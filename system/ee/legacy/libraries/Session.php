@@ -360,11 +360,9 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE)
 	{
-		$member = ee()->db->get_where('members', array('member_id' => $member_id));
-		$member_group = ee()->db->where('group_id', $member->row('group_id'))
-			->get('member_groups');
+		$member = ee('Model')->get('Member', $member_id)->first();
 
-		if ($this->access_cp == TRUE OR $member_group->row('can_access_cp') == 'y')
+		if ($this->access_cp == TRUE OR $member->MemberGroup->can_access_cp == 'y')
 		{
 			$this->sdata['admin_sess'] = 1;
 		}
@@ -373,7 +371,7 @@ class EE_Session {
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
 		}
 
-		$crypt_key = $member->row('crypt_key');
+		$crypt_key = $member->crypt_key;
 
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
@@ -395,9 +393,14 @@ class EE_Session {
 		$this->sdata['fingerprint']		= $this->_create_fingerprint((string) $crypt_key);
 
 		$this->userdata['member_id']	= (int) $member_id;
+		$this->userdata['group_id']		= $member->MemberGroup->getId();
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
+
+		$this->userdata['cp_homepage']			= $member->cp_homepage;
+		$this->userdata['cp_homepage_channel']	= $member->cp_homepage_channel;
+		$this->userdata['cp_homepage_custom']	= $member->cp_homepage_custom;
 
 		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
 		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);

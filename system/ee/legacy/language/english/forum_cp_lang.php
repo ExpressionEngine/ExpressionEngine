@@ -18,6 +18,9 @@ $lang = array(
 'templates' => 'Templates',
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
+'zero_forum_boards_found' => 'Zero <b>Forum Boards</b> found',
+'no_forum_boards' => 'No forum boards available',
+'create_new_board' => 'Create new forum board',
 
 // List / Index
 'forum_listing' => 'Forum listing',
@@ -59,7 +62,6 @@ $lang = array(
 'forum_directory_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the forum.',
 
 'site' => 'Site',
-'site_desc' => '<abbr title="Multiple Site Manager">MSM</abbr> site this forum board should appear under.',
 
 'forum_url_segment' => 'Forum <abbr title="Unified Resource Locator">URL</abbr> segment',
 'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
@@ -226,6 +228,9 @@ $lang = array(
 'edit_forum_board_error' => 'Cannot Update Forum Board',
 'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
 
+'forum_board_removed' => 'Forum Board Removed',
+'forum_board_removed_desc' => 'The forum board <b>%s</b> was removed.',
+
 // Create/Edit Category Form
 
 'create_category' => 'Create Category',
@@ -275,6 +280,9 @@ $lang = array(
 
 'edit_forum_error' => 'Cannot Update Forum',
 'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
+
+'forum_board_removed' => 'Forums Removed',
+'forum_board_removed_desc' => 'The following forums were removed',
 
 // Category Permissions
 
@@ -335,6 +343,7 @@ $lang = array(
 'edit_rank_error' => 'Cannot Update Rank',
 'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
 
+'ranks_removed' => 'Member Ranks Removed',
 'ranks_removed_desc' => 'The following ranks were removed',
 
 // Administrators
@@ -366,6 +375,9 @@ $lang = array(
 
 'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 'invalid_username' => 'The username you submitted does not appear to be valid',
+
+'admins_removed' => 'Administrators Removed',
+'admins_removed_desc' => 'The following administrators were removed',
 
 // Moderators
 
@@ -410,6 +422,9 @@ $lang = array(
 
 'edit_moderator_error' => 'Cannot Update Moderator',
 'edit_moderator_error_desc' => 'We were unable to update this moderator, please review and fix errors below.',
+
+'moderator_removed' => 'Moderator Removed',
+'moderator_removed_desc' => 'The moderator <b>%s</b> was removed.',
 
 ''=>''
 );

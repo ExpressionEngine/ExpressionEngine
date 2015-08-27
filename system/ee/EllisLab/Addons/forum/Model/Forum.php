@@ -81,12 +81,19 @@ class Forum extends Model {
 			'model'    => 'Post',
 			'from_key' => 'forum_last_post_id',
 			'to_key'   => 'post_id',
+			'weak'     => TRUE
 		),
 		'LastPostAuthor' => array(
 			'type'     => 'belongsTo',
 			'from_key' => 'forum_last_post_author_id',
 			'to_key'   => 'member_id',
-			'model'    => 'ee:Member'
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Forum',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		),
 		'Moderators' => array(
 			'type'   => 'hasMany',
@@ -192,7 +199,7 @@ class Forum extends Model {
 	{
 		$model = $this->getFrontend();
 
-		$last_forum = $model->get('Forum')
+		$last_forum = $model->get('forum:Forum')
 			->fields('forum_order')
 			->filter('forum_is_cat', $this->getProperty('forum_is_cat'))
 			->order('forum_order', 'desc');

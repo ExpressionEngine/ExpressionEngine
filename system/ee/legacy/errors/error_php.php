@@ -1,10 +1,19 @@
-<div style="border:1px solid #990000;padding-left:20px;margin:0 0 10px 0;">
+<?php
+	$class = strtolower($error_category);
+	$class = ($class == 'warning') ? 'warn' : $class;
+?>
 
-<h4>A PHP Error was encountered</h4>
+<script>
+<?php echo file_get_contents(__DIR__.'/error_toggle.js') ?>
+</script>
 
-<p>Severity: <?php echo $severity; ?></p>
-<p>Message:  <?php echo $message; ?></p>
-<p>Filename: <?php echo $filepath; ?></p>
-<p>Line Number: <?php echo $line; ?></p>
-
+<div class="err-wrap <?php echo $class ?>" onclick="return err_toggle(this)">
+	<h1><?php echo $error_category ?></h1>
+	<h2><?php echo $message ?></h2>
+	<p><?php echo $filepath ?>, line <?php echo $line ?> <a class="toggle" rel="notice-info" href="#">show details</a></p>
+	<div class="details <?php echo $class ?>-info">
+		<ul>
+			<li><b>Severity</b>: <?php echo $error_constant ?></li>
+		</ul>
+	</div>
 </div>

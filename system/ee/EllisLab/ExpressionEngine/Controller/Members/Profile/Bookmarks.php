@@ -46,7 +46,7 @@ class Bookmarks extends Profile {
 		}
 
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url  = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Bookmarks extends Profile {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('bookmarks') . ': <b>### ' . lang('bookmarks') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->view->base_url = $this->base_url;
@@ -133,6 +133,7 @@ class Bookmarks extends Profile {
 	 */
 	public function create()
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
@@ -162,6 +163,7 @@ class Bookmarks extends Profile {
 	 */
 	public function edit($id)
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
@@ -305,7 +307,11 @@ class Bookmarks extends Profile {
 			}
 			elseif (ee()->form_validation->errors_exist())
 			{
-				ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_erorr'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
 			}
 		}
 

@@ -49,13 +49,13 @@ if ( ! isset($alerts_name))
 }
 ?>
 <?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-	<?=ee('Alert')->get($alerts_name)?>
+	<?=ee('CP/Alert')->get($alerts_name)?>
 	<?php
 	if (isset($extra_alerts))
 	{
 		foreach ($extra_alerts as $alert)
 		{
-			echo ee('Alert')->get($alert);
+			echo ee('CP/Alert')->get($alert);
 		}
 	}
 	if (isset($tabs)):
@@ -77,8 +77,38 @@ if ( ! isset($alerts_name))
 	{
 		$this->embed('_shared/form/section', array('name' => $name, 'settings' => $settings));
 	}
+
+	// Set invalid class on secure form controls down below if it contains an invalid field
+	$fieldset_classes = '';
+	if (isset($errors) OR validation_errors())
+	{
+		foreach ($secure_form_ctrls as $setting)
+		{
+			if (validation_errors())
+			{
+				$fieldset_classes = form_error_class(array_keys($setting['fields']));
+
+				if ( ! empty($fieldset_classes))
+				{
+					break;
+				}
+			}
+			else
+			{
+				foreach (array_keys($setting['fields']) as $field)
+				{
+					if ($errors->hasErrors($field))
+					{
+						$fieldset_classes = 'invalid';
+						break;
+					}
+				}
+			}
+		}
+	}
 	?>
-	<fieldset class="form-ctrls">
+
+	<fieldset class="form-ctrls <?=$fieldset_classes?>">
 		<?php foreach ($secure_form_ctrls as $setting): ?>
 			<div class="password-req required">
 				<div class="setting-txt col w-8">

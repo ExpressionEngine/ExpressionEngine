@@ -24,28 +24,7 @@
  */
 class EE_Exceptions {
 
-	var $action;
-	var $severity;
-	var $message;
-	var $filename;
-	var $line;
-	var $ob_level;
-
-	var $levels = array(
-						E_ERROR				=>	'Error',
-						E_WARNING			=>	'Warning',
-						E_PARSE				=>	'Parsing Error',
-						E_NOTICE			=>	'Notice',
-						E_CORE_ERROR		=>	'Core Error',
-						E_CORE_WARNING		=>	'Core Warning',
-						E_COMPILE_ERROR		=>	'Compile Error',
-						E_COMPILE_WARNING	=>	'Compile Warning',
-						E_USER_ERROR		=>	'User Error',
-						E_USER_WARNING		=>	'User Warning',
-						E_USER_NOTICE		=>	'User Notice',
-						E_STRICT			=>	'Runtime Notice'
-					);
-
+	private $ob_level;
 
 	/**
 	 * Constructor
@@ -53,28 +32,24 @@ class EE_Exceptions {
 	public function __construct()
 	{
 		$this->ob_level = ob_get_level();
-		// Note:  Do not log messages from this constructor.
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Exception Logger
 	 *
 	 * This function logs PHP generated error messages
 	 *
-	 * @access	private
 	 * @param	string	the error severity
 	 * @param	string	the error string
 	 * @param	string	the error filepath
 	 * @param	string	the error line number
 	 * @return	string
 	 */
-	function log_exception($severity, $message, $filepath, $line)
+	public function log_exception($severity, $message, $filepath, $line)
 	{
-		$severity = ( ! isset($this->levels[$severity])) ? $severity : $this->levels[$severity];
+		list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
-		log_message('error', 'Severity: '.$severity.'  --> '.$message. ' '.$filepath.' '.$line, TRUE);
+		log_message('error', 'Severity: '.$error_constant.'  --> '.$message. ' '.$filepath.' '.$line, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -82,12 +57,16 @@ class EE_Exceptions {
 	/**
 	 * 404 Page Not Found Handler
 	 *
-	 * @access	private
 	 * @param	string
 	 * @return	string
 	 */
-	function show_404($page = '', $log_error = TRUE)
+	public function show_404($page = '', $log_error = TRUE)
 	{
+		if (defined('REQ') && constant('REQ') == 'CP')
+		{
+			throw new \EllisLab\ExpressionEngine\Error\FileNotFound();
+		}
+
 		$heading = "404 Page Not Found";
 		$message = "The page you requested was not found.";
 
@@ -97,7 +76,7 @@ class EE_Exceptions {
 			log_message('error', '404 Page Not Found --> '.$page);
 		}
 
-		echo $this->show_error($heading, $message, 'error_404', 404);
+		echo $this->show_error($heading, $message, 'error_general', 404);
 		exit;
 	}
 
@@ -106,32 +85,28 @@ class EE_Exceptions {
 	/**
 	 * Native PHP error handler
 	 *
-	 * @access	private
 	 * @param	string	the error severity
 	 * @param	string	the error string
 	 * @param	string	the error filepath
 	 * @param	string	the error line number
 	 * @return	string
 	 */
-	function show_php_error($severity, $message, $filepath, $line)
+	public function show_php_error($severity, $message, $filepath, $line)
 	{
-		$severity = ( ! isset($this->levels[$severity])) ? $severity : $this->levels[$severity];
+		list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
 		$filepath = str_replace("\\", "/", $filepath);
-
-		// For safety reasons we do not show the full file path
-		if (FALSE !== strpos($filepath, '/'))
-		{
-			$x = explode('/', $filepath);
-			$filepath = $x[count($x)-2].'/'.end($x);
-		}
+		$filepath = str_replace(SYSPATH, '', $filepath);
 
 		if (ob_get_level() > $this->ob_level + 1)
 		{
 			ob_end_flush();
 		}
+
 		ob_start();
+
 		include(APPPATH.'errors/error_php.php');
+
 		$buffer = ob_get_contents();
 		ob_end_clean();
 		echo $buffer;
@@ -144,16 +119,48 @@ class EE_Exceptions {
 	 *
 	 * Take over CI's Error template to use the EE user error template
 	 *
-	 * @access	public
 	 * @param	string	the heading
 	 * @param	string	the message
 	 * @param	string	the template
 	 * @return	string
 	 */
-	function show_error($heading, $message, $template = 'error_general', $status_code = 500)
+	public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
 	{
 		set_status_header($status_code);
 
+		// Ajax Requests get a reasonable response
+		if (defined('AJAX_REQUEST') && AJAX_REQUEST)
+		{
+			ee()->output->send_ajax_response(array(
+				'error'	=> $message
+			));
+		}
+
+		if (is_array($message))
+		{
+			$message = '<p>'.implode("</p>\n\n<p>", $message).'</p>';
+		}
+
+		// If we have the template class we can show their error template
+		if (function_exists('ee') && isset(ee()->TMPL))
+		{
+			ee()->output->fatal_error($message);
+		}
+
+		if (ob_get_level() > $this->ob_level + 1)
+		{
+			ob_end_flush();
+		}
+
+		ob_start();
+
+		include(APPPATH.'errors/'.$template.'.php');
+
+		$buffer = ob_get_contents();
+		ob_end_clean();
+		return $buffer;
+
+/*
 		// "safe" HTML typography in EE will strip paragraph tags, and needs newlines to indicate paragraphs
 		$message = '<p>'.implode("</p>\n\n<p>", ( ! is_array($message)) ? array($message) : $message).'</p>';
 
@@ -177,41 +184,6 @@ class EE_Exceptions {
 			));
 		}
 
-		// CP requests get no change in treatment
-		// nor do errors that occur in code prior to template parsing
-		// since the db, typography, etc. aren't available yet
-		if ( ! defined('REQ') OR REQ == 'CP' OR ( ! isset(ee()->TMPL)))
-		{
-			if (ob_get_level() > $this->ob_level + 1)
-			{
-				ob_end_flush();
-			}
-
-			ob_start();
-
-			if (isset(ee()->session) && isset(ee()->session->userdata))
-			{
-				if (defined('PATH_CP_THEME') &&
-					(file_exists(PATH_CP_THEME.'/views/errors/'.$template.'.php')))
-				{
-					include(PATH_CP_THEME.'/views/errors/'.$template.'.php');
-				}
-				else
-				{
-					include(APPPATH.'errors/'.$template.'.php');
-				}
-			}
-			else
-			{
-				include(APPPATH.'errors/'.$template.'.php');
-			}
-
-			$buffer = ob_get_contents();
-			ob_end_clean();
-			return $buffer;
-		}
-
-
 		// Error occurred on a frontend request
 
 		// AR DB errors can result in a memory loop on subsequent queries so we output them now
@@ -223,9 +195,86 @@ class EE_Exceptions {
 		// everything is in place to show the
 		// custom error template
 		ee()->output->fatal_error($message);
+		*/
 	}
 
-	// --------------------------------------------------------------------
+	public function show_exception(\Exception $exception, $status_code = 500)
+	{
+		set_status_header($status_code);
+
+		$message = $exception->getMessage();
+		$location =  $exception->getFile() . ':' . $exception->getLine();
+		$trace = explode("\n", $exception->getTraceAsString());
+
+		foreach ($trace as &$line)
+		{
+			$path = preg_quote(SYSPATH, '/');
+			$line = preg_replace('/^(#\d+\s+)'.$path.'/', '$1', $line);
+		}
+
+		if (ob_get_level() > $this->ob_level + 1)
+		{
+			ob_end_flush();
+		}
+
+		ob_start();
+
+		if (defined('EE_APPPATH'))
+		{
+			include(EE_APPPATH.'errors/error_exception.php');
+		}
+		else
+		{
+			include(APPPATH.'errors/error_exception.php');
+		}
+
+		$buffer = ob_get_contents();
+		ob_end_clean();
+		echo $buffer;
+		exit;
+	}
+
+	/**
+	 * @return Array of [PHP Severity constant, Human severity name]
+	 */
+	private function lookupSeverity($severity)
+	{
+		switch ($severity)
+		{
+			case E_ERROR:
+			 	return array('E_ERROR', 'Error');
+			case E_WARNING:
+			 	return array('E_WARNING', 'Warning');
+			case E_PARSE:
+			 	return array('E_PARSE', 'Error');
+			case E_NOTICE:
+			 	return array('E_NOTICE', 'Notice');
+			case E_CORE_ERROR:
+			 	return array('E_CORE_ERROR', 'Error');
+			case E_CORE_WARNING:
+			 	return array('E_CORE_WARNING', 'Warning');
+			case E_COMPILE_ERROR:
+			 	return array('E_COMPILE_ERROR', 'Error');
+			case E_COMPILE_WARNING:
+			 	return array('E_COMPILE_WARNING', 'Warning');
+			case E_USER_ERROR:
+			 	return array('E_USER_ERROR', 'Error');
+			case E_USER_WARNING:
+			 	return array('E_USER_WARNING', 'Warning');
+			case E_USER_NOTICE:
+			 	return array('E_USER_NOTICE', 'Notice');
+			case E_STRICT:
+			 	return array('E_STRICT', 'Notice');
+			case E_RECOVERABLE_ERROR:
+			 	return array('E_RECOVERABLE_ERROR', 'Error');
+			case E_DEPRECATED:
+			 	return array('E_DEPRECATED', 'Deprecated');
+			case E_USER_DEPRECATED:
+			 	return array('E_USER_DEPRECATED', 'Deprecated');
+			default:
+				return array('UNKNOWN', 'Error');
+		}
+	}
 
 }
 // END Exceptions Class

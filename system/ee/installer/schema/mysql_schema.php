@@ -350,6 +350,9 @@ class EE_Schema {
 			pmember_id int(10) NOT NULL default '0',
 			rte_enabled char(1) NOT NULL DEFAULT 'y',
 			rte_toolset_id int(10) NOT NULL DEFAULT '0',
+			cp_homepage varchar(20) NULL DEFAULT NULL,
+			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
+			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `group_id` (`group_id`),
 			KEY `unique_id` (`unique_id`),
@@ -464,6 +467,9 @@ class EE_Schema {
 			search_flood_control mediumint(5) unsigned NOT NULL default '15',
 			prv_msg_send_limit smallint unsigned NOT NULL default '20',
 			prv_msg_storage_limit smallint unsigned NOT NULL default '60',
+			cp_homepage varchar(20) NULL DEFAULT NULL,
+			cp_homepage_channel int(10) unsigned NOT NULL DEFAULT '0',
+			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
@@ -555,6 +561,7 @@ class EE_Schema {
 			channel_require_membership char(1) NOT NULL default 'y',
 			channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			channel_html_formatting char(4) NOT NULL default 'all',
+			extra_publish_controls char(1) NOT NULL default 'n',
 			channel_allow_img_urls char(1) NOT NULL default 'y',
 			channel_auto_link_urls char(1) NOT NULL default 'n',
 			channel_notify char(1) NOT NULL default 'n',
@@ -920,7 +927,6 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_layout_publish (
 			layout_id int(10) UNSIGNED NOT NULL auto_increment,
 			site_id int(4) UNSIGNED NOT NULL default 1,
-			member_group int(4) UNSIGNED NOT NULL,
 			channel_id int(4) UNSIGNED NOT NULL default 0,
 			layout_name varchar(50) NOT NULL,
 			field_layout text,
@@ -1074,6 +1080,7 @@ class EE_Schema {
 			server_path varchar(255) NOT NULL default '',
 			url varchar(100) NOT NULL,
 			allowed_types varchar(3) NOT NULL default 'img',
+			default_modal_view varchar(5) NOT NULL default 'list',
 			max_size varchar(16) NULL DEFAULT NULL,
 			max_height varchar(6) NULL DEFAULT NULL,
 			max_width varchar(6) NULL DEFAULT NULL,
@@ -1085,7 +1092,7 @@ class EE_Schema {
 			file_post_format varchar(120) NULL DEFAULT NULL,
 			cat_group varchar(255) NULL DEFAULT NULL,
 			batch_location varchar(255) NULL DEFAULT NULL,
-			module_id int(4) DEFAULT NULL,
+			module_id int(4) NOT NULL DEFAULT 0,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
 		)";

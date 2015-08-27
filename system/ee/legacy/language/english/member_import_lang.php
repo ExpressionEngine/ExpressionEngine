@@ -71,8 +71,6 @@ not implicitly given in the XML file.  These options will NOT override XML data.
 
 'duplicate_member_id' => 'Duplicate Member ID: "%x"<br />It is recommended that you do not use a &lt;member_id&gt; tag and allow ExpressionEngine to auto-increment member_id',
 
-'duplicate_screen_name' => 'Duplicate screen_name: ',
-
 'duplicate_username' => 'Duplicate username: ',
 
 'enclosure' => 'Enclosing Character',

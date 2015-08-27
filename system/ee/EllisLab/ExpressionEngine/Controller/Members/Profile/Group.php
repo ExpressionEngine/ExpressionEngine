@@ -49,7 +49,7 @@ class Group extends Profile {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('access_privilege_warning'))
 					->addToBody(
@@ -107,18 +107,24 @@ class Group extends Profile {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Don't try to save the password confirm
-			array_pop($vars['sections'][0]);
-
-			if ($this->saveSettings($vars['sections']))
+			if ($this->saveSettings(array_slice($vars['sections'], 0, 1)))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

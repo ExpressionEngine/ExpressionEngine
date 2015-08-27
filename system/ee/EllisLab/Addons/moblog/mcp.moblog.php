@@ -96,12 +96,16 @@ EOT;
 		$data = array();
 		foreach ($moblogs as $moblog)
 		{
+			$edit_url = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']);
 			$columns = array(
 				$moblog['moblog_id'],
-				$moblog['moblog_full_name'],
+				array(
+					'content' => $moblog['moblog_full_name'],
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'copy' => array(
@@ -147,7 +151,7 @@ EOT;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('moblogs') . ': <b>### ' . lang('moblogs') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return ee('View')->make('moblog:index')->render($vars);
@@ -169,7 +173,7 @@ EOT;
 			{
 				ee('Model')->get('moblog:Moblog', $moblog_ids)->delete();
 
-				ee('Alert')->makeInline('moblogs-table')
+				ee('CP/Alert')->makeInline('moblogs-table')
 					->asSuccess()
 					->withTitle(lang('moblogs_removed'))
 					->addToBody(sprintf(lang('moblogs_removed_desc'), count($moblog_ids)))
@@ -268,7 +272,7 @@ EOT;
 					ee()->session->set_flashdata('highlight_id', $moblog->getId());
 				}
 
-				ee('Alert')->makeInline('moblogs-table')
+				ee('CP/Alert')->makeInline('moblogs-table')
 					->asSuccess()
 					->withTitle(lang('moblog_'.$alert_key))
 					->addToBody(sprintf(lang('moblog_'.$alert_key.'_desc'), $moblog->moblog_full_name))
@@ -279,7 +283,7 @@ EOT;
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('moblogs-table')
+				ee('CP/Alert')->makeInline('moblogs-table')
 					->asIssue()
 					->withTitle(lang('moblog_not_'.$alert_key))
 					->addToBody(lang('moblog_not_'.$alert_key.'_desc'))
@@ -1037,7 +1041,7 @@ MAGIC;
 	{
 		if ( ! $response)
 		{
-			ee('Alert')->makeInline('moblogs-table')
+			ee('CP/Alert')->makeInline('moblogs-table')
 				->asIssue()
 				->withTitle(lang('moblog_check_failure'))
 				->addToBody($MP->errors())
@@ -1045,7 +1049,7 @@ MAGIC;
 		}
 		else
 		{
-			ee('Alert')->makeInline('moblogs-table')
+			ee('CP/Alert')->makeInline('moblogs-table')
 				->asSuccess()
 				->withTitle(lang('moblog_check_success'))
 				->addToBody(lang('emails_done').NBS.$MP->emails_done)

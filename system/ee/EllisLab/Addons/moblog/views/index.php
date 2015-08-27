@@ -4,11 +4,11 @@
 			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/moblog/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=lang('moblogs')?></h1>
-		<?=ee('Alert')->get('moblogs-table')?>
+		<?=ee('CP/Alert')->get('moblogs-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
@@ -19,8 +19,6 @@
 	<?=form_close();?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
@@ -30,7 +28,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

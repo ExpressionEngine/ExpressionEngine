@@ -81,6 +81,7 @@ feature 'Category Groups' do
     @page.sort_col.text.should eq 'Group Name'
 
     @page.category_groups[2].find('input[type="checkbox"]').set true
+	@page.wait_until_bulk_action_visible
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible
@@ -101,6 +102,7 @@ feature 'Category Groups' do
   it 'should bulk delete category groups' do
     groups = get_group_names
     @page.select_all.click
+	@page.wait_until_bulk_action_visible
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible

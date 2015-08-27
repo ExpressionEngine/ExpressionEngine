@@ -59,35 +59,48 @@ class Members extends CP_Controller {
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'all_members' => array(
-				'href' => ee('CP/URL', 'members'),
-				'button' => array(
-					'href' => ee('CP/URL', 'members/create'),
-					'text' => 'new'
-				)
-			),
-			array(
-				'pending_activation' => ee('CP/URL', 'members', array('group' => 4)),
-				'manage_bans' => ee('CP/URL', 'members/bans')
-			),
-			'member_groups' => array(
-				'href' => ee('CP/URL', 'members/groups'),
-				'button' => array(
-					'href' => ee('CP/URL', 'members/groups/create'),
-					'text' => 'new'
-				)
-			),
-			array(
-				'custom_member_fields' => ee('CP/URL', 'members/fields')
-			)
-		));
-
 		$this->base_url = ee('CP/URL', 'members');
+		$this->set_view_header($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('CP/Sidebar')->make();
+
+		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members')->compile())
+			->withButton(lang('new'), ee('CP/URL', 'members/create'));
+		$list = $header->addBasicList();
+
+		if ($active == 'all_members')
+		{
+			$header->isActive();
+		}
+
+		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members', array('group' => 4))->compile());
+
+		if ($active == 'pending')
+		{
+			$pending->isActive();
+		}
+
+		$list->addItem(lang('manage_bans'), ee('CP/URL', 'members/bans'));
+
+		$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL', 'members/groups'))
+			->withButton(lang('new'), ee('CP/URL', 'members/groups/create'));
+
+		$item = $header->addBasicList()
+			->addItem(lang('custom_member_fields'), ee('CP/URL', 'members/fields'));
+
+		if ($active == 'fields')
+		{
+			$item->isActive();
+		}
+
+		if ($active == 'groups')
+		{
+			$header->isActive();
+		}
+	}
 
 	/**
 	 * MemberList
@@ -153,6 +166,9 @@ class Members extends CP_Controller {
 				'username' => array(
 					'encode' => FALSE
 				),
+				'dates' => array(
+					'encode' => FALSE
+				),
 				'member_group' => array(
 					'encode' => FALSE
 				),
@@ -193,8 +209,16 @@ class Members extends CP_Controller {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
+
+		switch ($this->group)
+		{
+			case 2: $active = 'ban'; break;
+			case 4: $active = 'pending'; break;
+			default: $active = 'all_members'; break;
+		}
+		$this->generateSidebar($active);
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -342,19 +366,28 @@ class Members extends CP_Controller {
 			}
 
 			ee()->config->update_site_prefs($data);
-			ee()->view->set_message('success', lang('ban_settings_updated'), lang('ban_settings_updated_desc'), TRUE);
+
+			ee('CP/Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('ban_settings_updated'))
+				->defer();
+
 			ee()->functions->redirect($this->base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('banned_members');
 		$this->form = $vars;
 		$this->form['cp_page_title'] = lang('user_banning');
 		$this->form['ajax_validate'] = TRUE;
-		$this->form['save_btn_text'] = 'btn_save_settings';
+		$this->form['save_btn_text'] = sprintf(lang('btn_save'), lang('settings'));
 		$this->form['save_btn_text_working'] = 'btn_saving';
 
 		$this->index();
@@ -403,9 +436,10 @@ class Members extends CP_Controller {
 		foreach ($members as $member)
 		{
 			$attributes = array();
+			$edit_link = ee('CP/URL', 'members/profile/', array('id' => $member['member_id']));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/profile/', array('id' => $member['member_id'])),
+					'href' => $edit_link,
 					'title' => strtolower(lang('profile'))
 				)
 			));
@@ -433,11 +467,18 @@ class Members extends CP_Controller {
 				$attributes['class'] = 'selected';
 			}
 
-			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>e-mail</a>";
+			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
+			$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
+			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
+			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],
-					'username' => "{$member['username']} ($email)",
+					'username' => $username_display,
+					'<span class="meta-info">
+						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
+						<b>'.lang('last_visit').'</b>: '.$last_visit.'
+					</span>',
 					'member_group' => $group,
 					$toolbar,
 					array(
@@ -482,11 +523,11 @@ class Members extends CP_Controller {
 		$options = $group_ids;
 		$options['all'] = lang('all');
 
-		$group = ee('Filter')->make('group', 'member_group', $options);
+		$group = ee('CP/Filter')->make('group', 'member_group', $options);
 		$group->setPlaceholder(lang('all'));
 		$group->disableCustomValue();
 
-		$filters = ee('Filter')->add($group);
+		$filters = ee('CP/Filter')->add($group);
 
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
@@ -626,7 +667,12 @@ class Members extends CP_Controller {
 		$cp_message = (count($member_ids) == 1) ?
 			lang('member_deleted') : lang('members_deleted');
 
-		ee()->view->set_message('success', lang('member_delete_success'), $cp_message, TRUE);
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_delete_success'))
+			->addToBody($cp_message)
+			->defer();
+
 		ee()->functions->redirect($this->base_url);
 	}
 
@@ -738,6 +784,24 @@ class Members extends CP_Controller {
 				}
 			}
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Set the header for the members section
+	 * @param String $form_url Form URL
+	 * @param String $search_button_value The text for the search button
+	 */
+	protected function set_view_header($form_url, $search_button_value = '')
+	{
+		$search_button_value = ($search_button_value) ?: lang('search_members_button');
+
+		ee()->view->header = array(
+			'title' => lang('member_manager'),
+			'form_url' => $form_url,
+			'search_button_value' => $search_button_value
+		);
 	}
 }
 // END CLASS

@@ -32,6 +32,13 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  */
 class Status extends AbstractChannelsController {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('status');
+	}
+
 	/**
 	 * Status groups listing
 	 */
@@ -39,7 +46,7 @@ class Status extends AbstractChannelsController {
 	{
 		$status_groups = ee('Model')->get('StatusGroup')
 			->filter('site_id', ee()->config->item('site_id'));
-		$total_rows = $status_groups->all()->count();
+		$total_rows = $status_groups->count();
 
 		$table = $this->buildTableFromStatusGroupsQuery($status_groups);
 
@@ -54,7 +61,7 @@ class Status extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('status_groups') . ': <b>### ' . lang('status_groups') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('channels/status/index', $vars);
@@ -79,7 +86,7 @@ class Status extends AbstractChannelsController {
 					->filter('group_id', 'IN', $group_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('status_groups_removed'))
 					->addToBody(sprintf(lang('status_groups_removed_desc'), count($group_ids)))
@@ -178,7 +185,7 @@ class Status extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $status_group->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('status_group_'.$alert_key))
 				->addToBody(sprintf(lang('status_group_'.$alert_key.'_desc'), $status_group->group_name))
@@ -188,7 +195,7 @@ class Status extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('status_group_not_'.$alert_key))
 				->addToBody(lang('status_group_not_'.$alert_key.'_desc'))
@@ -223,7 +230,7 @@ class Status extends AbstractChannelsController {
 			$status_group->filter('group_id', '!=', $group_id);
 		}
 
-		if ($status_group->all()->count() > 0)
+		if ($status_group->count() > 0)
 		{
 			ee()->form_validation->set_message('validateStatusGroupName', lang('duplicate_status_group_name'));
 			return FALSE;
@@ -293,12 +300,16 @@ class Status extends AbstractChannelsController {
 		$data = array();
 		foreach ($statuses as $status)
 		{
+			$edit_url = ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status->getId());
 			$columns = array(
 				$status->getId().form_hidden('order[]', $status->getId()),
-				$status->status,
+				array(
+					'content' => $status->status,
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -335,12 +346,12 @@ class Status extends AbstractChannelsController {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/status'), lang('status_groups'));
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/v3/status_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/status_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('status_ajax_reorder_fail'))
@@ -407,7 +418,7 @@ class Status extends AbstractChannelsController {
 					->filter('status_id', 'IN', $status_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('statuses_removed'))
 					->addToBody(sprintf(lang('statuses_removed_desc'), count($status_ids)))
@@ -508,7 +519,7 @@ class Status extends AbstractChannelsController {
 				)
 			),
 			'permissions' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('category_permissions_warning'))
 					->addToBody(
@@ -569,7 +580,7 @@ class Status extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $status->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('status_'.$alert_key))
 				->addToBody(sprintf(lang('status_'.$alert_key.'_desc'), $status->status))
@@ -579,7 +590,7 @@ class Status extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('status_not_'.$alert_key))
 				->addToBody(lang('status_not_'.$alert_key.'_desc'))
@@ -666,7 +677,7 @@ class Status extends AbstractChannelsController {
 			$status->filter('status_id', '!=', $status_id);
 		}
 
-		if ($status->all()->count() > 0)
+		if ($status->count() > 0)
 		{
 			ee()->form_validation->set_message('validateName', lang('duplicate_status_name'));
 			return FALSE;

@@ -6,7 +6,7 @@
 			<?=$themes?>
 		</fieldset>
 		<h1><?=$cp_heading?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 	<?=form_close()?>

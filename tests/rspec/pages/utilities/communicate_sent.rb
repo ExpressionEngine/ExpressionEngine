@@ -1,7 +1,7 @@
 class CommunicateSent < ControlPanelPage
 	set_url_matcher /utilities\/communicate\/sent/
 
-	element :heading, 'div.box h1'
+	element :heading, 'div.w-12 div.box h1'
 
 	element :phrase_search, 'input[name=search]'
 	element :search_submit_button, 'form fieldset.tbl-search input.submit'
@@ -16,7 +16,7 @@ class CommunicateSent < ControlPanelPage
 	elements :dates, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)'
 	elements :total_sents, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(3)'
 
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act button.submit'
 
 	def generate_data(

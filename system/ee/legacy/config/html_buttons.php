@@ -31,21 +31,21 @@ $predefined_buttons = array(
 												'tag_open'  => '<strong>',
 												'tag_close' => '</strong>',
 												'accesskey' => 'b',
-												'classname'	 => 'btn_b'
+												'classname'	 => 'bold'
 												),
 							'italic'	=> array(
 												'tag_name'  => 'i',
 												'tag_open'  => '<em>',
 												'tag_close' => '</em>',
 												'accesskey' => 'i',
-												'classname'	 => 'btn_i'
+												'classname'	 => 'italic'
 												),
 							'strike'	=> array(
 												'tag_name'  => 's',
 												'tag_open'  => '<del>',
 												'tag_close' => '</del>',
 												'accesskey' => 's',
-												'classname'	 => 'btn_strike'
+												'classname'	 => 'strikethrough'
 												),
 							'ins'	 	=> array(
 												'tag_name'  => 'insert',

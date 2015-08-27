@@ -8,11 +8,11 @@
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_heading?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
@@ -24,7 +24,7 @@
 	<?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
+<?php ee('CP/Modal')->startModal('template-settings'); ?>
 
 <div class="modal-wrap modal-template-settings hidden">
 	<div class="modal">
@@ -38,6 +38,8 @@
 	</div>
 </div>
 
+<?php ee('CP/Modal')->endModal(); ?>
+
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-template',
@@ -47,7 +49,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove-template', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

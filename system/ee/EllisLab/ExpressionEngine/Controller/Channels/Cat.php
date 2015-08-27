@@ -47,6 +47,8 @@ class Cat extends AbstractChannelsController {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		$this->generateSidebar('category');
 	}
 
 	/**
@@ -57,7 +59,7 @@ class Cat extends AbstractChannelsController {
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$total_rows = $cat_groups->all()->count();
+		$total_rows = $cat_groups->count();
 
 		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups);
 
@@ -72,7 +74,7 @@ class Cat extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_groups') . ': <b>### ' . lang('category_groups') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('channels/cat/index', $vars);
@@ -208,7 +210,7 @@ class Cat extends AbstractChannelsController {
 				)
 			),
 			'permissions' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('category_permissions_warning'))
 					->addToBody(
@@ -293,7 +295,7 @@ class Cat extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $group->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('category_group_'.$alert_key))
 				->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $group->group_name))
@@ -303,7 +305,7 @@ class Cat extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('category_group_not_'.$alert_key))
 				->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
@@ -338,7 +340,7 @@ class Cat extends AbstractChannelsController {
 			$cat_group->filter('group_id', '!=', $group_id);
 		}
 
-		if ($cat_group->all()->count() > 0)
+		if ($cat_group->count() > 0)
 		{
 			ee()->form_validation->set_message('validCategoryGroupName', lang('duplicate_category_group_name'));
 			return FALSE;
@@ -390,7 +392,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
-		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
 
 		// Get the category tree with a single query
 		ee()->load->library('datastructures/tree');
@@ -401,9 +403,9 @@ class Cat extends AbstractChannelsController {
 		ee()->view->cat_group = $cat_group;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('category_ajax_reorder_fail'))
@@ -507,7 +509,7 @@ class Cat extends AbstractChannelsController {
 					->filter('cat_id', 'IN', $cat_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('categories_removed'))
 					->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
@@ -760,7 +762,7 @@ class Cat extends AbstractChannelsController {
 					ee()->session->set_flashdata('highlight_id', $category->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_group_'.$alert_key))
 					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $category->cat_name))
@@ -772,7 +774,7 @@ class Cat extends AbstractChannelsController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_group_not_'.$alert_key))
 					->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
@@ -907,14 +909,19 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_fields as $field)
 		{
+			$edit_url = ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field->getId());
+
 			$columns = array(
 				$field->getId().form_hidden('order[]', $field->getId()),
-				$field->field_label,
+				array(
+					'content' => $field->field_label,
+					'href' => $edit_url
+				),
 				'<var>'.LD.$field->field_name.RD.'</var>',
 				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -948,12 +955,12 @@ class Cat extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/v3/cat_field_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/cat_field_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('cat_field_ajax_reorder_fail'))
@@ -1020,7 +1027,7 @@ class Cat extends AbstractChannelsController {
 					->filter('field_id', 'IN', $field_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_fields_removed'))
 					->addToBody(sprintf(lang('category_fields_removed_desc'), count($field_ids)))
@@ -1200,7 +1207,7 @@ class Cat extends AbstractChannelsController {
 					ee()->session->set_flashdata('highlight_id', $cat_field->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_field_'.$alert_key))
 					->addToBody(sprintf(lang('category_field_'.$alert_key.'_desc'), $cat_field->field_label))
@@ -1212,7 +1219,7 @@ class Cat extends AbstractChannelsController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_field_not_'.$alert_key))
 					->addToBody(lang('category_field_not_'.$alert_key.'_desc'))
@@ -1228,7 +1235,7 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/field/'.$group_id), lang('category_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		ee()->cp->render('settings/form', $vars);

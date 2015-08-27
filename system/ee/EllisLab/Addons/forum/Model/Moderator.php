@@ -59,16 +59,26 @@ class Moderator extends Model {
 			'to_key'   => 'forum_id'
 		),
 		'Member' => array(
-			'type'     => 'hasOne',
+			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'mod_member_id',
-			'to_key'   => 'member_id'
+			'to_key'   => 'member_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Moderator',
+				'type' => 'hasMany'
+			)
 		),
 		'MemberGroup' => array(
-			'type'     => 'hasOne',
+			'type'     => 'belongsTo',
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'mod_group_id',
-			'to_key'   => 'group_id'
+			'to_key'   => 'group_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Moderator',
+				'type' => 'hasMany'
+			)
 		),
 	);
 
@@ -106,7 +116,6 @@ class Moderator extends Model {
 
 		if ($this->mod_group_id)
 		{
-			return "Group #{$this->mod_group_id} <em>(Not yet implemented)</em>";
 			$name = $this->MemberGroup->group_title;
 		}
 

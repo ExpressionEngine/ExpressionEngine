@@ -11,6 +11,7 @@ class FieldDisplay {
 	public function __construct($field)
 	{
 		$this->field = $field;
+		$this->collapsed = (bool) $field->getItem('field_is_hidden');
 	}
 
 	public function get($key)

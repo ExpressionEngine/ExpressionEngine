@@ -14,11 +14,11 @@
 		<?php endif; ?>
 		<div class="clear_left"></div>
 	</div>
-	
+
 	<div id="file_browser_body" class="">
-	
+
 		<?=$table_html?>
-		
+
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
 			<a title="${name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_browser_thumbnail">
 				<img src="${thumb}?r=${modified_date}" class="${thumb_class}" data-dimensions="${file_hw_original}" />
@@ -26,7 +26,7 @@
 			</a>
 		</script>
 	</div>
-	
+
 	<div id="file_browser_footer">
 		<p><?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?></p>
 		<?=$pagination_html?>
@@ -34,5 +34,4 @@
 </div>
 
 <?php
-/* End of file filebrowser.php */
-/* Location: ./themes/cp/default/_shared/file_upload/browser.php */
+

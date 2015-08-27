@@ -67,7 +67,8 @@ class Updater {
 				'_export_mailing_lists',
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
-				'_remove_show_button_cluster_column'
+				'_remove_show_button_cluster_column',
+				'_add_cp_homepage_columns'
 			)
 		);
 
@@ -893,7 +894,22 @@ class Updater {
 				array(
 					'module_id' => array(
 						'type'    => 'INT(4)',
-						'null'    => TRUE,
+						'null'    => FALSE,
+						'default' => 0
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('default_modal_view', 'upload_prefs'))
+		{
+			ee()->smartforge->add_column(
+				'upload_prefs',
+				array(
+					'default_modal_view' => array(
+						'type'    => 'VARCHAR(5)',
+						'null'    => FALSE,
+						'default' => 'list',
 					)
 				)
 			);
@@ -1189,6 +1205,21 @@ class Updater {
 				)
 			);
 		}
+
+		if ( ! ee()->db->field_exists('extra_publish_controls', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'extra_publish_controls' => array(
+						'type'       => 'char',
+						'constraint' => 1,
+						'default'    => 'n',
+						'null'       => FALSE
+					)
+				)
+			);
+		}
 	}
 
 	/**
@@ -1223,6 +1254,54 @@ class Updater {
 	private function _remove_show_button_cluster_column()
 	{
 		ee()->smartforge->drop_column('channels', 'show_button_cluster');
+	}
+
+	/**
+	 * Add columns to store CP homepage redirect information
+	 */
+	private function _add_cp_homepage_columns()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'cp_homepage' => array(
+					'type'		=> 'varchar(20)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_channel' => array(
+					'type'		=> 'int',
+					'unsigned'	=> TRUE,
+					'null'		=> FALSE,
+				),
+				'cp_homepage_custom' => array(
+					'type'		=> 'varchar(100)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				)
+			)
+		);
+
+		ee()->smartforge->add_column(
+			'members',
+			array(
+				'cp_homepage' => array(
+					'type'		=> 'varchar(20)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_channel' => array(
+					'type'		=> 'varchar(255)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_custom' => array(
+					'type'		=> 'varchar(100)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				)
+			)
+		);
 	}
 }
 /* END CLASS */

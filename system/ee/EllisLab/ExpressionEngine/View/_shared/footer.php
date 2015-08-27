@@ -82,16 +82,16 @@
 		<div class="overlay"></div>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('v3/common.js')?>
+		<?=ee()->view->script_tag('common.js')?>
 		<?php
 
 		echo ee()->javascript->get_global();
 
 		echo ee()->cp->render_footer_js();
 
-		if (isset($library_src))
+		if (isset($_extra_library_src))
 		{
-			echo $library_src;
+			echo $_extra_library_src;
 		}
 
 		echo ee()->javascript->script_foot();
@@ -140,6 +140,6 @@
 				</div>
 			</div>
 		</div>
-		<?=ee('Alert')->getStandard()?>
+		<?=ee('CP/Alert')->getStandard()?>
 	</body>
 </html>

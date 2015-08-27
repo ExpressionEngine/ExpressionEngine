@@ -75,7 +75,7 @@ class Email extends Logs {
 
 		if ($logs->count() > 10)
 		{
-			$filters = ee('Filter')
+			$filters = ee('CP/Filter')
 				->add('Username')
 				->add('Date')
 				->add('Perpage', $logs->count(), 'all_email_logs');
@@ -112,6 +112,12 @@ class Email extends Logs {
 		{
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
+
+		ee()->view->header = array(
+			'title' => lang('system_logs'),
+			'form_url' => $this->base_url->compile(),
+			'search_button_value' => lang('search_logs_button')
+		);
 
 		$logs = $logs->order('cache_date', 'desc')
 			->limit($this->params['perpage'])

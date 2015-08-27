@@ -60,6 +60,14 @@ class Site extends Model {
 		'Stats' => array(
 			'type' => 'HasOne'
 		),
+		'Statuses' => array(
+			'model' => 'Status',
+			'type' => 'hasMany'
+		),
+		'StatusGroups' => array(
+			'model' => 'StatusGroup',
+			'type' => 'hasMany'
+		),
 		'TemplateGroups' => array(
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
@@ -74,6 +82,14 @@ class Site extends Model {
 		),
 		'Channels' => array(
 			'model' => 'Channel',
+			'type' => 'hasMany'
+		),
+		'Files' => array(
+			'model' => 'File',
+			'type' => 'hasMany'
+		),
+		'UploadDestinations' => array(
+			'model' => 'UploadDestination',
 			'type' => 'hasMany'
 		)
 	);

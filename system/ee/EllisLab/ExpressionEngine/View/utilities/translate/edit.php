@@ -2,7 +2,7 @@
 
 <h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 <?=form_open(ee('CP/URL', 'utilities/translate/' . $language . '/save/' . $file), 'class="settings"')?>
-<?=ee('Alert')->getAllInlines()?>
+<?=ee('CP/Alert')->getAllInlines()?>
 <?php foreach ($keys as $key => $value):?>
 	<fieldset class="col-group required <?=form_error_class($key)?>">
 		<div class="setting-txt col w-8">

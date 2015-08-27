@@ -9,11 +9,11 @@
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
 
-			<?=ee('Alert')->get('toolsets-form')?>
+			<?=ee('CP/Alert')->get('toolsets-form')?>
 
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>
-			<fieldset class="tbl-bulk-act">
+			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="enable"><?=lang('enable')?></option>
@@ -26,8 +26,6 @@
 	</div>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
@@ -37,7 +35,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

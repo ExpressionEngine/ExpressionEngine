@@ -52,8 +52,14 @@ class Post extends Model {
 			'model' => 'Attachment'
 		),
 		'Author' => array(
-			'type' => 'belongsTo',
-			'model' => 'ee:Member'
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Post',
+				'type' => 'hasMany'
+			)
 		),
 		'Board' => array(
 			'type' => 'belongsTo'
@@ -62,7 +68,13 @@ class Post extends Model {
 			'type'     => 'belongsTo',
 			'from_key' => 'post_edit_author',
 			'to_key'   => 'member_id',
-			'model'    => 'ee:Member'
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Post',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		),
 		'Forum' => array(
 			'type' => 'belongsTo'

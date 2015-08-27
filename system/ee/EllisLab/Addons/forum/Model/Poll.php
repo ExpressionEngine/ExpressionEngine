@@ -43,8 +43,14 @@ class Poll extends Model {
 
 	protected static $_relationships = array(
 		'Author' => array(
-			'type' => 'belongsTo',
-			'model' => 'ee:Member'
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Poll',
+				'type' => 'hasMany'
+			)
 		),
 		'PollVotes' => array(
 			'type'  => 'hasMany',

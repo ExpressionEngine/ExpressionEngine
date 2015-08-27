@@ -210,7 +210,7 @@ class Application {
 	 * @param String $method Method to forward to
 	 * @return Array Array of method results, nested arrays are flattened
 	 */
-	protected function forward($method)
+	public function forward($method)
 	{
 		$result = array();
 

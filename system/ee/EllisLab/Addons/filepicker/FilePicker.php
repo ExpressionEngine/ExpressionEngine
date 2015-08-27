@@ -17,15 +17,7 @@ class FilePicker {
 		// Insert the modal
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
 		$modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
-
-		if (empty($view->blocks['modals']))
-		{
-			$view->blocks['modals'] = '';
-		}
-
-		if (strpos($view->blocks['modals'], $modal) === FALSE) {
-			$view->blocks['modals'] .= $modal;
-		}
+		ee('CP/Modal')->addModal('modal-file', $modal);
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -79,11 +71,12 @@ class FilePicker {
 		return "<a class='m-link filepicker $class' rel='modal-file' href='$href' $extra>". $text ."</a>";
 	}
 
-	public function buildTableFromFileCollection(Collection $files, $limit = 20)
+	public function buildTableFromFileCollection(Collection $files, $limit = 20, $selected = NULL)
 	{
 		$table = Table::fromGlobals(array(
 			'autosort' => TRUE,
-			'limit' => $limit
+			'limit' => $limit,
+			'class' => 'file-list'
 		));
 		$table->setColumns(
 			array(
@@ -92,9 +85,6 @@ class FilePicker {
 				),
 				'file_type',
 				'date_added',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				)
 			)
 		);
 		$table->setNoResultsText(lang('no_uploaded_files'));
@@ -107,8 +97,6 @@ class FilePicker {
 
 		$data = array();
 
-		$file_id = ee()->session->flashdata('file_id');
-
 		foreach ($files as $file)
 		{
 			if ( ! $file->getUploadDestination()
@@ -118,35 +106,19 @@ class FilePicker {
 				continue;
 			}
 
-			$toolbar = array(
-				'edit' => array(
-					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
-					'title' => lang('edit')
-				),
-				'crop' => array(
-					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
-					'title' => lang('crop'),
-				),
-				'download' => array(
-					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
-					'title' => lang('download'),
-				),
-			);
-
-			if ( ! $file->isImage())
-			{
-				unset($toolbar['crop']);
-			}
-
 			$column = array(
 				$file->title . '<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
-				array('toolbar_items' => $toolbar),
 			);
 
-			$attrs = array();
 			$attrs = array('data-id' => $file->file_id);
+
+			if ($file->file_id == $selected)
+			{
+				$attrs = array('class' => 'selected');
+				$column[0] = '<span></span>' . $column[0];
+			}
 
 			$data[] = array(
 				'attrs'		=> $attrs,

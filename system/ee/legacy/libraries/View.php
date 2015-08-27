@@ -27,34 +27,10 @@ class View {
 	public $alerts = array();
 	public $blocks = array();
 
-	protected $_theme = 'default';
 	protected $_extend = '';
 	protected $_data = array();
 	protected $_disabled = array();
 	protected $_disable_up = array();
-
-	/**
-	 * Set Theme
-	 *
-	 * @access public
-	 * @return void
-	 */
-	public function set_cp_theme($cp_theme)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('3.0');
-
-		$this->_theme = $cp_theme;
-		ee()->session->userdata['cp_theme'] = $cp_theme;
-/*
-		// root overrides deprecated in 2.9.1, view overrides should be in
-		// /views/ henceforth
-		ee()->load->add_theme_cascade(PATH_CP_THEME);
-		ee()->load->add_theme_cascade(PATH_CP_THEME.'views/');
-*/
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Render output (html)
@@ -164,7 +140,7 @@ class View {
 	 */
 	public function head_title($title)
 	{
-		return '<title>' . $title . ' | ExpressionEngine</title>'.PHP_EOL;
+		return '<title>' . strip_tags($title) . ' | ExpressionEngine</title>'.PHP_EOL;
 	}
 
 	// --------------------------------------------------------------------
@@ -176,14 +152,14 @@ class View {
 	 * include a v= query string with the filemtime, so farfuture expires headers
 	 * can be sent
 	 *
-	 * @param 	string		Javascript File, relative to themes/javascript/<src/compressed>/jquery
+	 * @param 	string		Javascript File, relative to themes/ee/asset/javascript/<src/compressed>/jquery
 	 * @return 	string 		script tag
 	 */
 	public function script_tag($file)
 	{
 		$src_dir = (ee()->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
 
-		$path = PATH_THEMES.'javascript/'.$src_dir.$file;
+		$path = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$src_dir.$file;
 
 		if ( ! file_exists($path))
 		{
@@ -192,7 +168,7 @@ class View {
 
 		$filemtime = filemtime($path);
 
-		$url = URL_THEMES . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
+		$url = URL_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
 
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
@@ -214,20 +190,10 @@ class View {
 		$filemtime = NULL;
 		$file_url  = NULL;
 
-		$css_paths = array(
-			$this->_theme => PATH_CP_THEME,
-			'default'     => PATH_THEMES.'cp/default/'
-		);
-
-		foreach($css_paths as $theme => $path)
+		if (file_exists(PATH_CP_THEME.$file))
 		{
-			if (file_exists($path.$file))
-			{
-				$filemtime = filemtime($path.$file);
-				$base_url  = ($theme == 'default') ? URL_THEMES : URL_ADDONS_THEMES;
-				$file_url  = $base_url.'cp/'.$theme.'/'.$file;
-				break;
-			}
+			$filemtime = filemtime(PATH_CP_THEME.$file);
+			$file_url  = URL_THEMES.'cp/'.$file;
 		}
 
 		if ($file_url === NULL)
@@ -279,7 +245,7 @@ class View {
 	 */
 	public function set_alert($type, array $alert_data, $flashdata = FALSE)
 	{
-		$alert = ee('Alert')->make('shared-form', strtolower($type))
+		$alert = ee('CP/Alert')->make('shared-form', strtolower($type))
 			->withTitle($alert_data['title'])
 			->addToBody($alert_data['description']);
 

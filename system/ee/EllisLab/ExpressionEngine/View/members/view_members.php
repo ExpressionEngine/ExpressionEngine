@@ -3,10 +3,6 @@
 <div class="box snap mb">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
-		<fieldset class="tbl-search right">
-			<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
-			<input class="btn submit" type="submit" value="<?=lang('search_members_button')?>">
-		</fieldset>
 		<h1>
 			<ul class="toolbar">
 				<li class="settings">
@@ -16,7 +12,7 @@
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		</h1>
 
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->get('view-members')?>
 
 		<?php if (isset($filters)) echo $filters; ?>
 
@@ -25,7 +21,7 @@
 		<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
 		<?php if ( ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
@@ -43,8 +39,6 @@
 </div>
 <?php endif; ?>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 
 $modal_vars = array(
@@ -55,7 +49,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'system_utilities' => 'System Utilities',
+
 /**
  * Menu
  */
@@ -35,6 +37,8 @@ $lang = array(
 'statistics' => 'Statistics',
 
 'search_and_replace' => 'Search and Replace',
+
+'default' => 'Default',
 
 /**
  * Communicate
@@ -227,8 +231,6 @@ $lang = array(
 
 'duplicate_member_id' => 'Duplicate Member ID: "%x"<br />It is recommended that you do not use a &lt;member_id&gt; tag and allow ExpressionEngine to auto-increment member_id',
 
-'duplicate_screen_name' => 'Duplicate screen_name: ',
-
 'duplicate_username' => 'Duplicate username: ',
 
 'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN!  Proceed with caution!',
@@ -271,7 +273,7 @@ $lang = array(
 
 'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
-'mbr_xml_file_location' => '<abbr title="Unified Resource Locator">URL</abbr> location of your <abbr title="Extensible Markup Language"><mark>xml</mark></abbr> file.',
+'mbr_xml_file_location' => 'Server path to your <abbr title="Extensible Markup Language"><mark>xml</mark></abbr> file.',
 
 'mbr_import_default_options' => 'Default Options',
 

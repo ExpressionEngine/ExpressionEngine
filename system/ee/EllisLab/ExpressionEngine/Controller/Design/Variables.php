@@ -46,7 +46,7 @@ class Variables extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar('variables');
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
@@ -105,12 +105,16 @@ class Variables extends AbstractDesignController {
 			{
 				$all_sites = '<b class="no">' . lang('no') . '</b>';
 			}
+			$edit_url = ee('CP/URL', 'design/variables/edit/' . $variable->variable_id);
 			$column = array(
-				$variable->variable_name,
+				array(
+					'content' => $variable->variable_name,
+					'href' => $edit_url
+				),
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/variables/edit/' . $variable->variable_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'find' => array(
@@ -162,7 +166,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_variable') . ': <b>### ' . lang('template_variables') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		$this->stdHeader();
@@ -255,7 +259,7 @@ class Variables extends AbstractDesignController {
 
 			ee()->session->set_flashdata('variable_id', $variable->variable_id);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_variable_success'))
 				->addToBody(sprintf(lang('create_template_variable_success_desc'), $variable->variable_name))
@@ -265,7 +269,7 @@ class Variables extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_template_variable_error'))
 				->addToBody(lang('create_template_variable_error_desc'))
@@ -378,7 +382,7 @@ class Variables extends AbstractDesignController {
 
 			ee()->session->set_flashdata('variable_id', $variable->variable_id);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_template_variable_success'))
 				->addToBody(sprintf(lang('edit_template_variable_success_desc'), $variable->variable_name))
@@ -388,7 +392,7 @@ class Variables extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_template_variable_error'))
 				->addToBody(lang('edit_template_variable_error_desc'))
@@ -426,7 +430,7 @@ class Variables extends AbstractDesignController {
 
 		$variables->delete();
 
-		ee('Alert')->makeInline('variable-form')
+		ee('CP/Alert')->makeInline('variable-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('template_variables_removed_desc'))
@@ -452,7 +456,7 @@ class Variables extends AbstractDesignController {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))

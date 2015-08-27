@@ -29,6 +29,8 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
  */
 class Base64Native extends SerializedType {
 
+	protected $data = array();
+
 	/**
 	 * Called when the column is fetched from db
 	 */

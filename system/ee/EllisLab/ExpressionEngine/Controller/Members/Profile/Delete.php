@@ -60,7 +60,7 @@ class Delete extends Profile {
 			)
 		);
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
 			->withTitle(lang('delete_member_warning'))

@@ -364,6 +364,11 @@ class Table {
 							$settings = array_merge($defaults, $item);
 							$settings['type'] = $col_settings[0]['type'];
 
+							if ($settings['type'] == self::COL_TEXT)
+							{
+								$settings['encode'] = $col_settings[0]['encode'];
+							}
+
 							$data_row[] = array_merge(array('content' => ''), $settings);
 						}
 

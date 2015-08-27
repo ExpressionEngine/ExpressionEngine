@@ -1,4 +1,4 @@
-<a class="has-sub" href="">
+<a class="has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=strtolower(lang($label))?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=$value?>)</span>
@@ -29,7 +29,7 @@
 </div>
 
 <?php if ($confirm_show_all): ?>
-<?php $this->startOrAppendBlock('modals'); ?>
+<?php ee('CP/Modal')->startModal('show-all'); ?>
 <div class="modal-wrap modal-confirm-show-all hidden">
 	<div class="modal">
 		<div class="col-group">
@@ -50,5 +50,5 @@
 		</div>
 	</div>
 </div>
-<?php $this->endBlock(); ?>
+<?php ee('CP/Modal')->endModal(); ?>
 <?php endif; ?>

@@ -424,15 +424,19 @@ $lang = array(
 
 'none' => 'None',
 
-'define_html_buttons' => 'HTML Formatting Button Definitions',
+'html_button' => 'HTML Button',
 
-'create_html_button' => 'Create HTML Button',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
-'edit_html_button' => 'Edit HTML Button',
+'define_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Button Definitions',
 
-'save_html_button' => 'Save HTML Button',
+'create_html_button' => 'Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
 
-'no_buttons' => 'No HTML buttons defined.',
+'edit_html_button' => 'Edit <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'save_html_button' => 'Save <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'no_buttons' => 'No <abbr title="Hyper-Text Markup Language">HTML</abbr> buttons defined.',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 
@@ -448,7 +452,7 @@ $lang = array(
 
 'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
-'accesskey' => 'Tag shortcut',
+'accesskey' => 'Shortcut',
 
 'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 
@@ -621,7 +625,7 @@ $lang = array(
 
 'custom_field_created' => 'Custom Field Created',
 
-'no_field_groups' => 'There are no custom fields in this group',
+'no_field_groups' => 'No field groups found',
 
 'delete_field' => 'Delete Field',
 

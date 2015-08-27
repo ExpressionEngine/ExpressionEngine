@@ -6,7 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\EmailCache;
+use EllisLab\ExpressionEngine\Model\Email\EmailCache;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -375,7 +375,7 @@ class Communicate extends Utilities {
 
 		ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-		ee('Alert')->makeStandard('batchmode')
+		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
 			->withTitle(lang('batchmode_ready_to_begin'))
 			->addToBody(lang('batchmode_warning'))
@@ -436,7 +436,7 @@ class Communicate extends Utilities {
 
 			ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-			ee('Alert')->makeStandard('batchmode')
+			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
 				->withTitle($message)
 				->addToBody(lang('batchmode_warning'))
@@ -585,7 +585,7 @@ class Communicate extends Utilities {
 	private function deliverEmail(EmailCache $email, $to, $cc = NULL, $bcc = NULL)
 	{
 		ee()->email->clear(TRUE);
-		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
+		ee()->email->wordwrap  = $email->wordwrap;
 		ee()->email->mailtype  = $email->mailtype;
 		ee()->email->from($email->from_email, $email->from_name);
 		ee()->email->to($to);
@@ -747,7 +747,7 @@ class Communicate extends Utilities {
 		{
 			$data[] = array(
 				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
-				ee()->localize->human_time($email->cache_date),
+				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
 					'view' => array(
@@ -814,7 +814,7 @@ class Communicate extends Utilities {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('view_email_cache') . ': <b>### ' . lang('emails') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('utilities/communicate/sent', $vars);

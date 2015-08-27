@@ -121,7 +121,6 @@ feature 'Member Import' do
 
     @page.should have_text 'Confirm Import'
     @page.should have_text "The username you chose is not available (Username: 'admin' - within user record 'admin')"
-    @page.should have_text "The screen name you chose is not available (Screen Name: 'Admin' - within user record 'admin')"
     @page.should have_text "The email you submitted is not valid (Email: 'robertexample.com' - within user record 'robr')"
     @page.should have_text "Duplicate username: robr"
   end

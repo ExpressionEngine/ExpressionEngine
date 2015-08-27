@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controller\Publish;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -68,7 +68,7 @@ abstract class AbstractPublish extends CP_Controller {
 		{
 			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
-		$channel_filter = ee('Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
+		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
 		$channel_filter->disableCustomValue(); // This may have to go
 		return $channel_filter;
 	}

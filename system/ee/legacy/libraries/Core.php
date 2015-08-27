@@ -28,12 +28,23 @@ class EE_Core {
 	var $native_modules		= array();		// List of native modules with EE
 	var $native_plugins		= array();		// List of native plugins with EE
 
+	private $bootstrapped = FALSE;
+	private $ee_loaded = FALSE;
+	private $cp_loaded = FALSE;
+
 	/**
 	 * Sets constants, sets paths contants to appropriate directories, loads
 	 * the database and generally prepares the system to run.
 	 */
 	public function bootstrap()
 	{
+		if ($this->bootstrapped)
+		{
+			return;
+		}
+
+		$this->bootstrapped = TRUE;
+
 		// Define the request type
 		// Note: admin.php defines REQ=CP
 		if ( ! defined('REQ'))
@@ -201,12 +212,14 @@ class EE_Core {
 
 		define('PATH_THEMES', $theme_path.'ee/');
 		define('URL_THEMES', $theme_url.'ee/');
+		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
+		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
-		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
+		define('PATH_CP_GBL_IMG', PATH_THEMES_GLOBAL_ASSET.'img/');
 		unset($theme_path);
 
 		// Load the very, very base classes
@@ -241,6 +254,13 @@ class EE_Core {
 	 */
 	public function run_ee()
 	{
+		if ($this->ee_loaded)
+		{
+			return;
+		}
+
+		$this->ee_loaded = TRUE;
+
 		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
@@ -386,10 +406,16 @@ class EE_Core {
 	 */
 	public function run_cp()
 	{
+		if ($this->cp_loaded)
+		{
+			return;
+		}
+
+		$this->cp_loaded = TRUE;
+
 		$this->_somebody_set_us_up_the_base();
 
-		$cp_theme = 'default';
-		define('PATH_CP_THEME', PATH_THEMES.'cp/default/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL

@@ -4,9 +4,9 @@ namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Module\Channel\Model\Display\DefaultChannelLayout;
+use EllisLab\ExpressionEngine\Model\Channel\Display\DefaultChannelLayout;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;
+use EllisLab\ExpressionEngine\Model\Channel\Channel;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
@@ -44,6 +44,8 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->lang->loadfile('content');
+
+		$this->generateSidebar('channel');
 	}
 
 	public function layouts($channel_id)
@@ -88,12 +90,16 @@ class Layouts extends AbstractChannelsController {
 
 		foreach ($channel->ChannelLayouts as $layout)
 		{
+			$edit_url = ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id);
 			$column = array(
-				$layout->layout_name,
+				array(
+					'content' => $layout->layout_name,
+					'href' => $edit_url
+				),
 				implode(',', $layout->MemberGroups->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -131,7 +137,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('layouts') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -232,7 +238,7 @@ class Layouts extends AbstractChannelsController {
 
 			$layout->save();
 
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('create_layout_success'))
 				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
@@ -242,7 +248,7 @@ class Layouts extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('create_layout_error'))
 				->addToBody(lang('create_layout_error_desc'))
@@ -339,7 +345,7 @@ class Layouts extends AbstractChannelsController {
 
 			$channel_layout->save();
 
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('edit_layout_success'))
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
@@ -349,7 +355,7 @@ class Layouts extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('edit_layout_error'))
 				->addToBody(lang('edit_layout_error_desc'))
@@ -361,13 +367,13 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
-		$alert_required = ee('Alert')->makeBanner('tab-has-required-fields')
+		$alert_required = ee('CP/Alert')->makeBanner('tab-has-required-fields')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('error_cannot_hide_tab'))
 			->addToBody(lang('error_tab_has_required_fields'));
 
-		$alert_not_empty = ee('Alert')->makeBanner('tab-has-fields')
+		$alert_not_empty = ee('CP/Alert')->makeBanner('tab-has-fields')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('error_cannot_remove_tab'))
@@ -415,7 +421,7 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		$channel_layouts->delete();
-		ee('Alert')->makeInline('layouts')
+		ee('CP/Alert')->makeInline('layouts')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('layouts_removed_desc'))

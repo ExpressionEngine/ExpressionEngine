@@ -170,7 +170,7 @@ class File extends AbstractFilesController {
 
 			$file->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_file_metadata_success'))
 				->addToBody(sprintf(lang('edit_file_metadata_success_desc'), $file->title))
@@ -180,14 +180,14 @@ class File extends AbstractFilesController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_file_metadata_error'))
 				->addToBody(lang('edit_file_metadata_error_desc'))
 				->now();
 		}
 
-		$this->sidebarMenu($file->upload_location_id);
+		$this->generateSidebar($file->upload_location_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
 		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . ee('CP/URL', 'files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
@@ -222,7 +222,7 @@ class File extends AbstractFilesController {
 
 		if ( ! $file->exists())
 		{
-			$alert = ee('Alert')->makeStandard()
+			$alert = ee('CP/Alert')->makeStandard()
 				->asIssue()
 				->withTitle(lang('file_not_found'))
 				->addToBody(sprintf(lang('file_not_found_desc'), $file->getAbsolutePath()));
@@ -243,7 +243,7 @@ class File extends AbstractFilesController {
 			// Check permissions on the file
 			if ( ! $file->isWritable())
 			{
-				$alert = ee('Alert')->makeInline('crop-form')
+				$alert = ee('CP/Alert')->makeInline('crop-form')
 					->asIssue()
 					->withTitle(lang('file_not_writable'))
 					->addToBody(sprintf(lang('file_not_writable_desc'), $file->getAbsolutePath()))
@@ -329,7 +329,7 @@ class File extends AbstractFilesController {
 
 			if (isset($response['errors']))
 			{
-				ee('Alert')->makeInline('crop-form')
+				ee('CP/Alert')->makeInline('crop-form')
 					->asIssue()
 					->withTitle(sprintf(lang('crop_file_error'), lang($action)))
 					->addToBody($response['errors'])
@@ -356,7 +356,7 @@ class File extends AbstractFilesController {
 					FALSE // Regenerate all images
 				);
 
-				ee('Alert')->makeInline('crop-form')
+				ee('CP/Alert')->makeInline('crop-form')
 					->asSuccess()
 					->withTitle(sprintf(lang('crop_file_success'), lang($action)))
 					->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)))
@@ -365,7 +365,7 @@ class File extends AbstractFilesController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('crop-form')
+			ee('CP/Alert')->makeInline('crop-form')
 				->asIssue()
 				->withTitle(sprintf(lang('crop_file_error'), lang($action)))
 				->addToBody(sprintf(lang('crop_file_error_desc'), strtolower(lang($action))))

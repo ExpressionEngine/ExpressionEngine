@@ -115,11 +115,7 @@ class EE_Config {
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
 
-
 		$this->_set_overrides($assign_to_config);
-
-		// Freelancer version?
-		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member.php')) ? 'TRUE' : 'FALSE';
 
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;
@@ -529,7 +525,6 @@ class EE_Config {
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
-			'template_debugging',
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
@@ -1315,8 +1310,7 @@ class EE_Config {
 				'force_query_string' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'redirect_method'    => array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
 				'debug'              => array('s', $debug_options),
-				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'template_debugging' => array('r', array('y' => 'yes', 'n' => 'no'))
+				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
 			'channel_cfg'		=>	array(
@@ -1682,7 +1676,6 @@ class EE_Config {
 			'is_system_on'				=> array('is_system_on_explanation'),
 			'debug'						=> array('debug_explanation'),
 			'show_profiler'				=> array('show_profiler_explanation'),
-			'template_debugging'		=> array('template_debugging_explanation'),
 			'max_caches'				=> array('max_caches_explanation'),
 			'use_newrelic'				=> array('use_newrelic_explanation'),
 			'newrelic_app_name'			=> array('newrelic_app_name_explanation'),

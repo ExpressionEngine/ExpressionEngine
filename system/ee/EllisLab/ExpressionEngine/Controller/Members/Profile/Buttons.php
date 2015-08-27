@@ -136,8 +136,8 @@ class Buttons extends Profile {
 		ee()->javascript->set_global('lang.remove_confirm', lang('html_buttons') . ': <b>### ' . lang('html_buttons') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
-				'cp/v3/html_button_reorder',
+				'cp/confirm_remove',
+				'cp/members/html_button_reorder',
 				'cp/sort_helper'
 			),
 			'plugin' => array(
@@ -145,7 +145,7 @@ class Buttons extends Profile {
 			)
 		));
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('html_button_ajax_reorder_fail'))
@@ -166,15 +166,23 @@ class Buttons extends Profile {
 	 * @access public
 	 * @return void
 	 */
-	public function create()
+	public function create($preset = '')
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('html_buttons'));
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+
+		$values = array();
+
+		if (isset($this->predefined[$preset]))
+		{
+			$values = $this->predefined[$preset];
+		}
 
 		$vars = array(
 			'cp_page_title' => lang('create_html_button')
 		);
 
-		$this->form($vars);
+		$this->form($vars, $values);
 	}
 
 	/**
@@ -186,6 +194,7 @@ class Buttons extends Profile {
 	 */
 	public function edit($id)
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('html_buttons'));
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
@@ -212,7 +221,7 @@ class Buttons extends Profile {
 
 		$buttons->delete();
 
-		ee('Alert')->makeInline('html_buttons')
+		ee('CP/Alert')->makeInline('html_buttons')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('html_buttons_removed'))
@@ -353,13 +362,20 @@ class Buttons extends Profile {
 		{
 			if ($this->saveButtons($vars))
 			{
-				ee()->view->set_message('success', lang('html_button_updated'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('html_button_updated'))
+					->defer();
 				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;
@@ -377,7 +393,7 @@ class Buttons extends Profile {
 		foreach ($this->predefined as $name => $button)
 		{
 			$current = array(
-				'href' => '#',
+				'href' => ee('CP/URL', 'members/profile/buttons/create/' . $name),
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);

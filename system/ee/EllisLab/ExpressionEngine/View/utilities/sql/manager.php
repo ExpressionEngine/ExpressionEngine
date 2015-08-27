@@ -12,14 +12,14 @@
 <div class="box">
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
-			<?=ee('Alert')->getAllInlines()?>
+			<?=ee('CP/Alert')->getAllInlines()?>
 			<fieldset class="tbl-search right">
 				<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$table['search']?>">
 				<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_tables')?>">
 			</fieldset>
 			<h1><?=$table_heading?></h1>
 			<?php $this->embed('_shared/table', $table); ?>
-			<fieldset class="tbl-bulk-act">
+			<fieldset class="tbl-bulk-act hidden">
 				<select name="table_action">
 					<option value="none">-- <?=lang('with_selected')?> --</option>
 					<option value="REPAIR"><?=lang('repair')?></option>
