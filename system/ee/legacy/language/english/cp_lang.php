@@ -546,6 +546,8 @@ $lang = array(
 
 'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
+'success' => 'Success',
+
 /**
  * Footer
  */
