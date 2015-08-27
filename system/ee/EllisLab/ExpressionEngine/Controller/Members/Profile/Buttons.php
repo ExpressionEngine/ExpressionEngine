@@ -397,14 +397,14 @@ class Buttons extends Profile {
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);
-			if (empty($button['tag_icon']))
+			if (strpos($button['classname'], 'html-') !== 0)
 			{
 				$current['content'] = $name;
 				$buttons[$button['tag_name']] = $current;
 			}
 			else
 			{
-				$buttons['html-' . $button['tag_icon']] = $current;
+				$buttons[$button['classname']] = $current;
 			}
 		}
 
