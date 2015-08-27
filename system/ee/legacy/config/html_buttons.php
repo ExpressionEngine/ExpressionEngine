@@ -68,68 +68,12 @@ $predefined_buttons = array(
 												'accesskey' => 'o',
 												'classname'	 => 'html-order-list'
 												),
-							'li'		=> array(
-												'tag_name'  => 'li',
-												'tag_open'  => '<li>',
-												'tag_close' => '</li>',
-												'accesskey' => 'o',
-												'classname'	 => 'btn_li'
-												),
-							'p'			=> array(
-												'tag_name'  => 'p',
-												'tag_open'  => '<p>',
-												'tag_close' => '</p>',
-												'accesskey' => 'p',
-												'classname'	 => 'btn_p'
-												),
 							'blockquote'	=> array(
 												'tag_name'  => 'blockquote',
 												'tag_open'  => '<blockquote>',
 												'tag_close' => '</blockquote>',
 												'accesskey' => 'q',
 												'classname'	 => 'html-quote'
-												),
-							'h1'		=> array(
-												'tag_name'  => 'h1',
-												'tag_open'  => '<h1>',
-												'tag_close' => '</h1>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h1'
-												),
-							'h2'		=> array(
-												'tag_name'  => 'h2',
-												'tag_open'  => '<h2>',
-												'tag_close' => '</h2>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h2'
-												),
-							'h3'		=> array(
-												'tag_name'  => 'h3',
-												'tag_open'  => '<h3>',
-												'tag_close' => '</h3>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h3'
-												),
-							'h4'		=> array(
-												'tag_name'  => 'h4',
-												'tag_open'  => '<h4>',
-												'tag_close' => '</h4>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h4'
-												),
-							'h5'		=> array(
-												'tag_name'  => 'h5',
-												'tag_open'  => '<h5>',
-												'tag_close' => '</h5>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h5'
-												),
-							'h6'		=> array(
-												'tag_name'  => 'h6',
-												'tag_open'  => '<h6>',
-												'tag_close' => '</h6>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h6'
 												),
 							'anchor'	=> array(
 												'tag_name'  => 'a',
@@ -145,13 +89,6 @@ $predefined_buttons = array(
 												'accesskey' => '',
 												'classname'	 => 'html-upload'
 												),
-							// 'separator'	=> array(
-							// 					'tag_name'  => 'separator',
-							// 					'tag_open'  => '',
-							// 					'tag_close' => '',
-							// 					'accesskey' => '',
-							// 					'classname'	 => 'markItUpSeparator'
-							// 					),
 							);
 
 
