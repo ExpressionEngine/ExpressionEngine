@@ -95,6 +95,10 @@ class Site extends Model {
 		'UploadDestinations' => array(
 			'model' => 'UploadDestination',
 			'type' => 'hasMany'
+		),
+		'MemberGroups' => array(
+			'model' => 'MemberGroup',
+			'type' => 'hasMany'
 		)
 	);
 

@@ -1016,14 +1016,6 @@ class Groups extends Members\Members {
 		$allowed_addons = ee()->input->post('addons_access');
 		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
 
-		// Set our various permissions if we're not editing the Super Admin
-		if ( ! empty($this->group) && $this->group->group_id !== 1)
-		{
-			$this->group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
-			$this->group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
-			$this->group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
-		}
-
 		if ( ! empty($this->group))
 		{
 			$group = $this->group;
@@ -1031,6 +1023,14 @@ class Groups extends Members\Members {
 		else
 		{
 			$group = ee('Model')->make('MemberGroup');
+		}
+
+		// Set our various permissions if we're not editing the Super Admin
+		if ($group->group_id !== 1)
+		{
+			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
+			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
+			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
 		}
 
 		foreach ($sections as $section)

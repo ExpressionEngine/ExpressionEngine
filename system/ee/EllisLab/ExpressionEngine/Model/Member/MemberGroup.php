@@ -10,7 +10,9 @@ class MemberGroup extends Model {
 	protected static $_table_name = 'member_groups';
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'afterInsert',
+		'afterUpdate'
 	);
 
 	protected static $_typed_columns = array(
@@ -238,6 +240,10 @@ class MemberGroup extends Model {
 	protected $cp_homepage_custom;
 
 
+	/**
+	 * Ensure group ID is set for new records
+	 * @return void
+	 */
 	public function onBeforeInsert()
 	{
 		if ( ! $this->group_id)
@@ -245,5 +251,74 @@ class MemberGroup extends Model {
 			$id = ee('db')->query('SELECT MAX(group_id) as id FROM exp_member_groups')->row('id');
 			$this->setRawProperty('group_id', $id + 1);
 		}
+	}
+
+	/**
+	 * Only set ID if we're being passed a number other than 0 or NULL
+	 * @param Integer/String $new_id ID of the record
+	 */
+	public function setId($new_id)
+	{
+		if ($new_id !== '0' && $new_id !== 0)
+		{
+			parent::setId($new_id);
+		}
+	}
+
+	/**
+	 * Ensure member group records are created for each site
+	 * @return void
+	 */
+	public function onAfterInsert()
+	{
+		$this->setId($this->group_id);
+
+		$sites = $this->getFrontend()->get('Site')
+			->fields('site_id')
+			->all()
+			->pluck('site_id');
+
+		foreach ($sites as $site_id)
+		{
+			$group = $this->getFrontend()->get('MemberGroup')
+				->filter('group_id', $this->group_id)
+				->filter('site_id', $site_id)
+				->first();
+
+			if ( ! $group)
+			{
+				$data = $this->getValues();
+				$data['site_id'] = (int) $site_id;
+				$this->getFrontend()->make('MemberGroup', $data)->save();
+			}
+		}
+	}
+
+	protected function constrainQueryToSelf($query)
+	{
+		if ($this->isDirty('site_id'))
+		{
+			throw new LogicException('Cannot modify site_id.');
+		}
+
+		$query->filter('site_id', $this->site_id);
+		parent::constrainQueryToSelf($query);
+	}
+
+	/**
+	 * Update common attributes (group_title, group_description, is_locked)
+	 * @return void
+	 */
+	public function onAfterUpdate()
+	{
+		ee('db')->update(
+			'member_groups',
+			array(
+				'group_title' => $this->group_title,
+				'group_description' => $this->group_description,
+				'is_locked' => $this->is_locked
+			),
+			array('group_id' => $this->group_id)
+		);
 	}
 }

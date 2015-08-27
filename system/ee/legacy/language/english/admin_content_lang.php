@@ -50,8 +50,6 @@ $lang = array(
 
 'edit_field_group_error_desc' => 'We were unable to update this field group, please review and fix errors below.',
 
-'success' => 'Success',
-
 'field_groups_removed_desc' => 'The following field groups were removed',
 
 'fields_removed_desc' => 'The following fields were removed',
