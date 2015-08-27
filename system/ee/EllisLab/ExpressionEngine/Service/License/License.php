@@ -55,8 +55,8 @@ class License {
 
 	/**
 	 * @var array $errors An associative array of errors. The values contain a
-	 *   default error message, however the * keys should correspond to a
-	 *   language key. The following keys * are available:
+	 *   default error message, however the keys should correspond to a
+	 *   language key. The following keys are available:
 	 *     corrupt_license_file
 	 *     invalid_signature
 	 *     missing_license
