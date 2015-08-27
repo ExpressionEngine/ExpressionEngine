@@ -47,7 +47,9 @@ class Comment extends Model {
 		),
 		'Author' => array(
 			'type' => 'BelongsTo',
-			'model' => 'Member'
+			'model' => 'Member',
+			'from_key' => 'author_id',
+			'to_key' => 'member_id'
 		)
 	);
 
