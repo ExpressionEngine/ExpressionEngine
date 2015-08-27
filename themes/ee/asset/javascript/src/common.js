@@ -280,8 +280,10 @@ $(document).ready(function(){
 		});
 
 		// Highlight table rows when checked
-		$('table').on('click', 'tr', function() {
-			$(this).children('td:last-child').children('input[type=checkbox]').click();
+		$('table').on('click', 'tr', function(event) {
+			if (event.target.nodeName != 'A') {
+       			$(this).children('td:last-child').children('input[type=checkbox]').click();
+			}
 		});
 
 		// Prevent clicks on checkboxes from bubbling to the table row
