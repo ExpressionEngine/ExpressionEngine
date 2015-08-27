@@ -495,7 +495,7 @@ class Msm extends CP_Controller {
 
 		if ($disabled)
 		{
-			$alert = ee('Alert')->makeInline('site-limit-reached')
+			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
 				->addToBody(lang('site_limit_reached_desc'))
@@ -592,7 +592,7 @@ class Msm extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_site_error'))
 				->addToBody(lang($action . '_site_error_desc'))

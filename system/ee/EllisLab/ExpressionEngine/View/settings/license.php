@@ -5,7 +5,7 @@
 <div class="box mb">
 	<h1><?=lang('license_and_registration')?></h1>
 	<div class="txt-wrap">
-		<?=ee('Alert')->get('core-license')?>
+		<?=ee('CP/Alert')->get('core-license')?>
 		<ul class="checklist">
 			<li><b><?=lang('license_no')?></b>: <?=$license->getData('license_number')?></li>
 			<li><b><?=lang('owned_by')?></b>: <a href="<?=$license->getData('license_contact')?>">

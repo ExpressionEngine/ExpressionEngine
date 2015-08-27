@@ -256,7 +256,7 @@ class Cp {
 
 		if ( ! $license->isValid())
 		{
-			$alert = ee('Alert')->makeBanner('invalid-license')
+			$alert = ee('CP/Alert')->makeBanner('invalid-license')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('software_unregistered'));

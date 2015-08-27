@@ -62,7 +62,7 @@ class License extends Settings {
 			{
 				if (rename($license_file['tmp_name'], SYSPATH.'user/config/license.key'))
 				{
-					$alert = ee('Alert')->makeInline('shared-form')
+					$alert = ee('CP/Alert')->makeInline('shared-form')
 						->asSuccess()
 						->withTitle(lang('license_updated'))
 						->addToBody(lang('license_updated_desc'))
@@ -72,7 +72,7 @@ class License extends Settings {
 				}
 				else
 				{
-					ee('Alert')->makeInline('shared-form')
+					ee('CP/Alert')->makeInline('shared-form')
 						->asIssue()
 						->withTitle(lang('license_file_fail'))
 						->addToBody(sprintf(lang('license_file_permissions'), SYSPATH.'user/config'))
@@ -81,7 +81,7 @@ class License extends Settings {
 			}
 			else
 			{
-				$alert = ee('Alert')->makeInline('shared-form')
+				$alert = ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('license_file_error'));
 
@@ -96,7 +96,7 @@ class License extends Settings {
 
 		if (IS_CORE)
 		{
-			ee('Alert')->makeInline('core-license')
+			ee('CP/Alert')->makeInline('core-license')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('features_limited'))
