@@ -312,6 +312,9 @@ class Spam_mcp {
 					->withTitle(lang('success'))
 					->addToBody(lang('spam_settings_updated'))
 					->defer();
+				
+				// Delete the classifier from shared memory if our settings changed
+				ee('spam:Training', 'default')->deleteClassifier();
 			}
 
 			ee()->functions->redirect($base_url);
