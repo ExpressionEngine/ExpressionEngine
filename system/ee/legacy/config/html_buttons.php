@@ -31,14 +31,14 @@ $predefined_buttons = array(
 												'tag_open'  => '<strong>',
 												'tag_close' => '</strong>',
 												'accesskey' => 'b',
-												'classname'	 => 'bold'
+												'classname'	 => 'html-bold'
 												),
 							'italic'	=> array(
 												'tag_name'  => 'i',
 												'tag_open'  => '<em>',
 												'tag_close' => '</em>',
 												'accesskey' => 'i',
-												'classname'	 => 'italic'
+												'classname'	 => 'html-italic'
 												),
 							'strike'	=> array(
 												'tag_name'  => 's',
@@ -59,14 +59,14 @@ $predefined_buttons = array(
 												'tag_open'  => '<ul>',
 												'tag_close' => '</ul>',
 												'accesskey' => 'u',
-												'classname'	 => 'btn_ul'
+												'classname'	 => 'html-order-list'
 												),
 							'ol'		=> array(
 												'tag_name'  => 'ol',
 												'tag_open'  => '<ol>',
 												'tag_close' => '</ol>',
 												'accesskey' => 'o',
-												'classname'	 => 'btn_ol'
+												'classname'	 => 'html-order-list'
 												),
 							'li'		=> array(
 												'tag_name'  => 'li',
@@ -87,7 +87,7 @@ $predefined_buttons = array(
 												'tag_open'  => '<blockquote>',
 												'tag_close' => '</blockquote>',
 												'accesskey' => 'q',
-												'classname'	 => 'btn_blockquote'
+												'classname'	 => 'html-quote'
 												),
 							'h1'		=> array(
 												'tag_name'  => 'h1',
@@ -136,14 +136,14 @@ $predefined_buttons = array(
 												'tag_open'  => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
 												'tag_close' => '</a>',
 												'accesskey' => 'a',
-												'classname'	 => 'btn_a'
+												'classname'	 => 'html-link'
 												),
 							'picture'	=> array(
 												'tag_name'  => 'img',
 												'tag_open'  => '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />',
 												'tag_close' => '',
 												'accesskey' => '',
-												'classname'	 => 'btn_img'
+												'classname'	 => 'html-upload'
 												),
 							// 'separator'	=> array(
 							// 					'tag_name'  => 'separator',
