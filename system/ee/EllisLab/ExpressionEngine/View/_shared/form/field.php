@@ -170,6 +170,13 @@ case 'image': ?>
 	</figure>
 <?php break;
 
+case 'slider': ?>
+	<div class="slider">
+		<input name='<?=$field_name?>' min="0" max="100" value="<?=$value?>" rel="range-value" type="range">
+		<div class="slider-output"><output class="range-value"><?=$value?></output>%</div>
+	</div>
+<?php break;
+
 case 'action_button': ?>
 	<a class="btn tn action <?=$field['class']?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
 <?php break;
