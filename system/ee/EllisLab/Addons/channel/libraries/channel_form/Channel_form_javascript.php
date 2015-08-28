@@ -33,7 +33,7 @@ class Channel_form_javascript
 	{
 		if (ee()->config->item('use_compressed_js') == 'n')
 		{
-			$this->js_path = PATH_THEMES.'javascript/src/';
+			$this->js_path = PATH_THEMES.'asset/javascript/src/';
 
 			if ( ! defined('PATH_JQUERY'))
 			{
@@ -42,7 +42,7 @@ class Channel_form_javascript
 		}
 		else
 		{
-			$this->js_path = PATH_THEMES.'javascript/compressed/';
+			$this->js_path = PATH_THEMES.'asset/javascript/compressed/';
 
 			if ( ! defined('PATH_JQUERY'))
 			{
