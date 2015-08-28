@@ -48,4 +48,4 @@ $('table').each(function() {
 	}
 });
 
-});
+})(jQuery);
