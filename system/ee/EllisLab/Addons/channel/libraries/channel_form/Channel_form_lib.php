@@ -1999,7 +1999,11 @@ GRID_FALLBACK;
 	 */
 	public function entry($key)
 	{
-		return $this->entry->getProperty($key);
+		if (isset($this->entry))
+		{
+			return $this->entry->getProperty($key);
+		}
+
 	}
 
 	// --------------------------------------------------------------------
