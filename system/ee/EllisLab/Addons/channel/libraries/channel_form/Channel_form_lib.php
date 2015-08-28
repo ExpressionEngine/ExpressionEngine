@@ -96,7 +96,7 @@ class Channel_form_lib
 	{
 		//set a global object
 	//	ee()->set('safecracker', $this); // deprecated
-	//	ee()->set('channel_form', $this);
+		ee()->set('channel_form', $this);
 		ee()->lang->loadfile('channel_form');
 	}
 
