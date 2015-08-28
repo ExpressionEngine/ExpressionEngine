@@ -496,7 +496,9 @@ class Msm extends CP_Controller {
 	{
 		$sections = array(array());
 
-		if ($can_add)
+		$disabled = ! $can_add;
+
+		if ( ! $can_add)
 		{
 			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
