@@ -1678,7 +1678,12 @@ GRID_FALLBACK;
 
 			if (in_array($this->channel('channel_id'), ee()->functions->fetch_assigned_channels()))
 			{
-				$this->entry->set($_POST);
+				$entry_data = array_filter(
+					$_POST,
+					function($v) { return ! is_null($v); }
+				);
+
+				$this->entry->set($entry_data);
 
 				$result = $this->entry->validate();
 
