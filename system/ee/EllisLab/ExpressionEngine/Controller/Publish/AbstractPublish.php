@@ -139,7 +139,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->javascript->set_global('publish.title_focus', FALSE);
 
-		if ( ! $entry_id && $valid && ee()->config->item('publish_page_title_focus') != 'n')
+		if ( ! $entry_id && $valid && bool_config_item('publish_page_title_focus'))
 		{
 			ee()->javascript->set_global('publish.title_focus', TRUE);
 		}
