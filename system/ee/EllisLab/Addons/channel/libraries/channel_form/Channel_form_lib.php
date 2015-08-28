@@ -1062,12 +1062,12 @@ GRID_FALLBACK;
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 
 		// RTE Selector parameter?
-		$rte_selector = ee()->TMPL->fetch_param('rte_selector');
+		$rte_selector = ee()->TMPL->fetch_param('rte_selector', '.WysiHat-field');
 
 		if ($rte_selector)
 		{
 			// toolset id specified?
-			$rte_toolset_id = (int)ee()->TMPL->fetch_param('rte_toolset_id');
+			$rte_toolset_id = (int) ee()->TMPL->fetch_param('rte_toolset_id', 0);
 
 			$js_url = ee()->functions->fetch_site_index().QUERY_MARKER
 				.'ACT='.ee()->functions->fetch_action_id('Rte', 'get_js')
