@@ -939,19 +939,17 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
+		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
+
 		// Try to rename automatically
 		if ($this->rename_installer())
 		{
 			ee()->load->helper('url');
-			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+			redirect($cp_login_url);
 		}
 
 		// Are we back here from a input?
-		if (ee()->input->get('login'))
-		{
-			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
-		}
-		else if (ee()->input->get('download'))
+		if (ee()->input->get('download'))
 		{
 			ee()->load->helper('download');
 			force_download(
@@ -972,6 +970,7 @@ class Wizard extends CI_Controller {
 		// Send them to their CP via the form
 		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
+		$template_variables['cp_login_url'] = $cp_login_url;
 
 		// Only show download button if mailing list export exists
 		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
