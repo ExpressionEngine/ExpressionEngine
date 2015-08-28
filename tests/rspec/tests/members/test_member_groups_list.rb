@@ -196,7 +196,6 @@ feature 'Member Group List' do
 
     # Enable MSM if it's not enabled
     unless @page.has_content?('Site Manager')
-      p 'here!'
       @page.settings_btn.click
       find('input[name="multiple_sites_enabled"][value="y"]').click
       find('form[action$="cp/settings/general"] input[type="submit"]').click
