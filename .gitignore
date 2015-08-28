@@ -101,7 +101,7 @@ images/captchas/*
 !images/captchas/index.html
 !images/captchas/.htaccess
 
-images/avatars/uploads/*
+images/avatars/*
 !images/avatars/index.html
 !images/avatars/.htaccess
 
