@@ -81,6 +81,10 @@ class ChannelEntry extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryVersion'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		)
 	);
 
 	protected static $_validation_rules = array(
