@@ -962,10 +962,6 @@ GRID_FALLBACK;
 			'plugin' => array('markitup'),
 		);
 
-		$js_defaults['plugin'][] = 'toolbox.expose';
-		$js_defaults['plugin'][] = 'overlay';
-		$js_defaults['plugin'][] = 'tmpl';
-
 		if ($this->datepicker)
 		{
 			$js_defaults['file'][] = 'cp/date_picker';
