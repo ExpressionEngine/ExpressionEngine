@@ -35,14 +35,16 @@ Capybara.app_host = $test_config[:app_host]
 Capybara.run_server = false
 
 def sanitize_filename(filename)
-   return filename.strip do |name|
+   name = filename.strip
+
    name.gsub!(/^.*(\\|\/)/, '')
 
    name.gsub!(/\s/, '-')
 
    # Strip out the non-ascii character
    name.gsub!(/[^0-9A-Za-z.\-]/, '_')
-  end
+
+   return name
 end
 
 # Configure hook to run after each example
