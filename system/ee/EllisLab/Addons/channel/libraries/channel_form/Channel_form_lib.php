@@ -1083,6 +1083,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<link rel="stylesheet" type="text/css" media="screen" href="'.URL_THEMES.'cform/css/eecms-cform.min.css" />';
 
 		//add fieldtype styles
 		foreach (ee()->cp->get_head() as $item)
