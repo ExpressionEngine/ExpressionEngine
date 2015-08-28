@@ -64,7 +64,7 @@ class Spam_upd {
 		$fields = array(
 			'vocabulary_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
-			'term'			=> array('type' => 'varchar' , 'constraint' => '128'),
+			'term'			=> array('type' => 'text'),
 			'count'			=> array('type' => 'int' , 'constraint' => '10')
 		);
 
