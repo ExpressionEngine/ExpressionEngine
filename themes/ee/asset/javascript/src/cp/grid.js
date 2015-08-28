@@ -213,7 +213,7 @@ Grid.Publish.prototype = {
 		this._fireEvent('display', el);
 
 		// Bind the new row's inputs to AJAX form validation
-		if (EE.cp.formValidation !== undefined) {
+		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
 		}
 	},
