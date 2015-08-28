@@ -88,6 +88,10 @@ class Site extends Model {
 			'model' => 'Channel',
 			'type' => 'hasMany'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		),
 		'Files' => array(
 			'model' => 'File',
 			'type' => 'hasMany'
