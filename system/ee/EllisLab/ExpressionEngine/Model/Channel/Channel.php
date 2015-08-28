@@ -51,6 +51,10 @@ class Channel extends StructureModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntry'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		),
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
 		),
