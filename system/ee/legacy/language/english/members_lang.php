@@ -435,7 +435,7 @@ $lang = array(
 
 "screen_name_banning" => "Restricted Screen Names",
 
-"screen_name_banning_instructions" => "<b>Place each screen name on a separate line</b><b> These screen names will not be allowed.",
+"screen_name_banning_instructions" => "<b>Place each screen name on a separate line</b><br> These screen names will not be allowed.",
 
 
 //----------------------------
