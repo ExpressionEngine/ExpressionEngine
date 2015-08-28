@@ -220,11 +220,6 @@ class Channel_form_lib
 			$this->datepicker = $this->bool_string(ee()->TMPL->fetch_param('datepicker'), $this->datepicker);
 		}
 
-		if ($this->datepicker)
-		{
-			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:"'.ee()->localize->datepicker_format().'"+EE.date_obj_time});');
-		}
-
 		//decide which fields to show, based on pipe delimited list of field id's and/or field short names
 		if (ee()->TMPL->fetch_param('show_fields'))
 		{
@@ -445,24 +440,6 @@ class Channel_form_lib
 			$expiration_date = ($this->entry('expiration_date')) ? $this->entry('expiration_date')*1000 : ee()->localize->now*1000;
 			$comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date')*1000 : ee()->localize->now*1000;
 
-			if ($this->datepicker)
-			{
-				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
-				{
-					ee()->javascript->output('$("input[name=entry_date]").datepicker({defaultDate: new Date('.($this->entry('entry_date')*1000).')});');
-				}
-
-				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
-				{
-					ee()->javascript->output('$("input[name=expiration_date]").datepicker({defaultDate: new Date('.$expiration_date.')});');
-				}
-
-				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
-				{
-					ee()->javascript->output('$("input[name=comment_expiration_date]").datepicker({defaultDate: new Date('.$comment_expiration_date.')});');
-				}
-			}
-
 			foreach (ee()->TMPL->var_single as $key)
 			{
 				if ($this->entry($key) !== FALSE)
@@ -560,24 +537,18 @@ class Channel_form_lib
 
 			if ($this->datepicker)
 			{
-				ee()->javascript->output('$.datepicker.setDefaults({defaultDate: new Date('.(ee()->localize->now*1000).')});');
-
 				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
 				{
-					ee()->javascript->output('$("input[name=entry_date]").datepicker();');
 					$this->parse_variables['entry_date'] = ee()->localize->human_time();
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
 				{
-					ee()->javascript->output('$("input[name=expiration_date]").datepicker();');
 					$this->parse_variables['expiration_date'] = '';
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
 				{
-					ee()->javascript->output('$("input[name=comment_expiration_date]").datepicker();');
-
 					$comment_expiration_date = '';
 
 					if ($this->channel('comment_expiration') > 0)
@@ -900,6 +871,51 @@ class Channel_form_lib
 			)
 		);
 
+
+		if ($this->datepicker)
+		{
+			$addt_js['date']['date_format'] = ee()->localize->get_date_format();
+			$addt_js['lang']['date']['months']['full'] = array(
+				lang('january'),
+				lang('february'),
+				lang('march'),
+				lang('april'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('august'),
+				lang('september'),
+				lang('october'),
+				lang('november'),
+				lang('december')
+			);
+			$addt_js['lang']['date']['months']['abbreviated'] = array(
+				lang('jan'),
+				lang('feb'),
+				lang('mar'),
+				lang('apr'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('aug'),
+				lang('sept'),
+				lang('oct'),
+				lang('nov'),
+				lang('dec')
+			);
+			$addt_js['lang']['date']['days'] = array(
+				lang('su'),
+				lang('mo'),
+				lang('tu'),
+				lang('we'),
+				lang('th'),
+				lang('fr'),
+				lang('sa'),
+			);
+
+		}
+
+
 		ee()->lang->loadfile('content');
 
 		$this->output_js['json'] = array(
@@ -952,7 +968,7 @@ GRID_FALLBACK;
 
 		if ($this->datepicker)
 		{
-			$js_defaults['ui'][] = 'datepicker';
+			$js_defaults['file'][] = 'cp/date_picker';
 			$js_defaults['file'][] = 'cp/date';
 		}
 
@@ -1165,17 +1181,6 @@ GRID_FALLBACK;
 
 			if ($field->getType() == 'date')
 			{
-				if ($this->datepicker)
-				{
-					$default_date = (($this->entry($field_name)) ? $this->entry($field_name) : ee()->localize->now) * 1000;
-					ee()->javascript->output('
-						$(\'input[name="'.$field_name.'"]\').datepicker({
-							constrainInput: false,
-							defaultDate: new Date('.$default_date.')
-						});
-					');
-				}
-
 				$custom_field_variables_row['field_data'] = ee()->localize->human_time($this->entry($field_name));
 			}
 
