@@ -1503,7 +1503,10 @@ GRID_FALLBACK;
 
 					$_POST['field_id_'.$field->field_id] = ee()->input->post($key, $xss_clean);
 
-					$spam_content .= " " . ee()->input->post($key,TRUE);
+					if ( ! is_array($_POST[$key]))
+					{
+						$spam_content .= " " . ee()->input->post($key, TRUE);
+					}
 
 					//auto set format if not POSTed
 					$fmt = $field->field_fmt;
