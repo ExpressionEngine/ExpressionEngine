@@ -30,6 +30,7 @@ class ChannelEntry extends ContentModel {
 		'entry_date'              => 'int',
 		'expiration_date'         => 'int',
 		'comment_expiration_date' => 'int',
+		'author_id'               => 'int',
 		'edit_date'               => 'timestamp',
 		'recent_comment_date'     => 'timestamp',
 	);
