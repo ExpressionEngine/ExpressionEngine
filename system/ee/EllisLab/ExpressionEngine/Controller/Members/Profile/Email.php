@@ -137,7 +137,7 @@ class Email extends Profile {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Don't save the password check to the model
-			unset($vars['sections'][0][count($vars['sections'][0]) - 1]);
+			unset($vars['sections']['secure_form_ctrls']);
 
 			if ($this->saveSettings($vars['sections']))
 			{
@@ -153,7 +153,7 @@ class Email extends Profile {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}

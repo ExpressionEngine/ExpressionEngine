@@ -24,8 +24,6 @@ $lang = array(
 
 'filter_channels' => 'filter channels',
 
-'success' => 'Success',
-
 'pages_deleted_desc' => 'The following Page URLs were deleted',
 
 'pages_settings' => 'Pages Settings',

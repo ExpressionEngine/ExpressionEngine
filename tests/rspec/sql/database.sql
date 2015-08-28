@@ -1744,11 +1744,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_html_buttons` WRITE;
 INSERT INTO `exp_html_buttons` (`id`, `site_id`, `member_id`, `tag_name`, `tag_open`, `tag_close`, `accesskey`, `tag_order`, `tag_row`, `classname`) VALUES
-	(1,1,0,'b','<strong>','</strong>','b',1,'1','btn_b'),
-	(2,1,0,'i','<em>','</em>','i',2,'1','btn_i'),
-	(3,1,0,'blockquote','<blockquote>','</blockquote>','q',3,'1','btn_blockquote'),
-	(4,1,0,'a','<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>','</a>','a',4,'1','btn_a'),
-	(5,1,0,'img','<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />','','',5,'1','btn_img');
+	(1,1,0,'Bold text','<strong>','</strong>','b',1,'1','html-bold'),
+	(2,1,0,'Italic text','<em>','</em>','i',2,'1','html-italic'),
+	(3,1,0,'Blockquote','<blockquote>','</blockquote>','q',3,'1','html-quote'),
+	(4,1,0,'Link','<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>','</a>','a',4,'1','html-link'),
+	(5,1,0,'Image','<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />','','',5,'1','html-upload');
 UNLOCK TABLES;
 
 

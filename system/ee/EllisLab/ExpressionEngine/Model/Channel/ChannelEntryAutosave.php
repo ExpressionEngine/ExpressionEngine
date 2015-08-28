@@ -9,6 +9,10 @@ class ChannelEntryAutosave extends Model {
 	protected static $_primary_key = 'entry_id';
 	protected static $_table_name = 'channel_entries_autosave';
 
+	protected static $_typed_columns = array(
+		'entry_data' => 'json'
+	);
+
 	protected static $_relationships = array(
 		'ChannelEntry' => array(
 			'type' => 'belongsTo',
@@ -54,15 +58,4 @@ class ChannelEntryAutosave extends Model {
 	protected $recent_comment_date;
 	protected $comment_total;
 	protected $entry_data;
-
-	public function set__entry_data($entry_data)
-	{
-		$this->entry_data = json_encode($entry_data);
-	}
-
-	public function get__entry_data()
-	{
-		return json_decode($this->entry_data, TRUE);
-	}
-
 }

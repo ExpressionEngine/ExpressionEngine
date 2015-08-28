@@ -72,7 +72,9 @@ class Edit extends AbstractPublishController {
 				'column_title' => array(
 					'encode' => FALSE
 				),
-				'column_comment_total',
+				'column_comment_total' => array(
+					'encode' => FALSE
+				),
 				'column_entry_date',
 				'column_status' => array(
 					'type'	=> Table::COL_STATUS

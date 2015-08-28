@@ -96,8 +96,8 @@ class Settings extends Profile {
 
 		$path = ee()->config->item('avatar_path');
 		$directory = ee('Model')->get('UploadDestination')
-						->filter('server_path', $path)
-						->first();
+			->filter('server_path', $path)
+			->first();
 
 		$fp = new FilePicker();
 		$fp->inject(ee()->view);
@@ -256,7 +256,7 @@ class Settings extends Profile {
 					->withTitle(lang('member_updated'))
 					->addToBody(lang('member_updated_desc'))
 					->defer();
-				ee()->functions->redirect($base_url);
+				ee()->functions->redirect($this->base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -299,14 +299,17 @@ class Settings extends Profile {
 				break;
 		}
 
-		parent::saveSettings($settings);
+		return parent::saveSettings($settings);
 	}
 
 	private function uploadAvatar()
 	{
 		ee()->load->library('filemanager');
 		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('server_path', ee()->config->item('avatar_path'))
+			->first();
+
 		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
 
 		if (isset($upload_response['error']))
@@ -316,16 +319,20 @@ class Settings extends Profile {
 				->withTitle(lang('upload_filedata_error'))
 				->addToBody($upload_response['error'])
 				->now();
+
+			return;
 		}
 
-		return $upload_response->file_name;
+		return $upload_response['file_name'];
 	}
 
 	private function uploadRemoteAvatar()
 	{
 		$url = ee()->input->post('link_avatar');
 		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('server_path', ee()->config->item('avatar_path'))
+			->first();
 
     	$ch = curl_init($url);
     	curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -335,24 +342,23 @@ class Settings extends Profile {
     	curl_close($ch);
 
 		ee()->load->library('filemanager');
-		ee()->load->library('upload', $config);
 
 		$file_path = ee()->filemanager->clean_filename(
-			$filename,
-			$directory_id,
+			basename($url),
+			$directory->id,
 			array('ignore_dupes' => FALSE)
 		);
 		$filename = basename($file_path);
 
 		// Upload the file
-		$config = array('upload_path' => dirname($file_path));
+		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
 
 		if (ee()->upload->raw_upload($filename, $file) === FALSE)
 		{
 			return FALSE;
 		}
 
-		$result = ee()->filemanager->save_file(
+		$upload_response = ee()->filemanager->save_file(
 			$file_path,
 			$directory->id,
 			array(

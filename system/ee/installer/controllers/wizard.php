@@ -939,19 +939,17 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
+		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
+
 		// Try to rename automatically
 		if ($this->rename_installer())
 		{
 			ee()->load->helper('url');
-			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+			redirect($cp_login_url);
 		}
 
 		// Are we back here from a input?
-		if (ee()->input->get('login'))
-		{
-			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
-		}
-		else if (ee()->input->get('download'))
+		if (ee()->input->get('download'))
 		{
 			ee()->load->helper('download');
 			force_download(
@@ -972,6 +970,7 @@ class Wizard extends CI_Controller {
 		// Send them to their CP via the form
 		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
+		$template_variables['cp_login_url'] = $cp_login_url;
 
 		// Only show download button if mailing list export exists
 		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
@@ -998,10 +997,6 @@ class Wizard extends CI_Controller {
 		$self = htmlspecialchars($self, ENT_QUOTES);
 
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
-
-		// license number
-		$this->userdata['license_contact'] = '';
-		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
@@ -1816,8 +1811,6 @@ class Wizard extends CI_Controller {
 			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
-			'license_contact'           => $this->userdata['license_contact'],
-			'license_number'            => trim($this->userdata['license_number']),
 			'debug'                     => '1',
 			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
@@ -2221,9 +2214,6 @@ class Wizard extends CI_Controller {
 		{
 			$config['index_page'] = $config['site_index'];
 		}
-
-		// We also add a few other items
-		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
 
 		// BUILD_REMOVE_CJS_START
 		$config['use_compressed_js'] = 'n';

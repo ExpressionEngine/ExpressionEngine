@@ -22,6 +22,7 @@ dependencies:
 checkout:
   post:
     - cp tests/circleci/config.php system/user/config/
+    - cp tests/circleci/license.key system/user/config/
     - chmod 666 system/user/config/config.php
     - chmod -R 777 system/user/cache
     - chmod -R 777 system/user/templates

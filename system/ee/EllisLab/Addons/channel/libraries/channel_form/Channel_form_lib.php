@@ -1448,6 +1448,8 @@ GRID_FALLBACK;
 			}
 		}
 
+		$spam_content = "";
+
 		// Reset categories if they weren't set above
 		if ($this->_meta['entry_id'] &&
 			ee()->input->post('category') === FALSE &&
@@ -1488,7 +1490,6 @@ GRID_FALLBACK;
 				}
 			}
 
-
 			foreach ($_POST as $key => $value)
 			{
 				//change field_name'd POSTed keys to field_id's
@@ -1501,6 +1502,8 @@ GRID_FALLBACK;
 					$xss_clean = ( ! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
 
 					$_POST['field_id_'.$field->field_id] = ee()->input->post($key, $xss_clean);
+
+					$spam_content .= " " . ee()->input->post($key,TRUE);
 
 					//auto set format if not POSTed
 					$fmt = $field->field_fmt;
@@ -1522,6 +1525,7 @@ GRID_FALLBACK;
 					$_POST['field_id_'.$field->field_id.'_'.$match[1]] = ee()->input->post($key, TRUE);
 				}
 			}
+
 		}
 
 		foreach ($this->title_fields as $field)
@@ -1639,25 +1643,44 @@ GRID_FALLBACK;
 
 			if (in_array($this->channel('channel_id'), ee()->functions->fetch_assigned_channels()))
 			{
-				$entry_data = array_filter(
-					$_POST,
-					function($v) { return ! is_null($v); }
-				);
+				// Lastly we check for spam before inserting the data
+				$is_spam = ee('Spam')->isSpam($spam_content);
 
-				$this->entry->set($entry_data);
-
-				$result = $this->entry->validate();
-
-				if ($result->isValid())
+				if ($is_spam === FALSE)
 				{
-					$this->entry->save();
+					$entry_data = array_filter(
+						$_POST,
+						function($v) { return ! is_null($v); }
+					);
+
+					$this->entry->set($entry_data);
+
+					$result = $this->entry->validate();
+
+					if ($result->isValid())
+					{
+						$this->entry->save();
+					}
+					else
+					{
+						$errors = $result->getAllErrors();
+
+						// only show the first error for each field to match CI's old behavior
+						$this->field_errors = array_map('current', $errors);
+					}
 				}
 				else
 				{
-					$errors = $result->getAllErrors();
+					if ($this->entry('entry_id'))
+					{
+						$spam_data = array($_POST, NULL, $this->entry('entry_id'));
+					}
+					else
+					{
+						$spam_data = array($_POST, $this->channel('channel_id'));
+					}
 
-					// only show the first error for each field to match CI's old behavior
-					$this->field_errors = array_map('current', $errors);
+					ee()->spam->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', $spam_data, $spam_content);
 				}
 			}
 			else
