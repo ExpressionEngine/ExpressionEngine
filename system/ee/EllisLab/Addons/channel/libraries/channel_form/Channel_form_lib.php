@@ -130,7 +130,7 @@ class Channel_form_lib
 		ee()->load->library('cp');
 		// ee()->router->set_class('ee');
 		ee()->load->library('javascript');
-		// ee()->load->library('api');
+		ee()->load->library('api');
 		// ee()->load->library('form_validation');
 		// ee()->legacy_api->instantiate('channel_fields');
 
