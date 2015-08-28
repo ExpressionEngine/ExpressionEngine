@@ -32,7 +32,7 @@ class FilePicker {
 
 		if ( ! empty($data['image']))
 		{
-			$qs['type'] = 'thumbnails';
+			$qs['type'] = 'thumb';
 		}
 		else
 		{
