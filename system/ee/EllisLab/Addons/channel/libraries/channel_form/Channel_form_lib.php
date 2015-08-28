@@ -1437,6 +1437,8 @@ GRID_FALLBACK;
 			}
 		}
 
+		ee()->legacy_api->instantiate('channel_fields');
+
 		// If any checkbox fields are missing from the POST array,
 		// add them in as blank values for form validation to catch
 		if (isset($_POST['checkbox_fields']))
