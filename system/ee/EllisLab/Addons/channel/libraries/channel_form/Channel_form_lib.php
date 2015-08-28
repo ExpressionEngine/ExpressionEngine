@@ -1659,21 +1659,6 @@ GRID_FALLBACK;
 					// only show the first error for each field to match CI's old behavior
 					$this->field_errors = array_map('current', $errors);
 				}
-				/*
-				if ($this->entry('entry_id'))
-				{
-					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
-				}
-				else
-				{
-					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, $this->channel('channel_id'));
-				}
-
-				if ( ! $submit)
-				{
-					$this->errors = ee()->api_channel_form_channel_entries->errors;
-				}
-				*/
 			}
 			else
 			{
@@ -1741,14 +1726,6 @@ GRID_FALLBACK;
 							}
 						}
 					}
-				}
-			}
-
-			foreach ($this->date_fields as $field)
-			{
-				if ($this->entry($field) && ! is_numeric($this->entry($field)))
-				{
-					$this->entry[$field] = ee()->localize->string_to_timestamp($this->entry($field));
 				}
 			}
 
