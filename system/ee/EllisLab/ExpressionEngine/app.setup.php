@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
@@ -171,6 +172,14 @@ return array(
 			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
+		},
+
+		'License' => function($ee)
+		{
+			$default_key_path = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
+			$default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
+
+			return new License\LicenseFactory($default_key);
 		},
 
 		'Model/Datastore' => function($ee)

@@ -197,7 +197,7 @@ $lang = array(
 
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',
-'msm_manager'      => 'Multi-Site Manager',
+'msm_manager'      => 'Site Manager',
 'addon_manager'    => 'Add-On Manager',
 'utilities'        => 'Utilities',
 'logs'             => 'Logs',
@@ -460,6 +460,16 @@ $lang = array(
 /**
  * 3.0
  */
+
+//----------------------------
+// License Errors
+//----------------------------
+'software_unregistered' => 'Software Unregistered',
+'corrupt_license_file' => 'The license file provided is missing data. <a href="%s">Please upload your license.</a>',
+'invalid_signature' => 'The license file provided has an invalid signature. <a href="%s">Please upload your license.</a>',
+'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
+'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
 
 'btn_save' => 'Save %s',
 

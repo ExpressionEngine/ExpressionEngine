@@ -38,6 +38,8 @@ def sanitize_filename(filename)
    return filename.strip do |name|
    name.gsub!(/^.*(\\|\/)/, '')
 
+   name.gsub!(/\s/, '-')
+
    # Strip out the non-ascii character
    name.gsub!(/[^0-9A-Za-z.\-]/, '_')
   end

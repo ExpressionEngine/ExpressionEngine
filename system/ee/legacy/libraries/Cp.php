@@ -166,9 +166,6 @@ class Cp {
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
 		);
 
-		require_once(APPPATH.'libraries/El_pings.php');
-		$pings = new El_pings();
-
 		ee()->javascript->set_global(array(
 			'BASE'             => str_replace(AMP, '&', BASE),
 			'XID'              => CSRF_TOKEN,
@@ -176,7 +173,6 @@ class Cp {
 			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
 			'username'         => ee()->session->userdata('username'),
-			'registered'       => $pings->is_registered(),
 			'router_class'     => ee()->router->class, // advanced css
 			'lang'             => $js_lang_keys,
 			'THEME_URL'        => $this->cp_theme_url,
@@ -238,6 +234,8 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
+		$license = $this->validateLicense();
+		ee()->view->ee_license = $license;
 		$sidebar = ee('CP/Sidebar')->render();
 
 		if ( ! empty($sidebar))
@@ -246,6 +244,39 @@ class Cp {
 		}
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	protected function validateLicense()
+	{
+		$license = ee('License')->getEELicense();
+
+		require_once(APPPATH.'libraries/El_pings.php');
+		$pings = new El_pings();
+		$registered = $pings->is_registered($license);
+
+		if ( ! $license->isValid())
+		{
+			$alert = ee('CP/Alert')->makeBanner('invalid-license')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('software_unregistered'));
+
+			foreach ($license->getErrors() as $key => $value)
+			{
+				if ($key == 'missing_pubkey')
+				{
+					$alert->addToBody(sprintf(lang($key), 'https://store.ellislab.com/manage'));
+				}
+				else
+				{
+					$alert->addToBody(sprintf(lang($key), ee('CP/URL', 'settings/license')));
+				}
+			}
+
+			$alert->now();
+		}
+
+		return $license;
 	}
 
 	/**
