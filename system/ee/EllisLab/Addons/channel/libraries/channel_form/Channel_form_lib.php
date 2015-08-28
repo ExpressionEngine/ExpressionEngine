@@ -432,7 +432,7 @@ class Channel_form_lib
 		}
 
 		//edit form
-		if ($this->entry)
+		if ($this->edit)
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
