@@ -1474,35 +1474,7 @@ GRID_FALLBACK;
 				isset($_POST[$field->field_name.'_hidden_file'])
 			);
 
-			if ( ! $this->edit || $isset)
-			{
-				$field_rules = array();
-
-				if (isset($rules[$field->field_name]))
-				{
-					$field_rules = explode('|', $rules[$field->field_name]);
-				}
-
-				if ( ! in_array('call_field_validation['.$field->field_id.']', $field_rules))
-				{
-					array_unshift($field_rules, 'call_field_validation['.$field->field_id.']');
-				}
-
-				if ($field->field_required == 'y' && ! in_array('required', $field_rules))
-				{
-					array_unshift($field_rules, 'required');
-				}
-
-				// the file field does not always populate the $_POST[$field] value and does its own
-				// check for required
-				if ($field->field_type == 'file')
-				{
-					$field_rules = array_diff($field_rules, array('required'));
-				}
-
-				ee()->form_validation->set_rules($field->field_name, $field->field_label, implode('|', $field_rules));
-			}
-			else
+			if ($this->edit || ! $isset)
 			{
 				if ($field->field_type == 'date')
 				{
@@ -1642,13 +1614,6 @@ GRID_FALLBACK;
 			ee()->api_channel_fields->settings[$field_id] = $settings;
 		}
 
-		//moved to before custom field processing,
-		//since we are now using the call_field_validation rule
-		if ( ! ee()->form_validation->run())
-		{
-			$this->field_errors = (is_array($this->field_errors)) ? array_merge($this->field_errors, ee()->form_validation->_error_array) : ee()->form_validation->_error_array;
-		}
-
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1689,7 +1654,10 @@ GRID_FALLBACK;
 				}
 				else
 				{
-					$this->errors = $result->getAllErrors();
+					$errors = $result->getAllErrors();
+
+					// only show the first error for each field to match CI's old behavior
+					$this->field_errors = array_map('current', $errors);
 				}
 				/*
 				if ($this->entry('entry_id'))
