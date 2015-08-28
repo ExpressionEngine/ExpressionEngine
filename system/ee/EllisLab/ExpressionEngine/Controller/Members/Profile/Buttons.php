@@ -299,6 +299,7 @@ class Buttons extends Profile {
 		$open = isset($values['tag_open']) ? $values['tag_open']: '';
 		$close = isset($values['tag_close']) ? $values['tag_close']: '';
 		$shortcut = isset($values['accesskey']) ? $values['accesskey']: '';
+		$class = isset($values['classname']) ? $values['classname']: '';
 
 		$vars['sections'] = array(
 			array(
@@ -326,7 +327,8 @@ class Buttons extends Profile {
 					'title' => 'accesskey',
 					'desc' => 'accesskey_desc',
 					'fields' => array(
-						'accesskey' => array('type' => 'text', 'value' => $shortcut)
+						'accesskey' => array('type' => 'text', 'value' => $shortcut),
+						'classname' => array('type' => 'hidden', 'value' => $class)
 					)
 				)
 			)
