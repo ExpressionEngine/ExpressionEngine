@@ -629,6 +629,11 @@ class ChannelEntry extends ContentModel {
 						'populateCallback'		=> array($this, 'populateCategories')
 					);
 				};
+
+				if ( ! $this->Channel->comment_system_enabled)
+				{
+					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
+				}
 			}
 
 			$module_tabs = $this->getTabFields();
