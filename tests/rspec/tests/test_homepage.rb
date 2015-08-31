@@ -1,17 +1,11 @@
 require './bootstrap.rb'
 
 feature 'Homepage' do
-  before :all do
-  end
-
   before :each do
     cp_session
     @page = Homepage.new
     @page.load
     no_php_js_errors
-  end
-
-  after :all do
   end
 
   context 'when spam module is not installed' do
