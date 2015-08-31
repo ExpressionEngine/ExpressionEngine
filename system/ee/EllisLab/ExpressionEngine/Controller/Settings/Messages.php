@@ -170,8 +170,10 @@ class Messages extends Settings {
 	 */
 	private function updateUploadDirectory($data)
 	{
-		$current = ee()->config->item('prv_msg_upload_path');
-		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'PM Attachments')
+			->filter('module_id', '4')
+			->first();
 		$directory->server_path = $data['prv_msg_upload_path'];
 		$directory->max_size = $data['prv_msg_attach_maxsize'];
 		$directory->save();
