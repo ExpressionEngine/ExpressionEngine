@@ -461,6 +461,8 @@ $lang = array(
  * 3.0
  */
 
+'clear_filters' => 'Clear filters',
+
 //----------------------------
 // License Errors
 //----------------------------
