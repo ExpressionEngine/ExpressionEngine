@@ -43,7 +43,7 @@ class Wiki_mcp {
 		ee()->load->library('form_validation');
 		ee()->load->library('wiki_lib');
 		ee()->load->model('addons_model');
-		
+
 	}
 
 	// --------------------------------------------------------------------
@@ -83,8 +83,8 @@ class Wiki_mcp {
 
 
 		$wikis = ee('Model')->get('wiki:Wiki')->all();
-		
-	
+
+
 		$data = array();
 
 		foreach ($wikis as $row)
@@ -124,9 +124,9 @@ class Wiki_mcp {
 		}
 
 		$table->setData($data);
-		
+
 		$table->setNoResultsText('no_wikis', 'create_wiki', ee('CP/URL', 'addons/settings/wiki/create'));
-		
+
 
 		$vars['table'] = $table->viewData($this->_base_url);
 		$vars['base_url'] = clone $vars['table']['base_url'];
@@ -148,7 +148,7 @@ class Wiki_mcp {
 		return ee('View')->make('wiki:index')->render($vars);
 
 
-		
+
 /*
 		return array(
   'body'       => ee('View')->make('wiki:index')->render($vars),
@@ -180,7 +180,7 @@ class Wiki_mcp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Provides Edit 
+	 * Provides Edit
 	 *
 	 * @access	public
 	 * @param	int $toolset_id The Toolset ID to be edited (optional)
@@ -239,9 +239,9 @@ class Wiki_mcp {
 		ee()->functions->redirect($this->_base_url);
 
 	}
-		
-	
-	
+
+
+
 	// -------------------------------------------------------------------------
 
 	/**
@@ -258,7 +258,7 @@ class Wiki_mcp {
 		if ($wiki_id)
 		{
 			$valid_wiki =  ee('Model')->get('wiki:Wiki')->filter('wiki_id', $wiki_id)->first();
-			
+
 
 			if ( ! $valid_wiki)
 			{
@@ -272,14 +272,14 @@ class Wiki_mcp {
 		else
 		{
 			$valid_wiki = ee('Model')->make('wiki:Wiki');
-			
+
 			$error_url = ee('CP/URL', 'addons/settings/wiki/create');
-			$success_url = ee('CP/URL', 'addons/settings/wiki');			
+			$success_url = ee('CP/URL', 'addons/settings/wiki');
 
 			// Only auto-complete short name for new wikis
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
-				$("input[name=wiki_label_name]").bind("keyup keydown", 
+				$("input[name=wiki_label_name]").bind("keyup keydown",
 				function() {
 					$(this).ee_url_title("input[name=wiki_short_name]");
 				});
@@ -289,7 +289,7 @@ class Wiki_mcp {
 		if ( ! empty($_POST))
 		{
 			$valid_wiki->set($_POST);
-			
+
 			// Need to convert this field from its presentation serialization
 			$valid_wiki->wiki_moderation_emails = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['wiki_moderation_emails']), ','));
 
@@ -304,7 +304,7 @@ class Wiki_mcp {
 				{
 					ee()->session->set_flashdata('highlight_id', $new_wiki);
 					ee()->functions->redirect($success_url);
-			
+
 				// If edit, show success message
 					ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -316,7 +316,7 @@ class Wiki_mcp {
 				{
 					ee()->load->library('form_validation');
 					ee()->form_validation->_error_array = $result->renderErrors();
-				
+
 					ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('settings_error'))
@@ -324,12 +324,12 @@ class Wiki_mcp {
 					->now();
 				}
 			}
-		
-		} // End Validation check on posted data		
-		
+
+		} // End Validation check on posted data
+
 
 		$vars['sections'] = $this->make_form($wiki_id, $valid_wiki);
-		
+
 		$vars['base_url'] = $this->_base_url.'/update/wiki&wiki_id='.$wiki_id;
 		$vars['save_btn_text'] = 'btn_save_settings';
 		$vars['save_btn_text_working'] = 'btn_saving';
@@ -338,12 +338,12 @@ class Wiki_mcp {
  		return ee('View')->make('wiki:update')->render($vars);
 
 	}
-	
+
 
 	function make_form($wiki_id, $wiki = NULL)
 	{
 		$new = TRUE;
-		
+
 		ee()->load->helper('form');
 
 		$text_formats 	= ee()->addons_model->get_plugin_formatting(TRUE);
@@ -354,7 +354,7 @@ class Wiki_mcp {
 						'all'	=> ee()->lang->line('allow_all_html')
 				);
 
-		
+
 		$member_groups = ee('Model')->get('MemberGroup')
 			->filter('group_id', 'NOT IN', array(2,3,4))
 			->order('group_title')
@@ -364,9 +364,9 @@ class Wiki_mcp {
 		foreach ($member_groups as $group)
 		{
 			$member_group_options[$group->group_id] = $group->group_title;
-		}			
-			
-		
+		}
+
+
 		$form_element = array(
 			'title' => 'label_name',
 			'fields' => array(
@@ -376,22 +376,22 @@ class Wiki_mcp {
 					'required' => TRUE
 				)
 			)
-		);		
+		);
 
 		$form[] = $form_element;
-		
+
 		$form_element = array(
 			'title' => 'short_name',
 			'fields' => array(
 				'wiki_short_name' => array(
 					'type' => 'text',
-					'value' => $wiki->wiki_short_name,					
+					'value' => $wiki->wiki_short_name,
 					'required' => TRUE
 				)
 			)
-		);		
+		);
 
-		$form[] = $form_element;	
+		$form[] = $form_element;
 
 		$form_element = array(
 			'title' => 'text_format',
@@ -404,7 +404,7 @@ class Wiki_mcp {
 			)
 		);
 
-						
+
 		$form[] = $form_element;
 
 		$form_element = array(
@@ -420,7 +420,7 @@ class Wiki_mcp {
 
 
 		$form[] = $form_element;
-				
+
 		$form_element = array(
 			'title' => 'upload_dir',
 			'fields' => array(
@@ -429,12 +429,13 @@ class Wiki_mcp {
 					'value' => $wiki->wiki_upload_dir,
 					'choices' => ee('Model')->get('UploadDestination')
 						->filter('site_id', ee()->config->item('site_id'))
+						->filter('module_id', 0)
 						->all()
 						->getDictionary('id', 'name')
 				)
 			)
 		);
-	
+
 
 		$form[] = $form_element;
 
@@ -450,7 +451,7 @@ class Wiki_mcp {
 				)
 			)
 		);
-		
+
 		$form[] = $form_element;
 
 		$form_element = array(
@@ -467,7 +468,7 @@ class Wiki_mcp {
 		);
 
 		$form[] = $form_element;
-		
+
 		$form_element = array(
 			'title' => 'revision_limit',
 			'desc' => 'revision_limit_description',
@@ -477,11 +478,11 @@ class Wiki_mcp {
 					'value' => $wiki->wiki_revision_limit
 				)
 			)
-		);		
+		);
 
 
-		$form[] = $form_element;		
-		
+		$form[] = $form_element;
+
 			$form_element = array(
 			'title' => 'author_limit',
 			'desc' => 'author_limit_description',
@@ -491,11 +492,11 @@ class Wiki_mcp {
 					'value' => $wiki->wiki_author_limit,
 				)
 			)
-		);		
+		);
 
 		$form[] = $form_element;
-		
-	
+
+
 		$form_element = array(
 			'title' => 'moderation_emails',
 			'desc' => 'moderation_emails_description',
@@ -505,8 +506,8 @@ class Wiki_mcp {
 					'value' =>  implode("\n", $wiki->wiki_moderation_emails)
 				)
 			)
-		);		
-		
+		);
+
 		$form[] = $form_element;
 
 
@@ -527,9 +528,9 @@ class Wiki_mcp {
 		);
 
 		$form[] = $form_element;
-		
-		return array($form);		
-		
+
+		return array($form);
+
 	}
 
 
@@ -566,15 +567,15 @@ class Wiki_mcp {
 			)
 		);
 		$grid->setNoResultsText('no_namespaces', 'add_namespaces');
-		
+
 		$member_choices = array();
 		$member_groups = ee()->api->get('MemberGroup');
 		$member_groups = $member_groups->all();
-		
+
 		foreach ($member_groups as $group)
 		{
 			$member_choices[$group->group_id] = $group->group_title;
-		}		
+		}
 
 		$grid->setBlankRow($this->getGridRow($member_choices));
 
@@ -656,7 +657,7 @@ class Wiki_mcp {
 			'namespace_label' => '',
 			'namespace_name' => '',
 		);
-		
+
 		if ( ! isset($namespace['namespace_users']) )
 		{
 			$namespace['namespace_users'] = array();
@@ -669,7 +670,7 @@ class Wiki_mcp {
 		if ( ! isset($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = array();
-		}	
+		}
 		elseif ( ! is_array($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = explode('|', $namespace['namespace_admins']);
@@ -677,28 +678,28 @@ class Wiki_mcp {
 
 		$namespace = array_merge($defaults, $namespace);
 		$namespace = array_map('form_prep', $namespace);
-		
+
 		$user_checkboxes = '';
-		
+
 		// Not sure about hard coding label?
 		foreach ($member_choices as $group_id => $group_name)
 		{
 			$selected = (in_array($group_id, $namespace['namespace_users'])) ? 'chosen' : '';
 			$check = ( ! empty($selected)) ? 'y' : '';
-			
+
 			$user_checkboxes .= '<label class="choice block '. $selected.'">'.form_checkbox('namespace_users[]', $group_id, $check).' '.$group_name.'</label>'."\n";
 		}
-		
+
 		$admin_checkboxes = '';
 
 		foreach ($member_choices as $group_id => $group_name)
 		{
 			$selected = (in_array($group_id, $namespace['namespace_admins'])) ? 'chosen' : '';
 			$check = ( ! empty($selected)) ? 'y' : '';
-			
+
 			$admin_checkboxes .= '<label class="choice block '. $selected.'">'.form_checkbox('namespace_admins[]', $group_id).' '.$group_name.'</label>'."\n";
-		}		
-		
+		}
+
 		return array(
 			array(
 				'html' => form_input('namespace_label', $namespace['namespace_label']),
@@ -715,7 +716,7 @@ class Wiki_mcp {
 			array(
 				'html' => $admin_checkboxes,
 				'error' => $this->getGridFieldError($namespace, 'namespace_admins')
-			)				
+			)
 		);
 	}
 
@@ -750,7 +751,7 @@ class Wiki_mcp {
 		{
 			show_error(ee()->lang->line('unauthorized_access'));
 		}
-		
+
 		if (ee()->wiki_model->delete_namespace(ee()->input->get_post('namespace_id')) === TRUE)
 		{
 			ee()->output->send_ajax_response(array('response' => 'success'));

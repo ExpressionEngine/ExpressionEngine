@@ -38,6 +38,7 @@ class Filepicker_mcp {
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
 			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
 			->all();
 
 		$directories = $dirs->indexBy('id');
