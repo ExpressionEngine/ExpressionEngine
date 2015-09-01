@@ -555,6 +555,7 @@ EOT;
 							'type' => 'select',
 							'choices' => ee('Model')->get('UploadDestination')
 								->filter('site_id', ee()->config->item('site_id'))
+								->filter('module_id', 0)
 								->all()
 								->getDictionary('id', 'name'),
 							'value' => $moblog->moblog_upload_directory

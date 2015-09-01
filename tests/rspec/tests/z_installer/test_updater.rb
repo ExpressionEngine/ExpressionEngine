@@ -126,7 +126,6 @@ feature 'Updater' do
 
     @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
     @page.req_title.text.should include 'Completed'
-    @page.has_submit?.should == true
 
     @page.has_login?.should == true
 

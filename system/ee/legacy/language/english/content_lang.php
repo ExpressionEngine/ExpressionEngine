@@ -13,7 +13,6 @@ $lang = array(
 'filter_by_status' => 'status',
 'custom_date' => 'custom date',
 'custom_limit' => 'custom limit',
-'clear_filters' => 'Clear filters',
 'all_entries' => 'All %d entries',
 
 'column_entry_id' => 'ID#',

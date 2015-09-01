@@ -53,7 +53,6 @@ return array(
 		{
 			$grid = new Library\CP\GridInput(
 				$config,
-				ee()->view,
 				ee()->cp,
 				ee()->config,
 				ee()->javascript

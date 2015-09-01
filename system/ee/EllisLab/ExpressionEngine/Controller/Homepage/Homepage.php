@@ -54,7 +54,7 @@ class Homepage extends CP_Controller {
 		$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('status', 's')
-			->count();;
+			->count();
 
 		$vars['number_of_channels'] = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -87,6 +87,8 @@ class Homepage extends CP_Controller {
 			->filter('Comment.site_id', ee()->config->item('site_id'))
 			->filter('Entry.status', 'closed')
 			->count();
+
+		$vars['spam_module_installed'] = (ee('Model')->get('Module')->filter('module_name', 'Spam')->count());
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);

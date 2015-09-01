@@ -28,7 +28,6 @@ namespace EllisLab\ExpressionEngine\Library\CP;
 
 class GridInput extends Table {
 
-	protected $view;
 	protected $cp;
 	protected $ee_config;
 	protected $javascript;
@@ -46,14 +45,12 @@ class GridInput extends Table {
 	 * probably best not to set any other config items.
 	 *
 	 * @param	array 	$config		See Table constructor for options
-	 * @param	object 	$view		EE view library, used for loading assets
 	 * @param	object 	$cp			EE CP library, used for loading assets
 	 * @param	object 	$ee_config	EE config library, used for loading assets
 	 * @param	object 	$javascript	EE javascript library, used for loading assets
 	 */
-	public function __construct($config = array(), $view = NULL, $cp = NULL, $ee_config = NULL, $javascript = NULL)
+	public function __construct($config = array(), $cp = NULL, $ee_config = NULL, $javascript = NULL)
 	{
-		$this->view = $view;
 		$this->cp = $cp;
 		$this->ee_config = $ee_config;
 		$this->javascript = $javascript;

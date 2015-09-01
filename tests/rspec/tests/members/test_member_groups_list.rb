@@ -195,15 +195,14 @@ feature 'Member Group List' do
     @page.main_menu.dev_menu.click
 
     # Enable MSM if it's not enabled
-    unless @page.has_content?('Multi-Site Manager')
-      p 'here!'
+    unless @page.has_content?('Site Manager')
       @page.settings_btn.click
       find('input[name="multiple_sites_enabled"][value="y"]').click
       find('form[action$="cp/settings/general"] input[type="submit"]').click
       @page.main_menu.dev_menu.click
     end
 
-    click_link 'Multi-Site Manager'
+    click_link 'Site Manager'
     find('.sidebar a[href$="cp/msm/create"]').click
 
     find('input[name="site_label"]').set 'Second Site'

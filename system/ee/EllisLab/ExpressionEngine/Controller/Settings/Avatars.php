@@ -166,7 +166,10 @@ class Avatars extends Settings {
 	private function updateUploadDirectory($data)
 	{
 		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'Avatars')
+			->filter('module_id', '4')
+			->first();
 		$directory->server_path = $data['avatar_path'];
 		$directory->url = $data['avatar_url'];
 		$directory->max_size = $data['avatar_max_kb'];

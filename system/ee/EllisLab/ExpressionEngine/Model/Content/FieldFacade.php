@@ -36,6 +36,11 @@ class FieldFacade {
 		return $this->field_name;
 	}
 
+	public function getShortName()
+	{
+		return $this->getItem('field_name') ?: $this->getName();
+	}
+
 	public function setContentId($id)
 	{
 		$this->content_id = $id;
@@ -222,6 +227,12 @@ class FieldFacade {
 	{
 		$this->initField();
 		return ee()->api_channel_fields->apply('post_save_settings', array($data));
+	}
+
+	public function delete()
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('delete', array(array($this->getContentId())));
 	}
 
 	public function getStatus()

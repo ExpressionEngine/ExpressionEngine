@@ -88,6 +88,10 @@ class Site extends Model {
 			'model' => 'Channel',
 			'type' => 'hasMany'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		),
 		'Files' => array(
 			'model' => 'File',
 			'type' => 'hasMany'
@@ -99,7 +103,11 @@ class Site extends Model {
 		'MemberGroups' => array(
 			'model' => 'MemberGroup',
 			'type' => 'hasMany'
-		)
+		),
+		'HTMLButtons' => array(
+			'model' => 'HTMLButton',
+			'type' => 'hasMany'
+		),
 	);
 
 	protected static $_validation_rules = array(

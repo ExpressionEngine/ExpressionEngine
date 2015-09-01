@@ -189,147 +189,57 @@ class Date_ft extends EE_Fieldtype {
 			'include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
 		);
 
-		if (REQ == 'CP')
-		{
-			ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
-			ee()->javascript->set_global('lang.date.months.full', array(
-				lang('january'),
-				lang('february'),
-				lang('march'),
-				lang('april'),
-				lang('may'),
-				lang('june'),
-				lang('july'),
-				lang('august'),
-				lang('september'),
-				lang('october'),
-				lang('november'),
-				lang('december')
-			));
-			ee()->javascript->set_global('lang.date.months.abbreviated', array(
-				lang('jan'),
-				lang('feb'),
-				lang('mar'),
-				lang('apr'),
-				lang('may'),
-				lang('june'),
-				lang('july'),
-				lang('aug'),
-				lang('sept'),
-				lang('oct'),
-				lang('nov'),
-				lang('dec')
-			));
-			ee()->javascript->set_global('lang.date.days', array(
-				lang('su'),
-				lang('mo'),
-				lang('tu'),
-				lang('we'),
-				lang('th'),
-				lang('fr'),
-				lang('sa'),
-			));
-			ee()->cp->add_js_script(array(
-				'file' => array('cp/date_picker'),
-			));
-
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
-
-			return ee('View')->make('date:publish')->render(array(
-				'has_localize_option' => ( ! in_array($this->field_name, $special) && $this->content_type() != 'grid'),
-				'field_name' => $this->field_name,
-				'value' => $custom_date,
-				'localize_option_name' => $date_local,
-				'localized' => $localized,
-			));
-		}
-		elseif ( ! ee()->session->cache(__CLASS__, 'date_js_loaded'))
-		{
-			// We only want to set the date global once
-			ee()->session->set_cache(__CLASS__, 'date_js_loaded', TRUE);
-			ee()->javascript->output('EE.date = '.json_encode($date_js_globals).';');
-		}
-
+		ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
+		ee()->javascript->set_global('lang.date.months.full', array(
+			lang('january'),
+			lang('february'),
+			lang('march'),
+			lang('april'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('august'),
+			lang('september'),
+			lang('october'),
+			lang('november'),
+			lang('december')
+		));
+		ee()->javascript->set_global('lang.date.months.abbreviated', array(
+			lang('jan'),
+			lang('feb'),
+			lang('mar'),
+			lang('apr'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('aug'),
+			lang('sept'),
+			lang('oct'),
+			lang('nov'),
+			lang('dec')
+		));
+		ee()->javascript->set_global('lang.date.days', array(
+			lang('su'),
+			lang('mo'),
+			lang('tu'),
+			lang('we'),
+			lang('th'),
+			lang('fr'),
+			lang('sa'),
+		));
 		ee()->cp->add_js_script(array(
-			'ui' => 'datepicker',
-			'file' => 'cp/date'
+			'file' => array('cp/date_picker'),
 		));
 
-		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
-		// Hence we adjust default date to compensate for the coming localization
-		ee()->javascript->output('
-			var d = new Date();
-			var jsCurrentUTC = d.getTimezoneOffset()*60;
-			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
+		$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
 
-			$("[name='.$this->field_name.']").not(".grid_field_container [name='.$this->field_name.']").datepicker({
-				constrainInput: false,
-				dateFormat: EE.date.date_format + EE.date_obj_time,
-				defaultDate: new Date(adjustedDefault)
-			});
-		');
-
-		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded')
-			&& $this->content_type() == 'grid')
-		{
-			ee()->javascript->output('
-
-				Grid.bind("date", "display", function(cell)
-				{
-					var d = new Date();
-					var jsCurrentUTC = d.getTimezoneOffset()*60;
-					var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
-
-					field = cell.find(".ee_datepicker");
-					field.removeAttr("id");
-
-					cell.find(".ee_datepicker").datepicker({
-						constrainInput: false,
-						dateFormat: EE.date.date_format + EE.date_obj_time,
-						defaultDate: new Date(adjustedDefault)
-					});
-				});
-
-			');
-
-			ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
-		}
-
-		$input_class = 'ee_datepicker text';
-
-		if ($this->content_type() != 'grid')
-		{
-			$input_class .= ' field';
-		}
-
-		$r = form_input(array(
-			'name'	=> $this->field_name,
-			'value'	=> $custom_date,
-			'class'	=> $input_class
+		return ee('View')->make('date:publish')->render(array(
+			'has_localize_option' => ( ! in_array($this->field_name, $special) && $this->content_type() != 'grid'),
+			'field_name' => $this->field_name,
+			'value' => $custom_date,
+			'localize_option_name' => $date_local,
+			'localized' => $localized,
 		));
-
-		if ( ! in_array($this->field_name, $special))
-		{
-			$text_direction = (isset($this->settings['field_text_direction']))
-				? $this->settings['field_text_direction'] : 'ltr';
-
-			// We hide the dropdown in Grid because the localization setting is
-			// effectively global for that field
-			if ($this->content_type() != 'grid')
-			{
-				$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
-
-				$localized_opts	= array(
-					'y' => ee()->lang->line('localized_date'),
-					'n' => ee()->lang->line('fixed_date')
-				);
-
-				$r .= NBS.NBS.NBS.NBS;
-				$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'"');
-			}
-		}
-
-		return $r;
 	}
 
 	// --------------------------------------------------------------------

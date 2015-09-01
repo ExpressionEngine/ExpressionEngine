@@ -30,6 +30,7 @@ class ChannelEntry extends ContentModel {
 		'entry_date'              => 'int',
 		'expiration_date'         => 'int',
 		'comment_expiration_date' => 'int',
+		'author_id'               => 'int',
 		'edit_date'               => 'timestamp',
 		'recent_comment_date'     => 'timestamp',
 	);
@@ -80,6 +81,10 @@ class ChannelEntry extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryVersion'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		)
 	);
 
 	protected static $_validation_rules = array(
@@ -226,7 +231,7 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->Versions->count() == $this->Channel->max_revisions)
 		{
-			$this->Versions->order('version_date')->first()->delete();
+			$this->Versions->sortBy('version_date')->first()->delete();
 		}
 
 		$data = array(
@@ -242,6 +247,8 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
 			include_once($info->getPath() . '/tab.' . $name . '.php');
@@ -351,6 +358,7 @@ class ChannelEntry extends ContentModel {
 		$module_tabs = array();
 
 		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
 
 		foreach ($this->getModulesWithTabs() as $name => $info)
@@ -623,6 +631,11 @@ class ChannelEntry extends ContentModel {
 						'populateCallback'		=> array($this, 'populateCategories')
 					);
 				};
+
+				if ( ! $this->Channel->comment_system_enabled)
+				{
+					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
+				}
 			}
 
 			$module_tabs = $this->getTabFields();
