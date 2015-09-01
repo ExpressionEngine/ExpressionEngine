@@ -58,7 +58,7 @@ feature 'Channel Fields' do
     @page.modal_submit_button.click
 
     @page.fields.should have(2).items
-    @Page.field_group[0].text.should include 'Body'
-    @Page.field_group[1].text.should include 'News Image'
+    @page.fields[0].text.should include 'Body'
+    @page.fields[1].text.should include 'News Image'
   end
 end
