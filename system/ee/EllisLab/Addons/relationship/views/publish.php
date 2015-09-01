@@ -1,10 +1,10 @@
 <?php if ($multiple): ?>
 <div class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
-	<?php else: ?>
-<div class="col w-16 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
+<?php else: ?>
+<div class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
-	<?php endif; ?>
+<?php endif; ?>
 	<div class="relate-actions">
 		<?php if (count($channels) > 1): ?>
 		<div class="filters">

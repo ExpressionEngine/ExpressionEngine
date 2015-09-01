@@ -32,6 +32,7 @@
 				.removeClass('block');
 			relationship.find('.relate-wrap-chosen .relate-manage').remove();
 			relationship.find('.relate-wrap-chosen').first().append(chosen);
+			relationship.removeClass('empty');
 		});
 
 		// Multiple Relationships
@@ -77,6 +78,10 @@
 			// Is this a multiple relationship?
 			if (choices.hasClass('w-8')) {
 				choices = choices.siblings('.relate-wrap').first();
+			}
+			else
+			{
+				choices.addClass('empty');
 			}
 
 			choices.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
