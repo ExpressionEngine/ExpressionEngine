@@ -90,6 +90,18 @@
 					}
 
 					$field_class = 'col-group';
+					if ($field->getStatus() == 'warning')
+					{
+						$field_class .= ' warned';
+					}
+					if ($errors->hasErrors($field->getName()))
+					{
+						$field_class .= ' invalid';
+					}
+					if ($field->isRequired())
+					{
+						$field_class .= ' required';
+					}
 					if (end($tab->getFields()) == $field)
 					{
 						$field_class .= ' last';
@@ -98,7 +110,7 @@
 				<?php if ($field->getType() == 'grid'): ?>
 				<div class="grid-publish <?=$field_class?>">
 				<?php else: ?>
-				<fieldset class="<?=$field_class?><?php if ($field->getStatus() == 'warning') echo ' warned'; ?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?><?php if ($field->isRequired()) echo ' required'; ?>">
+				<fieldset class="<?=$field_class?>">
 				<?php endif; ?>
 					<div class="setting-txt col <?=$width?>">
 						<h3<?php if ($field->isCollapsed()) echo ' class="field-closed"';?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
