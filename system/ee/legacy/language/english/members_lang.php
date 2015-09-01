@@ -94,9 +94,9 @@ $lang = array(
 
 //----------------------------------------
 
-"include_in_memberlist" => "Include Members in Site's Member List?",
+"include_in_authorlist" => "Author list",
 
-"include_in_authorlist" => "Include Members in PUBLISH page multi-author list?",
+"include_in_memberlist" => "Member list",
 
 "field_description" => "Instructions",
 
@@ -492,7 +492,7 @@ $lang = array(
 
 'include_members_in' => 'Include members in',
 
-'include_members_in_desc' => 'Users in this group will be including in all of the selected list types',
+'include_members_in_desc' => 'Users in this group will be including in all of the selected list types.',
 
 'commenting' => 'Commenting',
 
