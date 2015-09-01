@@ -10,7 +10,7 @@ feature 'Homepage' do
 
   context 'when spam module is not installed' do
     before :each do
-      toggle_spam(false)
+      toggle_spam :off
     end
 
     it 'does not show flagged comments' do
@@ -20,7 +20,7 @@ feature 'Homepage' do
 
   context 'when spam module is installed' do
     before :each do
-      toggle_spam(true)
+      toggle_spam :on
     end
 
     it 'shows flagged comments' do
@@ -28,13 +28,15 @@ feature 'Homepage' do
     end
   end
 
-  def toggle_spam(enabled)
+  def toggle_spam(state)
     @page.open_dev_menu
     click_link 'Add-On Manager'
 
-    if enabled && @page.has_selector?('a[href*="cp/addons/install/spam"]')
+    can_install = @page.has_selector?('a[href*="cp/addons/install/spam"]')
+
+    if state == :on && can_install
       find('a[href*="cp/addons/install/spam"]').click
-    elsif @page.has_selector?('a[href*="cp/addons/install/spam"]') == false
+    elsif state == :off && can_install == false
       find('input[value="spam"]').click
       find('select[name="bulk_action"]').set 'remove'
       find('.tbl-bulk-act button').click
