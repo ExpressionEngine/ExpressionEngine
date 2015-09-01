@@ -247,6 +247,8 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
 			include_once($info->getPath() . '/tab.' . $name . '.php');

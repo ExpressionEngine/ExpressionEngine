@@ -18,7 +18,8 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'afterSave'
+		'afterSave',
+		'beforeDelete'
 	);
 
 	protected $_field_facades;
@@ -66,6 +67,17 @@ abstract class ContentModel extends VariableColumnModel {
 			$field->postSave();
 		}
 	}
+
+	/**
+	 * Cascade the delete to the fieldtypes
+	 */
+	 public function onBeforeDelete()
+	 {
+		 foreach ($this->getCustomFields() as $field)
+		 {
+			 $field->delete();
+		 }
+	 }
 
 	/**
 	 * Check if a custom field of $name exists
