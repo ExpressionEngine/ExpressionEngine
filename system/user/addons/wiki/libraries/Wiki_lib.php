@@ -31,7 +31,7 @@ var $_base_url = '';
 	public function __construct()
 	{
 		
-		$this->_base_url = ee('CP/URL', 'addons/settings/wiki');
+		$this->_base_url = ee('CP/URL')->make('addons/settings/wiki');
 	}
 
 	// -------------------------------------------------------------------------
@@ -54,10 +54,10 @@ var $_base_url = '';
 
 			if ( ! $valid_wiki)
 			{
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/wiki'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/wiki'));
 			}
 
-			$error_url = ee('CP/URL', 'addons/settings/wiki/update', array('wiki_id' => $wiki_id));
+			$error_url = ee('CP/URL')->make('addons/settings/wiki/update', array('wiki_id' => $wiki_id));
 			$success_url = $error_url;
 
 		}
@@ -65,8 +65,8 @@ var $_base_url = '';
 		{
 			$valid_wiki = ee('Model')->make('wiki:Wikis');
 			
-			$error_url = ee('CP/URL', 'addons/settings/wiki/create');
-			$success_url = ee('CP/URL', 'addons/settings/wiki');			
+			$error_url = ee('CP/URL')->make('addons/settings/wiki/create');
+			$success_url = ee('CP/URL')->make('addons/settings/wiki');			
 
 			// Only auto-complete short name for new wikis
 			ee()->cp->add_js_script('plugin', 'ee_url_title');

@@ -39,7 +39,7 @@ class Spam_mcp {
 	 */
 	public function __construct()
 	{
-		$this->base_url = ee('CP/URL', 'addons/settings/spam');
+		$this->base_url = ee('CP/URL')->make('addons/settings/spam');
 	}
 
 	/**
@@ -177,7 +177,7 @@ class Spam_mcp {
 
 		$data['table'] = $table->viewData($this->base_url);
 		$data['filters'] = $filters->render($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'addons/settings/spam');
+		$data['form_url'] = ee('CP/URL')->make('addons/settings/spam');
 		$data['cp_page_title'] = lang('all_spam');
 
 		// Set search results heading
@@ -216,7 +216,7 @@ class Spam_mcp {
 	 */
 	public function settings()
 	{
-		$base_url = ee('CP/URL', 'addons/settings/spam/settings');
+		$base_url = ee('CP/URL')->make('addons/settings/spam/settings');
 		ee()->load->library('form_validation');
 
 		$settings = array(
@@ -342,7 +342,7 @@ class Spam_mcp {
 		return array(
 			'body'       => ee('View')->make('spam:form')->render(array('data' => $vars)),
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/spam')->compile() => lang('spam')
+				ee('CP/URL')->make('addons/settings/spam')->compile() => lang('spam')
 			),
 			'heading' => lang('spam_settings')
 		);

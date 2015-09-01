@@ -72,7 +72,7 @@ class Metaweblog_api_mcp {
 				)
 			)
 		);
-		$table->setNoResultsText('no_configurations', 'metaweblog_create', ee('CP/URL', 'addons/settings/metaweblog_api/create'));
+		$table->setNoResultsText('no_configurations', 'metaweblog_create', ee('CP/URL')->make('addons/settings/metaweblog_api/create'));
 
 		$data = array();
 

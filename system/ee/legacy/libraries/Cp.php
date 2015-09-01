@@ -269,7 +269,7 @@ class Cp {
 				}
 				else
 				{
-					$alert->addToBody(sprintf(lang($key), ee('CP/URL', 'settings/license')));
+					$alert->addToBody(sprintf(lang($key), ee('CP/URL')->make('settings/license')));
 				}
 			}
 

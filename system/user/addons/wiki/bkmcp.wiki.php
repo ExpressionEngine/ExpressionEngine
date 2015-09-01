@@ -39,7 +39,7 @@ class Wiki_mcp {
 	{
 
 		// set some properties
-		$this->_base_url = ee('CP/URL', 'addons/settings/wiki');
+		$this->_base_url = ee('CP/URL')->make('addons/settings/wiki');
 		ee()->load->library('form_validation');
 		ee()->load->library('wiki_lib');
 		ee()->load->model('addons_model');
@@ -103,7 +103,7 @@ class Wiki_mcp {
 					array(
 						'toolbar_items' => array(
 							'edit' => array(
-								'href' => ee('CP/URL', '/cp/addons/settings/wiki/update'.AMP.'wiki_id='. $row->wiki_id),
+								'href' => ee('CP/URL')->make('/cp/addons/settings/wiki/update'.AMP.'wiki_id='. $row->wiki_id),
 								'title' => lang('edit')
 							)
 						)
@@ -125,7 +125,7 @@ class Wiki_mcp {
 
 		$table->setData($data);
 
-		$table->setNoResultsText('no_wikis', 'create_wiki', ee('CP/URL', 'addons/settings/wiki/create'));
+		$table->setNoResultsText('no_wikis', 'create_wiki', ee('CP/URL')->make('addons/settings/wiki/create'));
 
 
 		$vars['table'] = $table->viewData($this->_base_url);
@@ -172,7 +172,7 @@ class Wiki_mcp {
 			'body'			=> $this->edit_wiki(0),
 			'heading'		=> lang('create_wiki'),
 			'breadcrumb' 	=> array(
-				ee('CP/URL', 'addons/settings/wiki')->compile() => lang('wiki_manager')
+				ee('CP/URL')->make('addons/settings/wiki')->compile() => lang('wiki_manager')
 			)
 		);
 	}
@@ -194,7 +194,7 @@ class Wiki_mcp {
 			'body'			=> $this->edit_wiki($wiki_id),
 			'heading'		=> lang('edit_wiki'),
 			'breadcrumb' 	=> array(
-				ee('CP/URL', 'addons/settings/wiki')->compile() => lang('wiki_manager')
+				ee('CP/URL')->make('addons/settings/wiki')->compile() => lang('wiki_manager')
 			)
 		);
 	}
@@ -262,10 +262,10 @@ class Wiki_mcp {
 
 			if ( ! $valid_wiki)
 			{
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/wiki'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/wiki'));
 			}
 
-			$error_url = ee('CP/URL', 'addons/settings/wiki/update', array('wiki_id' => $wiki_id));
+			$error_url = ee('CP/URL')->make('addons/settings/wiki/update', array('wiki_id' => $wiki_id));
 			$success_url = $error_url;
 
 		}
@@ -273,8 +273,8 @@ class Wiki_mcp {
 		{
 			$valid_wiki = ee('Model')->make('wiki:Wiki');
 
-			$error_url = ee('CP/URL', 'addons/settings/wiki/create');
-			$success_url = ee('CP/URL', 'addons/settings/wiki');
+			$error_url = ee('CP/URL')->make('addons/settings/wiki/create');
+			$success_url = ee('CP/URL')->make('addons/settings/wiki');
 
 			// Only auto-complete short name for new wikis
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
