@@ -558,7 +558,7 @@ $lang = array(
 
 "can_access_tools" => "Can access TOOLS section",
 
-"can_ban_users" => "Can ban users",
+"can_ban_users" => "Ban members",
 
 "cp_admin_privs" => "Control Panel Administration",
 
@@ -610,7 +610,7 @@ $lang = array(
 
 'can_access_content_prefs' => 'Can access ADMIN: Content Settings',
 
-"can_delete_members" => "Can delete members",
+"can_delete_members" => "Delete members",
 
 "can_admin_mbr_groups" => "Can change the group that a member is assigned to (Unlocked groups only)",
 
