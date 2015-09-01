@@ -582,7 +582,7 @@ $lang = array(
 
 "can_admin_upload_prefs" => "Can administrate file upload preferences",
 
-"can_admin_members" => "Can administrate members accounts",
+"can_admin_members" => "Create and edit members",
 
 'can_access_edit' => 'Can access CONTENT: Edit',
 
@@ -612,7 +612,7 @@ $lang = array(
 
 "can_delete_members" => "Delete members",
 
-"can_admin_mbr_groups" => "Can change the group that a member is assigned to (Unlocked groups only)",
+"can_admin_mbr_groups" => "Change member groups",
 
 "can_admin_mbr_templates" => "Can administrate member profile templates",
 
