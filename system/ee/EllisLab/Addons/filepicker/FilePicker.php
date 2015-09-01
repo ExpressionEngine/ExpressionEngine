@@ -63,6 +63,11 @@ class FilePicker {
 			$extra .= " data-input-name='{$data['name']}'";
 		}
 
+		if ( ! empty($data['selected']))
+		{
+			$extra .= " data-selected='{$data['selected']}'";
+		}
+
 		if ( ! empty($data['callback']))
 		{
 			$extra .= " data-callback='{$data['callback']}'";
