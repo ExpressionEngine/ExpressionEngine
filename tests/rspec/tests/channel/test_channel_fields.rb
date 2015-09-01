@@ -36,10 +36,12 @@ feature 'Channel Fields' do
       save_field
     end
 
-    it 'saves a field' do
-      @page.fields_edit[1].click
-      save_field
-    end
+    it 'saves a field'
+    # TODO: Reenable once we fix https://github.com/EllisLab/ExpressionEngine/issues/464
+    # do
+    #   @page.fields_edit[1].click
+    #   save_field
+    # end
   end
 
   it 'deletes a field' do
