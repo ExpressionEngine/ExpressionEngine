@@ -444,6 +444,8 @@ $lang = array(
 
 'close' => 'Close',
 
+'spam' => 'SPAM',
+
 'closed' => 'Closed',
 
 'options' => 'Options',

@@ -283,7 +283,7 @@ class Textarea_ft extends EE_Fieldtype {
 			// Construct the rest of the settings form for Channel...
 			$field_tools = array(
 				'title' => 'field_tools',
-				'desc' => 'field_tools_desc',
+				'desc' => '',
 				'fields' => array(
 					'field_show_formatting_btns' => array(
 						'type' => 'checkbox',

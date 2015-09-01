@@ -49,7 +49,7 @@ class Quicklinks extends Profile {
 	 */
 	public function index()
 	{
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array('reorder' => TRUE));
 		$links = array();
 		$data = array();
 
@@ -65,10 +65,7 @@ class Quicklinks extends Profile {
 			));
 
 			$links[] = array(
-				'name' => array(
-						'content' => $quicklink['title'],
-						'href' => $edit_url
-					),
+				'<a href="' . $edit_url . '">' . $quicklink['title'] . '</a>' . form_hidden('order[]', $quicklink['order']),
 				$toolbar,
 				array(
 					'name' => 'selection[]',
@@ -82,7 +79,9 @@ class Quicklinks extends Profile {
 
 		$table->setColumns(
 			array(
-				'name',
+				'name' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -101,8 +100,24 @@ class Quicklinks extends Profile {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
+			'file' => array(
+				'cp/confirm_remove',
+				'cp/sort_helper',
+				'cp/members/quick_links_reorder',
+			),
+			'plugin' => array(
+				'ee_table_reorder',
+			),
 		));
+
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('quick_links_ajax_reorder_fail'))
+			->addToBody(lang('quick_links_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('quick_links.reorder_url', ee('CP/URL', 'members/profile/quicklinks/order/', $this->query_string)->compile());
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -200,6 +215,26 @@ class Quicklinks extends Profile {
 		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
+	public function order()
+	{
+		parse_str(ee()->input->post('order'), $order);
+		$order = $order['order'];
+		$position = 1;
+
+		if (is_array($order))
+		{
+			foreach ($order as $id)
+			{
+				$this->quicklinks[$id]['order'] = $position;
+				$position++;
+			}
+		}
+
+		$this->saveQuicklinks();
+
+		return TRUE;
+	}
+
 	/**
 	 * saveQuicklinks compiles the links and saves them for the current member
 	 *
@@ -212,8 +247,9 @@ class Quicklinks extends Profile {
 
 		foreach ($this->quicklinks as $quicklink)
 		{
-			$compiled[] = implode('|', $quicklink);
+			$compiled[$quicklink['order']] = implode('|', $quicklink);
 		}
+		ksort($compiled);
 
 		$compiled = implode("\n", $compiled);
 		$this->member->quick_links = $compiled;

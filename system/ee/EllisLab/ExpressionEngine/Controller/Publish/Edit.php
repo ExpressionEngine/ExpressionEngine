@@ -89,20 +89,10 @@ class Edit extends AbstractPublishController {
 		);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
-		$channels = ee('Model')->get('Channel')
-			->fields('channel_id', 'channel_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		if (count($channels) == 1)
-		{
-			$channel_id = $channels[0]->channel_id;
-			$channel_title = $channels[0]->channel_title;
-		}
-
 		if ($channel_id)
 		{
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_title).'</a>';
+			$channel = ee('Model')->get('Channel', $channel_id)->first();
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 		}
 		else
 		{

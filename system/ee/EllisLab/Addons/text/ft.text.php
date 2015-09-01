@@ -246,7 +246,7 @@ class Text_ft extends EE_Fieldtype {
 			{
 				$field_tools = array(
 					'title' => 'field_tools',
-					'desc' => 'field_tools_desc',
+					'desc' => '',
 					'fields' => array(
 						'field_show_smileys' => array(
 							'type' => 'checkbox',

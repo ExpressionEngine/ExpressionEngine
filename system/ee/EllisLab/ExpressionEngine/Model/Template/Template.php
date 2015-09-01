@@ -2,9 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Template extends Model {
+class Template extends FileSyncedModel {
 
 	protected static $_primary_key = 'template_id';
 	protected static $_table_name = 'templates';
@@ -91,12 +89,6 @@ class Template extends Model {
 		'protect_javascript' => 'enum[y,n]',
 	);
 
-	protected static $_events = array(
-		'afterDelete',
-		'afterSave',
-		'afterUpdate'
-	);
-
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -146,11 +138,42 @@ class Template extends Model {
 
 		if ($path == '' || $file == '' || $ext == '')
 		{
-
 			return NULL;
 		}
 
 		return $path.'/'.$file.$ext;
+	}
+
+	/**
+	 * Get the data to be stored in the file
+	 */
+	protected function serializeFileData()
+	{
+		return $this->template_data;
+	}
+
+	/**
+	 * Set the model based on the data in the file
+	 */
+	protected function unserializeFileData($str)
+	{
+		$this->setProperty('template_data', $str);
+	}
+
+	/**
+	 * Make the last modified time available to the parent class
+	 */
+	public function getModificationTime()
+	{
+		return $this->edit_date;
+	}
+
+	/**
+	 * Allow our parent class to set the modification time
+	 */
+	public function setModificationTime($mtime)
+	{
+		$this->setProperty('edit_date', $mtime);
 	}
 
 	/**
@@ -168,62 +191,10 @@ class Template extends Model {
 	}
 
 	/**
-	 * For all saves, write the template file with the new contents.
-	 *
-	 * Technically we could make this afterInsert and do more checks
-	 * in afterUpdate to make sure things actually changed, but this
-	 * is much simpler.
-	 */
-	public function onAfterSave()
-	{
-		$fs = new Filesystem();
-		$path = $this->getFilePath();
-
-		if (isset($path) && $fs->exists($fs->dirname($path)))
-		{
-			$fs->write($path, $this->template_data, TRUE);
-		}
-	}
-
-	/**
-	 * If the template is updated, we need to make sure things like
-	 * renames or changes in template group are reflected in the
-	 * filesystem. We do this by simply deleting the old file, since
-	 * our afterSave event will always write a new one.
-	 *
-	 * @param Array Old values that were changed by this save
-	 */
-	public function onAfterUpdate($previous)
-	{
-		$fs = new Filesystem();
-		$path = $this->getFilePath();
-		$old_path = $this->getPreviousPath($previous);
-
-		if ($path != $old_path && $fs->exists($old_path))
-		{
-			$fs->delete($old_path);
-		}
-	}
-
-	/**
-	 * If the template is deleted, remove the template file
-	 */
-	public function onAfterDelete()
-	{
-		$fs = new Filesystem();
-		$path = $this->getFilePath();
-
-		if (isset($path) && $fs->exists($path))
-		{
-			$fs->delete($path);
-		}
-	}
-
-	/**
 	 * Get the old template path, so that we can delete it if
 	 * the path changed.
 	 */
-	protected function getPreviousPath($prev)
+	protected function getPreviousFilePath($prev)
 	{
 		$values = $this->getValues();
 		$parts = array_merge($values, $prev);
