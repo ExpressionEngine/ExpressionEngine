@@ -1,0 +1,3 @@
+class CustomFields < ControlPanelPage
+
+end
