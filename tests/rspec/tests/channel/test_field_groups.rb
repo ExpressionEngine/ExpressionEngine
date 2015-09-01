@@ -31,7 +31,7 @@ feature 'Field Groups' do
       @page.field_groups_fields.should have(number_of).items
       @page.field_groups_checkboxes.should have(number_of).items
 
-      @page.field_groups.any?{ |fg| fg.text.include?(name) }.should == true
+      @page.field_groups.any? { |fg| fg.text.include?(name) }.should == true
     end
 
     it 'creates a field group' do
