@@ -505,7 +505,7 @@ class Groups extends Members\Members {
 					),
 					array(
 						'title' => 'exclude_from_moderation',
-						'desc' => 'exclude_from_moderation_desc',
+						'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
 						'fields' => array(
 							'exclude_from_moderation' => array(
 								'type' => 'yes_no',

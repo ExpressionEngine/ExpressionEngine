@@ -241,7 +241,7 @@ $lang = array(
 
 "exclude_from_moderation" => "Bypass moderation",
 
-"exclude_from_moderation_desc" => "When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default comment settings.",
+"exclude_from_moderation_desc" => "When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default <a href='%s'>comment settings</a>.",
 
 "moderation_actions" => "Moderation actions",
 
