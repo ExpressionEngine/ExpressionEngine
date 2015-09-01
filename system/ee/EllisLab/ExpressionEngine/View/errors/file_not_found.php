@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/wrapper'); ?>
 
 <div class="col-group snap">
 	<div class="col w-16 last">
