@@ -1026,34 +1026,6 @@ class Updater {
 			}
 
 			$directory->save();
-
-			if (is_readable($dir['server_path']))
-			{
-				// Insert Files
-				$files = scandir($dir['server_path']);
-
-				foreach ($files as $filename)
-				{
-					$path = $dir['server_path'] . $filename;
-
-					if ($filename != 'index.html' && is_file($path))
-					{
-						$time = time();
-						$file = ee('Model')->make('File');
-						$file->site_id = $site_id;
-						$file->upload_location_id = $directory->id;
-						$file->uploaded_by_member_id = 1;
-						$file->modified_by_member_id = 1;
-						$file->title = $filename;
-						$file->file_name = $filename;
-						$file->upload_date = $time;
-						$file->modified_date = $time;
-						$file->mime_type = mime_content_type($path);
-						$file->file_size = filesize($path);
-						$file->save();
-					}
-				}
-			}
 		}
 
 		return TRUE;
