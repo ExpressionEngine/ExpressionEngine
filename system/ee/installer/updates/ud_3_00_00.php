@@ -500,8 +500,10 @@ class Updater {
 			)
 		);
 
-		$layouts = ee()->db->select('layout_id, member_group, layout_name, field_layout')
-			->get('layout_publish')
+		$layouts = ee()->db->select('layout_id, cat_group, member_group, layout_name, field_layout')
+			->from('layout_publish')
+			->join('channels', 'layout_publish.channel_id = channels.channel_id')
+			->get()
 			->result_array();
 
 		if ( ! empty($layouts))
@@ -537,7 +539,16 @@ class Updater {
 						}
 						elseif ($field == 'category')
 						{
-							$field = 'categories';
+							foreach (explode('|', $layout['cat_group']) as $cat_group_id)
+							{
+								$tab['fields'][] = array(
+									'field' => 'cat_group_id_' . $cat_group_id,
+									'visible' => $info['visible'],
+									'collapsed' => $info['collapse']
+								);
+							}
+
+							continue;
 						}
 						elseif ($field == 'new_channel')
 						{

@@ -469,14 +469,6 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		if ( ! isset($this->settings['grid_row_id'])
-			&& substr($field_name, 7) != 'col_id_'
-			&& count($entries)
-			&& REQ != 'CP')
-		{
-			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
-		}
-
 		if (REQ == 'CP')
 		{
 			ee()->cp->add_js_script(array(
@@ -490,7 +482,7 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
-				'file' => 'cp/relationships',
+				'file' => 'fields/relationship/cp',
 				'ui' => 'sortable'
 			));
 		}

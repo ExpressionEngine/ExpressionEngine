@@ -148,7 +148,16 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->_load_grid_lib();
 
-		return ee()->grid_lib->display_field($grid, $data);
+	 	$field = ee()->grid_lib->display_field($grid, $data);
+
+		if (REQ != 'CP')
+		{
+			// channel form is not guaranteed to have this wrapper class,
+			// but the js requires it
+			$field = '<div class="grid-publish">'.$field.'</div>';
+		}
+
+		return $field;
 	}
 
 	// --------------------------------------------------------------------

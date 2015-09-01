@@ -197,7 +197,7 @@ $lang = array(
 
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',
-'msm_manager'      => 'Multi-Site Manager',
+'msm_manager'      => 'Site Manager',
 'addon_manager'    => 'Add-On Manager',
 'utilities'        => 'Utilities',
 'logs'             => 'Logs',
@@ -461,6 +461,18 @@ $lang = array(
  * 3.0
  */
 
+'clear_filters' => 'Clear filters',
+
+//----------------------------
+// License Errors
+//----------------------------
+'software_unregistered' => 'Software Unregistered',
+'corrupt_license_file' => 'The license file provided is missing data. <a href="%s">Please upload your license.</a>',
+'invalid_signature' => 'The license file provided has an invalid signature. <a href="%s">Please upload your license.</a>',
+'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
+'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
+
 'btn_save' => 'Save %s',
 
 'btn_fix_errors' => 'Errors Found',
@@ -546,6 +558,8 @@ $lang = array(
 
 'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
+'success' => 'Success',
+
 /**
  * Footer
  */
@@ -613,6 +627,21 @@ $lang = array(
 'confirm_show_all_btn' => 'Damn the torpedoes, full speed ahead!',
 
 'all_items' => 'All %d items',
+
+
+//----------------------------
+// HTML Buttons
+//----------------------------
+
+'html_btn_bold' => 'Bold text',
+'html_btn_italic' => 'Italic text',
+'html_btn_strike' => 'Strikethrough text',
+'html_btn_ins' => 'Insert text',
+'html_btn_ul' => 'Unordered list',
+'html_btn_ol' => 'Ordered list',
+'html_btn_blockquote' => 'Blockquote',
+'html_btn_anchor' => 'Link',
+'html_btn_picture' => 'Image',
 
 ''=>''
 );

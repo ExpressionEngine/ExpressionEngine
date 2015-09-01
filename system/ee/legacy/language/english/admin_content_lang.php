@@ -50,8 +50,6 @@ $lang = array(
 
 'edit_field_group_error_desc' => 'We were unable to update this field group, please review and fix errors below.',
 
-'success' => 'Success',
-
 'field_groups_removed_desc' => 'The following field groups were removed',
 
 'fields_removed_desc' => 'The following fields were removed',
@@ -442,7 +440,7 @@ $lang = array(
 
 'add_preset_button' => 'Add Preset Button:',
 
-'tag_name' => 'Tag Name',
+'tag_name' => 'Name',
 
 'tag_open' => 'Opening Tag',
 
@@ -452,7 +450,7 @@ $lang = array(
 
 'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
-'accesskey' => 'Tag shortcut',
+'accesskey' => 'Shortcut',
 
 'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 

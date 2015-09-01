@@ -63,18 +63,18 @@
 				</div>
 				<div class="right">
 					<p>
-						<?php if (ee()->config->item('license_number')): ?>
-							<?=lang('license_no')?>: <?=ee()->config->item('license_number')?>
-							<?php if (ee()->config->item('license_contact')): ?>
-								<br><?=lang('owned_by')?>: <a href="mailto:<?=ee()->config->item('license_contact')?>">
-									<?=(ee()->config->item('license_contact_name')) ?: ee()->config->item('license_contact')?>
-								</a>
-							<?php endif ?>
-						<?php elseif (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
+					<?php if ($ee_license->isValid()): ?>
+						<?=lang('license_no')?>: <?=$ee_license->getData('license_number')?>
+						<br><?=lang('owned_by')?>: <a href="mailto:<?=$ee_license->getData('license_contact')?>">
+							<?=($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact')?>
+						</a>
+					<?php else: ?>
+						<?php if (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
 							<a class="btn no-reg" href="<?=ee('CP/URL')->make('settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>
 						<?php endif ?>
+					<?php endif; ?>
 					</p>
 				</div>
 			</div>

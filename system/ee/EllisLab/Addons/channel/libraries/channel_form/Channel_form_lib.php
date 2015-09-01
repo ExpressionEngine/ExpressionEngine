@@ -95,7 +95,7 @@ class Channel_form_lib
 	public function __construct()
 	{
 		//set a global object
-		ee()->set('safecracker', $this); // deprecated
+	//	ee()->set('safecracker', $this); // deprecated
 		ee()->set('channel_form', $this);
 		ee()->lang->loadfile('channel_form');
 	}
@@ -128,11 +128,11 @@ class Channel_form_lib
 		ee()->load->helper('form');
 		ee()->router->set_class('cp');
 		ee()->load->library('cp');
-		ee()->router->set_class('ee');
+		// ee()->router->set_class('ee');
 		ee()->load->library('javascript');
 		ee()->load->library('api');
-		ee()->load->library('form_validation');
-		ee()->legacy_api->instantiate('channel_fields');
+		// ee()->load->library('form_validation');
+		// ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->lang->loadfile('content');
 		ee()->lang->loadfile('upload');
@@ -218,11 +218,6 @@ class Channel_form_lib
 		if (ee()->TMPL->fetch_param('datepicker'))
 		{
 			$this->datepicker = $this->bool_string(ee()->TMPL->fetch_param('datepicker'), $this->datepicker);
-		}
-
-		if ($this->datepicker)
-		{
-			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:"'.ee()->localize->datepicker_format().'"+EE.date_obj_time});');
 		}
 
 		//decide which fields to show, based on pipe delimited list of field id's and/or field short names
@@ -437,31 +432,13 @@ class Channel_form_lib
 		}
 
 		//edit form
-		if ($this->entry)
+		if ($this->edit)
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
 
 			$expiration_date = ($this->entry('expiration_date')) ? $this->entry('expiration_date')*1000 : ee()->localize->now*1000;
 			$comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date')*1000 : ee()->localize->now*1000;
-
-			if ($this->datepicker)
-			{
-				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
-				{
-					ee()->javascript->output('$("input[name=entry_date]").datepicker({defaultDate: new Date('.($this->entry('entry_date')*1000).')});');
-				}
-
-				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
-				{
-					ee()->javascript->output('$("input[name=expiration_date]").datepicker({defaultDate: new Date('.$expiration_date.')});');
-				}
-
-				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
-				{
-					ee()->javascript->output('$("input[name=comment_expiration_date]").datepicker({defaultDate: new Date('.$comment_expiration_date.')});');
-				}
-			}
 
 			foreach (ee()->TMPL->var_single as $key)
 			{
@@ -560,24 +537,18 @@ class Channel_form_lib
 
 			if ($this->datepicker)
 			{
-				ee()->javascript->output('$.datepicker.setDefaults({defaultDate: new Date('.(ee()->localize->now*1000).')});');
-
 				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
 				{
-					ee()->javascript->output('$("input[name=entry_date]").datepicker();');
 					$this->parse_variables['entry_date'] = ee()->localize->human_time();
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
 				{
-					ee()->javascript->output('$("input[name=expiration_date]").datepicker();');
 					$this->parse_variables['expiration_date'] = '';
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
 				{
-					ee()->javascript->output('$("input[name=comment_expiration_date]").datepicker();');
-
 					$comment_expiration_date = '';
 
 					if ($this->channel('comment_expiration') > 0)
@@ -603,12 +574,12 @@ class Channel_form_lib
 				{
 					$tag_name = current(preg_split('/\s/', $tag_pair_open));
 
-					if ($tag_name == $field['field_name'])
+					if ($tag_name == $field->field_name)
 					{
 						//special parsing here for catchall fieldtype, pls keep this in
-						if ($field['field_type'] === 'catchall')
+						if ($field->field_type === 'catchall')
 						{
-							if (preg_match_all('/'.LD.$tag_pair_open.RD.'(.*)'.LD.'\/'.$field['field_name'].RD.'/s', ee()->TMPL->tagdata, $matches))
+							if (preg_match_all('/'.LD.$tag_pair_open.RD.'(.*)'.LD.'\/'.$field->field_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 							{
 								foreach ($matches[1] as $match_index => $var_pair_tagdata)
 								{
@@ -628,38 +599,38 @@ class Channel_form_lib
 						}
 						else
 						{
-							$this->parse_variables[$field['field_name']] = '';
+							$this->parse_variables[$field->field_name] = '';
 						}
 					}
-					elseif ($tag_name == 'options:'.$field['field_name'] && ($field_type_match = $this->get_field_type($field['field_name'])) &&
+					elseif ($tag_name == 'options:'.$field->field_name && ($field_type_match = $this->get_field_type($field->field_name)) &&
 							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'relationship'))
 					{
-						if ($field['field_type'] == 'checkboxes')
+						if ($field->field_type == 'checkboxes')
 						{
-							$checkbox_fields[] = $field['field_name'];
+							$checkbox_fields[] = $field->field_name;
 						}
 
-						$this->parse_variables['options:'.$field['field_name']] = (isset($custom_field_variables[$field['field_name']]['options'])) ? $custom_field_variables[$field['field_name']]['options'] : '';
+						$this->parse_variables['options:'.$field->field_name] = (isset($custom_field_variables[$field->field_name]['options'])) ? $custom_field_variables[$field->field_name]['options'] : '';
 					}
 				}
 
-				$this->parse_variables[$field['field_name']] = '';
-				$this->parse_variables['label:'.$field['field_name']] = $field['field_label'];
-				$this->parse_variables['selected_option:'.$field['field_name'].':label'] = '';
-				$this->parse_variables['selected_option:'.$field['field_name']] = '';
-				$this->parse_variables['label:'.$field['field_name']] = $field['field_label'];
-				$this->parse_variables['instructions:'.$field['field_name']] = $field['field_instructions'];
-				$this->parse_variables['error:'.$field['field_name']] = ( ! empty($this->field_errors[$field['field_name']])) ? $this->field_errors[$field['field_name']] : '';
+				$this->parse_variables[$field->field_name] = '';
+				$this->parse_variables['label:'.$field->field_name] = $field->field_label;
+				$this->parse_variables['selected_option:'.$field->field_name.':label'] = '';
+				$this->parse_variables['selected_option:'.$field->field_name] = '';
+				$this->parse_variables['label:'.$field->field_name] = $field->field_label;
+				$this->parse_variables['instructions:'.$field->field_name] = $field->field_instructions;
+				$this->parse_variables['error:'.$field->field_name] = ( ! empty($this->field_errors[$field->field_name])) ? $this->field_errors[$field->field_name] : '';
 
 				//let's not needlessly call this, otherwise we could get duplicate fields rendering
-				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field['field_name'].RD) !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field->field_name.RD) !== FALSE)
 				{
-					if ($field['field_type'] == 'checkboxes')
+					if ($field->field_type == 'checkboxes')
 					{
-						$checkbox_fields[] = $field['field_name'];
+						$checkbox_fields[] = $field->field_name;
 					}
 
-					$this->parse_variables['field:'.$field['field_name']] = (array_key_exists($field['field_name'], $this->custom_fields)) ? $this->display_field($field['field_name']) : '';
+					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields)) ? $this->display_field($field['field_name']) : '';
 				}
 			}
 		}
@@ -756,7 +727,7 @@ class Channel_form_lib
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
 			'action'		=> $action,
-			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
+			'id'			=> ee()->TMPL->fetch_param('id', 'cform'),
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
 
@@ -900,6 +871,51 @@ class Channel_form_lib
 			)
 		);
 
+
+		if ($this->datepicker)
+		{
+			$addt_js['date']['date_format'] = ee()->localize->get_date_format();
+			$addt_js['lang']['date']['months']['full'] = array(
+				lang('january'),
+				lang('february'),
+				lang('march'),
+				lang('april'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('august'),
+				lang('september'),
+				lang('october'),
+				lang('november'),
+				lang('december')
+			);
+			$addt_js['lang']['date']['months']['abbreviated'] = array(
+				lang('jan'),
+				lang('feb'),
+				lang('mar'),
+				lang('apr'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('aug'),
+				lang('sept'),
+				lang('oct'),
+				lang('nov'),
+				lang('dec')
+			);
+			$addt_js['lang']['date']['days'] = array(
+				lang('su'),
+				lang('mo'),
+				lang('tu'),
+				lang('we'),
+				lang('th'),
+				lang('fr'),
+				lang('sa'),
+			);
+
+		}
+
+
 		ee()->lang->loadfile('content');
 
 		$this->output_js['json'] = array(
@@ -946,13 +962,9 @@ GRID_FALLBACK;
 			'plugin' => array('markitup'),
 		);
 
-		$js_defaults['plugin'][] = 'toolbox.expose';
-		$js_defaults['plugin'][] = 'overlay';
-		$js_defaults['plugin'][] = 'tmpl';
-
 		if ($this->datepicker)
 		{
-			$js_defaults['ui'][] = 'datepicker';
+			$js_defaults['file'][] = 'cp/date_picker';
 			$js_defaults['file'][] = 'cp/date';
 		}
 
@@ -1050,12 +1062,12 @@ GRID_FALLBACK;
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 
 		// RTE Selector parameter?
-		$rte_selector = ee()->TMPL->fetch_param('rte_selector');
+		$rte_selector = ee()->TMPL->fetch_param('rte_selector', '.WysiHat-field');
 
 		if ($rte_selector)
 		{
 			// toolset id specified?
-			$rte_toolset_id = (int)ee()->TMPL->fetch_param('rte_toolset_id');
+			$rte_toolset_id = (int) ee()->TMPL->fetch_param('rte_toolset_id', 0);
 
 			$js_url = ee()->functions->fetch_site_index().QUERY_MARKER
 				.'ACT='.ee()->functions->fetch_action_id('Rte', 'get_js')
@@ -1067,6 +1079,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<link rel="stylesheet" type="text/css" media="screen" href="'.URL_THEMES.'cform/css/eecms-cform.min.css" />';
 
 		//add fieldtype styles
 		foreach (ee()->cp->get_head() as $item)
@@ -1107,17 +1120,30 @@ GRID_FALLBACK;
 	{
 		$custom_field_variables = array();
 
-		foreach ($this->custom_fields as $field_name => $field)
+		$fields_by_shortname = array();
+		$fields = $this->entry->getDisplay()->getFields();
+
+		foreach ($fields as $field)
 		{
+			$fields_by_shortname[$field->getShortName()] = $field;
+		}
+
+		foreach ($fields_by_shortname as $field_name => $field)
+		{
+			if ( ! array_key_exists($field_name, $this->custom_fields))
+			{
+				continue;
+			}
+
 			// standard vars/conditionals
 			$custom_field_variables_row = array(
-				'required'		=> ($field['field_required'] == 'n') ? 0 : 1,
-				'text_direction'=> $field['field_text_direction'],
-				'field_data'	=> $this->entry($field_name),
-				'rows'			=> $field['field_ta_rows'],
-				'maxlength'		=> $field['field_maxl'],
+				'required'		=> $field->isRequired(),
+				'text_direction'=> $field->getSetting('field_text_direction'),
+				'field_data'	=> $this->entry($field->getName()),
+				'rows'			=> $field->getSetting('field_ta_rows'),
+				'maxlength'		=> $field->getSetting('field_maxl'),
 				'formatting_buttons'			=> '',
-				'field_show_formatting_btns'	=> (isset($field['field_show_formatting_btns']) && $field['field_show_formatting_btns'] == 'y') ? 1 : 0,
+				'field_show_formatting_btns'	=> ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
 				'textinput'		=> 0,
 				'pulldown'		=> 0,
 				'checkbox'		=> 0,
@@ -1128,10 +1154,11 @@ GRID_FALLBACK;
 				'radio'			=> 0,
 				'display_field'	=> '',
 				'options'		=> $this->get_field_options($field_name),
-				'error'			=> ( ! empty($this->field_errors[$field['field_name']])) ? lang($this->field_errors[$field['field_name']]) : ''
+				'error'			=> ( ! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
 			);
 
-			$custom_field_variables_row = array_merge($field, $custom_field_variables_row);
+			$custom_field_equivalent = $this->custom_fields[$field_name];
+			$custom_field_variables_row = array_merge($custom_field_equivalent->getValues(), $custom_field_variables_row);
 
 			$fieldtypes = ee()->api_channel_fields->fetch_installed_fieldtypes();
 
@@ -1142,35 +1169,21 @@ GRID_FALLBACK;
 			}
 
 			// fieldtype conditionals
-			foreach ($this->custom_fields as $f_name => $f)
+			$custom_field_variables_row[$field->getType()] = 1;
+
+			if (array_key_exists($field->getType(), $this->custom_field_conditional_names))
 			{
-				$custom_field_variables_row[$f['field_type']] = $custom_field_variables_row[$f_name] = ($field['field_type'] == $f['field_type']) ? 1 : 0;
+				$custom_field_variables_row[$this->custom_field_conditional_names[$field->getType()]] = 1;
 			}
 
-			if (array_key_exists($field['field_type'], $this->custom_field_conditional_names))
+			if ($field->getType() == 'date')
 			{
-				$custom_field_variables_row[$this->custom_field_conditional_names[$field['field_type']]] = 1;
-			}
-
-			if ($field['field_type'] == 'date')
-			{
-				if ($this->datepicker)
-				{
-					$default_date = (($this->entry($field_name)) ? $this->entry($field_name) : ee()->localize->now) * 1000;
-					ee()->javascript->output('
-						$(\'input[name="'.$field_name.'"]\').datepicker({
-							constrainInput: false,
-							defaultDate: new Date('.$default_date.')
-						});
-					');
-				}
-
 				$custom_field_variables_row['field_data'] = ee()->localize->human_time($this->entry($field_name));
 			}
 
-			if ($field['field_type'] == 'relationship')
+			if ($field->getType() == 'relationship')
 			{
-				$settings = $this->get_field_data($field_name);
+				$settings = $this->get_field_settings($field_name);
 				$custom_field_variables_row['allow_multiple'] = 0;
 				if (isset($settings['allow_multiple']))
 				{
@@ -1291,7 +1304,7 @@ GRID_FALLBACK;
 
 		ee()->load->helper(array('url', 'form'));
 		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
+		//ee()->legacy_api->instantiate('channel_fields');
 		ee()->load->library('filemanager');
 		ee()->load->library('form_validation');
 		ee()->load->library('localize');
@@ -1411,12 +1424,16 @@ GRID_FALLBACK;
 		}
 		else
 		{
+			$this->fetch_entry(0);
+
 			if (ee()->input->post('unique_url_title', TRUE))
 			{
 				$_POST['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
 				$this->_meta['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
 			}
 		}
+
+		ee()->legacy_api->instantiate('channel_fields');
 
 		// If any checkbox fields are missing from the POST array,
 		// add them in as blank values for form validation to catch
@@ -1431,6 +1448,8 @@ GRID_FALLBACK;
 			}
 		}
 
+		$spam_content = "";
+
 		// Reset categories if they weren't set above
 		if ($this->_meta['entry_id'] &&
 			ee()->input->post('category') === FALSE &&
@@ -1441,100 +1460,75 @@ GRID_FALLBACK;
 
 		foreach ($this->custom_fields as $i => $field)
 		{
-			if (in_array($field['field_type'], $this->file_fields))
+			if (in_array($field->field_type, $this->file_fields))
 			{
 				// trick validation into calling the file fieldtype
-				if (isset($_FILES[$field['field_name']]['name']))
+				if (isset($_FILES[$field->field_name]['name']))
 				{
-					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+					$_POST[$field->field_name] = $_FILES[$field->field_name]['name'];
 				}
 			}
 
 			$isset = (
-				isset($_POST['field_id_'.$field['field_id']]) ||
-				isset($_POST[$field['field_name']]) ||
+				isset($_POST['field_id_'.$field->field_id]) ||
+				isset($_POST[$field->field_name]) ||
 				// always call the fieldtype if a file field was on the page
-				isset($_POST[$field['field_name'].'_hidden_file'])
+				isset($_POST[$field->field_name.'_hidden_file'])
 			);
 
-			$this->custom_fields[$i]['isset'] = $isset;
-
-			if ( ! $this->edit || $isset)
+			if ($this->edit || ! $isset)
 			{
-				$field_rules = array();
-
-				if (isset($rules[$field['field_name']]))
+				if ($field->field_type == 'date')
 				{
-					$field_rules = explode('|', $rules[$field['field_name']]);
+					$_POST['field_id_'.$field->field_id] = $_POST[$field->field_name] = ee()->localize->human_time($this->entry($field->field_name));
 				}
-
-				if ( ! in_array('call_field_validation['.$field['field_id'].']', $field_rules))
-				{
-					array_unshift($field_rules, 'call_field_validation['.$field['field_id'].']');
-				}
-
-				if ($field['field_required'] == 'y' && ! in_array('required', $field_rules))
-				{
-					array_unshift($field_rules, 'required');
-				}
-
-				// the file field does not always populate the $_POST[$field] value and does its own
-				// check for required
-				if ($field['field_type'] == 'file')
-				{
-					$field_rules = array_diff($field_rules, array('required'));
-				}
-
-				ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
-			}
-			else
-			{
-				if ($field['field_type'] == 'date')
-				{
-					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = ee()->localize->human_time($this->entry($field['field_name']));
-				}
-				elseif ($field['field_required'] == 'y')
+				elseif ($field->field_required == 'y')
 				{
 					//add a dummy value to be removed later
 					//to get around _check_data_for_errors, a redundant check
-					$_POST['field_id_'.$field['field_id']] = '1';
+					$_POST['field_id_'.$field->field_id] = '1';
 				}
 			}
-
 
 			foreach ($_POST as $key => $value)
 			{
 				//change field_name'd POSTed keys to field_id's
-				if ($key == $field['field_name'])
+				if ($key == $field->field_name)
 				{
 					//@TODO what to do about xss_clean and "naughty" html
 					//for now you can crack open this file and manually add fields_ids and/or field types to the respective arrays
 					//to prevent xss_clean
 					//i had some people complain about not being able to submit <object>'s
-					$xss_clean = ( ! in_array($field['field_id'], $this->skip_xss_field_ids) && ! in_array($field['field_type'], $this->skip_xss_fieldtypes));
+					$xss_clean = ( ! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
 
-					$_POST['field_id_'.$field['field_id']] = ee()->input->post($key, $xss_clean);
+					$_POST['field_id_'.$field->field_id] = ee()->input->post($key, $xss_clean);
+
+					if ( ! is_array($_POST[$key]))
+					{
+						$spam_content .= " " . ee()->input->post($key, TRUE);
+					}
 
 					//auto set format if not POSTed
-					$fmt = $field['field_fmt'];
+					$fmt = $field->field_fmt;
 
-					if (ee()->input->post('field_ft_'.$field['field_id']) !== FALSE)
+					if (ee()->input->post('field_ft_'.$field->field_id) !== FALSE)
 					{
-						$fmt = ee()->input->post('field_ft_'.$field['field_id'], TRUE);
+						$fmt = ee()->input->post('field_ft_'.$field->field_id, TRUE);
 					}
-					elseif (ee()->input->post($field['field_name'].'_ft') !== FALSE)
+					elseif (ee()->input->post($field->field_name.'_ft') !== FALSE)
 					{
-						$fmt = ee()->input->post($field['field_name'].'_ft', TRUE);
+						$fmt = ee()->input->post($field->field_name.'_ft', TRUE);
 					}
 
-					$_POST['field_ft_'.$field['field_id']] = $fmt;
+					$_POST['field_ft_'.$field->field_id] = $fmt;
 				}
-				elseif (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
+				elseif (preg_match('/^'.$field->field_name.'_(.+)/', $key, $match))
 				{
 					//also change utility POST fields, ie my_field_field_directory to field_id_X_directory
-					$_POST['field_id_'.$field['field_id'].'_'.$match[1]] = ee()->input->post($key, TRUE);
+					$_POST['field_id_'.$field->field_id.'_'.$match[1]] = ee()->input->post($key, TRUE);
 				}
 			}
+
 		}
 
 		foreach ($this->title_fields as $field)
@@ -1565,7 +1559,7 @@ GRID_FALLBACK;
 						$_POST[$field] = ee()->localize->human_time();
 					}
 				}
-				elseif ($field == 'versioning_enabled' AND $this->channel['enable_versioning'] == 'y')
+				elseif ($field == 'versioning_enabled' AND $this->channel('enable_versioning') == 'y')
 				{
 					$_POST[$field] = 'y';
 				}
@@ -1627,21 +1621,14 @@ GRID_FALLBACK;
 			ee()->api_channel_fields->settings[$field_id] = $settings;
 		}
 
-		//moved to before custom field processing,
-		//since we are now using the call_field_validation rule
-		if ( ! ee()->form_validation->run())
-		{
-			$this->field_errors = (is_array($this->field_errors)) ? array_merge($this->field_errors, ee()->form_validation->_error_array) : ee()->form_validation->_error_array;
-		}
-
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
 		// the field_id_# value, we need to sync up our data.
 		foreach ($this->custom_fields as $i => $field)
 		{
-			$field_id = 'field_id_'.$field['field_id'];
-			$field_name = $field['field_name'];
+			$field_id = 'field_id_'.$field->field_id;
+			$field_name = $field->field_name;
 
 			if (isset($_POST[$field_id]) && isset($_POST[$field_name]))
 			{
@@ -1659,18 +1646,44 @@ GRID_FALLBACK;
 
 			if (in_array($this->channel('channel_id'), ee()->functions->fetch_assigned_channels()))
 			{
-				if ($this->entry('entry_id'))
+				// Lastly we check for spam before inserting the data
+				$is_spam = ee('Spam')->isSpam($spam_content);
+
+				if ($is_spam === FALSE)
 				{
-					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
+					$entry_data = array_filter(
+						$_POST,
+						function($v) { return ! is_null($v); }
+					);
+
+					$this->entry->set($entry_data);
+
+					$result = $this->entry->validate();
+
+					if ($result->isValid())
+					{
+						$this->entry->save();
+					}
+					else
+					{
+						$errors = $result->getAllErrors();
+
+						// only show the first error for each field to match CI's old behavior
+						$this->field_errors = array_map('current', $errors);
+					}
 				}
 				else
 				{
-					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, $this->channel('channel_id'));
-				}
+					if ($this->entry('entry_id'))
+					{
+						$spam_data = array($_POST, NULL, $this->entry('entry_id'));
+					}
+					else
+					{
+						$spam_data = array($_POST, $this->channel('channel_id'));
+					}
 
-				if ( ! $submit)
-				{
-					$this->errors = ee()->api_channel_form_channel_entries->errors;
+					ee()->spam->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', $spam_data, $spam_content);
 				}
 			}
 			else
@@ -1719,7 +1732,7 @@ GRID_FALLBACK;
 
 		if ( ! $this->json && ($this->errors || $this->field_errors) && $this->error_handling == 'inline')
 		{
-			$this->entry = $_POST;
+			$this->entry->set($_POST);
 
 			$this->form_error = TRUE;
 
@@ -1729,24 +1742,16 @@ GRID_FALLBACK;
 
 				foreach ($this->custom_fields as $field)
 				{
-					if ($field['field_type'] == $field_type)
+					if ($field->field_type == $field_type)
 					{
 						foreach ($callbacks as $callback)
 						{
 							if (in_array($callback, $this->valid_callbacks))
 							{
-								$this->entry[$field['field_name']] = $this->entry['field_id_'.$field['field_id']] = call_user_func($callback, $this->entry($field['field_name']));
+								$this->entry[$field->field_name] = $this->entry['field_id_'.$field->field_id] = call_user_func($callback, $this->entry($field->field_name));
 							}
 						}
 					}
-				}
-			}
-
-			foreach ($this->date_fields as $field)
-			{
-				if ($this->entry($field) && ! is_numeric($this->entry($field)))
-				{
-					$this->entry[$field] = ee()->localize->string_to_timestamp($this->entry($field));
 				}
 			}
 
@@ -1770,8 +1775,15 @@ GRID_FALLBACK;
 
 		if ($this->errors OR $this->field_errors)
 		{
+			$field_errors = array();
+
+			foreach ($this->field_errors as $field => $error)
+			{
+				$field_errors[] = "<b>{$field}: </b>{$error}";
+			}
+
 			throw new Channel_form_exception(
-				array_merge($this->errors, $this->field_errors)
+				array_merge($this->errors, $field_errors)
 			);
 		}
 
@@ -1889,7 +1901,7 @@ GRID_FALLBACK;
 	 */
 	public function channel($key)
 	{
-		return (isset($this->channel[$key])) ? $this->channel[$key] : FALSE;
+		return $this->channel->getProperty($key);
 	}
 
 	// --------------------------------------------------------------------
@@ -1956,14 +1968,13 @@ GRID_FALLBACK;
 	 * @param	mixed $key
 	 * @return	void
 	 */
-	public function entry($key, $force_string = FALSE)
+	public function entry($key)
 	{
-		if (isset($this->entry[$key]))
+		if (isset($this->entry))
 		{
-			return $this->entry[$key];
+			return $this->entry->getProperty($key);
 		}
 
-		return ($force_string) ? '' : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -2032,49 +2043,47 @@ GRID_FALLBACK;
 	 * @param	mixed $url_title = FALSE
 	 * @return	void
 	 */
-	public function fetch_channel($channel_id, $channel_name = FALSE, $entry_id = FALSE, $url_title = FALSE)
+	public function fetch_channel($channel_id, $channel_name = FALSE)
 	{
-		//exit if already loaded
-		if ($this->channel('channel_id'))
+		//exit if already loaded - TODO when does this happen? overly defensive
+		if (isset($this->channel))
 		{
 			return;
 		}
+
+		$query = ee('Model')->get('Channel');
 
 		if ($channel_id)
 		{
-			ee()->db->where('exp_channels.channel_id', ee('Security/XSS')->clean($channel_id));
+			$query->filter('channel_id', $channel_id);
+		//	ee()->db->where('exp_channels.channel_id', ee('Security/XSS')->clean($channel_id));
 		}
 		elseif ($channel_name)
 		{
-			ee()->db->where('exp_channels.channel_name', ee('Security/XSS')->clean($channel_name));
-		}
-		elseif ($entry_id)
-		{
-			ee()->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
-			ee()->db->where('exp_channel_titles.entry_id', ee('Security/XSS')->clean($entry_id));
-		}
-		elseif ($url_title)
-		{
-			ee()->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
-			ee()->db->where('exp_channel_titles.url_title', ee('Security/XSS')->clean($url_title));
+			$query->filter('channel_name', $channel_name);
+		//	ee()->db->where('exp_channels.channel_name', ee('Security/XSS')->clean($channel_name));
 		}
 		else
 		{
-			return;
+			throw new Channel_form_exception(lang('channel_form_no_channel'));
 		}
 
 		//get field group and limit
-		ee()->db->where('channels.site_id', $this->site_id);
-		ee()->db->limit(1);
+		$query->filter('Channel.site_id', $this->site_id);
 
-		$query = ee()->db->get('channels');
+		$channel = $query->first();
 
-		if ( ! $query->num_rows())
+		// ee()->db->where('channels.site_id', $this->site_id);
+		// ee()->db->limit(1);
+
+		// $query = ee()->db->get('channels');
+
+		if ( ! isset($channel))
 		{
-			return;
+			throw new Channel_form_exception(lang('channel_form_unknown_channel'));
 		}
 
-		$this->channel = $query->row_array();
+		$this->channel = $channel;
 
 		if ( ! empty(ee()->TMPL))
 		{
@@ -2093,52 +2102,17 @@ GRID_FALLBACK;
 	 */
 	public function fetch_custom_fields()
 	{
-		//exit if already loaded, or if there is no field group
-		if ($this->custom_fields || ! $this->channel('field_group'))
+		$fields = $this->channel->getCustomFields();
+
+		foreach ($fields as $field)
 		{
-			return;
-		}
+			$this->custom_fields[$field->field_name] = $field;
+			$this->custom_field_names[$field->field_id] = $field->field_name;
 
-		ee()->load->model('channel_model');
-
-		$query = ee()->channel_model->get_channel_fields($this->channel('field_group'));
-
-		foreach ($query->result_array() as $row)
-		{
-			$this->custom_fields[$row['field_name']] = $row;
-
-			foreach ($this->unserialize($row['field_settings'], TRUE) as $key => $value)
-			{
-				$this->custom_fields[$row['field_name']][$key] = $value;
-			}
-
-			$this->custom_field_names[$row['field_id']] = $row['field_name'];
-
-			if (in_array($row['field_type'], $this->file_fields))
+			if (in_array($field->field_type, $this->file_fields))
 			{
 				$this->file = TRUE;
 			}
-		}
-
-		//prepare the channel fields api
-		//which is use to trigger fieldtype methods,
-		//namely save and display_field
-		ee()->load->library('api');
-
-		ee()->legacy_api->instantiate('channel_fields');
-
-		foreach ($this->custom_fields as $field)
-		{
-			if ( ! array_key_exists($field['field_type'], ee()->api_channel_fields->field_types))
-			{
-				ee()->api_channel_fields->field_types[$field['field_type']] = ee()->api_channel_fields->include_handler($field['field_type']);
-			}
-
-			ee()->api_channel_fields->custom_fields[$field['field_id']] = $field['field_type'];
-
-			ee()->api_channel_fields->set_settings($field['field_id'], $field);
-
-			ee()->api_channel_fields->setup_handler($field['field_id']);
 		}
 	}
 
@@ -2153,68 +2127,30 @@ GRID_FALLBACK;
 	 */
 	public function fetch_entry($entry_id, $url_title = FALSE)
 	{
-		//exit if already loaded, or no entry_id/url_title
-		if ($this->entry || ( ! $entry_id && ! $url_title))
+		if ( ! $entry_id && ! $url_title)
 		{
+			$this->entry = ee('Model')->make('ChannelEntry');
+			$this->entry->Channel = $this->channel;
 			return;
 		}
 
-		//fetch channel data, including custom fields
-		if ( ! $this->channel('channel_id'))
+		$query = ee('Model')->get('ChannelEntry')->with('Channel');
+
+		if ($entry_id)
 		{
-			$this->fetch_channel(NULL, NULL, $entry_id, $url_title);
+			$query->filter('entry_id', $entry_id);
+		}
+		elseif ($url_title)
+		{
+			$query->filter('url_title', $url_title);
 		}
 
-		//get an array with entry title data, custom field data (with field_id_X AND short name keys)
-		$select = 'exp_channel_titles.*, exp_channel_data.*';
+		$entry = $query->first();
 
-		foreach ($this->custom_fields as $field)
+		if (isset($entry))
 		{
-			$select .= ', exp_channel_data.`field_id_'.$field['field_id'].'` as `'.$field['field_name'].'`';
+			$this->entry = $entry;
 		}
-
-		ee()->db->select($select, FALSE);
-		ee()->db->from('exp_channel_titles');
-		ee()->db->join('exp_channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id');
-		ee()->db->where('exp_channel_titles.site_id', $this->site_id);
-		ee()->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), ee('Security/XSS')->clean(($entry_id) ? $entry_id : $url_title));
-		ee()->db->where('exp_channel_data.channel_id', $this->channel('channel_id'));
-		ee()->db->limit(1);
-
-		$query = ee()->db->get();
-
-		if ($query->num_rows())
-		{
-			$row = $query->row_array();
-
-			$row['categories'] = array();
-
-			ee()->db->select('cat_id');
-
-			ee()->db->where('entry_id', $row['entry_id']);
-
-			$cat_query = ee()->db->get('exp_category_posts');
-
-			foreach ($cat_query->result_array() as $cat_row)
-			{
-				$row['categories'][] = $cat_row['cat_id'];
-			}
-
-			ee()->legacy_api->instantiate('channel_fields');
-
-			foreach ($this->custom_fields as $field=>$definition)
-			{
-				if ($definition['field_type'] == 'text')
-				{
-					ee()->api_channel_fields->include_handler($definition['field_type']);
-					$handler = ee()->api_channel_fields->setup_handler($definition['field_type'], TRUE);
-					$row[$field] = $handler->_format_number($row[$field], $definition['field_content_type']);
-				}
-			}
-			$this->entry = $row;
-		}
-
-		unset($query);
 	}
 
 	// --------------------------------------------------------------------
@@ -2305,13 +2241,6 @@ GRID_FALLBACK;
 					$this->settings[$column][$site_id][$channel_id] = $value;
 				}
 			}
-
-			// safecracker legacy setting names for extensions that might
-			// be trying to access them.
-
-			$this->settings['logged_out_member_id'] =& $this->settings['default_author'];
-			$this->settings['override_status'] =& $this->settings['default_status'];
-			$this->settings['allow_guests'] =& $this->settings['allow_guest_posts'];
 		}
 	}
 
@@ -2332,7 +2261,7 @@ GRID_FALLBACK;
 		}
 		else
 		{
-			$this->site_id = ($site_id) ? $site_id : ee()->config->item('site_id');
+			$this->site_id = ($site_id) ?: ee()->config->item('site_id');
 		}
 	}
 
@@ -2598,6 +2527,10 @@ GRID_FALLBACK;
 		}
 	}
 
+	public function get_field($field_name)
+	{
+		return $this->custom_fields[$field_name];
+	}
 
 	// --------------------------------------------------------------------
 
@@ -2618,13 +2551,15 @@ GRID_FALLBACK;
 
 		if (isset($this->custom_fields[$field_name]))
 		{
+			$field = $this->custom_fields[$field_name];
+
 			if ($key)
 			{
-				return (isset($this->custom_fields[$field_name][$key])) ? $this->custom_fields[$field_name][$key] : array();
+				return $field->getProperty($key, array());
 			}
 			else
 			{
-				return $this->custom_fields[$field_name];
+				return $field->getValues();
 			}
 		}
 
@@ -2667,37 +2602,37 @@ GRID_FALLBACK;
 	 */
 	public function get_field_options($field_name)
 	{
-		$field = $this->get_field_data($field_name);
+		$field = $this->get_field($field_name);
 
 		$options = array();
 
-		if (in_array($field['field_type'], $this->option_fields))
+		if (in_array($field->field_type, $this->option_fields))
 		{
-			if ($field['field_pre_populate'] == 'y')
+			if ($field->field_pre_populate == 'y')
 			{
-				$query = ee()->db->select('field_id_'.$field['field_pre_field_id'])
+				$query = ee()->db->select('field_id_'.$field->field_pre_field_id)
 						->distinct()
 						->from('channel_data')
-						->where('channel_id', $field['field_pre_channel_id'])
-						->where('field_id_'.$field['field_pre_field_id'].' !=', '')
+						->where('channel_id', $field->field_pre_channel_id)
+						->where('field_id_'.$field->field_pre_field_id.' !=', '')
 						->get();
 
-				$current = explode('|', $this->entry($field['field_name']));
+				$current = explode('|', $this->entry($field->field_name));
 
 				foreach ($query->result_array() as $row)
 				{
 					$options[] = array(
-						'option_value' => $row['field_id_'.$field['field_pre_field_id']],
-						'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ' , substr($row['field_id_'.$field['field_pre_field_id']], 0, 110)),
-						'selected' => (in_array($row['field_id_'.$field['field_pre_field_id']], $current)) ? ' selected="selected"' : '',
-						'checked' => (in_array($row['field_id_'.$field['field_pre_field_id']], $current)) ? ' checked="checked"' : '',
+						'option_value' => $row['field_id_'.$field->field_pre_field_id],
+						'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ' , substr($row['field_id_'.$field->field_pre_field_id], 0, 110)),
+						'selected' => (in_array($row['field_id_'.$field->field_pre_field_id], $current)) ? ' selected="selected"' : '',
+						'checked' => (in_array($row['field_id_'.$field->field_pre_field_id], $current)) ? ' checked="checked"' : '',
 					);
 				}
 			}
 
-			elseif ($field['field_list_items'])
+			elseif ($field->field_list_items)
 			{
-				foreach (preg_split('/[\r\n]+/', $field['field_list_items']) as $row)
+				foreach (preg_split('/[\r\n]+/', $field->field_list_items) as $row)
 				{
 					$row = trim($row);
 
@@ -2717,9 +2652,9 @@ GRID_FALLBACK;
 				}
 			}
 
-			elseif ( ! in_array($field['field_type'], $this->native_option_fields))
+			elseif ( ! in_array($field->field_type, $this->native_option_fields))
 			{
-				$field_settings = $this->unserialize($field['field_settings'], TRUE);
+				$field_settings = $field->field_settings;
 
 				if ( ! empty($field_settings['options']))
 				{
@@ -2738,7 +2673,7 @@ GRID_FALLBACK;
 			}
 		}
 
-		elseif ($field['field_type'] == 'relationship')
+		elseif ($field->field_type == 'relationship')
 		{
 			$order = array();
 			$entries = array();
@@ -2767,7 +2702,7 @@ GRID_FALLBACK;
 				}
 			}
 
-			$settings = $this->get_field_data($field_name);
+			$settings = $this->get_field_settings($field_name);
 
 			$limit_channels = $settings['channels'];
 			$limit_categories = $settings['categories'];
@@ -2915,14 +2850,14 @@ GRID_FALLBACK;
 	 * @param	mixed $unserialize = TRUE
 	 * @return	void
 	 */
-	public function get_field_settings($field_name, $unserialize = TRUE)
+	public function get_field_settings($field_name)
 	{
 		if ( ! $field_settings = $this->get_field_data($field_name, 'field_settings'))
 		{
 			return array();
 		}
 
-		return ($unserialize) ? $this->unserialize($field_settings, TRUE) : $field_settings;
+		return $field_settings;
 	}
 
 	// --------------------------------------------------------------------
@@ -2955,7 +2890,6 @@ GRID_FALLBACK;
 		$this->initialized = TRUE;
 
 		$this->categories = array();
-		$this->channel = array();
 		$this->checkboxes = array(
 			'sticky',
 			'allow_comments'
@@ -3016,7 +2950,6 @@ GRID_FALLBACK;
 		);
 
 		$this->edit = FALSE;
-		$this->entry = array();
 		$this->error_handling = 'message';
 		$this->errors = array();
 		$this->field_errors = array();
@@ -3093,7 +3026,7 @@ GRID_FALLBACK;
 		$this->fetch_settings();
 
 		$this->option_fields = $this->native_option_fields;
-
+/*
 		ee()->config->load('config');
 
 		if (is_array(ee()->config->item('safecracker_option_fields')))
@@ -3122,6 +3055,7 @@ GRID_FALLBACK;
 		{
 			$this->extra_js = ee()->config->item('safecracker_field_extra_js');
 		}
+	*/
 	}
 
 	// --------------------------------------------------------------------

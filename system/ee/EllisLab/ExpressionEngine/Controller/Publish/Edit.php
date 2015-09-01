@@ -72,7 +72,9 @@ class Edit extends AbstractPublishController {
 				'column_title' => array(
 					'encode' => FALSE
 				),
-				'column_comment_total',
+				'column_comment_total' => array(
+					'encode' => FALSE
+				),
 				'column_entry_date',
 				'column_status' => array(
 					'type'	=> Table::COL_STATUS
@@ -132,7 +134,7 @@ class Edit extends AbstractPublishController {
 
 			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
 
-			if ($entry->comment_total > 1)
+			if ($entry->comment_total > 0)
 			{
 				$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 			}

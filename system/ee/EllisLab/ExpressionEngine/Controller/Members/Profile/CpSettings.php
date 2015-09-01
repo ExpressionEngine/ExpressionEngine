@@ -65,11 +65,15 @@ class CpSettings extends Profile {
 		}
 		else
 		{
-			$field['allowed_channels'] = ee('Model')->get('Channel')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('channel_id', 'IN', array_keys(ee()->session->userdata['assigned_channels']))
-				->all()
-				->getDictionary('channel_id', 'channel_title');
+			$allowed_channels = ee('Model')->get('Channel')
+				->filter('site_id', ee()->config->item('site_id'));
+
+			if ( ! empty(ee()->session->userdata['assigned_channels']))
+			{
+				$allowed_channels->filter('channel_id', 'IN', array_keys(ee()->session->userdata['assigned_channels']));
+			}
+
+			$field['allowed_channels'] = $allowed_channels->all()->getDictionary('channel_id', 'channel_title');
 
 			if (empty($field['allowed_channels']))
 			{

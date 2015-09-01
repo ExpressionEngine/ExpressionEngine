@@ -72,6 +72,10 @@ class Site extends Model {
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
 		),
+		'Templates' => array(
+			'model' => 'Template',
+			'type' => 'hasMany'
+		),
 		'SearchLogs' => array(
 			'model' => 'SearchLog',
 			'type' => 'hasMany'
@@ -84,6 +88,10 @@ class Site extends Model {
 			'model' => 'Channel',
 			'type' => 'hasMany'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		),
 		'Files' => array(
 			'model' => 'File',
 			'type' => 'hasMany'
@@ -91,12 +99,24 @@ class Site extends Model {
 		'UploadDestinations' => array(
 			'model' => 'UploadDestination',
 			'type' => 'hasMany'
-		)
+		),
+		'MemberGroups' => array(
+			'model' => 'MemberGroup',
+			'type' => 'hasMany'
+		),
+		'HTMLButtons' => array(
+			'model' => 'HTMLButton',
+			'type' => 'hasMany'
+		),
 	);
 
 	protected static $_validation_rules = array(
 		'site_name'  => 'required|validateShortName|unique',
 		'site_label' => 'required',
+	);
+
+	protected static $_events = array(
+		'beforeInsert'
 	);
 
 	// Properties
@@ -119,6 +139,19 @@ class Site extends Model {
 		}
 
 		return TRUE;
+	}
+
+	public function onBeforeInsert()
+	{
+		$current_number_of_sites = $this->getFrontend()->get('Site')->count();
+
+		$can_add = ee('License')->getEELicense()
+			->canAddSites($current_number_of_sites);
+
+		if ( ! $can_add)
+		{
+			throw new \Exception("Site limit reached.");
+		}
 	}
 
 }

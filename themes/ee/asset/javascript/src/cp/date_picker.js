@@ -124,7 +124,13 @@ $(document).ready(function(){
 			this.calendars = [];
 
 			if ($('.date-picker-wrap').length == 0) {
-				$('body').append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');
+				var parent = $('body');
+
+				if ($('#cform').length) {
+					parent = $('#cform');
+				}
+
+				parent.append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');
 
 				// listen for clicks on elements classed with .date-picker-next
 				$('.date-picker-clip-inner').on('click', '.date-picker-next', function(e){
@@ -180,7 +186,14 @@ $(document).ready(function(){
 			}
 
 			if ($(this.element).val()) {
-				d = new Date($(this.element).attr('data-timestamp') * 1000);
+				var timestamp = $(this.element).attr('data-timestamp');
+
+				if ( ! timestamp) {
+					d = new Date(Date.parse($(this.element).val()));
+				} else {
+					d = new Date(timestamp * 1000);
+				}
+
 				selected = d.getUTCDate();
 				year  = d.getUTCFullYear();
 				month = d.getUTCMonth();

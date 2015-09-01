@@ -13,7 +13,6 @@ $lang = array(
 'filter_by_status' => 'status',
 'custom_date' => 'custom date',
 'custom_limit' => 'custom limit',
-'clear_filters' => 'Clear filters',
 'all_entries' => 'All %d entries',
 
 'column_entry_id' => 'ID#',
@@ -37,8 +36,6 @@ $lang = array(
 'btn_create_new_entry_in_channel' => 'Create New in %s',
 
 'btn_create_new' => 'Create New',
-
-'success' => 'Success',
 
 'entries_removed_desc' => 'The following entries were removed',
 
@@ -612,8 +609,6 @@ $lang = array(
 'image' => 'Image',
 
 'non_image' => 'Non-image',
-
-'success' => 'Success!',
 
 'you_have_uploaded' => 'You have uploaded the following file:',
 

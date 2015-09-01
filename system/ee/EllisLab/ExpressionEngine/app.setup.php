@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Profiler;
@@ -18,6 +19,7 @@ use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\Addons\Spam\Service\Spam;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -52,7 +54,6 @@ return array(
 		{
 			$grid = new Library\CP\GridInput(
 				$config,
-				ee()->view,
 				ee()->cp,
 				ee()->config,
 				ee()->javascript
@@ -116,6 +117,11 @@ return array(
 			return $frontend;
 		},
 
+		'Spam' => function($ee)
+		{
+			return new Spam();
+		},
+
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
@@ -169,6 +175,14 @@ return array(
 			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
+		},
+
+		'License' => function($ee)
+		{
+			$default_key_path = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
+			$default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
+
+			return new License\LicenseFactory($default_key);
 		},
 
 		'Model/Datastore' => function($ee)

@@ -109,25 +109,28 @@ $lang = array(
  * License & Registration
  */
 
-'license_and_reg_title' => 'License &amp; Registration Settings',
-
-'license_contact_name' => 'Account holder name',
-
-'license_contact_name_desc' => 'Name of individual or company that owns this license.',
-
-'license_contact' => 'Account holder Email',
-
-'license_contact_desc' => 'Contact Email for the account that owns this license.',
-
-'license_number' => 'License number',
-
-'license_number_desc' => 'Found on your <a href="%s">purchase management</a> page.',
+'license_and_registration' => 'License &amp; Registration',
+'license_and_registration_settings' => 'License &amp; Registration Settings',
 
 'license_updated' => 'License &amp; Registration Updated',
-
 'license_updated_desc' => 'Your license and registration information has been saved successfully.',
 
-'invalid_license_number' => 'The license number provided is not a valid license number.',
+'license_file_error' => 'License Invalid',
+'license_file_corrupt_license_file' => 'The license file provided is missing data.',
+'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
+'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'license_file_invalid_license_number' => 'The license file provided is invalid.',
+
+'license_file_fail' => 'License not saved',
+'license_file_permissions' => 'The license file could not be saved. Check the permissions on <b>%s</b>.',
+
+'license_file' => 'License file',
+'license_file_desc' => 'Found on your <a href="%s" rel="external">purchase management</a> page.',
+
+'site_limit' => 'Site limit',
+
+'features_limited' => 'Features Limited',
+'features_limited_desc' => 'The Core version of ExpressionEngine is feature limited. <a href="%s" rel="external">Upgrade today.</a>',
 
 /**
  * URLs and Path Settings
@@ -721,6 +724,23 @@ $lang = array(
 'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
 'banishment_message' => 'Message',
+
+/**
+ * HTML Buttons
+ */
+
+'create_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Created',
+'create_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been created.',
+
+'create_html_buttons_error' => 'Cannot Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+'create_html_buttons_error_desc' => 'We were unable to create this <abbr title="Hyper-Text Markup Language">HTML</abbr> button, please review and fix errors below.',
+
+'edit_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Updated',
+'edit_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been updated.',
+
+'edit_html_buttons_error' => 'Cannot Update <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+'edit_html_buttons_error_desc' => 'We were unable to update this <abbr title="Hyper-Text Markup Language">HTML</abbr> button, please review and fix errors below.',
+
 
 ''=>''
 );

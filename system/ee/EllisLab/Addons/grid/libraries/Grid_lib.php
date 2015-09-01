@@ -91,7 +91,13 @@ class Grid_lib {
 				$column_headings[$column['col_label']]['class'] = 'grid-mr';
 			}
 
-			$blank_column[] = $this->_publish_field_cell($column);
+			$blank_column[] = array(
+				'html' => $this->_publish_field_cell($column),
+				'attrs' => array(
+					'data-fieldtype' => $column['col_type'],
+					'data-column-id' => $column['col_id']
+				)
+			);
 		}
 		$grid->setColumns($column_headings);
 		$grid->setBlankRow($blank_column);

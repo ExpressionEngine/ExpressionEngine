@@ -655,13 +655,13 @@ class Rte_lib {
 
 		if ( ! defined('PATH_JQUERY'))
 		{
-			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$folder.'/jquery/');
+			define('PATH_JQUERY', PATH_THEMES.'asset/javascript/'.$folder.'/jquery/');
 		}
 
 		$types	= array(
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
-			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
+			'file'		=> PATH_THEMES.'asset/javascript/'.$folder.'/',
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_ADDONS
 		);

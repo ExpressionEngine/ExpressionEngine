@@ -76,7 +76,7 @@ class Settings extends CP_Controller {
 
 		if (ee()->addons_model->module_installed('pages'))
 		{
-			$list->addItem(lang('pages_settings'), ee('CP/URL')->make('settings/pages'));
+			$list->addItem(lang('pages_settings'), ee('CP/URL')->make('addons/settings/pages/settings'));
 		}
 
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));

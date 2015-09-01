@@ -456,7 +456,9 @@ class Comments extends AbstractPublishController {
 
 		$table->setColumns(
 			array(
-				'column_comment',
+				'column_comment' => array(
+					'encode' => FALSE
+				),
 				'column_comment_date',
 				'column_ip_address',
 				'column_status' => array(
