@@ -609,6 +609,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'can_access_cp',
 						'desc' => 'can_access_cp_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'can_access_cp' => array(
 								'type' => 'yes_no',
@@ -683,6 +684,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'channel_entry_actions',
 						'desc' => 'channel_entry_actions_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'channel_entry_actions' => array(
 								'type' => 'checkbox',
@@ -712,6 +714,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'allowed_actions',
 						'desc' => 'allowed_actions_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'member_actions' => array(
 								'type' => 'checkbox',
@@ -772,6 +775,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'can_admin_modules',
 						'desc' => 'can_admin_modules_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'can_admin_modules' => array(
 								'type' => 'inline_radio',
@@ -788,6 +792,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'addons_access',
 						'desc' => 'addons_access_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'addons_access' => array(
 								'type' => 'checkbox',
@@ -801,6 +806,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'access_tools',
 						'desc' => 'access_tools_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'access_tools' => array(
 								'type' => 'checkbox',
