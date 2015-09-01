@@ -486,6 +486,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'choose_avatar' => 'Choose from library',
 
+'update_avatar_path' => '</em><em>Please update your <a href="%s">avatar</a> upload settings.',
+
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
 
 'link_avatar' => ' Link to avatar',
