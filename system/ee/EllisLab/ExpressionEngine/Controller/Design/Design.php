@@ -181,13 +181,13 @@ class Design extends AbstractDesignController {
 
 	protected function _sync_from_files()
 	{
-		if ($this->config->item('save_tmpl_files') != 'y' || $this->config->item('tmpl_file_basepath') == '')
+		if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('tmpl_file_basepath') == '')
 		{
 			return FALSE;
 		}
 
-		$this->load->library('api');
-		$this->legacy_api->instantiate('template_structure');
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('template_structure');
 
 		$groups = ee('Model')->get('TemplateGroup')->with('Templates')->all();
 		$group_ids_by_name = $groups->getDictionary('group_name', 'group_id');
@@ -202,9 +202,9 @@ class Design extends AbstractDesignController {
 			);
 		}
 
-		$basepath = $this->config->slash_item('tmpl_file_basepath');
-		$basepath .= '/'.$this->config->item('site_short_name');
-		$this->load->helper('directory');
+		$basepath = ee()->config->slash_item('tmpl_file_basepath');
+		$basepath .= '/'.ee()->config->item('site_short_name');
+		ee()->load->helper('directory');
 		$files = directory_map($basepath, 0, 1);
 
 		if ($files !== FALSE)
@@ -234,7 +234,7 @@ class Design extends AbstractDesignController {
 				// if the template group doesn't exist, make it!
 				if ( ! isset($existing[$group]))
 				{
-					if ( ! $this->legacy_api->is_url_safe($group_name))
+					if ( ! ee()->legacy_api->is_url_safe($group_name))
 					{
 						continue;
 					}
@@ -247,7 +247,7 @@ class Design extends AbstractDesignController {
 					$data = array(
 						'group_name'		=> $group_name,
 						'is_site_default'	=> 'n',
-						'site_id'			=> $this->config->item('site_id')
+						'site_id'			=> ee()->config->item('site_id')
 					);
 
 					$new_group = ee('Model')->make('TemplateGroup', $data)->save();
@@ -279,21 +279,21 @@ class Design extends AbstractDesignController {
 						continue;
 					}
 					$ext = strtolower(ltrim(strrchr($template, '.'), '.'));
-					if ( ! in_array('.'.$ext, $this->api_template_structure->file_extensions))
+					if ( ! in_array('.'.$ext, ee()->api_template_structure->file_extensions))
 					{
 						continue;
 					}
 
 					$ext_length = strlen($ext) + 1;
 					$template_name = substr($template, 0, -$ext_length);
-					$template_type = array_search('.'.$ext, $this->api_template_structure->file_extensions);
+					$template_type = array_search('.'.$ext, ee()->api_template_structure->file_extensions);
 
 					if (isset($existing[$group][$template_name]))
 					{
 						continue;
 					}
 
-					if ( ! $this->legacy_api->is_url_safe($template_name))
+					if ( ! ee()->legacy_api->is_url_safe($template_name))
 					{
 						continue;
 					}
@@ -308,9 +308,9 @@ class Design extends AbstractDesignController {
 						'template_name'			=> $template_name,
 						'template_type'			=> $template_type,
 						'template_data'			=> file_get_contents($basepath.'/'.$group.'/'.$template),
-						'edit_date'				=> $this->localize->now,
-						'last_author_id'		=> $this->session->userdata['member_id'],
-						'site_id'				=> $this->config->item('site_id')
+						'edit_date'				=> ee()->localize->now,
+						'last_author_id'		=> ee()->session->userdata['member_id'],
+						'site_id'				=> ee()->config->item('site_id')
 					 );
 
 					// do it!
@@ -326,10 +326,10 @@ class Design extends AbstractDesignController {
 						'group_id'				=> $group_id,
 						'template_name'			=> 'index',
 						'template_data'			=> '',
-						'edit_date'				=> $this->localize->now,
+						'edit_date'				=> ee()->localize->now,
 						'save_template_file'	=> 'y',
-						'last_author_id'		=> $this->session->userdata['member_id'],
-						'site_id'				=> $this->config->item('site_id')
+						'last_author_id'		=> ee()->session->userdata['member_id'],
+						'site_id'				=> ee()->config->item('site_id')
 					 );
 
 					ee('Model')->make('Template', $data)->save();
