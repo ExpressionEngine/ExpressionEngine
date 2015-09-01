@@ -2,6 +2,9 @@
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
+
+
+
 //use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 //use EllisLab\ExpressionEngine\Module\Member\Model;
 
@@ -447,9 +450,9 @@ class Wiki_mcp {
 		}
 		else
 		{
-			$wiki->WikiNamespaces = ee('Model')->get('WikiNamespaces', $existing_ids)->all();
+			$wiki->WikiNamespaces = ee('Model')->get('wiki:WikiNamespace', $existing_ids)->all();
 		}
-
+		
 		$validate = array();
 
 		foreach ($wiki->WikiNamespaces as $model)
@@ -460,10 +463,11 @@ class Wiki_mcp {
 			$validate[$row_id] = $model;
 		}
 
+
 		foreach ($new_ids as $row_id => $columns)
 		{
-			$model = ee('Model')->make('FileDimension', $columns);
-			$upload_destination->FileDimensions[] = $model;
+			$model = ee('Model')->make('wiki:WikiNamespace', $columns);
+			$wiki->WikiNamespaces[] = $model;
 
 			$validate[$row_id] = $model;
 		}
@@ -474,11 +478,11 @@ class Wiki_mcp {
 
 			if ( ! $result->isValid())
 			{
-				$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
+				$this->wiki_errors['namespaces'][$row_id] = $result->renderErrors();
 			}
 		}
 
-		return empty($this->upload_errors);
+		return empty($this->wiki_errors);
 	}
 
 
@@ -772,11 +776,11 @@ class Wiki_mcp {
 		if ( ! empty($namespaces))
 		{
 			$data = array();
-
+//echo '<pre>'; print_r($namespaces);
 			foreach($namespaces as $namespace)
 			{
 				$data[] = array(
-					'attrs' => array('row_id' => $namespace['id']),
+					'attrs' => array('row_id' => $namespace['namespace_id']),
 					'columns' => $this->getGridRow($member_choices, $namespace),
 				);
 			}

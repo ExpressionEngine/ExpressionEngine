@@ -37,7 +37,18 @@ class Revision extends Model {
 	protected static $_relationships = array(
 		'Page' => array(
 			'type' => 'belongsTo'
-		)
+		),
+       'RevisionAuthor' => array(
+            'type'     => 'belongsTo',
+            'from_key' => 'revision_author',
+            'to_key'   => 'member_id',
+            'model'    => 'ee:Member',
+            'weak'     => TRUE,
+            'inverse' => array(
+                'name' => 'Revision',
+                'type' => 'hasMany'
+            )
+        )	
 	);
 	
 

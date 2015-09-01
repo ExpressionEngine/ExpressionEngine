@@ -37,7 +37,18 @@ class Upload extends Model {
 	protected static $_relationships = array(
 		'Wiki' => array(
 			'type' => 'belongsTo'
-		)
+		),
+        'UploadAuthor' => array(
+            'type'     => 'belongsTo',
+            'from_key' => 'upload_author',
+            'to_key'   => 'member_id',
+            'model'    => 'ee:Member',
+            'weak'     => TRUE,
+            'inverse' => array(
+                'name' => 'Upload',
+                'type' => 'hasMany'
+            )
+        )	
 	);	
 
 	protected $wiki_upload_id;
