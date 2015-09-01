@@ -812,25 +812,11 @@ class Cp {
 
 		foreach ($quick_links as $ql)
 		{
-			if (strncmp($ql['link'], ee()->config->item('cp_url'), $len) == 0)
-			{
-				$l = str_replace(ee()->config->item('cp_url'), '', $ql['link']);
-				$l = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $l);
-
-				$link[$count] = array(
-					'link'		=> BASE.AMP.$l,
-					'title'		=> $ql['title'],
-					'external'	=> FALSE
-				);
-			}
-			else
-			{
-				$link[$count] = array(
-					'link'		=> $ql['link'],
-					'title'		=> $ql['title'],
-					'external'	=> TRUE
-				);
-			}
+			$link[$count] = array(
+				'link'		=> ee('CP/URL')->makeFromString($ql['link']),
+				'title'		=> $ql['title'],
+				'external'	=> TRUE
+			);
 
 			$count++;
 		}
