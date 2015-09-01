@@ -464,7 +464,7 @@ $lang = array(
 
 "can_view_online_system" => "Online",
 
-"can_view_offline_system" => "Offline - Not recommended",
+"can_view_offline_system" => "Offline - <i>Not recommended</i>",
 
 "mbr_account_privs" => "Member Account Privileges",
 
