@@ -276,7 +276,7 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->encode())),
+						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode())),
 						'title' => lang('install'),
 						'class' => 'add'
 					)
@@ -312,7 +312,7 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->encode())),
+							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode())),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -343,7 +343,7 @@ class Addons extends CP_Controller {
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', ee('CP/URL')->getCurrentUrl()->encode());
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode());
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
