@@ -354,9 +354,7 @@ class Edit extends AbstractPublishController {
 			else
 			{
 				$vars['errors'] = $result;
-				// Hacking
-				ee()->load->library('form_validation');
-				ee()->form_validation->_error_array = $result->renderErrors();
+
 				ee('CP/Alert')->makeInline('entry-form')
 					->asIssue()
 					->withTitle(lang('edit_entry_error'))
