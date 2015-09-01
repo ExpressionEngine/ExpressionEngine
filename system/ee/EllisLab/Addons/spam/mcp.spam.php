@@ -44,7 +44,7 @@ class Spam_mcp {
 
 	/**
 	 * Controller for the index view
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -202,12 +202,15 @@ class Spam_mcp {
 			'file' => array('cp/addons/spam'),
 		));
 
-		return ee('View')->make('spam:index')->render($data);
+		return array(
+			'body'       => ee('View')->make('spam:index')->render($data),
+			'heading' => lang('all_spam')
+		);
 	}
 
 	/**
 	 * Controller method for the spam module settings page
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -312,7 +315,7 @@ class Spam_mcp {
 					->withTitle(lang('success'))
 					->addToBody(lang('spam_settings_updated'))
 					->defer();
-				
+
 				// Delete the classifier from shared memory if our settings changed
 				ee('spam:Training', 'default')->deleteClassifier();
 			}
@@ -336,7 +339,13 @@ class Spam_mcp {
 		$vars['save_btn_text'] = 'btn_save_settings';
 		$vars['save_btn_text_working'] = 'btn_saving';
 
-		return ee('View')->make('spam:form')->render(array('data' => $vars));
+		return array(
+			'body'       => ee('View')->make('spam:form')->render(array('data' => $vars)),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/spam')->compile() => lang('spam')
+			),
+			'heading' => lang('spam_settings')
+		);
 	}
 
 	/**
@@ -345,8 +354,8 @@ class Spam_mcp {
 	 * and then clears that entry from the spam trap. Everywhere that uses the
 	 * spam module is reponsible for providing it's own callback when it calls
 	 * the moderate method.
-	 * 
-	 * @param mixed $trapped 
+	 *
+	 * @param mixed $trapped
 	 * @access private
 	 * @return void
 	 */
@@ -379,8 +388,8 @@ class Spam_mcp {
 	/**
 	 * This method is used when content in the spam trap is confirmed as spam.
 	 * It will simply delete the content from the spam trap.
-	 * 
-	 * @param CoreCollection $trapped 
+	 *
+	 * @param CoreCollection $trapped
 	 * @access public
 	 * @return void
 	 */
@@ -399,7 +408,7 @@ class Spam_mcp {
 	/**
 	 * Moderate content. Will insert record into training table and either delete
 	 * or reinsert the data if it's spam or ham respectively.
-	 * 
+	 *
 	 * @param integer $id    ID of the content to moderate
 	 * @param boolean $class  The name of the class this was flagged as
 	 * @access public
@@ -425,8 +434,8 @@ class Spam_mcp {
 
 	/**
 	 * Grab the appropriate kernel ID or insert a new one
-	 * 
-	 * @param string $name The name of the kernel 
+	 *
+	 * @param string $name The name of the kernel
 	 * @access private
 	 * @return int The kernel ID
 	 */
@@ -437,8 +446,8 @@ class Spam_mcp {
 
 	/**
 	 * Returns an array of content flagged as spam
-	 * 
-	 * @param  integer $limit The number of entries to grab  
+	 *
+	 * @param  integer $limit The number of entries to grab
 	 * @access private
 	 * @return array   Array of content to moderate
 	 */
@@ -489,7 +498,7 @@ class Spam_mcp {
 
 	/**
 	 * Returns an array of member data for all our known spammers
-	 * 
+	 *
 	 * @access private
 	 * @return array
 	 */
@@ -503,8 +512,8 @@ class Spam_mcp {
 	}
 
 	/**
-	 * Returns an array of member data for known non-spammers 
-	 * 
+	 * Returns an array of member data for known non-spammers
+	 *
 	 * @access private
 	 * @return array
 	 */
@@ -519,7 +528,7 @@ class Spam_mcp {
 
 	/**
 	 * Returns an array of sources and classes for training
-	 * 
+	 *
 	 * @access private
 	 * @return array
 	 */
@@ -532,13 +541,13 @@ class Spam_mcp {
 
 	/**
 	 * Sets the maximum likelihood estimates for a given training set and kernel
-	 * 
+	 *
 	 * @param array $training Multi-dimensional array of training data:
 	 * 						  $class => array(
 	 * 						  	  array($feature0, $feauture1, ...),
 	 * 						  	  ...
 	 * 						  )
-	 * @param string $kernel 
+	 * @param string $kernel
 	 * @access private
 	 * @return void
 	 */
@@ -568,7 +577,7 @@ class Spam_mcp {
 			foreach ($query->result() as $parameter)
 			{
 				$parameters[$parameter->index] = $parameter;
-			}	
+			}
 
 			foreach ($zipped as $index => $feature)
 			{
@@ -619,7 +628,7 @@ class Spam_mcp {
 
 	/**
 	 * Loops through all content marked as spam/ham and re-trains the parameters
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -642,7 +651,7 @@ class Spam_mcp {
 		foreach ($query->result() as $term)
 		{
 			$existing[$term->term] = $term;
-		}	
+		}
 
 		foreach ($tfidf->vocabulary as $term => $count)
 		{
@@ -682,7 +691,7 @@ class Spam_mcp {
 		foreach ($query->result() as $vocab)
 		{
 			$vocabulary[$vocab->term] = $vocab->count;
-		}	
+		}
 
 		$tfidf->vocabulary = $vocabulary;
 
@@ -714,9 +723,9 @@ class Spam_mcp {
 	}
 
 	/**
-	 * This will create initial training data from everything that's in the 
+	 * This will create initial training data from everything that's in the
 	 * training table
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -733,13 +742,13 @@ class Spam_mcp {
 	}
 
 	/**
-	 * Use Knuth's algorithm to update the mean and variance as we go. This 
+	 * Use Knuth's algorithm to update the mean and variance as we go. This
 	 * should avoid any numerical instability due to cancellation
-	 * 
-	 * @param mixed $count 
-	 * @param mixed $mean 
-	 * @param mixed $variance 
-	 * @param mixed $data 
+	 *
+	 * @param mixed $count
+	 * @param mixed $mean
+	 * @param mixed $variance
+	 * @param mixed $data
 	 * @access private
 	 * @return void
 	 */

@@ -134,7 +134,7 @@ class Edit extends AbstractPublishController {
 
 			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
 
-			if ($entry->comment_total > 1)
+			if ($entry->comment_total > 0)
 			{
 				$comments = '(<a href="' . ee('CP/URL', 'publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 			}

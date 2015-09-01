@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -171,11 +169,23 @@ class Buttons extends Settings {
 	{
 		$this->base_url = ee('CP/URL', $this->index_url . '/create');
 
+		$this->button = ee('Model')->make('HTMLButton');
+
+		$last_button = ee('Model')->get('HTMLButton')
+			->fields('tag_order')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('tag_order', 'desc')
+			->first();
+
+		$this->button->tag_order = $last_button->tag_order + 1;
+
 		$values = array();
 
 		if (isset($this->predefined[$preset]))
 		{
+			$this->base_url = ee('CP/URL', $this->index_url . '/create/' . $preset);
 			$values = $this->predefined[$preset];
+			$this->button->classname = $values['classname'];
 		}
 
 		$vars['cp_page_title'] = lang('create_html_button');
@@ -255,27 +265,17 @@ class Buttons extends Settings {
 	 */
 	private function saveButtons($form)
 	{
-		if (empty($this->button))
-		{
-			$button = ee('Model')->make('HTMLButton');
-			$button->Member = $this->member;
-		}
-		else
-		{
-			$button = $this->button;
-		}
-
 		foreach ($form['sections'][0] as $sections)
 		{
 			foreach ($sections['fields'] as $field => $options)
 			{
-				$button->$field = ee()->input->post($field);
+				$this->button->$field = ee()->input->post($field);
 			}
 		}
 
-		$button->save();
+		$this->button->save();
 
-		ee()->session->set_flashdata('button_id', $button->id);
+		ee()->session->set_flashdata('button_id', $this->button->id);
 
 		return TRUE;
 	}
@@ -346,9 +346,11 @@ class Buttons extends Settings {
 			array(
 				 'field'   => 'accesskey',
 				 'label'   => 'lang:accesskey',
-				 'rules'   => 'required|valid_xss_check'
+				 'rules'   => 'valid_xss_check'
 			)
 		));
+
+		$action = $this->button->isNew() ? 'create' : 'edit';
 
 		if (AJAX_REQUEST)
 		{
@@ -359,13 +361,22 @@ class Buttons extends Settings {
 		{
 			if ($this->saveButtons($vars))
 			{
-				ee()->view->set_message('success', lang('html_button_updated'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang($action . '_html_buttons_success'))
+					->addToBody(sprintf(lang($action . '_html_buttons_success_desc'), $this->button->tag_name))
+					->defer();
+
 				ee()->functions->redirect(ee('CP/URL', $this->index_url));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_html_buttons_error'))
+				->addToBody(lang($action . '_html_buttons_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

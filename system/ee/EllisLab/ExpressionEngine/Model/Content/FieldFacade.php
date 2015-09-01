@@ -229,6 +229,12 @@ class FieldFacade {
 		return ee()->api_channel_fields->apply('post_save_settings', array($data));
 	}
 
+	public function delete()
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('delete', array(array($this->getContentId())));
+	}
+
 	public function getStatus()
 	{
 		$data = $this->initField();

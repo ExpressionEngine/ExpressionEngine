@@ -74,9 +74,13 @@ class Member extends Model {
 		'ChannelEntryAutosaves' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryAutosave',
-			'key' => 'author_id',
 			'to_key' => 'author_id'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment',
+			'to_key' => 'author_id'
+		)
 	);
 
 	// Properties

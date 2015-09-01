@@ -16,10 +16,13 @@
 	$(document).ready(function () {
 
 		$('.avatarPicker').FilePicker({
+			ajax: false,
+			filters: false,
 			callback: function(data, picker) {
+				data = data.find('img');
 				picker.modal.find('.m-close').click();
-				picker.input_value.val(data.file_id);
-				picker.input_img.html("<img src='" + data.path + "' />");
+				picker.input_value.val(data.attr('alt'));
+				picker.input_img.html("<img src='" + data.attr('src') + "' />");
 				picker.input_img.parents('fieldset').show();
 			}
 		});

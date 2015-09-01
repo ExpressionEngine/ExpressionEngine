@@ -105,6 +105,8 @@ class Settings extends Profile {
 		$dirs[] = $fp->link('Avatars', $directory->id, array(
 			'image' => 'avatar',
 			'input' => 'avatar_filename',
+			'hasFilters' => FALSE,
+			'selected' => $this->member->avatar_filename,
 			'class' => 'avatarPicker'
 		));
 
