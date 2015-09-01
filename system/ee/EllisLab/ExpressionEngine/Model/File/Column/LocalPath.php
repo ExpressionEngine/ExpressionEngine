@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @package		ExpressionEngine
  * @subpackage	Site\Preferences
  * @category	Model
- * @author		EllisLab Dev Team
+  @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
 class LocalPath extends CustomType {
@@ -34,7 +34,7 @@ class LocalPath extends CustomType {
 	protected $path;
 
 	/**
-	* Called when the column is fetched from db
+	* This is a stub, since we do the actual loading when the property is accessed.
 	*/
 	public function unserialize($db_data)
 	{
@@ -42,7 +42,7 @@ class LocalPath extends CustomType {
 	}
 
 	/**
-	* Called before the column is written to the db
+	* The value in the DB will always be the same path
 	*/
 	public function serialize($data)
 	{
@@ -56,6 +56,13 @@ class LocalPath extends CustomType {
 		return parent::load($db_data);
 	}
 
+	/**
+	 * readPath will instatiate a collection of file models for every file in 
+	 * this column's path.
+	 * 
+	 * @access protected
+	 * @return Collection  A Collection of File objects
+	 */
 	protected function readPath()
 	{
 		if (is_dir($this->path))
@@ -91,6 +98,14 @@ class LocalPath extends CustomType {
 		}
 	}
 
+	/**
+	 * We use a custom getter so we can load our files in when the property is 
+	 * read instead of when the column is instantiated.
+	 * 
+	 * @param mixed $property 
+	 * @access public
+	 * @return mixed
+	 */
 	public function __get($property)
 	{
 		if ($property == 'files')
@@ -101,6 +116,13 @@ class LocalPath extends CustomType {
 		return parent::__get($property);
 	}
 
+	/**
+	 * Override the string representation so we can still treat the sever_path 
+	 * as a string when we want to.
+	 * 
+	 * @access public
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return $this->path;
