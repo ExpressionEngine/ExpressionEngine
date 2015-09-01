@@ -17,7 +17,7 @@
 		// Single Relationship:
 		//   When the radio button is clicked, copy the chosen data into the
 		//   div.relate-wrap-chosen area
-		$('.relate-wrap input:radio').on('click', function (e) {
+		$('div.publish').on('click', '.relate-wrap input:radio', function (e) {
 			var relationship = $(this).closest('.relate-wrap');
 			var label = $(this).closest('label');
 			var chosen = $(this).closest('.scroll-wrap')
@@ -37,7 +37,7 @@
 		// Multiple Relationships
 		//   When checkbox is clicked, copy the chosen data into the second
 		//   div.relate-wrap div.scroll-wrap area
-		$('.relate-wrap input:checkbox').on('click', function (e) {
+		$('div.publish').on('click', '.relate-wrap input:checkbox', function (e) {
 			var relationship = $(this).closest('.relate-wrap')
 				.siblings('.relate-wrap')
 				.first();
@@ -70,7 +70,7 @@
 		});
 
 		// Removing Relationships
-		$('.relate-wrap').on('click', '.relate-manage a', function (e) {
+		$('div.publish').on('click', '.relate-wrap .relate-manage a', function (e) {
 			var choices = $(this).closest('.relate-wrap');
 			var chosen = $(this).closest('.relate-wrap');
 
@@ -138,7 +138,7 @@
 		}
 
 		// Filter by Channel
-		$('.relate-wrap .relate-actions .filters a[data-channel-id]').on('click', function (e) {
+		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
 			var empty = true;
 			var channelId = $(this).data('channel-id');
 			var matchesSearchValue = true;
@@ -174,7 +174,7 @@
 		});
 
 		// Search Relationships
-		$('.relate-wrap .relate-actions .relate-search').on('interact', function (e) {
+		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
 			var empty = true;
 			var searchText = $(this).val();
 			var matchesChannelFilter = true;
