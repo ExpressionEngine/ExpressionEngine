@@ -145,6 +145,13 @@ class URL implements \Serializable {
 	 */
 	public function compile()
 	{
+		// HACK: Really I'd rather have this outside the CP/URL class
+		// or to have a more general URL class
+		if (empty($this->path) && array_key_exists('URL', $this->qs))
+		{
+			return $this->base.'?URL=' . $this->qs['URL'];
+		}
+
 		$path = trim($this->path, '/');
 		$path = preg_replace('#^cp(/|$)#', '', $path);
 		$path = rtrim('?/cp/'.$path, '/');
