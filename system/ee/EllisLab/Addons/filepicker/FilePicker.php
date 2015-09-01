@@ -39,6 +39,11 @@ class FilePicker {
 			$qs['type'] = 'list';
 		}
 
+		if ( isset($data['hasFilters']))
+		{
+			$qs['hasFilters'] = $data['hasFilters'];
+		}
+
 		$href = ee('CP/URL', $this->controller, $qs);
 		$extra = "";
 		$class = "";
