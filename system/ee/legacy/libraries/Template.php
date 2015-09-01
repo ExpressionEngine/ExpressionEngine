@@ -2183,6 +2183,7 @@ class EE_Template {
 
 			$this->template_type = "404";
 			$template = explode('/', $site_404);
+			$this->layout_vars = array(); // Reset Layout vars
 			$this->fetch_and_parse($template[0], $template[1]);
 			$out = $this->parse_globals($this->final_template);
 			ee()->output->out_type = "404";
