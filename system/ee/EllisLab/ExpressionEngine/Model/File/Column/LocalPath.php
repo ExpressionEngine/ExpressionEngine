@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @package		ExpressionEngine
  * @subpackage	Site\Preferences
  * @category	Model
-  @author		EllisLab Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
 class LocalPath extends CustomType {
@@ -57,9 +57,9 @@ class LocalPath extends CustomType {
 	}
 
 	/**
-	 * readPath will instatiate a collection of file models for every file in 
+	 * readPath will instatiate a collection of file models for every file in
 	 * this column's path.
-	 * 
+	 *
 	 * @access protected
 	 * @return Collection  A Collection of File objects
 	 */
@@ -71,7 +71,7 @@ class LocalPath extends CustomType {
 			$directory = ee('Model')->get('UploadDestination')->fields('id')->filter('server_path', $this->path)->first();
 			$mime = new \EllisLab\ExpressionEngine\Library\Mime\MimeType();
 			$exclude = array('index.html');
-			
+
 			if ($dh = opendir($this->path))
 			{
 				while (($file = readdir($dh)) !== false)
@@ -99,10 +99,10 @@ class LocalPath extends CustomType {
 	}
 
 	/**
-	 * We use a custom getter so we can load our files in when the property is 
+	 * We use a custom getter so we can load our files in when the property is
 	 * read instead of when the column is instantiated.
-	 * 
-	 * @param mixed $property 
+	 *
+	 * @param mixed $property
 	 * @access public
 	 * @return mixed
 	 */
@@ -117,14 +117,14 @@ class LocalPath extends CustomType {
 	}
 
 	/**
-	 * Override the string representation so we can still treat the sever_path 
+	 * Override the string representation so we can still treat the sever_path
 	 * as a string when we want to.
-	 * 
+	 *
 	 * @access public
 	 * @return string
 	 */
 	public function __toString()
 	{
-		return $this->path;
+		return $this->path ?: '';
 	}
 }
