@@ -734,11 +734,7 @@ class Groups extends Members\Members {
 						'desc' => 'can_admin_design_desc',
 						'fields' => array(
 							'can_admin_design' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								),
+								'type' => 'yes_no',
 								'value' => element('can_admin_design', $values)
 							)
 						)
@@ -748,11 +744,7 @@ class Groups extends Members\Members {
 						'desc' => 'can_admin_templates_desc',
 						'fields' => array(
 							'can_admin_templates' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								),
+								'type' => 'yes_no',
 								'value' => element('can_admin_templates', $values)
 							)
 						)
@@ -778,11 +770,7 @@ class Groups extends Members\Members {
 						'caution' => TRUE,
 						'fields' => array(
 							'can_admin_modules' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								),
+								'type' => 'yes_no',
 								'value' => element('can_admin_modules', $values)
 							)
 						)
