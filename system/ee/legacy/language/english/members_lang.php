@@ -682,13 +682,13 @@ $lang = array(
 
 "can_post_in" => "Can post and edit entries in:",
 
-"can_edit_other_entries" => "Can edit entries authored by others",
+"can_delete_self_entries" => "Delete own entries",
 
-"can_assign_post_authors" => "Can change the author name when posting channel entries",
+"can_edit_other_entries" => "Edit entries, by others",
 
-"can_delete_self_entries" => "Can delete their own channel entries",
+"can_delete_all_entries" => "Delete entries, by others",
 
-"can_delete_all_entries" => "Can delete channel entries authored by others",
+"can_assign_post_authors" => "Change entry author",
 
 "cp_template_access_privs" => "Template Editing Privileges",
 
