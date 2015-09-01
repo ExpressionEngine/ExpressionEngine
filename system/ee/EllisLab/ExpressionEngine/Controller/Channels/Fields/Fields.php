@@ -55,17 +55,18 @@ class Fields extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/'.$group_id));
 		}
 
 		$group = ee('Model')->get('ChannelFieldGroup')
 			->filter('group_id', $group_id)
 			->first();
 
-		$base_url = ee('CP/URL', 'channels/fields');
+		$base_url = ee('CP/URL', 'channels/fields/'.$group_id);
 
 		$vars = array(
-			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id)
+			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id),
+			'group_id'   => $group->group_id
 		);
 
 		$fields = ee('Model')->get('ChannelField')
