@@ -57,10 +57,21 @@ class File_ft extends EE_Fieldtype {
 	function validate($data)
 	{
 		// Is it required but empty?
-		if ($this->settings['field_required'] && empty($data))
+		if (($this->settings['field_required'] === TRUE
+			|| $this->settings['field_required'] == 'y')
+				&& empty($data))
 		{
 			return array('value' => '', 'error' => lang('required'));
 		}
+
+		// Is it optional and empty?
+		if (($this->settings['field_required'] === FALSE
+			|| $this->settings['field_required'] == 'n')
+				&& empty($data))
+		{
+			return array('value' => '');
+		}
+
 
 		// Does it look like '{filedir_n}file_name.ext'?
 		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
