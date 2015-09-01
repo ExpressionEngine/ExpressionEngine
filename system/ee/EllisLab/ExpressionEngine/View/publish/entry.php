@@ -94,7 +94,7 @@
 					{
 						$field_class .= ' warned';
 					}
-					if ($errors->hasErrors($field->getName()))
+					if ($errors->hasErrors($field->getName()) && $field->getType() != 'grid')
 					{
 						$field_class .= ' invalid';
 					}
@@ -112,7 +112,7 @@
 				<?php else: ?>
 				<fieldset class="<?=$field_class?>">
 				<?php endif; ?>
-					<div class="setting-txt col <?=$width?>">
+					<div class="setting-txt col <?=$width?><?php if ($errors->hasErrors($field->getName()) && $field->getType() == 'grid'):?> invalid<?php endif ?>">
 						<h3<?php if ($field->isCollapsed()) echo ' class="field-closed"';?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>><?=$field->getInstructions()?></em>
 						<?php if ($field->get('field_id') == 'categories' &&
