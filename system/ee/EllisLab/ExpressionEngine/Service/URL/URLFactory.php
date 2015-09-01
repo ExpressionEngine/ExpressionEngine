@@ -99,15 +99,23 @@ class URLFactory {
 				// Remove the Session ID; the URL class will add it if needed.
 				unset($qs['S']);
 
-				$vars = array_keys($qs);
+				$arguments = array();
+				$path = NULL;
 
-				$i = array_search('cp/', $vars);
-				if ($i !== FALSE)
+				foreach ($qs as $key => $value)
 				{
-					$path = $vars[$i];
-					unset($qs[$path]);
+					if (strpos($key, '/cp/') === 0)
+					{
+						$path = $key;
+						continue;
+					}
 
-					return $this->make($path, $qs);
+					$arguments[$key] = $value;
+				}
+
+				if ($path)
+				{
+					return $this->make($path, $arguments);
 				}
 			}
 		}
