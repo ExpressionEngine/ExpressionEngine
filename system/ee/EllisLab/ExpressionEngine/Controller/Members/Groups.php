@@ -722,6 +722,7 @@ class Groups extends Members\Members {
 									'can_admin_members' => lang('can_admin_members'),
 									'can_delete_members' => lang('can_delete_members'),
 									'can_ban_users' => lang('can_ban_users'),
+									'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
 								),
 								'value' => element('member_actions', $values)
 							)
@@ -1005,6 +1006,11 @@ class Groups extends Members\Members {
 		if ($result['can_ban_users'] === TRUE)
 		{
 			$result['member_actions'][] = 'can_ban_users';
+		}
+
+		if ($result['can_admin_mbr_groups'] === TRUE)
+		{
+			$result['member_actions'][] = 'can_admin_mbr_groups';
 		}
 
 		// Access tools checkbox group
