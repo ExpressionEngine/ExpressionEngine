@@ -566,13 +566,13 @@ $lang = array(
 
 "can_view_other_comments" => "Can view comments in channel entries authored by others",
 
-"can_edit_own_comments" => "Can edit comments in their own channel entries",
+"can_edit_own_comments" => "Edit own comments",
 
-"can_delete_own_comments" => "Can delete comments in their own channel entries",
+"can_delete_own_comments" => "Delete own comments",
 
-"can_edit_all_comments" => "Can edit comments in ANY channel entries",
+"can_edit_all_comments" => "Edit comments by others",
 
-"can_delete_all_comments" => "Can delete comments in ANY channel entries",
+"can_delete_all_comments" => "Delete comments by others",
 
 "channels" => "Channels",
 
