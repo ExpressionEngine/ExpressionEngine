@@ -78,7 +78,7 @@ class Sql extends Utilities {
 				$table['size'],
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => ee('CP/URL',
+						'href' => ee('CP/URL')->make(
 							'utilities/query/run-query/'.$table['name'],
 							array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
 						),

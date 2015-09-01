@@ -252,7 +252,7 @@ class Query extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = ee('CP/URL',
+		$base_url = ee('CP/URL')->make(
 			'utilities/query/run-query/'.$table_name,
 			array('thequery' => rawurlencode(base64_encode($sql)))
 		);
