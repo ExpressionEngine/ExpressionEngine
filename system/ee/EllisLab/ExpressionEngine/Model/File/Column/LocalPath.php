@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\File\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
+use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class LocalPath extends CustomType {
+class LocalPath extends SerializedType {
 
 	protected $files;
 	protected $path;
@@ -38,22 +38,19 @@ class LocalPath extends CustomType {
 	*/
 	public function unserialize($db_data)
 	{
-		return array('files' => new Collection());
+		return $db_data;
 	}
 
-	/**
-	* The value in the DB will always be the same path
-	*/
-	public function serialize($data)
+	public function load($data)
 	{
-		return $this->path;
+		$this->data = $data;
+
+		return $data;
 	}
 
-	public function load($db_data)
+	public function store($data)
 	{
-		$this->path = $db_data;
-
-		return parent::load($db_data);
+		return $data;
 	}
 
 	/**
