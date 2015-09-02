@@ -82,22 +82,6 @@ class Template extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/template/create/' . $group_name),
-			'buttons' => array(
-				array(
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'create',
-					'text' => sprintf(lang('btn_save'), lang('template')),
-					'working' => 'btn_create_template_working'
-				),
-				array(
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'edit',
-					'text' => 'btn_create_and_edit_template',
-					'working' => 'btn_create_template_working'
-				),
-			),
 			'sections' => array(
 				array(
 					array(
@@ -306,15 +290,67 @@ class Template extends AbstractDesignController {
 
 		$author = $template->getLastAuthor();
 
-		// @TODO add the "tabs" key and use the shared form! :) (see mcp.forum.php)
+		$edit_fields = array(
+			array(
+				'title' => '',
+				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
+				'wide' => TRUE,
+				'fields' => array(
+					'template_data' => array(
+						'type' => 'textarea',
+						'attrs' => 'class="template-edit"',
+						'value' => $template->template_data,
+					)
+				)
+			)
+		);
+
+		$edit = ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $edit_fields));
+
+		$notes_fields = array(
+			array(
+				'title' => 'template_notes',
+				'desc' => 'template_notes_desc',
+				'wide' => TRUE,
+				'fields' => array(
+					'template_notes' => array(
+						'type' => 'textarea',
+						'value' => $template->template_notes,
+					)
+				)
+			)
+		);
+
+		$notes = ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $notes_fields));
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
-			'settings' => $this->renderSettingsPartial($template),
-			'access' => $this->renderAccessPartial($template),
-			'template' => $template,
-			'group' => $group,
-			'author' => (empty($author)) ? '-' : $author->screen_name,
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
+			'tabs' => array(
+				'edit' => $edit,
+				'notes' => $notes,
+				'settings' => $this->renderSettingsPartial($template),
+				'access' => $this->renderAccessPartial($template),
+			),
+			'buttons' => array(
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'update',
+					'text' => sprintf(lang('btn_save'), lang('template')),
+					'working' => 'btn_create_template_working'
+				),
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'finish',
+					'text' => 'btn_update_and_finish_editing',
+					'working' => 'btn_create_template_working'
+				),
+			),
+			'sections' => array(),
 		);
 
 		$view_url = ee()->functions->fetch_site_index();
@@ -343,7 +379,7 @@ class Template extends AbstractDesignController {
 		// Supress browser XSS check that could cause obscure bug after saving
 		ee()->output->set_header("X-XSS-Protection: 0");
 
-		ee()->cp->render('design/template/edit', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	public function settings($template_id)
