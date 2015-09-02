@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
 <div class="box has-tabs">
-	<h1><?=$cp_page_title?> <a class="btn action ta" href="<?=$view_path?>"><?=lang('view_rendered')?></a></h1>
+	<h1><?=$cp_page_title?> <a class="btn action ta" href="<?=$view_path?>" rel="external"><?=lang('view_rendered')?></a></h1>
 	<div class="tab-wrap">
 		<ul class="tabs">
 			<li><a class="act" href="" rel="t-0"><?=lang('edit')?></a></li>
