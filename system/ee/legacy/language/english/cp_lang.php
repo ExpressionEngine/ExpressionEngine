@@ -474,7 +474,11 @@ $lang = array(
 'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
 
 'btn_save' => 'Save %s',
+// CP Errors
+'404_does_not_exist' => '404: Item does not exist.',
+'404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
 
+// Common
 'btn_fix_errors' => 'Errors Found',
 
 'btn_saving' => 'Saving...',
