@@ -624,13 +624,114 @@ class Template extends AbstractDesignController {
 
 	private function renderSettingsPartial(TemplateModel $template)
 	{
-		// @TODO: use ee('View')->make('ee:_shared/form/section') instead (see mcp.forum.php)
-
-		$vars = array(
-			'template' => $template,
-			'template_types' => $this->getTemplateTypes(),
+		$sections = array(
+			array(
+				array(
+					'title' => 'template_name',
+					'desc' => 'alphadash_desc',
+					'fields' => array(
+						'old_name' => array(
+							'type' => 'hidden',
+							'value' => $template->template_name
+						),
+						'template_name' => array(
+							'type' => 'text',
+							'value' => $template->template_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'template_type',
+					'fields' => array(
+						'template_type' => array(
+							'type' => 'select',
+							'choices' => $this->getTemplateTypes(),
+							'value' => $template->template_type
+						)
+					)
+				),
+				array(
+					'title' => 'enable_caching',
+					'desc' => 'enable_caching_desc',
+					'fields' => array(
+						'cache' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $template->cache
+						)
+					)
+				),
+				array(
+					'title' => 'refresh_interval',
+					'desc' => 'refresh_interval_desc',
+					'fields' => array(
+						'refresh' => array(
+							'type' => 'text',
+							'value' => $template->refresh
+						)
+					)
+				),
+				array(
+					'title' => 'enable_php',
+					'desc' => 'enable_php_desc',
+					'caution' => TRUE,
+					'fields' => array(
+						'allow_php' => array(
+							'type' => 'yes_no',
+							'value' => $template->allow_php
+						)
+					)
+				),
+				array(
+					'title' => 'parse_stage',
+					'desc' => 'parse_stage_desc',
+					'fields' => array(
+						'php_parse_location' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'i' => 'input',
+								'o' => 'output'
+							),
+							'value' => $template->php_parse_location
+						)
+					)
+				),
+				array(
+					'title' => 'hit_counter',
+					'desc' => 'hit_counter_desc',
+					'fields' => array(
+						'hits' => array(
+							'type' => 'text',
+							'disabled' => TRUE,
+							'value' => $template->hits
+						)
+					)
+				)
+			)
 		);
-		return ee('View')->make('design/template/partials/settings')->render($vars);
+
+		$html = ee('CP/Alert')->makeInline('permissions-warn')
+			->asWarning()
+			->addToBody(lang('php_in_templates_warning'))
+			->addToBody(
+				sprintf(lang('php_in_templates_warning2'), '<span title="excercise caution"></span>'),
+				'caution'
+			)
+			->cannotClose()
+			->render();
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings));
+				// , 'errors' => $errors
+		}
+
+		return $html;
 	}
 
 	private function renderAccessPartial(TemplateModel $template)

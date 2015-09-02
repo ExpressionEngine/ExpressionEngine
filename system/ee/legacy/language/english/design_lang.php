@@ -455,6 +455,10 @@ $lang = array(
 
 'security_warning' => 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
 
+'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
+
+'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
+
 'input' => 'Input',
 
 'output' => 'Output',
