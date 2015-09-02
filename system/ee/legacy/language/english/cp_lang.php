@@ -461,7 +461,6 @@ $lang = array(
  * 3.0
  */
 
-'clear_filters' => 'Clear filters',
 
 //----------------------------
 // License Errors
@@ -473,96 +472,57 @@ $lang = array(
 'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
 'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
 
-'btn_save' => 'Save %s',
 // CP Errors
 '404_does_not_exist' => '404: Item does not exist.',
 '404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
 
 // Common
+'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 'btn_fix_errors' => 'Errors Found',
-
+'btn_save' => 'Save %s',
 'btn_saving' => 'Saving...',
-
-'cp_message_success' => 'Action was a success',
-
-'cp_message_warn' => 'Warning',
-
+'clear_filters' => 'Clear filters',
+'col_id' => 'ID#',
 'cp_message_issue' => 'An error occurred',
-
-'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
-
-'log_out' => 'log out',
-
-'menu_create' => 'Create',
-
-'new_channel' => 'New Channel',
-
-'view_all' => 'View All',
-
-'new_site' => 'New Site',
-
-'name_your_site' => 'Name your site',
-
-'my_profile' => 'My Profile',
-
-'new_link' => 'New Link',
-
-'menu_edit' => 'Edit',
-
-'menu_files' => 'Files',
-
-'menu_members' => 'Members',
-
-'enable' => 'Enable',
-
-'disable' => 'Disable',
-
-'search_results_heading' => 'Search Results<br><i>we found %d results for "%s"</i>',
-
-'submit' => 'Submit',
-
-'with_selected' => 'with selected',
-
-'remove' => 'Remove',
-
+'cp_message_success' => 'Action was a success',
+'cp_message_warn' => 'Warning',
 'create_new' => 'Create New',
 'create_new_channel' => 'Create New Channel',
-
-'new' => 'New',
-
-'none' => 'None',
-
-'col_id' => 'ID#',
-
-'manage' => 'Manage',
-
-'name' => 'Name',
-
-'type' => 'Type',
-
-'url_title' => 'URL Title',
-
-'url_title_lc' => 'URL title',
-
 'description' => 'Description',
-
+'disable' => 'Disable',
+'enable' => 'Enable',
+'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 'image' => 'Image',
-
+'log_out' => 'log out',
+'manage' => 'Manage',
+'menu_create' => 'Create',
+'menu_edit' => 'Edit',
+'menu_files' => 'Files',
+'menu_members' => 'Members',
+'my_profile' => 'My Profile',
+'name' => 'Name',
+'name_your_site' => 'Name your site',
+'new' => 'New',
+'new_channel' => 'New Channel',
+'new_link' => 'New Link',
+'new_site' => 'New Site',
 'no_rows_returned' => 'No rows returned',
-
-'used_in_cp_only' => 'Used in the control panel only.',
-
-'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
+'none' => 'None',
 'preferences_updated' => 'Preferences updated',
-
 'preferences_updated_desc' => 'Your preferences have been saved successfully.',
-
+'remove' => 'Remove',
+'search_results_heading' => 'Search Results<br><i>we found %d results for "%s"</i>',
 'settings_save_error' => 'Attention: Settings not saved',
-
 'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
-
+'submit' => 'Submit',
 'success' => 'Success',
+'type' => 'Type',
+'url' => 'URL',
+'url_title' => 'URL Title',
+'url_title_lc' => 'URL title',
+'used_in_cp_only' => 'Used in the control panel only.',
+'view_all' => 'View All',
+'with_selected' => 'with selected',
 
 /**
  * Footer
