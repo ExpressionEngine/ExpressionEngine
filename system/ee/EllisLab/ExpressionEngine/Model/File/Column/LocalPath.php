@@ -46,7 +46,7 @@ class LocalPath extends CustomType {
 	*/
 	public function serialize($data)
 	{
-		return $data;
+		return $this->path;
 	}
 
 	public function load($db_data)
