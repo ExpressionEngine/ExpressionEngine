@@ -291,6 +291,9 @@ class Template extends AbstractDesignController {
 
 			$template->save();
 
+			// Save a new revision
+			$this->saveNewTemplateRevision($template);
+
 			$alert = ee('CP/Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))

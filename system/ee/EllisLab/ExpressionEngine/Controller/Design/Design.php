@@ -314,7 +314,8 @@ class Design extends AbstractDesignController {
 					 );
 
 					// do it!
-					ee('Model')->make('Template', $data)->save();
+					$template_model = ee('Model')->make('Template', $data)->save();
+					$this->saveNewTemplateRevision($template_model);
 
 					// add to existing array so we don't try to create this template again
 					$existing[$group][] = $template_name;
@@ -332,7 +333,8 @@ class Design extends AbstractDesignController {
 						'site_id'				=> ee()->config->item('site_id')
 					 );
 
-					ee('Model')->make('Template', $data)->save();
+					$template_model = ee('Model')->make('Template', $data)->save();
+					$this->saveNewTemplateRevision($template_model);
 				}
 
 				unset($existing[$group]);
