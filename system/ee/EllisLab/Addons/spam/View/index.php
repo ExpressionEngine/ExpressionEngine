@@ -8,7 +8,7 @@
 		<h1>
 			<ul class="toolbar">
 				<li class="settings">
-					<a href="<?=cp_url('addons/settings/spam/settings')?>" title="<?=lang('spam_settings')?>"></a>
+					<a href="<?=ee('CP/URL', 'addons/settings/spam/settings')?>" title="<?=lang('spam_settings')?>"></a>
 				</li>
 			</ul>
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
