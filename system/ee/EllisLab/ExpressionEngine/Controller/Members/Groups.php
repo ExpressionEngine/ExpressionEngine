@@ -978,9 +978,13 @@ class Groups extends Members\Members {
 							'access_settings' => array(
 								'type' => 'checkbox',
 								'choices' => array(
-									'can_access_general_settings' => lang('can_access_general_settings'),
+									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
+									'can_access_design' => lang('can_access_design'),
+									'can_access_edit' => lang('can_access_edit'),
+									'can_access_files' => lang('can_access_files'),
+									'can_access_members' => lang('can_access_members'),
+									'can_access_publish' => lang('can_access_publish'),
 									'can_access_content_settings' => lang('can_access_content_settings'),
-									'can_access_member_settings' => lang('can_access_member_settings'),
 									'can_access_security_settings' => lang('can_access_security_settings'),
 									'can_access_addon_settings' => lang('can_access_addon_settings'),
 								),
