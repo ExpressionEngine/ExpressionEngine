@@ -259,7 +259,12 @@ RADIO;
 
 		if (empty($errors))
 		{
-			ee()->session->set_flashdata('message_success', lang('template_routes_saved'));
+			ee('CP/Alert')->makeInline()
+				->asSuccess()
+				->withTitle(lang('template_routes_saved'))
+				->addToBody(lang('template_routes_saved_desc'))
+				->defer();
+
 			ee()->functions->redirect($this->base_url);
 		}
 		else
