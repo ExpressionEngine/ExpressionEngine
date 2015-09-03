@@ -40,7 +40,9 @@ class Template extends FileSyncedModel {
 		'cache'              => 'boolString',
 		'enable_http_auth'   => 'boolString',
 		'allow_php'          => 'boolString',
-		'protect_javascript' => 'boolString'
+		'protect_javascript' => 'boolString',
+		'refresh'            => 'int',
+		'hit_counter'        => 'int',
 	);
 
 	protected static $_relationships = array(

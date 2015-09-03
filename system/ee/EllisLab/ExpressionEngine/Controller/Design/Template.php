@@ -771,8 +771,6 @@ class Template extends AbstractDesignController {
 
 	private function renderAccessPartial(TemplateModel $template)
 	{
-		// @TODO: use ee('View')->make('ee:_shared/form/section') instead (see mcp.forum.php)
-
 		$existing_templates = array();
 
 		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
@@ -785,10 +783,16 @@ class Template extends AbstractDesignController {
 			$existing_templates[$template_group->group_name] = $templates;
 		}
 
-		$member_gropus = ee('Model')->get('MemberGroup')
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', '!=', 1)
 			->all();
+
+		$allowed_member_groups = array_diff(
+			$member_groups->pluck('group_id'),
+			$template->getNoAccess()->pluck('group_id')
+		);
 
 		$route = $template->getTemplateRoute();
 
@@ -797,14 +801,79 @@ class Template extends AbstractDesignController {
 			$route = ee('Model')->make('TemplateRoute');
 		}
 
-		$vars = array(
-			'template' => $template,
-			'route' => $route,
-			'denied_member_groups' => $template->getNoAccess()->pluck('group_id'),
-			'member_groups' => $member_gropus,
-			'existing_templates' => $existing_templates
+		$sections = array(
+			array(
+				array(
+					'title' => 'allowed_member_groups',
+					'desc' => 'allowed_member_groups_desc',
+					'desc_cont' => 'allowed_member_groups_super_admin',
+					'fields' => array(
+						'allowed_member_groups' => array(
+							'type' => 'checkbox',
+							'wrap' => TRUE,
+							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
+							'value' => $allowed_member_groups
+						)
+					)
+				),
+				array(
+					'title' => 'non_access_redirect',
+					'desc' => 'non_access_redirect_desc',
+					'fields' => array(
+						'no_auth_bounce' => array(
+							'type' => 'select',
+							'choices' => $existing_templates,
+							'value' => $template->no_auth_bounce
+						)
+					)
+				),
+				array(
+					'title' => 'enable_http_authentication',
+					'desc' => 'enable_http_authentication_desc',
+					'fields' => array(
+						'cache' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $template->enable_http_auth
+						)
+					)
+				),
+				array(
+					'title' => 'template_route_override',
+					'desc' => 'template_route_override_desc',
+					'fields' => array(
+						'refresh' => array(
+							'type' => 'text',
+							'value' => $route->route
+						)
+					)
+				),
+				array(
+					'title' => 'require_all_segments',
+					'desc' => 'require_all_segments_desc',
+					'fields' => array(
+						'allow_php' => array(
+							'type' => 'yes_no',
+							'value' => $route->route_required
+						)
+					)
+				)
+			)
 		);
-		return ee('View')->make('design/template/partials/access')->render($vars);
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings));
+				// , 'errors' => $errors
+		}
+
+		return $html;
 	}
 
 	/**
