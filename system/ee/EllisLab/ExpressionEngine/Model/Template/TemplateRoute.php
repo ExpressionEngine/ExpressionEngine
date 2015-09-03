@@ -48,7 +48,7 @@ class TemplateRoute extends Model {
 
 	protected static $_validation_rules = array(
 		'template_id'    => 'required|isNatural',
-		'route'          => 'validateRoute[route_required]',
+		'route'          => 'validateRouteIsUnique[route_required]',
 		'route_required' => 'enum[y,n]',
 	);
 
@@ -128,7 +128,10 @@ class TemplateRoute extends Model {
 		return $route;
 	}
 
-	public function validateRoute($key, $value, $params, $rule)
+	/**
+	 * Validates that the route is unique
+	 */
+	public function validateRouteIsUnique($key, $value, $params, $rule)
 	{
 		if (empty($value))
 		{

@@ -227,6 +227,10 @@ class Template extends FileSyncedModel {
 		return $path.'/'.$file.$ext;
 	}
 
+	/**
+	 * Validates the template name checking for illegal characters and
+	 * reserved names.
+	 */
 	public function validateTemplateName($key, $value, $params, $rule)
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $value))
