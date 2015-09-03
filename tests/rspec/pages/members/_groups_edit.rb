@@ -30,17 +30,27 @@ class MemberGroupsEdit < SitePrism::Section
   elements :cp_homepage, 'input[name="cp_homepage"]'
   elements :footer_helper_links, 'input[name="footer_helper_links[]"]'
 
-  elements :can_admin_channels, 'input[name="can_admin_channels"]'
-  elements :category_actions, 'input[name="category_actions[]"]'
+  elements :channel_permissions, 'input[name="channel_permissions[]"]'
+  elements :channel_field_permissions, 'input[name="channel_field_permissions[]"]'
+  elements :channel_category_permissions, 'input[name="channel_category_permissions[]"]'
+  elements :channel_status_permissions, 'input[name="channel_status_permissions[]"]'
 
   elements :channel_entry_actions, 'input[name="channel_entry_actions[]"]'
   elements :allowed_channels, 'input[name="allowed_channels[]"]'
 
+  elements :asset_upload_directories, 'input[name="asset_upload_directories[]"]'
+  elements :assets, 'input[name="assets[]"]'
+  elements :rte_toolsets, 'input[name="rte_toolsets[]"]'
+
+  elements :member_group_actions, 'input[name="member_group_actions[]"]'
   elements :member_actions, 'input[name="member_actions[]"]'
 
   elements :can_admin_design, 'input[name="can_admin_design"]'
-  elements :can_admin_templates, 'input[name="can_admin_templates"]'
+  elements :template_groups, 'input[name="template_groups[]"]'
+  elements :template_partials, 'input[name="template_partials[]"]'
+  elements :template_variables, 'input[name="template_variables[]"]'
 
+  elements :template_permissions, 'input[name="template_permissions[]"]'
   elements :allowed_template_groups, 'input[name="allowed_template_groups[]"]'
 
   elements :can_admin_modules, 'input[name="can_admin_modules"]'
@@ -48,4 +58,5 @@ class MemberGroupsEdit < SitePrism::Section
   elements :addons_access, 'input[name="addons_access[]"]'
 
   elements :access_tools, 'input[name="access_tools[]"]'
+  elements :access_settings, 'input[name="access_settings[]"]'
 end
