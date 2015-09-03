@@ -269,6 +269,13 @@ RADIO;
 		}
 		else
 		{
+			ee()->load->helper('html_helper');
+			ee('CP/Alert')->makeInline()
+				->asIssue()
+				->withTitle(lang('template_routes_not_saved'))
+				->addToBody(lang('template_routes_not_saved_desc').ul($errors))
+				->now();
+
 			$this->index();
 		}
 	}

@@ -734,6 +734,10 @@ and templates will only be accesible from the default group/template URL.',
 
 'template_routes_saved_desc' => 'Template routes have been saved.',
 
+'template_routes_not_saved' => 'Template Routes Not Saved',
+
+'template_routes_not_saved_desc' => 'We were unable to save the template routes, please review and fix errors below.',
+
 'http_auth_protected' => 'HTTP Auth Protected',
 
 'template_preferences_manager' => 'Template Preferences Manager',
