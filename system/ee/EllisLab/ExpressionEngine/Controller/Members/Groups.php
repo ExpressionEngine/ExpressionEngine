@@ -188,38 +188,38 @@ class Groups extends Members\Members {
 		);
 		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
+		$vars['sections'] = $this->buildForm($vars);
 		$this->form($vars);
 	}
 
 	public function copy($group_id)
 	{
-
 		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$master = $this->groupData($this->group);
 		unset($master['group_id'], $master['site_id']);
 
-		$vars = array(
-			'cp_page_title' => sprintf(lang('copy_member_group'), $this->group->group_title)
-		);
-
+		$vars = $this->group->getValues();
+		$vars['cp_page_title'] = lang('copy_member_group');
+		$sections = $this->buildForm($vars);
+		$current = $this->groupData($this->group, $sections);
+		$vars['sections'] = $this->buildForm(array_merge($vars, $current));
 		$this->group = NULL;
-
 		$this->form($vars, $master);
 	}
 
 	public function edit($group_id)
 	{
-		$vars = array(
-			'cp_page_title' => lang('edit_member_group')
-		);
-
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$this->group_id = (int) $this->group->group_id;
 		$this->base_url = ee('CP/URL', 'members/groups/edit/' . $group_id, $this->query_string);
-		$current = $this->groupData($this->group);
+		$vars = $this->group->getValues();
+		$vars['cp_page_title'] = lang('edit_member_group');
 
+		$sections = $this->buildForm($vars);
+		$current = $this->groupData($this->group, $sections);
+		$vars['sections'] = $this->buildForm(array_merge($vars, $current));
 		$this->form($vars, $current);
 	}
 
@@ -334,9 +334,199 @@ class Groups extends Members\Members {
 
 		ee()->load->helper('array');
 
+
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field' => 'group_title',
+				 'label' => 'lang:group_title',
+				 'rules' => 'valid_xss_check|required|unique'
+			),
+			array(
+				 'field' => 'group_description',
+				 'label' => 'lang:group_description',
+				 'rules' => 'valid_xss_check'
+			),
+			array(
+				 'field' => 'mbr_delete_notify_emails',
+				 'label' => 'lang:mbr_delete_notify_emails',
+				 'rules' => 'valid_xss_check|valid_emails'
+			),
+			array(
+				 'field' => 'search_flood_control',
+				 'label' => 'lang:search_flood_control',
+				 'rules' => 'is_natural'
+			),
+			array(
+				 'field' => 'prv_msg_storage_limit',
+				 'label' => 'lang:prv_msg_storage_limit',
+				 'rules' => 'is_natural'
+			),
+			array(
+				 'field' => 'prv_msg_send_limit',
+				 'label' => 'lang:prv_msg_send_limit',
+				 'rules' => 'is_natural'
+			),
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($this->save($vars['sections']))
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_group_updated'))
+					->addToBody(lang('member_group_updated_desc'))
+					->defer();
+			}
+
+			ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
+		}
+
+		ee()->view->base_url = $this->base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member_group'));
+		ee()->view->save_btn_text_working = 'btn_save_working';
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function groupData($group, $form = array())
+	{
+		$result = $group->getValues();
+
+		foreach ($form as $section)
+		{
+			foreach ($section as $fieldset)
+			{
+				foreach ($fieldset['fields'] as $name => $field)
+				{
+					if ($field['type'] == 'checkbox')
+					{
+						if ((bool)count(array_filter(array_keys($field['choices']), 'is_string')))
+						{
+							$result[$name] = array();
+							foreach ($field['choices'] as $choice => $lang)
+							{
+								if ($result[$choice] === TRUE)
+								{
+									$result[$name][] = $choice;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$result['addons_access'] = $this->group->AssignedModules->pluck('module_id');
+		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('group_id');
+		$result['allowed_channels'] = $this->group->AssignedChannels->pluck('channel_id');
+
+		return $result;
+	}
+
+	private function defaults()
+	{
+		return $defaults;
+	}
+
+	private function save($sections)
+	{
+		$this->index_url = 'members/groups';
+		$allowed_channels = ee()->input->post('allowed_channels');
+		$allowed_template_groups = ee()->input->post('allowed_template_groups');
+		$allowed_addons = ee()->input->post('addons_access');
+		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
+
+		if ( ! empty($this->group))
+		{
+			$group = $this->group;
+		}
+		else
+		{
+			$group = ee('Model')->make('MemberGroup');
+		}
+
+		// Set our various permissions if we're not editing the Super Admin
+		if ($group->group_id !== 1)
+		{
+			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
+			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
+			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
+		}
+
+		foreach ($sections as $section)
+		{
+			foreach ($section as $item)
+			{
+				foreach ($item['fields'] as $field => $options)
+				{
+					if ( ! in_array($field, $ignore))
+					{
+						$submitted = ee()->input->post($field);
+
+						if ($options['type'] == 'checkbox')
+						{
+							$submitted = ee()->input->post($field);
+						}
+
+						$submitted = $submitted === FALSE ? array() : $submitted;
+						if (is_array($submitted))
+						{
+							$choices = array_keys($options['choices']);
+							$deselected = array_diff($choices, $submitted);
+
+							foreach ($submitted as $item)
+							{
+								$group->$item = 'y';
+							}
+
+							foreach ($deselected as $item)
+							{
+								$group->$item = 'n';
+							}
+						}
+						else
+						{
+							$group->$field = $submitted;
+						}
+					}
+				}
+			}
+		}
+
+		// This field isn't present in the section array, it's shimmy'd into a radio selection
+		$group->cp_homepage_channel = ee()->input->post('cp_homepage_channel');
+
+		if ( empty($group->site_id))
+		{
+			$group->site_id = ee()->config->item('site_id');
+		}
+
+		$group->save();
+
+		$this->query_string['group'] = $group->group_id;
+
+		return TRUE;
+	}
+
+	private function buildForm($values)
+	{
 		if (isset($values['group_id']) && $values['group_id'] == 1)
 		{
-			$vars['sections'] = array(
+			$vars = array(
 				array(
 					array(
 						'title' => 'group_name',
@@ -387,7 +577,7 @@ class Groups extends Members\Members {
 				->all()
 				->getDictionary('channel_id', 'channel_title');
 
-			$vars['sections'] = array(
+			$vars= array(
 				array(
 					array(
 						'title' => 'group_name',
@@ -434,7 +624,7 @@ class Groups extends Members\Members {
 									'can_view_online_system' => lang('can_view_online_system'),
 									'can_view_offline_system' => lang('can_view_offline_system')
 								),
-								'value' => element('site_access', $values)
+								'value' => element('website_access', $values)
 							),
 						)
 					),
@@ -488,7 +678,7 @@ class Groups extends Members\Members {
 									'include_in_authorlist' => lang('include_in_authorlist'),
 									'include_in_memberlist' => lang('include_in_memberlist'),
 								),
-								'value' => element('include_member_in', $values)
+								'value' => element('include_members_in', $values)
 							),
 						)
 					)
@@ -756,9 +946,9 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'asset_upload_directories' => array(
 								'choices' => array(
-									'can_create_upload_directories' => 'create_upload_directories',
-									'can_edit_upload_directories' => 'edit_upload_directories',
-									'can_delete_upload_directories' => 'delete_upload_directories',
+									'can_create_upload_directories' => lang('create_upload_directories'),
+									'can_edit_upload_directories' => lang('edit_upload_directories'),
+									'can_delete_upload_directories' => lang('delete_upload_directories'),
 									),
 								'type' => 'checkbox',
 								'value' => element('asset_upload_directories', $values)
@@ -771,9 +961,9 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'assets' => array(
 								'choices' => array(
-									'can_upload_new_assets' => 'upload_new_assets',
-									'can_edit_assets' => 'edit_assets',
-									'can_delete_assets' => 'delete_assets',
+									'can_upload_new_assets' => lang('upload_new_assets'),
+									'can_edit_assets' => lang('edit_assets'),
+									'can_delete_assets' => lang('delete_assets'),
 								),
 								'type' => 'checkbox',
 								'value' => element('assets', $values)
@@ -786,9 +976,9 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'rte_toolsets' => array(
 								'choices' => array(
-									'can_upload_new_toolsets' => 'upload_new_toolsets',
-									'can_edit_toolsets' => 'edit_toolsets',
-									'can_delete_toolsets' => 'delete_toolsets'
+									'can_upload_new_toolsets' => lang('upload_new_toolsets'),
+									'can_edit_toolsets' => lang('edit_toolsets'),
+									'can_delete_toolsets' => lang('delete_toolsets')
 								),
 								'type' => 'checkbox',
 								'value' => element('rte_toolsets', $values)
@@ -809,7 +999,7 @@ class Groups extends Members\Members {
 									'can_edit_member_groups' => lang('edit_member_groups'),
 									'can_delete_member_groups' => lang('delete_member_groups'),
 								),
-								'value' => element('member_actions', $values)
+								'value' => element('member_group_actions', $values)
 							)
 						)
 					)
@@ -850,14 +1040,14 @@ class Groups extends Members\Members {
 						'desc' => 'allowed_actions_desc',
 						'caution' => TRUE,
 						'fields' => array(
-							'template_groups' => array(
+							'template_group_permissions' => array(
 								'choices' => array(
 									'can_create_template_groups' => lang('create_template_groups'),
 									'can_edit_template_groups' => lang('edit_template_groups'),
 									'can_delete_template_groups' => lang('delete_template_groups'),
 								),
 								'type' => 'checkbox',
-								'value' => element('template_groups', $values)
+								'value' => element('template_group_permissions', $values)
 							)
 						)
 					),
@@ -902,10 +1092,10 @@ class Groups extends Members\Members {
 							'template_permissions' => array(
 								'type' => 'checkbox',
 								'choices' => array(
-									'can_manage_template_settings' => 'manage_template_settings',
-									'can_create_new_templates' => 'create_new_templates',
-									'can_edit_templates' => 'edit_templates',
-									'can_delete_templates' => 'delete_templates'
+									'can_manage_template_settings' => lang('manage_template_settings'),
+									'can_create_new_templates' => lang('create_new_templates'),
+									'can_edit_templates' => lang('edit_templates'),
+									'can_delete_templates' => lang('delete_templates')
 								),
 								'value' => element('template_permissions', $values)
 							),
@@ -980,13 +1170,8 @@ class Groups extends Members\Members {
 								'choices' => array(
 									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
 									'can_access_design' => lang('can_access_design'),
-									'can_access_edit' => lang('can_access_edit'),
-									'can_access_files' => lang('can_access_files'),
 									'can_access_members' => lang('can_access_members'),
-									'can_access_publish' => lang('can_access_publish'),
-									'can_access_content_settings' => lang('can_access_content_settings'),
 									'can_access_security_settings' => lang('can_access_security_settings'),
-									'can_access_addon_settings' => lang('can_access_addon_settings'),
 								),
 								'value' => element('access_settings', $values)
 							),
@@ -1003,309 +1188,7 @@ class Groups extends Members\Members {
 				->now();
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field' => 'group_title',
-				 'label' => 'lang:group_title',
-				 'rules' => 'valid_xss_check|required|unique'
-			),
-			array(
-				 'field' => 'group_description',
-				 'label' => 'lang:group_description',
-				 'rules' => 'valid_xss_check'
-			),
-			array(
-				 'field' => 'mbr_delete_notify_emails',
-				 'label' => 'lang:mbr_delete_notify_emails',
-				 'rules' => 'valid_xss_check|valid_emails'
-			),
-			array(
-				 'field' => 'search_flood_control',
-				 'label' => 'lang:search_flood_control',
-				 'rules' => 'is_natural'
-			),
-			array(
-				 'field' => 'prv_msg_storage_limit',
-				 'label' => 'lang:prv_msg_storage_limit',
-				 'rules' => 'is_natural'
-			),
-			array(
-				 'field' => 'prv_msg_send_limit',
-				 'label' => 'lang:prv_msg_send_limit',
-				 'rules' => 'is_natural'
-			),
-		));
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->save($vars['sections']))
-			{
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('member_group_updated'))
-					->addToBody(lang('member_group_updated_desc'))
-					->defer();
-			}
-
-			ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
-				->addToBody(lang('settings_save_error_desc'))
-				->now();
-		}
-
-		ee()->view->base_url = $this->base_url;
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member_group'));
-		ee()->view->save_btn_text_working = 'btn_save_working';
-		ee()->cp->render('settings/form', $vars);
-	}
-
-	private function groupData($group)
-	{
-		$result = $group->getValues();
-
-		// Site access checkbox group
-		$result['site_access'] = array();
-
-		if ($result['can_view_online_system'] === TRUE)
-		{
-			$result['site_access'][] = 'can_view_online_system';
-		}
-
-		if ($result['can_view_offline_system'] === TRUE)
-		{
-			$result['site_access'][] = 'can_view_offline_system';
-		}
-
-		// Include member in checkbox group
-		$result['include_member_in'] = array();
-
-		if ($result['include_in_authorlist'] === TRUE)
-		{
-			$result['include_member_in'][] = 'include_in_authorlist';
-		}
-
-		if ($result['include_in_memberlist'] === TRUE)
-		{
-			$result['include_member_in'][] = 'include_in_memberlist';
-		}
-
-		// Comment moderation checkbox group
-		$result['comment_actions'] = array();
-
-		if ($result['can_edit_own_comments'] === TRUE)
-		{
-			$result['comment_actions'][] = 'can_edit_own_comments';
-		}
-
-		if ($result['can_delete_own_comments'] === TRUE)
-		{
-			$result['comment_actions'][] = 'can_delete_own_comments';
-		}
-
-		if ($result['can_edit_all_comments'] === TRUE)
-		{
-			$result['comment_actions'][] = 'can_edit_all_comments';
-		}
-
-		if ($result['can_delete_all_comments'] === TRUE)
-		{
-			$result['comment_actions'][] = 'can_delete_all_comments';
-		}
-
-		// Footer helper checkbox group
-		$result['footer_helper_links'] = array();
-
-		if ($result['can_access_footer_report_bug'])
-		{
-			$result['footer_helper_links'][] = 'can_access_footer_report_bug';
-		}
-		if ($result['can_access_footer_new_ticket'])
-		{
-			$result['footer_helper_links'][] = 'can_access_footer_new_ticket';
-		}
-		if ($result['can_access_footer_user_guide'])
-		{
-			$result['footer_helper_links'][] = 'can_access_footer_user_guide';
-		}
-
-		// Channel category checkbox group
-		$result['category_actions'] = array();
-
-		if ($result['can_edit_categories'] === TRUE)
-		{
-			$result['category_actions'][] = 'can_edit_categories';
-		}
-
-		if ($result['can_delete_categories'] === TRUE)
-		{
-			$result['category_actions'][] = 'can_delete_categories';
-		}
-
-		// Channel entry actions
-		$result['channel_entry_actions'] = array();
-
-		if ( $result['can_delete_self_entries'] == TRUE)
-		{
-			$result['channel_entry_actions'][] = 'can_delete_self_entries';
-		}
-		if ( $result['can_edit_other_entries'] == TRUE)
-		{
-			$result['channel_entry_actions'][] = 'can_edit_other_entries';
-		}
-		if ( $result['can_delete_all_entries'] == TRUE)
-		{
-			$result['channel_entry_actions'][] = 'can_delete_all_entries';
-		}
-		if ( $result['can_assign_post_authors'] == TRUE)
-		{
-			$result['channel_entry_actions'][] = 'can_assign_post_authors';
-		}
-
-		// Member actions checkbox group
-
-		$result['member_actions'] = array();
-
-		if ($result['can_admin_members'] === TRUE)
-		{
-			$result['member_actions'][] = 'can_admin_members';
-		}
-
-		if ($result['can_delete_members'] === TRUE)
-		{
-			$result['member_actions'][] = 'can_delete_members';
-		}
-
-		if ($result['can_ban_users'] === TRUE)
-		{
-			$result['member_actions'][] = 'can_ban_users';
-		}
-
-		if ($result['can_admin_mbr_groups'] === TRUE)
-		{
-			$result['member_actions'][] = 'can_admin_mbr_groups';
-		}
-
-		// Access tools checkbox group
-
-		$result['access_tools'] = array();
-
-
-		if ($result['can_access_logs'] === TRUE)
-		{
-			$result['access_tools'][] = 'can_access_logs';
-		}
-
-		if ($result['can_access_data'] === TRUE)
-		{
-			$result['access_tools'][] = 'can_access_data';
-		}
-
-		if ($result['can_access_utilities'] === TRUE)
-		{
-			$result['access_tools'][] = 'can_access_utilities';
-		}
-
-		if ($result['can_access_comm'] === TRUE)
-		{
-			$result['access_tools'][] = 'can_access_comm';
-		}
-
-		$result['addons_access'] = $this->group->AssignedModules->pluck('module_id');
-		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('group_id');
-		$result['allowed_channels'] = $this->group->AssignedChannels->pluck('channel_id');
-
-		return $result;
-	}
-
-	private function defaults()
-	{
-		return $defaults;
-	}
-
-	private function save($sections)
-	{
-		$this->index_url = 'members/groups';
-		$allowed_channels = ee()->input->post('allowed_channels');
-		$allowed_template_groups = ee()->input->post('allowed_template_groups');
-		$allowed_addons = ee()->input->post('addons_access');
-		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
-
-		if ( ! empty($this->group))
-		{
-			$group = $this->group;
-		}
-		else
-		{
-			$group = ee('Model')->make('MemberGroup');
-		}
-
-		// Set our various permissions if we're not editing the Super Admin
-		if ($group->group_id !== 1)
-		{
-			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
-			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
-			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
-		}
-
-		foreach ($sections as $section)
-		{
-			foreach ($section as $item)
-			{
-				foreach ($item['fields'] as $field => $options)
-				{
-					if ( ! in_array($field, $ignore))
-					{
-						$submitted = ee()->input->post($field);
-						$submitted = $submitted === FALSE ? array() : $submitted;
-
-						if (is_array($submitted))
-						{
-							$choices = array_keys($options['choices']);
-							$deselected = array_diff($choices, $submitted);
-
-							foreach ($submitted as $item)
-							{
-								$group->$item = 'y';
-							}
-
-							foreach ($deselected as $item)
-							{
-								$group->$item = 'n';
-							}
-						}
-						else
-						{
-							$group->$field = $submitted;
-						}
-					}
-				}
-			}
-		}
-
-		// This field isn't present in the section array, it's shimmy'd into a radio selection
-		$group->cp_homepage_channel = ee()->input->post('cp_homepage_channel');
-
-		if ( empty($group->site_id))
-		{
-			$group->site_id = ee()->config->item('site_id');
-		}
-
-		$group->save();
-
-		$this->query_string['group'] = $group->group_id;
-
-		return TRUE;
+		return $vars;
 	}
 
 }
