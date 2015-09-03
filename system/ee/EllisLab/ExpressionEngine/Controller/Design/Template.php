@@ -741,7 +741,6 @@ class Template extends AbstractDesignController {
 					'fields' => array(
 						'hits' => array(
 							'type' => 'text',
-							'disabled' => TRUE,
 							'value' => $template->hits
 						)
 					)
