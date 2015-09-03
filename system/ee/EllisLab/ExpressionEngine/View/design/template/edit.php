@@ -8,6 +8,7 @@
 			<li><a href="" rel="t-1"><?=lang('notes')?></a></li>
 			<li><a href="" rel="t-2"><?=lang('settings')?></a></li>
 			<li><a href="" rel="t-3"><?=lang('access')?></a></li>
+			<?php if ($revisions): ?><li><a href="" rel="t-4"><?=lang('revisions')?></a></li><?php endif ?>
 		</ul>
 		<?=form_open($form_url, 'class="settings ajax-validate"')?>
 		<?=ee('CP/Alert')->get('template-form')?>
@@ -38,6 +39,11 @@
 			<div class="tab t-3">
 				<?=$access?>
 			</div>
+			<?php if ($revisions): ?>
+				<div class="tab t-4">
+					<?=$revisions?>
+				</div>
+			<?php endif ?>
 			<fieldset class="form-ctrls">
 				<?php if (ee()->form_validation->errors_exist()): ?>
 				<button class="btn disable" disabled="disabled" name="submit" type="submit" value="update" data-submit-text="<?=sprintf(lang('btn_save'), lang('template'))?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>

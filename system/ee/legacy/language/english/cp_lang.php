@@ -523,6 +523,11 @@ $lang = array(
 'used_in_cp_only' => 'Used in the control panel only.',
 'view_all' => 'View All',
 'with_selected' => 'with selected',
+'revisions' => 'Revisions',
+'rev_id' => '#',
+'rev_date' => 'Date',
+'rev_author' => 'Author',
+'current' => 'Current',
 
 /**
  * Footer

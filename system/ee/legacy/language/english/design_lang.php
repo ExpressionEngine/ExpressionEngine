@@ -220,6 +220,8 @@ $lang = array(
 
 'access' => 'Access',
 
+'no_revisions' => 'No revisions',
+
 'template_notes' => 'Template Notes',
 
 'template_notes_desc' => 'Use this form field to store notes and information about this template',
