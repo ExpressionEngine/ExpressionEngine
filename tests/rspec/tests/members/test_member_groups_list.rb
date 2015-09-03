@@ -41,23 +41,100 @@ feature 'Member Group List' do
       @page.edit.can_access_cp[0].checked?.should == true
       @page.edit.cp_homepage[1].checked?.should == true
       @page.edit.footer_helper_links.each { |e| e.checked?.should == true }
-      @page.edit.can_admin_channels[0].checked?.should == true
-      @page.edit.category_actions.each { |e| e.checked?.should == true }
       @page.edit.channel_entry_actions.each { |e| e.checked?.should == true }
       @page.edit.member_actions.each { |e| e.checked?.should == true }
       @page.edit.allowed_channels.each { |e| e.checked?.should == true }
       @page.edit.can_admin_design[0].checked?.should == true
-      @page.edit.can_admin_templates[0].checked?.should == true
       @page.edit.allowed_template_groups.each { |e| e.checked?.should == true }
       @page.edit.can_admin_modules[0].checked?.should == true
       @page.edit.addons_access.each { |e| e.checked?.should == true }
       @page.edit.access_tools.each { |e| e.checked?.should == true }
     end
-
-    it 'edits a group successfully' do
-      edit_member_group
-    end
   end
+
+  context 'when editing a member group' do
+    before :each do
+      create_member_group
+
+      @page.edit.name.set 'Editors'
+      @page.edit.description.set 'Editors description.'
+      @page.edit.security_lock[1].click
+
+	  submit_form
+
+      @page.edit.name.value.should == 'Editors'
+      @page.edit.description.value.should == 'Editors description.'
+      @page.edit.security_lock[0].checked?.should == false
+      @page.edit.security_lock[1].checked?.should == true
+    end
+
+	it 'saves member group permissions' do
+	  permissions = Hash[
+        'website_access' => 'website_access',
+        'can_view_profiles' => 'can_view_profiles',
+        'can_send_email' => 'can_send_email',
+        'can_delete_self' => 'can_delete_self',
+        'include_members_in' => 'include_members_in',
+        'can_post_comments' => 'can_post_comments',
+        'exclude_from_moderation' => 'exclude_from_moderation',
+        'comment_actions' => 'comment_actions',
+        'can_search' => 'can_search',
+        'can_send_private_messages' => 'can_send_private_messages',
+        'can_attach_in_private_messages' => 'can_attach_in_private_messages',
+        'can_send_bulletins' => 'can_send_bulletins',
+        'can_access_cp' => 'can_access_cp',
+        'channel_permissions' => 'channel_permissions',
+        'channel_field_permissions' => 'channel_field_permissions',
+        'channel_category_permissions' => 'channel_category_permissions',
+        'channel_status_permissions' => 'channel_status_permissions',
+        'can_admin_channels' => 'can_admin_channels',
+        'category_actions' => 'category_actions',
+        'channel_entry_actions' => 'channel_entry_actions',
+        'allowed_channels' => 'allowed_channels',
+        'asset_upload_directories' => 'asset_upload_directories',
+        'assets' => 'assets',
+        'rte_toolsets' => 'rte_toolsets',
+        'member_group_actions' => 'member_group_actions',
+        'member_actions' => 'member_actions',
+        'can_admin_design' => 'can_admin_design',
+        'template_groups' => 'template_groups',
+        'template_partials' => 'template_partials',
+        'template_variables' => 'template_variables',
+        'template_permissions' => 'template_permissions',
+        'allowed_template_groups' => 'allowed_template_groups',
+        'can_admin_modules' => 'can_admin_modules',
+        'addons_access' => 'addons_access',
+        'access_tools' => 'access_tools',
+        'access_settings' => 'access_settings'
+	  ]
+
+	  permissions.each do |key, item|
+        it 'toggles ' + key + ' member group permissions' do
+          toggle_state = Hash.new(Hash.new)
+		  @page.edit.send(:item).each_with_index do |permission_group, index|
+            toggle_state[permission_group][permission_group.value] = permission_group.checked?
+			
+			# Handle checkbox groups vs y/n radios
+            if permission_group.value == 'y' || permission_group.value == 'n' then
+            	if ! permission_group.checked? then
+				  permission_group.click
+            	end
+            else
+				permission_group.click
+            end
+		  end
+
+		  submit_form
+
+		  @page.edit.send(:item).each_with_index do |permission_group, index|
+            permission_group.checked?.should == toggle_state[permission_group][permission_group.value]
+		  end
+        end
+	  end
+	end
+
+  end
+
 
   context 'when using MSM' do
     before :each do
@@ -183,6 +260,15 @@ feature 'Member Group List' do
     @page.edit.access_tools[1].checked?.should == false
     @page.edit.access_tools[2].checked?.should == true
     @page.edit.access_tools[3].checked?.should == true
+  end
+
+  def submit_form
+    @page.edit.submit.click
+
+    @page.list.groups.last.find('li.edit a').click
+
+    @page.list.all_there?.should == false
+    @page.edit.all_there?.should == true
   end
 
   def create_msm_site
