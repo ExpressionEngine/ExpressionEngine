@@ -479,11 +479,18 @@ class Template extends AbstractDesignController {
 		}
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
-			'settings' => $this->renderSettingsPartial($template),
-			'access' => $this->renderAccessPartial($template),
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
+			'tabs' => array(
+				'settings' => $this->renderSettingsPartial($template),
+				'access' => $this->renderAccessPartial($template),
+			),
+			'sections' => array(),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving',
+			'cp_page_title' => lang('template_settings_and_access')
 		);
-		ee()->cp->render('design/template/settings', $vars);
+		ee()->cp->render('_shared/form', $vars);
 	}
 
 	public function search()
