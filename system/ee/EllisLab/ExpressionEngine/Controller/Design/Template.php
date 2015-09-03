@@ -827,7 +827,7 @@ class Template extends AbstractDesignController {
 			$templates = array();
 			foreach ($template_group->getTemplates() as $t)
 			{
-				$templates[$template->template_id] = $t->template_name;
+				$templates[$t->template_id] = $t->template_name;
 			}
 			$existing_templates[$template_group->group_name] = $templates;
 		}
