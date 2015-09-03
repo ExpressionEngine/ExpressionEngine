@@ -144,13 +144,10 @@ feature 'Member Group List' do
     @page.edit.can_access_cp[0].click
     @page.edit.cp_homepage[1].click
     @page.edit.footer_helper_links.each(&:click)
-    @page.edit.can_admin_channels[0].click
-    @page.edit.category_actions.each(&:click)
     @page.edit.channel_entry_actions.each(&:click)
     @page.edit.member_actions.each(&:click)
     @page.edit.allowed_channels.each(&:click)
     @page.edit.can_admin_design[0].click
-    @page.edit.can_admin_templates[0].click
     @page.edit.allowed_template_groups.each(&:click)
     @page.edit.can_admin_modules[0].click
     @page.edit.addons_access.each(&:click)
@@ -167,7 +164,6 @@ feature 'Member Group List' do
     @page.edit.name.set 'Editors'
     @page.edit.description.set 'Editors description.'
     @page.edit.security_lock[1].click
-    @page.edit.can_admin_templates[1].click
     @page.edit.allowed_template_groups.each(&:click)
     @page.edit.access_tools[0].click
     @page.edit.access_tools[1].click
@@ -182,8 +178,6 @@ feature 'Member Group List' do
     @page.edit.description.value.should == 'Editors description.'
     @page.edit.security_lock[0].checked?.should == false
     @page.edit.security_lock[1].checked?.should == true
-    @page.edit.can_admin_templates[0].checked?.should == false
-    @page.edit.can_admin_templates[1].checked?.should == true
     @page.edit.allowed_template_groups.each { |e| e.checked?.should == false }
     @page.edit.access_tools[0].checked?.should == false
     @page.edit.access_tools[1].checked?.should == false
