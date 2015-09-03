@@ -136,6 +136,12 @@ class Template extends FileSyncedModel {
 		}
 
 		$group = $this->getTemplateGroup();
+
+		if ( ! isset($group))
+		{
+			return NULL;
+		}
+
 		$group->ensureFolderExists();
 
 		$path = $group->getFolderPath();

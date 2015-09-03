@@ -392,7 +392,8 @@ abstract class AbstractDesign extends CP_Controller {
 				array('toolbar_items' => array(
 					'view' => array(
 						'href' => ee()->cp->masked_url($view_url),
-						'title' => lang('view')
+						'title' => lang('view'),
+						'rel' => 'external'
 					),
 					'edit' => array(
 						'href' => $edit_url,
