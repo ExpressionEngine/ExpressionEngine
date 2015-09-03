@@ -195,6 +195,16 @@ class Template extends AbstractDesignController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
+		if ($version_id = ee()->input->get('version'))
+		{
+			$version = ee('Model')->get('RevisionTracker', $version_id)->first();
+
+			if ($version)
+			{
+				$template->template_data = $version->item_data;
+			}
+		}
+
 		if ( ! $template)
 		{
 			show_error(lang('error_no_template'));
@@ -218,6 +228,8 @@ class Template extends AbstractDesignController {
 			if ($result->isValid())
 			{
 				$template->save();
+				// Save a new revision
+				$this->saveNewTemplateRevision($template);
 
 				$alert = ee('CP/Alert')->makeInline('template-form')
 					->asSuccess()
@@ -264,6 +276,12 @@ class Template extends AbstractDesignController {
 			'sections' => array(),
 		);
 
+		if (bool_config_item('save_tmpl_revisions'))
+		{
+			$vars['tabs']['revisions'] = $this->renderRevisionsPartial($template, $version_id);
+		}
+
+
 		$view_url = ee()->functions->fetch_site_index();
 		$view_url = rtrim($view_url, '/').'/';
 
@@ -290,6 +308,83 @@ class Template extends AbstractDesignController {
 		ee()->output->set_header("X-XSS-Protection: 0");
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Renders the template revisions table for the Revisions tab
+	 *
+	 * @param	Template	$template	Template object
+	 * @param	int			$version_id	ID of template version to mark as selected
+	 * @return	string		Table HTML for insertion into Template edit form
+	 */
+	protected function renderRevisionsPartial($template, $version_id = FALSE)
+	{
+		if ( ! bool_config_item('save_tmpl_revisions'))
+		{
+			return FALSE;
+		}
+
+		$table = ee('CP/Table');
+
+		$table->setColumns(
+			array(
+				'rev_id',
+				'rev_date',
+				'rev_author',
+				'manage' => array(
+					'encode' => FALSE
+				)
+			)
+		);
+		$table->setNoResultsText(lang('no_revisions'));
+
+		$data = array();
+		$i = 1;
+
+		foreach ($template->Versions as $version)
+		{
+			$attrs = array();
+
+			// Last item should be marked as current
+			if ($template->Versions->count() == $i)
+			{
+				$toolbar = '<span class="st-open">' . lang('current') . '</span>';
+			}
+			else
+			{
+				$toolbar = ee('View')->make('_shared/toolbar')->render(array(
+					'toolbar_items' => array(
+							'txt-only' => array(
+								'href' => ee('CP/URL', 'design/template/edit/' . $template->getId(), array('version' => $version->getId())),
+								'title' => lang('view'),
+								'content' => lang('view')
+							),
+						)
+					)
+				);
+			}
+
+			// Mark currently-loaded version as selected
+			if (( ! $version_id && $template->Versions->count() == $i) OR $version_id == $version->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					ee()->localize->human_time($version->item_date),
+					$version->Author->getMemberName(),
+					$toolbar
+				)
+			);
+			$i++;
+		}
+
+		$table->setData($data);
+
+		return ee('View')->make('_shared/table')->render($table->viewData(''));
 	}
 
 	public function settings($template_id)

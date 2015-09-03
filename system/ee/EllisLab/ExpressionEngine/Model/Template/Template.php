@@ -78,6 +78,11 @@ class Template extends FileSyncedModel {
 			'to_key' => 'live_look_template',
 			'from_key' => 'template_id',
 			'weak' => TRUE,
+		),
+		'Versions' => array(
+			'type' => 'hasMany',
+			'model' => 'RevisionTracker',
+			'to_key' => 'item_id',
 		)
 	);
 
