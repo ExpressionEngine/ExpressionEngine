@@ -845,7 +845,7 @@ class Template extends AbstractDesignController {
 					'title' => 'template_route_override',
 					'desc' => 'template_route_override_desc',
 					'fields' => array(
-						'refresh' => array(
+						'route' => array(
 							'type' => 'text',
 							'value' => $route->route
 						)
@@ -855,7 +855,7 @@ class Template extends AbstractDesignController {
 					'title' => 'require_all_segments',
 					'desc' => 'require_all_segments_desc',
 					'fields' => array(
-						'allow_php' => array(
+						'route_required' => array(
 							'type' => 'yes_no',
 							'value' => $route->route_required
 						)
