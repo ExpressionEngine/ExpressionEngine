@@ -6,8 +6,8 @@ use \EE_Route;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-
 use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,8 +51,11 @@ class Template extends AbstractDesignController {
 
 	public function create($group_name)
 	{
+		$errors = NULL;
+
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $group)
@@ -79,8 +82,53 @@ class Template extends AbstractDesignController {
 			$existing_templates[$template_group->group_name] = $templates;
 		}
 
+		$template = ee('Model')->make('Template');
+		$template->site_id = ee()->config->item('site_id');
+		$template->TemplateGroup = $group;
+
+		// Duplicate a template?
+		if (ee()->input->post('template_id'))
+		{
+			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
+				->first()
+				->getValues();
+			unset($master_template['template_id']);
+
+			$template->set($master_template);
+		}
+
+		$result = $this->validateTemplate($template);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$template->save();
+
+				$alert = ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_template_success'))
+					->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
+					->defer();
+
+				ee()->session->set_flashdata('template_id', $template->template_id);
+
+				if (ee()->input->post('submit') == 'edit')
+				{
+					ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				}
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL', 'design/template/create/' . $group_name),
 			'sections' => array(
 				array(
@@ -114,72 +162,24 @@ class Template extends AbstractDesignController {
 						)
 					),
 				)
-			)
-		);
-
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'template_name',
-				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
 			),
-			array(
-				'field' => 'template_type',
-				'label' => 'lang:template_type',
-				'rules' => 'required'
-			)
-		));
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if (ee()->input->post('template_id'))
-			{
-				$template = ee('Model')->get('Template', ee()->input->post('template_id'));
-				$template->template_id = NULL;
-			}
-			else
-			{
-				$template = ee('Model')->make('Template');
-			}
-			$template->site_id = ee()->config->item('site_id');
-			$template->group_id = $group->group_id;
-			$template->template_name = ee()->input->post('template_name');
-			$template->template_type = ee()->input->post('template_type');
-			$template->edit_date = ee()->localize->now;
-			$template->last_author_id = ee()->session->userdata('member_id');
-			$template->save();
-
-			ee()->session->set_flashdata('template_id', $template->template_id);
-
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('create_template_success'))
-				->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
-				->defer();
-
-			if (ee()->input->post('submit') == 'edit')
-			{
-				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
-			}
-			else
-			{
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
-			}
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('create_template_error'))
-				->addToBody(lang('create_template_error_desc'))
-				->now();
-		}
+			'buttons' => array(
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'edit',
+					'text' => sprintf(lang('btn_save'), lang('template')),
+					'working' => 'btn_create_template_working'
+				),
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'finish',
+					'text' => 'btn_create_and_edit_template',
+					'working' => 'btn_create_template_working'
+				),
+			),
+		);
 
 		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_template');
@@ -189,6 +189,8 @@ class Template extends AbstractDesignController {
 
 	public function edit($template_id)
 	{
+		$errors = NULL;
+
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -205,134 +207,45 @@ class Template extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'template_name',
-				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
-			),
-			array(
-				'field' => 'template_type',
-				'label' => 'lang:template_type',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'cache',
-				'label' => 'lang:enable_caching',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'allow_php',
-				'label' => 'lang:enable_php',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'php_parse_location',
-				'label' => 'lang:parse_stage',
-				'rules' => 'enum[i,o]'
-			),
-			array(
-				'field' => 'enable_http_auth',
-				'label' => 'lang:enable_http_authentication',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'route',
-				'label' => 'lang:template_route_override',
-				'rules' => 'callback__template_route_checks'
-			),
-			array(
-				'field' => 'route_required',
-				'label' => 'lang:require_all_segments',
-				'rules' => 'enum[y,n]'
-			)
-		));
+		$template_result = $this->validateTemplate($template);
+		$route_result = $this->validateTemplateRoute($template);
+		$result = $this->combineResults($template_result, $route_result);
 
-		if (AJAX_REQUEST)
+		if ($result instanceOf ValidationResult)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$template->template_data = ee()->input->post('template_data');
-			$template->template_notes = ee()->input->post('template_notes');
-			$template->edit_date = ee()->localize->now;
-			$template->last_author_id = ee()->session->userdata('member_id');
+			$errors = $result;
 
-			$template = $this->updateSettingsAndAccess($template);
-
-			$template->save();
-
-			$alert = ee('CP/Alert')->makeInline('template-form')
-				->asSuccess()
-				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
-				->defer();
-
-			if (ee()->input->post('submit') == 'finish')
+			if ($result->isValid())
 			{
-				ee()->session->set_flashdata('template_id', $template->template_id);
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				$template->save();
+
+				$alert = ee('CP/Alert')->makeInline('template-form')
+					->asSuccess()
+					->withTitle(lang('update_template_success'))
+					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+					->defer();
+
+				if (ee()->input->post('submit') == 'finish')
+				{
+					ee()->session->set_flashdata('template_id', $template->template_id);
+					ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				}
+
+				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 			}
 
-			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+			var_dump($errors->getAllErrors());
 		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('template-form')
-				->asIssue()
-				->withTitle(lang('update_template_error'))
-				->addToBody(lang('update_template_error_desc'))
-				->now();
-		}
-
-		$author = $template->getLastAuthor();
-
-		$edit_fields = array(
-			array(
-				'title' => '',
-				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
-				'wide' => TRUE,
-				'fields' => array(
-					'template_data' => array(
-						'type' => 'textarea',
-						'attrs' => 'class="template-edit"',
-						'value' => $template->template_data,
-					)
-				)
-			)
-		);
-
-		$edit = ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => NULL, 'settings' => $edit_fields));
-
-		$notes_fields = array(
-			array(
-				'title' => 'template_notes',
-				'desc' => 'template_notes_desc',
-				'wide' => TRUE,
-				'fields' => array(
-					'template_notes' => array(
-						'type' => 'textarea',
-						'value' => $template->template_notes,
-					)
-				)
-			)
-		);
-
-		$notes = ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => NULL, 'settings' => $notes_fields));
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
 			'tabs' => array(
-				'edit' => $edit,
-				'notes' => $notes,
-				'settings' => $this->renderSettingsPartial($template),
-				'access' => $this->renderAccessPartial($template),
+				'edit' => $this->renderEditPartial($template, $errors),
+				'notes' => $this->renderNotesPartial($template, $errors),
+				'settings' => $this->renderSettingsPartial($template, $errors),
+				'access' => $this->renderAccessPartial($template, $errors),
 			),
 			'buttons' => array(
 				array(
@@ -383,6 +296,8 @@ class Template extends AbstractDesignController {
 
 	public function settings($template_id)
 	{
+		$errors = NULL;
+
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -399,91 +314,36 @@ class Template extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'template_name',
-				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
-			),
-			array(
-				'field' => 'template_type',
-				'label' => 'lang:template_type',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'cache',
-				'label' => 'lang:enable_caching',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'allow_php',
-				'label' => 'lang:enable_php',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'refresh',
-				'label' => 'lang:refresh_interval',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'php_parse_location',
-				'label' => 'lang:parse_stage',
-				'rules' => 'enum[i,o]'
-			),
-			array(
-				'field' => 'enable_http_auth',
-				'label' => 'lang:enable_http_authentication',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'route',
-				'label' => 'lang:template_route_override',
-				'rules' => 'callback__template_route_checks'
-			),
-			array(
-				'field' => 'route_required',
-				'label' => 'lang:require_all_segments',
-				'rules' => 'enum[y,n]'
-			)
-		));
+		$template_result = $this->validateTemplate($template);
+		$route_result = $this->validateTemplateRoute($template);
+		$result = $this->combineResults($template_result, $route_result);
 
-		if (AJAX_REQUEST && ! empty($_POST))
+		if ($result instanceOf ValidationResult)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$template = $this->updateSettingsAndAccess($template);
+			$errors = $result;
 
-			$template->save();
+			if ($result->isValid())
+			{
+				$template->save();
 
-			$alert = ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name.'/'.$template->template_name))
-				->defer();
+				$alert = ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('update_template_success'))
+					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+					->defer();
 
-			ee()->session->set_flashdata('template_id', $template->template_id);
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('template-form')
-				->asIssue()
-				->withTitle(lang('update_template_error'))
-				->addToBody(lang('update_template_error_desc'))
-				->defer();
-			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+				ee()->session->set_flashdata('template_id', $template->template_id);
+				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			}
 		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
 			'tabs' => array(
-				'settings' => $this->renderSettingsPartial($template),
-				'access' => $this->renderAccessPartial($template),
+				'settings' => $this->renderSettingsPartial($template, $errors),
+				'access' => $this->renderAccessPartial($template, $errors),
 			),
 			'sections' => array(),
 			'save_btn_text' => 'btn_save_settings',
@@ -560,65 +420,114 @@ class Template extends AbstractDesignController {
 		ee()->cp->render('design/index', $vars);
 	}
 
-	private function updateSettingsAndAccess(TemplateModel $template)
+	private function validateTemplate(TemplateModel $template)
 	{
-		// Settings
-		$template->template_name = ee()->input->post('template_name');
-		$template->template_type = ee()->input->post('template_type');
-		$template->cache = ee()->input->post('cache');
-		$template->refresh = ee()->input->post('refresh');
-		$template->allow_php = ee()->input->post('allow_php');
-		$template->php_parse_location = ee()->input->post('php_parse_location');
-		$template->hits = ee()->input->post('hits');
-
-		// Access
-		$template->no_auth_bounce = ee()->input->post('no_auth_bounce');
-		$template->enable_http_auth = ee()->input->post('enable_http_auth');
-
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', 1)
-			->all();
-
-		$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
-
-
-		$no_access = $member_groups->filter(function($group) use ($allowed_member_groups)
+		if (empty($_POST))
 		{
-			return ! in_array($group->group_id, $allowed_member_groups);
-		});
-
-		$template->NoAccess = $no_access;
-
-		// Route
-		$route = $template->getTemplateRoute();
-
-		if ( ! $route)
-		{
-			$route = ee('Model')->make('TemplateRoute');
-			$route->template_id = $template->template_id;
+			return FALSE;
 		}
 
-		$route->route = ee()->input->post('route');
-		$route->route_required = ee()->input->post('route_required');
+		$template->set($_POST);
+		$template->edit_date = ee()->localize->now;
+		$template->last_author_id = ee()->session->userdata('member_id');
 
-		if (empty($route->route))
+		$result = $template->validate();
+
+		if ($response = $this->ajaxValidation($result))
 		{
-			if ($route->route_id)
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'))
+				->now();
+		}
+		else
+		{
+			$member_groups = ee('Model')->get('MemberGroup')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', '!=', 1)
+				->all();
+
+			$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
+
+			$template->NoAccess = $member_groups->filter(function($group) use ($allowed_member_groups)
 			{
-				$route->delete();
-			}
+				return ! in_array($group->group_id, $allowed_member_groups);
+			});
+		}
+
+		return $result;
+	}
+
+	private function validateTemplateRoute(TemplateModel $template)
+	{
+		if ( ! ee()->input->post('route'))
+		{
+			$template->TemplateRoute = NULL;
+			return FALSE;
+		}
+
+		if ( ! $template->TemplateRoute)
+		{
+			$template->TemplateRoute = ee('Model')->make('TemplateRoute');
+		}
+
+		$template->TemplateRoute->set($_POST);
+		$result = $template->TemplateRoute->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'))
+				->now();
 		}
 		else
 		{
 			ee()->load->library('template_router');
-			$ee_route = new EE_Route($route->route, $route->route_required);
-			$route->route_parsed = $ee_route->compile();
-
-			$route->save();
+			$ee_route = new EE_Route($template->TemplateRoute->route, $template->TemplateRoute->route_required);
+			$template->TemplateRoute->route_parsed = $ee_route->compile();
 		}
 
-		return $template;
+		return $result;
+	}
+
+	private function combineResults($one, $two)
+	{
+		$result = FALSE;
+
+		if ($one instanceOf ValidationResult)
+		{
+			$result = $one;
+
+			if ($two instanceOf ValidationResult && $two->failed())
+			{
+				foreach ($two->getFailed() as $field => $rules)
+				{
+					foreach ($rules as $rule)
+					{
+						$result->addFailed($field, $rule);
+					}
+				}
+			}
+		}
+		elseif ($two instanceOf ValidationResult)
+		{
+			$result = $two;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -628,7 +537,6 @@ class Template extends AbstractDesignController {
 	 * template type selection dropdowns, optionally merged with
 	 * user-defined template types via the template_types hook.
 	 *
-	 * @access private
 	 * @return array Array of available template types
 	 */
 	private function getTemplateTypes()
@@ -664,7 +572,50 @@ class Template extends AbstractDesignController {
 		return $template_types;
 	}
 
-	private function renderSettingsPartial(TemplateModel $template)
+	private function renderEditPartial(TemplateModel $template, $errors)
+	{
+		$author = $template->getLastAuthor();
+
+		$section = array(
+			array(
+				'title' => '',
+				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
+				'wide' => TRUE,
+				'fields' => array(
+					'template_data' => array(
+						'type' => 'textarea',
+						'attrs' => 'class="template-edit"',
+						'value' => $template->template_data,
+					)
+				)
+			)
+		);
+
+		return ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	private function renderNotesPartial(TemplateModel $template, $errors)
+	{
+		$section = array(
+			array(
+				'title' => 'template_notes',
+				'desc' => 'template_notes_desc',
+				'wide' => TRUE,
+				'fields' => array(
+					'template_notes' => array(
+						'type' => 'textarea',
+						'value' => $template->template_notes,
+					)
+				)
+			)
+		);
+
+		return ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	private function renderSettingsPartial(TemplateModel $template, $errors)
 	{
 		$sections = array(
 			array(
@@ -768,14 +719,13 @@ class Template extends AbstractDesignController {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
-				// , 'errors' => $errors
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
 	}
 
-	private function renderAccessPartial(TemplateModel $template)
+	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
 		$existing_templates = array();
 
@@ -875,80 +825,10 @@ class Template extends AbstractDesignController {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
-				// , 'errors' => $errors
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
-	}
-
-	/**
-	  *	 Check Template Name
-	  */
-	public function _template_name_checks($str, $group_id)
-	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $str))
-		{
-			ee()->lang->loadfile('admin');
-			ee()->form_validation->set_message('_template_name_checks', lang('illegal_characters'));
-			return FALSE;
-		}
-
-		$reserved_names = array('act', 'css');
-
-		if (in_array($str, $reserved_names))
-		{
-			ee()->form_validation->set_message('_template_name_checks', lang('reserved_name'));
-			return FALSE;
-		}
-
-		$count = ee('Model')->get('Template')
-			->filter('group_id', $group_id)
-			->filter('template_name', $str)
-			->count();
-
-		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $count > 0)
-		{
-			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
-			return FALSE;
-		}
-		elseif ($count > 1)
-		{
-			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	public function _template_route_checks($str)
-	{
-		if (empty($str))
-		{
-			return TRUE;
-		}
-
-		ee()->load->library('template_router');
-		$ee_route = new EE_Route($str, ee()->input->post('route_required'));
-
-		$template_ids = ee('Model')->get('Template')
-			->fields('template_id')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all()
-			->pluck('template_id');
-
-		$routes = ee('Model')->get('TemplateRoute')
-			->filter('template_id', 'IN', $template_ids)
-			->all();
-
-		foreach ($routes as $route)
-		{
-			if ($ee_route->equals($route))
-			{
-				ee()->form_validation->set_message('_template_route_checks', lang('duplicate_route'));
-				return FALSE;
-			}
-		}
 	}
 }
 // EOF
