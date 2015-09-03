@@ -23,35 +23,22 @@ class MemberGroup extends Model {
 		'can_access_footer_report_bug'   => 'boolString',
 		'can_access_footer_new_ticket'   => 'boolString',
 		'can_access_footer_user_guide'   => 'boolString',
-		'can_access_content'             => 'boolString',
 		'can_access_publish'             => 'boolString',
 		'can_access_edit'                => 'boolString',
 		'can_access_files'               => 'boolString',
-		'can_access_fieldtypes'          => 'boolString',
 		'can_access_design'              => 'boolString',
 		'can_access_addons'              => 'boolString',
-		'can_access_modules'             => 'boolString',
-		'can_access_extensions'          => 'boolString',
-		'can_access_plugins'             => 'boolString',
 		'can_access_members'             => 'boolString',
-		'can_access_admin'               => 'boolString',
 		'can_access_sys_prefs'           => 'boolString',
-		'can_access_content_prefs'       => 'boolString',
-		'can_access_tools'               => 'boolString',
 		'can_access_comm'                => 'boolString',
 		'can_access_utilities'           => 'boolString',
 		'can_access_data'                => 'boolString',
 		'can_access_logs'                => 'boolString',
-		'can_admin_channels'             => 'boolString',
-		'can_admin_upload_prefs'         => 'boolString',
 		'can_admin_design'               => 'boolString',
-		'can_admin_members'              => 'boolString',
 		'can_delete_members'             => 'boolString',
-		'can_admin_mbr_groups'           => 'boolString',
 		'can_admin_mbr_templates'        => 'boolString',
 		'can_ban_users'                  => 'boolString',
 		'can_admin_modules'              => 'boolString',
-		'can_admin_templates'            => 'boolString',
 		'can_edit_categories'            => 'boolString',
 		'can_delete_categories'          => 'boolString',
 		'can_view_other_entries'         => 'boolString',
@@ -174,35 +161,22 @@ class MemberGroup extends Model {
 	protected $can_access_footer_report_bug;
 	protected $can_access_footer_new_ticket;
 	protected $can_access_footer_user_guide;
-	protected $can_access_content;
 	protected $can_access_publish;
 	protected $can_access_edit;
 	protected $can_access_files;
-	protected $can_access_fieldtypes;
 	protected $can_access_design;
 	protected $can_access_addons;
-	protected $can_access_modules;
-	protected $can_access_extensions;
-	protected $can_access_plugins;
 	protected $can_access_members;
-	protected $can_access_admin;
 	protected $can_access_sys_prefs;
-	protected $can_access_content_prefs;
-	protected $can_access_tools;
 	protected $can_access_comm;
 	protected $can_access_utilities;
 	protected $can_access_data;
 	protected $can_access_logs;
-	protected $can_admin_channels;
-	protected $can_admin_upload_prefs;
 	protected $can_admin_design;
-	protected $can_admin_members;
 	protected $can_delete_members;
-	protected $can_admin_mbr_groups;
 	protected $can_admin_mbr_templates;
 	protected $can_ban_users;
 	protected $can_admin_modules;
-	protected $can_admin_templates;
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 	protected $can_view_other_entries;
