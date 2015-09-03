@@ -366,6 +366,7 @@ class Groups extends Members\Members {
 								'choices' => array(
 									'include_in_authorlist' => lang('include_in_authorlist'),
 									'include_in_memberlist' => lang('include_in_memberlist'),
+									'include_in_mailinglist' => lang('include_in_mailinglist'),
 								),
 								'value' => element('include_member_in', $values)
 							),
@@ -656,29 +657,65 @@ class Groups extends Members\Members {
 				),
 				'channels' => array(
 					array(
-						'title' => 'can_admin_channels',
-						'desc' => 'can_admin_channels_desc',
+						'title' => 'channels',
+						'desc' => 'allowed_actions_desc',
 						'fields' => array(
-							'can_admin_channels' => array(
-								'type' => 'yes_no',
-								'value' => element('can_admin_channels', $values)
+							'channel_permissions' => array(
+								'choices' => array(
+									'can_create_channels' => lang('create_channels'),
+									'can_edit_channels' => lang('edit_channels'),
+									'can_delete_channels' => lang('delete_channels')
+								),
+								'type' => 'checkbox',
+								'value' => element('channel_permissions', $values)
 							)
 						)
 					),
 					array(
-						'title' => 'category_actions',
-						'desc' => 'category_actions_desc',
+						'title' => 'channel_fields',
+						'desc' => 'allowed_actions_desc',
 						'fields' => array(
-							'category_actions' => array(
-								'type' => 'checkbox',
+							'channel_field_permissions' => array(
 								'choices' => array(
-									'can_edit_categories' => lang('can_edit_categories'),
-									'can_delete_categories' => lang('can_delete_categories')
+									'can_create_channel_fields' => lang('create_channel_fields'),
+									'can_edit_channel_fields' => lang('edit_channel_fields'),
+									'can_delete_channel_fields' => lang('delete_channel_fields')
 								),
-								'value' => element('category_actions', $values)
-							),
+								'type' => 'checkbox',
+								'value' => element('channel_field_permissions', $values)
+							)
 						)
-					)
+					),
+					array(
+						'title' => 'channel_categories',
+						'desc' => 'allowed_actions_desc',
+						'fields' => array(
+							'channel_category_permissions' => array(
+								'choices' => array(
+									'can_create_categories' => lang('create_categories'),
+									'can_edit_categories' => lang('edit_categories'),
+									'can_delete_categories' => lang('delete_categories')
+								),
+								'type' => 'checkbox',
+								'value' => element('channel_category_permissions', $values)
+							)
+						)
+					),
+					array(
+						'title' => 'channel_statuses',
+						'desc' => 'allowed_actions_desc',
+						'fields' => array(
+							'channel_status_permissions' => array(
+								'choices' => array(
+									'can_create_statuses' => lang('create_statuses'),
+									'can_edit_statuses' => lang('edit_statuses'),
+									'can_delete_statuses' => lang('delete_statuses')
+								),
+								'type' => 'checkbox',
+								'value' => element('channel_status_permissions', $values)
+							)
+						)
+					),
 				),
 				'channel_entries_management' => array(
 					array(
@@ -689,6 +726,8 @@ class Groups extends Members\Members {
 							'channel_entry_actions' => array(
 								'type' => 'checkbox',
 								'choices' => array(
+									'can_create_entries' => lang('can_create_entries'),
+									'can_edit_self_entries' => lang('can_edit_self_entries'),
 									'can_delete_self_entries' => lang('can_delete_self_entries'),
 									'can_edit_other_entries' => lang('can_edit_other_entries'),
 									'can_delete_all_entries' => lang('can_delete_all_entries'),
@@ -710,6 +749,71 @@ class Groups extends Members\Members {
 						)
 					)
 				),
+				'content' => array(
+					array(
+						'title' => 'asset_upload_directories',
+						'desc' => 'allowed_actions_desc',
+						'fields' => array(
+							'asset_upload_directories' => array(
+								'choices' => array(
+									'can_create_upload_directories' => 'create_upload_directories',
+									'can_edit_upload_directories' => 'edit_upload_directories',
+									'can_delete_upload_directories' => 'delete_upload_directories',
+									),
+								'type' => 'checkbox',
+								'value' => element('asset_upload_directories', $values)
+							)
+						)
+					),
+					array(
+						'title' => 'assets',
+						'desc' => 'allowed_actions_desc',
+						'fields' => array(
+							'assets' => array(
+								'choices' => array(
+									'can_upload_new_assets' => 'upload_new_assets',
+									'can_edit_assets' => 'edit_assets',
+									'can_delete_assets' => 'delete_assets',
+								),
+								'type' => 'checkbox',
+								'value' => element('assets', $values)
+							)
+						)
+					),
+					array(
+						'title' => 'rte_toolsets',
+						'desc' => 'allowed_actions_desc',
+						'fields' => array(
+							'rte_toolsets' => array(
+								'choices' => array(
+									'can_upload_new_toolsets' => 'upload_new_toolsets',
+									'can_edit_toolsets' => 'edit_toolsets',
+									'can_delete_toolsets' => 'delete_toolsets'
+								),
+								'type' => 'checkbox',
+								'value' => element('rte_toolsets', $values)
+							)
+						)
+					),
+				),
+				'member_groups' => array(
+					array(
+						'title' => 'allowed_actions',
+						'desc' => 'allowed_actions_desc',
+						'caution' => TRUE,
+						'fields' => array(
+							'member_group_actions' => array(
+								'type' => 'checkbox',
+								'choices' => array(
+									'can_create_member_groups' => lang('create_member_groups'),
+									'can_edit_member_groups' => lang('edit_member_groups'),
+									'can_delete_member_groups' => lang('delete_member_groups'),
+								),
+								'value' => element('member_actions', $values)
+							)
+						)
+					)
+				),
 				'members' => array(
 					array(
 						'title' => 'allowed_actions',
@@ -719,7 +823,8 @@ class Groups extends Members\Members {
 							'member_actions' => array(
 								'type' => 'checkbox',
 								'choices' => array(
-									'can_admin_members' => lang('can_admin_members'),
+									'can_create_members' => lang('create_members'),
+									'can_edit_members' => lang('edit_members'),
 									'can_delete_members' => lang('can_delete_members'),
 									'can_ban_users' => lang('can_ban_users'),
 									'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
@@ -741,17 +846,71 @@ class Groups extends Members\Members {
 						)
 					),
 					array(
-						'title' => 'can_admin_templates',
-						'desc' => 'can_admin_templates_desc',
+						'title' => 'template_groups',
+						'desc' => 'allowed_actions_desc',
+						'caution' => TRUE,
 						'fields' => array(
-							'can_admin_templates' => array(
-								'type' => 'yes_no',
-								'value' => element('can_admin_templates', $values)
+							'template_groups' => array(
+								'choices' => array(
+									'can_create_template_groups' => lang('create_template_groups'),
+									'can_edit_template_groups' => lang('edit_template_groups'),
+									'can_delete_template_groups' => lang('delete_template_groups'),
+								),
+								'type' => 'checkbox',
+								'value' => element('template_groups', $values)
 							)
 						)
-					)
+					),
+					array(
+						'title' => 'template_partials',
+						'desc' => 'allowed_actions_desc',
+						'caution' => TRUE,
+						'fields' => array(
+							'template_partials' => array(
+								'choices' => array(
+									'can_create_template_partials' => lang('create_template_partials'),
+									'can_edit_template_partials' => lang('edit_template_partials'),
+									'can_delete_template_partials' => lang('delete_template_partials'),
+								),
+								'type' => 'checkbox',
+								'value' => element('template_partials', $values)
+							)
+						)
+					),
+					array(
+						'title' => 'template_variables',
+						'desc' => 'allowed_actions_desc',
+						'caution' => TRUE,
+						'fields' => array(
+							'template_variables' => array(
+								'choices' => array(
+									'can_create_template_variables' => lang('create_template_variables'),
+									'can_edit_template_variables' => lang('edit_template_variables'),
+									'can_delete_template_variables' => lang('delete_template_variables'),
+								),
+								'type' => 'checkbox',
+								'value' => element('template_variables', $values)
+							)
+						)
+					),
 				),
 				'template_management' => array(
+					array(
+						'title' => 'allowed_actions',
+						'desc' => 'template_permissions_desc',
+						'fields' => array(
+							'template_permissions' => array(
+								'type' => 'checkbox',
+								'choices' => array(
+									'can_manage_template_settings' => 'manage_template_settings',
+									'can_create_new_templates' => 'create_new_templates',
+									'can_edit_templates' => 'edit_templates',
+									'can_delete_templates' => 'delete_templates'
+								),
+								'value' => element('template_permissions', $values)
+							),
+						)
+					),
 					array(
 						'title' => 'allowed_template_groups',
 						'desc' => 'allowed_template_groups_desc',
@@ -806,6 +965,26 @@ class Groups extends Members\Members {
 									'can_access_logs' => lang('can_access_logs')
 								),
 								'value' => element('access_tools', $values)
+							),
+						)
+					)
+				),
+				'settings' => array(
+					array(
+						'title' => 'access_settings',
+						'desc' => 'access_settings_desc',
+						'caution' => TRUE,
+						'fields' => array(
+							'access_settings' => array(
+								'type' => 'checkbox',
+								'choices' => array(
+									'can_access_general_settings' => lang('can_access_general_settings'),
+									'can_access_content_settings' => lang('can_access_content_settings'),
+									'can_access_member_settings' => lang('can_access_member_settings'),
+									'can_access_security_settings' => lang('can_access_security_settings'),
+									'can_access_addon_settings' => lang('can_access_addon_settings'),
+								),
+								'value' => element('access_settings', $values)
 							),
 						)
 					)
