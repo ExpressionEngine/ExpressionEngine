@@ -773,7 +773,8 @@ class Updater {
 		// Add new granular permissions columns
 		$columns = array();
 		$permissions = array(
-			'can_access_addons',
+			'can_create_entries',
+			'can_edit_self_entries',
 			'can_upload_new_assets',
 			'can_edit_assets',
 			'can_delete_assets',
@@ -810,7 +811,8 @@ class Updater {
 			'can_delete_template_partials',
 			'can_create_template_variables',
 			'can_delete_template_variables',
-			'can_edit_template_variables'
+			'can_edit_template_variables',
+			'can_access_security_settings'
 		);
 
 		foreach ($permissions as $permission)
@@ -927,7 +929,6 @@ class Updater {
 			'can_access_plugins',
 			'can_access_content',
 			'can_admin_channels',
-			'can_admin_mbr_groups',
 			'can_admin_members',
 			'can_admin_templates',
 			'can_access_admin',
