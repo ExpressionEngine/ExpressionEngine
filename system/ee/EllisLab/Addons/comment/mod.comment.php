@@ -2283,7 +2283,7 @@ class Comment {
 
 
 		// Force comment moderation if spam
-		$comment_string = ee()->security->xss_clean($_POST['comment']);
+		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 		$is_spam = ee('Spam')->isSpam($comment_string);
 
 		if ($is_spam === TRUE)
@@ -2857,7 +2857,7 @@ class Comment {
      * moderate_comment simply sets a particular status given a comment id.
      * This is used by the Spam Module for showing comments after they are
      * flagged as a false positive in the spam trap.
-	 * 
+	 *
 	 * @param integer $comment_id  The ID of the comment
 	 * @param string  $status  The status to set
 	 * @access public
