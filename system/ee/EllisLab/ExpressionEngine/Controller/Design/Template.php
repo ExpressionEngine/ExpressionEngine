@@ -233,8 +233,6 @@ class Template extends AbstractDesignController {
 
 				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 			}
-
-			var_dump($errors->getAllErrors());
 		}
 
 		$vars = array(
