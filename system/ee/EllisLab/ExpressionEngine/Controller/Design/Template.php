@@ -880,7 +880,7 @@ class Template extends AbstractDesignController {
 					'title' => 'enable_http_authentication',
 					'desc' => 'enable_http_authentication_desc',
 					'fields' => array(
-						'cache' => array(
+						'enable_http_auth' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => 'enable',
