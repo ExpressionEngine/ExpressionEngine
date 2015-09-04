@@ -552,7 +552,12 @@ class Template extends AbstractDesignController {
 
 		$result = $template->validate();
 
-		if ( ! isset($_POST['save_modal']) && $response = $this->ajaxValidation($result))
+		$field = ee()->input->post('ee_fv_field');
+
+		if ( ! isset($_POST['save_modal'])
+			&& isset($field)
+			&& $template->hasProperty($field)
+			&& $response = $this->ajaxValidation($result))
 		{
 			ee()->output->send_ajax_response($response);
 		}
