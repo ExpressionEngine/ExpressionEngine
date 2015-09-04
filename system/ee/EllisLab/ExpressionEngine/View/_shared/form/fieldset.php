@@ -60,9 +60,14 @@ $grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 $element = ($grid) ? 'div' : 'fieldset'; ?>
 <<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?>>
 	<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
+		<?php if (isset($setting['title'])): ?>
 		<h3><?=lang($setting['title'])?></h3>
+		<?php endif; ?>
 		<?php if (isset($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
+		<?php endif; ?>
+		<?php if (isset($setting['desc_cont'])): ?>
+		<em><?=lang($setting['desc_cont'])?></em>
 		<?php endif; ?>
 	</div>
 	<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">

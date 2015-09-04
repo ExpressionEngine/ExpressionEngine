@@ -6,8 +6,8 @@ use \EE_Route;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-
 use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,6 +51,8 @@ class Template extends AbstractDesignController {
 
 	public function create($group_name)
 	{
+		$errors = NULL;
+
 		if ( ! ee()->cp->allowed_group('can_create_new_templates'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -58,6 +60,7 @@ class Template extends AbstractDesignController {
 
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $group)
@@ -84,25 +87,54 @@ class Template extends AbstractDesignController {
 			$existing_templates[$template_group->group_name] = $templates;
 		}
 
+		$template = ee('Model')->make('Template');
+		$template->site_id = ee()->config->item('site_id');
+		$template->TemplateGroup = $group;
+
+		// Duplicate a template?
+		if (ee()->input->post('template_id'))
+		{
+			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
+				->first()
+				->getValues();
+			unset($master_template['template_id']);
+
+			$template->set($master_template);
+		}
+
+		$result = $this->validateTemplate($template);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$template->save();
+
+				$alert = ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_template_success'))
+					->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
+					->defer();
+
+				ee()->session->set_flashdata('template_id', $template->template_id);
+
+				if (ee()->input->post('submit') == 'edit')
+				{
+					ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				}
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL', 'design/template/create/' . $group_name),
-			'buttons' => array(
-				array(
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'create',
-					'text' => sprintf(lang('btn_save'), lang('template')),
-					'working' => 'btn_create_template_working'
-				),
-				array(
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'edit',
-					'text' => 'btn_create_and_edit_template',
-					'working' => 'btn_create_template_working'
-				),
-			),
 			'sections' => array(
 				array(
 					array(
@@ -135,72 +167,24 @@ class Template extends AbstractDesignController {
 						)
 					),
 				)
-			)
-		);
-
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'template_name',
-				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
 			),
-			array(
-				'field' => 'template_type',
-				'label' => 'lang:template_type',
-				'rules' => 'required'
-			)
-		));
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if (ee()->input->post('template_id'))
-			{
-				$template = ee('Model')->get('Template', ee()->input->post('template_id'));
-				$template->template_id = NULL;
-			}
-			else
-			{
-				$template = ee('Model')->make('Template');
-			}
-			$template->site_id = ee()->config->item('site_id');
-			$template->group_id = $group->group_id;
-			$template->template_name = ee()->input->post('template_name');
-			$template->template_type = ee()->input->post('template_type');
-			$template->edit_date = ee()->localize->now;
-			$template->last_author_id = ee()->session->userdata('member_id');
-			$template->save();
-
-			ee()->session->set_flashdata('template_id', $template->template_id);
-
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('create_template_success'))
-				->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
-				->defer();
-
-			if (ee()->input->post('submit') == 'edit')
-			{
-				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
-			}
-			else
-			{
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
-			}
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('create_template_error'))
-				->addToBody(lang('create_template_error_desc'))
-				->now();
-		}
+			'buttons' => array(
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'edit',
+					'text' => sprintf(lang('btn_save'), lang('template')),
+					'working' => 'btn_create_template_working'
+				),
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'finish',
+					'text' => 'btn_create_and_edit_template',
+					'working' => 'btn_create_template_working'
+				),
+			),
+		);
 
 		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_template');
@@ -210,6 +194,8 @@ class Template extends AbstractDesignController {
 
 	public function edit($template_id)
 	{
+		$errors = NULL;
+
 		if ( ! ee()->cp->allowed_group('can_edit_templates'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -241,105 +227,70 @@ class Template extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'template_name',
-				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
-			),
-			array(
-				'field' => 'template_type',
-				'label' => 'lang:template_type',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'cache',
-				'label' => 'lang:enable_caching',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'allow_php',
-				'label' => 'lang:enable_php',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'php_parse_location',
-				'label' => 'lang:parse_stage',
-				'rules' => 'enum[i,o]'
-			),
-			array(
-				'field' => 'enable_http_auth',
-				'label' => 'lang:enable_http_authentication',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'route',
-				'label' => 'lang:template_route_override',
-				'rules' => 'callback__template_route_checks'
-			),
-			array(
-				'field' => 'route_required',
-				'label' => 'lang:require_all_segments',
-				'rules' => 'enum[y,n]'
-			)
-		));
+		$template_result = $this->validateTemplate($template);
+		$route_result = $this->validateTemplateRoute($template);
+		$result = $this->combineResults($template_result, $route_result);
 
-		if (AJAX_REQUEST)
+		if ($result instanceOf ValidationResult)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$template->template_data = ee()->input->post('template_data');
-			$template->template_notes = ee()->input->post('template_notes');
-			$template->edit_date = ee()->localize->now;
-			$template->last_author_id = ee()->session->userdata('member_id');
+			$errors = $result;
 
-			$template = $this->updateSettingsAndAccess($template);
-
-			$template->save();
-
-			// Save a new revision
-			$this->saveNewTemplateRevision($template);
-
-			$alert = ee('CP/Alert')->makeInline('template-form')
-				->asSuccess()
-				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
-				->defer();
-
-			if (ee()->input->post('submit') == 'finish')
+			if ($result->isValid())
 			{
-				ee()->session->set_flashdata('template_id', $template->template_id);
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				$template->save();
+				// Save a new revision
+				$this->saveNewTemplateRevision($template);
+
+				$alert = ee('CP/Alert')->makeInline('template-form')
+					->asSuccess()
+					->withTitle(lang('update_template_success'))
+					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+					->defer();
+
+				if (ee()->input->post('submit') == 'finish')
+				{
+					ee()->session->set_flashdata('template_id', $template->template_id);
+					ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				}
+
+				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 			}
-
-			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('template-form')
-				->asIssue()
-				->withTitle(lang('update_template_error'))
-				->addToBody(lang('update_template_error_desc'))
-				->now();
-		}
-
-		$author = $template->getLastAuthor();
-
-		// @TODO add the "tabs" key and use the shared form! :) (see mcp.forum.php)
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
-			'settings' => $this->renderSettingsPartial($template),
-			'access' => $this->renderAccessPartial($template),
-			'revisions' => $this->renderRevisionsPartial($template, $version_id),
-			'template' => $template,
-			'group' => $group,
-			'author' => (empty($author)) ? '-' : $author->screen_name,
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'base_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
+			'tabs' => array(
+				'edit' => $this->renderEditPartial($template, $errors),
+				'notes' => $this->renderNotesPartial($template, $errors),
+				'settings' => $this->renderSettingsPartial($template, $errors),
+				'access' => $this->renderAccessPartial($template, $errors),
+			),
+			'buttons' => array(
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'update',
+					'text' => sprintf(lang('btn_save'), lang('template')),
+					'working' => 'btn_create_template_working'
+				),
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'finish',
+					'text' => 'btn_update_and_finish_editing',
+					'working' => 'btn_create_template_working'
+				),
+			),
+			'sections' => array(),
 		);
+
+		if (bool_config_item('save_tmpl_revisions'))
+		{
+			$vars['tabs']['revisions'] = $this->renderRevisionsPartial($template, $version_id);
+		}
+
 
 		$view_url = ee()->functions->fetch_site_index();
 		$view_url = rtrim($view_url, '/').'/';
@@ -353,12 +304,11 @@ class Template extends AbstractDesignController {
 			$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 		}
 
-		$vars['view_path'] = ee()->cp->masked_url($view_url);
-
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
+		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . ' <a class="btn action ta" href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . lang('view_rendered') . '</a>';
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'design')->compile() => lang('template_manager'),
 			ee('CP/URL', 'design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
@@ -367,15 +317,15 @@ class Template extends AbstractDesignController {
 		// Supress browser XSS check that could cause obscure bug after saving
 		ee()->output->set_header("X-XSS-Protection: 0");
 
-		ee()->cp->render('design/template/edit', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
 	 * Renders the template revisions table for the Revisions tab
 	 *
-	 * @param	Template	$template	Template object
-	 * @param	int			$version_id	ID of template version to mark as selected
-	 * @return	string		Table HTML for insertion into Template edit form
+	 * @param TemplateModel $template A Template entity
+	 * @param int $version_id ID of template version to mark as selected
+	 * @return string Table HTML for insertion into Template edit form
 	 */
 	protected function renderRevisionsPartial($template, $version_id = FALSE)
 	{
@@ -449,6 +399,8 @@ class Template extends AbstractDesignController {
 
 	public function settings($template_id)
 	{
+		$errors = NULL;
+
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -465,91 +417,61 @@ class Template extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'template_name',
-				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
-			),
-			array(
-				'field' => 'template_type',
-				'label' => 'lang:template_type',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'cache',
-				'label' => 'lang:enable_caching',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'allow_php',
-				'label' => 'lang:enable_php',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'refresh',
-				'label' => 'lang:refresh_interval',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'php_parse_location',
-				'label' => 'lang:parse_stage',
-				'rules' => 'enum[i,o]'
-			),
-			array(
-				'field' => 'enable_http_auth',
-				'label' => 'lang:enable_http_authentication',
-				'rules' => 'enum[y,n]'
-			),
-			array(
-				'field' => 'route',
-				'label' => 'lang:template_route_override',
-				'rules' => 'callback__template_route_checks'
-			),
-			array(
-				'field' => 'route_required',
-				'label' => 'lang:require_all_segments',
-				'rules' => 'enum[y,n]'
-			)
-		));
+		$template_result = $this->validateTemplate($template);
+		$route_result = $this->validateTemplateRoute($template);
+		$result = $this->combineResults($template_result, $route_result);
 
-		if (AJAX_REQUEST && ! empty($_POST))
+		if ($result instanceOf ValidationResult)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$template = $this->updateSettingsAndAccess($template);
+			$errors = $result;
 
-			$template->save();
+			if ($result->isValid())
+			{
+				$template->save();
 
-			$alert = ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name.'/'.$template->template_name))
-				->defer();
+				if (isset($_POST['save_modal']))
+				{
+					return array(
+						'messageType' => 'success',
+					);
+				}
 
-			ee()->session->set_flashdata('template_id', $template->template_id);
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('template-form')
-				->asIssue()
-				->withTitle(lang('update_template_error'))
-				->addToBody(lang('update_template_error_desc'))
-				->defer();
-			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+				$alert = ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('update_template_success'))
+					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+					->defer();
+
+				ee()->session->set_flashdata('template_id', $template->template_id);
+				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			}
 		}
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
-			'settings' => $this->renderSettingsPartial($template),
-			'access' => $this->renderAccessPartial($template),
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'base_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
+			'tabs' => array(
+				'settings' => $this->renderSettingsPartial($template, $errors),
+				'access' => $this->renderAccessPartial($template, $errors),
+			),
+			'sections' => array(),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving',
+			'cp_page_title' => lang('template_settings_and_access')
 		);
-		ee()->cp->render('design/template/settings', $vars);
+
+		$html = ee()->cp->render('_shared/form', $vars, TRUE);
+
+		if (isset($_POST['save_modal']))
+		{
+			return array(
+				'messageType' => 'error',
+				'body' => $html
+			);
+		}
+
+		return $html;
 	}
 
 	public function search()
@@ -619,65 +541,150 @@ class Template extends AbstractDesignController {
 		ee()->cp->render('design/index', $vars);
 	}
 
-	private function updateSettingsAndAccess(TemplateModel $template)
+	/**
+	 * Sets a template entity with the POSTed data and validates it, setting
+	 * an alert if there are any errors.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @return mixed FALSE if nothing was posted, void if it was an AJAX call,
+	 *  or a ValidationResult object.
+	 */
+	private function validateTemplate(TemplateModel $template)
 	{
-		// Settings
-		$template->template_name = ee()->input->post('template_name');
-		$template->template_type = ee()->input->post('template_type');
-		$template->cache = ee()->input->post('cache');
-		$template->refresh = ee()->input->post('refresh');
-		$template->allow_php = ee()->input->post('allow_php');
-		$template->php_parse_location = ee()->input->post('php_parse_location');
-		$template->hits = ee()->input->post('hits');
-
-		// Access
-		$template->no_auth_bounce = ee()->input->post('no_auth_bounce');
-		$template->enable_http_auth = ee()->input->post('enable_http_auth');
-
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', 1)
-			->all();
-
-		$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
-
-
-		$no_access = $member_groups->filter(function($group) use ($allowed_member_groups)
+		if (empty($_POST))
 		{
-			return ! in_array($group->group_id, $allowed_member_groups);
-		});
-
-		$template->NoAccess = $no_access;
-
-		// Route
-		$route = $template->getTemplateRoute();
-
-		if ( ! $route)
-		{
-			$route = ee('Model')->make('TemplateRoute');
-			$route->template_id = $template->template_id;
+			return FALSE;
 		}
 
-		$route->route = ee()->input->post('route');
-		$route->route_required = ee()->input->post('route_required');
+		$template->set($_POST);
+		$template->edit_date = ee()->localize->now;
+		$template->last_author_id = ee()->session->userdata('member_id');
 
-		if (empty($route->route))
+		$result = $template->validate();
+
+		$field = ee()->input->post('ee_fv_field');
+
+		// The ajaxValidation method looks for the 'ee_fv_field' in the POST
+		// data. Then it checks to see if the result object has an error
+		// for that field. Then it'll return. Since we may be validating
+		// a field on a TemplateRoute model we should check for that
+		// befaore outputting an ajax response.
+		if ( ! isset($_POST['save_modal'])
+			&& isset($field)
+			&& $template->hasProperty($field)
+			&& $response = $this->ajaxValidation($result))
 		{
-			if ($route->route_id)
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'))
+				->now();
+		}
+		else
+		{
+			$member_groups = ee('Model')->get('MemberGroup')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', '!=', 1)
+				->all();
+
+			$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
+
+			$template->NoAccess = $member_groups->filter(function($group) use ($allowed_member_groups)
 			{
-				$route->delete();
-			}
+				return ! in_array($group->group_id, $allowed_member_groups);
+			});
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Sets a template route entity with the POSTed data and validates it,
+	 * setting an alert if there are any errors.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @return mixed FALSE if nothing was posted, void if it was an AJAX call,
+	 *  or a ValidationResult object.
+	 */
+	private function validateTemplateRoute(TemplateModel $template)
+	{
+		if ( ! ee()->input->post('route'))
+		{
+			$template->TemplateRoute = NULL;
+			return FALSE;
+		}
+
+		if ( ! $template->TemplateRoute)
+		{
+			$template->TemplateRoute = ee('Model')->make('TemplateRoute');
+		}
+
+		$template->TemplateRoute->set($_POST);
+		$result = $template->TemplateRoute->validate();
+
+		if ( ! isset($_POST['save_modal']) && $response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'))
+				->now();
 		}
 		else
 		{
 			ee()->load->library('template_router');
-			$ee_route = new EE_Route($route->route, $route->route_required);
-			$route->route_parsed = $ee_route->compile();
-
-			$route->save();
+			$ee_route = new EE_Route($template->TemplateRoute->route, $template->TemplateRoute->route_required);
+			$template->TemplateRoute->route_parsed = $ee_route->compile();
 		}
 
-		return $template;
+		return $result;
+	}
+
+	/**
+	 * Combines the results of two different model validation calls
+	 *
+	 * @param bool|ValidationResult $one FALSE (if nothing was submitted) or a
+	 *   ValidationResult object.
+	 * @param bool|ValidationResult $two FALSE (if nothing was submitted) or a
+	 *   ValidationResult object.
+	 * @return bool|ValidationResult $one FALSE (if nothing was submitted) or a
+	 *   ValidationResult object.
+	 */
+	private function combineResults($one, $two)
+	{
+		$result = FALSE;
+
+		if ($one instanceOf ValidationResult)
+		{
+			$result = $one;
+
+			if ($two instanceOf ValidationResult && $two->failed())
+			{
+				foreach ($two->getFailed() as $field => $rules)
+				{
+					foreach ($rules as $rule)
+					{
+						$result->addFailed($field, $rule);
+					}
+				}
+			}
+		}
+		elseif ($two instanceOf ValidationResult)
+		{
+			$result = $two;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -687,7 +694,6 @@ class Template extends AbstractDesignController {
 	 * template type selection dropdowns, optionally merged with
 	 * user-defined template types via the template_types hook.
 	 *
-	 * @access private
 	 * @return array Array of available template types
 	 */
 	private function getTemplateTypes()
@@ -723,21 +729,202 @@ class Template extends AbstractDesignController {
 		return $template_types;
 	}
 
-	private function renderSettingsPartial(TemplateModel $template)
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's contents. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
+	private function renderEditPartial(TemplateModel $template, $errors)
 	{
-		// @TODO: use ee('View')->make('ee:_shared/form/section') instead (see mcp.forum.php)
+		$author = $template->getLastAuthor();
 
-		$vars = array(
-			'template' => $template,
-			'template_types' => $this->getTemplateTypes(),
+		$section = array(
+			array(
+				'title' => '',
+				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
+				'wide' => TRUE,
+				'fields' => array(
+					'template_data' => array(
+						'type' => 'textarea',
+						'attrs' => 'class="template-edit"',
+						'value' => $template->template_data,
+					)
+				)
+			)
 		);
-		return ee('View')->make('design/template/partials/settings')->render($vars);
+
+		return ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
 	}
 
-	private function renderAccessPartial(TemplateModel $template)
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's notes. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
+	private function renderNotesPartial(TemplateModel $template, $errors)
 	{
-		// @TODO: use ee('View')->make('ee:_shared/form/section') instead (see mcp.forum.php)
+		$section = array(
+			array(
+				'title' => 'template_notes',
+				'desc' => 'template_notes_desc',
+				'wide' => TRUE,
+				'fields' => array(
+					'template_notes' => array(
+						'type' => 'textarea',
+						'value' => $template->template_notes,
+					)
+				)
+			)
+		);
 
+		return ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's settings. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
+	private function renderSettingsPartial(TemplateModel $template, $errors)
+	{
+		$sections = array(
+			array(
+				ee('CP/Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('php_in_templates_warning'))
+					->addToBody(
+						sprintf(lang('php_in_templates_warning2'), '<span title="excercise caution"></span>'),
+						'caution'
+					)
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'template_name',
+					'desc' => 'alphadash_desc',
+					'fields' => array(
+						'old_name' => array(
+							'type' => 'hidden',
+							'value' => $template->template_name
+						),
+						'template_name' => array(
+							'type' => 'text',
+							'value' => $template->template_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'template_type',
+					'fields' => array(
+						'template_type' => array(
+							'type' => 'select',
+							'choices' => $this->getTemplateTypes(),
+							'value' => $template->template_type
+						)
+					)
+				),
+				array(
+					'title' => 'enable_caching',
+					'desc' => 'enable_caching_desc',
+					'fields' => array(
+						'cache' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $template->cache
+						)
+					)
+				),
+				array(
+					'title' => 'refresh_interval',
+					'desc' => 'refresh_interval_desc',
+					'fields' => array(
+						'refresh' => array(
+							'type' => 'text',
+							'value' => $template->refresh
+						)
+					)
+				),
+				array(
+					'title' => 'enable_php',
+					'desc' => 'enable_php_desc',
+					'caution' => TRUE,
+					'fields' => array(
+						'allow_php' => array(
+							'type' => 'yes_no',
+							'value' => $template->allow_php
+						)
+					)
+				),
+				array(
+					'title' => 'parse_stage',
+					'desc' => 'parse_stage_desc',
+					'fields' => array(
+						'php_parse_location' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'i' => 'input',
+								'o' => 'output'
+							),
+							'value' => $template->php_parse_location
+						)
+					)
+				),
+				array(
+					'title' => 'hit_counter',
+					'desc' => 'hit_counter_desc',
+					'fields' => array(
+						'hits' => array(
+							'type' => 'text',
+							'value' => $template->hits
+						)
+					)
+				)
+			)
+		);
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's access settings. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
+	private function renderAccessPartial(TemplateModel $template, $errors)
+	{
 		$existing_templates = array();
 
 		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
@@ -745,15 +932,21 @@ class Template extends AbstractDesignController {
 			$templates = array();
 			foreach ($template_group->getTemplates() as $t)
 			{
-				$templates[$template->template_id] = $t->template_name;
+				$templates[$t->template_id] = $t->template_name;
 			}
 			$existing_templates[$template_group->group_name] = $templates;
 		}
 
-		$member_gropus = ee('Model')->get('MemberGroup')
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', '!=', 1)
 			->all();
+
+		$allowed_member_groups = array_diff(
+			$member_groups->pluck('group_id'),
+			$template->getNoAccess()->pluck('group_id')
+		);
 
 		$route = $template->getTemplateRoute();
 
@@ -762,83 +955,78 @@ class Template extends AbstractDesignController {
 			$route = ee('Model')->make('TemplateRoute');
 		}
 
-		$vars = array(
-			'template' => $template,
-			'route' => $route,
-			'denied_member_groups' => $template->getNoAccess()->pluck('group_id'),
-			'member_groups' => $member_gropus,
-			'existing_templates' => $existing_templates
+		$sections = array(
+			array(
+				array(
+					'title' => 'allowed_member_groups',
+					'desc' => 'allowed_member_groups_desc',
+					'desc_cont' => 'allowed_member_groups_super_admin',
+					'fields' => array(
+						'allowed_member_groups' => array(
+							'type' => 'checkbox',
+							'wrap' => TRUE,
+							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
+							'value' => $allowed_member_groups
+						)
+					)
+				),
+				array(
+					'title' => 'non_access_redirect',
+					'desc' => 'non_access_redirect_desc',
+					'fields' => array(
+						'no_auth_bounce' => array(
+							'type' => 'select',
+							'choices' => $existing_templates,
+							'value' => $template->no_auth_bounce
+						)
+					)
+				),
+				array(
+					'title' => 'enable_http_authentication',
+					'desc' => 'enable_http_authentication_desc',
+					'fields' => array(
+						'enable_http_auth' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $template->enable_http_auth
+						)
+					)
+				),
+				array(
+					'title' => 'template_route_override',
+					'desc' => 'template_route_override_desc',
+					'fields' => array(
+						'route' => array(
+							'type' => 'text',
+							'value' => $route->route
+						)
+					)
+				),
+				array(
+					'title' => 'require_all_segments',
+					'desc' => 'require_all_segments_desc',
+					'fields' => array(
+						'route_required' => array(
+							'type' => 'yes_no',
+							'value' => $route->route_required
+						)
+					)
+				)
+			)
 		);
-		return ee('View')->make('design/template/partials/access')->render($vars);
-	}
 
-	/**
-	  *	 Check Template Name
-	  */
-	public function _template_name_checks($str, $group_id)
-	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $str))
+		$html = '';
+
+		foreach ($sections as $name => $settings)
 		{
-			ee()->lang->loadfile('admin');
-			ee()->form_validation->set_message('_template_name_checks', lang('illegal_characters'));
-			return FALSE;
+			$html .= ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
-		$reserved_names = array('act', 'css');
-
-		if (in_array($str, $reserved_names))
-		{
-			ee()->form_validation->set_message('_template_name_checks', lang('reserved_name'));
-			return FALSE;
-		}
-
-		$count = ee('Model')->get('Template')
-			->filter('group_id', $group_id)
-			->filter('template_name', $str)
-			->count();
-
-		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $count > 0)
-		{
-			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
-			return FALSE;
-		}
-		elseif ($count > 1)
-		{
-			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	public function _template_route_checks($str)
-	{
-		if (empty($str))
-		{
-			return TRUE;
-		}
-
-		ee()->load->library('template_router');
-		$ee_route = new EE_Route($str, ee()->input->post('route_required'));
-
-		$template_ids = ee('Model')->get('Template')
-			->fields('template_id')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all()
-			->pluck('template_id');
-
-		$routes = ee('Model')->get('TemplateRoute')
-			->filter('template_id', 'IN', $template_ids)
-			->all();
-
-		foreach ($routes as $route)
-		{
-			if ($ee_route->equals($route))
-			{
-				ee()->form_validation->set_message('_template_route_checks', lang('duplicate_route'));
-				return FALSE;
-			}
-		}
+		return $html;
 	}
 }
 // EOF

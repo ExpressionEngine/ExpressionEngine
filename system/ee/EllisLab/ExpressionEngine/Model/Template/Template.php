@@ -40,7 +40,9 @@ class Template extends FileSyncedModel {
 		'cache'              => 'boolString',
 		'enable_http_auth'   => 'boolString',
 		'allow_php'          => 'boolString',
-		'protect_javascript' => 'boolString'
+		'protect_javascript' => 'boolString',
+		'refresh'            => 'int',
+		'hit_counter'        => 'int',
 	);
 
 	protected static $_relationships = array(
@@ -87,10 +89,14 @@ class Template extends FileSyncedModel {
 	protected static $_validation_rules = array(
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
-		'template_name'      => 'required|alphaDash|unique[group_id]',
+		'template_name'      => 'required|unique[group_id]|validateTemplateName',
+		'template_type'      => 'required',
 		'cache'              => 'enum[y,n]',
+		'refresh'            => 'isNatural',
 		'enable_http_auth'   => 'enum[y,n]',
 		'allow_php'          => 'enum[y,n]',
+		'php_parse_location' => 'enum[i,o]',
+		'hits'               => 'isNatural',
 		'protect_javascript' => 'enum[y,n]',
 	);
 
@@ -230,5 +236,26 @@ class Template extends FileSyncedModel {
 		}
 
 		return $path.'/'.$file.$ext;
+	}
+
+	/**
+	 * Validates the template name checking for illegal characters and
+	 * reserved names.
+	 */
+	public function validateTemplateName($key, $value, $params, $rule)
+	{
+		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $value))
+		{
+			return 'illegal_characters';
+		}
+
+		$reserved_names = array('act', 'css');
+
+		if (in_array($value, $reserved_names))
+		{
+			return 'reserved_name';
+		}
+
+		return TRUE;
 	}
 }

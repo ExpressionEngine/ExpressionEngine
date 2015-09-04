@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
+use \EE_Route;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
@@ -34,6 +35,11 @@ class TemplateRoute extends Model {
 	protected static $_primary_key = 'route_id';
 	protected static $_table_name = 'template_routes';
 
+	protected static $_typed_columns = array(
+		'order'          => 'int',
+		'route_required' => 'boolString',
+	);
+
 	protected static $_relationships = array(
 		'Template' => array(
 			'type' => 'BelongsTo'
@@ -42,6 +48,7 @@ class TemplateRoute extends Model {
 
 	protected static $_validation_rules = array(
 		'template_id'    => 'required|isNatural',
+		'route'          => 'validateRouteIsValid[route_required]|validateRouteIsUnique[route_required]',
 		'route_required' => 'enum[y,n]',
 	);
 
@@ -122,40 +129,69 @@ class TemplateRoute extends Model {
 	}
 
 	/**
-	 * A setter for the route_required property
-	 *
-	 * @param str|bool $new_value Accept TRUE or 'y' for 'yes' or FALSE or 'n'
-	 *   for 'no'
-	 * @throws InvalidArgumentException if the provided argument is not a
-	 *   boolean or is not 'y' or 'n'.
-	 * @return void
+	 * Validates that the route is valid
 	 */
-	protected function set__route_required($new_value)
+	public function validateRouteIsValid($key, $value, $params, $rule)
 	{
-		if ($new_value === TRUE || $new_value == 'y')
+		if (empty($value))
 		{
-			$this->route_required = 'y';
+			return TRUE;
 		}
 
-		elseif ($new_value === FALSE || $new_value == 'n')
+		$route_required = $params[0];
+
+		ee()->load->library('template_router');
+
+		try
 		{
-			$this->route_required = 'n';
+			$ee_route = new EE_Route($value, $route_required);
+		}
+		catch (\Exception $error)
+		{
+			$rule->stop();
+			return $error->getMessage();
 		}
 
-		else
-		{
-			throw new InvalidArgumentException('route_required must be TRUE or "y", or FALSE or "n"');
-		}
+		return TRUE;
 	}
 
 	/**
-	 * A getter for the route_required property
-	 *
-	 * @return bool TRUE if this is the default; FALSE if not
+	 * Validates that the route is unique
 	 */
-	protected function get__route_required()
+	public function validateRouteIsUnique($key, $value, $params, $rule)
 	{
-		return ($this->route_required == 'y');
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
+		$route_required = $params[0];
+
+		ee()->load->library('template_router');
+		$ee_route = new EE_Route($value, $route_required);
+
+		$template_ids = $this->getFrontend()->get('Template')
+			->fields('template_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->pluck('template_id');
+
+		$routes = $this->getFrontend()->get('TemplateRoute')
+			->fields('route')
+			->filter('template_id', 'IN', $template_ids)
+			->filter('route', '!=', 'NULL')
+			->all()
+			->pluck('route');
+
+		foreach ($routes as $route)
+		{
+			if ($ee_route->equals(new EE_Route($route, $route_required)))
+			{
+				return 'duplicate_route';
+			}
+		}
+
+		return TRUE;
 	}
 
 }
