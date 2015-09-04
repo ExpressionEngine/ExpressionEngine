@@ -170,16 +170,6 @@ $lang = array(
 
 'edit_categories' => 'Edit Categories',
 
-'revisions' => 'Revisions',
-
-'rev_id' => '#',
-
-'rev_date' => 'Date',
-
-'rev_author' => 'Author',
-
-'current' => 'Current',
-
 'revision' => 'Revision',
 
 'formatting' => 'Formatting:',
@@ -443,6 +433,8 @@ $lang = array(
 'open' => 'Open',
 
 'close' => 'Close',
+
+'spam' => 'SPAM',
 
 'closed' => 'Closed',
 

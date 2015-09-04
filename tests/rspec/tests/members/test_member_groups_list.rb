@@ -41,21 +41,113 @@ feature 'Member Group List' do
       @page.edit.can_access_cp[0].checked?.should == true
       @page.edit.cp_homepage[1].checked?.should == true
       @page.edit.footer_helper_links.each { |e| e.checked?.should == true }
-      @page.edit.can_admin_channels[0].checked?.should == true
-      @page.edit.category_actions.each { |e| e.checked?.should == true }
       @page.edit.channel_entry_actions.each { |e| e.checked?.should == true }
       @page.edit.member_actions.each { |e| e.checked?.should == true }
       @page.edit.allowed_channels.each { |e| e.checked?.should == true }
       @page.edit.can_admin_design[0].checked?.should == true
-      @page.edit.can_admin_templates[0].checked?.should == true
       @page.edit.allowed_template_groups.each { |e| e.checked?.should == true }
       @page.edit.can_admin_modules[0].checked?.should == true
       @page.edit.addons_access.each { |e| e.checked?.should == true }
       @page.edit.access_tools.each { |e| e.checked?.should == true }
     end
+  end
 
-    it 'edits a group successfully' do
-      edit_member_group
+  context 'when editing a member group' do
+    before :each do
+      create_member_group
+
+      @page.edit.name.set 'Editors'
+      @page.edit.description.set 'Editors description.'
+      @page.edit.security_lock[1].click
+
+      submit_form
+
+      @page.edit.name.value.should == 'Editors'
+      @page.edit.description.value.should == 'Editors description.'
+      @page.edit.security_lock[0].checked?.should == false
+      @page.edit.security_lock[1].checked?.should == true
+    end
+
+    checkboxes = %w(
+      website_access
+      include_members_in
+      comment_actions
+      footer_helper_links
+      channel_permissions
+      channel_field_permissions
+      channel_category_permissions
+      channel_status_permissions
+      channel_entry_actions
+      allowed_channels
+      asset_upload_directories
+      assets
+      rte_toolsets
+      member_group_actions
+      member_actions
+      template_groups
+      template_partials
+      template_variables
+      template_permissions
+      allowed_template_groups
+      addons_access
+      access_tools
+      access_settings
+    )
+
+    checkboxes.each do |name|
+      it "toggles `#{name}` member group checkbox permissions" do
+        toggle_state = {}
+
+        @page.edit.send(name).each_with_index do |permission, index|
+          toggle_state[index] = permission.checked?
+          permission.click
+        end
+
+        submit_form
+
+        @page.edit.send(name).each_with_index do |permission, index|
+          toggle_state[index].should_not == permission.checked?
+          permission.click
+        end
+
+        submit_form
+
+        @page.edit.send(name).each_with_index do |permission, index|
+          toggle_state[index].should == permission.checked?
+          permission.click
+        end
+      end
+    end
+
+    radios = %w(
+      can_view_profiles
+      can_send_email
+      can_delete_self
+      can_post_comments
+      exclude_from_moderation
+      can_search
+      can_send_private_messages
+      can_attach_in_private_messages
+      can_send_bulletins
+      can_access_cp
+      cp_homepage
+      can_admin_design
+      can_admin_modules
+    )
+
+    radios.each do |name|
+      it "toggles `#{name}` member group radio permissions" do
+        @page.edit.send(name)[0].click
+
+        submit_form
+
+        @page.edit.send(name)[0].should be_checked
+        @page.edit.send(name)[1].click
+
+        submit_form
+
+        @page.edit.send(name)[1].should be_checked
+      end
     end
   end
 
@@ -75,7 +167,8 @@ feature 'Member Group List' do
       edit_member_group
 
       rows = []
-      fields = 'group_title, group_description, is_locked, can_admin_templates,
+      fields = 'group_title, group_description, is_locked, can_create_template_groups,
+        can_edit_template_groups, can_delete_template_groups,
         can_access_comm, can_access_utilities, can_access_data, can_access_logs'
       $db.query("SELECT #{fields} FROM exp_member_groups WHERE group_id=6").each do |row|
         rows << row
@@ -87,7 +180,9 @@ feature 'Member Group List' do
       rows[0]['is_locked'].should == rows[1]['is_locked']
 
       # These fields should *not* change among all groups
-      rows[0]['can_admin_templates'].should_not == rows[1]['can_admin_templates']
+      rows[0]['can_create_template_groups'].should_not == rows[1]['can_create_template_groups']
+      rows[0]['can_edit_template_groups'].should_not == rows[1]['can_edit_template_groups']
+      rows[0]['can_delete_template_groups'].should_not == rows[1]['can_delete_template_groups']
       rows[0]['can_access_comm'].should_not == rows[1]['can_access_comm']
       rows[0]['can_access_utilities'].should_not == rows[1]['can_access_utilities']
 
@@ -144,13 +239,13 @@ feature 'Member Group List' do
     @page.edit.can_access_cp[0].click
     @page.edit.cp_homepage[1].click
     @page.edit.footer_helper_links.each(&:click)
-    @page.edit.can_admin_channels[0].click
-    @page.edit.category_actions.each(&:click)
+    @page.edit.channel_permissions.each(&:click)
+    @page.edit.channel_category_permissions.each(&:click)
     @page.edit.channel_entry_actions.each(&:click)
     @page.edit.member_actions.each(&:click)
     @page.edit.allowed_channels.each(&:click)
+    @page.edit.template_groups.each(&:click)
     @page.edit.can_admin_design[0].click
-    @page.edit.can_admin_templates[0].click
     @page.edit.allowed_template_groups.each(&:click)
     @page.edit.can_admin_modules[0].click
     @page.edit.addons_access.each(&:click)
@@ -167,7 +262,7 @@ feature 'Member Group List' do
     @page.edit.name.set 'Editors'
     @page.edit.description.set 'Editors description.'
     @page.edit.security_lock[1].click
-    @page.edit.can_admin_templates[1].click
+    @page.edit.template_groups.each(&:click)
     @page.edit.allowed_template_groups.each(&:click)
     @page.edit.access_tools[0].click
     @page.edit.access_tools[1].click
@@ -182,13 +277,21 @@ feature 'Member Group List' do
     @page.edit.description.value.should == 'Editors description.'
     @page.edit.security_lock[0].checked?.should == false
     @page.edit.security_lock[1].checked?.should == true
-    @page.edit.can_admin_templates[0].checked?.should == false
-    @page.edit.can_admin_templates[1].checked?.should == true
+    @page.edit.template_groups.each { |e| e.checked?.should == false }
     @page.edit.allowed_template_groups.each { |e| e.checked?.should == false }
     @page.edit.access_tools[0].checked?.should == false
     @page.edit.access_tools[1].checked?.should == false
     @page.edit.access_tools[2].checked?.should == true
     @page.edit.access_tools[3].checked?.should == true
+  end
+
+  def submit_form
+    @page.edit.submit.click
+
+    @page.list.groups.last.find('li.edit a').click
+
+    @page.list.all_there?.should == false
+    @page.edit.all_there?.should == true
   end
 
   def create_msm_site

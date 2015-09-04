@@ -64,7 +64,7 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array('sort_dir' => 'desc'));
 
 		$table->setColumns(
 			array(
@@ -89,20 +89,10 @@ class Edit extends AbstractPublishController {
 		);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
-		$channels = ee('Model')->get('Channel')
-			->fields('channel_id', 'channel_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		if (count($channels) == 1)
-		{
-			$channel_id = $channels[0]->channel_id;
-			$channel_title = $channels[0]->channel_title;
-		}
-
 		if ($channel_id)
 		{
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_title).'</a>';
+			$channel = ee('Model')->get('Channel', $channel_id)->first();
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 		}
 		else
 		{
@@ -152,7 +142,8 @@ class Edit extends AbstractPublishController {
 				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
 				$toolbar['view'] = array(
 					'href' => ee()->cp->masked_url($view_url),
-					'title' => lang('view')
+					'title' => lang('view'),
+					'rel' => 'external'
 				);
 			}
 
@@ -354,9 +345,7 @@ class Edit extends AbstractPublishController {
 			else
 			{
 				$vars['errors'] = $result;
-				// Hacking
-				ee()->load->library('form_validation');
-				ee()->form_validation->_error_array = $result->renderErrors();
+
 				ee('CP/Alert')->makeInline('entry-form')
 					->asIssue()
 					->withTitle(lang('edit_entry_error'))

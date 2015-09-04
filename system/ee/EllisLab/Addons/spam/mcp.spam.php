@@ -428,7 +428,6 @@ class Spam_mcp {
 		}
 
 		$result = new CoreCollection($result);
-		$this->trainParameters($result);
 		$result->save();
 	}
 

@@ -217,7 +217,7 @@ class EntryListing {
 			}
 			else
 			{
-				$entries->filter('entry_date', '>=', $this->localize->now - $filter_values['filter_by_date']);
+				$entries->filter('entry_date', '>=', $this->now - $filter_values['filter_by_date']);
 			}
 		}
 

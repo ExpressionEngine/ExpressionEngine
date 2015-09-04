@@ -93,7 +93,8 @@ class General extends Settings {
 							'type' => 'action_button',
 							'text' => 'check_now',
 							'link' => ee('CP/URL', 'settings/general/version-check'),
-							'class' => 'version-check'
+							'class' => 'version-check',
+							'save_in_config' => FALSE
 						)
 					)
 				),

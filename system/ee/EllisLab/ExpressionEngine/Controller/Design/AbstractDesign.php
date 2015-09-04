@@ -392,7 +392,8 @@ abstract class AbstractDesign extends CP_Controller {
 				array('toolbar_items' => array(
 					'view' => array(
 						'href' => ee()->cp->masked_url($view_url),
-						'title' => lang('view')
+						'title' => lang('view'),
+						'rel' => 'external'
 					),
 					'edit' => array(
 						'href' => $edit_url,
@@ -433,5 +434,39 @@ abstract class AbstractDesign extends CP_Controller {
 		return $table;
 	}
 
+	/**
+	 * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
+	 *
+	 * @param	Template	$template	Saved template model object
+	 */
+	protected function saveNewTemplateRevision($template)
+	{
+		if ( ! bool_config_item('save_tmpl_revisions'))
+		{
+			return;
+		}
+
+		// Create the new version
+		$version = ee('Model')->make('RevisionTracker');
+		$version->Template = $template;
+		$version->item_table = 'exp_templates';
+		$version->item_field = 'template_data';
+		$version->item_data = $template->template_data;
+		$version->item_date = ee()->localize->now;
+		$version->Author = $template->LastAuthor;
+		$version->save();
+
+		// Now, rotate template revisions based on 'max_tmpl_revisions' config item
+		$versions = ee('Model')->get('RevisionTracker')
+			->filter('item_id', $template->getId())
+			->filter('item_field', 'template_data')
+			->order('item_date', 'desc')
+			->limit(ee()->config->item('max_tmpl_revisions'))
+			->all();
+
+		// Reassign versions and delete the leftovers
+		$template->Versions = $versions;
+		$template->save();
+	}
 }
 // EOF

@@ -35,10 +35,10 @@ class Groups extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group(
-			'can_access_admin',
-			'can_admin_channels',
-			'can_access_content_prefs'
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields'
 		))
 		{
 			show_error(lang('unauthorized_access'));

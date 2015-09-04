@@ -2391,7 +2391,7 @@ class Wizard extends CI_Controller {
 		// Generate the new path by suffixing a dotless version number
 		$new_path = str_replace(
 			'installer',
-			'installer_'.str_replace('.', '', $this->version),
+			'installer_'.$this->version,
 			APPPATH
 		);
 
