@@ -50,6 +50,11 @@ class Profile extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! $this->cp->allowed_group('can_edit_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$id = ee()->input->get('id');
 
 		if (empty($id))

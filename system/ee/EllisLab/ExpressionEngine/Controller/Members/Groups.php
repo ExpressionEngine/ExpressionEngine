@@ -183,6 +183,11 @@ class Groups extends Members\Members {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars = array(
 			'cp_page_title' => lang('create_member_group')
 		);
@@ -194,6 +199,11 @@ class Groups extends Members\Members {
 
 	public function copy($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
@@ -211,6 +221,11 @@ class Groups extends Members\Members {
 
 	public function edit($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_member_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$this->group_id = (int) $this->group->group_id;
 		$this->base_url = ee('CP/URL', 'members/groups/edit/' . $group_id, $this->query_string);
@@ -231,10 +246,9 @@ class Groups extends Members\Members {
 	 */
 	public function delete()
 	{
-		// Only super admins can delete member groups
-		if ($this->session->userdata['group_id'] != 1)
+		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
 		{
-			show_error(lang('only_superadmins_can_admin_groups'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$replacement = ee()->input->post('replacement');
