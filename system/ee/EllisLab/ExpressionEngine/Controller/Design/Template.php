@@ -419,6 +419,13 @@ class Template extends AbstractDesignController {
 			{
 				$template->save();
 
+				if (isset($_POST['save_modal']))
+				{
+					return array(
+						'messageType' => 'success',
+					);
+				}
+
 				$alert = ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
@@ -443,7 +450,18 @@ class Template extends AbstractDesignController {
 			'save_btn_text_working' => 'btn_saving',
 			'cp_page_title' => lang('template_settings_and_access')
 		);
-		ee()->cp->render('_shared/form', $vars);
+
+		$html = ee()->cp->render('_shared/form', $vars, TRUE);
+
+		if (isset($_POST['save_modal']))
+		{
+			return array(
+				'messageType' => 'error',
+				'body' => $html
+			);
+		}
+
+		return $html;
 	}
 
 	public function search()
@@ -526,7 +544,7 @@ class Template extends AbstractDesignController {
 
 		$result = $template->validate();
 
-		if ($response = $this->ajaxValidation($result))
+		if ( ! isset($_POST['save_modal']) && $response = $this->ajaxValidation($result))
 		{
 			ee()->output->send_ajax_response($response);
 		}
@@ -573,7 +591,7 @@ class Template extends AbstractDesignController {
 		$template->TemplateRoute->set($_POST);
 		$result = $template->TemplateRoute->validate();
 
-		if ($response = $this->ajaxValidation($result))
+		if ( ! isset($_POST['save_modal']) && $response = $this->ajaxValidation($result))
 		{
 			ee()->output->send_ajax_response($response);
 		}
