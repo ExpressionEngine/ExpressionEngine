@@ -152,6 +152,11 @@ class Design extends AbstractDesignController {
 
 	private function remove($template_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_templates'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($template_ids))
 		{
 			$template_ids = array($template_ids);
