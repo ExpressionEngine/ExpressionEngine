@@ -40,7 +40,14 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_content', 'can_access_files'))
+		if ( ! ee()->cp->allowed_group_permissions(
+			'can_upload_new_assets',
+			'can_edit_assets',
+			'can_delete_assets',
+			'can_create_upload_directories',
+			'can_edit_upload_directories',
+			'can_delete_upload_directories'
+		))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -184,6 +191,12 @@ abstract class AbstractFiles extends CP_Controller {
 					'title' => lang('download'),
 				),
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_assets'))
+			{
+				unset($toolbar['view']);
+				unset($toolbar['crop']);
+			}
 
 			if ( ! $file->isImage())
 			{
