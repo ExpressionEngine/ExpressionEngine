@@ -313,9 +313,9 @@ class Template extends AbstractDesignController {
 	/**
 	 * Renders the template revisions table for the Revisions tab
 	 *
-	 * @param	Template	$template	Template object
-	 * @param	int			$version_id	ID of template version to mark as selected
-	 * @return	string		Table HTML for insertion into Template edit form
+	 * @param TemplateModel $template A Template entity
+	 * @param int $version_id ID of template version to mark as selected
+	 * @return string Table HTML for insertion into Template edit form
 	 */
 	protected function renderRevisionsPartial($template, $version_id = FALSE)
 	{
@@ -531,6 +531,14 @@ class Template extends AbstractDesignController {
 		ee()->cp->render('design/index', $vars);
 	}
 
+	/**
+	 * Sets a template entity with the POSTed data and validates it, setting
+	 * an alert if there are any errors.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @return mixed FALSE if nothing was posted, void if it was an AJAX call,
+	 *  or a ValidationResult object.
+	 */
 	private function validateTemplate(TemplateModel $template)
 	{
 		if (empty($_POST))
@@ -575,6 +583,14 @@ class Template extends AbstractDesignController {
 		return $result;
 	}
 
+	/**
+	 * Sets a template route entity with the POSTed data and validates it,
+	 * setting an alert if there are any errors.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @return mixed FALSE if nothing was posted, void if it was an AJAX call,
+	 *  or a ValidationResult object.
+	 */
 	private function validateTemplateRoute(TemplateModel $template)
 	{
 		if ( ! ee()->input->post('route'))
@@ -614,6 +630,16 @@ class Template extends AbstractDesignController {
 		return $result;
 	}
 
+	/**
+	 * Combines the results of two different model validation calls
+	 *
+	 * @param bool|ValidationResult $one FALSE (if nothing was submitted) or a
+	 *   ValidationResult object.
+	 * @param bool|ValidationResult $two FALSE (if nothing was submitted) or a
+	 *   ValidationResult object.
+	 * @return bool|ValidationResult $one FALSE (if nothing was submitted) or a
+	 *   ValidationResult object.
+	 */
 	private function combineResults($one, $two)
 	{
 		$result = FALSE;
@@ -683,6 +709,16 @@ class Template extends AbstractDesignController {
 		return $template_types;
 	}
 
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's contents. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
 	private function renderEditPartial(TemplateModel $template, $errors)
 	{
 		$author = $template->getLastAuthor();
@@ -706,6 +742,16 @@ class Template extends AbstractDesignController {
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
 	}
 
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's notes. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
 	private function renderNotesPartial(TemplateModel $template, $errors)
 	{
 		$section = array(
@@ -726,6 +772,16 @@ class Template extends AbstractDesignController {
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
 	}
 
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's settings. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
 	private function renderSettingsPartial(TemplateModel $template, $errors)
 	{
 		$sections = array(
@@ -837,6 +893,16 @@ class Template extends AbstractDesignController {
 		return $html;
 	}
 
+	/**
+	 * Renders the portion of a form that contains the elements for editing
+	 * a template's access settings. This is especially useful for tabbed forms.
+	 *
+	 * @param TemplateModel $template A Template entity
+	 * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
 	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
 		$existing_templates = array();
