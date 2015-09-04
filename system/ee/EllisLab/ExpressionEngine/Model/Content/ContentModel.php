@@ -306,6 +306,15 @@ abstract class ContentModel extends VariableColumnModel {
 			$this->addFacade($id, $field);
 		}
 
+		$structure = $this->getStructure();
+
+		// no structure yet? defer
+		if ( ! $structure)
+		{
+			$this->_field_facades = NULL;
+			return;
+		}
+
 		$native_fields = $this->getStructure()->getCustomFields()->sortBy('field_order');
 		$native_prefix = $this->getCustomFieldPrefix();
 
