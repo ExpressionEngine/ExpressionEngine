@@ -41,7 +41,7 @@ class Snippets extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -177,6 +177,11 @@ class Snippets extends AbstractDesignController {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_template_partials'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/snippets/create'),
@@ -288,6 +293,11 @@ class Snippets extends AbstractDesignController {
 
 	public function edit($snippet_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_template_partials'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$snippet = ee('Model')->get('Snippet')
 			->filter('snippet_id', $snippet_id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -417,6 +427,11 @@ class Snippets extends AbstractDesignController {
 	 */
 	private function remove($snippet_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_template_partials'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($snippet_ids))
 		{
 			$snippet_ids = array($snippet_ids);

@@ -43,7 +43,11 @@ class Cat extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_edit_categories'))
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -85,6 +89,12 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
+
+		if ( ! $this->cp->allowed_group('can_delete_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group_ids = ee()->input->post('cat_groups');
 
 		if ( ! empty($group_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -123,6 +133,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function create()
 	{
+		if ( ! $this->cp->allowed_group('can_create_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form();
 	}
 
@@ -131,6 +146,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function edit($group_id)
 	{
+		if ( ! $this->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form($group_id);
 	}
 

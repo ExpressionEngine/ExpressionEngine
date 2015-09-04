@@ -23,40 +23,30 @@ class MemberGroup extends Model {
 		'can_access_footer_report_bug'   => 'boolString',
 		'can_access_footer_new_ticket'   => 'boolString',
 		'can_access_footer_user_guide'   => 'boolString',
-		'can_access_content'             => 'boolString',
 		'can_access_publish'             => 'boolString',
 		'can_access_edit'                => 'boolString',
 		'can_access_files'               => 'boolString',
-		'can_access_fieldtypes'          => 'boolString',
 		'can_access_design'              => 'boolString',
 		'can_access_addons'              => 'boolString',
-		'can_access_modules'             => 'boolString',
-		'can_access_extensions'          => 'boolString',
-		'can_access_plugins'             => 'boolString',
 		'can_access_members'             => 'boolString',
-		'can_access_admin'               => 'boolString',
 		'can_access_sys_prefs'           => 'boolString',
-		'can_access_content_prefs'       => 'boolString',
-		'can_access_tools'               => 'boolString',
 		'can_access_comm'                => 'boolString',
 		'can_access_utilities'           => 'boolString',
 		'can_access_data'                => 'boolString',
 		'can_access_logs'                => 'boolString',
-		'can_admin_channels'             => 'boolString',
-		'can_admin_upload_prefs'         => 'boolString',
 		'can_admin_design'               => 'boolString',
-		'can_admin_members'              => 'boolString',
 		'can_delete_members'             => 'boolString',
 		'can_admin_mbr_groups'           => 'boolString',
 		'can_admin_mbr_templates'        => 'boolString',
 		'can_ban_users'                  => 'boolString',
 		'can_admin_modules'              => 'boolString',
-		'can_admin_templates'            => 'boolString',
 		'can_edit_categories'            => 'boolString',
 		'can_delete_categories'          => 'boolString',
 		'can_view_other_entries'         => 'boolString',
 		'can_edit_other_entries'         => 'boolString',
 		'can_assign_post_authors'        => 'boolString',
+		'can_create_entries'             => 'boolString',
+		'can_edit_self_entries'          => 'boolString',
 		'can_delete_self_entries'        => 'boolString',
 		'can_delete_all_entries'         => 'boolString',
 		'can_view_other_comments'        => 'boolString',
@@ -80,7 +70,47 @@ class MemberGroup extends Model {
 		'can_send_bulletins'             => 'boolString',
 		'include_in_authorlist'          => 'boolString',
 		'include_in_memberlist'          => 'boolString',
+		'include_in_mailinglist'         => 'boolString',
+		'can_upload_new_assets'          => 'boolString',
+		'can_edit_assets'                => 'boolString',
+		'can_delete_assets'              => 'boolString',
+		'can_upload_new_toolsets'        => 'boolString',
+		'can_edit_toolsets'              => 'boolString',
+		'can_delete_toolsets'            => 'boolString',
+		'can_create_upload_directories'  => 'boolString',
+		'can_edit_upload_directories'    => 'boolString',
+		'can_delete_upload_directories'  => 'boolString',
+		'can_create_channels'            => 'boolString',
+		'can_edit_channels'              => 'boolString',
+		'can_delete_channels'            => 'boolString',
+		'can_create_channel_fields'      => 'boolString',
+		'can_edit_channel_fields'        => 'boolString',
+		'can_delete_channel_fields'      => 'boolString',
+		'can_create_statuses'            => 'boolString',
+		'can_delete_statuses'            => 'boolString',
+		'can_edit_statuses'              => 'boolString',
+		'can_create_categories'          => 'boolString',
+		'can_create_member_groups'       => 'boolString',
+		'can_delete_member_groups'       => 'boolString',
+		'can_edit_member_groups'         => 'boolString',
+		'can_create_members'             => 'boolString',
+		'can_edit_members'               => 'boolString',
+		'can_manage_template_settings'   => 'boolString',
+		'can_create_new_templates'       => 'boolString',
+		'can_edit_templates'             => 'boolString',
+		'can_delete_templates'           => 'boolString',
+		'can_create_template_groups'     => 'boolString',
+		'can_edit_template_groups'       => 'boolString',
+		'can_delete_template_groups'     => 'boolString',
+		'can_create_template_partials'   => 'boolString',
+		'can_edit_template_partials'     => 'boolString',
+		'can_delete_template_partials'   => 'boolString',
+		'can_create_template_variables'  => 'boolString',
+		'can_delete_template_variables'  => 'boolString',
+		'can_edit_template_variables'    => 'boolString',
+		'can_access_security_settings'   => 'boolString'
 	);
+
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -174,40 +204,30 @@ class MemberGroup extends Model {
 	protected $can_access_footer_report_bug;
 	protected $can_access_footer_new_ticket;
 	protected $can_access_footer_user_guide;
-	protected $can_access_content;
 	protected $can_access_publish;
 	protected $can_access_edit;
 	protected $can_access_files;
-	protected $can_access_fieldtypes;
 	protected $can_access_design;
 	protected $can_access_addons;
-	protected $can_access_modules;
-	protected $can_access_extensions;
-	protected $can_access_plugins;
 	protected $can_access_members;
-	protected $can_access_admin;
 	protected $can_access_sys_prefs;
-	protected $can_access_content_prefs;
-	protected $can_access_tools;
 	protected $can_access_comm;
 	protected $can_access_utilities;
 	protected $can_access_data;
 	protected $can_access_logs;
-	protected $can_admin_channels;
-	protected $can_admin_upload_prefs;
 	protected $can_admin_design;
-	protected $can_admin_members;
 	protected $can_delete_members;
 	protected $can_admin_mbr_groups;
 	protected $can_admin_mbr_templates;
 	protected $can_ban_users;
 	protected $can_admin_modules;
-	protected $can_admin_templates;
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 	protected $can_view_other_entries;
 	protected $can_edit_other_entries;
 	protected $can_assign_post_authors;
+	protected $can_create_entries;
+	protected $can_edit_self_entries;
 	protected $can_delete_self_entries;
 	protected $can_delete_all_entries;
 	protected $can_view_other_comments;
@@ -235,10 +255,48 @@ class MemberGroup extends Model {
 	protected $can_send_bulletins;
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
+	protected $include_in_mailinglist;
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
-
+	protected $can_upload_new_assets;
+	protected $can_edit_assets;
+	protected $can_delete_assets;
+	protected $can_upload_new_toolsets;
+	protected $can_edit_toolsets;
+	protected $can_delete_toolsets;
+	protected $can_create_upload_directories;
+	protected $can_edit_upload_directories;
+	protected $can_delete_upload_directories;
+	protected $can_create_channels;
+	protected $can_edit_channels;
+	protected $can_delete_channels;
+	protected $can_create_channel_fields;
+	protected $can_edit_channel_fields;
+	protected $can_delete_channel_fields;
+	protected $can_create_statuses;
+	protected $can_delete_statuses;
+	protected $can_edit_statuses;
+	protected $can_create_categories;
+	protected $can_create_member_groups;
+	protected $can_delete_member_groups;
+	protected $can_edit_member_groups;
+	protected $can_create_members;
+	protected $can_edit_members;
+	protected $can_manage_template_settings;
+	protected $can_create_new_templates;
+	protected $can_edit_templates;
+	protected $can_delete_templates;
+	protected $can_create_template_groups;
+	protected $can_edit_template_groups;
+	protected $can_delete_template_groups;
+	protected $can_create_template_partials;
+	protected $can_edit_template_partials;
+	protected $can_delete_template_partials;
+	protected $can_create_template_variables;
+	protected $can_delete_template_variables;
+	protected $can_edit_template_variables;
+	protected $can_access_security_settings;
 
 	/**
 	 * Ensure group ID is set for new records

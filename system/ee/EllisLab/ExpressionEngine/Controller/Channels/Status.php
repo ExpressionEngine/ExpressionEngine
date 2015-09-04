@@ -36,6 +36,15 @@ class Status extends AbstractChannelsController {
 	{
 		parent::__construct();
 
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_statuses',
+			'can_edit_statuses',
+			'can_delete_statuses'
+		))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar('status');
 	}
 
@@ -72,6 +81,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group_ids = ee()->input->post('status_groups');
 
 		if ( ! empty($group_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -106,6 +120,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form();
 	}
 
@@ -114,6 +133,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function edit($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form($group_id);
 	}
 
