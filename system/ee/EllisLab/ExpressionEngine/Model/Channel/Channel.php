@@ -45,7 +45,8 @@ class Channel extends StructureModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelField',
 			'from_key' => 'field_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE
 		),
 		'Entries' => array(
 			'type' => 'hasMany',

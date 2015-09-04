@@ -54,7 +54,8 @@ class ChannelField extends FieldModel {
 		'Channel' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'group_id',
-			'to_key' => 'field_group'
+			'to_key' => 'field_group',
+			'weak' => TRUE
 		),
 	);
 
