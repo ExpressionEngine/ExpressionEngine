@@ -80,6 +80,11 @@ class Member extends Model {
 			'type' => 'hasMany',
 			'model' => 'Comment',
 			'to_key' => 'author_id'
+		),
+		'TemplateRevisions' => array(
+			'type' => 'hasMany',
+			'model' => 'RevisionTracker',
+			'to_key' => 'item_author_id'
 		)
 	);
 

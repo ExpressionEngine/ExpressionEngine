@@ -259,11 +259,23 @@ RADIO;
 
 		if (empty($errors))
 		{
-			ee()->session->set_flashdata('message_success', lang('template_routes_saved'));
+			ee('CP/Alert')->makeInline()
+				->asSuccess()
+				->withTitle(lang('template_routes_saved'))
+				->addToBody(lang('template_routes_saved_desc'))
+				->defer();
+
 			ee()->functions->redirect($this->base_url);
 		}
 		else
 		{
+			ee()->load->helper('html_helper');
+			ee('CP/Alert')->makeInline()
+				->asIssue()
+				->withTitle(lang('template_routes_not_saved'))
+				->addToBody(lang('template_routes_not_saved_desc').ul($errors))
+				->now();
+
 			$this->index();
 		}
 	}

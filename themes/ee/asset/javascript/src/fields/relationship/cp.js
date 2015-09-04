@@ -179,7 +179,7 @@
 		});
 
 		// Search Relationships
-		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
+		$('div.publish').on('keyup', '.relate-wrap .relate-actions .relate-search', function (e) {
 			var empty = true;
 			var searchText = $(this).val();
 			var matchesChannelFilter = true;

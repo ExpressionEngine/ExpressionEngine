@@ -292,5 +292,8 @@ return array(
 			// ..\Email
 			'EmailCache' => 'Model\Email\EmailCache',
 			'EmailTracker' => 'Model\Email\EmailTracker',
+
+			// ..\Revision
+			'RevisionTracker' => 'Model\Revision\RevisionTracker'
 	)
 );

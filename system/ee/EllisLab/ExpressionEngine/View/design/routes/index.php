@@ -6,8 +6,8 @@
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php $this->embed('_shared/pagination'); ?>
-		<fieldset class="tbl-bulk-act hidden">
-			<button class="btn submit"><?=lang('submit')?></button>
+		<fieldset class="tbl-bulk-act">
+			<button class="btn submit"><?=sprintf(lang('btn_save'), lang('routes'))?></button>
 		</fieldset>
 	<?=form_close()?>
 </div>

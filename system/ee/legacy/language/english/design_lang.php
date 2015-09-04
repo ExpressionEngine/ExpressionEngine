@@ -26,6 +26,8 @@ $lang = array(
 
 'template_routes' => 'Template Routes',
 
+'routes' => 'Routes',
+
 'create_new_template' => 'Create New Template',
 
 'messages' => 'messages',
@@ -219,6 +221,8 @@ $lang = array(
 'settings' => 'Settings',
 
 'access' => 'Access',
+
+'no_revisions' => 'No revisions',
 
 'template_notes' => 'Template Notes',
 
@@ -726,7 +730,13 @@ and templates will only be accesible from the default group/template URL.',
 
 'route_required_subtext' => 'If route segments are required all segments in the template route must be present in the request URI.',
 
-'template_routes_saved' => 'Template Routes saved',
+'template_routes_saved' => 'Template Routes Saved',
+
+'template_routes_saved_desc' => 'Template routes have been saved.',
+
+'template_routes_not_saved' => 'Template Routes Not Saved',
+
+'template_routes_not_saved_desc' => 'We were unable to save the template routes, please review and fix errors below.',
 
 'http_auth_protected' => 'HTTP Auth Protected',
 
