@@ -1568,11 +1568,13 @@ class EE_Schema {
 			),
 			array(
 				'group_title'                    => 'Guests',
-				'group_id'                       => 3
+				'group_id'                       => 3,
+				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Pending',
-				'group_id'                       => 4
+				'group_id'                       => 4,
+				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Members',
