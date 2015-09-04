@@ -554,6 +554,11 @@ class Template extends AbstractDesignController {
 
 		$field = ee()->input->post('ee_fv_field');
 
+		// The ajaxValidation method looks for the 'ee_fv_field' in the POST
+		// data. Then it checks to see if the result object has an error
+		// for that field. Then it'll return. Since we may be validating
+		// a field on a TemplateRoute model we should check for that
+		// befaore outputting an ajax response.
 		if ( ! isset($_POST['save_modal'])
 			&& isset($field)
 			&& $template->hasProperty($field)
