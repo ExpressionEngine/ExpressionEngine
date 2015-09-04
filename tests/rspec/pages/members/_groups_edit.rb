@@ -46,7 +46,7 @@ class MemberGroupsEdit < SitePrism::Section
   elements :member_actions, 'input[name="member_actions[]"]'
 
   elements :can_admin_design, 'input[name="can_admin_design"]'
-  elements :template_groups, 'input[name="template_groups[]"]'
+  elements :template_groups, 'input[name="template_group_permissions[]"]'
   elements :template_partials, 'input[name="template_partials[]"]'
   elements :template_variables, 'input[name="template_variables[]"]'
 
