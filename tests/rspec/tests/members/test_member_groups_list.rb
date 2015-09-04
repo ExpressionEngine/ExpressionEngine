@@ -60,7 +60,7 @@ feature 'Member Group List' do
       @page.edit.description.set 'Editors description.'
       @page.edit.security_lock[1].click
 
-	  submit_form
+      submit_form
 
       @page.edit.name.value.should == 'Editors'
       @page.edit.description.value.should == 'Editors description.'
@@ -68,73 +68,88 @@ feature 'Member Group List' do
       @page.edit.security_lock[1].checked?.should == true
     end
 
-	it 'saves member group permissions' do
-	  permissions = Hash[
-        'website_access' => 'website_access',
-        'can_view_profiles' => 'can_view_profiles',
-        'can_send_email' => 'can_send_email',
-        'can_delete_self' => 'can_delete_self',
-        'include_members_in' => 'include_members_in',
-        'can_post_comments' => 'can_post_comments',
-        'exclude_from_moderation' => 'exclude_from_moderation',
-        'comment_actions' => 'comment_actions',
-        'can_search' => 'can_search',
-        'can_send_private_messages' => 'can_send_private_messages',
-        'can_attach_in_private_messages' => 'can_attach_in_private_messages',
-        'can_send_bulletins' => 'can_send_bulletins',
-        'can_access_cp' => 'can_access_cp',
-        'channel_permissions' => 'channel_permissions',
-        'channel_field_permissions' => 'channel_field_permissions',
-        'channel_category_permissions' => 'channel_category_permissions',
-        'channel_status_permissions' => 'channel_status_permissions',
-        'can_admin_channels' => 'can_admin_channels',
-        'category_actions' => 'category_actions',
-        'channel_entry_actions' => 'channel_entry_actions',
-        'allowed_channels' => 'allowed_channels',
-        'asset_upload_directories' => 'asset_upload_directories',
-        'assets' => 'assets',
-        'rte_toolsets' => 'rte_toolsets',
-        'member_group_actions' => 'member_group_actions',
-        'member_actions' => 'member_actions',
-        'can_admin_design' => 'can_admin_design',
-        'template_groups' => 'template_groups',
-        'template_partials' => 'template_partials',
-        'template_variables' => 'template_variables',
-        'template_permissions' => 'template_permissions',
-        'allowed_template_groups' => 'allowed_template_groups',
-        'can_admin_modules' => 'can_admin_modules',
-        'addons_access' => 'addons_access',
-        'access_tools' => 'access_tools',
-        'access_settings' => 'access_settings'
-	  ]
+    checkboxes = %w(
+      website_access
+      include_members_in
+      comment_actions
+      footer_helper_links
+      channel_permissions
+      channel_field_permissions
+      channel_category_permissions
+      channel_status_permissions
+      channel_entry_actions
+      allowed_channels
+      asset_upload_directories
+      assets
+      rte_toolsets
+      member_group_actions
+      member_actions
+      template_groups
+      template_partials
+      template_variables
+      template_permissions
+      allowed_template_groups
+      addons_access
+      access_tools
+      access_settings
+    )
 
-	  permissions.each do |key, item|
-        it 'toggles ' + key + ' member group permissions' do
-          toggle_state = Hash.new(Hash.new)
-		  @page.edit.send(:item).each_with_index do |permission_group, index|
-            toggle_state[permission_group][permission_group.value] = permission_group.checked?
+    checkboxes.each do |name|
+      it "toggles `#{name}` member group checkbox permissions" do
+        toggle_state = {}
 
-			# Handle checkbox groups vs y/n radios
-            if permission_group.value == 'y' || permission_group.value == 'n' then
-            	if ! permission_group.checked? then
-				  permission_group.click
-            	end
-            else
-				permission_group.click
-            end
-		  end
-
-		  submit_form
-
-		  @page.edit.send(:item).each_with_index do |permission_group, index|
-            permission_group.checked?.should == toggle_state[permission_group][permission_group.value]
-		  end
+        @page.edit.send(name).each_with_index do |permission, index|
+          toggle_state[index] = permission.checked?
+          permission.click
         end
-	  end
-	end
 
+        submit_form
+
+        @page.edit.send(name).each_with_index do |permission, index|
+          toggle_state[index].should_not == permission.checked?
+          permission.click
+        end
+
+        submit_form
+
+        @page.edit.send(name).each_with_index do |permission, index|
+          toggle_state[index].should == permission.checked?
+          permission.click
+        end
+      end
+    end
+
+    radios = %w(
+      can_view_profiles
+      can_send_email
+      can_delete_self
+      can_post_comments
+      exclude_from_moderation
+      can_search
+      can_send_private_messages
+      can_attach_in_private_messages
+      can_send_bulletins
+      can_access_cp
+      cp_homepage
+      can_admin_design
+      can_admin_modules
+    )
+
+    radios.each do |name|
+      it "toggles `#{name}` member group radio permissions" do
+        @page.edit.send(name)[0].click
+
+        submit_form
+
+        @page.edit.send(name)[0].should be_checked
+        @page.edit.send(name)[1].click
+
+        submit_form
+
+        @page.edit.send(name)[1].should be_checked
+      end
+    end
   end
-
 
   context 'when using MSM' do
     before :each do
