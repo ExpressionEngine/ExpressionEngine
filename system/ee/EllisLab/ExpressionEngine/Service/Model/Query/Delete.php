@@ -230,7 +230,6 @@ class Delete extends Query {
 			if ($relation->isWeak())
 			{
 				$to_model = $relation->getSourceModel();
-				var_dump($to_model);
 				$this->delete_list[] = array($to_model, $this->weak($relation, $path));
 				continue;
 			}
