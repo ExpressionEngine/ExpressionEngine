@@ -730,6 +730,15 @@ class Template extends AbstractDesignController {
 	{
 		$sections = array(
 			array(
+				ee('CP/Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('php_in_templates_warning'))
+					->addToBody(
+						sprintf(lang('php_in_templates_warning2'), '<span title="excercise caution"></span>'),
+						'caution'
+					)
+					->cannotClose()
+					->render(),
 				array(
 					'title' => 'template_name',
 					'desc' => 'alphadash_desc',
@@ -817,15 +826,7 @@ class Template extends AbstractDesignController {
 			)
 		);
 
-		$html = ee('CP/Alert')->makeInline('permissions-warn')
-			->asWarning()
-			->addToBody(lang('php_in_templates_warning'))
-			->addToBody(
-				sprintf(lang('php_in_templates_warning2'), '<span title="excercise caution"></span>'),
-				'caution'
-			)
-			->cannotClose()
-			->render();
+		$html = '';
 
 		foreach ($sections as $name => $settings)
 		{
