@@ -182,7 +182,7 @@ feature 'Translate Tool' do
 
 		visit(new_url)
 
-		@list_page.should have_text "404: Item does not exist."
+		@list_page.should have_text "404: Item does not exist"
 	end
 
 	it 'shows a breadcrumb link on the edit page', :edit => true do
