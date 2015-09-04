@@ -52,7 +52,6 @@ class Filepicker_mcp {
 		{
 			$id = 'all';
 			$files = ee('Model')->get('File')
-				->filter('module_id', 0)
 				->filter('site_id', ee()->config->item('site_id'))->all();
 
 			$type = ee()->input->get('type') ?: 'list';
