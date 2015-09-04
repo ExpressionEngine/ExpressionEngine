@@ -48,7 +48,7 @@ class TemplateRoute extends Model {
 
 	protected static $_validation_rules = array(
 		'template_id'    => 'required|isNatural',
-		'route'          => 'validateRouteIsUnique[route_required]',
+		'route'          => 'validateRouteIsValid|validateRouteIsUnique[route_required]',
 		'route_required' => 'enum[y,n]',
 	);
 
@@ -126,6 +126,25 @@ class TemplateRoute extends Model {
 		}
 
 		return $route;
+	}
+
+	/**
+	 * Validates that the route is valid
+	 */
+	public function validateRouteIsValid($key, $value, $params, $rule)
+	{
+		ee()->load->library('template_router');
+
+		try
+		{
+			$ee_route = new \EE_Route($route, $required == 'y');
+		}
+		catch (Exception $error)
+		{
+			return $error->getMessage();
+		}
+
+		return TRUE;
 	}
 
 	/**
