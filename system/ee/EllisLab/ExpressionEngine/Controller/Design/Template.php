@@ -51,6 +51,11 @@ class Template extends AbstractDesignController {
 
 	public function create($group_name)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_new_templates'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
 			->first();
@@ -205,6 +210,11 @@ class Template extends AbstractDesignController {
 
 	public function edit($template_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_templates'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();

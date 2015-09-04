@@ -964,6 +964,46 @@ class Cp {
 	 * Member access validation
 	 *
 	 * @param	string  any number of permission names
+	 * @return	bool    TRUE if member has any permissions in the set
+	 */
+	public function allowed_group_any()
+	{
+		$which = func_get_args();
+
+		if ( ! count($which))
+		{
+			return FALSE;
+		}
+
+		// Super Admins always have access
+		if (ee()->session->userdata('group_id') == 1)
+		{
+			return TRUE;
+		}
+
+		$result = FALSE;
+
+		foreach ($which as $w)
+		{
+			$k = ee()->session->userdata($w);
+
+			if ($k === TRUE OR $k == 'y')
+			{
+				$result = TRUE;
+			}
+		}
+
+		return $result;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Allowed Group
+	 *
+	 * Member access validation
+	 *
+	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()

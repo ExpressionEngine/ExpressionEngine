@@ -41,7 +41,7 @@ class Variables extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -177,6 +177,11 @@ class Variables extends AbstractDesignController {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_template_variables'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/variables/create'),
@@ -288,6 +293,11 @@ class Variables extends AbstractDesignController {
 
 	public function edit($variable_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_template_variables'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$variable = ee('Model')->get('GlobalVariable')
 			->filter('variable_id', $variable_id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -417,6 +427,11 @@ class Variables extends AbstractDesignController {
 	 */
 	private function remove($variable_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_template_variables'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($variable_ids))
 		{
 			$variable_ids = array($variable_ids);
