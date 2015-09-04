@@ -36,6 +36,7 @@ class Wiki_mcp {
 
 	var $_base_url = '';
 	private $wiki_errors = array();
+	private $member_groups = array();
 
 	/**
 	  *  Constructor
@@ -248,6 +249,14 @@ class Wiki_mcp {
 	}
 
 
+	function get_member_groups()
+	{
+		$this->member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(2,3,4))
+			->order('group_title')
+			->all();
+	}
+
 
 	// -------------------------------------------------------------------------
 
@@ -260,6 +269,8 @@ class Wiki_mcp {
 	 */
 	public function edit_wiki($wiki_id = 0)
 	{
+		$this->get_member_groups();
+
 		ee()->load->helper('form');
 		$alert_key = (is_null($wiki_id)) ? 'created' : 'updated';
 
@@ -503,13 +514,8 @@ class Wiki_mcp {
 				);
 
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(2,3,4))
-			->order('group_title')
-			->all();
-
 		$member_group_options = array();
-		foreach ($member_groups as $group)
+		foreach ($this->member_groups as $group)
 		{
 			$member_group_options[$group->group_id] = $group->group_title;
 		}
@@ -717,10 +723,8 @@ class Wiki_mcp {
 		$grid->setNoResultsText('no_namespaces', 'add_namespaces');
 
 		$member_choices = array();
-		$member_groups = ee()->api->get('MemberGroup');
-		$member_groups = $member_groups->all();
 
-		foreach ($member_groups as $group)
+		foreach ($this->member_groups as $group)
 		{
 			$member_choices[$group->group_id] = $group->group_title;
 		}
@@ -806,15 +810,6 @@ class Wiki_mcp {
 			'namespace_name' => '',
 		);
 
-		if ( ! isset($namespace['namespace_users']) )
-		{
-			$namespace['namespace_users'] = array();
-		}
-		elseif ( ! is_array($namespace['namespace_users']))
-		{
-			$namespace['namespace_users'] = explode('|', $namespace['namespace_users']);
-		}
-
 		if ( ! isset($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = array();
@@ -822,6 +817,16 @@ class Wiki_mcp {
 		elseif ( ! is_array($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = explode('|', $namespace['namespace_admins']);
+		}
+
+
+		if ( ! isset($namespace['namespace_users']) )
+		{
+			$namespace['namespace_users'] = array();
+		}
+		elseif ( ! is_array($namespace['namespace_users']))
+		{
+			$namespace['namespace_users'] = explode('|', $namespace['namespace_users']);
 		}
 
 		$namespace = array_merge($defaults, $namespace);
@@ -858,12 +863,12 @@ class Wiki_mcp {
 				'error' => $this->getGridFieldError($namespace, 'namespace_name')
 			),
 			array(
-				'html' => $user_checkboxes,
-				'error' => $this->getGridFieldError($namespace, 'namespace_users')
-			),
-			array(
 				'html' => $admin_checkboxes,
 				'error' => $this->getGridFieldError($namespace, 'namespace_admins')
+			),
+			array(
+				'html' => $user_checkboxes,
+				'error' => $this->getGridFieldError($namespace, 'namespace_users')
 			)
 		);
 	}
