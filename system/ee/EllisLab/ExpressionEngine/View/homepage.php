@@ -4,19 +4,11 @@
 	<div class="col-group snap mb">
 		<div class="col w-16 last">
 			<div class="box full">
-				<?php if (isset($form_url)): ?>
-					<?=form_open($form_url)?>
-						<fieldset class="tbl-search right">
-							<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=ee()->input->get_post('search')?>">
-							<input class="btn submit" type="submit" value="<?=lang('search_content')?>">
-						</fieldset>
-				<?php endif ?>
+				<div class="tbl-ctrls">
 					<h1>
 						<?=$cp_page_title?>
 					</h1>
-				<?php if (isset($form_url)): ?>
-				</form>
-				<?php endif ?>
+				</div>
 			</div>
 		</div>
 	</div>

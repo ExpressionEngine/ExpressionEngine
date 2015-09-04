@@ -513,7 +513,13 @@ $lang = array(
 
 'attachment_settings' => 'Attachment Settings',
 
-'prv_msg_upload_path' => 'Upload directory',
+'prv_msg_upload_url' => 'Upload directory',
+
+'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
+
+'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
+
+'prv_msg_upload_path' => 'Upload path',
 
 'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
