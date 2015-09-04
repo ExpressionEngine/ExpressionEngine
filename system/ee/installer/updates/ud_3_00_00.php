@@ -931,7 +931,6 @@ class Updater {
 
 		// Drop all superfluous permissions columns
 		$old = array(
-			'can_access_accessories',
 			'can_access_extensions',
 			'can_access_fieldtypes',
 			'can_access_modules',
@@ -945,7 +944,7 @@ class Updater {
 			'can_admin_upload_prefs',
 			'can_access_tools'
 		);
-		
+
 		foreach ($old as $permission)
 		{
 			ee()->smartforge->drop_column('member_groups', $permission);
