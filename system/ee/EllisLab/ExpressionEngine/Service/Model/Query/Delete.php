@@ -45,12 +45,15 @@ class Delete extends Query {
 			return;
 		}
 
-		$from     = $this->removeDefaultPrefix($from);
+		$from = $this->removeDefaultPrefix($from);
 
 		$delete_list = $this->getDeleteList($from);
 
-		foreach ($delete_list as $model => $withs)
+		foreach ($delete_list as $delete_item)
 		{
+			list($model, $withs) = $delete_item;
+			$model = $this->removeDefaultPrefix($model);
+
 			$offset		= 0;
 			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model?
 
@@ -179,16 +182,96 @@ class Delete extends Query {
 	 *    'Site'          => array()
 	 * );
 	 *
-	 * @param String  $from  Model to delete from
+	 * @param String  $model  Model to delete from
 	 * @return Array  [name => withs, ...] as described above
 	 */
-	protected function getDeleteList($from)
+	protected function getDeleteList($model)
 	{
 		$this->delete_list = array();
-		$this->deleteListRecursive($from);
+		$this->recursivePath($model, array());
+
+		usort($this->delete_list, function($a, $b) {
+
+			if ($a[1] instanceOf \Closure)
+			{
+				return 5e10;
+			}
+
+			if ($b[1] instanceOf \Closure)
+			{
+				return -5e10;
+			}
+
+			return count($a[1]) - count($b[1]);
+		});
+
+		foreach ($this->delete_list as &$final)
+		{
+			if (is_array($final[1]))
+			{
+				$final[1] = $this->nest($final[1]);
+			}
+		}
+
 		return array_reverse($this->delete_list);
 	}
 
+
+	protected function recursivePath($model, $path = array())
+	{
+		$this->delete_list[] = array($model, array_reverse($path));
+
+		$relations = $this->store->getAllRelations($model);
+
+		foreach ($relations as $name => $relation)
+		{
+			$inverse = $relation->getInverse();
+
+			if ($relation->isWeak())
+			{
+				$to_model = $relation->getSourceModel();
+				var_dump($to_model);
+				$this->delete_list[] = array($to_model, $this->weak($relation, $path));
+				continue;
+			}
+
+			if ($inverse instanceOf BelongsTo)
+			{
+				$to_model = $relation->getTargetModel();
+				$to_name = $inverse->getName();
+
+				// check for recursion
+				if ($to_model == $model && $to_name == end($path))
+				{
+					$this->delete_list[] = array($to_model, $this->recursive($relation, $path));
+					continue;
+				}
+
+				$subpath = $path;
+				$subpath[] = $to_name;
+
+				$this->recursivePath($to_model, $subpath);
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	protected function nest($array)
+	{
+		if (empty($array))
+		{
+			return array();
+		}
+
+		$key = array_shift($array);
+		return array($key => $this->nest($array));
+	}
+
+	/**
+	 *
+	 */
 	private function removeDefaultPrefix($str)
 	{
 		if (strpos($str, 'ee:') === 0)
@@ -197,73 +280,6 @@ class Delete extends Query {
 		}
 
 		return $str;
-	}
-
-	/**
-	 * Helper to build a delete list. See the `getDeleteList()` method
-	 * for details.
-	 *
-	 * @param String  $parent  Model we're processing
-	 * @return Array  [name => withs, ...]
-	 */
-	protected function deleteListRecursive($parent)
-	{
-		$parent = $this->removeDefaultPrefix($parent);
-
-		$results = array();
-		$relations = $this->store->getAllRelations($parent);
-
-		if ( ! isset($this->delete_list[$parent]))
-		{
-			$this->delete_list[$parent] = array();
-		}
-
-		foreach ($relations as $name => $relation)
-		{
-			if ($relation->isWeak())
-			{
-				$to_model = $relation->getSourceModel();
-				$to_model = $this->removeDefaultPrefix($to_model);
-
-				$inherit = $this->delete_list[$parent];
-				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
-				continue;
-			}
-
-			$inverse = $relation->getInverse();
-
-			if ($inverse instanceOf BelongsTo)
-			{
-				$to_name = $inverse->getName();
-				$to_model = $relation->getTargetModel();
-				$to_model = $this->removeDefaultPrefix($to_model);
-
-				if ( ! isset($this->delete_list[$to_model]))
-				{
-					$this->delete_list[$to_model] = array();
-				}
-
-				$inherit = $this->delete_list[$parent];
-
-				// already dealing with a closure?
-				if ( ! is_array($this->delete_list[$to_model]))
-				{
-					continue;
-				}
-
-				if (isset($this->delete_list[$to_model][$to_name]))
-				{
-					$this->delete_list[$to_model] = $this->recursive($relation, $inherit);
-					continue;
-				}
-
-				$this->delete_list[$to_model][$to_name] = $inherit;
-
-				$this->deleteListRecursive($to_model);
-			}
-		}
-
-		return $results;
 	}
 
 	/**
@@ -276,6 +292,8 @@ class Delete extends Query {
 	 */
 	private function recursive($relation, $withs)
 	{
+		$withs = $this->nest(array_reverse($withs));
+
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
@@ -301,6 +319,8 @@ class Delete extends Query {
 	 */
 	private function weak($relation, $withs)
 	{
+		$withs = $this->nest(array_reverse($withs));
+
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
