@@ -47,9 +47,6 @@ abstract class AbstractChannels extends CP_Controller {
 			}
 		}
 		elseif ( ! ee()->cp->allowed_group_any(
-			'can_admin_channels', 
-			'can_access_content_prefs'
-			'can_admin_channels',
 			'can_create_channels',
 			'can_edit_channels',
 			'can_delete_channels',
