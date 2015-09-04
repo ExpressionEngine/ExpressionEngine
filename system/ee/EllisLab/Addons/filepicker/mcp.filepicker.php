@@ -67,7 +67,7 @@ class Filepicker_mcp {
 			$files = $dir->Files;
 
 			// Only show member directories if it's avatars
-			if (isset($dir->Module) && $dir->Module->module_name == 'Member')
+			if ($dir->Module && $dir->Module->module_name == 'Member')
 			{
 				if ($dir->server_path == ee()->config->item('avatar_path'))
 				{
