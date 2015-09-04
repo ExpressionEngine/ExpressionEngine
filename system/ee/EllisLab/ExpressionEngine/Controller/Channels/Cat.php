@@ -43,7 +43,7 @@ class Cat extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_permissions(
+		if ( ! ee()->cp->allowed_group_any(
 			'can_create_categories',
 			'can_edit_categories',
 			'can_delete_categories'

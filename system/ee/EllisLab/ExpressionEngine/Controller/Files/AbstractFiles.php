@@ -40,7 +40,7 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_permissions(
+		if ( ! ee()->cp->allowed_group_any(
 			'can_upload_new_assets',
 			'can_edit_assets',
 			'can_delete_assets',

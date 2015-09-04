@@ -35,7 +35,7 @@ class Fields extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_permissions(
+		if ( ! ee()->cp->allowed_group_any(
 			'can_create_channel_fields',
 			'can_edit_channel_fields',
 			'can_delete_channel_fields'

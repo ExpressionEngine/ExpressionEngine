@@ -966,7 +966,7 @@ class Cp {
 	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has any permissions in the set
 	 */
-	public function allowed_group_permissions()
+	public function allowed_group_any()
 	{
 		$which = func_get_args();
 

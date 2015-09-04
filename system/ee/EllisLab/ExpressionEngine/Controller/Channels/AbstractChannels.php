@@ -46,7 +46,7 @@ abstract class AbstractChannels extends CP_Controller {
 				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! ee()->cp->allowed_group_permissions(
+		elseif ( ! ee()->cp->allowed_group_any(
 			'can_admin_channels', 
 			'can_access_content_prefs'
 			'can_admin_channels',

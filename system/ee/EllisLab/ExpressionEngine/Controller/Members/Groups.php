@@ -1033,6 +1033,8 @@ class Groups extends Members\Members {
 									'can_delete_members' => lang('can_delete_members'),
 									'can_ban_users' => lang('can_ban_users'),
 									'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
+									'can_email_from_profile' => lang('can_email_from_profile'),
+									'can_edit_html_buttons' => lang('can_edit_html_buttons')
 								),
 								'value' => element('member_actions', $values)
 							)
