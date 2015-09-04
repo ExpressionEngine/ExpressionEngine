@@ -70,6 +70,7 @@ class MemberGroup extends Model {
 		'can_send_bulletins'             => 'boolString',
 		'include_in_authorlist'          => 'boolString',
 		'include_in_memberlist'          => 'boolString',
+		'include_in_mailinglist'         => 'boolString',
 		'can_upload_new_assets'          => 'boolString',
 		'can_edit_assets'                => 'boolString',
 		'can_delete_assets'              => 'boolString',
@@ -254,6 +255,7 @@ class MemberGroup extends Model {
 	protected $can_send_bulletins;
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
+	protected $include_in_mailinglist;
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;

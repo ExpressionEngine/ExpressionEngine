@@ -677,6 +677,7 @@ class Groups extends Members\Members {
 								'choices' => array(
 									'include_in_authorlist' => lang('include_in_authorlist'),
 									'include_in_memberlist' => lang('include_in_memberlist'),
+									'include_in_mailinglist' => lang('include_in_mailinglist'),
 								),
 								'value' => element('include_members_in', $values)
 							),
