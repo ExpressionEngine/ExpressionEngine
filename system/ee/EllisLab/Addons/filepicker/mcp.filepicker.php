@@ -25,9 +25,10 @@ class Filepicker_mcp {
 	public function index()
 	{
 		// check if we have a request for a specific file id
-		if ( ! empty(ee()->input->get('file')))
+		$file = ee()->input->get('file');
+		if ( ! empty($file))
 		{
-			$this->fileInfo(ee()->input->get('file'));
+			$this->fileInfo($file);
 		}
 
 		if ($this->access === FALSE)
