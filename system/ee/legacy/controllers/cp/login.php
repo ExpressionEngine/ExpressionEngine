@@ -218,59 +218,9 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$return_path = ee('CP/URL', 'homepage');
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
-		// Check to see if there is an alternative redirect set up
-		$member_group = ee('Model')->get('MemberGroup', ee()->session->userdata('group_id'))->first();
-
-		if ($this->input->post('return_path'))
-		{
-			$return_path = base64_decode($this->input->post('return_path'));
-
-			if (strpos($return_path, '{') === 0)
-			{
-				$uri_elements = json_decode($return_path, TRUE);
-				$return_path = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-			}
-			else
-			{
-				$return_path = ee()->uri->reformat($base.AMP.$return_path, $base);
-			}
-		}
-		else if ($member_group->cp_homepage != '' OR ee()->session->userdata('cp_homepage') != '')
-		{
-			if (ee()->session->userdata('cp_homepage') != '')
-			{
-				$site_id = ee()->config->item('site_id');
-
-				$cp_homepage = ee()->session->userdata('cp_homepage');
-				$cp_homepage_channel = ee()->session->userdata('cp_homepage_channel');
-				$cp_homepage_channel = $cp_homepage_channel[$site_id];
-				$cp_homepage_custom = ee()->session->userdata('cp_homepage_custom');
-			}
-			else
-			{
-				$cp_homepage = $member_group->cp_homepage;
-				$cp_homepage_channel = $member_group->cp_homepage_channel;
-				$cp_homepage_custom = $member_group->cp_homepage_custom;
-			}
-
-			switch ($cp_homepage) {
-				case 'entries_edit':
-					$return_path = ee('CP/URL', 'publish/edit');
-					break;
-				case 'publish_form':
-					$return_path = ee('CP/URL', 'publish/create/'.$cp_homepage_channel);
-					break;
-				case 'custom':
-					$return_path = ee('CP/URL', $cp_homepage_custom); # make instructions on field or something
-					break;
-				default:
-					break;
-			}
-		}
-
-		$this->functions->redirect($return_path);
+		$this->functions->redirect($member->getCPHomepageURL());
 	}
 
 	// --------------------------------------------------------------------
