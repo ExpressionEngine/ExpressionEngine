@@ -61,6 +61,11 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 			foreach ($section['fields'] as $field_info)
 			{
+				if (empty($field_info))
+				{
+					continue;
+				}
+
 				$field_id = $field_info['field'];
 
 				$field = $fields[$field_id];
