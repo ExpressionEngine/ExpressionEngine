@@ -67,7 +67,7 @@ $(document).ready(function () {
 				$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
 
 				// Add the field to the publish_layout array
-				EE.publish_layout[getTabIndex()].fields.splice(0, 0, field);
+				EE.publish_layout[getTabIndex()].fields.unshift(field);
 				field = null;
 
 				// Make sure the last element has the last class
@@ -113,10 +113,12 @@ $(document).ready(function () {
 				return;
 			}
 
-			var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
+			if (field != null) {
+				var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
 
-			EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
-			field = null;
+				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
+				field = null;
+			}
 
 			$('fieldset.sortable').removeClass('last');
 			$('fieldset.sortable:last-child').addClass('last');
