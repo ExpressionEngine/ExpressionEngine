@@ -166,6 +166,7 @@ class Layouts extends AbstractChannelsController {
 
 		$default_layout = new DefaultChannelLayout($channel_id, NULL);
 		$channel_layout = ee('Model')->make('ChannelLayout');
+		$channel_layout->Channel = $channel;
 		$field_layout = $default_layout->getLayout();
 
 		foreach ($channel->CustomFields as $custom_field)
@@ -191,17 +192,6 @@ class Layouts extends AbstractChannelsController {
 					$assigned_member_groups[$group_id] = $layout;
 				}
 			});
-
-		$vars = array(
-			'channel' => $channel,
-			'form_url' => ee('CP/URL', 'channels/layouts/create/' . $channel_id),
-			'layout' => $entry->getDisplay(),
-			'channel_layout' => $channel_layout,
-			'member_groups' => $this->getEligibleMemberGroups($channel),
-			'selected_member_groups' => array(),
-			'assigned_member_groups' => $assigned_member_groups,
-			'submit_button_text' => lang('btn_create_layout')
-		);
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
@@ -255,6 +245,20 @@ class Layouts extends AbstractChannelsController {
 				->now();
 		}
 
+		$vars = array(
+			'channel' => $channel,
+			'form_url' => ee('CP/URL', 'channels/layouts/create/' . $channel_id),
+			'layout' => $entry->getDisplay(),
+			'channel_layout' => $channel_layout,
+			'form' => $this->getForm($channel_layout),
+
+			'member_groups' => $this->getEligibleMemberGroups($channel),
+			'selected_member_groups' => array(),
+			'assigned_member_groups' => $assigned_member_groups,
+
+			'submit_button_text' => lang('btn_create_layout')
+		);
+
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'channels')->compile() => lang('channels'),
 			ee('CP/URL', 'channels/layouts/' . $channel_id)->compile() => lang('form_layouts')
@@ -301,17 +305,6 @@ class Layouts extends AbstractChannelsController {
 					$assigned_member_groups[$group_id] = $layout;
 				}
 			});
-
-		$vars = array(
-			'channel' => $channel,
-			'form_url' => ee('CP/URL', 'channels/layouts/edit/' . $layout_id),
-			'layout' => $entry->getDisplay($channel_layout),
-			'channel_layout' => $channel_layout,
-			'member_groups' => $this->getEligibleMemberGroups($channel),
-			'selected_member_groups' => $channel_layout->MemberGroups->pluck('group_id'),
-			'assigned_member_groups' => $assigned_member_groups,
-			'submit_button_text' => lang('btn_edit_layout')
-		);
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
@@ -362,6 +355,20 @@ class Layouts extends AbstractChannelsController {
 				->now();
 		}
 
+		$vars = array(
+			'channel' => $channel,
+			'form_url' => ee('CP/URL', 'channels/layouts/edit/' . $layout_id),
+			'layout' => $entry->getDisplay($channel_layout),
+			'channel_layout' => $channel_layout,
+			'form' => $this->getForm($channel_layout),
+
+			'member_groups' => $this->getEligibleMemberGroups($channel),
+			'selected_member_groups' => $channel_layout->MemberGroups->pluck('group_id'),
+			'assigned_member_groups' => $assigned_member_groups,
+
+			'submit_button_text' => lang('btn_edit_layout')
+		);
+
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'channels')->compile() => lang('channels'),
 			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
@@ -389,6 +396,68 @@ class Layouts extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channels/layout/form', $vars);
+	}
+
+	private function getForm($layout)
+	{
+		$disabled_choices = array();
+		$member_groups = $this->getEligibleMemberGroups($layout->Channel)
+			->getDictionary('group_id', 'group_title');
+
+		$assigned_member_groups = ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('channel_id', $layout->Channel->channel_id);
+
+		if ( ! $layout->isNew())
+		{
+			// Exclude this layout
+			$assigned_member_groups->filter('layout_id', '!=', $layout_id);
+		}
+
+		$assigned_member_groups = $assigned_member_groups->all()
+			->indexBy('group_id');
+
+		foreach ($member_groups as $id => $title)
+		{
+			if (in_array($id, $assigned_member_groups))
+			{
+				$layout = $assigned_member_groups[$member_group->group_id];
+				$member_groups[$id] = '<s>' . $title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
+				$disabled_choices[] = $id;
+			}
+		}
+
+		$selected_member_groups = ($layout->MemberGroups) ? $layout->MemberGroups->pluck('group_id') : array();
+
+		$section = array(
+			array(
+				'title' => 'name',
+				'fields' => array(
+					'layout_name' => array(
+						'type' => 'text',
+						'required' => TRUE,
+						'value' => $layout->layout_name,
+					)
+				)
+			),
+			array(
+				'title' => 'member_group(s)',
+				'desc' => 'member_group(s)_desc',
+				'fields' => array(
+					'member_groups' => array(
+						'type' => 'checkbox',
+						'required' => TRUE,
+						'choices' => $member_groups,
+						'disabled_choices' => $disabled_choices,
+						'value' => $selected_member_groups,
+					)
+				)
+			),
+		);
+
+		return ee('View')->make('ee:_shared/form/section')
+				->render(array('name' => 'layout_options', 'settings' => $section));
+
 	}
 
 	private function getEligibleMemberGroups(Channel $channel)
