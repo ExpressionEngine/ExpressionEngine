@@ -182,7 +182,7 @@ class Groups extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_group_success_desc'), $field_group->group_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups/edit/' . $id));
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups'));
 			}
 			else
 			{
