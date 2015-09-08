@@ -47,45 +47,50 @@ $(document).ready(function () {
 	var spring;
 	var spring_delay = 500;
 
-	$('ul.tabs li a').droppable({
-		accept: "fieldset.sortable",
-		hoverClass: "highlight",
-		tolerance: "pointer",
-		drop: function(e, ui) {
-			// Stop the Timeout
-			clearTimeout(spring);
+	function makeTabsDroppable()
+	{
+		$('ul.tabs li a').droppable({
+			accept: "fieldset.sortable",
+			hoverClass: "highlight",
+			tolerance: "pointer",
+			drop: function(e, ui) {
+				// Stop the Timeout
+				clearTimeout(spring);
 
-			// Open the tab
-			$(this).trigger('click');
+				// Open the tab
+				$(this).trigger('click');
 
-			// Remove the fieldset from the old tab
-			ui.draggable.remove();
+				// Remove the fieldset from the old tab
+				ui.draggable.remove();
 
-			// Add the fieldset to the new tab
-			$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
+				// Add the fieldset to the new tab
+				$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
 
-			// Add the field to the publish_layout array
-			EE.publish_layout[getTabIndex()].fields.splice(0, 0, field);
-			field = null;
+				// Add the field to the publish_layout array
+				EE.publish_layout[getTabIndex()].fields.splice(0, 0, field);
+				field = null;
 
-			// Make sure the last element has the last class
-			$('fieldset.sortable').removeClass('last');
-			$('fieldset.sortable:last-child').addClass('last');
-		},
-		over: function(e, ui) {
-			tab = this;
-			spring = setTimeout(function() {
-				$(tab).trigger('click');
-				$('div.tab').sortable("refreshPositions");
-			}, spring_delay);
-		},
-		out: function(e, ui) {
-			clearTimeout(spring);
-		},
-		deactivate: function(e, ui) {
-			clearTimeout(spring);
-		}
-	});
+				// Make sure the last element has the last class
+				$('fieldset.sortable').removeClass('last');
+				$('fieldset.sortable:last-child').addClass('last');
+			},
+			over: function(e, ui) {
+				tab = this;
+				spring = setTimeout(function() {
+					$(tab).trigger('click');
+					$('div.tab').sortable("refreshPositions");
+				}, spring_delay);
+			},
+			out: function(e, ui) {
+				clearTimeout(spring);
+			},
+			deactivate: function(e, ui) {
+				clearTimeout(spring);
+			}
+		});
+	}
+
+	makeTabsDroppable();
 
 	// Sorting the fields
 	$('div.tab').sortable({
@@ -177,8 +182,13 @@ $(document).ready(function () {
 				EE.publish_layout.push(tab);
 
 				var index = $('ul.tabs li').length;
-				$('ul.tabs').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
-				$('div.tab.t-' + index - 1).after('<div class="tab t-' + index + '"></div>');
+
+				$('ul.tabs li a').droppable("destroy");
+
+				$('ul.tabs').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>');
+				$('div.tab.t-' + (index - 1)).after('<div class="tab t-' + index + '"></div>');
+
+				makeTabsDroppable();
 
 				$('.modal-add-new-tab .m-close').trigger('click');
 			}
