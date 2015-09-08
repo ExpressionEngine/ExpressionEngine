@@ -103,7 +103,7 @@ $lang = array(
 
 'version_update_available' => 'A newer version of ExpressionEngine is available',
 
-'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
+'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s" rel="external">Download the latest version</a> and follow the <a href="%s" rel="external">update instructions</a>.',
 
 /**
  * License & Registration

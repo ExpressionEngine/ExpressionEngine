@@ -530,7 +530,7 @@ $lang = array(
 
 'no_upload_prefs' => 'There are currently no file upload preferences',
 
-'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external" target="_blank">add one or more upload directories</a> to use the File field type.',
+'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external">add one or more upload directories</a> to use the File field type.',
 
 'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
 
