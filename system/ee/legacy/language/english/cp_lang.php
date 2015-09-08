@@ -208,6 +208,8 @@ $lang = array(
 //----------------------------
 
 'nav_settings' => 'Settings',
+'nav_homepage' => 'CP Home',
+'nav_overview' => 'CP Overview',
 
 'loading' => 'Loading',
 
