@@ -180,19 +180,6 @@ class Layouts extends AbstractChannelsController {
 
 		$channel_layout->field_layout = $field_layout;
 
-		$assigned_member_groups = array();
-
-		ee('Model')->get('ChannelLayout')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_id', $channel_id)
-			->all()
-			->each(function($layout) use (&$assigned_member_groups) {
-				foreach ($layout->MemberGroups->pluck('group_id') as $group_id)
-				{
-					$assigned_member_groups[$group_id] = $layout;
-				}
-			});
-
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
@@ -253,11 +240,6 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay(),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-
-			'member_groups' => $this->getEligibleMemberGroups($channel),
-			'selected_member_groups' => array(),
-			'assigned_member_groups' => $assigned_member_groups,
-
 			'submit_button_text' => lang('btn_create_layout')
 		);
 
@@ -293,20 +275,6 @@ class Layouts extends AbstractChannelsController {
 
 		$entry = ee('Model')->make('ChannelEntry');
 		$entry->Channel = $channel;
-
-		$assigned_member_groups = array();
-
-		ee('Model')->get('ChannelLayout')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_id', $channel->channel_id)
-			->filter('layout_id', '!=', $layout_id) // Exclude this layout
-			->all()
-			->each(function($layout) use (&$assigned_member_groups) {
-				foreach ($layout->MemberGroups->pluck('group_id') as $group_id)
-				{
-					$assigned_member_groups[$group_id] = $layout;
-				}
-			});
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
@@ -363,11 +331,6 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-
-			'member_groups' => $this->getEligibleMemberGroups($channel),
-			'selected_member_groups' => $channel_layout->MemberGroups->pluck('group_id'),
-			'assigned_member_groups' => $assigned_member_groups,
-
 			'submit_button_text' => lang('btn_edit_layout')
 		);
 
