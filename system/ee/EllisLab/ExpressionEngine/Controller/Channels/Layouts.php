@@ -228,13 +228,15 @@ class Layouts extends AbstractChannelsController {
 
 			$layout->save();
 
+			ee()->session->set_flashdata('layout_id', $layout->layout_id);
+
 			ee('CP/Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('create_layout_success'))
 				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -344,7 +346,7 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/edit/' . $layout_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $layout->Channel->channel_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -411,7 +413,7 @@ class Layouts extends AbstractChannelsController {
 		if ( ! $layout->isNew())
 		{
 			// Exclude this layout
-			$assigned_member_groups->filter('layout_id', '!=', $layout_id);
+			$assigned_member_groups->filter('layout_id', '!=', $layout->layout_id);
 		}
 
 		$assigned_member_groups = $assigned_member_groups->all()
