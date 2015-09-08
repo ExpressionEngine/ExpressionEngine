@@ -190,7 +190,7 @@ $(document).ready(function () {
 	$('.modal-add-new-tab .m-close').on('click', function(e) {
 		$('.modal-add-new-tab input[name="tab_name"]').val('');
 		$('.modal-add-new-tab .setting-field em').remove();
-		input.parents('fieldset').removeClass('invalid');
+		$('.modal-add-new-tab input[name="tab_name"]').parents('fieldset').removeClass('invalid');
 	});
 
 	// If you submit the form, trigger the submit button click
