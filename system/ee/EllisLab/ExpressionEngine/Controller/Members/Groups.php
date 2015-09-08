@@ -348,7 +348,6 @@ class Groups extends Members\Members {
 
 		ee()->load->helper('array');
 
-
 		ee()->form_validation->set_rules(array(
 			array(
 				 'field' => 'group_title',
@@ -538,6 +537,10 @@ class Groups extends Members\Members {
 
 	private function buildForm($values)
 	{
+		// @TODO: This should be refactored to remove the need for the
+		// `element()` method
+		ee()->load->helper('array');
+
 		if (isset($values['group_id']) && $values['group_id'] == 1)
 		{
 			$vars = array(
