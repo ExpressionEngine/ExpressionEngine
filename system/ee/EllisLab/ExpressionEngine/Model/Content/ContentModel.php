@@ -66,6 +66,8 @@ abstract class ContentModel extends VariableColumnModel {
 			$field->setContentId($this->getId());
 			$field->postSave();
 		}
+
+		$this->_field_was_saved = array();
 	}
 
 	/**
@@ -169,8 +171,6 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		$this->_field_was_saved = array();
-
 		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
