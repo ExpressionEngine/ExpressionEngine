@@ -189,6 +189,6 @@ case 'html': ?>
 </div>
 <?php endif ?>
 <?php if ( ! $grid): ?>
-	<?=form_error($field_name)?>
+	<?=form_error(rtrim($field_name, '[]'))?>
 	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
 <?php endif ?>
