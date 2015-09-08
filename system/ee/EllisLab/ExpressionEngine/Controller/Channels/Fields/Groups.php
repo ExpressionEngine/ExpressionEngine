@@ -202,21 +202,6 @@ class Groups extends AbstractChannelsController {
 
 	private function setWithPost(ChannelFieldGroup $field_group)
 	{
-		$selected_field_ids = ee()->input->post('custom_fields');
-
-		if ( ! empty($selected_field_ids))
-		{
-			$custom_fields = ee('Model')->get('ChannelField', $selected_field_ids)
-				->filter('site_id', ee()->config->item('site_id'))
-				->all();
-
-			$field_group->ChannelFields = $custom_fields;
-		}
-		else
-		{
-			$field_group->ChannelFields = NULL;
-		}
-
 		$field_group->group_name = ee()->input->post('group_name');
 		return $field_group;
 	}
