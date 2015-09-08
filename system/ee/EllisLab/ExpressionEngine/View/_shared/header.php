@@ -99,7 +99,7 @@
 				</ul>
 				<ul class="dev-menu">
 					<li class="develop">
-						<a class="has-sub" href=""></a>
+						<a class="has-sub" href="" title="<?=lang('nav_developer_tools')?>"></a>
 						<div class="sub-menu">
 							<ul>
 								<?php
@@ -119,7 +119,7 @@
 							</ul>
 						</div>
 					</li>
-					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
+					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 				</ul>
 			</nav>
 		</section>

@@ -195,6 +195,7 @@ $lang = array(
 // Develop Menu
 //----------------------------
 
+'nav_developer_tools'  => 'Developer Tools',
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',
 'msm_manager'      => 'Site Manager',
@@ -205,6 +206,8 @@ $lang = array(
 //----------------------------
 // Control Panel
 //----------------------------
+
+'nav_settings' => 'Settings',
 
 'loading' => 'Loading',
 
