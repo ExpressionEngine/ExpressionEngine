@@ -162,19 +162,19 @@ $lang = array(
 
 'btn_edit_template_variable' => 'Edit Template Variable',
 
-'create_template_variable_success' => 'Template Partial Created',
+'create_template_variable_success' => 'Template Variable Created',
 
 'create_template_variable_success_desc' => 'The template variable <b>%s</b> has been created.',
 
-'create_template_variable_error' => 'Cannot Create Template Partial',
+'create_template_variable_error' => 'Cannot Create Template Variable',
 
 'create_template_variable_error_desc' => 'We were unable to create this variable, please review and fix errors below.',
 
-'edit_template_variable_success' => 'Template Partial Updated',
+'edit_template_variable_success' => 'Template Variable Updated',
 
 'edit_template_variable_success_desc' => 'The template variable <b>%s</b> has been updated.',
 
-'edit_template_variable_error' => 'Cannot Update Template Partial',
+'edit_template_variable_error' => 'Cannot Update Template Variable',
 
 'edit_template_variable_error_desc' => 'We were unable to update this variable, please review and fix errors below.',
 
