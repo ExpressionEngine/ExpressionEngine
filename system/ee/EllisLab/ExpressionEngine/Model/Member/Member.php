@@ -209,4 +209,49 @@ class Member extends Model {
 		$this->save();
 	}
 
+	/**
+	 * Returns the URL to use for the homepage for this member, otherwise we'll
+	 * use the default of 'homepage'. We prioritize on the Member's preferences
+	 * then the groups preferences, falling back to the default.
+	 *
+	 * @return EllisLab\ExpressionEngine\Library\CP\URL The URL
+	 */
+	public function getCPHomepageURL()
+	{
+		$cp_homepage = NULL;
+
+		if ( ! empty($this->cp_homepage))
+		{
+			$site_id = ee()->config->item('site_id');
+
+			$cp_homepage = $this->cp_homepage;
+			$cp_homepage_channel = $this->cp_homepage_channel;
+			$cp_homepage_channel = $cp_homepage_channel[$site_id];
+			$cp_homepage_custom = $this->cp_homepage_custom;
+		}
+		elseif ( ! empty($this->MemberGroup->cp_homepage))
+		{
+			$cp_homepage = $this->MemberGroup->cp_homepage;
+			$cp_homepage_channel = $this->MemberGroup->cp_homepage_channel;
+			$cp_homepage_custom = $this->MemberGroup->cp_homepage_custom;
+		}
+
+		switch ($cp_homepage) {
+			case 'entries_edit':
+				$url = ee('CP/URL', 'publish/edit');
+				break;
+			case 'publish_form':
+				$url = ee('CP/URL', 'publish/create/'.$cp_homepage_channel);
+				break;
+			case 'custom':
+				$url = ee('CP/URL', $cp_homepage_custom);
+				break;
+			default:
+				$url = ee('CP/URL', 'homepage');
+				break;
+		}
+
+		return $url;
+	}
+
 }
