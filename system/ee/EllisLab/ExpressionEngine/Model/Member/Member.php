@@ -169,11 +169,23 @@ class Member extends Model {
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
 
+	/**
+	 * Gets the member's name
+	 *
+	 * @return string The member's name
+	 */
 	public function getMemberName()
 	{
 		return $this->screen_name ?: $this->username;
 	}
 
+	/**
+	 * Gets the HTML buttons for a given site id for this member. Falls back
+	 * to the site's defined HTML buttons
+	 *
+	 * @param int $site_id The site ID
+	 * @return EllisLab\ExpressionEngine\Library\Data\Collection A collection of HTMLButton entities
+	 */
 	public function getHTMLButtonsForSite($site_id)
 	{
 		$buttons = $this->getFrontend()->get('HTMLButton')
@@ -182,18 +194,24 @@ class Member extends Model {
 			->order('tag_order')
 			->all();
 
-			if ( ! $buttons->count())
-			{
-				$buttons = $this->getFrontend()->get('HTMLButton')
-					->filter('site_id', $site_id)
-					->filter('member_id', 0)
-					->order('tag_order')
-					->all();
-			}
+		if ( ! $buttons->count())
+		{
+			$buttons = $this->getFrontend()->get('HTMLButton')
+				->filter('site_id', $site_id)
+				->filter('member_id', 0)
+				->order('tag_order')
+				->all();
+		}
 
-			return $buttons;
+		return $buttons;
 	}
 
+	/**
+	 * Updates the author's total_entries and total_comments stats based on
+	 * the ChannelEntry and Comment counts.
+	 *
+	 * @return void
+	 */
 	public function updateAuthorStats()
 	{
 		$total_entries = $this->getFrontend()->get('ChannelEntry')
