@@ -315,7 +315,7 @@ abstract class ContentModel extends VariableColumnModel {
 			return;
 		}
 
-		$native_fields = $this->getStructure()->getCustomFields()->sortBy('field_order');
+		$native_fields = $this->getStructure()->getCustomFields();
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)

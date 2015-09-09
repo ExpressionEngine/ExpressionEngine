@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
@@ -322,7 +323,27 @@ class ChannelEntry extends ContentModel {
 
 		$this->getCustomField('title')->setItem('field_label', $this->Channel->title_field_label);
 
-		return parent::getDisplay($layout);
+		$this->usesCustomFields();
+
+		$fields = $this->getCustomFields();
+
+		uasort($fields, function($a, $b) {
+			if ($a->getItem('field_order') == $b->getItem('field_order'))
+			{
+				return ($a->getId() < $b->getId()) ? -1 : 1;
+			}
+
+			return ($a->getItem('field_order') < $b->getItem('field_order')) ? -1 : 1;
+		});
+
+		$fields = array_map(
+			function($field) { return new FieldDisplay($field); },
+			$fields
+		);
+
+		$layout = $layout ?: new DefaultLayout();
+
+		return $layout->transform($fields);
 	}
 
 	protected function getModulesWithTabs()
