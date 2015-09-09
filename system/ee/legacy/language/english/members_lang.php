@@ -234,7 +234,6 @@ $lang = array(
 	'applies_to_all_sites' => 'applies to all sites',
 	'publish_form' => 'Publish form',
 	'choose_channels_per_site' => 'choose channels, per site below',
-	'no_channels' => 'No Channels',
 	'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
 	"footer_helper_links" => "Access footer helper links",
 	"footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",
