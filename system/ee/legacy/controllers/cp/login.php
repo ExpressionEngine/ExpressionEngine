@@ -218,9 +218,27 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		if ($this->input->post('return_path'))
+		{
+			$return_path = base64_decode($this->input->post('return_path'));
 
-		$this->functions->redirect($member->getCPHomepageURL());
+			if (strpos($return_path, '{') === 0)
+			{
+				$uri_elements = json_decode($return_path, TRUE);
+				$return_path = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			}
+			else
+			{
+				$return_path = ee()->uri->reformat($base.AMP.$return_path, $base);
+			}
+		}
+		else
+		{
+			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$return_path = $member->getCPHomepageURL();
+		}
+
+		$this->functions->redirect($return_path);
 	}
 
 	// --------------------------------------------------------------------
