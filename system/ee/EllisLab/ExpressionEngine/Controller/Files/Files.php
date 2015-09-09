@@ -178,7 +178,9 @@ class Files extends AbstractFilesController {
 	public function export()
 	{
 		$files = ee('Model')->get('File')
+			->with('UploadDestination')
 			->fields('file_id')
+			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$this->exportFiles($files->all()->pluck('file_id'));
