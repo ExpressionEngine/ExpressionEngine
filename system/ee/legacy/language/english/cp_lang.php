@@ -492,6 +492,7 @@ $lang = array(
 'cp_message_success' => 'Action was a success',
 'cp_message_warn' => 'Warning',
 'create_new' => 'Create New',
+'no_channels' => 'No <b>Channels</b> found.',
 'create_new_channel' => 'Create New Channel',
 'description' => 'Description',
 'disable' => 'Disable',

@@ -249,6 +249,42 @@ class Bookmarks extends Profile {
 			$fields = $channel->CustomFields->getDictionary('field_id', 'field_label');
 		}
 
+		$channels = array();
+
+		if ($channels)
+		{
+			$bookmarklet_field_fields = array(
+				'channel' => array(
+					'type' => 'select',
+					'choices' => $channels,
+					'value' => $channel,
+					'required' => TRUE
+				),
+				'field' => array(
+					'type' => 'select',
+					'choices' => $fields,
+					'value' => $field,
+					'required' => TRUE
+				)
+			);
+		}
+		else
+		{
+			$bookmarklet_field_fields = array(
+				'channel' => array(
+					'type' => 'select',
+					'choices' => $channels,
+					'value' => $channel,
+					'required' => TRUE,
+					'no_results' => array(
+						'text' => 'no_channels',
+						'link_text' => 'create_new_channel',
+						'link_href' => ee('CP/URL', 'channels/create')
+					)
+				),
+			);
+		}
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -265,20 +301,7 @@ class Bookmarks extends Profile {
 				array(
 					'title' => 'bookmarklet_field',
 					'desc' => 'bookmarklet_field_desc',
-					'fields' => array(
-						'channel' => array(
-							'type' => 'select',
-							'choices' => $channels,
-							'value' => $channel,
-							'required' => TRUE
-						),
-						'field' => array(
-							'type' => 'select',
-							'choices' => $fields,
-							'value' => $field,
-							'required' => TRUE
-						)
-					)
+					'fields' => $bookmarklet_field_fields
 				)
 			)
 		);
