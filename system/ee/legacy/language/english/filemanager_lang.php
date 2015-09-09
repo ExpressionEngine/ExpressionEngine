@@ -60,7 +60,7 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
-'zero_directories_found' => 'Zero <b>Directories</b> found',
+'zero_directories_found' => 'No <b>Directories</b> found',
 
 'files_in_directory' => 'Files in <b>%s</b>',
 

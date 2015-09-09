@@ -24,7 +24,7 @@ $lang = array(
 
 'create_field_group' => 'Create Field Group',
 
-'custom_fields_not_found' => 'Zero <b>custom fields</b> found',
+'custom_fields_not_found' => 'No <b>custom fields</b> found',
 
 'create_new_field' => 'Create New Field',
 

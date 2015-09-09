@@ -62,7 +62,7 @@ $lang = array(
 
 'btn_save_banlist' => 'Save Banlist',
 
-'no_countries' => 'Zero <b>countries</b> found.',
+'no_countries' => 'No <b>countries</b> found.',
 
 ''=>''
 );

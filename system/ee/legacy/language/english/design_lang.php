@@ -16,7 +16,7 @@ $lang = array(
 
 'template_groups' => 'Template Groups',
 
-'zero_template_groups_found' => 'Zero <b>Template Groups</b> found',
+'zero_template_groups_found' => 'No <b>Template Groups</b> found',
 
 'system_templates' => 'System Templates',
 
