@@ -115,11 +115,13 @@ class Login extends CP_Controller {
 		}
 
 		// Show the site label
-		$this->view->site_label = ee()->api
-			->get('Site')
+		$site_label = ee('Model')->get('Site')
+			->fields('site_label')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first()
 			->site_label;
+
+		$this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
 		if ($this->input->get('BK'))
 		{
