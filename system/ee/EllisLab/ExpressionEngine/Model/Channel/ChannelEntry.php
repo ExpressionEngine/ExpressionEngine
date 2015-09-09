@@ -599,7 +599,8 @@ class ChannelEntry extends ContentModel {
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'radio',
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
-					'field_maxl'			=> 100
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateAllowComments')
 				)
 			);
 
@@ -671,6 +672,28 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return $default_fields;
+	}
+
+	/**
+	 * Populate the Allow Comments checkbox
+	 */
+	public function populateAllowComments($field)
+	{
+		// Validation error?
+		if (ee()->input->post('allow_comments'))
+		{
+			return $field->setItem('field_data', ee()->input->post('allow_comments'));
+		}
+		// New entry? Go off channel default
+		else if ($this->isNew())
+		{
+			return $field->setItem('field_data', $this->Channel->deft_comments ? 'y' : 'n');
+		}
+		// We're editing
+		else
+		{
+			return $field->setItem('field_data', $this->allow_comments ? 'y' : 'n');
+		}
 	}
 
 	public function populateChannels($field)
