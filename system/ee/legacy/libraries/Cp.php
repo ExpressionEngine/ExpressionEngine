@@ -314,13 +314,6 @@ class Cp {
 	{
 		$version = explode('.', $version);
 
-		// Drop the last zero if the version number is 3 digits (there might
-		// be regex to do this as well)
-		if (count($version == 3) && $version[2] == '0')
-		{
-			unset($version[2]);
-		}
-
 		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
 	}
 
