@@ -449,9 +449,6 @@ and provide them with the URL below.',
 
 'paypal_account' => 'PayPal account',
 
-'no_entries_matching_that_criteria' =>
-'There are no entries matching the criteria you selected',
-
 ''=>''
 );
 

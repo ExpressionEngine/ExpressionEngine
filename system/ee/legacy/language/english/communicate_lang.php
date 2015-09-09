@@ -66,7 +66,6 @@ $lang = array(
 'delete_emails'			=> 'Delete Email',
 'delete_confirm'		=> 'Delete Email Confirmation',
 'delete_question'		=> 'Are you sure you want to delete the specified email(s)?',
-'bad_cache_ids'			=> 'There are no emails matching the selected criteria',
 'email_deleted'			=> 'Email has been deleted',
 'complete'				=> 'Complete',
 'incomplete'			=> 'Incomplete',

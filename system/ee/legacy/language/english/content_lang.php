@@ -405,7 +405,6 @@ $lang = array(
 
 'add_author'		=> 'Add Author',
 'add_author_desc' 	=> 'Group settings over-ride individual settings, and some users cannot be removed from the author list.',
-'no_potential_authors' => 'There are no members available to add to the author list.', // who aren't already on it
 
 'hide_toolbar'		=> 'hide toolbar',
 'show_toolbar'		=> 'show toolbar',
@@ -605,8 +604,6 @@ $lang = array(
 'you_have_uploaded' => 'You have uploaded the following file:',
 
 'choose_a_destination' => 'Where would like your file to appear?',
-
-'no_entry_fields' => 'There are no entry fields in this channel.',
 
 'posted_by' => 'Author:',
 

@@ -429,8 +429,6 @@ $lang = array(
 
 'global_template_preferences' => 'Global Template Preferences',
 
-'no_templates_assigned' => 'There are no templates currently assigned to you',
-
 'template_not_saved' => 'Unable to save your template as a text file',
 
 'template_file_not_deleted' => 'Unable to delete the associated template file',

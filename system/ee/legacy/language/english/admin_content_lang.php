@@ -272,8 +272,6 @@ $lang = array(
 
 'restrict_status_to_group' => 'Restrict status to members of specific groups',
 
-'no_publishing_groups' => 'There are no Member Groups available that permit publishing',
-
 'status_updated' => 'Status updated',
 
 'status_deleted' => 'Status deleted',
@@ -582,8 +580,6 @@ $lang = array(
 'exclude_from_channels_or_publish' => 'Exclude from Channel or File Category Assignment?',
 'exclude_from_publish' 		=> 'Channel Assignment',
 'exclude_from_files'		=> 'File Assignment',
-
-'no_member_groups_available' => 'There are no member groups allowed to %x categories.  You may assign these privileges using the member group editor: ',
 
 'member_group' => 'Member Group',
 
