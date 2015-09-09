@@ -96,7 +96,7 @@ case 'yes_no': ?>
 <?php break;
 
 case 'select': ?>
-	<?=form_dropdown($field_name, $field['choices'], $value, $attrs)?>
+<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs); ?>
 <?php break;
 
 case 'checkbox': ?>
