@@ -84,7 +84,7 @@ $lang = array(
 'auto_br'	=> 'Auto &lt;br /&gt;',
 'xhtml'		=> 'XHTML',
 
-'no_cached_emails' => 'No Emails availble',
+'no_cached_email' => 'No <b>cached emails</b> found.',
 
 'create_new_email' => 'Create new Email',
 
