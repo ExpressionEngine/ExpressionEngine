@@ -164,21 +164,30 @@ class Layouts extends AbstractChannelsController {
 		$entry = ee('Model')->make('ChannelEntry');
 		$entry->Channel = $channel;
 
-		$default_layout = new DefaultChannelLayout($channel_id, NULL);
 		$channel_layout = ee('Model')->make('ChannelLayout');
 		$channel_layout->Channel = $channel;
-		$field_layout = $default_layout->getLayout();
+		$channel_layout->site_id = ee()->config->item('site_id');
 
-		foreach ($channel->CustomFields as $custom_field)
+		if ( ! ee()->input->post('field_layout'))
 		{
-			$field_layout[0]['fields'][] = array(
-				'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
-				'visible' => TRUE,
-				'collapsed' => FALSE
-			);
-		}
+			$default_layout = new DefaultChannelLayout($channel_id, NULL);
+			$field_layout = $default_layout->getLayout();
 
-		$channel_layout->field_layout = $field_layout;
+			foreach ($channel->CustomFields as $custom_field)
+			{
+				$field_layout[0]['fields'][] = array(
+					'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				);
+			}
+
+			$channel_layout->field_layout = $field_layout;
+		}
+		else
+		{
+			$channel_layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+		}
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
@@ -201,26 +210,22 @@ class Layouts extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$layout = ee('Model')->make('ChannelLayout');
-			$layout->Channel = $channel;
-			$layout->site_id = ee()->config->item('site_id');
-			$layout->layout_name = ee()->input->post('layout_name');
-			$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+			$channel_layout->layout_name = ee()->input->post('layout_name');
 
 			$member_groups = ee('Model')->get('MemberGroup', ee()->input->post('member_groups'))
 				->filter('site_id', ee()->config->item('site_id'))
 				->all();
 
-			$layout->MemberGroups = $member_groups;
+			$channel_layout->MemberGroups = $member_groups;
 
-			$layout->save();
+			$channel_layout->save();
 
-			ee()->session->set_flashdata('layout_id', $layout->layout_id);
+			ee()->session->set_flashdata('layout_id', $channel_layout->layout_id);
 
 			ee('CP/Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('create_layout_success'))
-				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
+				->addToBody(sprintf(lang('create_layout_success_desc'), $channel_layout->layout_name))
 				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_id));
@@ -237,7 +242,7 @@ class Layouts extends AbstractChannelsController {
 		$vars = array(
 			'channel' => $channel,
 			'form_url' => ee('CP/URL', 'channels/layouts/create/' . $channel_id),
-			'layout' => $entry->getDisplay(),
+			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
 			'submit_button_text' => lang('btn_create_layout')
@@ -276,6 +281,11 @@ class Layouts extends AbstractChannelsController {
 		$entry = ee('Model')->make('ChannelEntry');
 		$entry->Channel = $channel;
 
+		if (ee()->input->post('field_layout'))
+		{
+			$channel_layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+		}
+
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
@@ -298,7 +308,6 @@ class Layouts extends AbstractChannelsController {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$channel_layout->layout_name = ee()->input->post('layout_name');
-			$channel_layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
 
 			$member_groups = ee('Model')->get('MemberGroup', ee()->input->post('member_groups'))
 				->filter('site_id', ee()->config->item('site_id'))
