@@ -52,6 +52,10 @@ class TemplateRoute extends Model {
 		'route_required' => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'beforeSave',
+	);
+
 	protected $route_id;
 	protected $template_id;
 	protected $order;
@@ -94,6 +98,13 @@ class TemplateRoute extends Model {
    		}
 
    		return $return;
+	}
+
+	public function onBeforeSave()
+	{
+		ee()->load->library('template_router');
+		$ee_route = new EE_Route($this->getProperty('route'), $this->route_required);
+		$this->setProperty('route_parsed', $ee_route->compile());
 	}
 
 	/**
@@ -165,13 +176,14 @@ class TemplateRoute extends Model {
 			return TRUE;
 		}
 
-		$route_required = $params[0];
+		$route_required = $this->getProperty($params[0]);
 
 		ee()->load->library('template_router');
 		$ee_route = new EE_Route($value, $route_required);
 
 		$template_ids = $this->getFrontend()->get('Template')
 			->fields('template_id')
+			->filter('template_id', '!=', $this->template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->pluck('template_id');
