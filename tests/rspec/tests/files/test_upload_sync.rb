@@ -116,8 +116,8 @@ feature 'Upload Directory Sync' do
 
     @page.load_sync_for_dir(2)
     @page.should have_sizes
-    @page.should have_text 'some_name Constrain, 20px by 30px'
-    @page.should have_text 'some_other_name Crop, 50px by 40px'
+    @page.should have_text 'Some_name Constrain, 20px By 30px'
+    @page.should have_text 'Some_other_name Crop, 50px By 40px'
     # Should be unchecked by default
     @page.sizes.count.should == 2
     @page.sizes[0].checked?.should == false
