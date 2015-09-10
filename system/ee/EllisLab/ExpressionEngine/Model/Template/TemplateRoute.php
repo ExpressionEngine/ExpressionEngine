@@ -181,6 +181,8 @@ class TemplateRoute extends Model {
 		ee()->load->library('template_router');
 		$ee_route = new EE_Route($value, $route_required);
 
+		// Get a list of template IDs for the current site excluding the
+		// template ID for this route.
 		$template_ids = $this->getFrontend()->get('Template')
 			->fields('template_id')
 			->filter('template_id', '!=', $this->template_id)
@@ -188,6 +190,7 @@ class TemplateRoute extends Model {
 			->all()
 			->pluck('template_id');
 
+		// Get all non-empty routes based on the template IDs we just grabbed
 		$routes = $this->getFrontend()->get('TemplateRoute')
 			->fields('route')
 			->filter('template_id', 'IN', $template_ids)
