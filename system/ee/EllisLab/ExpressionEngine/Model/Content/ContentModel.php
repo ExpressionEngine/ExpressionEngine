@@ -23,7 +23,7 @@ abstract class ContentModel extends VariableColumnModel {
 	);
 
 	protected $_field_facades;
-	protected $_field_was_saved;
+	protected $_field_was_saved = array();
 	protected $_custom_fields_loaded = FALSE;
 
 	/**
