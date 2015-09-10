@@ -758,7 +758,7 @@ class Template extends AbstractDesignController {
 			)
 		);
 
-		return ee('View')->make('ee:_shared/form/section')
+		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
 	}
 
@@ -788,7 +788,7 @@ class Template extends AbstractDesignController {
 			)
 		);
 
-		return ee('View')->make('ee:_shared/form/section')
+		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
 	}
 
@@ -906,7 +906,7 @@ class Template extends AbstractDesignController {
 
 		foreach ($sections as $name => $settings)
 		{
-			$html .= ee('View')->make('ee:_shared/form/section')
+			$html .= ee('View')->make('_shared/form/section')
 				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
@@ -1022,7 +1022,7 @@ class Template extends AbstractDesignController {
 
 		foreach ($sections as $name => $settings)
 		{
-			$html .= ee('View')->make('ee:_shared/form/section')
+			$html .= ee('View')->make('_shared/form/section')
 				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
