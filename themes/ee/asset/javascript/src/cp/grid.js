@@ -138,8 +138,9 @@ Grid.Publish.prototype = {
 		}
 
 		if (this.settings.grid_max_rows !== '') {
-			// Show add button if row count is below the max rows setting
-			addButton.toggle(rowCount < this.settings.grid_max_rows);
+			// Show add button if row count is below the max rows setting,
+			// and only if there are already other rows present
+			addButton.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
 		}
 
 		if (this.settings.grid_min_rows !== '') {
