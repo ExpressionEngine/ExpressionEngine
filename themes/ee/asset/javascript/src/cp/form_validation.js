@@ -24,10 +24,15 @@ EE.cp.formValidation = {
 	 */
 	init: function(form) {
 
-		var form = form || $('form');
+		var form = form || $('form'),
+			that = this;
 
-		this._bindButtonStateChange(form);
-		this._bindForms(form);
+		form.each(function(index, el) {
+
+			that._bindButtonStateChange($(el));
+			that._bindForms($(el));
+		});
+
 		this._focusFirstError();
 		this._scrollGrid();
 	},
@@ -117,12 +122,10 @@ EE.cp.formValidation = {
 	 */
 	_bindButtonStateChange: function(form) {
 
-		var form = form || $('form');
+		var $button = $('.form-ctrls input.btn, .form-ctrls button.btn', form);
 
 		// Bind form submission to update button text
-		$('form').submit(function(event) {
-
-			var $button = $('.form-ctrls input.btn', this);
+		form.submit(function(event) {
 
 			if ($button.size() > 0)
 			{
@@ -133,9 +136,11 @@ EE.cp.formValidation = {
 				// data attribute
 				if ($button.data('work-text') != '')
 				{
-					$button.attr('value', $button.data('work-text'));
+					$button.attr('value', $button.data('work-text')).prop('disabled', true);
 				}
 			}
+
+			return true;
 		});
 	},
 
@@ -147,8 +152,7 @@ EE.cp.formValidation = {
 	 */
 	_bindForms: function(form) {
 
-		var that = this,
-			form = form || $('form');
+		var that = this;
 
 		form.has('.form-ctrls .btn').each(function(index, el) {
 
