@@ -152,11 +152,11 @@ $lang = array(
 
 'variable' => 'Variable',
 
-'no_template_routes' => 'There are currently no Template Routes',
+'no_template_routes' => 'No <b>Template Routes</b> found.',
 
-'no_template_variables' => 'There are currently no Template Variables',
+'no_template_variables' => 'No <b>Template Variables</b> found.',
 
-'no_snippets' => 'There are currently no Template Partials',
+'no_snippets' => 'No <b>Template Partials</b> found.',
 
 'btn_create_template_variable' => 'Create Template Variable',
 
