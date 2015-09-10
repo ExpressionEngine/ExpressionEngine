@@ -39,7 +39,7 @@ class Profile extends CP_Controller {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -140,7 +140,13 @@ class Profile extends CP_Controller {
 				->addBasicList();
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL', 'members/profile/ignore', $this->query_string));
-			$list->addItem(lang('member_group'), ee('CP/URL', 'members/profile/group', $this->query_string));
+
+			if ( ! ($this->member->member_id == ee()->session->userdata['member_id']
+				    && $this->member->group_id == 1))
+			{
+				$list->addItem(lang('member_group'), ee('CP/URL', 'members/profile/group', $this->query_string));
+			}
+
 			$list->addItem(lang('cp_settings'), ee('CP/URL', 'members/profile/cp-settings', $this->query_string));
 
 			if ($this->member->member_id != ee()->session->userdata['member_id'])
