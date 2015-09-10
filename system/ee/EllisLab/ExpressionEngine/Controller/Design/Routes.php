@@ -77,12 +77,13 @@ class Routes extends Design {
 		$table->setColumns($columns);
 		$data = array();
 		$templates = ee()->api->get('Template')
-						->with('TemplateGroup')
-						->with('TemplateRoute')
-						->order('TemplateRoute.order', 'asc')
-						->order('TemplateGroup.group_name', 'asc')
-						->order('template_name', 'asc')
-						->all();
+			->with('TemplateGroup')
+			->with('TemplateRoute')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('TemplateRoute.order', 'asc')
+			->order('TemplateGroup.group_name', 'asc')
+			->order('template_name', 'asc')
+			->all();
 
 		foreach($templates as $template)
 		{
