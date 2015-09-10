@@ -66,8 +66,6 @@ class Routes extends Design {
 
 	public function index($templates = NULL, $errors = NULL)
 	{
-		// var_dump($errors->getAllErrors());
-
 		$vars = array();
 		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
 		$columns = array(
@@ -134,7 +132,7 @@ class Routes extends Design {
 				$template->template_name,
 				array(
 					'html' => $route,
-					'error' => ($errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
+					'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
 				),
 				$required
 			);
