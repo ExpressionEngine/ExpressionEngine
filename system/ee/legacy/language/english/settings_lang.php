@@ -115,6 +115,9 @@ $lang = array(
 'license_updated' => 'License &amp; Registration Updated',
 'license_updated_desc' => 'Your license and registration information has been saved successfully.',
 
+'license_file_upload_error' => 'Cannot Update License &amp; Registration',
+'license_file_upload_error_desc' => 'We were unable to update the license &amp; registration, please review and fix errors below.',
+
 'license_file_error' => 'License Invalid',
 'license_file_corrupt_license_file' => 'The license file provided is missing data.',
 'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
