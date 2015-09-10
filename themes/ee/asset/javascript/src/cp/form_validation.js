@@ -132,12 +132,27 @@ EE.cp.formValidation = {
 				// Add "work" class to make the buttons pulsate
 				$button.addClass('work');
 
-				// Update the button text to the value of its "work-text"
-				// data attribute
+				// Update the button text to the value of its "work-text" data attribute
 				if ($button.data('work-text') != '')
 				{
-					$button.attr('value', $button.data('work-text')).prop('disabled', true);
+					// Replace button text with working text and disable the button to prevent further clicks
+					$button.attr('value', $button.data('work-text'));
 				}
+
+				// If the submit was trigger by a button click, disable it to prevent futher clicks
+				$button.each(function(index, el) {
+					if (event.target == el) {
+
+						el.prop('disabled', true);
+
+						// Some controllers rely on the presence of the submit button in POST, but it won't
+						// make it to the controller if it's disabled, so add it back as a hidden input
+						form.append($('<input/>', { type: 'hidden', name: el.name, value: el.value }));
+
+						// Our work here is done
+						return false;
+					}
+				});
 			}
 
 			return true;
