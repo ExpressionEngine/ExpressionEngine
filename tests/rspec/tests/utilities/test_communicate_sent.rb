@@ -31,7 +31,7 @@ feature 'Communicate > Sent' do
 		@page.should have_search_submit_button
 		@page.should have_email_table
 		@page.should have_no_results
-		@page.should have_text 'No Emails availble'
+		@page.should have_text 'No cached emails found'
 		@page.should have_text 'CREATE NEW EMAIL'
 		@page.should_not have_pagination
 	end
