@@ -226,7 +226,7 @@ $(document).ready(function(){
 			// fade in the overlay
 			$('.overlay').fadeIn('fast').css('height',heightIs);
 			// fade in modal
-			$(this).fadeIn('fast');
+			$(this).fadeIn('slow');
 
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
@@ -240,7 +240,7 @@ $(document).ready(function(){
 
 		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
-			$('.overlay').fadeOut('fast');
+			$('.overlay').fadeOut('slow');
 			// fade out the modal
 			$('.modal-wrap').fadeOut('fast');
 		});
