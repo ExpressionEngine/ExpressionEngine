@@ -688,12 +688,15 @@ class Members extends CP_Controller {
 	 */
 	private function _super_admin_delete_check($member_ids)
 	{
-		$super_admins = ee()->db->select('member_id')
-			->where(array(
-				'group_id' => 1
-			))
-			->where_in('member_id', $member_ids)
-			->count_all_results('members');
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
+
+		$super_admins = ee('Model')->get('Member')
+			->filter('group_id', 1)
+			->filter('member_id', 'IN', $member_ids)
+			->count();
 
 		if ($super_admins > 0)
 		{
@@ -705,10 +708,11 @@ class Members extends CP_Controller {
 			}
 
 			// You can't delete the only Super Admin
-			ee()->load->model('member_model');
-			$query = ee()->member_model->count_members(1);
+			$total_super_admins = ee('Model')->get('Member')
+				->filter('group_id', 1)
+				->count();
 
-			if ($super_admins >= $query)
+			if ($super_admins >= $total_super_admins)
 			{
 				show_error(lang('can_not_delete_super_admin'));
 			}
