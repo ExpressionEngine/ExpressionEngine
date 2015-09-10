@@ -129,6 +129,7 @@ class Groups extends Members\Members {
 			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
 			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
 
+			$bulk_checkbox_diabled = (in_array($group->group_id, $this->no_delete)) ? TRUE : NULL;
 
 			$groupData[] = array(
 				'id' => $group->group_id,
@@ -138,6 +139,7 @@ class Groups extends Members\Members {
 				array(
 					'name' => 'selection[]',
 					'value' => $group->group_id,
+					'disabled' => $bulk_checkbox_diabled,
 					'data'	=> array(
 						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_title, ENT_QUOTES) . '</b>'
 					)
