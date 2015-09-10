@@ -714,7 +714,7 @@ class Members extends CP_Controller {
 
 			if ($super_admins >= $total_super_admins)
 			{
-				show_error(lang('can_not_delete_super_admin'));
+				show_error(lang('cannot_delete_super_admin'));
 			}
 		}
 	}
