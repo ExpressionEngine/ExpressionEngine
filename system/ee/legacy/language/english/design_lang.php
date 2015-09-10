@@ -290,6 +290,8 @@ $lang = array(
 
 'error_cannot_create_zip' => 'Cannot create a .zip file',
 
+'error_export_no_templates' => 'No templates found, please create a template before exporting.',
+
 'group_not_found' => 'No template group found',
 
 // System Templates -> Messages
@@ -752,7 +754,7 @@ and templates will only be accesible from the default group/template URL.',
 
 'no_templates_selected' => 'No Templates Selected',
 
-'no_templates_available' => 'No Templates Available',
+'no_templates_found' => 'No <b>Templates</b> found.',
 
 'url_manager' => 'Template Route Manager',
 

@@ -180,7 +180,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$return = base64_encode(ee()->cp->get_safe_refresh());
 		}
 
-		ee()->view->header = array(
+		$header = array(
 			'title' => lang('template_manager'),
 			'form_url' => ee('CP/URL', 'design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
@@ -188,13 +188,21 @@ abstract class AbstractDesign extends CP_Controller {
 					'href' => ee('CP/URL', 'settings/template'),
 					'title' => lang('settings')
 				),
-				'download' => array(
-					'href' => ee('CP/URL', 'design/export'),
-					'title' => lang('export_all')
-				)
 			),
 			'search_button_value' => lang('search_templates')
 		);
+
+		if (ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count() > 0)
+		{
+			$header['toolbar_items']['download'] =array(
+				'href' => ee('CP/URL', 'design/export'),
+				'title' => lang('export_all')
+			);
+		}
+
+		ee()->view->header = $header;
 	}
 
 	/**
@@ -294,6 +302,20 @@ abstract class AbstractDesign extends CP_Controller {
 			$template_ids = array($template_ids);
 		}
 
+		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		if ( ! $templates)
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_export_no_templates'))
+				->now();
+			return;
+		}
+
 		// Create the Zip Archive
 		$zipfilename = tempnam(sys_get_temp_dir(), '');
 		$zip = new ZipArchive();
@@ -308,10 +330,7 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Loop through templates and add them to the zip
-		$templates = ee('Model')->get('Template', $template_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all()
-			->each(function($template) use($zip) {
+		$templates->each(function($template) use($zip) {
 				$filename = $template->getTemplateGroup()->group_name . 'group/' . $template->template_name . $template->getFileExtension();
 				$zip->addFromString($filename, $template->template_data);
 			});
@@ -342,7 +361,7 @@ abstract class AbstractDesign extends CP_Controller {
 				)
 			)
 		);
-		$table->setNoResultsText('no_templates_available');
+		$table->setNoResultsText('no_templates_found');
 
 		$data = array();
 
