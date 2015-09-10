@@ -640,12 +640,6 @@ class Template extends AbstractDesignController {
 				->addToBody(lang('update_template_error_desc'))
 				->now();
 		}
-		else
-		{
-			ee()->load->library('template_router');
-			$ee_route = new EE_Route($template->TemplateRoute->route, $template->TemplateRoute->route_required);
-			$template->TemplateRoute->route_parsed = $ee_route->compile();
-		}
 
 		return $result;
 	}
