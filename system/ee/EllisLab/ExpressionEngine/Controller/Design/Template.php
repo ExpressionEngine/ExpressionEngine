@@ -530,7 +530,7 @@ class Template extends AbstractDesignController {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/manager'
+				'cp/design/manager'
 			),
 		));
 
