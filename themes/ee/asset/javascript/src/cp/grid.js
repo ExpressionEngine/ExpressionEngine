@@ -120,15 +120,21 @@ Grid.Publish.prototype = {
 
 		// Show add button below field when there are more than zero rows
 		addButton.toggle(rowCount > 0);
-		reorderCol.toggle(rowCount > 0);
-		gridRemove.toggle(rowCount > 0);
 
 		if (rowCount > 0) {
-			reorderCol.next().removeClass('first');
-			gridRemove.prev().removeClass('last');
+			if (reorderCol.size() == 0) {
+				$('thead tr', this.root).prepend(
+					$('<th/>', { class: 'first reorder-col' })
+				);
+			}
+			if (gridRemove.size() == 0) {
+				$('thead tr', this.root).append(
+					$('<th/>', { class: 'last grid-remove' })
+				);
+			}
 		} else {
-			reorderCol.next().addClass('first');
-			gridRemove.prev().addClass('last');
+			reorderCol.remove();
+			gridRemove.remove();
 		}
 
 		if (this.settings.grid_max_rows !== '') {
