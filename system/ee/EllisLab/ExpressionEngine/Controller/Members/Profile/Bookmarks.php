@@ -68,10 +68,10 @@ class Bookmarks extends Profile {
 			));
 
 			$path = ee()->config->item('cp_url').'?/cp/publish/create/'.$bookmark->channel;
-			$path .= '&BK=1';
+			$path .= '&BK=1&';
 
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";
-			$link = "bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$bookmark->field."='+encodeURI(bm),'bmentry',''))";
+			$link = "bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&field_id_".$bookmark->field."='+encodeURI(bm),'bmentry',''))";
 			$link = 'javascript:'.urlencode($link);
 
 			$links[] = array(
