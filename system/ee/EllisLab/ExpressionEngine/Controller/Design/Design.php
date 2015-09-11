@@ -257,6 +257,8 @@ class Design extends AbstractDesignController {
 
 					$new_group = ee('Model')->make('TemplateGroup', $data)->save();
 					$group_id = $new_group->group_id;
+
+					$existing[$group] = array();
 				}
 
 				// Grab group_id if we still don't have it.
@@ -283,6 +285,7 @@ class Design extends AbstractDesignController {
 					{
 						continue;
 					}
+
 					$ext = strtolower(ltrim(strrchr($template, '.'), '.'));
 					if ( ! in_array('.'.$ext, ee()->api_template_structure->file_extensions))
 					{
@@ -293,7 +296,7 @@ class Design extends AbstractDesignController {
 					$template_name = substr($template, 0, -$ext_length);
 					$template_type = array_search('.'.$ext, ee()->api_template_structure->file_extensions);
 
-					if (isset($existing[$group][$template_name]))
+					if (in_array($template_name, $existing[$group]))
 					{
 						continue;
 					}
@@ -325,8 +328,9 @@ class Design extends AbstractDesignController {
 					// add to existing array so we don't try to create this template again
 					$existing[$group][] = $template_name;
 				}
+
 				// An index template is required- so we create it if necessary
-				if ( ! isset($existing[$group]['index']))
+				if ( ! in_array('index', $existing[$group]))
 				{
 					$data = array(
 						'group_id'				=> $group_id,

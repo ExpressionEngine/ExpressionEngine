@@ -160,7 +160,7 @@ $lang = array(
 
 'default_status_group' => 'Default Statuses',
 
-'status_groups_not_found' => 'Zero <b>status groups</b> found',
+'status_groups_not_found' => 'No <b>status groups</b> found',
 
 'create_new_status_group' => 'Create New Status Group',
 
@@ -168,7 +168,7 @@ $lang = array(
 
 'custom_field_group_desc' => '',
 
-'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
+'custom_field_groups_not_found' => 'No <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
 
@@ -176,7 +176,7 @@ $lang = array(
 
 'category_groups_desc' => '',
 
-'category_groups_not_found' => 'Zero <b>category groups</b> found',
+'category_groups_not_found' => 'No <b>category groups</b> found',
 
 'create_new_category_group' => 'Create New Category Group',
 
@@ -436,7 +436,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'Zero <b>categories</b> found',
+'categories_not_found' => 'No <b>categories</b> found',
 
 'create_category' => 'Create Category',
 
@@ -468,7 +468,7 @@ $lang = array(
 
 'delete_categories_desc' => 'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'cat_group_no_member_groups_found' => 'Zero <b>member groups</b> with permissions found',
+'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions found',
 
 'edit_member_groups' => 'Edit Member Groups',
 

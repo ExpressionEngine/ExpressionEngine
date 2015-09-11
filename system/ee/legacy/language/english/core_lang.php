@@ -116,7 +116,7 @@ and email %s to report the link that generated this message.',
 
 'missing_mime_config' => 'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
 
-'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
 
 'checksum_changed_warning' => 'One or more core files have been altered:',
 
@@ -132,7 +132,7 @@ The following files are affected:
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
 https://support.ellislab.com/',
 
-'new_version_error' => 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+'new_version_error' => 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href="%s" title="download account" rel="external">Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
 
 'file_not_found' => 'File %s does not exist.',
 

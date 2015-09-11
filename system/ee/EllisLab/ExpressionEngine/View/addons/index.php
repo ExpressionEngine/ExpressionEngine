@@ -1,6 +1,10 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
+<?php if (isset($tables['third'])): ?>
 <div class="box mb">
+<?php else: ?>
+<div class="box">
+<?php endif; ?>
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<h1><?=$cp_heading['first']?></h1>

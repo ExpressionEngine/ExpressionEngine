@@ -254,8 +254,6 @@ $lang = array(
 
 'fast_reply' => 'Fast Reply',
 
-'no_topics' => 'There are no topics in this forum yet',
-
 'title' => 'Title',
 
 'new_topic' => 'Post a New Topic',
@@ -716,19 +714,19 @@ $lang = array(
 
 'one_year_ago_and' => '1 Year Ago and...',
 
-'newer' => 
+'newer' =>
 'Newer',
 
-'older' => 
+'older' =>
 'Older',
 
-'sort_results_by' => 
+'sort_results_by' =>
 'Sort Results by',
 
-'descending' => 
+'descending' =>
 'Descending',
 
-'ascending' => 
+'ascending' =>
 'Ascending',
 
 'bulletin_board' => 'Bulletin Board',

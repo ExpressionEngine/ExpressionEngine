@@ -129,6 +129,7 @@ class Groups extends Members\Members {
 			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
 			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
 
+			$bulk_checkbox_diabled = (in_array($group->group_id, $this->no_delete)) ? TRUE : NULL;
 
 			$groupData[] = array(
 				'id' => $group->group_id,
@@ -138,6 +139,7 @@ class Groups extends Members\Members {
 				array(
 					'name' => 'selection[]',
 					'value' => $group->group_id,
+					'disabled' => $bulk_checkbox_diabled,
 					'data'	=> array(
 						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_title, ENT_QUOTES) . '</b>'
 					)
@@ -348,7 +350,6 @@ class Groups extends Members\Members {
 
 		ee()->load->helper('array');
 
-
 		ee()->form_validation->set_rules(array(
 			array(
 				 'field' => 'group_title',
@@ -538,6 +539,10 @@ class Groups extends Members\Members {
 
 	private function buildForm($values)
 	{
+		// @TODO: This should be refactored to remove the need for the
+		// `element()` method
+		ee()->load->helper('array');
+
 		if (isset($values['group_id']) && $values['group_id'] == 1)
 		{
 			$vars = array(

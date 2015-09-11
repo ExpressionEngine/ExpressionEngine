@@ -105,19 +105,18 @@ class Cp {
 			'table_open' => '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">'
 		);
 
-		$user_q = ee()->member_model->get_member_data(
-			ee()->session->userdata('member_id'),
-			array(
-				'screen_name', 'notepad', 'quick_links',
-				'avatar_filename', 'avatar_width', 'avatar_height'
-			)
-		);
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
-		$notepad_content = ($user_q->row('notepad')) ? $user_q->row('notepad') : '';
+		if ( ! $member)
+		{
+			$member = ee('Model')->make('Member');
+		}
+
+		$notepad_content = ($member->notepad) ?: '';
 
 		// Global view variables
-
 		$vars =	array(
+			'cp_homepage_url'       => $member->getCPHomepageURL(),
 			'cp_page_onload'		=> '',
 			'cp_page_title'			=> '',
 			'cp_breadcrumbs'		=> array(),
@@ -128,16 +127,15 @@ class Cp {
 			'cp_pad_table_template'	=> $cp_pad_table_template,
 			'cp_theme_url'			=> $this->cp_theme_url,
 			'cp_current_site_label'	=> ee()->config->item('site_name'),
-			'cp_screen_name'		=> $user_q->row('screen_name'),
-			'cp_avatar_path'		=> $user_q->row('avatar_filename') ? ee()->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
-			'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
-			'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
-			'cp_quicklinks'			=> $this->_get_quicklinks($user_q->row('quick_links')),
+			'cp_screen_name'		=> $member->screen_name,
+			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : '',
+			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
+			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
+			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
 
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> (ee()->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
 		);
-
 
 		// global table data
 		ee()->session->set_cache('table', 'cp_template', $cp_table_template);
@@ -315,13 +313,6 @@ class Cp {
 	public function formatted_version($version)
 	{
 		$version = explode('.', $version);
-
-		// Drop the last zero if the version number is 3 digits (there might
-		// be regex to do this as well)
-		if (count($version == 3) && $version[2] == '0')
-		{
-			unset($version[2]);
-		}
 
 		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
 	}

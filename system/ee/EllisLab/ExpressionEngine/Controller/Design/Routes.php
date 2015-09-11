@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controller\Design;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controller\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -63,7 +64,7 @@ class Routes extends Design {
 		$this->base_url = ee('CP/URL', 'design/routes');
 	}
 
-	public function index()
+	public function index($templates = NULL, $errors = NULL)
 	{
 		$vars = array();
 		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
@@ -76,13 +77,17 @@ class Routes extends Design {
 
 		$table->setColumns($columns);
 		$data = array();
-		$templates = ee()->api->get('Template')
-						->with('TemplateGroup')
-						->with('TemplateRoute')
-						->order('TemplateRoute.order', 'asc')
-						->order('TemplateGroup.group_name', 'asc')
-						->order('template_name', 'asc')
-						->all();
+		if (is_null($templates))
+		{
+			$templates = ee()->api->get('Template')
+				->with('TemplateGroup')
+				->with('TemplateRoute')
+				->filter('site_id', ee()->config->item('site_id'))
+				->order('TemplateRoute.order', 'asc')
+				->order('TemplateGroup.group_name', 'asc')
+				->order('template_name', 'asc')
+				->all();
+		}
 
 		foreach($templates as $template)
 		{
@@ -100,39 +105,35 @@ class Routes extends Design {
 			$id = $template->template_id;
 			$route_id = $route->getId();
 
-			if (empty($route) || $route->route_required === FALSE)
-			{
-				$no_class = "chosen";
-				$no_selected = "checked='checked'";
-				$yes_class = $yes_selected = '';
-			}
-			else
-			{
-				$yes_class = "chosen";
-				$yes_selected = "checked='checked'";
-				$no_class = $no_selected = '';
-			}
+			$required = ee('View')->make('_shared/form/field')
+				->render(array(
+					'field_name' => "routes[{$id}][required]",
+					'field' => array(
+						'type' => 'yes_no',
+						'value' => (empty($route) || $route->route_required === FALSE) ? 'n' : 'y'
+					),
+					'grid' => FALSE,
+					'errors' => $errors
+				));
 
-			$required = <<<RADIO
-<label class="choice yes mr $yes_class">
-	<input type="radio" name="routes[{$id}][required]" value="y" $yes_selected>
-	yes
-</label>
-<label class="choice no $no_class">
-	<input type="radio" name="routes[{$id}][required]" value="n" $no_selected>
-	no
-</label>
-RADIO;
-
-			$route = $route->route;
-			$route = empty($route) ? '' : $route;
-			$route = form_input("routes[{$id}][route]", $route);
+			$route = ee('View')->make('_shared/form/field')
+				->render(array(
+					'field_name' => "routes[{$id}][route]",
+					'field' => array(
+						'type' => 'text',
+						'value' => ($route->route) ?: ''
+					),
+					'grid' => FALSE,
+				));
 
 			$row = array();
 			$row['columns'] = array(
 				htmlentities($group->group_name, ENT_QUOTES),
 				$template->template_name,
-				$route,
+				array(
+					'html' => $route,
+					'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
+				),
 				$required
 			);
 			$row['attrs']['class'] = 'setting-field';
@@ -163,102 +164,58 @@ RADIO;
 			ee()->functions->redirect($this->base_url);
 		}
 
+		$errors = new ValidationResult;
+		$templates = ee()->api->get('Template')
+			->with('TemplateGroup')
+			->with('TemplateRoute')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('TemplateRoute.order', 'asc')
+			->order('TemplateGroup.group_name', 'asc')
+			->order('template_name', 'asc')
+			->all();
 
-		ee()->load->library('template_router');
-
-		$errors = array();
-		$error_ids = array();
-		$updated_routes = array();
-		$templates = ee()->api->get('Template')->all();
 		$submitted = ee()->input->post('routes');
+
 		$order = array_keys($submitted);
 
 		foreach ($templates as $template)
 		{
-			$error = FALSE;
 			$id = $template->template_id;
-			$route_required = FALSE;
 
-			if ( ! empty($submitted[$id]['required']))
+			if ( ! $template->TemplateRoute)
 			{
-				$route_required = $submitted[$id]['required'];
+				$template->TemplateRoute = ee('Model')->make('TemplateRoute');
 			}
 
-			$route = $submitted[$id]['route'];
-			$ee_route = NULL;
+			$route = $template->TemplateRoute;
 
-			if ($route_required !== FALSE)
+			if (empty($submitted[$id]['route']))
 			{
-				$required = $route_required;
-			}
-			else
-			{
-				$required = 'n';
+				$template->TemplateRoute = NULL;
+				continue;
 			}
 
-			if ( ! empty($route))
+			$route->route_required = ($submitted[$id]['required'] != 'n');
+			$route->route = $submitted[$id]['route'];
+			$route->order = array_search($id, $order);
+
+			$result = $route->validate();
+			if ($result->isNotValid())
 			{
-				try
+				foreach ($result->getFailed() as $field => $rules)
 				{
-					$ee_route = new \EE_Route($route, $required == 'y');
-					$compiled = $ee_route->compile();
-				}
-				catch (Exception $error)
-				{
-					$error = $error->getMessage();
-					$error_ids[] = $id;
-					$errors[$id] = $error;
-				}
-			}
-			else
-			{
-				$compiled = NULL;
-				$route = NULL;
-			}
-
-			// Check if we have a duplicate route
-			if ( ! empty($ee_route))
-			{
-				foreach ($updated_routes as $existing_route)
-				{
-					if ($ee_route->equals($existing_route))
+					foreach ($rules as $rule)
 					{
-						$error_ids[] = $id;
-						$errors[$id] = lang('duplicate_route');
-						$error = TRUE;
+						$errors->addFailed("routes[{$id}][route]", $rule);
 					}
-				}
-				if ($error === FALSE)
-				{
-					$updated_routes[] = $ee_route;
-				}
-			}
-
-			if ($error === FALSE)
-			{
-				$data = array(
-					'route' => $route,
-					'route_parsed' => $compiled,
-					'route_required' => $required,
-					'template_id' => $id,
-					'order' => array_search($id, $order)
-				);
-				$current = ee()->api->get('TemplateRoute')->filter('template_id', $id)->first();
-
-				if (empty($current))
-				{
-					$current = ee()->api->make('TemplateRoute', $data);
-					$current->save();
-				}
-				else
-				{
-					ee()->api->get('TemplateRoute')->filter('template_id', $id)->first()->set($data)->save();
 				}
 			}
 		}
 
-		if (empty($errors))
+		if ($errors->isValid())
 		{
+			$templates->save();
+
 			ee('CP/Alert')->makeInline()
 				->asSuccess()
 				->withTitle(lang('template_routes_saved'))
@@ -273,10 +230,10 @@ RADIO;
 			ee('CP/Alert')->makeInline()
 				->asIssue()
 				->withTitle(lang('template_routes_not_saved'))
-				->addToBody(lang('template_routes_not_saved_desc').ul($errors))
+				->addToBody(lang('template_routes_not_saved_desc'))
 				->now();
 
-			$this->index();
+			$this->index($templates, $errors);
 		}
 	}
 }

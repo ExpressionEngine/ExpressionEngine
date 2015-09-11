@@ -24,10 +24,15 @@ EE.cp.formValidation = {
 	 */
 	init: function(form) {
 
-		var form = form || $('form');
+		var form = form || $('form'),
+			that = this;
 
-		this._bindButtonStateChange(form);
-		this._bindForms(form);
+		form.each(function(index, el) {
+
+			that._bindButtonStateChange($(el));
+			that._bindForms($(el));
+		});
+
 		this._focusFirstError();
 		this._scrollGrid();
 	},
@@ -117,25 +122,40 @@ EE.cp.formValidation = {
 	 */
 	_bindButtonStateChange: function(form) {
 
-		var form = form || $('form');
+		var $button = $('.form-ctrls input.btn, .form-ctrls button.btn', form);
 
 		// Bind form submission to update button text
-		$('form').submit(function(event) {
-
-			var $button = $('.form-ctrls input.btn', this);
+		form.submit(function(event) {
 
 			if ($button.size() > 0)
 			{
 				// Add "work" class to make the buttons pulsate
 				$button.addClass('work');
 
-				// Update the button text to the value of its "work-text"
-				// data attribute
+				// Update the button text to the value of its "work-text" data attribute
 				if ($button.data('work-text') != '')
 				{
+					// Replace button text with working text and disable the button to prevent further clicks
 					$button.attr('value', $button.data('work-text'));
 				}
+
+				// If the submit was trigger by a button click, disable it to prevent futher clicks
+				$button.each(function(index, el) {
+					if (event.target == el) {
+
+						el.prop('disabled', true);
+
+						// Some controllers rely on the presence of the submit button in POST, but it won't
+						// make it to the controller if it's disabled, so add it back as a hidden input
+						form.append($('<input/>', { type: 'hidden', name: el.name, value: el.value }));
+
+						// Our work here is done
+						return false;
+					}
+				});
 			}
+
+			return true;
 		});
 	},
 
@@ -147,8 +167,7 @@ EE.cp.formValidation = {
 	 */
 	_bindForms: function(form) {
 
-		var that = this,
-			form = form || $('form');
+		var that = this;
 
 		form.has('.form-ctrls .btn').each(function(index, el) {
 

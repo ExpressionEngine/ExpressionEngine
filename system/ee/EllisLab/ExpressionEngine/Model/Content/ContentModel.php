@@ -23,7 +23,7 @@ abstract class ContentModel extends VariableColumnModel {
 	);
 
 	protected $_field_facades;
-	protected $_field_was_saved;
+	protected $_field_was_saved = array();
 	protected $_custom_fields_loaded = FALSE;
 
 	/**
@@ -66,6 +66,8 @@ abstract class ContentModel extends VariableColumnModel {
 			$field->setContentId($this->getId());
 			$field->postSave();
 		}
+
+		$this->_field_was_saved = array();
 	}
 
 	/**
@@ -169,8 +171,6 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		$this->_field_was_saved = array();
-
 		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
@@ -315,7 +315,7 @@ abstract class ContentModel extends VariableColumnModel {
 			return;
 		}
 
-		$native_fields = $this->getStructure()->getCustomFields()->sortBy('field_order');
+		$native_fields = $this->getStructure()->getCustomFields();
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)

@@ -96,7 +96,7 @@ case 'yes_no': ?>
 <?php break;
 
 case 'select': ?>
-	<?=form_dropdown($field_name, $field['choices'], $value, $attrs)?>
+<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs); ?>
 <?php break;
 
 case 'checkbox': ?>
@@ -172,8 +172,18 @@ case 'image': ?>
 
 case 'slider': ?>
 	<div class="slider">
-		<input name='<?=$field_name?>' min="0" max="100" value="<?=$value?>" rel="range-value" type="range">
-		<div class="slider-output"><output class="range-value"><?=$value?></output>%</div>
+		<input type="range" rel="range-value"
+			id="<?=$field_name?>"
+			name="<?=$field_name?>"
+			value="<?=$value?>"
+			min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
+			max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
+			step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
+			<?= isset($field['list']) ? "list='{$field['list']}'" : NULL ?>
+		>
+		<div class="slider-output">
+			<output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
+		</div>
 	</div>
 <?php break;
 
@@ -189,6 +199,6 @@ case 'html': ?>
 </div>
 <?php endif ?>
 <?php if ( ! $grid): ?>
-	<?=form_error($field_name)?>
+	<?=form_error(rtrim($field_name, '[]'))?>
 	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
 <?php endif ?>

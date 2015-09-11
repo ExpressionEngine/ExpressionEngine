@@ -37,6 +37,8 @@ class Text_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
+		ee()->load->library('form_validation');
+
 		if ($data == '')
 		{
 			return TRUE;

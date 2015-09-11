@@ -144,28 +144,49 @@ class EE_Menu {
 	 */
 	private function _develop_menu()
 	{
-		$menu = array(
-			'channel_manager'  => ee('CP/URL', 'channels'),
-			'template_manager' => ee('CP/URL', 'design'),
-			'msm_manager'      => ee('CP/URL', 'msm'),
-			'addon_manager'    => ee('CP/URL', 'addons'),
-			'utilities'        => ee('CP/URL', 'utilities'),
-			'logs'             => ee('CP/URL', 'logs')
-		);
+		$menu = array();
 
-		if (ee()->config->item('multiple_sites_enabled') !== 'y')
+		if (ee()->cp->allowed_group_any(
+			'can_create_channels',
+			'can_edit_channels',
+			'can_delete_channels',
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields',
+			'can_create_statuses',
+			'can_delete_statuses',
+			'can_edit_statuses',
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
 		{
-			unset($menu['msm_manager']);
+			$menu['channel_manager'] = ee('CP/URL', 'channels');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		if (ee()->cp->allowed_group('can_access_design'))
 		{
-			unset($menu['addon_manager']);
+			$menu['template_manager'] = ee('CP/URL', 'design');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_access_addons'))
 		{
-			unset($menu['logs']);
+			$menu['msm_manager'] = ee('CP/URL', 'msm');
+		}
+
+		if (ee()->cp->allowed_group('can_access_addons'))
+		{
+			$menu['addon_manager'] = ee('CP/URL', 'addons');
+		}
+
+		if (ee()->cp->allowed_group('can_access_utilities'))
+		{
+			$menu['utilities'] = ee('CP/URL', 'utilities');
+		}
+
+		if (ee()->cp->allowed_group('can_access_logs'))
+		{
+			$menu['logs'] = ee('CP/URL', 'logs');
 		}
 
 		return $menu;

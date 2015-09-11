@@ -101,6 +101,11 @@ class Publish extends AbstractPublishController {
 		$entry->sticky = FALSE;
 		$entry->allow_comments = TRUE;
 
+		if (isset($_GET['BK']))
+		{
+			$this->populateFromBookmarklet($entry);
+		}
+
 		ee()->view->cp_page_title = sprintf(lang('create_entry_with_channel_name'), $channel->channel_title);
 
 		$form_attributes = array(
@@ -219,6 +224,32 @@ class Publish extends AbstractPublishController {
 		));
 
 		ee()->cp->render('publish/entry', $vars);
+	}
+
+	private function populateFromBookmarklet($entry)
+	{
+		$field = '';
+
+		foreach ($_GET as $key => $value)
+		{
+			if (strpos($key, 'field_id_') === 0)
+			{
+				$field = $key;
+				break;
+			}
+		}
+
+		if ( ! $field)
+		{
+			return;
+		}
+
+		$data = array(
+			'title' => ee()->input->get('title'),
+			$field => ee()->input->get($field)
+		);
+
+		$entry->set($data);
 	}
 }
 // EOF

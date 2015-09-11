@@ -174,7 +174,6 @@ class Spam_mcp {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($trapped);
 
-
 		$data['table'] = $table->viewData($this->base_url);
 		$data['filters'] = $filters->render($this->base_url);
 		$data['form_url'] = ee('CP/URL', 'addons/settings/spam');

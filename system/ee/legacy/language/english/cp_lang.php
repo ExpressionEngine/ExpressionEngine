@@ -195,6 +195,7 @@ $lang = array(
 // Develop Menu
 //----------------------------
 
+'nav_developer_tools'  => 'Developer Tools',
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',
 'msm_manager'      => 'Site Manager',
@@ -205,6 +206,10 @@ $lang = array(
 //----------------------------
 // Control Panel
 //----------------------------
+
+'nav_settings' => 'Settings',
+'nav_homepage' => 'CP Home',
+'nav_overview' => 'CP Overview',
 
 'loading' => 'Loading',
 
@@ -487,6 +492,7 @@ $lang = array(
 'cp_message_success' => 'Action was a success',
 'cp_message_warn' => 'Warning',
 'create_new' => 'Create New',
+'no_channels' => 'No <b>Channels</b> found.',
 'create_new_channel' => 'Create New Channel',
 'description' => 'Description',
 'disable' => 'Disable',

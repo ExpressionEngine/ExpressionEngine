@@ -75,7 +75,7 @@ class Application {
 	 */
 	public function setupAddons($path)
 	{
-		$folders = new FilesystemIterator($path);
+		$folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);
 
 		foreach ($folders as $item)
 		{

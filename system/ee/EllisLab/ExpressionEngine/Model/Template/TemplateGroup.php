@@ -114,8 +114,11 @@ class TemplateGroup extends Model {
 
 			$new_path = $this->getFolderPath();
 
-			$fs = new Filesystem();
-			$fs->rename($old_path, $new_path);
+			if ($old_path !== NULL && $new_path !== NULL)
+			{
+				$fs = new Filesystem();
+				$fs->rename($old_path, $new_path);
+			}
 		}
 
 		$this->ensureFolderExists();

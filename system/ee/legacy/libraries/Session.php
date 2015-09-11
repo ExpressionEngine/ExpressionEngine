@@ -398,10 +398,6 @@ class EE_Session {
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
 
-		$this->userdata['cp_homepage']			= $member->cp_homepage;
-		$this->userdata['cp_homepage_channel']	= $member->cp_homepage_channel;
-		$this->userdata['cp_homepage_custom']	= $member->cp_homepage_custom;
-
 		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
 		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
 

@@ -60,7 +60,7 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
-'zero_directories_found' => 'Zero <b>Directories</b> found',
+'zero_directories_found' => 'No <b>Directories</b> found',
 
 'files_in_directory' => 'Files in <b>%s</b>',
 
@@ -530,7 +530,7 @@ $lang = array(
 
 'no_upload_prefs' => 'There are currently no file upload preferences',
 
-'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external" target="_blank">add one or more upload directories</a> to use the File field type.',
+'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external">add one or more upload directories</a> to use the File field type.',
 
 'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
 
@@ -603,7 +603,6 @@ $lang = array(
 'please_select'				=> 'Please Select&hellip',
 'directory'					=> 'Directory',
 'no_sync_title'				=> 'No Results', // @todo, this phrase should change, just not sure what to put  -ga
-'no_file_sync_needed'		=> 'There are no files in your batch upload directories to sync.',
 'file_count'				=> 'Number of Files',
 'file_types'				=> 'Types of Files',
 'files_processed'			=> 'Number of Files Processed',

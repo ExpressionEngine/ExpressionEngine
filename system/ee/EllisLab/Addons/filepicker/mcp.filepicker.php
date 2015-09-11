@@ -25,9 +25,10 @@ class Filepicker_mcp {
 	public function index()
 	{
 		// check if we have a request for a specific file id
-		if ( ! empty(ee()->input->get('file')))
+		$file = ee()->input->get('file');
+		if ( ! empty($file))
 		{
-			$this->fileInfo(ee()->input->get('file'));
+			$this->fileInfo($file);
 		}
 
 		if ($this->access === FALSE)
@@ -255,7 +256,6 @@ class Filepicker_mcp {
 				array(
 					array(
 						'title' => 'file',
-						'desc' => 'file_desc',
 						'fields' => array(
 							'file' => array(
 								'type' => 'file',
@@ -265,7 +265,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'title',
-						'desc' => 'title_desc',
 						'fields' => array(
 							'title' => array(
 								'type' => 'text',
@@ -274,7 +273,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'description',
-						'desc' => 'description_desc',
 						'fields' => array(
 							'description' => array(
 								'type' => 'textarea',
@@ -283,7 +281,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'credit',
-						'desc' => 'credit_desc',
 						'fields' => array(
 							'credit' => array(
 								'type' => 'text',
@@ -292,7 +289,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'location',
-						'desc' => 'location_desc',
 						'fields' => array(
 							'location' => array(
 								'type' => 'text',
