@@ -237,6 +237,7 @@ $(document).ready(function(){
 				$(document).scrollTop(0);
 			}, 100);
 
+			$(document).one('keydown', function(e) {
 				if (e.keyCode === 27) {
 					$('.modal-wrap').trigger('modal:close');
 				}
