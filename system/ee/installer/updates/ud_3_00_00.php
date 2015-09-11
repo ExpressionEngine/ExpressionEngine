@@ -857,7 +857,7 @@ class Updater {
 			}
 		}
 
-		if (ee()->db->field_exists('member_groups', 'can_access_content'))
+		if (ee()->db->field_exists('can_access_content', 'member_groups'))
 		{
 			ee()->db->update(
 				'member_groups',
@@ -876,7 +876,7 @@ class Updater {
 			);
 		}
 
-		if (ee()->db->field_exists('member_groups', 'can_admin_channels'))
+		if (ee()->db->field_exists('can_admin_channels', 'member_groups'))
 		{
 			ee()->db->update(
 				'member_groups',
@@ -896,7 +896,7 @@ class Updater {
 			);
 		}
 
-		if (ee()->db->field_exists('member_groups', 'can_admin_mbr_groups'))
+		if (ee()->db->field_exists('can_admin_mbr_groups', 'member_groups'))
 		{
 			ee()->db->update(
 				'member_groups',
@@ -909,7 +909,7 @@ class Updater {
 			);
 		}
 
-		if (ee()->db->field_exists('member_groups', 'can_admin_members'))
+		if (ee()->db->field_exists('can_admin_members', 'member_groups'))
 		{
 			ee()->db->update(
 				'member_groups',
@@ -921,7 +921,7 @@ class Updater {
 			);
 		}
 
-		if (ee()->db->field_exists('member_groups', 'can_admin_templates'))
+		if (ee()->db->field_exists('can_admin_templates', 'member_groups'))
 		{
 			ee()->db->update(
 				'member_groups',
