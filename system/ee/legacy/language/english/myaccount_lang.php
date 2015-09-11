@@ -195,8 +195,6 @@ Used in the control panel only.',
 
 "12_hour" => "12 Hour with AM/PM",
 
-"include_seconds" => "Show seconds?",
-
 'time_format' => 'Time Formatting',
 
 'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',

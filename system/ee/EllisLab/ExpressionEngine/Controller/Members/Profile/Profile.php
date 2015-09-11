@@ -43,6 +43,7 @@ class Profile extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee()->lang->loadfile('settings');
 		ee()->lang->loadfile('myaccount');
 
 		if ( ! $this->cp->allowed_group('can_access_members'))
