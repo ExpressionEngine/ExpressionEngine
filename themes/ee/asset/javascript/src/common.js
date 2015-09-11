@@ -376,9 +376,9 @@ $(document).ready(function(){
 			// set the newVal var
 			var newVal = $(this).val();
 			// set the rangeIS
-			var rangeIs = $(this).attr('rel');
+			var rangeIs = $(this).attr('id');
 			// change the value on the fly
-			$('.'+rangeIs).html(newVal);
+			$('output[for="' + rangeIs + '"]').html(newVal);
 		});
 
 	// ===============================
