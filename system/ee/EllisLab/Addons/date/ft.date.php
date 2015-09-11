@@ -189,6 +189,8 @@ class Date_ft extends EE_Fieldtype {
 			'include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
 		);
 
+		ee()->lang->loadfile('calendar');
+
 		ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
 		ee()->javascript->set_global('lang.date.months.full', array(
 			lang('january'),
