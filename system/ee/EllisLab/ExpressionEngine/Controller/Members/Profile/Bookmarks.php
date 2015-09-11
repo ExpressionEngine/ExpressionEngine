@@ -241,15 +241,13 @@ class Bookmarks extends Profile {
 		}
 		else
 		{
-			$channel = ee('Model')->get('Channel', array($channel_id));
+			$channel = ee('Model')->get('Channel', $channel_id)->first();
 		}
 
 		if ( ! empty($channel))
 		{
 			$fields = $channel->CustomFields->getDictionary('field_id', 'field_label');
 		}
-
-		$channels = array();
 
 		if ($channels)
 		{
