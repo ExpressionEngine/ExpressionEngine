@@ -857,77 +857,92 @@ class Updater {
 			}
 		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_upload_new_assets' => 'y',
-				'can_edit_assets' => 'y',
-				'can_delete_assets' => 'y',
-				'can_upload_new_toolsets' => 'y',
-				'can_edit_toolsets' => 'y',
-				'can_delete_toolsets' => 'y',
-				'can_create_upload_directories' => 'y',
-				'can_edit_upload_directories' => 'y',
-				'can_delete_upload_directories' => 'y'
-			),
-			array('can_access_content' => 'y')
-		);
+		if (ee()->db->field_exists('member_groups', 'can_access_content'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_upload_new_assets' => 'y',
+					'can_edit_assets' => 'y',
+					'can_delete_assets' => 'y',
+					'can_upload_new_toolsets' => 'y',
+					'can_edit_toolsets' => 'y',
+					'can_delete_toolsets' => 'y',
+					'can_create_upload_directories' => 'y',
+					'can_edit_upload_directories' => 'y',
+					'can_delete_upload_directories' => 'y'
+				),
+				array('can_access_content' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_create_channels' => 'y',
-				'can_edit_channels' => 'y',
-				'can_delete_channels' => 'y',
-				'can_create_channel_fields' => 'y',
-				'can_edit_channel_fields' => 'y',
-				'can_delete_channel_fields' => 'y',
-				'can_create_statuses' => 'y',
-				'can_delete_statuses' => 'y',
-				'can_edit_statuses' => 'y',
-				'can_create_categories' => 'y'
-			),
-			array('can_admin_channels' => 'y')
-		);
+		if (ee()->db->field_exists('member_groups', 'can_admin_channels'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_channels' => 'y',
+					'can_edit_channels' => 'y',
+					'can_delete_channels' => 'y',
+					'can_create_channel_fields' => 'y',
+					'can_edit_channel_fields' => 'y',
+					'can_delete_channel_fields' => 'y',
+					'can_create_statuses' => 'y',
+					'can_delete_statuses' => 'y',
+					'can_edit_statuses' => 'y',
+					'can_create_categories' => 'y'
+				),
+				array('can_admin_channels' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_create_member_groups' => 'y',
-				'can_delete_member_groups' => 'y',
-				'can_edit_member_groups' => 'y'
-			),
-			array('can_admin_mbr_groups' => 'y')
-		);
+		if (ee()->db->field_exists('member_groups', 'can_admin_mbr_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_member_groups' => 'y',
+					'can_delete_member_groups' => 'y',
+					'can_edit_member_groups' => 'y'
+				),
+				array('can_admin_mbr_groups' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_create_members' => 'y',
-				'can_edit_members' => 'y'
-			),
-			array('can_admin_members' => 'y')
-		);
+		if (ee()->db->field_exists('member_groups', 'can_admin_members'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_members' => 'y',
+					'can_edit_members' => 'y'
+				),
+				array('can_admin_members' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_manage_template_settings' => 'y',
-				'can_create_new_templates' => 'y',
-				'can_edit_templates' => 'y',
-				'can_delete_templates' => 'y',
-				'can_create_template_groups' => 'y',
-				'can_edit_template_groups' => 'y',
-				'can_delete_template_groups' => 'y',
-				'can_create_template_partials' => 'y',
-				'can_edit_template_partials' => 'y',
-				'can_delete_template_partials' => 'y',
-				'can_create_template_variables' => 'y',
-				'can_delete_template_variables' => 'y',
-				'can_edit_template_variables' => 'y'
-			),
-			array('can_admin_templates' => 'y')
-		);
+		if (ee()->db->field_exists('member_groups', 'can_admin_templates'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_manage_template_settings' => 'y',
+					'can_create_new_templates' => 'y',
+					'can_edit_templates' => 'y',
+					'can_delete_templates' => 'y',
+					'can_create_template_groups' => 'y',
+					'can_edit_template_groups' => 'y',
+					'can_delete_template_groups' => 'y',
+					'can_create_template_partials' => 'y',
+					'can_edit_template_partials' => 'y',
+					'can_delete_template_partials' => 'y',
+					'can_create_template_variables' => 'y',
+					'can_delete_template_variables' => 'y',
+					'can_edit_template_variables' => 'y'
+				),
+				array('can_admin_templates' => 'y')
+			);
+		}
 
 		// Drop all superfluous permissions columns
 		$old = array(
