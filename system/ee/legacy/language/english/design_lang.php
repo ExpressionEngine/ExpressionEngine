@@ -499,6 +499,18 @@ $lang = array(
 
 'rss' => 'RSS Page',
 
+'webpage_type_col' => '<abbr title="Hyper-Text Markup Language">HTML</abbr>',
+
+'feed_type_col' => '<abbr title="Really Simple Syndication">RSS</abbr>',
+
+'css_type_col' => '<abbr title="Cascading Style Sheet">CSS</abbr>',
+
+'js_type_col' => 'JavaScript',
+
+'static_type_col' => 'Static',
+
+'xml_type_col' => '<abbr title="Extensible Markup Language">XML</abbr>',
+
 'missing_name' => 'Your template must have a name',
 
 'id_not_found' => 'Template does not exist - invalid id',

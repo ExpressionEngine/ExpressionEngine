@@ -1,5 +1,9 @@
 <ul class="toolbar">
 	<?php foreach ($toolbar_items as $type => $attributes):
+		if (isset($attributes['type']))
+		{
+			$type = $attributes['type'];
+		}
 		$attr = '';
 		$content = '';
 		foreach ($attributes as $key => $val)

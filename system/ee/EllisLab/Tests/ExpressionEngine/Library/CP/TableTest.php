@@ -124,6 +124,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'           => FALSE,
 			'reorder_header' => FALSE,
 			'class'             => '',
+			'table_attrs'       => array(),
 			'sortable'          => TRUE,
 			'subheadings'       => FALSE,
 			'columns'           => $expected_cols,
@@ -380,6 +381,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'           => FALSE,
 			'reorder_header' => FALSE,
 			'class'             => '',
+			'table_attrs'       => array(),
 			'sortable'          => TRUE,
 			'subheadings'       => FALSE,
 			'columns'           => $expected_cols,
@@ -471,6 +473,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$config['autosearch'] = TRUE;
 		$config['search'] = 'data 2';
+		$config['attrs'] = array('data-test' => 'test');
 
 		$expected = array(
 			'base_url'          => NULL,
@@ -487,6 +490,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'           => FALSE,
 			'reorder_header' => FALSE,
 			'class'             => '',
+			'table_attrs'       => array('data-test' => 'test'),
 			'sortable'          => TRUE,
 			'subheadings'       => FALSE,
 			'columns'           => $expected_cols,

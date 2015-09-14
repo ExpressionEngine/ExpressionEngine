@@ -86,6 +86,7 @@ class Table {
 			'reorder'           => FALSE,
 			'reorder_header'    => FALSE,
 			'class'             => '',
+			'attrs'				=> array(),
 			'no_results'        => array(
 				'text'        => 'no_rows_returned',
 				'action_text' => '',
@@ -635,6 +636,7 @@ class Table {
 			'reorder'           => $this->config['reorder'],
 			'reorder_header'    => $this->config['reorder_header'],
 			'class'             => $this->config['class'],
+			'table_attrs'       => $this->config['attrs'],
 			'sortable'          => $this->config['sortable'],
 			'subheadings'       => ($this->config['subheadings'] && empty($this->config['search'])),
 			'sort_col'          => $this->getSortCol(),

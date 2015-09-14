@@ -352,6 +352,9 @@ abstract class AbstractDesign extends CP_Controller {
 				'template' => array(
 					'encode' => FALSE
 				),
+				'type' => array(
+					'encode' => FALSE
+				),
 				'hits',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -405,8 +408,15 @@ abstract class AbstractDesign extends CP_Controller {
 				$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 			}
 
+			$type_col = $template->template_type;
+			if (in_array($template->template_type, array('webpage', 'feed', 'css', 'js', 'static', 'xml')))
+			{
+				$type_col = lang($template->template_type.'_type_col');
+			}
+
 			$column = array(
 				$template_name,
+				'<span class="st-info">'.$type_col.'</span>',
 				$template->hits,
 				array('toolbar_items' => array(
 					'view' => array(
