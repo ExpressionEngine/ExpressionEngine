@@ -241,7 +241,7 @@ class Template extends AbstractDesignController {
 				// Save a new revision
 				$this->saveNewTemplateRevision($template);
 
-				$alert = ee('CP/Alert')->makeInline('template-form')
+				$alert = ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
@@ -273,14 +273,14 @@ class Template extends AbstractDesignController {
 					'type' => 'submit',
 					'value' => 'update',
 					'text' => sprintf(lang('btn_save'), lang('template')),
-					'working' => 'btn_create_template_working'
+					'working' => 'btn_saving'
 				),
 				array(
 					'name' => 'submit',
 					'type' => 'submit',
 					'value' => 'finish',
 					'text' => 'btn_update_and_finish_editing',
-					'working' => 'btn_create_template_working'
+					'working' => 'btn_saving'
 				),
 			),
 			'sections' => array(),
