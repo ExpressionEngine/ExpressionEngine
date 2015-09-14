@@ -54,15 +54,13 @@ RSpec.configure do |config|
     c.syntax = :should
   end
 
-  Capybara::Webkit.configure do |config|
-    # Whitelist URLs
-    config.allow_url $test_config[:app_host]
-    config.allow_url 'ellislab.com'
-    config.allow_url 'google-analytics.com'
-  end
-
   # Before each example...
   config.before(:each) do
+    # Whitelist URLs
+    page.driver.allow_url $test_config[:app_host]
+    page.driver.allow_url 'ellislab.com'
+    page.driver.allow_url 'google-analytics.com'
+
     # Re-import clean database
     file = RSpec.current_example.metadata[:file_path].match(
       /.*\/.*?\/test_(.*?).rb/
