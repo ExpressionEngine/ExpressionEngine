@@ -213,7 +213,7 @@ class Groups extends Members\Members {
 		unset($master['group_id'], $master['site_id']);
 
 		$vars = $this->group->getValues();
-		$vars['cp_page_title'] = lang('copy_member_group');
+		$vars['cp_page_title'] = sprintf(lang('copy_member_group'), $this->group->group_title);
 		$sections = $this->buildForm($vars);
 		$current = $this->groupData($this->group, $sections);
 		$vars['sections'] = $this->buildForm(array_merge($vars, $current));
