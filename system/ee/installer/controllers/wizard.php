@@ -66,7 +66,8 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker'
+		'filepicker',
+		'search'
 	);
 
 	public $theme_required_modules = array();
