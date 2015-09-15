@@ -110,51 +110,47 @@
 			e.preventDefault();
 		});
 
-		// Filter by Channel
-		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
-			var field = $(this).closest('fieldset').find('div.col.last').eq(0);
-			var channelId = $(this).data('channel-id');
-			var data = $(this).closest('fieldset').serialize();
+		var ajaxTimer;
+
+		function ajaxRefresh(elem, channelId, delay) {
+			var field = $(elem).closest('fieldset').find('div.col.last').eq(0);
+			var data = $(elem).closest('fieldset').serialize();
 
 			if (channelId)
 			{
 				data += '&channel=' + channelId;
 			}
 
-			$.ajax({
-				url: EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
-				data: data,
-				type: 'POST',
-				dataType: 'json',
-				success: function(ret) {
-					$(field).html(ret.html);
-				}
-			});
+			clearTimeout(ajaxTimer);
+
+			ajaxTimer = setTimeout(function() {
+				$.ajax({
+					url: EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
+					data: data,
+					type: 'POST',
+					dataType: 'json',
+					success: function(ret) {
+						$(field).html(ret.html);
+					}
+				});
+			}, delay);
+
+		}
+
+		// Filter by Channel
+		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
+			ajaxRefresh(this, $(this).data('channel-id'), 0);
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
 		});
 
 		// Search Relationships
-		$('div.publish').on('keyup', '.relate-wrap .relate-actions .relate-search', {delay: 10}, function (e) {
+		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
 			var field = $(this).closest('fieldset').find('div.col.last').eq(0);
 			var channelId = $(field).find('.filters .has-sub .faded').data('channel-id');
-			var data = $(this).closest('fieldset').serialize();
 
-			if (channelId)
-			{
-				data += '&channel=' + channelId;
-			}
-
-			$.ajax({
-				url: EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
-				data: data,
-				type: 'POST',
-				dataType: 'json',
-				success: function(ret) {
-					$(field).html(ret.html);
-				}
-			});
+			ajaxRefresh(this, channelId, 150);
 		});
 
 		// Sortable!
