@@ -115,6 +115,16 @@
 		function ajaxRefresh(elem, channelId, delay) {
 			var field = $(elem).closest('fieldset').find('div.col.last').eq(0);
 			var data = $(elem).closest('fieldset').serialize();
+			var url = EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field');
+
+			if (field.length == 0) {
+				field = $(elem).closest('td');
+
+				var row_id = $(field).data('row-id') ? $(field).data('row-id') : 0;
+
+				data = $(field).find('input').serialize() + '&column_id=' + $(field).data('column-id') + '&row_id=' + row_id;
+				url = EE.publish.field.URL + '/' + $(elem).closest('table').attr('id');
+			}
 
 			if (channelId)
 			{
@@ -125,7 +135,7 @@
 
 			ajaxTimer = setTimeout(function() {
 				$.ajax({
-					url: EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
+					url: url,
 					data: data,
 					type: 'POST',
 					dataType: 'json',
@@ -147,8 +157,10 @@
 
 		// Search Relationships
 		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
-			var field = $(this).closest('fieldset').find('div.col.last').eq(0);
-			var channelId = $(field).find('.filters .has-sub .faded').data('channel-id');
+			var channelId = $(this).closest('relate-actions').find('.filters .has-sub .faded').data('channel-id');
+
+			// In Grids, this field got its name reset
+			$(this).attr('name', 'search');
 
 			ajaxRefresh(this, channelId, 150);
 		});
