@@ -1,8 +1,8 @@
 <?php if ($multiple): ?>
-<div class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
 <?php else: ?>
-<div class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
 <?php endif; ?>
 	<div class="relate-actions">
@@ -10,7 +10,7 @@
 		<div class="filters">
 			<ul>
 				<li>
-					<a class="has-sub" href=""><?=lang('channel')?> <span class="faded"></span></a>
+					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))[0]->channel_title?>)</span><?php endif; ?></a>
 					<div class="sub-menu">
 						<ul>
 							<li><a href="" data-channel-id=""><?=lang('all_channels')?></a></li>
@@ -23,7 +23,7 @@
 			</ul>
 		</div>
 		<?php endif; ?>
-		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
+		<input class="relate-search" type="text" name="search" value="<?=ee()->input->post('search')?>" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
 	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php $chosen = NULL; ?>

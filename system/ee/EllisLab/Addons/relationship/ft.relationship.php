@@ -343,14 +343,28 @@ class Relationship_ft extends EE_Fieldtype {
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($order_field, $this->settings['order_dir']);
 
+		if (ee()->input->post('search'))
+		{
+			$entries->filter('title', 'LIKE', '%' . ee()->input->post('search') . '%');
+		}
+
+		if (ee()->input->post('channel'))
+		{
+			$entries->filter('channel_id', ee()->input->post('channel'));
+		}
+
 		if (count($limit_channels))
 		{
 			$entries->filter('channel_id', 'IN', $limit_channels);
-			$channels = ee('Model')->get('Channel', $limit_channels)->all();
+			$channels = ee('Model')->get('Channel', $limit_channels)
+				->fields('channel_id', 'channel_title')
+				->all();
 		}
 		else
 		{
-			$channels = ee('Model')->get('Channel')->all();
+			$channels = ee('Model')->get('Channel')
+				->fields('channel_id', 'channel_title')
+				->all();
 		}
 
 		if (count($limit_categories))
