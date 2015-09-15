@@ -260,6 +260,10 @@ class Relationship_ft extends EE_Fieldtype {
 				$order[$id] = isset($data['sort'][$k]) ? $data['sort'][$k] : 0;
 			}
 		}
+		elseif (is_int($data))
+		{
+			$selected[] = $data;
+		}
 
 		if ($entry_id)
 		{
