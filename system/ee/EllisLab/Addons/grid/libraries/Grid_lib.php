@@ -74,6 +74,22 @@ class Grid_lib {
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
+		if (AJAX_REQUEST)
+		{
+			$column_id = ee()->input->post('column_id');
+			$row_id = ee()->input->post('row_id');
+
+			if ($column_id)
+			{
+				if ($row_id)
+				{
+					return $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+				}
+
+				return $this->_publish_field_cell($columns[$column_id]);
+			}
+		}
+
 		$column_headings = array();
 		$blank_column = array();
 		foreach ($columns as $column)
