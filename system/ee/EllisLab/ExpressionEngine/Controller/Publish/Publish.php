@@ -29,6 +29,25 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
  */
 class Publish extends AbstractPublishController {
 
+	public function field($channel_id, $entry_id, $field_id)
+	{
+		if ($entry_id)
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Channel = ee('Model')->get('Channel', $channel_id)->first();
+		}
+
+		$entry->set($_POST);
+
+		return array('html' => $entry->getCustomField($field_id)->getForm());
+	}
+
 	public function autosave($channel_id, $entry_id)
 	{
 		$site_id = ee()->config->item('site_id');
