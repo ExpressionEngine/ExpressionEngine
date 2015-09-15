@@ -110,95 +110,51 @@
 			e.preventDefault();
 		});
 
-		function toggleNoResults(empty, channelId, element) {
-			if (empty) {
-				$(element).closest('.relate-wrap')
-					.addClass('empty')
-					.find('.no-results')
-					.show();
-
-				if (channelId) {
-					$(element).closest('.relate-wrap')
-						.find('.no-results a.btn, .no-results .filters')
-						.hide();
-
-					$(element).closest('.relate-wrap')
-						.find('.no-results a.btn[data-channel-id=' + channelId + ']')
-						.show();
-				} else {
-					$(element).closest('.relate-wrap')
-						.find('.no-results a.btn')
-						.hide();
-
-					$(element).closest('.relate-wrap')
-						.find('.no-results .filters')
-						.show();
-				}
-			} else {
-				$(element).closest('.relate-wrap')
-					.removeClass('empty')
-					.find('.no-results')
-					.hide();
-			}
-		}
-
 		// Filter by Channel
 		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
-			var empty = true;
+			var field = $(this).closest('fieldset').find('div.col.last').eq(0);
 			var channelId = $(this).data('channel-id');
-			var matchesSearchValue = true;
-			var searchText = $(this).closest('.relate-actions')
-				.find('.relate-search')
-				.first()
-				.data('channel-id', channelId)
-				.val();
+			var data = $(this).closest('fieldset').serialize();
 
-			if (channelId) {
-				$(this).closest('.filters').find('a.has-sub .faded').text('(' + $(this).text() + ')');
-			} else {
-				$(this).closest('.filters').find('a.has-sub .faded').text('');
+			if (channelId)
+			{
+				data += '&channel=' + channelId;
 			}
 
-			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
-				if (searchText) {
-					matchesSearchValue = ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
-				}
-
-				if (($(this).data('channel-id') == channelId || ! channelId) && matchesSearchValue) {
-					$(this).show();
-					empty = false;
-				} else {
-					$(this).hide();
+			$.ajax({
+				url: EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
+				data: data,
+				type: 'POST',
+				dataType: 'json',
+				success: function(ret) {
+					$(field).html(ret.html);
 				}
 			});
-
-			toggleNoResults(empty, channelId, this);
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
 		});
 
 		// Search Relationships
-		$('div.publish').on('keyup', '.relate-wrap .relate-actions .relate-search', function (e) {
-			var empty = true;
-			var searchText = $(this).val();
-			var matchesChannelFilter = true;
-			var channelId = $(this).data('channel-id');
+		$('div.publish').on('keyup', '.relate-wrap .relate-actions .relate-search', {delay: 10}, function (e) {
+			var field = $(this).closest('fieldset').find('div.col.last').eq(0);
+			var channelId = $(field).find('.filters .has-sub .faded').data('channel-id');
+			var data = $(this).closest('fieldset').serialize();
 
-			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
-				if (channelId) {
-					matchesChannelFilter = ($(this).data('channel-id') == channelId);
-				}
+			if (channelId)
+			{
+				data += '&channel=' + channelId;
+			}
 
-				if ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1 && matchesChannelFilter) {
-					$(this).show();
-					empty = false;
-				} else {
-					$(this).hide();
+			$.ajax({
+				url: EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
+				data: data,
+				type: 'POST',
+				dataType: 'json',
+				success: function(ret) {
+					$(field).html(ret.html);
 				}
 			});
-
-			toggleNoResults(empty, channelId, this);
 		});
 
 		// Sortable!
