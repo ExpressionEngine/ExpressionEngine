@@ -91,6 +91,9 @@
 				.find('input:hidden')
 				.val(0);
 
+			choices.find('.scroll-wrap input[type="hidden"][value=' + $(this).data('entry-id') + ']')
+				.remove();
+
 			$(this).closest('label').remove();
 
 			if (chosen.find('.relate-manage').length == 0) {
@@ -157,10 +160,14 @@
 
 		// Search Relationships
 		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
-			var channelId = $(this).closest('relate-actions').find('.filters .has-sub .faded').data('channel-id');
+			var channelId = $(this).closest('.relate-actions').find('.filters .has-sub .faded').data('channel-id');
 
 			// In Grids, this field got its name reset
-			$(this).attr('name', 'search');
+			if ($(this).attr('name').indexOf('search_related') != -1) {
+				$(this).attr('name', 'search_related');
+			} else {
+				$(this).attr('name', 'search');
+			}
 
 			ajaxRefresh(this, channelId, 150);
 		});
