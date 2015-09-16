@@ -265,6 +265,8 @@ $lang = array(
 
 'no_watermark' => 'No watermark',
 
+'image_manip_dimension_required' => 'A height or width must be entered if no watermark is selected.',
+
 'no_manipulations' => 'No manipulations created',
 
 'add_manipulation' => 'Add New Manipulation',
