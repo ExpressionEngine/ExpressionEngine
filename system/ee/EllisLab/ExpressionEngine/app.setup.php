@@ -67,7 +67,7 @@ return array(
 			return Library\CP\Table::fromGlobals($config);
 		},
 
-		'CP/URL' => function($ee)
+		'CP/URL' => function($ee, $path = NULL)
 		{
 			$cp_url = ee()->config->item('cp_url');
 			$site_index = ee()->functions->fetch_site_index(0,0);
@@ -75,7 +75,9 @@ return array(
 			$session_id = ee()->session->session_id();
 			$default_cp_url = SELF;
 
-			return new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+
+			return (is_null($path)) ? $factory : $factory->make($path);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
