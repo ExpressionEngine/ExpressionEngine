@@ -487,23 +487,11 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		if (REQ == 'CP')
-		{
-			ee()->cp->add_js_script(array(
-				'plugin' => 'ee_interact.event',
-				'file' => 'fields/relationship/cp',
-				'ui' => 'sortable'
-			));
-		}
-		// Channel Form
-		else
-		{
-			ee()->cp->add_js_script(array(
-				'plugin' => 'ee_interact.event',
-				'file' => 'fields/relationship/cp',
-				'ui' => 'sortable'
-			));
-		}
+		ee()->cp->add_js_script(array(
+			'plugin' => 'ee_interact.event',
+			'file' => 'fields/relationship/cp',
+			'ui' => 'sortable'
+		));
 
 		if ($entry_id)
 		{
