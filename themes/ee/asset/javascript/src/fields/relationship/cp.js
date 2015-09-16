@@ -91,6 +91,9 @@
 				.find('input:hidden')
 				.val(0);
 
+			choices.find('.scroll-wrap input[type="hidden"][value=' + $(this).data('entry-id') + ']')
+				.remove();
+
 			$(this).closest('label').remove();
 
 			if (chosen.find('.relate-manage').length == 0) {
