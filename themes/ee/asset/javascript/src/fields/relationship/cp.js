@@ -157,7 +157,7 @@
 
 		// Search Relationships
 		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
-			var channelId = $(this).closest('relate-actions').find('.filters .has-sub .faded').data('channel-id');
+			var channelId = $(this).closest('.relate-actions').find('.filters .has-sub .faded').data('channel-id');
 
 			// In Grids, this field got its name reset
 			$(this).attr('name', 'search');
