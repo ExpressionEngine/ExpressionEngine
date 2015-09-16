@@ -69,6 +69,11 @@ class File extends AbstractFilesController {
 
 	public function edit($id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_assets'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$file = ee('Model')->get('File', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -201,6 +206,11 @@ class File extends AbstractFilesController {
 
 	public function crop($id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_assets'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$file = ee('Model')->get('File', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();

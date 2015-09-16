@@ -54,7 +54,8 @@ class ChannelField extends FieldModel {
 		'Channel' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'group_id',
-			'to_key' => 'field_group'
+			'to_key' => 'field_group',
+			'weak' => TRUE
 		),
 	);
 
@@ -74,6 +75,10 @@ class ChannelField extends FieldModel {
 		'field_is_hidden'      => 'enum[y,n]',
 		'field_show_fmt'       => 'enum[y,n]',
 		'field_order'          => 'integer',
+	);
+
+	protected static $_events = array(
+		'beforeInsert',
 	);
 
 	protected $field_id;
@@ -131,6 +136,19 @@ class ChannelField extends FieldModel {
 		$this->setProperty('field_settings', $field->saveSettingsForm($data));
 
 		return $this;
+	}
+
+	public function onBeforeInsert()
+	{
+		if ($this->field_order)
+		{
+			return;
+		}
+
+		$this->field_order = $this->getFrontend()->get('ChannelField')
+			->filter('group_id', $this->group_id)
+			->filter('site_id', $this->site_id)
+			->count() + 1;
 	}
 
 }

@@ -62,43 +62,45 @@ class Date extends Filter {
 
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 
+		ee()->lang->loadfile('calendar');
+
 		ee()->javascript->set_global('date.date_format', $date_format);
 		ee()->javascript->set_global('lang.date.months.full', array(
-			lang('january'),
-			lang('february'),
-			lang('march'),
-			lang('april'),
-			lang('may'),
-			lang('june'),
-			lang('july'),
-			lang('august'),
-			lang('september'),
-			lang('october'),
-			lang('november'),
-			lang('december')
+			lang('cal_january'),
+			lang('cal_february'),
+			lang('cal_march'),
+			lang('cal_april'),
+			lang('cal_may'),
+			lang('cal_june'),
+			lang('cal_july'),
+			lang('cal_august'),
+			lang('cal_september'),
+			lang('cal_october'),
+			lang('cal_november'),
+			lang('cal_december')
 		));
 		ee()->javascript->set_global('lang.date.months.abbreviated', array(
-			lang('jan'),
-			lang('feb'),
-			lang('mar'),
-			lang('apr'),
-			lang('may'),
-			lang('june'),
-			lang('july'),
-			lang('aug'),
-			lang('sept'),
-			lang('oct'),
-			lang('nov'),
-			lang('dec')
+			lang('cal_jan'),
+			lang('cal_feb'),
+			lang('cal_mar'),
+			lang('cal_apr'),
+			lang('cal_may'),
+			lang('cal_june'),
+			lang('cal_july'),
+			lang('cal_aug'),
+			lang('cal_sept'),
+			lang('cal_oct'),
+			lang('cal_nov'),
+			lang('cal_dec')
 		));
 		ee()->javascript->set_global('lang.date.days', array(
-			lang('su'),
-			lang('mo'),
-			lang('tu'),
-			lang('we'),
-			lang('th'),
-			lang('fr'),
-			lang('sa'),
+			lang('cal_su'),
+			lang('cal_mo'),
+			lang('cal_tu'),
+			lang('cal_we'),
+			lang('cal_th'),
+			lang('cal_fr'),
+			lang('cal_sa'),
 		));
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/date_picker'),

@@ -11,7 +11,7 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php $this->embed('_shared/table', $table); ?>
+	<?= $table; ?>
 
 	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 

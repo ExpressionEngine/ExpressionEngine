@@ -103,7 +103,7 @@ $lang = array(
 
 'version_update_available' => 'A newer version of ExpressionEngine is available',
 
-'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
+'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s" rel="external">Download the latest version</a> and follow the <a href="%s" rel="external">update instructions</a>.',
 
 /**
  * License & Registration
@@ -114,6 +114,9 @@ $lang = array(
 
 'license_updated' => 'License &amp; Registration Updated',
 'license_updated_desc' => 'Your license and registration information has been saved successfully.',
+
+'license_file_upload_error' => 'Cannot Update License &amp; Registration',
+'license_file_upload_error_desc' => 'We were unable to update the license &amp; registration, please review and fix errors below.',
 
 'license_file_error' => 'License Invalid',
 'license_file_corrupt_license_file' => 'The license file provided is missing data.',
@@ -513,7 +516,13 @@ $lang = array(
 
 'attachment_settings' => 'Attachment Settings',
 
-'prv_msg_upload_path' => 'Upload directory',
+'prv_msg_upload_url' => 'Upload directory',
+
+'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
+
+'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
+
+'prv_msg_upload_path' => 'Upload path',
 
 'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 

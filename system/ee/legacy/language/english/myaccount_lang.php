@@ -195,8 +195,6 @@ Used in the control panel only.',
 
 "12_hour" => "12 Hour with AM/PM",
 
-"include_seconds" => "Show seconds?",
-
 'time_format' => 'Time Formatting',
 
 'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
@@ -486,6 +484,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'choose_avatar' => 'Choose from library',
 
+'update_avatar_path' => '</em><em>Please update your <a href="%s">avatar</a> upload settings.',
+
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
 
 'link_avatar' => ' Link to avatar',
@@ -509,6 +509,9 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'site_index' => 'Site Index',
 
 'btn_login' => 'Login',
+
+'quick_links_ajax_reorder_fail' => 'Attention: Failed to save quick links order',
+'quick_links_ajax_reorder_fail_desc' => 'We failed to save your new quick links order. Refresh the page and make sure you\'re logged in.',
 
 ''=>''
 );

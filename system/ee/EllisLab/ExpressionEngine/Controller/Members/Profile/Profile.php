@@ -39,13 +39,19 @@ class Profile extends CP_Controller {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
+		ee()->lang->loadfile('settings');
 		ee()->lang->loadfile('myaccount');
 
 		if ( ! $this->cp->allowed_group('can_access_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ( ! $this->cp->allowed_group('can_edit_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -97,7 +103,11 @@ class Profile extends CP_Controller {
 
 		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
-		$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
+
+		if (ee()->config->item('allow_member_localization') == 'y' OR ee()->session->userdata('group_id') == 1)
+		{
+			$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
+		}
 
 		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL')->make('members/profile/publishing', $this->query_string))
 			->addBasicList();
@@ -125,33 +135,54 @@ class Profile extends CP_Controller {
 
 		$list->addItem(lang('subscriptions'), ee('CP/URL')->make('members/profile/subscriptions', $this->query_string));
 
-		$list = $sidebar->addHeader(lang('administration'))
-			->addBasicList();
+		if (ee()->cp->allowed_group('can_admin_members'))
+		{
+			$list = $sidebar->addHeader(lang('administration'))
+				->addBasicList();
 
-		$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
-		$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
-		$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
-		$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL')->make('utilities/communicate/member/' . $this->member->member_id));
-		$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
-		$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL')->make('members/delete', $this->query_string))
-			->asDeleteAction('modal-confirm-remove-member');
+			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
-		$modal_vars = array(
-			'name'		=> 'modal-confirm-remove-member',
-			'form_url'	=> ee('CP/URL')->make('members/delete'),
-			'checklist' => array(
-				array(
-					'kind' => lang('members'),
-					'desc' => $this->member->username,
-				)
-			),
-			'hidden' => array(
-				'bulk_action' => 'remove',
-				'selection'   => $this->member->member_id
-			)
-		);
+			if ( ! ($this->member->member_id == ee()->session->userdata['member_id']
+				    && $this->member->group_id == 1))
+			{
+				$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
+			}
 
-		ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));
+			$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
+
+			if ($this->member->member_id != ee()->session->userdata['member_id'])
+			{
+				$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL')->make('utilities/communicate/member/' . $this->member->member_id));
+
+				if (ee()->session->userdata('group_id') == 1)
+				{
+					$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
+				}
+
+				if (ee()->cp->allowed_group('can_delete_members'))
+				{
+					$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL')->make('members/delete', $this->query_string))
+						->asDeleteAction('modal-confirm-remove-member');
+
+					$modal_vars = array(
+						'name'		=> 'modal-confirm-remove-member',
+						'form_url'	=> ee('CP/URL')->make('members/delete'),
+						'checklist' => array(
+							array(
+								'kind' => lang('members'),
+								'desc' => $this->member->username,
+							)
+						),
+						'hidden' => array(
+							'bulk_action' => 'remove',
+							'selection'   => $this->member->member_id
+						)
+					);
+
+					ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));
+				}
+			}
+		}
 	}
 
 	public function index()

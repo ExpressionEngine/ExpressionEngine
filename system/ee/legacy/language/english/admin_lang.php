@@ -236,8 +236,6 @@ $lang = array(
 
 "taken_channel_name" => "This channel name is already taken.",
 
-"no_members_matched" => "There are no member accounts matching the criteria you submitted",
-
 "good_member_pruning" => "%x member accounts have been deleted",
 
 "prune_member_confirm_msg" => "Are you sure you want to delete the member accounts you specified?",
@@ -260,8 +258,6 @@ $lang = array(
 
 "prune_entry_confirm_msg" => "Are you sure you want to delete the channel entries you specified?",
 
-"no_entries_matched" => "There are no channel entries matching the criteria you submitted",
-
 "good_entry_pruning" => "%x channel entries have been deleted",
 
 "select_prune_channels" => "Delete only within the selected channels",
@@ -269,8 +265,6 @@ $lang = array(
 "comment_pruning" => "Comment Pruning",
 
 "comment_prune_x_days" => "Delete comments that are more than X days old",
-
-"no_comments_matched" => "There are no comments matching the criteria you submitted",
 
 "good_commennt_pruning" => "%x comments have been deleted",
 
@@ -300,8 +294,6 @@ $lang = array(
 "must_select_one" => "You must select at least one",
 
 "prune_topic_confirm_msg" => "Are you sure you want to delete the forum topics you specified?",
-
-"no_topics_matched" => "There are no topics matching the criteria you submitted",
 
 "select_prune_topics" => "Delete only within the selected forums",
 
@@ -698,7 +690,7 @@ $lang = array(
 
 'license_contact_explanation' => 'The contact email address for the owner of this software license.',
 
-'license_number_explanation' => 'You can find and manage your software licenses on the EllisLab.com <a href="https://store.ellislab.com/manage">Manage Purchases</a> page,',
+'license_number_explanation' => 'You can find and manage your software licenses on the EllisLab.com <a href="https://store.ellislab.com/manage" rel="external">Manage Purchases</a> page,',
 
 "image_path" => "Path to Images Directory",
 
@@ -1114,8 +1106,6 @@ $lang = array(
 "plugin_manager" => "Plugin Manager",
 
 "installed_plugins" => "Installed Plugins",
-
-"no_plugins_exist" => "There are no plugins currently installed",
 
 "view_info" => "View Info",
 

@@ -178,7 +178,9 @@ class Files extends AbstractFilesController {
 	public function export()
 	{
 		$files = ee('Model')->get('File')
+			->with('UploadDestination')
 			->fields('file_id')
+			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$this->exportFiles($files->all()->pluck('file_id'));
@@ -189,6 +191,11 @@ class Files extends AbstractFilesController {
 
 	public function upload($dir_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_upload_new_assets'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$dir = ee('Model')->get('UploadDestination', $dir_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -368,6 +375,11 @@ class Files extends AbstractFilesController {
 
 	public function rmdir()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$id = ee()->input->post('dir_id');
 		$dir = ee('Model')->get('UploadDestination', $id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -501,6 +513,11 @@ class Files extends AbstractFilesController {
 
 	private function remove($file_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_assets'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($file_ids))
 		{
 			$file_ids = array($file_ids);

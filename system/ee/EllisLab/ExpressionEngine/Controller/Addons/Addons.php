@@ -1397,7 +1397,7 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs a fieldtype
 	 *
-	 * @param  str	$$fieldtype	The add-on to install
+	 * @param  str	$fieldtype	The add-on to install
 	 * @return str				The name of the add-on just installed
 	 */
 	private function installFieldtype($fieldtype)

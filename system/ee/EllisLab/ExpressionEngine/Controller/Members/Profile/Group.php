@@ -33,6 +33,17 @@ class Group extends Profile {
 
 	private $base_url = 'members/profile/group';
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ($this->member->member_id == ee()->session->userdata['member_id']
+		    && $this->member->group_id == 1)
+		{
+			show_error(lang('cannot_change_your_group'));
+		}
+	}
+
 	/**
 	 * Member Group assignment
 	 */

@@ -24,57 +24,99 @@
 (function ($) {
 
 	var modal;
+	var current;
 
-	var bind_modal = function(options) {
+	var bind_modal = function(url, options) {
+		$.get(url, function(data) {
+			modal.find('div.box').html(data);
+			if (typeof options.selected != 'undefined') {
+				var selected = modal.find('tbody *[data-id="' + options.selected + '"]');
+				selected.addClass('selected');
+
+				if (selected.prop("tagName") == 'A') {
+					selected.parents('td').addClass('selected');
+				} else {
+					selected.parents('tr').addClass('selected');
+				}
+			}
+		});
+
 		$('.modal-file').off('click', 'tbody > tr');
-		$('.modal-file').on('click', 'tbody > tr, .filepicker-item', function(e) {
+		$('.modal-file').on('click', ' .filepicker-item, tbody > tr', function(e) {
+			e.stopPropagation();
 			var id = $(this).data('id');
 			var file_url = options.url.replace(/directory=.+(?=&)?/ig, 'file=' + id);
 
-			$.ajax({
-				url: file_url,
-				success: function(data) {
-					var picker = {
-						modal: modal,
-						input_value: options.input_value,
-						input_name: options.input_name,
-						input_img: options.input_img
-					}
-					options.callback(data, picker);
-				},
-				dataType: 'json'
-			});
+			current.data('selected', id);
+			modal.find('tbody .selected').toggleClass('selected');
+			options.selected = id;
+			var selected = $(this);
+
+			if (selected.prop("tagName") == 'A') {
+				selected.parents('td').addClass('selected');
+			} else {
+				selected.parents('tr').addClass('selected');
+			}
+
+			if (options.ajax == false) {
+				var picker = {
+					modal: modal,
+					input_value: options.input_value,
+					input_name: options.input_name,
+					input_img: options.input_img
+				}
+				options.callback($(this), picker);
+				
+			} else {
+				$.ajax({
+					url: file_url,
+					success: function(data) {
+						var picker = {
+							modal: modal,
+							input_value: options.input_value,
+							input_name: options.input_name,
+							input_img: options.input_img
+						}
+						options.callback(data, picker);
+					},
+					dataType: 'json'
+				});
+			}
 		});
 	};
 
 	$.fn.FilePicker = function(options) {
 		this.off('click');
-		options['url'] = this.attr('href');
-		options['rel'] = this.attr('rel');
-
-		if (options.input_value) {
-			options['input_value'] = $(options.input_value);
-		} else {
-			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
-		}
-
-		if (options.input_name) {
-			options['input_name'] = $(options.input_name);
-		} else {
-			options['input_name'] = $('#' + $(this).data('input-name'));
-		}
-
-		if (options.input_img) {
-			options['input_img'] = $(options.input_img);
-		} else {
-			options['input_img'] = $('#' + $(this).data('input-image'));
-		}
 
 		return this.each(function() {
 			$(this).on('click', function(){
+				current = $(this);
+				options['url'] = $(this).attr('href');
+				options['rel'] = $(this).attr('rel');
+
+				if (options.input_value) {
+					options['input_value'] = $(options.input_value);
+				} else {
+					options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
+				}
+
+				if (options.input_name) {
+					options['input_name'] = $(options.input_name);
+				} else {
+					options['input_name'] = $('#' + $(this).data('input-name'));
+				}
+
+				if (options.input_img) {
+					options['input_img'] = $(options.input_img);
+				} else {
+					options['input_img'] = $('#' + $(this).data('input-image'));
+				}
+
+				if ( ! ('selected' in options)) {
+					options['selected'] = $(this).data('selected');
+				}
 				modal = $("." + options.rel);
-				modal.find("div.box").load(options.url);
-				bind_modal(options);
+				bind_modal(options.url, options);
 			});
 		});
 	};
@@ -100,8 +142,10 @@
 			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
 			options['input_name'] = $('#' + $(this).data('input-name'));
 			options['input_img'] = $('#' + $(this).data('input-image'));
+			options['selected'] = $(this).data('selected');
 			callback_name = $(this).data('callback');
 			picker_url = $(this).attr('href');
+			current = $(this);
 
 			if (typeof callback_name != 'undefined' && callback_name.length !== 0)	{
 				callback = function(data, picker) {
@@ -128,8 +172,7 @@
 			options['url'] = picker_url;
 			options['callback'] = callback;
 			modal = $("." + $(this).attr('rel'));
-			modal.find("div.box").load(picker_url);
-			bind_modal(options);
+			bind_modal(picker_url, options);
 		});
 	});
 })(jQuery);

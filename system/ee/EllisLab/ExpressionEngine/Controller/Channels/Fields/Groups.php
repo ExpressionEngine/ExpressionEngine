@@ -35,10 +35,10 @@ class Groups extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group(
-			'can_access_admin',
-			'can_admin_channels',
-			'can_access_content_prefs'
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields'
 		))
 		{
 			show_error(lang('unauthorized_access'));
@@ -182,7 +182,7 @@ class Groups extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_group_success_desc'), $field_group->group_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/edit/' . $id));
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups'));
 			}
 			else
 			{
@@ -202,21 +202,6 @@ class Groups extends AbstractChannelsController {
 
 	private function setWithPost(ChannelFieldGroup $field_group)
 	{
-		$selected_field_ids = ee()->input->post('custom_fields');
-
-		if ( ! empty($selected_field_ids))
-		{
-			$custom_fields = ee('Model')->get('ChannelField', $selected_field_ids)
-				->filter('site_id', ee()->config->item('site_id'))
-				->all();
-
-			$field_group->ChannelFields = $custom_fields;
-		}
-		else
-		{
-			$field_group->ChannelFields = NULL;
-		}
-
 		$field_group->group_name = ee()->input->post('group_name');
 		return $field_group;
 	}

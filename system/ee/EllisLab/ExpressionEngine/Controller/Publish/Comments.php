@@ -315,7 +315,7 @@ class Comments extends AbstractPublishController {
 		if ($live_look_template)
 		{
 			$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $comment->getEntry()->entry_id);
-			$title = '<a href="' . ee()->cp->masked_url($view_url) . '">' . $title . '</a>';
+			$title = '<a href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . $title . '</a>';
 		}
 
 		$move_desc = sprintf(lang('move_comment_desc'),

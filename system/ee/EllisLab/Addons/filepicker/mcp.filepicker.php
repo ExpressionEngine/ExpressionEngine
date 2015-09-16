@@ -25,9 +25,10 @@ class Filepicker_mcp {
 	public function index()
 	{
 		// check if we have a request for a specific file id
-		if ( ! empty(ee()->input->get('file')))
+		$file = ee()->input->get('file');
+		if ( ! empty($file))
 		{
-			$this->fileInfo(ee()->input->get('file'));
+			$this->fileInfo($file);
 		}
 
 		if ($this->access === FALSE)
@@ -65,6 +66,20 @@ class Filepicker_mcp {
 
 			$dir = $directories[$id];
 			$files = $dir->Files;
+
+			// Only show member directories if it's avatars
+			if ($dir->Module && $dir->Module->module_name == 'Member')
+			{
+				if ($dir->server_path == ee()->config->item('avatar_path'))
+				{
+					$files = $dir->server_path->files;
+				}
+				else
+				{
+					show_error(lang('invalid_upload_destination'));
+				}
+			}
+
 			$type = ee()->input->get('type') ?: $dir->default_modal_view;
 		}
 
@@ -73,28 +88,32 @@ class Filepicker_mcp {
 
 		$base_url = ee('CP/URL')->make($this->base_url);
 
-		$directories = array_map(function($dir) {return $dir->name;}, $directories);
-		$directories = array('all' => lang('all')) + $directories;
-		$vars['type'] = $type;
+		if (ee()->input->get('hasFilters') !== '0')
+		{
+			$directories = array_filter($directories, function($dir) {return $dir->module_id == 0;});
+			$directories = array_map(function($dir) {return $dir->name;}, $directories);
+			$directories = array('all' => lang('all')) + $directories;
+			$vars['type'] = $type;
 
-		$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
-			->disableCustomValue();
+			$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
+				->disableCustomValue();
 
-		$filters = ee('CP/Filter')->add($dirFilter);
+			$filters = ee('CP/Filter')->add($dirFilter);
 
-		$filters = $filters->add('Perpage', $files->count(), 'show_all_files');
+			$filters = $filters->add('Perpage', $files->count(), 'show_all_files');
 
-		$imgOptions = array(
-			'thumb' => 'thumbnails',
-			'list' => 'list'
-		);
-		$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
-			->disableCustomValue()
-			->setDefaultValue($type);
-		$filters = $filters->add($imgFilter);
+			$imgOptions = array(
+				'thumb' => 'thumbnails',
+				'list' => 'list'
+			);
+			$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
+				->disableCustomValue()
+				->setDefaultValue($type);
+			$filters = $filters->add($imgFilter);
 
-		$perpage = $filters->values()['perpage'];
-		$vars['filters'] = $filters->render($base_url);
+			$perpage = $filters->values()['perpage'];
+			$vars['filters'] = $filters->render($base_url);
+		}
 
 		$base_url->setQueryStringVariable('directory', $id);
 		$base_url->setQueryStringVariable('type', $type);
@@ -237,7 +256,6 @@ class Filepicker_mcp {
 				array(
 					array(
 						'title' => 'file',
-						'desc' => 'file_desc',
 						'fields' => array(
 							'file' => array(
 								'type' => 'file',
@@ -247,7 +265,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'title',
-						'desc' => 'title_desc',
 						'fields' => array(
 							'title' => array(
 								'type' => 'text',
@@ -256,7 +273,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'description',
-						'desc' => 'description_desc',
 						'fields' => array(
 							'description' => array(
 								'type' => 'textarea',
@@ -265,7 +281,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'credit',
-						'desc' => 'credit_desc',
 						'fields' => array(
 							'credit' => array(
 								'type' => 'text',
@@ -274,7 +289,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'location',
-						'desc' => 'location_desc',
 						'fields' => array(
 							'location' => array(
 								'type' => 'text',

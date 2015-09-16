@@ -12,7 +12,7 @@
 		</div>
 	</fieldset>
 	<fieldset class="form-ctrls">
-		<button class="btn" name="submit" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_template')?></button>
+		<button class="btn" name="submit" type="submit" value="update" data-submit-text="<?=sprintf(lang('btn_save'), lang('template'))?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=sprintf(lang('btn_save'), lang('template'))?></button>
 		<button class="btn" name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_and_finish_editing')?></button>
 	</fieldset>
 </form>

@@ -39,6 +39,11 @@ class FilePicker {
 			$qs['type'] = 'list';
 		}
 
+		if ( isset($data['hasFilters']))
+		{
+			$qs['hasFilters'] = $data['hasFilters'];
+		}
+
 		$href = ee('CP/URL')->make($this->controller, $qs);
 		$extra = "";
 		$class = "";
@@ -56,6 +61,11 @@ class FilePicker {
 		if ( ! empty($data['name']))
 		{
 			$extra .= " data-input-name='{$data['name']}'";
+		}
+
+		if ( ! empty($data['selected']))
+		{
+			$extra .= " data-selected='{$data['selected']}'";
 		}
 
 		if ( ! empty($data['callback']))

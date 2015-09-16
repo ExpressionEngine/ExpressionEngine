@@ -33,7 +33,10 @@ class LayoutDisplay {
 
 	public function getTabs()
 	{
-		return array_values($this->tabs);
+		return array_filter(array_values($this->tabs), function($tab) {
+			$fields = $tab->getFields();
+			return ( ! empty($fields));
+		});
 	}
 
 	public function getFields()

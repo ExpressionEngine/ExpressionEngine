@@ -180,7 +180,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$return = ee('CP/URL')->getCurrentUrl()->encode();
 		}
 
-		ee()->view->header = array(
+		$header = array(
 			'title' => lang('template_manager'),
 			'form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
@@ -188,13 +188,21 @@ abstract class AbstractDesign extends CP_Controller {
 					'href' => ee('CP/URL')->make('settings/template'),
 					'title' => lang('settings')
 				),
-				'download' => array(
-					'href' => ee('CP/URL')->make('design/export'),
-					'title' => lang('export_all')
-				)
 			),
 			'search_button_value' => lang('search_templates')
 		);
+
+		if (ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count() > 0)
+		{
+			$header['toolbar_items']['download'] =array(
+				'href' => ee('CP/URL', 'design/export'),
+				'title' => lang('export_all')
+			);
+		}
+
+		ee()->view->header = $header;
 	}
 
 	/**
@@ -294,6 +302,20 @@ abstract class AbstractDesign extends CP_Controller {
 			$template_ids = array($template_ids);
 		}
 
+		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		if ( ! $templates)
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_export_no_templates'))
+				->now();
+			return;
+		}
+
 		// Create the Zip Archive
 		$zipfilename = tempnam(sys_get_temp_dir(), '');
 		$zip = new ZipArchive();
@@ -308,10 +330,7 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Loop through templates and add them to the zip
-		$templates = ee('Model')->get('Template', $template_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all()
-			->each(function($template) use($zip) {
+		$templates->each(function($template) use($zip) {
 				$filename = $template->getTemplateGroup()->group_name . 'group/' . $template->template_name . $template->getFileExtension();
 				$zip->addFromString($filename, $template->template_data);
 			});
@@ -333,6 +352,9 @@ abstract class AbstractDesign extends CP_Controller {
 				'template' => array(
 					'encode' => FALSE
 				),
+				'type' => array(
+					'encode' => FALSE
+				),
 				'hits',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -342,7 +364,7 @@ abstract class AbstractDesign extends CP_Controller {
 				)
 			)
 		);
-		$table->setNoResultsText('no_templates_available');
+		$table->setNoResultsText('no_templates_found');
 
 		$data = array();
 
@@ -386,13 +408,21 @@ abstract class AbstractDesign extends CP_Controller {
 				$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 			}
 
+			$type_col = $template->template_type;
+			if (in_array($template->template_type, array('webpage', 'feed', 'css', 'js', 'static', 'xml')))
+			{
+				$type_col = lang($template->template_type.'_type_col');
+			}
+
 			$column = array(
 				$template_name,
+				'<span class="st-info">'.$type_col.'</span>',
 				$template->hits,
 				array('toolbar_items' => array(
 					'view' => array(
 						'href' => ee()->cp->masked_url($view_url),
-						'title' => lang('view')
+						'title' => lang('view'),
+						'rel' => 'external'
 					),
 					'edit' => array(
 						'href' => $edit_url,
@@ -433,5 +463,39 @@ abstract class AbstractDesign extends CP_Controller {
 		return $table;
 	}
 
+	/**
+	 * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
+	 *
+	 * @param	Template	$template	Saved template model object
+	 */
+	protected function saveNewTemplateRevision($template)
+	{
+		if ( ! bool_config_item('save_tmpl_revisions'))
+		{
+			return;
+		}
+
+		// Create the new version
+		$version = ee('Model')->make('RevisionTracker');
+		$version->Template = $template;
+		$version->item_table = 'exp_templates';
+		$version->item_field = 'template_data';
+		$version->item_data = $template->template_data;
+		$version->item_date = ee()->localize->now;
+		$version->Author = $template->LastAuthor;
+		$version->save();
+
+		// Now, rotate template revisions based on 'max_tmpl_revisions' config item
+		$versions = ee('Model')->get('RevisionTracker')
+			->filter('item_id', $template->getId())
+			->filter('item_field', 'template_data')
+			->order('item_date', 'desc')
+			->limit(ee()->config->item('max_tmpl_revisions'))
+			->all();
+
+		// Reassign versions and delete the leftovers
+		$template->Versions = $versions;
+		$template->save();
+	}
 }
 // EOF

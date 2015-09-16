@@ -94,7 +94,7 @@ class EE_Menu {
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => $site_backlink));
+					$menu[$site_name] = ee('CP/URL', 'msm/switch_to/' . $site_id, array('page' => $site_backlink));
 				}
 			}
 		}
@@ -124,10 +124,10 @@ class EE_Menu {
 			foreach($channels->result() as $channel)
 			{
 				// Create link
-				$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+				$menu['create'][$channel->channel_title] = ee('CP/URL', 'publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id));
 			}
 		}
 
@@ -144,28 +144,49 @@ class EE_Menu {
 	 */
 	private function _develop_menu()
 	{
-		$menu = array(
-			'channel_manager'  => ee('CP/URL')->make('channels'),
-			'template_manager' => ee('CP/URL')->make('design'),
-			'msm_manager'      => ee('CP/URL')->make('msm'),
-			'addon_manager'    => ee('CP/URL')->make('addons'),
-			'utilities'        => ee('CP/URL')->make('utilities'),
-			'logs'             => ee('CP/URL')->make('logs')
-		);
+		$menu = array();
 
-		if (ee()->config->item('multiple_sites_enabled') !== 'y')
+		if (ee()->cp->allowed_group_any(
+			'can_create_channels',
+			'can_edit_channels',
+			'can_delete_channels',
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields',
+			'can_create_statuses',
+			'can_delete_statuses',
+			'can_edit_statuses',
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
 		{
-			unset($menu['msm_manager']);
+			$menu['channel_manager'] = ee('CP/URL', 'channels');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		if (ee()->cp->allowed_group('can_access_design'))
 		{
-			unset($menu['addon_manager']);
+			$menu['template_manager'] = ee('CP/URL', 'design');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_access_addons'))
 		{
-			unset($menu['logs']);
+			$menu['msm_manager'] = ee('CP/URL', 'msm');
+		}
+
+		if (ee()->cp->allowed_group('can_access_addons'))
+		{
+			$menu['addon_manager'] = ee('CP/URL', 'addons');
+		}
+
+		if (ee()->cp->allowed_group('can_access_utilities'))
+		{
+			$menu['utilities'] = ee('CP/URL', 'utilities');
+		}
+
+		if (ee()->cp->allowed_group('can_access_logs'))
+		{
+			$menu['logs'] = ee('CP/URL', 'logs');
 		}
 
 		return $menu;
@@ -225,10 +246,10 @@ class EE_Menu {
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
 	 * array(
-	 *     'key_of_heading' => ee('CP/URL')->make('optional/link'),
+	 *     'key_of_heading' => ee('CP/URL', 'optional/link'),
 	 *     'heading_with_no_link',
 	 *     array(
-	 *         'item_in_subsection' => ee('CP/URL')->make('sub/section')
+	 *         'item_in_subsection' => ee('CP/URL', 'sub/section')
 	 *     )
 	 * )
 	 *

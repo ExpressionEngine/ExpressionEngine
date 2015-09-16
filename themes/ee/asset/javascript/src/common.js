@@ -224,14 +224,20 @@ $(document).ready(function(){
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('fast').css('height',heightIs);
+			$('.overlay').fadeIn('fast').css('height', heightIs);
 			// fade in modal
-			$(this).fadeIn('fast');
+			$(this).fadeIn('slow');
 
-			// scroll up, if needed
-			$('#top').animate({ scrollTop: 0 }, 100);
+			// remember the scroll location on open
+			$(this).data('scroll', $(document).scrollTop());
 
-			$(document).one('keypress', function(e) {
+			// scroll up, if needed, but only do so after a significant
+			// portion of the overlay is show so as not to disorient the user
+			setTimeout(function() {
+				$(document).scrollTop(0);
+			}, 100);
+
+			$(document).one('keydown', function(e) {
 				if (e.keyCode === 27) {
 					$('.modal-wrap').trigger('modal:close');
 				}
@@ -240,9 +246,11 @@ $(document).ready(function(){
 
 		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
-			$('.overlay').fadeOut('fast');
+			$('.overlay').fadeOut('slow');
 			// fade out the modal
 			$('.modal-wrap').fadeOut('fast');
+
+			$(document).scrollTop($(this).data('scroll'));
 		});
 
 		// listen for clicks to elements with a class of m-link
@@ -376,9 +384,9 @@ $(document).ready(function(){
 			// set the newVal var
 			var newVal = $(this).val();
 			// set the rangeIS
-			var rangeIs = $(this).attr('rel');
+			var rangeIs = $(this).attr('id');
 			// change the value on the fly
-			$('.'+rangeIs).html(newVal);
+			$('output[for="' + rangeIs + '"]').html(newVal);
 		});
 
 	// ===============================

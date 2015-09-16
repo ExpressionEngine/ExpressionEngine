@@ -69,10 +69,18 @@ class UploadDestination extends Model {
 		)
 	);
 
+	protected static $_type_classes = array(
+		'LocalPath' => 'EllisLab\ExpressionEngine\Model\File\Column\LocalPath',
+	);
+
+	protected static $_typed_columns = array(
+		'server_path' => 'LocalPath'
+	);
+
 	protected static $_validation_rules = array(
 		'name'               => 'required|xss|noHtml|unique[site_id]',
 		'server_path'        => 'required|fileExists|writable',
-		'url'                => 'required|url',
+		'url'                => 'required',
 		'allowed_types'      => 'enum[img,all]',
 		'default_modal_view' => 'enum[list,thumb]',
 		'max_size'           => 'isNatural',

@@ -170,16 +170,6 @@ $lang = array(
 
 'edit_categories' => 'Edit Categories',
 
-'revisions' => 'Revisions',
-
-'rev_id' => '#',
-
-'rev_date' => 'Date',
-
-'rev_author' => 'Author',
-
-'current' => 'Current',
-
 'revision' => 'Revision',
 
 'formatting' => 'Formatting:',
@@ -360,7 +350,7 @@ $lang = array(
 
 'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
 
-'no_entries_exist' => 'There are no entries in this channel',
+'no_entries_exist' => 'No <b>entries</b> found.',
 
 'select_channel_to_post_in' => 'Choose a channel to post in',
 
@@ -415,7 +405,6 @@ $lang = array(
 
 'add_author'		=> 'Add Author',
 'add_author_desc' 	=> 'Group settings over-ride individual settings, and some users cannot be removed from the author list.',
-'no_potential_authors' => 'There are no members available to add to the author list.', // who aren't already on it
 
 'hide_toolbar'		=> 'hide toolbar',
 'show_toolbar'		=> 'show toolbar',
@@ -443,6 +432,8 @@ $lang = array(
 'open' => 'Open',
 
 'close' => 'Close',
+
+'spam' => 'SPAM',
 
 'closed' => 'Closed',
 
@@ -613,8 +604,6 @@ $lang = array(
 'you_have_uploaded' => 'You have uploaded the following file:',
 
 'choose_a_destination' => 'Where would like your file to appear?',
-
-'no_entry_fields' => 'There are no entry fields in this channel.',
 
 'posted_by' => 'Author:',
 

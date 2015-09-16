@@ -72,6 +72,11 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$channel_ids = ee()->input->post('channels');
 
 		if ( ! empty($channel_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -103,6 +108,11 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form();
 	}
 
@@ -111,6 +121,11 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function edit($channel_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form($channel_id);
 	}
 

@@ -21,8 +21,8 @@ $lang = array(
 	'db_hostname_note'  => 'Commonly <b>localhost</b>, but your host may require something else.',
 	'db_name'               => 'Name',
 	'db_name_note'          => 'Make sure the database exists, the installer will <b>not</b> create it.',
-	'db_username'           => 'Server Username',
-	'db_password'           => 'Server Password',
+	'db_username'           => 'Username',
+	'db_password'           => 'Password',
 	'db_prefix'             => 'Table Prefix',
 	'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
 

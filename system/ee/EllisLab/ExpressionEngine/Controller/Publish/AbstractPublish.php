@@ -123,6 +123,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.lang.tab_has_req_field'	=> lang('tab_has_req_field'),
 			'publish.markitup.foo'				=> FALSE,
 			'publish.smileys'					=> $smileys_enabled,
+			'publish.field.URL'                 => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
 			// 'publish.url_title_prefix'			=> $this->_channel_data['url_title_prefix'],
 			'publish.which'						=> ($entry_id) ? 'edit' : 'new',
 			'publish.word_separator'			=> ee()->config->item('word_separator') != "dash" ? '_' : '-',

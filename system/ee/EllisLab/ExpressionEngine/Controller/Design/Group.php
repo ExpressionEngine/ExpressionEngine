@@ -46,6 +46,11 @@ class Group extends AbstractDesignController {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_template_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$groups = array(
 			'false' => '-- ' . strtolower(lang('none')) . ' --'
 		);
@@ -205,6 +210,11 @@ class Group extends AbstractDesignController {
 
 	public function edit($group_name)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -313,6 +323,11 @@ class Group extends AbstractDesignController {
 
 	public function remove()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', ee()->input->post('group_name'))
 			->filter('site_id', ee()->config->item('site_id'))

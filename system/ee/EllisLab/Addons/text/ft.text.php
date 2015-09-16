@@ -37,6 +37,8 @@ class Text_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
+		ee()->load->library('form_validation');
+
 		if ($data == '')
 		{
 			return TRUE;
@@ -246,7 +248,7 @@ class Text_ft extends EE_Fieldtype {
 			{
 				$field_tools = array(
 					'title' => 'field_tools',
-					'desc' => 'field_tools_desc',
+					'desc' => '',
 					'fields' => array(
 						'field_show_smileys' => array(
 							'type' => 'checkbox',

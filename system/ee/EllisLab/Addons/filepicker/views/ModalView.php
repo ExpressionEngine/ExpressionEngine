@@ -19,9 +19,9 @@
 			<tr>
 				<?php foreach ($row as $file): ?>
 				<td>
-					<a data-id="<?=$file->file_id?>" class="filepicker-item" href="#">
+					<a data-id="<?=$file->file_id ?: $file->file_name ?>" class="filepicker-item" href="#">
 						<?php if ($file->isImage()): ?>
-						<img src="<?=$file->getAbsoluteURL()?>" alt="<?=$file->file_name?>">
+						<img src="<?=$file->getAbsoluteThumbnailURL()?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
 						<span class="file-thumb"><b><?=$file->file_name?></b></span>
 						<?php endif; ?>

@@ -42,6 +42,7 @@ class Wizard extends CI_Controller {
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
+	public $header            = '';
 	public $subtitle          = '';
 
 	private $current_step = 1;
@@ -65,7 +66,8 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker'
+		'filepicker',
+		'search'
 	);
 
 	public $theme_required_modules = array();
@@ -511,7 +513,8 @@ class Wizard extends CI_Controller {
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
-		$this->title = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
+		$this->title = sprintf(lang('install_title'), '');
+		$this->header = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
@@ -730,7 +733,7 @@ class Wizard extends CI_Controller {
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
-		if ($this->db_connect_attempt === 1045)
+		if ($this->db_connect_attempt === 1044 OR $this->db_connect_attempt === 1045)
 		{
 			$errors[] = lang('database_invalid_user');
 		}
@@ -1409,6 +1412,7 @@ class Wizard extends CI_Controller {
 		$version = explode('.', $this->version, 2);
 		$data = array(
 			'title'             => $this->title,
+			'header'            => $this->header,
 			'subtitle'          => $this->subtitle,
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
@@ -2391,7 +2395,7 @@ class Wizard extends CI_Controller {
 		// Generate the new path by suffixing a dotless version number
 		$new_path = str_replace(
 			'installer',
-			'installer_'.str_replace('.', '', $this->version),
+			'installer_'.$this->version,
 			APPPATH
 		);
 

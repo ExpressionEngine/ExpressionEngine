@@ -49,60 +49,32 @@ class Quicklinks extends Profile {
 	 */
 	public function index()
 	{
-		$table = ee('CP/Table');
-		$links = array();
-		$data = array();
-
-		foreach ($this->quicklinks as $quicklink)
-		{
-			$edit_url = ee('CP/URL')->make('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
-
-			$toolbar = array('toolbar_items' => array(
-				'edit' => array(
-					'href' => $edit_url,
-					'title' => strtolower(lang('edit'))
-				)
-			));
-
-			$links[] = array(
-				'name' => array(
-						'content' => $quicklink['title'],
-						'href' => $edit_url
-					),
-				$toolbar,
-				array(
-					'name' => 'selection[]',
-					'value' => $quicklink['order'],
-					'data'	=> array(
-						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-		}
-
-		$table->setColumns(
-			array(
-				'name',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
+		$data = array(
+			'table' => $this->makeTable(),
+			'new' => ee('CP/URL')->make('members/profile/quicklinks/create', $this->query_string),
+			'form_url' => ee('CP/URL')->make('members/profile/quicklinks/delete', $this->query_string)
 		);
-
-		$table->setNoResultsText('no_search_results');
-		$table->setData($links);
-
-		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = ee('CP/URL')->make('members/profile/quicklinks/create', $this->query_string);
-		$data['form_url'] = ee('CP/URL')->make('members/profile/quicklinks/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
+			'file' => array(
+				'cp/confirm_remove',
+				'cp/sort_helper',
+				'cp/members/quick_links_reorder',
+			),
+			'plugin' => array(
+				'ee_table_reorder',
+			),
 		));
+
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('quick_links_ajax_reorder_fail'))
+			->addToBody(lang('quick_links_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('quick_links.reorder_url', ee('CP/URL')->make('members/profile/quicklinks/order/', $this->query_string)->compile());
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -181,7 +153,6 @@ class Quicklinks extends Profile {
 	/**
 	 * Delete Quicklinks
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function delete()
@@ -197,6 +168,31 @@ class Quicklinks extends Profile {
 	}
 
 	/**
+	 * Reorder quicklinks
+	 *
+	 * @return Array Success or error array. On success returns the new quicklinks table
+	 */
+	public function order()
+	{
+		parse_str(ee()->input->post('order'), $order);
+		$order = $order['order'];
+		$position = 1;
+
+		if (is_array($order))
+		{
+			foreach ($order as $id)
+			{
+				$this->quicklinks[$id]['order'] = $position;
+				$position++;
+			}
+		}
+
+		$this->saveQuicklinks();
+
+		return array('success' => $this->makeTable());
+	}
+
+	/**
 	 * saveQuicklinks compiles the links and saves them for the current member
 	 *
 	 * @access private
@@ -205,11 +201,15 @@ class Quicklinks extends Profile {
 	private function saveQuicklinks()
 	{
 		$compiled = array();
+		$orders = array();
 
 		foreach ($this->quicklinks as $quicklink)
 		{
-			$compiled[] = implode('|', $quicklink);
+			$orders[] = $quicklink['order'];
+			$compiled[$quicklink['order']] = implode('|', $quicklink);
 		}
+
+		array_multisort($orders, $compiled, $this->quicklinks);
 
 		$compiled = implode("\n", $compiled);
 		$this->member->quick_links = $compiled;
@@ -287,6 +287,58 @@ class Quicklinks extends Profile {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('quick_link'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Create the quicklinks table
+	 */
+	protected function makeTable()
+	{
+		$table = ee('CP/Table', array('reorder' => TRUE));
+		$links = array();
+
+		foreach ($this->quicklinks as $quicklink)
+		{
+			$edit_url = ee('CP/URL')->make('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
+
+			$toolbar = array('toolbar_items' => array(
+				'edit' => array(
+					'href' => $edit_url,
+					'title' => strtolower(lang('edit'))
+				)
+			));
+
+			$links[] = array(
+				'<a href="' . $edit_url . '">' . $quicklink['title'] . '</a>' . form_hidden('order[]', $quicklink['order']),
+				$toolbar,
+				array(
+					'name' => 'selection[]',
+					'value' => $quicklink['order'],
+					'data'	=> array(
+						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$table->setColumns(
+			array(
+				'name' => array(
+					'encode' => FALSE
+				),
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$table->setNoResultsText('no_search_results');
+		$table->setData($links);
+
+		return ee('View')->make('_shared/table')->render($table->viewData($this->base_url));
 	}
 }
 // END CLASS

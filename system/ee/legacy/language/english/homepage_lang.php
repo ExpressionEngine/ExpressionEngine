@@ -38,7 +38,7 @@ $lang = array(
 
 'has' => 'has',
 
-'channel_fields' => 'Channel Fields',
+'field_groups' => 'Field Groups',
 
 'members' => 'Members',
 

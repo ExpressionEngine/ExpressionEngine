@@ -45,11 +45,6 @@ class Uploads extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');
@@ -60,6 +55,11 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar(NULL);
 		return $this->form();
 	}
@@ -72,6 +72,11 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function edit($upload_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
@@ -648,6 +653,16 @@ class Uploads extends AbstractFilesController {
 
 		foreach ($validate as $row_id => $model)
 		{
+			if ($model->height === '')
+			{
+				$model->height = 0;
+			}
+
+			if ($model->width === '')
+			{
+				$model->width = 0;
+			}
+
 			$result = $model->validate();
 
 			if ( ! $result->isValid())

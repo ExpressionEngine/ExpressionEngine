@@ -35,10 +35,10 @@ class Fields extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group(
-			'can_access_admin',
-			'can_admin_channels',
-			'can_access_content_prefs'
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields'
 		))
 		{
 			show_error(lang('unauthorized_access'));
@@ -55,17 +55,18 @@ class Fields extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL')->make('channels/fields'));
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/'.$group_id));
 		}
 
 		$group = ee('Model')->get('ChannelFieldGroup')
 			->filter('group_id', $group_id)
 			->first();
 
-		$base_url = ee('CP/URL')->make('channels/fields');
+		$base_url = ee('CP/URL', 'channels/fields/'.$group_id);
 
 		$vars = array(
-			'create_url' => ee('CP/URL')->make('channels/fields/create/' . $group->group_id)
+			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id),
+			'group_id'   => $group->group_id
 		);
 
 		$fields = ee('Model')->get('ChannelField')
@@ -97,6 +98,11 @@ class Fields extends AbstractChannelsController {
 
 	public function create($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
 			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => lang('fields'),
@@ -171,6 +177,11 @@ class Fields extends AbstractChannelsController {
 
 	public function edit($id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$field = ee('Model')->get('ChannelField', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -384,6 +395,11 @@ class Fields extends AbstractChannelsController {
 
 	private function remove($field_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($field_ids))
 		{
 			$field_ids = array($field_ids);

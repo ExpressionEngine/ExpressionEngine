@@ -34,7 +34,7 @@ $lang = array(
 
 'update_ips' => 'Update IP database',
 
-'update_info' => 'Updates the IP and country code information. Data source: <a href=\'%s\' title=\'Data Provider\'>maxmind.com</a>.</em><em><i>The new data will automatically be downloaded and applied. This may take several minutes and increase load on your database.</i></em>',
+'update_info' => 'Updates the IP and country code information. Data source: <a href="%s" title="Data Provider" rel="external">maxmind.com</a>.</em><em><i>The new data will automatically be downloaded and applied. This may take several minutes and increase load on your database.</i></em>',
 
 'last_update' => 'Last update: ',
 
@@ -62,7 +62,7 @@ $lang = array(
 
 'btn_save_banlist' => 'Save Banlist',
 
-'no_countries' => 'Zero <b>countries</b> found.',
+'no_countries' => 'No <b>countries</b> found.',
 
 ''=>''
 );

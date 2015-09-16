@@ -120,20 +120,28 @@ Grid.Publish.prototype = {
 
 		// Show add button below field when there are more than zero rows
 		addButton.toggle(rowCount > 0);
-		reorderCol.toggle(rowCount > 0);
-		gridRemove.toggle(rowCount > 0);
 
 		if (rowCount > 0) {
-			reorderCol.next().removeClass('first');
-			gridRemove.prev().removeClass('last');
+			// Only show reorder header if table is configured to be reorderable
+			if (reorderCol.size() == 0 && $('td.reorder-col', this.root).size() > 0) {
+				$('thead tr', this.root).prepend(
+					$('<th/>', { class: 'first reorder-col' })
+				);
+			}
+			if (gridRemove.size() == 0) {
+				$('thead tr', this.root).append(
+					$('<th/>', { class: 'last grid-remove' })
+				);
+			}
 		} else {
-			reorderCol.next().addClass('first');
-			gridRemove.prev().addClass('last');
+			reorderCol.remove();
+			gridRemove.remove();
 		}
 
 		if (this.settings.grid_max_rows !== '') {
-			// Show add button if row count is below the max rows setting
-			addButton.toggle(rowCount < this.settings.grid_max_rows);
+			// Show add button if row count is below the max rows setting,
+			// and only if there are already other rows present
+			addButton.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
 		}
 
 		if (this.settings.grid_min_rows !== '') {

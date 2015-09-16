@@ -57,52 +57,7 @@
 			</div>
 			<?php endforeach; ?>
 
-			<h2><?=lang('layout_options')?></h2>
-			<fieldset class="col-group required">
-				<div class="setting-txt col w-8">
-					<h3><?=lang('name')?></h3>
-					<em><?=lang('name_desc')?></em>
-				</div>
-				<div class="setting-field col w-8 last">
-					<input type="text" name="layout_name" value="<?=set_value('route', $channel_layout->layout_name)?>">
-					<?=form_error('layout_name')?>
-				</div>
-			</fieldset>
-			<fieldset class="col-group required last">
-				<div class="setting-txt col w-8">
-					<h3><?=lang('member_group(s)')?></h3>
-					<em><?=lang('member_group(s)_desc')?></em>
-				</div>
-				<div class="setting-field col w-8 last">
-					<div class="scroll-wrap">
-					<?php foreach ($member_groups as $member_group): ?>
-						<?php
-						$checked = '';
-						$class = 'choice block';
-						$disabled = '';
-						$display = $member_group->group_title;
-
-						if (in_array($member_group->group_id, $selected_member_groups))
-						{
-							$checked = ' checked="checked"';
-							$class = 'choice block chosen';
-						}
-
-						if (isset($assigned_member_groups[$member_group->group_id]))
-						{
-							$layout = $assigned_member_groups[$member_group->group_id];
-							$disabled = ' disabled="disabled"';
-							$display = '<s>' . $display . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL')->make('channels/layouts/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
-						}
-						?>
-						<label class="<?=$class?>">
-							<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?><?=$disabled?>> <?=$display?>
-						</label>
-					<?php endforeach; ?>
-				</div>
-				<?=form_error('member_groups')?>
-				</div>
-			</fieldset>
+			<?=$form?>
 
 			<fieldset class="form-ctrls">
 				<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>

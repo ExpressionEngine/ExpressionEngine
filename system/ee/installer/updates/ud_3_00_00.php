@@ -119,7 +119,7 @@ class Updater {
 		ee()->load->library('addons');
 
 		$installed_modules = ee()->db->select('module_name')->get('modules');
-		$required_modules = array('filepicker', 'comment');
+		$required_modules = array('filepicker', 'comment', 'search');
 
 		foreach ($installed_modules->result() as $installed_module)
 		{
@@ -739,6 +739,16 @@ class Updater {
 	private function _update_member_groups_table()
 	{
 		ee()->smartforge->add_column('member_groups', array(
+			'include_in_mailinglist' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			)
+		));
+
+		// Add footer permissions
+		ee()->smartforge->add_column('member_groups', array(
 			'can_access_footer_report_bug' => array(
 				'type'       => 'char',
 				'constraint' => 1,
@@ -768,6 +778,192 @@ class Updater {
 			),
 			array('can_access_cp' => 'y')
 		);
+
+		// Add new granular permissions columns
+		$columns = array();
+		$permissions = array(
+			'can_create_entries',
+			'can_edit_self_entries',
+			'can_upload_new_assets',
+			'can_edit_assets',
+			'can_delete_assets',
+			'can_upload_new_toolsets',
+			'can_edit_toolsets',
+			'can_delete_toolsets',
+			'can_create_upload_directories',
+			'can_edit_upload_directories',
+			'can_delete_upload_directories',
+			'can_create_channels',
+			'can_edit_channels',
+			'can_delete_channels',
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields',
+			'can_create_statuses',
+			'can_delete_statuses',
+			'can_edit_statuses',
+			'can_create_categories',
+			'can_create_member_groups',
+			'can_delete_member_groups',
+			'can_edit_member_groups',
+			'can_create_members',
+			'can_edit_members',
+			'can_manage_template_settings',
+			'can_create_new_templates',
+			'can_edit_templates',
+			'can_delete_templates',
+			'can_create_template_groups',
+			'can_edit_template_groups',
+			'can_delete_template_groups',
+			'can_create_template_partials',
+			'can_edit_template_partials',
+			'can_delete_template_partials',
+			'can_create_template_variables',
+			'can_delete_template_variables',
+			'can_edit_template_variables',
+			'can_access_security_settings'
+		);
+
+		foreach ($permissions as $permission)
+		{
+			$columns[$permission] = array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			);
+		}
+
+		ee()->smartforge->add_column('member_groups', $columns);
+		$groups = ee()->db->get('member_groups');
+
+		// Update addons access
+		foreach ($groups->result() as $group)
+		{
+			if ($group->can_access_extensions == 'y' ||
+				$group->can_access_fieldtypes == 'y' ||
+				$group->can_access_modules == 'y' ||
+				$group->can_access_plugins == 'y'
+			)
+			{
+				ee()->db->update(
+					'member_groups',
+					array('can_access_addons' => 'y'),
+					array(
+						'group_id' => $group->group_id,
+						'site_id' => $group->site_id
+					)
+				);
+			}
+		}
+
+		if (ee()->db->field_exists('can_access_content', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_upload_new_assets' => 'y',
+					'can_edit_assets' => 'y',
+					'can_delete_assets' => 'y',
+					'can_upload_new_toolsets' => 'y',
+					'can_edit_toolsets' => 'y',
+					'can_delete_toolsets' => 'y',
+					'can_create_upload_directories' => 'y',
+					'can_edit_upload_directories' => 'y',
+					'can_delete_upload_directories' => 'y'
+				),
+				array('can_access_content' => 'y')
+			);
+		}
+
+		if (ee()->db->field_exists('can_admin_channels', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_channels' => 'y',
+					'can_edit_channels' => 'y',
+					'can_delete_channels' => 'y',
+					'can_create_channel_fields' => 'y',
+					'can_edit_channel_fields' => 'y',
+					'can_delete_channel_fields' => 'y',
+					'can_create_statuses' => 'y',
+					'can_delete_statuses' => 'y',
+					'can_edit_statuses' => 'y',
+					'can_create_categories' => 'y'
+				),
+				array('can_admin_channels' => 'y')
+			);
+		}
+
+		if (ee()->db->field_exists('can_admin_mbr_groups', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_member_groups' => 'y',
+					'can_delete_member_groups' => 'y',
+					'can_edit_member_groups' => 'y'
+				),
+				array('can_admin_mbr_groups' => 'y')
+			);
+		}
+
+		if (ee()->db->field_exists('can_admin_members', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_members' => 'y',
+					'can_edit_members' => 'y'
+				),
+				array('can_admin_members' => 'y')
+			);
+		}
+
+		if (ee()->db->field_exists('can_admin_templates', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_manage_template_settings' => 'y',
+					'can_create_new_templates' => 'y',
+					'can_edit_templates' => 'y',
+					'can_delete_templates' => 'y',
+					'can_create_template_groups' => 'y',
+					'can_edit_template_groups' => 'y',
+					'can_delete_template_groups' => 'y',
+					'can_create_template_partials' => 'y',
+					'can_edit_template_partials' => 'y',
+					'can_delete_template_partials' => 'y',
+					'can_create_template_variables' => 'y',
+					'can_delete_template_variables' => 'y',
+					'can_edit_template_variables' => 'y'
+				),
+				array('can_admin_templates' => 'y')
+			);
+		}
+
+		// Drop all superfluous permissions columns
+		$old = array(
+			'can_access_extensions',
+			'can_access_fieldtypes',
+			'can_access_modules',
+			'can_access_plugins',
+			'can_access_content',
+			'can_admin_channels',
+			'can_admin_members',
+			'can_admin_templates',
+			'can_access_admin',
+			'can_access_content_prefs',
+			'can_admin_upload_prefs',
+			'can_access_tools'
+		);
+
+		foreach ($old as $permission)
+		{
+			ee()->smartforge->drop_column('member_groups', $permission);
+		}
 	}
 
 	/**
@@ -1037,34 +1233,6 @@ class Updater {
 			}
 
 			$directory->save();
-
-			if (is_readable($dir['server_path']))
-			{
-				// Insert Files
-				$files = scandir($dir['server_path']);
-
-				foreach ($files as $filename)
-				{
-					$path = $dir['server_path'] . $filename;
-
-					if ($filename != 'index.html' && is_file($path))
-					{
-						$time = time();
-						$file = ee('Model')->make('File');
-						$file->site_id = $site_id;
-						$file->upload_location_id = $directory->id;
-						$file->uploaded_by_member_id = 1;
-						$file->modified_by_member_id = 1;
-						$file->title = $filename;
-						$file->file_name = $filename;
-						$file->upload_date = $time;
-						$file->modified_date = $time;
-						$file->mime_type = mime_content_type($path);
-						$file->file_size = filesize($path);
-						$file->save();
-					}
-				}
-			}
 		}
 
 		return TRUE;

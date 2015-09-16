@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -29,6 +30,40 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
  */
 class Publish extends AbstractPublishController {
 
+	/**
+	 * Renders a single field for a given channel or channel entry
+	 *
+	 * @param int $channel_id The Channel ID
+	 * @param int $entry_id The Entry ID
+	 * @param string $field_name The name of the field to render
+	 * @return array An associative array (for JSON) containing the rendered HTML
+	 */
+	public function field($channel_id, $entry_id, $field_name)
+	{
+		if ($entry_id)
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Channel = ee('Model')->get('Channel', $channel_id)->first();
+		}
+
+		$entry->set($_POST);
+
+		return array('html' => $entry->getCustomField($field_name)->getForm());
+	}
+
+	/**
+	 * Autosaves a channel entry
+	 *
+	 * @param int $channel_id The Channel ID
+	 * @param int $entry_id The Entry ID
+	 * @return void
+	 */
 	public function autosave($channel_id, $entry_id)
 	{
 		$site_id = ee()->config->item('site_id');
@@ -81,6 +116,14 @@ class Publish extends AbstractPublishController {
 		));
 	}
 
+	/**
+	 * Creates a new channel entry
+	 *
+	 * @param int $channel_id The Channel ID
+	 * @param int|NULL $autosave_id An optional autosave ID, for pre-populating
+	 *   the form
+	 * @return string Rendered HTML
+	 */
 	public function create($channel_id, $autosave_id = NULL)
 	{
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -100,6 +143,11 @@ class Publish extends AbstractPublishController {
 		$entry->versioning_enabled = $channel->enable_versioning;
 		$entry->sticky = FALSE;
 		$entry->allow_comments = TRUE;
+
+		if (isset($_GET['BK']))
+		{
+			$this->populateFromBookmarklet($entry);
+		}
 
 		ee()->view->cp_page_title = sprintf(lang('create_entry_with_channel_name'), $channel->channel_title);
 
@@ -183,9 +231,7 @@ class Publish extends AbstractPublishController {
 			else
 			{
 				$vars['errors'] = $result;
-				// Hacking
-				ee()->load->library('form_validation');
-				ee()->form_validation->_error_array = $result->renderErrors();
+
 				ee('CP/Alert')->makeInline('entry-form')
 					->asIssue()
 					->withTitle(lang('create_entry_error'))
@@ -221,6 +267,38 @@ class Publish extends AbstractPublishController {
 		));
 
 		ee()->cp->render('publish/entry', $vars);
+	}
+
+	/**
+	 * Populates a channel entry entity from a bookmarklet action
+	 *
+	 * @param ChannelEntry $entry A Channel Entry entity to populate
+	 * @return void
+	 */
+	private function populateFromBookmarklet(ChannelEntry $entry)
+	{
+		$field = '';
+
+		foreach ($_GET as $key => $value)
+		{
+			if (strpos($key, 'field_id_') === 0)
+			{
+				$field = $key;
+				break;
+			}
+		}
+
+		if ( ! $field)
+		{
+			return;
+		}
+
+		$data = array(
+			'title' => ee()->input->get('title'),
+			$field => ee()->input->get($field)
+		);
+
+		$entry->set($data);
 	}
 }
 // EOF

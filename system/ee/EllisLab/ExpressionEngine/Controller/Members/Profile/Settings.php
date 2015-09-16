@@ -53,18 +53,18 @@ class Settings extends Profile {
 
 		$birthday['months'] = array(
 			''	 => lang('month'),
-			'01' => lang('january'),
-			'02' => lang('february'),
-			'03' => lang('march'),
-			'04' => lang('april'),
-			'05' => lang('mayl'),
-			'06' => lang('june'),
-			'07' => lang('july'),
-			'08' => lang('august'),
-			'09' => lang('september'),
-			'10' => lang('october'),
-			'11' => lang('november'),
-			'12' => lang('december')
+			'01' => lang('January'),
+			'02' => lang('February'),
+			'03' => lang('March'),
+			'04' => lang('April'),
+			'05' => lang('May_l'),
+			'06' => lang('June'),
+			'07' => lang('July'),
+			'08' => lang('August'),
+			'09' => lang('September'),
+			'10' => lang('October'),
+			'11' => lang('November'),
+			'12' => lang('December')
 		);
 
 		$birthday['days'][''] = lang('day');
@@ -102,11 +102,41 @@ class Settings extends Profile {
 		$fp = new FilePicker();
 		$fp->inject(ee()->view);
 		$dirs = array();
-		$dirs[] = $fp->link('Avatars', $directory->id, array(
-			'image' => 'avatar',
-			'input' => 'avatar_filename',
-			'class' => 'avatarPicker'
-		));
+		$avatar_choices = array();
+
+		if ($directory)
+		{
+			$fp = new FilePicker();
+			$fp->inject(ee()->view);
+			$dirs[] = $fp->link('Avatars', $directory->id, array(
+				'image' => 'avatar',
+				'input' => 'avatar_filename',
+				'hasFilters' => FALSE,
+				'selected' => $this->member->avatar_filename,
+				'class' => 'avatarPicker'
+			));
+			$avatar_choices = array(
+				'upload' => array(
+					'label' => 'upload_avatar',
+					'html' => form_upload('upload_avatar')
+				),
+				'choose' => array(
+					'label' => 'choose_avatar',
+					'html' => ul($dirs, array('class' => 'arrow-list'))
+				)
+			);
+		}
+
+		$avatar_choices['link'] = array(
+			'label' => 'link_avatar',
+			'html' => form_input('link_avatar', 'http://')
+		);
+
+		$avatar_choose_lang_desc = lang('change_avatar_desc');
+		if (count($avatar_choices) == 1)
+		{
+			$avatar_choose_lang_desc .= sprintf(lang('update_avatar_path'), ee('CP/URL', 'settings/avatars'));
+		}
 
 		$vars['has_file_input'] = TRUE;
 		$vars['sections'] = array(
@@ -194,25 +224,12 @@ class Settings extends Profile {
 				),
 				array(
 					'title' => 'change_avatar',
-					'desc' => 'change_avatar_desc',
+					'desc' => $avatar_choose_lang_desc,
 					'fields' => array(
 						'avatar_picker' => array(
 							'type' => 'radio_block',
-							'choices' => array(
-								'upload' => array(
-									'label' => 'upload_avatar',
-									'html' => form_upload('upload_avatar')
-								),
-								'choose' => array(
-									'label' => 'choose_avatar',
-									'html' => ul($dirs, array('class' => 'arrow-list'))
-								),
-								'link' => array(
-									'label' => 'link_avatar',
-									'html' => form_input('link_avatar', 'http://')
-								)
-							),
-							'value' => 'choose'
+							'choices' => $avatar_choices,
+							'value' => (count($avatar_choices) == 1) ? 'link' : 'choose'
 						)
 					)
 				)

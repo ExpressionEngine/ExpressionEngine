@@ -13,6 +13,10 @@ class ChannelLayout extends Model implements LayoutInterface {
 	protected static $_primary_key = 'layout_id';
 	protected static $_table_name = 'layout_publish';
 
+	protected static $_typed_columns = array(
+		'field_layout' => 'serialized',
+	);
+
 	protected static $_relationships = array(
 		'Channel' => array(
 			'type' => 'belongsTo',
@@ -40,17 +44,6 @@ class ChannelLayout extends Model implements LayoutInterface {
 	protected $layout_name;
 	protected $field_layout;
 
-	// @TODO Make this a typed/composite column
-	public function set__field_layout($field_layout)
-	{
-		$this->setRawProperty('field_layout', serialize($field_layout));
-	}
-
-	public function get__field_layout()
-	{
-		return unserialize($this->field_layout);
-	}
-
 	public function transform(array $fields)
 	{
 		$display = new LayoutDisplay();
@@ -68,6 +61,11 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 			foreach ($section['fields'] as $field_info)
 			{
+				if (empty($field_info))
+				{
+					continue;
+				}
+
 				$field_id = $field_info['field'];
 
 				$field = $fields[$field_id];

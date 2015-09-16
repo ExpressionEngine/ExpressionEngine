@@ -16,7 +16,7 @@ $lang = array(
 
 'template_groups' => 'Template Groups',
 
-'zero_template_groups_found' => 'Zero <b>Template Groups</b> found',
+'zero_template_groups_found' => 'No <b>Template Groups</b> found',
 
 'system_templates' => 'System Templates',
 
@@ -25,6 +25,8 @@ $lang = array(
 'template_variables' => 'Template Variables',
 
 'template_routes' => 'Template Routes',
+
+'routes' => 'Routes',
 
 'create_new_template' => 'Create New Template',
 
@@ -150,29 +152,29 @@ $lang = array(
 
 'variable' => 'Variable',
 
-'no_template_routes' => 'There are currently no Template Routes',
+'no_template_routes' => 'No <b>Template Routes</b> found.',
 
-'no_template_variables' => 'There are currently no Template Variables',
+'no_template_variables' => 'No <b>Template Variables</b> found.',
 
-'no_snippets' => 'There are currently no Template Partials',
+'no_snippets' => 'No <b>Template Partials</b> found.',
 
 'btn_create_template_variable' => 'Create Template Variable',
 
 'btn_edit_template_variable' => 'Edit Template Variable',
 
-'create_template_variable_success' => 'Template Partial Created',
+'create_template_variable_success' => 'Template Variable Created',
 
 'create_template_variable_success_desc' => 'The template variable <b>%s</b> has been created.',
 
-'create_template_variable_error' => 'Cannot Create Template Partial',
+'create_template_variable_error' => 'Cannot Create Template Variable',
 
 'create_template_variable_error_desc' => 'We were unable to create this variable, please review and fix errors below.',
 
-'edit_template_variable_success' => 'Template Partial Updated',
+'edit_template_variable_success' => 'Template Variable Updated',
 
 'edit_template_variable_success_desc' => 'The template variable <b>%s</b> has been updated.',
 
-'edit_template_variable_error' => 'Cannot Update Template Partial',
+'edit_template_variable_error' => 'Cannot Update Template Variable',
 
 'edit_template_variable_error_desc' => 'We were unable to update this variable, please review and fix errors below.',
 
@@ -219,6 +221,8 @@ $lang = array(
 'settings' => 'Settings',
 
 'access' => 'Access',
+
+'no_revisions' => 'No revisions',
 
 'template_notes' => 'Template Notes',
 
@@ -285,6 +289,8 @@ $lang = array(
 'error_export' => 'Cannot Export',
 
 'error_cannot_create_zip' => 'Cannot create a .zip file',
+
+'error_export_no_templates' => 'No templates found, please create a template before exporting.',
 
 'group_not_found' => 'No template group found',
 
@@ -425,8 +431,6 @@ $lang = array(
 
 'global_template_preferences' => 'Global Template Preferences',
 
-'no_templates_assigned' => 'There are no templates currently assigned to you',
-
 'template_not_saved' => 'Unable to save your template as a text file',
 
 'template_file_not_deleted' => 'Unable to delete the associated template file',
@@ -453,7 +457,11 @@ $lang = array(
 
 'protect_javascript' => 'Protect Javascript',
 
-'security_warning' => 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
+'security_warning' => 'Note: Allowing PHP in templates has security implications. Please consult the <a href="%s" title="Documentation" rel="external">documentation</a>.',
+
+'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
+
+'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
 
 'input' => 'Input',
 
@@ -490,6 +498,18 @@ $lang = array(
 'css_stylesheet' => 'CSS',
 
 'rss' => 'RSS Page',
+
+'webpage_type_col' => '<abbr title="Hyper-Text Markup Language">HTML</abbr>',
+
+'feed_type_col' => '<abbr title="Really Simple Syndication">RSS</abbr>',
+
+'css_type_col' => '<abbr title="Cascading Style Sheet">CSS</abbr>',
+
+'js_type_col' => 'JavaScript',
+
+'static_type_col' => 'Static',
+
+'xml_type_col' => '<abbr title="Extensible Markup Language">XML</abbr>',
 
 'missing_name' => 'Your template must have a name',
 
@@ -726,7 +746,13 @@ and templates will only be accesible from the default group/template URL.',
 
 'route_required_subtext' => 'If route segments are required all segments in the template route must be present in the request URI.',
 
-'template_routes_saved' => 'Template Routes saved',
+'template_routes_saved' => 'Template Routes Saved',
+
+'template_routes_saved_desc' => 'Template routes have been saved.',
+
+'template_routes_not_saved' => 'Template Routes Not Saved',
+
+'template_routes_not_saved_desc' => 'We were unable to save the template routes, please review and fix errors below.',
 
 'http_auth_protected' => 'HTTP Auth Protected',
 
@@ -740,7 +766,7 @@ and templates will only be accesible from the default group/template URL.',
 
 'no_templates_selected' => 'No Templates Selected',
 
-'no_templates_available' => 'No Templates Available',
+'no_templates_found' => 'No <b>Templates</b> found.',
 
 'url_manager' => 'Template Route Manager',
 
@@ -975,7 +1001,7 @@ You can drag and drop to rearrange the order.',
 
 'tag_no_closing_tag_error' => 'No closing tag found.  Note: some tags do not require closing.',
 
-'tag_docs_link_error' => 'Please consult the module\'s <a href=\'%s\'>documentation</a> if you experience problems.',
+'tag_docs_link_error' => 'Please consult the module\'s <a href="%s">documentation</a> if you experience problems.',
 
 'tag_class_error' => 'Invalid tag (no such plugin or module)',
 

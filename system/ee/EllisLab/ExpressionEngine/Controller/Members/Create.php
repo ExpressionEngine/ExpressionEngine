@@ -38,6 +38,11 @@ class Create extends Members {
 	 */
 	public function index()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->base_url = ee('CP/URL')->make($this->base_url);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
