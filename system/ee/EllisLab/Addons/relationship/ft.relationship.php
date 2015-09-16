@@ -500,8 +500,20 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$children = ee('Model')->get('ChannelEntry', $entry_id)
 				->first()
-				->Children
-				->indexBy('entry_id');
+				->Children;
+
+			if (AJAX_REQUEST)
+			{
+				if (ee()->input->post('search_related'))
+				{
+					$search_term = ee()->input->post('search_related');
+					$children = $children->filter(function($entry) use($search_term) {
+						return (strpos($entry->title, $search_term) !== FALSE);
+					});
+				}
+			}
+
+			$children = $children->indexBy('entry_id');
 		}
 		else
 		{
@@ -530,8 +542,17 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ( ! empty($new_children_ids))
 		{
-			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
-				->all()
+			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids);
+
+			if (AJAX_REQUEST)
+			{
+				if (ee()->input->post('search_related'))
+				{
+					$new_children->filter('title', 'LIKE', '%' . ee()->input->post('search_related') . '%');
+				}
+			}
+
+			$new_children = $new_children->all()
 				->indexBy('entry_id');
 		}
 
@@ -541,7 +562,7 @@ class Relationship_ft extends EE_Fieldtype {
 			{
 				$related[] = $children[$key];
 			}
-			elseif (in_array($key, $new_children_ids))
+			elseif (isset($new_children[$key]))
 			{
 				$related[] = $new_children[$key];
 			}
