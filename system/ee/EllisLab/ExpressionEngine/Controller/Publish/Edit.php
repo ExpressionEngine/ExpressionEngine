@@ -58,8 +58,8 @@ class Edit extends AbstractPublishController {
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
-		ee()->view->filters = $filters->render($base_url);
-		ee()->view->search_value = ee()->input->get_post('search');
+		$vars['filters'] = $filters->render($base_url);
+		$vars['search_value'] = ee()->input->get_post('search');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
@@ -206,17 +206,26 @@ class Edit extends AbstractPublishController {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
+				'cp/publish/entry-list'
 			),
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_title);
+			$vars['cp_heading'] = sprintf(lang('all_channel_entries'), $channel_title);
+		}
+
+		if (AJAX_REQUEST)
+		{
+			return array(
+				'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
+				'url' => $vars['form_url']->compile()
+			);
 		}
 
 		ee()->cp->render('publish/edit/index', $vars);
