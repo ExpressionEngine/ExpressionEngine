@@ -263,7 +263,7 @@ class Publish extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/channel/publish', 'cp/channel/category_edit')
+			'file' => array('cp/publish/publish', 'cp/channel/category_edit')
 		));
 
 		ee()->cp->render('publish/entry', $vars);

@@ -374,7 +374,7 @@ class Edit extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/channel/publish')
+			'file' => array('cp/publish/publish')
 		));
 
 		ee()->view->cp_breadcrumbs = array(
