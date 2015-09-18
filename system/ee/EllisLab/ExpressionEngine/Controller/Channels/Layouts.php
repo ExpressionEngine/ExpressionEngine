@@ -323,7 +323,7 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $layout->Channel->channel_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_layout->Channel->channel_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

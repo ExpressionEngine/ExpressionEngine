@@ -66,7 +66,8 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker'
+		'filepicker',
+		'search'
 	);
 
 	public $theme_required_modules = array();
@@ -732,7 +733,7 @@ class Wizard extends CI_Controller {
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
-		if ($this->db_connect_attempt === 1045)
+		if ($this->db_connect_attempt === 1044 OR $this->db_connect_attempt === 1045)
 		{
 			$errors[] = lang('database_invalid_user');
 		}

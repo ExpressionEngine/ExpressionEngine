@@ -210,12 +210,14 @@ feature 'Upload Destination Create/Edit' do
     @page.server_path.set @upload_path
     @page.submit
 
+    dimension_error = 'A height or width must be entered if no watermark is selected.'
+
     should_have_form_errors(@page)
     @page.error_messages.size.should == 3
     grid_should_have_error(@page.image_manipulations)
     grid_cell_should_have_error_text(@page.name_for_row(1), $required_error)
-    grid_cell_should_have_error_text(@page.width_for_row(1), $required_error)
-    grid_cell_should_have_error_text(@page.height_for_row(1), $required_error)
+    grid_cell_should_have_error_text(@page.width_for_row(1), dimension_error)
+    grid_cell_should_have_error_text(@page.height_for_row(1), dimension_error)
     no_php_js_errors
 
     # Reset for AJAX validation
@@ -247,7 +249,7 @@ feature 'Upload Destination Create/Edit' do
     width_cell = @page.width_for_row(1)
     width_cell.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    grid_cell_should_have_error_text(width_cell, $required_error)
+    grid_cell_should_have_error_text(width_cell, dimension_error)
 
     # Not required when a watermark is selected
     @page.watermark_for_row(1).select('Test')
@@ -269,66 +271,47 @@ feature 'Upload Destination Create/Edit' do
     @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(width_cell, $natural_number)
 
+    width_cell.set '2'
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(width_cell)
+
     # Height cell
     height_cell = @page.height_for_row(1)
-    height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    grid_cell_should_have_error_text(height_cell, $required_error)
-
-    # Not required when a watermark is selected
-    @page.watermark_for_row(1).select('Test')
+    height_cell.set 'ssdfsdsd'
     height_cell.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    grid_cell_should_have_no_error_text(height_cell)
-
-    @page.watermark_for_row(1).select('No watermark')
-    height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
+    grid_cell_should_have_error_text(height_cell, $natural_number)
 
     height_cell.set '4'
     height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(1)
+    @page.wait_for_error_message_count(0)
     grid_cell_should_have_no_error_text(height_cell)
-
-    height_cell.set 'ssdfsdsd'
-    height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    grid_cell_should_have_error_text(height_cell, $natural_number)
 
     @page.grid_add.click
     @page.grid_rows.size.should == 3
 
     name_cell = @page.name_for_row(2)
     name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(3)
+    @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(name_cell, $required_error)
 
     name_cell.set 'some_name2'
     name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
+    @page.wait_for_error_message_count(0)
     grid_cell_should_have_no_error_text(name_cell)
 
     name_cell.set 'some_name'
     name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(3)
+    @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(name_cell, $unique)
 
     grid_should_have_error(name_cell)
 
     name_cell.set 'some_name2'
     name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    grid_cell_should_have_no_error_text(name_cell)
-
-    width_cell.set '4'
-    width_cell.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    grid_cell_should_have_no_error_text(width_cell)
-
-    height_cell.set '4'
-    height_cell.trigger 'blur'
     @page.wait_for_error_message_count(0)
-    grid_cell_should_have_no_error_text(height_cell)
+    grid_cell_should_have_no_error_text(name_cell)
 
     grid_should_have_no_error(@page.image_manipulations)
     should_have_no_form_errors(@page)

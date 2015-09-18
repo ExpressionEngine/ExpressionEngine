@@ -653,6 +653,16 @@ class Uploads extends AbstractFilesController {
 
 		foreach ($validate as $row_id => $model)
 		{
+			if ($model->height === '')
+			{
+				$model->height = 0;
+			}
+
+			if ($model->width === '')
+			{
+				$model->width = 0;
+			}
+
 			$result = $model->validate();
 
 			if ( ! $result->isValid())

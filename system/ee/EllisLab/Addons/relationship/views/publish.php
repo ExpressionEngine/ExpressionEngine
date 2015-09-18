@@ -1,8 +1,8 @@
 <?php if ($multiple): ?>
-<div class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
 <?php else: ?>
-<div class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
 <?php endif; ?>
 	<div class="relate-actions">
@@ -10,7 +10,7 @@
 		<div class="filters">
 			<ul>
 				<li>
-					<a class="has-sub" href=""><?=lang('channel')?> <span class="faded"></span></a>
+					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))[0]->channel_title?>)</span><?php endif; ?></a>
 					<div class="sub-menu">
 						<ul>
 							<li><a href="" data-channel-id=""><?=lang('all_channels')?></a></li>
@@ -23,7 +23,7 @@
 			</ul>
 		</div>
 		<?php endif; ?>
-		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
+		<input class="relate-search" type="text" name="search" value="<?=ee()->input->post('search')?>" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
 	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php $chosen = NULL; ?>
@@ -57,12 +57,13 @@
 			$checked = FALSE;
 			if (in_array($entry->entry_id, $selected))
 			{
+				$selected = array_diff($selected, array($entry->entry_id));
 				$class = 'choice block chosen';
 				$checked = TRUE;
 				$chosen = $entry;
 			}
 		?>
-		<label class="<?=$class?>" data-channel-id="<?=$entry->getChannel()->channel_id?>" data-channel-title="<?=$entry->getChannel()->channel_title?>" data-entry-title="<?=$entry->title?>">
+		<label class="<?=$class?>" data-channel-id="<?=$entry->Channel->channel_id?>" data-channel-title="<?=$entry->Channel->channel_title?>" data-entry-title="<?=$entry->title?>">
 			<?php
 				if ($multiple)
 				{
@@ -74,15 +75,25 @@
 					echo form_radio($field_name.'[data][]', $entry->entry_id, $checked);
 				}
 			?>
-			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+			<?=$entry->title?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
 		</label>
 		<?php endforeach; ?>
+		<?php
+			foreach ($selected as $entry_id)
+			{
+				echo form_hidden($field_name.'[data][]', $entry_id);
+				if ($multiple)
+				{
+					echo form_hidden($field_name.'[sort][]', 0);
+				}
+			}
+		?>
 	</div>
 	<?php if ( ! $multiple): ?>
 		<div class="relate-wrap-chosen">
 			<?php if($chosen): ?>
 			<label class="choice block chosen relate-manage">
-				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$chosen->title?> <i>&mdash; <?=$chosen->getChannel()->channel_title?></i>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$chosen->title?> <i>&mdash; <?=$chosen->Channel->channel_title?></i>
 			</label>
 			<?php endif; ?>
 			<label class="choice <?=($chosen) ? "hidden" : "block"?>">
@@ -95,14 +106,14 @@
 <div class="col w-8 relate-wrap<?php if ( ! count($related)) echo " empty"; ?> last">
 	<h4><?=lang('items_related_to')?></h4>
 	<div class="relate-actions">
-		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_related_entries')?>">
+		<input class="relate-search" name="search_related" type="text" value="<?=ee()->input->post('search_related')?>" placeholder="<?=lang('search_related_entries')?>">
 	</div>
 	<div class="scroll-wrap">
 		<?php if (count($related)): ?>
 			<?php foreach ($related as $entry): ?>
 			<label class="choice block chosen relate-manage" data-entry-id="<?=$entry->entry_id?>">
 				<span class="relate-reorder"></span>
-				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=$entry->title?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
 			</label>
 			<?php endforeach; ?>
 		<?php else: ?>

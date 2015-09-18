@@ -108,6 +108,17 @@ class File extends Model {
 		return rtrim($this->UploadDestination->url, '/') . '/' . $this->file_name;
 	}
 
+	/**
+	 * Uses the file's upload destination's URL to compute the absolute thumbnail
+	 *  URL of the file
+	 *
+	 * @return string The absolute thumbnail URL to the file
+	 */
+	public function getAbsoluteThumbnailURL()
+	{
+		return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . $this->file_name;
+	}
+
 	public function onBeforeDelete()
 	{
 		unlink($this->getAbsolutePath());

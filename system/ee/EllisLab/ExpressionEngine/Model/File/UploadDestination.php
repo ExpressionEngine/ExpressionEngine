@@ -80,7 +80,7 @@ class UploadDestination extends Model {
 	protected static $_validation_rules = array(
 		'name'               => 'required|xss|noHtml|unique[site_id]',
 		'server_path'        => 'required|fileExists|writable',
-		'url'                => 'required|url',
+		'url'                => 'required|validateUrl',
 		'allowed_types'      => 'enum[img,all]',
 		'default_modal_view' => 'enum[list,thumb]',
 		'max_size'           => 'isNatural',
@@ -189,6 +189,20 @@ class UploadDestination extends Model {
 		}
 
 		return $path;
+	}
+
+	/**
+	 * Make sure URL is not submitted with the default value
+	 */
+	public function validateUrl($key, $value, $params, $rule)
+	{
+		if ($value == 'http://')
+		{
+			$rule->stop();
+			return lang('valid_url');
+		}
+
+		return TRUE;
 	}
 
 	/**

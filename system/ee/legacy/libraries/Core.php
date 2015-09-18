@@ -58,6 +58,13 @@ class EE_Core {
 			@set_time_limit((REQ == 'CP') ? 300 : 90);
 		}
 
+		// If someone's trying to access the CP but EE_APPPATH is defined, it likely
+		// means the installer is still active; redirect to clean path
+		if (defined('EE_APPPATH') && ee()->router->fetch_class() == 'cp')
+		{
+			header('Location: '.SELF);
+		}
+
 		// some path constants to simplify things
 		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');

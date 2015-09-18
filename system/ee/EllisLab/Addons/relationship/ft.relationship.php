@@ -256,12 +256,16 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			foreach ($data['data'] as $k => $id)
 			{
-				$selected[$k] = $id;
+				$selected[$id] = $id;
 				$order[$id] = isset($data['sort'][$k]) ? $data['sort'][$k] : 0;
 			}
 		}
+		elseif (is_int($data))
+		{
+			$selected[$data] = $data;
+		}
 
-		if ($entry_id)
+		if ($entry_id && ! AJAX_REQUEST)
 		{
 			$wheres = array(
 				'parent_id' => $entry_id,
@@ -309,7 +313,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 			foreach ($related as $row)
 			{
-				$selected[] = $row['child_id'];
+				$selected[$row['child_id']] = $row['child_id'];
 				$order[$row['child_id']] = $row['order'];
 			}
 		}
@@ -339,14 +343,31 @@ class Relationship_ft extends EE_Fieldtype {
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($order_field, $this->settings['order_dir']);
 
+		if (AJAX_REQUEST)
+		{
+			if (ee()->input->post('search'))
+			{
+				$entries->filter('title', 'LIKE', '%' . ee()->input->post('search') . '%');
+			}
+
+			if (ee()->input->post('channel'))
+			{
+				$entries->filter('channel_id', ee()->input->post('channel'));
+			}
+		}
+
 		if (count($limit_channels))
 		{
 			$entries->filter('channel_id', 'IN', $limit_channels);
-			$channels = ee('Model')->get('Channel', $limit_channels)->all();
+			$channels = ee('Model')->get('Channel', $limit_channels)
+				->fields('channel_id', 'channel_title')
+				->all();
 		}
 		else
 		{
-			$channels = ee('Model')->get('Channel')->all();
+			$channels = ee('Model')->get('Channel')
+				->fields('channel_id', 'channel_title')
+				->all();
 		}
 
 		if (count($limit_categories))
@@ -469,30 +490,30 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		if (REQ == 'CP')
-		{
-			ee()->cp->add_js_script(array(
-				'plugin' => 'ee_interact.event',
-				'file' => 'fields/relationship/cp',
-				'ui' => 'sortable'
-			));
-		}
-		// Channel Form
-		else
-		{
-			ee()->cp->add_js_script(array(
-				'plugin' => 'ee_interact.event',
-				'file' => 'fields/relationship/cp',
-				'ui' => 'sortable'
-			));
-		}
+		ee()->cp->add_js_script(array(
+			'plugin' => 'ee_interact.event',
+			'file' => 'fields/relationship/cp',
+			'ui' => 'sortable'
+		));
 
 		if ($entry_id)
 		{
 			$children = ee('Model')->get('ChannelEntry', $entry_id)
 				->first()
-				->Children
-				->indexBy('entry_id');
+				->Children;
+
+			if (AJAX_REQUEST)
+			{
+				if (ee()->input->post('search_related'))
+				{
+					$search_term = ee()->input->post('search_related');
+					$children = $children->filter(function($entry) use($search_term) {
+						return (strpos($entry->title, $search_term) !== FALSE);
+					});
+				}
+			}
+
+			$children = $children->indexBy('entry_id');
 		}
 		else
 		{
@@ -516,11 +537,34 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$related = array();
 
+		$new_children_ids = array_diff(array_keys($order), $children_ids);
+		$new_children = array();
+
+		if ( ! empty($new_children_ids))
+		{
+			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids);
+
+			if (AJAX_REQUEST)
+			{
+				if (ee()->input->post('search_related'))
+				{
+					$new_children->filter('title', 'LIKE', '%' . ee()->input->post('search_related') . '%');
+				}
+			}
+
+			$new_children = $new_children->all()
+				->indexBy('entry_id');
+		}
+
 		foreach ($order as $key => $index)
 		{
 			if (in_array($key, $children_ids))
 			{
 				$related[] = $children[$key];
+			}
+			elseif (isset($new_children[$key]))
+			{
+				$related[] = $new_children[$key];
 			}
 		}
 

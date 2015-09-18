@@ -49,54 +49,11 @@ class Quicklinks extends Profile {
 	 */
 	public function index()
 	{
-		$table = ee('CP/Table', array('reorder' => TRUE));
-		$links = array();
-		$data = array();
-
-		foreach ($this->quicklinks as $quicklink)
-		{
-			$edit_url = ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
-
-			$toolbar = array('toolbar_items' => array(
-				'edit' => array(
-					'href' => $edit_url,
-					'title' => strtolower(lang('edit'))
-				)
-			));
-
-			$links[] = array(
-				'<a href="' . $edit_url . '">' . $quicklink['title'] . '</a>' . form_hidden('order[]', $quicklink['order']),
-				$toolbar,
-				array(
-					'name' => 'selection[]',
-					'value' => $quicklink['order'],
-					'data'	=> array(
-						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-		}
-
-		$table->setColumns(
-			array(
-				'name' => array(
-					'encode' => FALSE
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
+		$data = array(
+			'table' => $this->makeTable(),
+			'new' => ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string),
+			'form_url' => ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string)
 		);
-
-		$table->setNoResultsText('no_search_results');
-		$table->setData($links);
-
-		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string);
-		$data['form_url'] = ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -200,7 +157,6 @@ class Quicklinks extends Profile {
 	/**
 	 * Delete Quicklinks
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function delete()
@@ -215,6 +171,11 @@ class Quicklinks extends Profile {
 		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
+	/**
+	 * Reorder quicklinks
+	 *
+	 * @return Array Success or error array. On success returns the new quicklinks table
+	 */
 	public function order()
 	{
 		parse_str(ee()->input->post('order'), $order);
@@ -232,7 +193,7 @@ class Quicklinks extends Profile {
 
 		$this->saveQuicklinks();
 
-		return TRUE;
+		return array('success' => $this->makeTable());
 	}
 
 	/**
@@ -244,12 +205,15 @@ class Quicklinks extends Profile {
 	private function saveQuicklinks()
 	{
 		$compiled = array();
+		$orders = array();
 
 		foreach ($this->quicklinks as $quicklink)
 		{
+			$orders[] = $quicklink['order'];
 			$compiled[$quicklink['order']] = implode('|', $quicklink);
 		}
-		ksort($compiled);
+
+		array_multisort($orders, $compiled, $this->quicklinks);
 
 		$compiled = implode("\n", $compiled);
 		$this->member->quick_links = $compiled;
@@ -327,6 +291,58 @@ class Quicklinks extends Profile {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('quick_link'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Create the quicklinks table
+	 */
+	protected function makeTable()
+	{
+		$table = ee('CP/Table', array('reorder' => TRUE));
+		$links = array();
+
+		foreach ($this->quicklinks as $quicklink)
+		{
+			$edit_url = ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
+
+			$toolbar = array('toolbar_items' => array(
+				'edit' => array(
+					'href' => $edit_url,
+					'title' => strtolower(lang('edit'))
+				)
+			));
+
+			$links[] = array(
+				'<a href="' . $edit_url . '">' . $quicklink['title'] . '</a>' . form_hidden('order[]', $quicklink['order']),
+				$toolbar,
+				array(
+					'name' => 'selection[]',
+					'value' => $quicklink['order'],
+					'data'	=> array(
+						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$table->setColumns(
+			array(
+				'name' => array(
+					'encode' => FALSE
+				),
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$table->setNoResultsText('no_search_results');
+		$table->setData($links);
+
+		return ee('View')->make('_shared/table')->render($table->viewData($this->base_url));
 	}
 }
 // END CLASS
