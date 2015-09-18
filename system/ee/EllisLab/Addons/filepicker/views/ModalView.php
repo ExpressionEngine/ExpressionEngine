@@ -15,7 +15,7 @@
 
 	<?php if($type == 'thumb'): ?>
 		<table class='img-grid'>
-		<?php foreach (array_chunk($files->asArray(), 4) as $row): ?>
+		<?php foreach (array_chunk($files->asArray(), 5) as $row): ?>
 			<tr>
 				<?php foreach ($row as $file): ?>
 				<td>
