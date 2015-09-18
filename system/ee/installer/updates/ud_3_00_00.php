@@ -465,7 +465,7 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
-		if (ee()->db->table_exists('layout_publish_member_groups'))
+		if ( ! ee()->db->field_exists('member_group', 'layout_publish'))
 		{
 			return;
 		}
