@@ -79,7 +79,11 @@ class Wiki extends Model {
 		'WikiNamespaces' => array(
 			'type' => 'hasMany',
 			'model' => 'WikiNamespace'
-		)
+		),
+		'Pages' => array(
+			'type'  => 'hasMany',
+			'model' => 'Page'
+		)		
 	);
 	
 	protected static $_events = array(
