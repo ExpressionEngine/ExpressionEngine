@@ -584,6 +584,8 @@ class Updater {
 				}
 
 				$layouts[$index]['field_layout'] = serialize($new_field_layout);
+				unset($layouts[$index]['cat_group']);
+				unset($layouts[$index]['member_group']);
 			}
 
 			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
