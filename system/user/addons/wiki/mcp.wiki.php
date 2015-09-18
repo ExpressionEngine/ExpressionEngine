@@ -348,61 +348,6 @@ class Wiki_mcp {
 
 		}
 
-
-			/*
-			// Need to convert this field from its presentation serialization
-			$valid_wiki->wiki_moderation_emails = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['wiki_moderation_emails']), ','));
-
-			$result = $valid_wiki->validate();
-
-			if ($result->isValid())
-			{
-				$wiki = $valid_wiki->save();
-
-				// If it's new, highlight
-				if ( ! $wiki_id)
-				{
-					ee()->session->set_flashdata('highlight_id', $wiki->getId());
-				}
-
-
-				ee('CP/Alert')->makeInline('wikis-table')
-					->asSuccess()
-					->withTitle(lang('wiki_'.$alert_key))
-					->addToBody(sprintf(lang('wiki_'.$alert_key.'_desc'), $wiki->wiki_label_name))
-					->defer();
-
-				ee()->functions->redirect($this->_base_url);
-
-			}
-			else
-			{
-					ee()->load->library('form_validation');
-					ee()->form_validation->_error_array = $result->renderErrors();
-
-				// Do some fenagling to fit our namespace errors into
-				//  Form Validation
-				if (isset(ee()->form_validation->_error_array['wiki_namespaces_list']))
-				{
-					// This is an array, Form Validation expects strings
-					unset(ee()->form_validation->_error_array['wiki_namespaces_list']);
-
-					// We need a dummy error here to set the invalid class on the parent fieldset
-					ee()->form_validation->_error_array['wiki_namespaces_data'] = 'asdf';
-				}
-
-					ee('CP/Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('settings_error'))
-					->addToBody(lang('settings_error_desc'))
-					->now();
-			}
-
-		} // End Validation check on posted data
-
-
-*/
-
 		$vars['sections'] = $this->make_form($wiki_id, $valid_wiki);
 
 		$vars['base_url'] = $this->_base_url.'/update/wiki&wiki_id='.$wiki_id;

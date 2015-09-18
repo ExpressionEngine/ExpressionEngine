@@ -11,8 +11,17 @@ return array(
 	'docs_url'    => 'http://github/wiki/index.html',
 	'models' => array(
 		'WikiNamespace' => 'Model\WikiNamespace',
-		'Wiki' => 'Model\Wiki'
-	)
+		'Wiki' => 'Model\Wiki',
+		'Page' => 'Model\Page',
+		'Revision' => 'Model\Revision'
+	),
+	'models.dependencies' => array(
+		'Revision'   => array(
+			'ee:Member'
+		)
+	)	
+	
+
 
 /*
 	'models' => array(
