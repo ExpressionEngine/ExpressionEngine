@@ -37,7 +37,7 @@ $(document).ready(function () {
 	}, 150));
 
 	// Selecting a channel filter
-	$('.filters .sub-menu a').on('click', function(event) {
+	$('.filters .sub-menu a, .filters .filter-clear a').on('click', function(event) {
 		$.ajax({
 			url: $(this).attr('href'),
 			type: 'GET',
