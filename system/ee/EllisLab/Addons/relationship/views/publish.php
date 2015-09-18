@@ -90,6 +90,7 @@
 		?>
 	</div>
 	<?php if ( ! $multiple): ?>
+		<?php if ( ! $chosen && ! empty($related)) $chosen = $related[0]; ?>
 		<div class="relate-wrap-chosen">
 			<?php if($chosen): ?>
 			<label class="choice block chosen relate-manage">
