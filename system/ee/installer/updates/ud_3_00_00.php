@@ -740,6 +740,11 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
+		if ( ! ee()->db->field_exists('can_access_extensions', 'member_groups'))
+		{
+			return;
+		}
+
 		ee()->smartforge->add_column('member_groups', array(
 			'include_in_mailinglist' => array(
 				'type'       => 'char',
