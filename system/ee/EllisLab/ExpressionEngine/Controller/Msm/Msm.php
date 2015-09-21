@@ -169,7 +169,7 @@ class Msm extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $site->site_id,
 					'data' => array(
-						'confirm' => lang('site') . ': <b>' . htmlentities($site->site_label, ENT_QUOTES) . '</b>'
+						'confirm' => lang('site') . ': <b>' . htmlentities($site->site_label, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

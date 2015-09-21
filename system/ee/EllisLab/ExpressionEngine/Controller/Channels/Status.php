@@ -341,7 +341,7 @@ class Status extends AbstractChannelsController {
 					'name' => 'statuses[]',
 					'value' => $status->getId(),
 					'data'	=> array(
-						'confirm' => lang('status') . ': <b>' . htmlentities($status->status, ENT_QUOTES) . '</b>'
+						'confirm' => lang('status') . ': <b>' . htmlentities($status->status, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
 					// Cannot delete default statuses
 					'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL

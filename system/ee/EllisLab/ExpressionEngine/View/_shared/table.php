@@ -118,9 +118,9 @@ if ($wrap): ?>
 						<?php foreach ($row['columns'] as $column): ?>
 							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
-								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES)?></a></td>
+								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
-								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
+								<td><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>

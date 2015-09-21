@@ -115,14 +115,14 @@ class Edit extends AbstractPublishController {
 			$autosaves = $entry->Autosaves->count();
 
 			$edit_link = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
-			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES). '</a>';
+			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8'). '</a>';
 
 			if ($autosaves)
 			{
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			if ($entry->comment_total > 0)
 			{
@@ -163,7 +163,7 @@ class Edit extends AbstractPublishController {
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

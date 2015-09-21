@@ -12,13 +12,11 @@ feature 'Query Form' do
   it 'shows the Query Form' do
     @page.should have_text 'Query to run'
     @page.should have_query_form
-    @page.should have_password
   end
 
   it 'should validate the form' do
     field_required = 'This field is required.'
     form_error = 'Attention: Query not run'
-    password_incorrect = 'The password entered is incorrect.'
 
     # Submit with nothing
     @page.submit
@@ -26,32 +24,6 @@ feature 'Query Form' do
     no_php_js_errors
     @page.should have_text form_error
     should_have_error_text(@page.query_form, field_required)
-    should_have_error_text(@page.password, field_required)
-    @page.should have_no_text password_incorrect
-    should_have_form_errors(@page)
-
-    # Query but no password
-    @page.load
-    @page.query_form.set 'query'
-    @page.submit
-
-    no_php_js_errors
-    @page.should have_text form_error
-    should_have_no_error_text(@page.query_form)
-    should_have_error_text(@page.password, field_required)
-    @page.should have_no_text password_incorrect
-    should_have_form_errors(@page)
-
-    # Query with wrong password
-    @page.load
-    @page.query_form.set 'query'
-    @page.password.set 'test'
-    @page.submit
-
-    no_php_js_errors
-    @page.query_form.value.should eq 'query'
-    should_have_no_error_text(@page.query_form)
-    should_have_error_text(@page.password, password_incorrect)
     should_have_form_errors(@page)
 
     # AJAX Validation
@@ -59,78 +31,53 @@ feature 'Query Form' do
     @page.query_form.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_error_text(@page.query_form, field_required)
-    should_have_no_error_text(@page.password)
-
-    @page.password.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    should_have_error_text(@page.query_form, field_required)
-    should_have_error_text(@page.password, field_required)
-
-    @page.password.set 'pass'
-    @page.password.trigger 'blur'
-    should_have_error_text(@page.query_form, field_required)
-    should_have_error_text(@page.password, password_incorrect)
-
-    @page.password.set 'password'
-    @page.password.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.query_form, field_required)
-    should_have_no_error_text(@page.password)
 
     @page.query_form.set 'SELECT'
     @page.query_form.trigger 'blur'
     @page.wait_for_error_message_count(0)
     should_have_no_error_text(@page.query_form)
-    should_have_no_error_text(@page.password)
   end
 
   it 'should not allow certain query types' do
     not_allowed = 'Query type not allowed'
 
     @page.query_form.set "FLUSH TABLES"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
     @page.should have_text not_allowed
 
     @page.query_form.set "REPLACE INTO offices(officecode,city) VALUES(8,'San Jose')"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
     @page.should have_text not_allowed
 
     @page.query_form.set "GRANT ALL ON db1.* TO 'jeffrey'@'localhost'"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
     @page.should have_text not_allowed
 
     @page.query_form.set "REVOKE INSERT ON *.* FROM 'jeffrey'@'localhost'"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
     @page.should have_text not_allowed
 
     @page.query_form.set "LOCK TABLES t1 READ"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
     @page.should have_text not_allowed
 
     @page.query_form.set "UNLOCK TABLES t1 READ"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
     @page.should have_text not_allowed
 
     @page.query_form.set "SELECT * FROM exp_channels"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -142,7 +89,6 @@ feature 'Query Form' do
 
     # Invalid query with errors on
     @page.query_form.set "SELECT FROM exp_channels"
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -152,7 +98,6 @@ feature 'Query Form' do
 
   it 'should show query results' do
     @page.query_form.set 'SELECT * FROM exp_channels'
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -173,7 +118,6 @@ feature 'Query Form' do
 
   it 'should sort query results by columns' do
     @page.query_form.set 'SELECT * FROM exp_channels'
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -185,7 +129,6 @@ feature 'Query Form' do
 
   it 'should search query results' do
     @page.query_form.set 'select * from exp_channel_titles'
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -220,7 +163,6 @@ feature 'Query Form' do
     cp_log.generate_data(count: 30)
 
     @page.query_form.set 'select * from exp_cp_log'
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -239,7 +181,6 @@ feature 'Query Form' do
     cp_log.generate_data(count: 30)
 
     @page.query_form.set 'select * from exp_cp_log'
-    @page.password.set 'password'
     @page.submit
 
     no_php_js_errors
@@ -335,7 +276,6 @@ feature 'Query Form' do
 
   it 'should show no results when there are no results' do
     @page.query_form.set 'select * from exp_channels where channel_id = 1000'
-    @page.password.set 'password'
     @page.submit
 
     @page.should have_text 'Total Results: 0'
@@ -344,7 +284,6 @@ feature 'Query Form' do
 
   it 'should show the number of affected rows on write queries' do
     @page.query_form.set 'UPDATE exp_channel_titles SET title = "Kevin" WHERE title = "Josh"'
-    @page.password.set 'password'
     @page.submit
 
     @page.should have_text 'Affected Rows: 1'

@@ -376,7 +376,7 @@ abstract class AbstractDesign extends CP_Controller {
 		foreach ($templates as $template)
 		{
 			$group = $template->getTemplateGroup();
-			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+			$template_name = htmlentities($template->template_name, ENT_QUOTES, 'UTF-8');
 			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
 			if ($include_group_name)
@@ -440,7 +440,7 @@ abstract class AbstractDesign extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $template->template_id,
 					'data' => array(
-						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

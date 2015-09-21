@@ -214,7 +214,7 @@ abstract class AbstractFiles extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $file->file_id,
 					'data' => array(
-						'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

@@ -48,11 +48,6 @@ class Query extends Utilities {
 				 'field'   => 'thequery',
 				 'label'   => 'lang:sql_query_to_run',
 				 'rules'   => 'required'
-			),
-			array(
-				'field' => 'password_auth',
-				'label' => 'lang:current_password',
-				'rules' => 'required|auth_password'
 			)
 		));
 
@@ -84,11 +79,6 @@ class Query extends Utilities {
 	 */
 	public function runQuery($table_name = '')
 	{
-		if (isset($_POST['password_auth']))
-		{
-			unset($_POST['password_auth']);
-		}
-
 		$row_limit	= 25;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;

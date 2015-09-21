@@ -226,7 +226,7 @@ class Database extends ProfilerSection {
 	{
 		// Load the text helper so we can highlight the SQL
 		ee()->load->helper('text');
-		$highlighted = highlight_code($sql, ENT_QUOTES);
+		$highlighted = highlight_code($sql, ENT_QUOTES, 'UTF-8');
 
 		foreach ($this->keywords as $keyword)
 		{

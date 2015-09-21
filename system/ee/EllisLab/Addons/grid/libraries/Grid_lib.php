@@ -111,7 +111,8 @@ class Grid_lib {
 				'html' => $this->_publish_field_cell($column),
 				'attrs' => array(
 					'data-fieldtype' => $column['col_type'],
-					'data-column-id' => $column['col_id']
+					'data-column-id' => $column['col_id'],
+					'width' => $column['col_width'].'%',
 				)
 			);
 		}
@@ -138,6 +139,7 @@ class Grid_lib {
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
 						'data-row-id' => $row_id,
+						'width' => $column['col_width'].'%',
 					)
 				);
 			}
