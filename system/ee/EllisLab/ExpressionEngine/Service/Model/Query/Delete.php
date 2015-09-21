@@ -45,14 +45,14 @@ class Delete extends Query {
 			return;
 		}
 
-		$from = $this->removeDefaultPrefix($from);
+		$from_alias = 'CurrentlyDeleting';
 
-		$delete_list = $this->getDeleteList($from);
+		$delete_list = $this->getDeleteList($from, $from_alias);
 
 		foreach ($delete_list as $delete_item)
 		{
-			list($model, $withs) = $delete_item;
-			$model = $this->removeDefaultPrefix($model);
+			list($get, $withs) = $delete_item;
+			list($model, $alias) = $this->splitAlias($get);
 
 			$offset		= 0;
 			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model?
@@ -70,8 +70,8 @@ class Delete extends Query {
 
 			 $basic_query = $builder
 				 ->getFrontend()
-				 ->get($model)
-				 ->filter("{$from}.{$from_pk}", 'IN', $parent_ids);
+				 ->get($get)
+				 ->filter("{$from_alias}.{$from_pk}", 'IN', $parent_ids);
 
 			 // expensive recursion fallback
 			 if ($withs instanceOf \Closure)
@@ -80,7 +80,6 @@ class Delete extends Query {
 				 $this->deleteCollection($delete_collection, $to_meta);
 				 continue;
 			 }
-
 
 			// TODO optimize further for on-db deletes
 			do {
@@ -93,11 +92,11 @@ class Delete extends Query {
 
 				if ($has_delete_event)
 				{
-					$fetch_query->fields("{$model}.*");
+					$fetch_query->fields("{$alias}.*");
 				}
 				else
 				{
-					$fetch_query->fields("{$model}.{$to_pk}");
+					$fetch_query->fields("{$alias}.{$to_pk}");
 				}
 
 				$delete_models = $fetch_query->all();
@@ -185,7 +184,7 @@ class Delete extends Query {
 	 * @param String  $model  Model to delete from
 	 * @return Array  [name => withs, ...] as described above
 	 */
-	protected function getDeleteList($model)
+	protected function getDeleteList($model, $delete_alias)
 	{
 		$this->delete_list = array();
 		$this->recursivePath($model, array());
@@ -209,7 +208,21 @@ class Delete extends Query {
 		{
 			if (is_array($final[1]))
 			{
+				if (count($final[1]))
+				{
+					$last = array_pop($final[1]);
+					$final[1][] = $last.' AS '.$delete_alias;
+				}
+				else
+				{
+					$final[0] .= ' AS '.$delete_alias;
+				}
+
 				$final[1] = $this->nest($final[1]);
+			}
+			else
+			{
+				$final[0] .= ' AS '.$delete_alias;
 			}
 		}
 
@@ -269,19 +282,6 @@ class Delete extends Query {
 	}
 
 	/**
-	 *
-	 */
-	private function removeDefaultPrefix($str)
-	{
-		if (strpos($str, 'ee:') === 0)
-		{
-			return substr($str, 3);
-		}
-
-		return $str;
-	}
-
-	/**
 	 * Creates a worker function to handle recursive deletes inline with
 	 * the rest of the delete flow. Will attempt to return to a bottom-up
 	 * deletion if the recursion is broken. If the recursion is not broken
@@ -332,5 +332,18 @@ class Delete extends Query {
 
 			return $models;
 		};
+	}
+
+	protected function splitAlias($string)
+	{
+		$string = trim($string);
+		$parts = preg_split('/\s+AS\s+/i', $string);
+
+		if ( ! isset($parts[1]))
+		{
+			return array($string, $string);
+		}
+
+		return $parts;
 	}
 }
