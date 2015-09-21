@@ -74,7 +74,7 @@ class Subscriptions extends Profile {
 						'name' => 'selection[]',
 						'value' => $subscription['id'],
 						'data'	=> array(
-							'confirm' => lang('subscription') . ': <b>' . htmlentities($subscription['title'], ENT_QUOTES) . '</b>'
+							'confirm' => lang('subscription') . ': <b>' . htmlentities($subscription['title'], ENT_QUOTES, 'UTF-8') . '</b>'
 						)
 					)
 				);

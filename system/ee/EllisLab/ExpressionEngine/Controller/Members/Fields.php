@@ -118,7 +118,7 @@ class Fields extends Members\Members {
 					'name' => 'selection[]',
 					'value' => $field->m_field_id,
 					'data'	=> array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

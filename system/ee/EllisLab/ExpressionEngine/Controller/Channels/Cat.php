@@ -949,7 +949,7 @@ class Cat extends AbstractChannelsController {
 					'name' => 'fields[]',
 					'value' => $field->getId(),
 					'data'	=> array(
-						'confirm' => lang('category_field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
+						'confirm' => lang('category_field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

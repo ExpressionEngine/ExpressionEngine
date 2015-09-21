@@ -99,7 +99,7 @@ class Wiki_mcp {
 					'name' => 'selection[]',
 					'value' => $row->wiki_id,
 					'data'	=> array(
-						'confirm' => lang('wiki') . ': <b>' . htmlentities($row->wiki_label_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('wiki') . ': <b>' . htmlentities($row->wiki_label_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 
@@ -408,7 +408,7 @@ class Wiki_mcp {
 		{
 			$wiki->WikiNamespaces = ee('Model')->get('wiki:WikiNamespace', $existing_ids)->all();
 		}
-		
+
 		$validate = array();
 
 		foreach ($wiki->WikiNamespaces as $model)

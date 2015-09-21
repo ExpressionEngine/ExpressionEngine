@@ -126,7 +126,7 @@ class Variables extends AbstractDesignController {
 					'name' => 'selection[]',
 					'value' => $variable->variable_id,
 					'data'	=> array(
-						'confirm' => lang('template_variable') . ': <b>' . htmlentities($variable->variable_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('template_variable') . ': <b>' . htmlentities($variable->variable_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 

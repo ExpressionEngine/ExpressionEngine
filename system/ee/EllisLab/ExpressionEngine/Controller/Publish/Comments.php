@@ -523,7 +523,7 @@ class Comments extends AbstractPublishController {
 					'name' => 'selection[]',
 					'value' => $comment->comment_id,
 					'data' => array(
-						'confirm' => lang('comment') . ': <b>' . htmlentities(ellipsize($comment->comment, 50), ENT_QUOTES) . '</b>'
+						'confirm' => lang('comment') . ': <b>' . htmlentities(ellipsize($comment->comment, 50), ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

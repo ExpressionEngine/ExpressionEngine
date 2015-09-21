@@ -122,7 +122,7 @@ EOT;
 					'name' => 'moblogs[]',
 					'value' => $moblog['moblog_id'],
 					'data'	=> array(
-						'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES) . '</b>'
+						'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
