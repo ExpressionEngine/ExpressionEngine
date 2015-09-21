@@ -61,6 +61,42 @@ class RequestCollection extends Collection {
 
 	public function exec($callback = NULL)
 	{
+		if ( ! empty($callback))
+		{
+			$this->callback = $callback;
+		}
+
+		$async = array();
+		$sync = array();
+
+		foreach ($this->collection as $request)
+		{
+			if ($request instanceof AsyncRequest)
+			{
+				$async[] = $request;
+			}
+			else
+			{
+				$sync[] = $request;
+			}
+		}
+
+		if ( ! empty($async))
+		{
+			$this->rollingCurl($async);
+		}
+
+		if ( ! empty($sync))
+		{
+			array_walk($sync, function($request) {
+				if ( ! empty($callback))
+				{
+					$request->callback = $callback;
+				}
+
+				$request->exec();
+			});
+		}
 	}
 
 	public function setWindow($size)
