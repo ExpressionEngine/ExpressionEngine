@@ -32,7 +32,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Revision extends Model {
 
 	protected static $_primary_key = 'page_id';
-	protected static $_table_name = 'wiki_page';
+	protected static $_table_name = 'wiki_revisions';
 
 	protected static $_relationships = array(
 		'Page' => array(
@@ -48,7 +48,7 @@ class Revision extends Model {
                 'name' => 'Revision',
                 'type' => 'hasMany'
             )
-        )	
+        )
 	);
 	
 
