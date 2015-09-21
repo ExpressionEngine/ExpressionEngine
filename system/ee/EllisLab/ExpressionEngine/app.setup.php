@@ -3,6 +3,7 @@
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Library\Request;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
@@ -98,6 +99,11 @@ return array(
 		'Filesystem' => function($ee)
 		{
 			return new Filesystem\Filesystem();
+		},
+
+		'Request' => function($ee)
+		{
+			return new Request\RequestFactory();
 		},
 
 		'View' => function($ee)
