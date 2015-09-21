@@ -331,7 +331,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		// Loop through templates and add them to the zip
 		$templates->each(function($template) use($zip) {
-				$filename = $template->getTemplateGroup()->group_name . 'group/' . $template->template_name . $template->getFileExtension();
+				$filename = $template->getTemplateGroup()->group_name . '.group/' . $template->template_name . $template->getFileExtension();
 				$zip->addFromString($filename, $template->template_data);
 			});
 
