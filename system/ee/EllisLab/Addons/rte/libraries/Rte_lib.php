@@ -571,7 +571,7 @@ class Rte_lib {
 		$code_chunks = array();
 
 		$data = trim($data);
-		$data = htmlspecialchars_decode($data, ENT_QUOTES, 'UTF-8');
+		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		$data = $this->clean_data($data);
 
