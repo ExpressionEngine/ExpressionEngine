@@ -75,7 +75,7 @@ feature 'Communicate > Sent' do
 
 		(0...25).each do |n|
 			my_date = now - (n * 86400)
-			dates.push(my_date.to_datetime.strftime("%-m/%-d/%y %-l:%M %p"))
+			dates.push(my_date.to_datetime.strftime("%-m/%-d/%Y %-l:%M %p"))
 			@page.generate_data(timestamp: my_date.to_i, count: 1)
 		end
 		dates.reverse!
@@ -95,7 +95,7 @@ feature 'Communicate > Sent' do
 
 		(0...25).each do |n|
 			my_date = now - (n * 86400)
-			dates.push(my_date.to_datetime.strftime("%-m/%-d/%y %-l:%M %p"))
+			dates.push(my_date.to_datetime.strftime("%-m/%-d/%Y %-l:%M %p"))
 			@page.generate_data(timestamp: my_date.to_i, count: 1)
 		end
 		load_page
