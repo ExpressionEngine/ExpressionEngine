@@ -56,7 +56,7 @@ class Query extends Utilities {
 			ee()->form_validation->run_ajax();
 			exit;
 		}
-		elseif (ee()->form_validation->run() !== FALSE)
+		elseif (ee()->form_validation->run() !== FALSE && $show_validation)
 		{
 			return $this->runQuery();
 		}
