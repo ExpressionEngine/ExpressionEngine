@@ -312,7 +312,7 @@ class Date_ft extends EE_Fieldtype {
 			'field_options' => array(
 				array(
 					'title' => 'localize_date',
-					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL', 'settings/general')),
+					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL')->make('settings/general')),
 					'fields' => array(
 						'localize' => array(
 							'type' => 'yes_no',

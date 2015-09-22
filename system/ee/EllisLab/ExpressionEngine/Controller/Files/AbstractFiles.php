@@ -74,13 +74,13 @@ abstract class AbstractFiles extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_admin_upload_prefs'))
 		{
-			$header->withButton(lang('new'), ee('CP/URL', 'files/uploads/create'));
+			$header->withButton(lang('new'), ee('CP/URL')->make('files/uploads/create'));
 
-			$list->withRemoveUrl(ee('CP/URL', 'files/rmdir', array('return' => base64_encode(ee()->cp->get_safe_refresh()))))
+			$list->withRemoveUrl(ee('CP/URL')->make('files/rmdir', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
 				->withRemovalKey('dir_id');
 
-			$watermark_header = $sidebar->addHeader(lang('watermarks'), ee('CP/URL', 'files/watermarks'))
-				->withButton(lang('new'), ee('CP/URL', 'files/watermarks/create'));
+			$watermark_header = $sidebar->addHeader(lang('watermarks'), ee('CP/URL')->make('files/watermarks'))
+				->withButton(lang('new'), ee('CP/URL')->make('files/watermarks/create'));
 
 			if ($active == 'watermark')
 			{
@@ -100,8 +100,8 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
-			$item = $list->addItem($destination->name, ee('CP/URL', 'files/directory/' . $destination->id))
-				->withEditUrl(ee('CP/URL', 'files/uploads/edit/' . $destination->id))
+			$item = $list->addItem($destination->name, ee('CP/URL')->make('files/directory/' . $destination->id))
+				->withEditUrl(ee('CP/URL')->make('files/uploads/edit/' . $destination->id))
 				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $destination->name . '</b>')
 				->identifiedBy($destination->id);
 
@@ -125,10 +125,10 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
-			'form_url' => ee('CP/URL', 'files'),
+			'form_url' => ee('CP/URL')->make('files'),
 			'toolbar_items' => array(
 				'download' => array(
-					'href' => ee('CP/URL', 'files/export'),
+					'href' => ee('CP/URL')->make('files/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -169,7 +169,7 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
-			$edit_link =  ee('CP/URL', 'files/file/edit/' . $file->file_id);
+			$edit_link =  ee('CP/URL')->make('files/file/edit/' . $file->file_id);
 			$toolbar = array(
 				'view' => array(
 					'href' => '',
@@ -183,11 +183,11 @@ abstract class AbstractFiles extends CP_Controller {
 					'title' => lang('edit')
 				),
 				'crop' => array(
-					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
+					'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
 					'title' => lang('crop'),
 				),
 				'download' => array(
-					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
+					'href' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
 			);

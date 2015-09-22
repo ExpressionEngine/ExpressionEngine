@@ -178,7 +178,7 @@ class Members extends Settings {
 			)
 		);
 
-		$base_url = ee('CP/URL', 'settings/members');
+		$base_url = ee('CP/URL')->make('settings/members');
 
 		ee()->form_validation->set_rules(array(
 			array(

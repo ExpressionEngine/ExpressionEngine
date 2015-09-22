@@ -1,7 +1,7 @@
 <div class="box">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-template')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/create-template')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=lang('email_templates')?></h1>
 		<?=ee('CP/Alert')->get('email-templates-table')?>
@@ -22,7 +22,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'addons/settings/simple_commerce/remove-template'),
+	'form_url'	=> ee('CP/URL')->make('addons/settings/simple_commerce/remove-template'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

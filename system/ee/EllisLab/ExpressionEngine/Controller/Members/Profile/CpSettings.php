@@ -101,7 +101,7 @@ class CpSettings extends Profile {
 			)
 		);
 
-		$base_url = ee('CP/URL', $this->base_url);
+		$base_url = ee('CP/URL')->make($this->base_url);
 
 		if ( ! empty($_POST))
 		{

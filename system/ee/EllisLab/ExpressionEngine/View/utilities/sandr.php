@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 <h1><?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-<?=form_open(ee('CP/URL', 'utilities/sandr'), 'class="settings ajax-validate"')?>
+<?=form_open(ee('CP/URL')->make('utilities/sandr'), 'class="settings ajax-validate"')?>
 	<div class="alert inline warn">
 		<?=lang('sandr_warning')?>
 	</div>

@@ -49,21 +49,21 @@ class Simple_commerce_mcp {
 
 		$this->sidebar = ee('CP/Sidebar')->make();
 
-		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL', 'addons/settings/simple_commerce'))
-			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
+		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL')->make('addons/settings/simple_commerce'))
+			->withButton(lang('new'), ee('CP/URL')->make('addons/settings/simple_commerce/create-item'));
 
-		$this->purchases_nav = $this->sidebar->addHeader(lang('purchases'), ee('CP/URL', 'addons/settings/simple_commerce/purchases'))
-			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
+		$this->purchases_nav = $this->sidebar->addHeader(lang('purchases'), ee('CP/URL')->make('addons/settings/simple_commerce/purchases'))
+			->withButton(lang('new'), ee('CP/URL')->make('addons/settings/simple_commerce/create-purchase'));
 
-		$this->email_templates_nav = $this->sidebar->addHeader(lang('email_templates'), ee('CP/URL', 'addons/settings/simple_commerce/email-templates'))
-			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
+		$this->email_templates_nav = $this->sidebar->addHeader(lang('email_templates'), ee('CP/URL')->make('addons/settings/simple_commerce/email-templates'))
+			->withButton(lang('new'), ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
 
 		ee()->view->header = array(
 			'title' => lang('simple_commerce_manager'),
 			'search_button_value' => lang('search_commerce'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'addons/settings/simple_commerce/settings'),
+					'href' => ee('CP/URL')->make('addons/settings/simple_commerce/settings'),
 					'title' => lang('settings')
 				)
 			)
@@ -97,7 +97,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText('no_purchases', 'create_new_item', ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
+		$table->setNoResultsText('no_purchases', 'create_new_item', ee('CP/URL')->make('addons/settings/simple_commerce/create-item'));
 
 		$sort_map = array(
 			'name'        => 'ChannelEntry.title',
@@ -127,7 +127,7 @@ class Simple_commerce_mcp {
 				$price_col = '<span class="yes">$'.$item->item_regular_price.'</span><span class="faded"> / $'.$item->item_sale_price.'</span>';
 			}
 
-			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item->getId());
+			$edit_url = ee('CP/URL')->make('addons/settings/simple_commerce/edit-item/'.$item->getId());
 
 			$columns = array(
 				array(
@@ -168,7 +168,7 @@ class Simple_commerce_mcp {
 
 		$table->setData($data);
 
-		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce');
+		$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce');
 		$vars['table'] = $table->viewData($vars['base_url']);
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
@@ -215,7 +215,7 @@ class Simple_commerce_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -225,7 +225,7 @@ class Simple_commerce_mcp {
 	{
 		ee()->lang->load('content');
 
-		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/create-item');
+		$base_url = ee('CP/URL')->make('addons/settings/simple_commerce/create-item');
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
@@ -293,7 +293,7 @@ class Simple_commerce_mcp {
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = ee('CP/URL', 'addons/settings/simple_commerce/add-items');
+		$vars['form_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/add-items');
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
@@ -305,7 +305,7 @@ class Simple_commerce_mcp {
 		return array(
 			'heading' => sprintf(lang('create_new_item_step'), 1),
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+				ee('CP/URL')->make('addons/settings/simple_commerce')->compile() => lang('commerce_items')
 			),
 			'body' => ee('View')->make('simple_commerce:entry_list')->render($vars),
 			'sidebar' => $this->sidebar
@@ -321,7 +321,7 @@ class Simple_commerce_mcp {
 
 		if ( ! ee()->input->post('items') && (empty($entry_ids) OR ee()->input->post('bulk_action') != 'add_item'))
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/create-item', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/create-item', ee()->cp->get_url_state()));
 		}
 
 		$forms = array();
@@ -385,7 +385,7 @@ class Simple_commerce_mcp {
 					->addToBody(lang('item_created_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce'));
 			}
 		}
 
@@ -414,7 +414,7 @@ class Simple_commerce_mcp {
 
 		$vars = array(
 			'forms' => $forms,
-			'form_url' => ee('CP/URL', 'addons/settings/simple_commerce/add-items'),
+			'form_url' => ee('CP/URL')->make('addons/settings/simple_commerce/add-items'),
 			'save_btn_text' => sprintf(lang('btn_save'), (count($forms) > 1) ? lang('items') : lang('item')),
 			'save_btn_text_working' => 'btn_saving'
 		);
@@ -424,7 +424,7 @@ class Simple_commerce_mcp {
 		return array(
 			'heading' => sprintf(lang('create_new_item_step'), 2),
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+				ee('CP/URL')->make('addons/settings/simple_commerce')->compile() => lang('commerce_items')
 			),
 			'body' => ee('View')->make('simple_commerce:add_items')->render($vars),
 			'sidebar' => $this->sidebar
@@ -459,7 +459,7 @@ class Simple_commerce_mcp {
 					->addToBody(sprintf(lang('item_updated_desc'), $item->ChannelEntry->title))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce'));
 			}
 			else
 			{
@@ -474,7 +474,7 @@ class Simple_commerce_mcp {
 
 		$vars['sections'] = $this->itemForm($item);
 		$vars['cp_page_title'] = lang('edit_item');
-		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item_id);
+		$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/edit-item/'.$item_id);
 		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('item'));
 		$vars['save_btn_text_working'] = 'btn_saving';
 
@@ -483,7 +483,7 @@ class Simple_commerce_mcp {
 		return array(
 			'heading' => lang('edit_item'),
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+				ee('CP/URL')->make('addons/settings/simple_commerce')->compile() => lang('commerce_items')
 			),
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
@@ -692,7 +692,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText('no_purchases', 'create_purchase', ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
+		$table->setNoResultsText('no_purchases', 'create_purchase', ee('CP/URL')->make('addons/settings/simple_commerce/create-purchase'));
 
 		$sort_map = array(
 			// Change when relationships work
@@ -714,7 +714,7 @@ class Simple_commerce_mcp {
 		$data = array();
 		foreach ($purchases as $purchase)
 		{
-			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId());
+			$edit_url = ee('CP/URL')->make('addons/settings/simple_commerce/edit-purchase/'.$purchase->getId());
 
 			$columns = array(
 				array(
@@ -754,7 +754,7 @@ class Simple_commerce_mcp {
 
 		$table->setData($data);
 
-		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/purchases');
+		$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/purchases');
 		$vars['table'] = $table->viewData($vars['base_url']);
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
@@ -801,7 +801,7 @@ class Simple_commerce_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -829,7 +829,7 @@ class Simple_commerce_mcp {
 		{
 			$alert_key = 'created';
 			$vars['cp_page_title'] = lang('create_purchase');
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/create-purchase');
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/create-purchase');
 
 			$purchase = ee('Model')->make('simple_commerce:Purchase');
 		}
@@ -844,7 +844,7 @@ class Simple_commerce_mcp {
 
 			$alert_key = 'updated';
 			$vars['cp_page_title'] = lang('edit_purchase');
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase_id);
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/edit-purchase/'.$purchase_id);
 		}
 
 		if ( ! empty($_POST))
@@ -867,7 +867,7 @@ class Simple_commerce_mcp {
 					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->ChannelEntry->title))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/purchases'));
 			}
 			else
 			{
@@ -1002,7 +1002,7 @@ class Simple_commerce_mcp {
 		return array(
 			'heading' => $vars['cp_page_title'],
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/simple_commerce/purchases')->compile() => lang('commerce_purchases')
+				ee('CP/URL')->make('addons/settings/simple_commerce/purchases')->compile() => lang('commerce_purchases')
 			),
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
@@ -1025,7 +1025,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText('no_email_templates', 'create_template', ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
+		$table->setNoResultsText('no_email_templates', 'create_template', ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
 
 		$sort_map = array(
 			'name' => 'email_name',
@@ -1042,7 +1042,7 @@ class Simple_commerce_mcp {
 		$data = array();
 		foreach ($email_templates as $template)
 		{
-			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId());
+			$edit_url = ee('CP/URL')->make('addons/settings/simple_commerce/edit-email-template/'.$template->getId());
 
 			$columns = array(
 				array(
@@ -1078,7 +1078,7 @@ class Simple_commerce_mcp {
 
 		$table->setData($data);
 
-		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/email-templates');
+		$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/email-templates');
 		$vars['table'] = $table->viewData($vars['base_url']);
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
@@ -1125,7 +1125,7 @@ class Simple_commerce_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -1153,7 +1153,7 @@ class Simple_commerce_mcp {
 		{
 			$alert_key = 'created';
 			$vars['cp_page_title'] = lang('create_email_template');
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/create-email-template');
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template');
 
 			$email_template = ee('Model')->make('simple_commerce:EmailTemplate');
 		}
@@ -1168,7 +1168,7 @@ class Simple_commerce_mcp {
 
 			$alert_key = 'updated';
 			$vars['cp_page_title'] = lang('edit_email_template');
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template_id);
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/edit-email-template/'.$template_id);
 		}
 
 		if ( ! empty($_POST))
@@ -1191,7 +1191,7 @@ class Simple_commerce_mcp {
 					->addToBody(sprintf(lang('email_template_'.$alert_key.'_desc'), $email_template->email_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/email-templates'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/email-templates'));
 			}
 			else
 			{
@@ -1273,7 +1273,7 @@ class Simple_commerce_mcp {
 		return array(
 			'heading' => $vars['cp_page_title'],
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/simple_commerce/email-templates')->compile() => lang('email_templates')
+				ee('CP/URL')->make('addons/settings/simple_commerce/email-templates')->compile() => lang('email_templates')
 			),
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
@@ -1285,7 +1285,7 @@ class Simple_commerce_mcp {
 	 */
 	public function settings()
 	{
-		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/settings');
+		$base_url = ee('CP/URL')->make('addons/settings/simple_commerce/settings');
 
 		$vars = array(
 			'heading' => lang('commerce_settings'),

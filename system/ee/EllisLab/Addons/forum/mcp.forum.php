@@ -49,10 +49,10 @@ class Forum_mcp extends CP_Controller {
 		$sidebar = ee('CP/Sidebar')->make();
 
 		$boards = $sidebar->addHeader(lang('forum_boards'))
-			->withButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));
+			->withButton(lang('new'), ee('CP/URL')->make($this->base . 'create/board'));
 
 		$board_list = $boards->addFolderList('boards')
-			->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))))
+			->withRemoveUrl(ee('CP/URL')->make($this->base . 'remove/board', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
 			->withNoResultsText(lang('zero_forum_boards_found'));
 
 		$all_boards = ee('Model')->get('forum:Board')
@@ -63,8 +63,8 @@ class Forum_mcp extends CP_Controller {
 		{
 			foreach ($all_boards as $board)
 			{
-				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . 'index/' . $board->board_id))
-					->withEditUrl(ee('CP/URL', $this->base . 'edit/board/' . $board->board_id))
+				$item = $board_list->addItem($board->board_label, ee('CP/URL')->make($this->base . 'index/' . $board->board_id))
+					->withEditUrl(ee('CP/URL')->make($this->base . 'edit/board/' . $board->board_id))
 					->withRemoveConfirmation(lang('forum_board') . ': <b>' . $board->board_label . '</b>')
 					->identifiedBy($board->board_id);
 
@@ -76,10 +76,10 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		$sidebar->addHeader(lang('templates'))
-			->withUrl(ee('CP/URL', 'design/forums'));
+			->withUrl(ee('CP/URL')->make('design/forums'));
 
 		$ranks = $sidebar->addHeader(lang('member_ranks'))
-			->withUrl(ee('CP/URL', $this->base . 'ranks'));
+			->withUrl(ee('CP/URL')->make($this->base . 'ranks'));
 
 		if ($active == 'ranks')
 		{
@@ -139,11 +139,11 @@ class Forum_mcp extends CP_Controller {
 				$manage = array(
 					'toolbar_items' => array(
 						'edit' => array(
-							'href' => ee('CP/URL', $this->base . 'edit/category/' . $category->forum_id),
+							'href' => ee('CP/URL')->make($this->base . 'edit/category/' . $category->forum_id),
 							'title' => lang('edit'),
 						),
 						'settings' => array(
-							'href' => ee('CP/URL', $this->base . 'settings/category/' . $category->forum_id),
+							'href' => ee('CP/URL')->make($this->base . 'settings/category/' . $category->forum_id),
 							'title' => lang('settings'),
 						)
 					)
@@ -178,13 +178,13 @@ class Forum_mcp extends CP_Controller {
 						)
 					)
 				);
-				$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
-				$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
+				$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id));
+				$table->addActionButton(ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
 
 				$data = array();
 				foreach ($category->Forums->sortBy('forum_order') as $forum)
 				{
-					$edit_url = ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id);
+					$edit_url = ee('CP/URL')->make($this->base . 'edit/forum/' . $forum->forum_id);
 
 					$row = array(
 						'<a href="' . $edit_url . '">' . $forum->forum_name . '</a>' . form_hidden('order[]', $forum->forum_id),
@@ -195,7 +195,7 @@ class Forum_mcp extends CP_Controller {
 									'title' => lang('edit'),
 								),
 								'settings' => array(
-									'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
+									'href' => ee('CP/URL')->make($this->base . 'settings/forum/' . $forum->forum_id),
 									'title' => lang('settings'),
 								)
 							)
@@ -222,7 +222,7 @@ class Forum_mcp extends CP_Controller {
 					);
 				}
 				$table->setData($data);
-				$categories[] = $table->viewData(ee('CP/URL', $this->base . 'index/' . $id));
+				$categories[] = $table->viewData(ee('CP/URL')->make($this->base . 'index/' . $id));
 			}
 
 		}
@@ -252,7 +252,7 @@ class Forum_mcp extends CP_Controller {
 			->withTitle(lang('forums_ajax_reorder_fail'))
 			->addToBody(lang('forums_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('forums.reorder_url', ee('CP/URL', $this->base . 'reorder/' . $id)->compile());
+		ee()->javascript->set_global('forums.reorder_url', ee('CP/URL')->make($this->base . 'reorder/' . $id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		$this->generateSidebar($id);
@@ -438,7 +438,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('create_forum_board'),
-			'base_url' => ee('CP/URL', $this->base . 'create/board'),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/board'),
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
@@ -464,7 +464,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => lang('forum_listing')
+				ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
 		);
@@ -496,7 +496,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_forum_board'), $board->board_label),
-			'base_url' => ee('CP/URL', $this->base . 'edit/board/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/board/' . $id),
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
@@ -515,7 +515,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 		);
@@ -569,7 +569,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_forum_board_success_desc'), $board->board_label))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $board->board_id));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $board->board_id));
 	}
 
 	private function getBoardForm($board, $errors)
@@ -1192,13 +1192,11 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang('forum_board_removed_desc'), $name))
 			->defer();
 
-		$return = ee('CP/URL', $this->base);
+		$return = ee('CP/URL')->make($this->base);
 
 		if (ee()->input->get_post('return'))
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -1255,7 +1253,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('create_category'),
-			'base_url' => ee('CP/URL', $this->base . 'create/category/' . $board_id),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/category/' . $board_id),
 			'save_btn_text' => 'btn_save_category',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->categoryForm($category),
@@ -1268,7 +1266,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_category'),
 		);
@@ -1300,7 +1298,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('edit_category'),
-			'base_url' => ee('CP/URL', $this->base . 'edit/category/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/category/' . $id),
 			'save_btn_text' => 'btn_save_category',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->categoryForm($category),
@@ -1313,7 +1311,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 		);
@@ -1360,7 +1358,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_category_success_desc'), $category->forum_name))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $category->board_id));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $category->board_id));
 	}
 
 	private function categoryForm($category)
@@ -1457,7 +1455,7 @@ class Forum_mcp extends CP_Controller {
 			show_404();
 		}
 
-		$return = ee('CP/URL', $this->base . '/index/' . $category->board_id);
+		$return = ee('CP/URL')->make($this->base . '/index/' . $category->board_id);
 
 		if ( ! empty($_POST))
 		{
@@ -1480,7 +1478,7 @@ class Forum_mcp extends CP_Controller {
 		$vars = array(
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('category_permissions'), $category->forum_name),
-			'base_url' => ee('CP/URL', $this->base . 'settings/category/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'settings/category/' . $id),
 			'save_btn_text' => 'btn_save_permissions',
 			'save_btn_text_working' => 'btn_saving',
 		);
@@ -1594,7 +1592,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('create_forum'),
-			'base_url' => ee('CP/URL', $this->base . 'create/forum/' . $cat_id),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/forum/' . $cat_id),
 			'save_btn_text' => 'btn_save_forum',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->forumForm($forum),
@@ -1607,7 +1605,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_forum'),
 		);
@@ -1639,7 +1637,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('edit_forum'),
-			'base_url' => ee('CP/URL', $this->base . 'edit/forum/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/forum/' . $id),
 			'save_btn_text' => 'btn_save_forum',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->forumForm($forum),
@@ -1652,7 +1650,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 		);
@@ -1704,7 +1702,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_forum_success_desc'), $forum->forum_name))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $forum->board_id));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $forum->board_id));
 	}
 
 	private function forumForm($forum)
@@ -1975,7 +1973,7 @@ class Forum_mcp extends CP_Controller {
 			show_404();
 		}
 
-		$return = ee('CP/URL', $this->base . '/index/' . $forum->board_id);
+		$return = ee('CP/URL')->make($this->base . '/index/' . $forum->board_id);
 
 		if ( ! empty($_POST))
 		{
@@ -1998,7 +1996,7 @@ class Forum_mcp extends CP_Controller {
 		$vars = array(
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('forum_permissions'), $forum->forum_name),
-			'base_url' => ee('CP/URL', $this->base . 'settings/forum/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'settings/forum/' . $id),
 			'save_btn_text' => 'btn_save_permissions',
 			'save_btn_text_working' => 'btn_saving',
 		);
@@ -2142,13 +2140,11 @@ class Forum_mcp extends CP_Controller {
 			->addToBody($forum_names)
 			->defer();
 
-		$return = ee('CP/URL', $this->base);
+		$return = ee('CP/URL')->make($this->base);
 
 		if (ee()->input->get_post('return'))
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -2180,14 +2176,14 @@ class Forum_mcp extends CP_Controller {
 				)
 			)
 		);
-		$table->setNoResultsText('no_ranks', 'create_new_rank', ee('CP/URL', $this->base . 'create/rank'));
+		$table->setNoResultsText('no_ranks', 'create_new_rank', ee('CP/URL')->make($this->base . 'create/rank'));
 
 		$rank_id = ee()->session->flashdata('rank_id');
 
 		$data = array();
 		foreach ($ranks as $rank)
 		{
-			$edit_url = ee('CP/URL', $this->base . 'edit/rank/' . $rank->rank_id);
+			$edit_url = ee('CP/URL')->make($this->base . 'edit/rank/' . $rank->rank_id);
 
 			$row = array(
 				array(
@@ -2226,7 +2222,7 @@ class Forum_mcp extends CP_Controller {
 		}
 		$table->setData($data);
 
-		$base_url = ee('CP/URL', $this->base . 'ranks');
+		$base_url = ee('CP/URL')->make($this->base . 'ranks');
 
 		$vars = array(
 			'cp_page_title' => lang('member_ranks'),
@@ -2280,7 +2276,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('create_member_rank'),
-			'base_url' => ee('CP/URL', $this->base . 'create/rank/'),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/rank/'),
 			'save_btn_text' => 'btn_save_rank',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->rankForm($rank),
@@ -2293,7 +2289,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
+				ee('CP/URL')->make($this->base. 'ranks')->compile() => lang('member_ranks')
 			),
 			'heading'    => $vars['cp_page_title'],
 		);
@@ -2325,7 +2321,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('edit_member_rank'),
-			'base_url' => ee('CP/URL', $this->base . 'edit/rank/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/rank/' . $id),
 			'save_btn_text' => 'btn_save_rank',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->rankForm($rank),
@@ -2338,7 +2334,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
+				ee('CP/URL')->make($this->base. 'ranks')->compile() => lang('member_ranks')
 			),
 			'heading'    => $vars['cp_page_title'],
 		);
@@ -2433,7 +2429,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_rank_success_desc'), $rank->rank_title))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . '/ranks'));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/ranks'));
 	}
 
 	private function removeRanks($ids)
@@ -2456,7 +2452,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody($rank_titles)
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . 'ranks', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . 'ranks', ee()->cp->get_url_state()));
 	}
 
 	// --------------------------------------------------------------------
@@ -2496,7 +2492,7 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$new_url = ee('CP/URL', $this->base . 'create/admin/' . $board_id);
+		$new_url = ee('CP/URL')->make($this->base . 'create/admin/' . $board_id);
 		$table->setNoResultsText('no_admins', 'create_new_admin', $new_url);
 
 		$admin_id = ee()->session->flashdata('admin_id');
@@ -2530,7 +2526,7 @@ class Forum_mcp extends CP_Controller {
 		}
 		$table->setData($data);
 
-		$base_url = ee('CP/URL', $this->base . 'admins/' . $board_id);
+		$base_url = ee('CP/URL')->make($this->base . 'admins/' . $board_id);
 
 		$vars = array(
 			'cp_page_title'   => lang('administrators'),
@@ -2561,7 +2557,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'    => $body,
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading' => lang('administrators'),
 		);
@@ -2597,7 +2593,7 @@ class Forum_mcp extends CP_Controller {
 					->addToBody(sprintf(lang('create_administrator_success_desc'), $admin->getAdminName()))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', $this->base . 'admins/' . $board_id));
+				ee()->functions->redirect(ee('CP/URL')->make($this->base . 'admins/' . $board_id));
 			}
 		}
 
@@ -2605,7 +2601,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => lang('create_administrator'),
-			'base_url' => ee('CP/URL', $this->base . 'create/admin/' . $board_id),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/admin/' . $board_id),
 			'save_btn_text' => 'btn_save_administrator',
 			'save_btn_text_working' => 'btn_saving',
 		);
@@ -2660,7 +2656,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 		);
@@ -2754,13 +2750,11 @@ class Forum_mcp extends CP_Controller {
 			->addToBody($forum_names)
 			->defer();
 
-		$return = ee('CP/URL', $this->base);
+		$return = ee('CP/URL')->make($this->base);
 
 		if (ee()->input->get_post('return'))
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -2788,7 +2782,7 @@ class Forum_mcp extends CP_Controller {
 			->order('forum_order', 'asc')
 			->all();
 
-		$base_url = ee('CP/URL', $this->base . 'moderators/' . $id);
+		$base_url = ee('CP/URL')->make($this->base . 'moderators/' . $id);
 
 		foreach ($boards_categories as $i => $category)
 		{
@@ -2804,7 +2798,7 @@ class Forum_mcp extends CP_Controller {
 					)
 				)
 			);
-			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
+			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id));
 
 			$data = array();
 			foreach ($category->Forums->sortBy('forum_order') as $forum)
@@ -2814,7 +2808,7 @@ class Forum_mcp extends CP_Controller {
 				{
 					$moderators[] = array(
 						'name' => $mod->getModeratorName(),
-						'edit_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $mod->mod_id),
+						'edit_url' => ee('CP/URL')->make($this->base . 'edit/moderator/' . $mod->mod_id),
 						'confirm' => lang('moderator') . ': <b>' . $mod->getModeratorName() . '</b>',
 						'id' => $mod->mod_id
 					);
@@ -2825,7 +2819,7 @@ class Forum_mcp extends CP_Controller {
 					(empty($moderators)) ? '' : ee('View')->make('forum:mod-subtable')->render(array('moderators' => $moderators)),
 					array('toolbar_items' => array(
 						'add' => array(
-							'href' => ee('CP/URL', $this->base . 'create/moderator/' . $forum->forum_id),
+							'href' => ee('CP/URL')->make($this->base . 'create/moderator/' . $forum->forum_id),
 							'title' => lang('add_moderator')
 						)
 					))
@@ -2851,7 +2845,7 @@ class Forum_mcp extends CP_Controller {
 			'board' => $board,
 			'categories' => $categories,
 			'base_url' => $base_url,
-			'remove_url' => ee('CP/URL', $this->base . 'remove/moderator'),
+			'remove_url' => ee('CP/URL')->make($this->base . 'remove/moderator'),
 		);
 
 		$body = ee('View')->make('forum:moderators')->render($vars);
@@ -2867,7 +2861,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'    => $body,
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL')->make($this->base. 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading' => lang('moderators'),
 		);
@@ -2907,7 +2901,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('create_moderator_in'), $forum->forum_name),
-			'base_url' => ee('CP/URL', $this->base . 'create/moderator/' . $forum_id),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/moderator/' . $forum_id),
 			'save_btn_text' => 'btn_save_moderator',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->moderatorForm($moderator),
@@ -2920,8 +2914,8 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
-				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
+				ee('CP/URL')->make($this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
+				ee('CP/URL')->make($this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
 			),
 			'heading'    => lang('create_moderator'),
 		);
@@ -2957,7 +2951,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_moderator_in'), $forum->forum_name),
-			'base_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $id),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/moderator/' . $id),
 			'save_btn_text' => 'btn_save_moderator',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->moderatorForm($moderator),
@@ -2970,8 +2964,8 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
-				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
+				ee('CP/URL')->make($this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
+				ee('CP/URL')->make($this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
 			),
 			'heading'    => lang('edit_moderator'),
 		);
@@ -3168,7 +3162,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_moderator_success_desc'), $moderator->getModeratorName()))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . 'moderators/' . $moderator->board_id));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . 'moderators/' . $moderator->board_id));
 	}
 
 	private function removeModerator($id)
@@ -3192,7 +3186,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang('moderator_removed_desc'), $name))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->base . 'moderators/' . $board_id));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . 'moderators/' . $board_id));
 	}
 
 	// --------------------------------------------------------------------

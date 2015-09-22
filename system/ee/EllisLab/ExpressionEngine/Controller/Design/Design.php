@@ -74,7 +74,7 @@ class Design extends AbstractDesignController {
 
 			if ( ! $group)
 			{
-				ee()->functions->redirect(ee('CP/URL', 'design/system'));
+				ee()->functions->redirect(ee('CP/URL')->make('design/system'));
 			}
 		}
 		else
@@ -100,7 +100,7 @@ class Design extends AbstractDesignController {
 			if ($this->hasEditTemplatePrivileges($group->group_id))
 			{
 				$this->remove(ee()->input->post('selection'));
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group_name, ee()->cp->get_url_state()));
+				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name, ee()->cp->get_url_state()));
 			}
 			else
 			{
@@ -119,7 +119,7 @@ class Design extends AbstractDesignController {
 		$vars['show_new_template_button'] = TRUE;
 		$vars['group_id'] = $group->group_name;
 
-		$base_url = ee('CP/URL', 'design/manager/' . $group->group_name);
+		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
 
 		$table = $this->buildTableFromTemplateCollection($group->Templates);
 
@@ -135,7 +135,7 @@ class Design extends AbstractDesignController {
 				->render($base_url);
 		}
 
-		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###')->compile());
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(

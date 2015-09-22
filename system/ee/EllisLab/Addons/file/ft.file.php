@@ -187,7 +187,7 @@ class File_ft extends EE_Fieldtype {
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => ee('CP/URL', $fp->controller, array('directory' => $allowed_file_dirs))
+				'fp_url' => ee('CP/URL')->make($fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
 
@@ -732,7 +732,7 @@ CSS;
 			ee()->lang->load('fieldtypes');
 			return sprintf(
 				lang('file_ft_no_upload_directories'),
-				ee('CP/URL', 'files/uploads/create')
+				ee('CP/URL')->make('files/uploads/create')
 			);
 		}
 

@@ -44,7 +44,7 @@ class FilePicker {
 			$qs['hasFilters'] = $data['hasFilters'];
 		}
 
-		$href = ee('CP/URL', $this->controller, $qs);
+		$href = ee('CP/URL')->make($this->controller, $qs);
 		$extra = "";
 		$class = "";
 

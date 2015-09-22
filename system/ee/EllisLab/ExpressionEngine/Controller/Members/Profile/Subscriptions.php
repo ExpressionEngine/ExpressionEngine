@@ -40,7 +40,7 @@ class Subscriptions extends Profile {
 		parent::__construct();
 		ee()->load->library('members');
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}
 
 	/**
@@ -151,7 +151,7 @@ class Subscriptions extends Profile {
 			->withTitle(lang('unsubscribe_success'))
 			->addToBody($cp_message)
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 	}
 
 }

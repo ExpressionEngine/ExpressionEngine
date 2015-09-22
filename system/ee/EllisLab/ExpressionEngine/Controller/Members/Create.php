@@ -43,7 +43,7 @@ class Create extends Members {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->base_url = ee('CP/URL', $this->base_url);
+		$this->base_url = ee('CP/URL')->make($this->base_url);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
@@ -314,7 +314,7 @@ class Create extends Members {
 			->addToBody(lang('member_updated_desc'))
 			->defer();
 
-		$this->functions->redirect(ee('CP/URL', 'members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
+		$this->functions->redirect(ee('CP/URL')->make('members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
 	}
 }
 // END CLASS

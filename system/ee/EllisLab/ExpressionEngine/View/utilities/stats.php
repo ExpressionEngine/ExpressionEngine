@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
-	<?=form_open(ee('CP/URL', 'utilities/stats/sync'))?>
+	<?=form_open(ee('CP/URL')->make('utilities/stats/sync'))?>
 		<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('ee:_shared/table', $table); ?>

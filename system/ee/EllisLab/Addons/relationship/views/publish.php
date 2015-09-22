@@ -30,10 +30,10 @@
 			<div class="no-results<?php if ( ! empty($entries)) echo " hidden" ?>">
 				<?=lang('no_entries_found')?>
 				<?php if (count($channels) == 1): ?>
-				<a class="btn action" href="<?=ee('CP/URL', 'publish/create/' . $channels[0]->channel_id)?>" data-channel-id="<?=$channels[0]->channel_id?>"><?=lang('btn_create_new')?></a>
+				<a class="btn action" href="<?=ee('CP/URL')->make('publish/create/' . $channels[0]->channel_id)?>" data-channel-id="<?=$channels[0]->channel_id?>"><?=lang('btn_create_new')?></a>
 				<?php else: ?>
 					<?php foreach($channels as $channel): ?>
-						<a class="btn action hidden" href="<?=ee('CP/URL', 'publish/create/' . $channel->channel_id)?>" data-channel-id="<?=$channel->channel_id?>"><?=lang('btn_create_new')?></a>
+						<a class="btn action hidden" href="<?=ee('CP/URL')->make('publish/create/' . $channel->channel_id)?>" data-channel-id="<?=$channel->channel_id?>"><?=lang('btn_create_new')?></a>
 					<?php endforeach; ?>
 				<div class="filters">
 					<ul>
@@ -42,7 +42,7 @@
 							<div class="sub-menu">
 								<ul>
 									<?php foreach($channels as $channel): ?>
-										<li><a href="<?=ee('CP/URL', 'publish/create/' . $channel->channel_id)?>"><?=$channel->channel_title?></a></li>
+										<li><a href="<?=ee('CP/URL')->make('publish/create/' . $channel->channel_id)?>"><?=$channel->channel_title?></a></li>
 									<?php endforeach; ?>
 								</ul>
 							</div>
