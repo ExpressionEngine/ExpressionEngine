@@ -128,7 +128,7 @@ class Routes extends Design {
 
 			$row = array();
 			$row['columns'] = array(
-				htmlentities($group->group_name, ENT_QUOTES),
+				htmlentities($group->group_name, ENT_QUOTES, 'UTF-8'),
 				$template->template_name,
 				array(
 					'html' => $route,

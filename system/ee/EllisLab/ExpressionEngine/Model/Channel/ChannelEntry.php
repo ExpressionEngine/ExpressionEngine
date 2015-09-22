@@ -712,29 +712,30 @@ class ChannelEntry extends ContentModel {
 
 	public function populateAuthors($field)
 	{
-		// Authors
 		$author_options = array();
 
-		// Get all admins
-		$authors = ee('Model')->get('Member')
-			->filter('group_id', 1)
+		// First, get member groups who should be in the list
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('include_in_authorlist', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		foreach ($authors as $author)
+		// Then authors who are individually selected to appear in author list
+		$authors = ee('Model')->get('Member')
+			->filter('in_authorlist', 'y');
+
+		// Then grab any members that are part of the member groups we found
+		if ($member_groups)
 		{
-			$author_options[$author->member_id] = $author->getMemberName();
+			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}
 
-		// Get all members assigned to this channel
-		foreach ($this->Channel->AssignedMemberGroups as $group)
+		$authors->order('screen_name');
+		$authors->order('username');
+
+		foreach ($authors->all() as $author)
 		{
-			if ($group->include_in_authorlist === TRUE)
-			{
-				foreach ($group->Members as $member)
-				{
-					$author_options[$member->member_id] = $member->getMemberName();
-				}
-			}
+			$author_options[$author->getId()] = $author->getMemberName();
 		}
 
 		$field->setItem('field_list_items', $author_options);

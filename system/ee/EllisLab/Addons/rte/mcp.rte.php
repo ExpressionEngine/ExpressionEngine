@@ -83,12 +83,12 @@ class Rte_mcp {
 		foreach ($toolsets as $t)
 		{
 			$url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
-			$toolset_name = htmlentities($t['name'], ENT_QUOTES);
+			$toolset_name = htmlentities($t['name'], ENT_QUOTES, 'UTF-8');
 			$checkbox = array(
 				'name' => 'selection[]',
 				'value' => $t['toolset_id'],
 				'data'	=> array(
-					'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
+					'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES, 'UTF-8') . '</b>'
 				)
 			);
 
@@ -113,7 +113,7 @@ class Rte_mcp {
 
 			if ($t['enabled'] == 'y')
 			{
-				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES);
+				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES, 'UTF-8');
 				$toolset['status'] = lang('enabled');
 			}
 

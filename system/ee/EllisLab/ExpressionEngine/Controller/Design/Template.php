@@ -241,7 +241,7 @@ class Template extends AbstractDesignController {
 				// Save a new revision
 				$this->saveNewTemplateRevision($template);
 
-				$alert = ee('CP/Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
@@ -290,7 +290,6 @@ class Template extends AbstractDesignController {
 		{
 			$vars['tabs']['revisions'] = $this->renderRevisionsPartial($template, $version_id);
 		}
-
 
 		$view_url = ee()->functions->fetch_site_index();
 		$view_url = rtrim($view_url, '/').'/';

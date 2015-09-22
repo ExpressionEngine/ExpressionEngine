@@ -47,6 +47,15 @@ class SpecialtyTemplate extends Model {
 		),
 	);
 
+	protected static $_validation_rules = array(
+		'enable_template'  => 'enum[y,n]',
+		'template_name'    => 'required',
+		'data_title'       => 'required',
+		'template_type'    => 'required',
+		'template_subtype' => 'required',
+		'template_data'    => 'required',
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $enable_template;

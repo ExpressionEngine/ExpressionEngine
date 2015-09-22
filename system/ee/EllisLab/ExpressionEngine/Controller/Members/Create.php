@@ -229,7 +229,7 @@ class Create extends Members {
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= $this->config->item('default_site_timezone');
-		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%y';
+		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%Y';
 		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : '12';
 		$data['include_seconds'] = $this->config->item('include_seconds') ? $this->config->item('include_seconds') : 'n';
 

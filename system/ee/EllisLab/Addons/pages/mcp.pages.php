@@ -114,7 +114,7 @@ class Pages_mcp {
 					'name' => 'selection[]',
 					'value' => $entry_id,
 					'data'	=> array(
-						'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES) . '</b>'
+						'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 

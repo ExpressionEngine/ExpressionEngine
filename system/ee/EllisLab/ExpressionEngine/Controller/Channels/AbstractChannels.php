@@ -196,7 +196,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'channels[]',
 					'value' => $channel->getId(),
 					'data'	=> array(
-						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -266,7 +266,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'content' => $field->field_label,
 					'href' => $edit_url
 				),
-				'<var>{' . htmlentities($field->field_name, ENT_QUOTES) . '}</var>',
+				'<var>{' . htmlentities($field->field_name, ENT_QUOTES, 'UTF-8') . '}</var>',
 				$field->field_type,
 				array('toolbar_items' => array(
 					'edit' => array(
@@ -282,7 +282,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $field->field_id,
 					'data' => array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -366,7 +366,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $group->group_id,
 					'data' => array(
-						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -467,7 +467,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'cat_groups[]',
 					'value' => $group->getId(),
 					'data'	=> array(
-						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -611,7 +611,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'status_groups[]',
 					'value' => $group->getId(),
 					'data'	=> array(
-						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
 					// Cannot delete default group
 					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL

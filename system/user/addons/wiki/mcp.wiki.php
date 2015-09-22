@@ -2,6 +2,9 @@
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
+
+
+
 //use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 //use EllisLab\ExpressionEngine\Module\Member\Model;
 
@@ -33,6 +36,7 @@ class Wiki_mcp {
 
 	var $_base_url = '';
 	private $wiki_errors = array();
+	private $member_groups = array();
 
 	/**
 	  *  Constructor
@@ -95,7 +99,7 @@ class Wiki_mcp {
 					'name' => 'selection[]',
 					'value' => $row->wiki_id,
 					'data'	=> array(
-						'confirm' => lang('wiki') . ': <b>' . htmlentities($row->wiki_label_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('wiki') . ': <b>' . htmlentities($row->wiki_label_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 
@@ -245,6 +249,14 @@ class Wiki_mcp {
 	}
 
 
+	function get_member_groups()
+	{
+		$this->member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(2,3,4))
+			->order('group_title')
+			->all();
+	}
+
 
 	// -------------------------------------------------------------------------
 
@@ -257,6 +269,8 @@ class Wiki_mcp {
 	 */
 	public function edit_wiki($wiki_id = 0)
 	{
+		$this->get_member_groups();
+
 		ee()->load->helper('form');
 		$alert_key = (is_null($wiki_id)) ? 'created' : 'updated';
 
@@ -334,61 +348,6 @@ class Wiki_mcp {
 
 		}
 
-
-			/*
-			// Need to convert this field from its presentation serialization
-			$valid_wiki->wiki_moderation_emails = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['wiki_moderation_emails']), ','));
-
-			$result = $valid_wiki->validate();
-
-			if ($result->isValid())
-			{
-				$wiki = $valid_wiki->save();
-
-				// If it's new, highlight
-				if ( ! $wiki_id)
-				{
-					ee()->session->set_flashdata('highlight_id', $wiki->getId());
-				}
-
-
-				ee('CP/Alert')->makeInline('wikis-table')
-					->asSuccess()
-					->withTitle(lang('wiki_'.$alert_key))
-					->addToBody(sprintf(lang('wiki_'.$alert_key.'_desc'), $wiki->wiki_label_name))
-					->defer();
-
-				ee()->functions->redirect($this->_base_url);
-
-			}
-			else
-			{
-					ee()->load->library('form_validation');
-					ee()->form_validation->_error_array = $result->renderErrors();
-
-				// Do some fenagling to fit our namespace errors into
-				//  Form Validation
-				if (isset(ee()->form_validation->_error_array['wiki_namespaces_list']))
-				{
-					// This is an array, Form Validation expects strings
-					unset(ee()->form_validation->_error_array['wiki_namespaces_list']);
-
-					// We need a dummy error here to set the invalid class on the parent fieldset
-					ee()->form_validation->_error_array['wiki_namespaces_data'] = 'asdf';
-				}
-
-					ee('CP/Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('settings_error'))
-					->addToBody(lang('settings_error_desc'))
-					->now();
-			}
-
-		} // End Validation check on posted data
-
-
-*/
-
 		$vars['sections'] = $this->make_form($wiki_id, $valid_wiki);
 
 		$vars['base_url'] = $this->_base_url.'/update/wiki&wiki_id='.$wiki_id;
@@ -447,7 +406,7 @@ class Wiki_mcp {
 		}
 		else
 		{
-			$wiki->WikiNamespaces = ee('Model')->get('WikiNamespaces', $existing_ids)->all();
+			$wiki->WikiNamespaces = ee('Model')->get('wiki:WikiNamespace', $existing_ids)->all();
 		}
 
 		$validate = array();
@@ -460,10 +419,11 @@ class Wiki_mcp {
 			$validate[$row_id] = $model;
 		}
 
+
 		foreach ($new_ids as $row_id => $columns)
 		{
-			$model = ee('Model')->make('FileDimension', $columns);
-			$upload_destination->FileDimensions[] = $model;
+			$model = ee('Model')->make('wiki:WikiNamespace', $columns);
+			$wiki->WikiNamespaces[] = $model;
 
 			$validate[$row_id] = $model;
 		}
@@ -474,11 +434,11 @@ class Wiki_mcp {
 
 			if ( ! $result->isValid())
 			{
-				$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
+				$this->wiki_errors['namespaces'][$row_id] = $result->renderErrors();
 			}
 		}
 
-		return empty($this->upload_errors);
+		return empty($this->wiki_errors);
 	}
 
 
@@ -499,13 +459,8 @@ class Wiki_mcp {
 				);
 
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(2,3,4))
-			->order('group_title')
-			->all();
-
 		$member_group_options = array();
-		foreach ($member_groups as $group)
+		foreach ($this->member_groups as $group)
 		{
 			$member_group_options[$group->group_id] = $group->group_title;
 		}
@@ -713,10 +668,8 @@ class Wiki_mcp {
 		$grid->setNoResultsText('no_namespaces', 'add_namespaces');
 
 		$member_choices = array();
-		$member_groups = ee()->api->get('MemberGroup');
-		$member_groups = $member_groups->all();
 
-		foreach ($member_groups as $group)
+		foreach ($this->member_groups as $group)
 		{
 			$member_choices[$group->group_id] = $group->group_title;
 		}
@@ -772,11 +725,11 @@ class Wiki_mcp {
 		if ( ! empty($namespaces))
 		{
 			$data = array();
-
+//echo '<pre>'; print_r($namespaces);
 			foreach($namespaces as $namespace)
 			{
 				$data[] = array(
-					'attrs' => array('row_id' => $namespace['id']),
+					'attrs' => array('row_id' => $namespace['namespace_id']),
 					'columns' => $this->getGridRow($member_choices, $namespace),
 				);
 			}
@@ -802,15 +755,6 @@ class Wiki_mcp {
 			'namespace_name' => '',
 		);
 
-		if ( ! isset($namespace['namespace_users']) )
-		{
-			$namespace['namespace_users'] = array();
-		}
-		elseif ( ! is_array($namespace['namespace_users']))
-		{
-			$namespace['namespace_users'] = explode('|', $namespace['namespace_users']);
-		}
-
 		if ( ! isset($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = array();
@@ -818,6 +762,16 @@ class Wiki_mcp {
 		elseif ( ! is_array($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = explode('|', $namespace['namespace_admins']);
+		}
+
+
+		if ( ! isset($namespace['namespace_users']) )
+		{
+			$namespace['namespace_users'] = array();
+		}
+		elseif ( ! is_array($namespace['namespace_users']))
+		{
+			$namespace['namespace_users'] = explode('|', $namespace['namespace_users']);
 		}
 
 		$namespace = array_merge($defaults, $namespace);
@@ -854,12 +808,12 @@ class Wiki_mcp {
 				'error' => $this->getGridFieldError($namespace, 'namespace_name')
 			),
 			array(
-				'html' => $user_checkboxes,
-				'error' => $this->getGridFieldError($namespace, 'namespace_users')
-			),
-			array(
 				'html' => $admin_checkboxes,
 				'error' => $this->getGridFieldError($namespace, 'namespace_admins')
+			),
+			array(
+				'html' => $user_checkboxes,
+				'error' => $this->getGridFieldError($namespace, 'namespace_users')
 			)
 		);
 	}

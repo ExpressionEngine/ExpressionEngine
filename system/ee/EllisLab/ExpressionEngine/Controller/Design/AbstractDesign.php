@@ -331,7 +331,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		// Loop through templates and add them to the zip
 		$templates->each(function($template) use($zip) {
-				$filename = $template->getTemplateGroup()->group_name . 'group/' . $template->template_name . $template->getFileExtension();
+				$filename = $template->getTemplateGroup()->group_name . '.group/' . $template->template_name . $template->getFileExtension();
 				$zip->addFromString($filename, $template->template_data);
 			});
 
@@ -376,8 +376,9 @@ abstract class AbstractDesign extends CP_Controller {
 		foreach ($templates as $template)
 		{
 			$group = $template->getTemplateGroup();
-			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+			$template_name = htmlentities($template->template_name, ENT_QUOTES, 'UTF-8');
 			$edit_url = ee('CP/URL')->make('design/template/edit/' . $template->template_id);
+			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
 			if ($include_group_name)
 			{
@@ -440,7 +441,7 @@ abstract class AbstractDesign extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $template->template_id,
 					'data' => array(
-						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

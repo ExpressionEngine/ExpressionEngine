@@ -141,7 +141,7 @@ class Groups extends Members\Members {
 					'value' => $group->group_id,
 					'disabled' => $bulk_checkbox_diabled,
 					'data'	=> array(
-						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

@@ -79,8 +79,16 @@ class Wiki extends Model {
 		'WikiNamespaces' => array(
 			'type' => 'hasMany',
 			'model' => 'WikiNamespace'
-		)
+		),
+		'Pages' => array(
+			'type'  => 'hasMany',
+			'model' => 'Page'
+		)		
 	);
+	
+	protected static $_events = array(
+		'afterInsert'
+	);	
 
 	protected $wiki_id;
 	protected $wiki_label_name;
@@ -121,5 +129,47 @@ class Wiki extends Model {
 
 		return TRUE;
 	}
+	
+	public function onAfterInsert()
+	{
+	
+		$this->Page->wiki_id = $this->wiki_id;
+		$this->Page->page_name = 'index';
+		$this->Page->page_namespace = '';		
+		$this->Page->last_updated	= $this->localize->now;
+		$this->Page->save();
+
+		//ee('Model')->make('wiki:Page', $data)->save();`
+	}
+
+
+
+/*	
+		//  Default Index Page
+		$this->lang->loadfile('wiki');
+
+		$data = array(	'wiki_id'		=> $wiki_id,
+						'page_name'		=> 'index',
+						'page_namespace'	=> '',
+						'last_updated'	=> $this->localize->now);
+
+		$this->db->insert('wiki_page', $data);
+		$page_id = $this->db->insert_id();
+
+		$data = array(	'page_id'			=> $page_id,
+						'wiki_id'			=> $wiki_id,
+						'revision_date'		=> $this->localize->now,
+						'revision_author'	=> $this->session->userdata('member_id'),
+						'revision_notes'	=> $this->lang->line('default_index_note'),
+						'page_content'		=> $this->lang->line('default_index_content')
+					 );
+
+		$this->db->insert('wiki_revisions', $data);
+		$last_revision_id = $this->db->insert_id();
+
+		$this->db->where('page_id', $page_id);
+		$this->db->update('wiki_page', array('last_revision_id' => $last_revision_id));
+	
+*/	
 
 }

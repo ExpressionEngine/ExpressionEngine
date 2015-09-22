@@ -31,17 +31,7 @@
 		</div>
 	</fieldset>
 
-	<fieldset class="form-ctrls required <?=form_error_class('password_auth')?>">
-		<div class="password-req">
-			<div class="setting-txt col w-8">
-				<h3><?=lang('current_password')?></h3>
-				<em><?=lang('sql_password_desc')?></em>
-			</div>
-			<div class="setting-field col w-8 last">
-				<input type="password" name="password_auth" value="">
-				<?=form_error('password_auth')?>
-			</div>
-		</div>
+	<fieldset class="form-ctrls">
 		<?=cp_form_submit('query_btn', 'query_btn_saving')?>
 	</fieldset>
 </form>

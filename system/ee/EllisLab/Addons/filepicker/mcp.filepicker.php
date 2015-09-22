@@ -44,10 +44,7 @@ class Filepicker_mcp {
 
 		$directories = $dirs->indexBy('id');
 
-		if ( ! empty(ee()->input->get('directory')))
-		{
-			$id = ee()->input->get('directory');
-		}
+		$id = ee()->input->get('directory');
 
 		if (empty($id) || $id == 'all')
 		{

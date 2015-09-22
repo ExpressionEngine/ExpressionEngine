@@ -58,8 +58,8 @@ class Edit extends AbstractPublishController {
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
-		ee()->view->filters = $filters->render($base_url);
-		ee()->view->search_value = ee()->input->get_post('search');
+		$vars['filters'] = $filters->render($base_url);
+		$vars['search_value'] = ee()->input->get_post('search');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
@@ -115,14 +115,14 @@ class Edit extends AbstractPublishController {
 			$autosaves = $entry->Autosaves->count();
 
 			$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES). '</a>';
+			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8'). '</a>';
 
 			if ($autosaves)
 			{
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			if ($entry->comment_total > 0)
 			{
@@ -163,7 +163,7 @@ class Edit extends AbstractPublishController {
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -206,17 +206,26 @@ class Edit extends AbstractPublishController {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
+				'cp/publish/entry-list'
 			),
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_title);
+			$vars['cp_heading'] = sprintf(lang('all_channel_entries'), $channel_title);
+		}
+
+		if (AJAX_REQUEST)
+		{
+			return array(
+				'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
+				'url' => $vars['form_url']->compile()
+			);
 		}
 
 		ee()->cp->render('publish/edit/index', $vars);
@@ -374,7 +383,7 @@ class Edit extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/channel/publish')
+			'file' => array('cp/publish/publish')
 		));
 
 		ee()->view->cp_breadcrumbs = array(

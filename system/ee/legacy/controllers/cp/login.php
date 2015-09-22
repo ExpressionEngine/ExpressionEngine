@@ -52,7 +52,10 @@ class Login extends CP_Controller {
 		if ($this->session->userdata('member_id') !== 0 &&
 			ee()->session->userdata('admin_sess') == 1)
 		{
-			return $this->functions->redirect(BASE);
+			$member = ee('Model')->get('Member')
+				->filter('member_id', ee()->session->userdata('member_id'))
+				->first();
+			return $this->functions->redirect($member->getCPHomepageURL());
 		}
 
 		// If an ajax request ends up here the user is probably logged out

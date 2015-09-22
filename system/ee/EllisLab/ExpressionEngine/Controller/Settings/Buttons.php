@@ -90,7 +90,7 @@ class Buttons extends Settings {
 					'name' => 'selection[]',
 					'value' => $button->id,
 					'data'	=> array(
-						'confirm' => lang('html_button') . ': <b>' . htmlentities($button->tag_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('html_button') . ': <b>' . htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

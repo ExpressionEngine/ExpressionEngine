@@ -81,7 +81,7 @@ class Bookmarks extends Profile {
 					'name' => 'selection[]',
 					'value' => $id,
 					'data'	=> array(
-						'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

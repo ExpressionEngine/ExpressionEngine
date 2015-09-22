@@ -204,7 +204,7 @@ class Forum_mcp extends CP_Controller {
 							'name' => 'selection[]',
 							'value' => $forum->forum_id,
 							'data'	=> array(
-								'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
+								'confirm' => lang('forum') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
 							)
 						)
 					);
@@ -2203,7 +2203,7 @@ class Forum_mcp extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $rank->rank_id,
 					'data'	=> array(
-						'confirm' => lang('rank') . ': <b>' . htmlentities($rank->rank_title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('rank') . ': <b>' . htmlentities($rank->rank_title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -2507,7 +2507,7 @@ class Forum_mcp extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $admin->admin_id,
 					'data'	=> array(
-						'confirm' => lang('admin') . ': <b>' . htmlentities($admin->getAdminName(), ENT_QUOTES) . '</b>'
+						'confirm' => lang('admin') . ': <b>' . htmlentities($admin->getAdminName(), ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

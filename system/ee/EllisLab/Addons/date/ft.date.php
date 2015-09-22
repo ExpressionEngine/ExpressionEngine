@@ -215,7 +215,7 @@ class Date_ft extends EE_Fieldtype {
 			lang('cal_june'),
 			lang('cal_july'),
 			lang('cal_aug'),
-			lang('cal_sept'),
+			lang('cal_sep'),
 			lang('cal_oct'),
 			lang('cal_nov'),
 			lang('cal_dec')

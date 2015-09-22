@@ -8,11 +8,20 @@ return array(
 	'version'     => '2.3',
 	'namespace'   => 'User\Addons\Wiki',
 	'settings_exist' => TRUE,
-	'docs_url'    => 'http://ellislab.com/expressionengine/user-guide/modules/wiki/index.html',
+	'docs_url'    => 'http://github/wiki/index.html',
 	'models' => array(
 		'WikiNamespace' => 'Model\WikiNamespace',
-		'Wiki' => 'Model\Wiki'
-	)
+		'Wiki' => 'Model\Wiki',
+		'Page' => 'Model\Page',
+		'Revision' => 'Model\Revision'
+	),
+	'models.dependencies' => array(
+		'Revision'   => array(
+			'ee:Member'
+		)
+	)	
+	
+
 
 /*
 	'models' => array(
@@ -24,6 +33,19 @@ return array(
 		'Search' => 'Model\Search',
 		'Upload' => 'Model\Upload',
 		'Wiki' => 'Model\Wiki'
-	)
+		
+	),
+
+	'models.dependencies' => array(
+		'Revision'   => array(
+			'ee:Member'
+		),
+		'Upload'   => array(
+			'ee:Member'
+		)
+	)	
+
+	
+	
 */
 );

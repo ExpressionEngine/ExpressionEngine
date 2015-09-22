@@ -315,7 +315,7 @@ class Quicklinks extends Profile {
 					'name' => 'selection[]',
 					'value' => $quicklink['order'],
 					'data'	=> array(
-						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES) . '</b>'
+						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

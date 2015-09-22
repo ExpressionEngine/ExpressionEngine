@@ -113,12 +113,14 @@
 			e.preventDefault();
 		});
 
-		var ajaxTimer;
+		var ajaxTimer,
+			ajaxRequest;
 
 		function ajaxRefresh(elem, channelId, delay) {
-			var field = $(elem).closest('fieldset').find('div.col.last').eq(0);
-			var data = $(elem).closest('fieldset').serialize();
-			var url = EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field');
+			var field = $(elem).closest('fieldset').find('div.col.last').eq(0),
+				data = $(elem).closest('fieldset').serialize(),
+				url = EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
+				name = $(elem).attr('name');
 
 			if (field.length == 0) {
 				field = $(elem).closest('td');
@@ -134,16 +136,26 @@
 				data += '&channel=' + channelId;
 			}
 
+			// Cancel the last AJAX request
 			clearTimeout(ajaxTimer);
+			if (ajaxRequest) {
+				ajaxRequest.abort();
+			}
 
 			ajaxTimer = setTimeout(function() {
-				$.ajax({
+				ajaxRequest = $.ajax({
 					url: url,
 					data: data,
 					type: 'POST',
 					dataType: 'json',
 					success: function(ret) {
 						$(field).html(ret.html);
+
+						// Set focus back to current search field and place cursor at the end
+						var searchField = $('input[name='+name+']', field).focus(),
+							tmpStr = searchField.val();
+						searchField.val('');
+						searchField.val(tmpStr);
 					}
 				});
 			}, delay);

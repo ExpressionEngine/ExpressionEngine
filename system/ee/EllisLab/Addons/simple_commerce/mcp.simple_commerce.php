@@ -148,7 +148,7 @@ class Simple_commerce_mcp {
 					'name' => 'items[]',
 					'value' => $item->getId(),
 					'data'	=> array(
-						'confirm' => lang('item') . ': <b>' . htmlentities($item->ChannelEntry->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('item') . ': <b>' . htmlentities($item->ChannelEntry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -272,8 +272,8 @@ class Simple_commerce_mcp {
 
 		foreach ($entries->all() as $entry)
 		{
-			$title = htmlentities($entry->title, ENT_QUOTES);
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
+			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			$data[] = array(
 				$entry->entry_id,
@@ -284,7 +284,7 @@ class Simple_commerce_mcp {
 					'name' => 'entries[]',
 					'value' => $entry->entry_id,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -735,7 +735,7 @@ class Simple_commerce_mcp {
 					'name' => 'purchases[]',
 					'value' => $purchase->getId(),
 					'data'	=> array(
-						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->Item->ChannelEntry->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->Item->ChannelEntry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -1059,7 +1059,7 @@ class Simple_commerce_mcp {
 					'name' => 'templates[]',
 					'value' => $template->getId(),
 					'data'	=> array(
-						'confirm' => lang('template') . ': <b>' . htmlentities($template->getId(), ENT_QUOTES) . '</b>'
+						'confirm' => lang('template') . ': <b>' . htmlentities($template->getId(), ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

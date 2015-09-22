@@ -107,7 +107,7 @@ class Layouts extends AbstractChannelsController {
 					'name' => 'selection[]',
 					'value' => $layout->layout_id,
 					'data' => array(
-						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

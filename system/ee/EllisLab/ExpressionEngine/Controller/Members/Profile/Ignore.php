@@ -96,7 +96,7 @@ class Ignore extends Profile {
 							'name' => 'selection[]',
 							'value' => $member->member_id,
 							'data'	=> array(
-								'confirm' => lang('member') . ': <b>' . htmlentities($member->screen_name, ENT_QUOTES) . '</b>'
+								'confirm' => lang('member') . ': <b>' . htmlentities($member->screen_name, ENT_QUOTES, 'UTF-8') . '</b>'
 							)
 						)
 					),

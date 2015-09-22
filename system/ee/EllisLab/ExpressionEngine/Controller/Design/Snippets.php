@@ -127,7 +127,7 @@ class Snippets extends AbstractDesignController {
 					'name' => 'selection[]',
 					'value' => $snippet->snippet_id,
 					'data'	=> array(
-						'confirm' => lang('template_partial') . ': <b>' . htmlentities($snippet->snippet_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('template_partial') . ': <b>' . htmlentities($snippet->snippet_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
