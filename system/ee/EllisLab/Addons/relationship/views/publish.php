@@ -23,7 +23,7 @@
 			</ul>
 		</div>
 		<?php endif; ?>
-		<input class="relate-search" name="search" type="text" name="search" value="<?=ee()->input->post('search')?>" placeholder="<?=lang('search_avilable_entries')?>">
+		<input class="relate-search" type="text" name="search" value="<?=ee()->input->post('search')?>" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
 	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php $chosen = NULL; ?>
