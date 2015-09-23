@@ -31,6 +31,17 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
  */
 class Edit extends AbstractPublishController {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
+			&& ! ee()->cp->allowed_group('can_edit_self_entries'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * Displays all available entries
 	 *
@@ -51,6 +62,12 @@ class Edit extends AbstractPublishController {
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
+
+		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+		{
+			$entries->filter('author_id', ee()->session->userdata('member_id'));
+		}
+
 		$count = $entries->count();
 
 		if ( ! empty(ee()->view->search_value))
@@ -242,6 +259,12 @@ class Edit extends AbstractPublishController {
 			show_error(lang('no_entries_matching_that_criteria'));
 		}
 
+		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
+			&& $entry->author_id != ee()->session->userdata('member_id'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		// -------------------------------------------
 		// 'publish_form_entry_data' hook.
 		//  - Modify entry's data
@@ -295,6 +318,11 @@ class Edit extends AbstractPublishController {
 
 		if (count($_POST))
 		{
+			if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+			{
+				unset($_POST['author_id']);
+			}
+
 			$entry->set($_POST);
 
 			// if categories are not in POST, then they've unchecked everything
@@ -395,6 +423,12 @@ class Edit extends AbstractPublishController {
 
 	private function remove($entry_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_all_entries')
+			&& ! ee()->cp->allowed_group('can_delete_self_entries'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($entry_ids))
 		{
 			$entry_ids = array($entry_ids);
@@ -411,6 +445,11 @@ class Edit extends AbstractPublishController {
 			}
 
 			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
+		}
+
+		if ( ! ee()->cp->allowed_group('can_delete_all_entries'))
+		{
+			$entries->filter('author_id', ee()->session->userdata('member_id'));
 		}
 
 		$entry_names = $entries->all()->pluck('title');
