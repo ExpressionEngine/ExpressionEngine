@@ -108,7 +108,8 @@ class Filepicker_mcp {
 				->setDefaultValue($type);
 			$filters = $filters->add($imgFilter);
 
-			$perpage = $filters->values()['perpage'];
+			$perpage = $filters->values();
+			$perpage = $filter_values['perpage'];
 			$vars['filters'] = $filters->render($base_url);
 		}
 
