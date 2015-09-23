@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Database\Database;
  * This is the backend for all model interactions. It should never be exposed
  * directly to any code outside of this namespace. This includes no access from
  * userspace models. The only way to interact with it should be through the
- * model frontend.
+ * model facade.
  *
  * @package		ExpressionEngine
  * @category	Service
@@ -58,8 +58,8 @@ class DataStore {
 	/**
 	 * @param Object|String $name      The name of a model or an existing
 	 *                                 model instance
-	 * @param Frontend      $frontend  A frontend instance. The datastore
-	 *                                 doesn't care about the frontend, but
+	 * @param Facade      $facade      A facade instance. The datastore
+	 *                                 doesn't care about the facade, but
 	 *                                 the model and associations need it, so
 	 *                                 we pass it in to keep things properly
 	 *                                 isolated.
@@ -67,7 +67,7 @@ class DataStore {
 	 *                                 This will be marked as dirty! Use fill()
 	 *                                 if you need clean data (i.e. from db).
 	 */
-	public function make($name, Frontend $frontend, array $data = array())
+	public function make($name, Facade $facade, array $data = array())
 	{
 		if ($name instanceOf Model)
 		{
@@ -92,7 +92,7 @@ class DataStore {
 		}
 
 		$model->setName($name);
-		$model->setFrontend($frontend);
+		$model->setFacade($facade);
 
 		$this->initializeAssociationsOn($model);
 

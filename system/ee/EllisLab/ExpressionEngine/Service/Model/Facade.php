@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Model Frontend
+ * ExpressionEngine Model Facade
  *
  * This is the only way the datastore should be communicated with. Either via
  * the query builder using get() or by creating new instances via make().
@@ -34,7 +34,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Frontend {
+class Facade {
 
 	protected $datastore;
 	protected $validation;
@@ -75,7 +75,7 @@ class Frontend {
 			}
 		}
 
-		$builder->setFrontend($this);
+		$builder->setFacade($this);
 
 		return $builder;
 	}

@@ -113,10 +113,10 @@ return array(
 
 		'Model' => function($ee)
 		{
-			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
-			$frontend->setValidationFactory($ee->make('Validation'));
+			$facade = new Model\Facade($ee->make('Model/Datastore'));
+			$facade->setValidationFactory($ee->make('Validation'));
 
-			return $frontend;
+			return $facade;
 		},
 
 		'Spam' => function($ee)
