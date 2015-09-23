@@ -721,10 +721,9 @@ CSS;
 	 * Form Validation callback; makes sure there are file upload
 	 * directories available before allowing a new file field to be saved
 	 *
-	 * @param	string	Selected file dir
 	 * @return	boolean	Whether or not to pass validation
 	 */
-	public function _validate_file_settings($file_dir)
+	public function _validate_file_settings($key, $value, $params, $rule)
 	{
 		// count upload dirs
 		if ( ! $this->_check_directories())
@@ -751,11 +750,8 @@ CSS;
 	 */
 	public function _check_directories()
 	{
-		ee()->load->model('file_upload_preferences_model');
-		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
-
 		// count upload dirs
-		return (count($upload_dir_prefs) !== 0);
+		return (ee('Model')->get('UploadDestination')->filter('module_id', 0)->count() !== 0);
 	}
 
 	// --------------------------------------------------------------------
