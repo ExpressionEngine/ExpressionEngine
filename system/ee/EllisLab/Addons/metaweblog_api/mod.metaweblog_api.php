@@ -434,11 +434,6 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
-		{
-			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
-		}
-
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
 		{
 			// If there aren't any channels assigned to the user, bail out
@@ -466,6 +461,11 @@ class Metaweblog_api {
 		if ($query->num_rows() == 0)
 		{
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
+		}
+
+		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		{
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
@@ -725,11 +725,6 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
-		{
-			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
-		}
-
 		/** ---------------------------------------
 		/**  Parse Out Channel Information
 		/** ---------------------------------------*/
@@ -774,6 +769,11 @@ class Metaweblog_api {
 		if ($query->num_rows() == 0)
 		{
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
+		}
+
+		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		{
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		if ($entry_id != '')
@@ -959,11 +959,6 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
-		{
-			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
-		}
-
 		/** ---------------------------------------
 		/**  Parse Out Channel Information
 		/** ---------------------------------------*/
@@ -994,6 +989,11 @@ class Metaweblog_api {
 		if ($query->num_rows() == 0)
 		{
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
+		}
+
+		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		{
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		/** ---------------------------------------
@@ -1099,11 +1099,6 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
-		{
-			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
-		}
-
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
 		{
 			// If there aren't any channels assigned to the user, bail out
@@ -1133,6 +1128,11 @@ class Metaweblog_api {
 		if ($query->num_rows() == 0)
 		{
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
+		}
+
+		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		{
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
