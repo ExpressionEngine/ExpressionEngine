@@ -52,6 +52,15 @@
 		setupFileField();
 
 		Grid.bind('file', 'display', function(cell) {
+			var button = $('.file-field-filepicker', cell),
+				input = $('input[type="hidden"]', cell),
+				safe_name = input.attr('name').replace(/[\[\]']+/g, '_');
+
+			button.attr('data-input-value', input.attr('name'));
+			button.attr('data-input-image', safe_name);
+
+			$('.file-chosen img', cell).attr('id', safe_name);
+
 			setupFileField(cell);
 		})
 	});
