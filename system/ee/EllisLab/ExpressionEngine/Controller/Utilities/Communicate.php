@@ -41,7 +41,7 @@ class Communicate extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_comm'))
+		if ( ! ee()->cp->allowed_group('can_access_comm'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

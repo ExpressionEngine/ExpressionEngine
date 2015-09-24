@@ -54,7 +54,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		ee()->lang->loadfile('filemanager');
 
-		ee()->view->can_admin_upload_prefs = ee()->cp->allowed_group('can_admin_upload_prefs');
+		ee()->view->can_edit_upload_directories = ee()->cp->allowed_group('can_edit_upload_directories');
 	}
 
 	protected function generateSidebar($active = NULL)
@@ -72,7 +72,7 @@ abstract class AbstractFiles extends CP_Controller {
 		$list = $header->addFolderList('directory')
 			->withNoResultsText(lang('zero_directories_found'));
 
-		if (ee()->cp->allowed_group('can_admin_upload_prefs'))
+		if (ee()->cp->allowed_group('can_create_upload_directories'))
 		{
 			$header->withButton(lang('new'), ee('CP/URL')->make('files/uploads/create'));
 
@@ -105,7 +105,7 @@ abstract class AbstractFiles extends CP_Controller {
 				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $destination->name . '</b>')
 				->identifiedBy($destination->id);
 
-			if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
+			if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
 			{
 				$item->cannotEdit()->cannotRemove();
 			}

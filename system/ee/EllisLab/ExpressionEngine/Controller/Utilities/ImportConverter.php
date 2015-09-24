@@ -34,7 +34,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -188,7 +188,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function import_fieldmap()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -273,7 +273,7 @@ class ImportConverter extends Utilities {
 	 */
 	private function _datafile_to_array($file, $delimiter, $enclosure)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -312,7 +312,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function importFieldmapConfirm()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -396,7 +396,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function importCodeOutput()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

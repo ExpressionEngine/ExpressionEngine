@@ -40,7 +40,7 @@ class MemberImport extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -185,7 +185,7 @@ class MemberImport extends Utilities {
 	 */
 	public function memberImportConfirm()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -272,7 +272,7 @@ class MemberImport extends Utilities {
 	 */
 	public function processXml()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -367,7 +367,7 @@ class MemberImport extends Utilities {
 	 */
 	public function validateXml($xml)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -612,7 +612,7 @@ class MemberImport extends Utilities {
 	 */
 	public function doImport()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -874,7 +874,7 @@ class MemberImport extends Utilities {
 	 */
 	public function createCustomFields()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

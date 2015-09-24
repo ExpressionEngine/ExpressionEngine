@@ -38,7 +38,7 @@ class System extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

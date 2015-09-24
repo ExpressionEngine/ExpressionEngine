@@ -132,7 +132,7 @@
 							</ul>
 						</div>
 					</li>
-					<?php if (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
+					<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
 					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 					<?php endif; ?>
 				</ul>
