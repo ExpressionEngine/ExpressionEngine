@@ -126,6 +126,11 @@ class Publish extends AbstractPublishController {
 	 */
 	public function create($channel_id, $autosave_id = NULL)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$channel = ee('Model')->get('Channel', $channel_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -179,6 +184,11 @@ class Publish extends AbstractPublishController {
 
 		if (count($_POST))
 		{
+			if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+			{
+				unset($_POST['author_id']);
+			}
+
 			$entry->set($_POST);
 			$result = $entry->validate();
 
