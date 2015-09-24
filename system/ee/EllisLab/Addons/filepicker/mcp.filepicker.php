@@ -83,7 +83,7 @@ class Filepicker_mcp {
 		// Filter out any files that are no longer on disk
 		$files->filter(function($file) { return $file->exists(); });
 
-		$base_url = ee('CP/URL', $this->base_url);
+		$base_url = ee('CP/URL')->make($this->base_url);
 
 		if (ee()->input->get('hasFilters') !== '0')
 		{
@@ -132,7 +132,7 @@ class Filepicker_mcp {
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
 
-		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload" ,array('directory' => $id));
+		$vars['upload'] = ee('CP/URL')->make($this->picker->base_url."upload" ,array('directory' => $id));
 		$vars['dir'] = $id;
 		if ( ! empty($vars['table']['data']))
 		{
@@ -222,7 +222,7 @@ class Filepicker_mcp {
 
 		if ( ! $dir->exists())
 		{
-			$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
+			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
 			ee('CP/Alert')->makeStandard()
 				->asIssue()
 				->withTitle(lang('file_not_found'))
@@ -246,7 +246,7 @@ class Filepicker_mcp {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
-			'base_url' => ee('CP/URL', $this->picker->base_url . 'upload', array('directory' => $dir_id)),
+			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -363,7 +363,7 @@ class Filepicker_mcp {
 					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $dir_id));
+				ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $dir_id));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())

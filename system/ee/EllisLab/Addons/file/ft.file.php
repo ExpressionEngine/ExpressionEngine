@@ -96,7 +96,7 @@ class File_ft extends EE_Fieldtype {
 					if (isset($this->settings['grid_row_id']))
 					{
 						ee()->load->model('grid_model');
-						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->content_type);
+						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->settings['grid_content_type']);
 
 						// If this filed was we need to check permissions.
 						if ($rows[$this->settings['grid_row_id']] != $data)
@@ -187,7 +187,7 @@ class File_ft extends EE_Fieldtype {
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => ee('CP/URL', $fp->controller, array('directory' => $allowed_file_dirs))
+				'fp_url' => ee('CP/URL')->make($fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
 
@@ -721,10 +721,9 @@ CSS;
 	 * Form Validation callback; makes sure there are file upload
 	 * directories available before allowing a new file field to be saved
 	 *
-	 * @param	string	Selected file dir
 	 * @return	boolean	Whether or not to pass validation
 	 */
-	public function _validate_file_settings($file_dir)
+	public function _validate_file_settings($key, $value, $params, $rule)
 	{
 		// count upload dirs
 		if ( ! $this->_check_directories())
@@ -732,7 +731,7 @@ CSS;
 			ee()->lang->load('fieldtypes');
 			return sprintf(
 				lang('file_ft_no_upload_directories'),
-				ee('CP/URL', 'files/uploads/create')
+				ee('CP/URL')->make('files/uploads/create')
 			);
 		}
 
@@ -751,11 +750,8 @@ CSS;
 	 */
 	public function _check_directories()
 	{
-		ee()->load->model('file_upload_preferences_model');
-		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
-
 		// count upload dirs
-		return (count($upload_dir_prefs) !== 0);
+		return (ee('Model')->get('UploadDestination')->filter('module_id', 0)->count() !== 0);
 	}
 
 	// --------------------------------------------------------------------

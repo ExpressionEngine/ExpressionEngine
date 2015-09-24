@@ -135,7 +135,7 @@ class Throttling extends Settings {
 			)
 		));
 
-		$base_url = ee('CP/URL', 'settings/throttling');
+		$base_url = ee('CP/URL')->make('settings/throttling');
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 

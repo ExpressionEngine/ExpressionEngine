@@ -47,6 +47,14 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
+	 * Isset implementation, also required for empty() to work
+	 */
+	function __isset($name)
+	{
+		return $this->hasGetterFor($name) OR ($this->hasProperty($name) && $this->getRawProperty($name) !== NULL);
+	}
+
+	/**
 	 *
 	 */
 	public function __set($name, $value)

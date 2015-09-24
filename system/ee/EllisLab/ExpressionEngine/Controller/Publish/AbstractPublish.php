@@ -111,8 +111,8 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.confirm_exit'					=> lang('confirm_exit'),
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
-			'publish.autosave.URL'				=> ee('CP/URL', 'publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
-			'publish.add_category.URL'			=> ee('CP/URL', 'channels/cat/createCat/###')->compile(),
+			'publish.autosave.URL'				=> ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.add_category.URL'			=> ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
@@ -170,7 +170,7 @@ abstract class AbstractPublish extends CP_Controller {
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
 				'toolbar_items' => array(
 						'txt-only' => array(
-							'href' => ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
+							'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
 							'title' => lang('view'),
 							'content' => lang('view')
 						),

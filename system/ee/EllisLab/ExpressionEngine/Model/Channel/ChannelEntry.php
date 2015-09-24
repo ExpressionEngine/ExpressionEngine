@@ -89,6 +89,7 @@ class ChannelEntry extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
+		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
@@ -183,6 +184,25 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Validate the author ID for permissions
+	 */
+	public function validateAuthorId($key, $value, $params, $rule)
+	{
+		if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+		{
+			return 'not_authorized';
+		}
+
+		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+		{
+			return 'not_authorized';
+		}
+
+		return TRUE;
 	}
 
 	public function onAfterSave()
@@ -712,29 +732,30 @@ class ChannelEntry extends ContentModel {
 
 	public function populateAuthors($field)
 	{
-		// Authors
 		$author_options = array();
 
-		// Get all admins
-		$authors = ee('Model')->get('Member')
-			->filter('group_id', 1)
+		// First, get member groups who should be in the list
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('include_in_authorlist', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		foreach ($authors as $author)
+		// Then authors who are individually selected to appear in author list
+		$authors = ee('Model')->get('Member')
+			->filter('in_authorlist', 'y');
+
+		// Then grab any members that are part of the member groups we found
+		if ($member_groups)
 		{
-			$author_options[$author->member_id] = $author->getMemberName();
+			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}
 
-		// Get all members assigned to this channel
-		foreach ($this->Channel->AssignedMemberGroups as $group)
+		$authors->order('screen_name');
+		$authors->order('username');
+
+		foreach ($authors->all() as $author)
 		{
-			if ($group->include_in_authorlist === TRUE)
-			{
-				foreach ($group->Members as $member)
-				{
-					$author_options[$member->member_id] = $member->getMemberName();
-				}
-			}
+			$author_options[$author->getId()] = $author->getMemberName();
 		}
 
 		$field->setItem('field_list_items', $author_options);

@@ -41,8 +41,8 @@
 			}
 		});
 
-		$('.modal-file').off('click', 'tbody > tr');
-		$('.modal-file').on('click', ' .filepicker-item, tbody > tr', function(e) {
+		$('.modal-file').off('click', '.filepicker-item, tbody > tr');
+		$('.modal-file').on('click', '.filepicker-item, tbody > tr', function(e) {
 			e.stopPropagation();
 			var id = $(this).data('id');
 			var file_url = options.url.replace(/directory=.+(?=&)?/ig, 'file=' + id);
@@ -66,7 +66,7 @@
 					input_img: options.input_img
 				}
 				options.callback($(this), picker);
-				
+
 			} else {
 				$.ajax({
 					url: file_url,

@@ -9,7 +9,7 @@
 		<h1>
 			<?=$cp_heading?>
 			<ul class="toolbar">
-				<li class="settings"><a href="<?=ee('CP/URL', 'settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
+				<li class="settings"><a href="<?=ee('CP/URL')->make('settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
 			</ul>
 		</h1>
 		<?=ee('CP/Alert')->getAllInlines()?>

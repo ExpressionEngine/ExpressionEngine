@@ -45,7 +45,7 @@ class Cp extends Logs {
 			$this->delete('CpLog', lang('cp_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(ee('CP/URL', 'logs/cp'));
+				return ee()->functions->redirect(ee('CP/URL')->make('logs/cp'));
 			}
 		}
 

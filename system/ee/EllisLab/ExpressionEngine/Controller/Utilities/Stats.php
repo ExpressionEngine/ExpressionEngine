@@ -86,7 +86,7 @@ class Stats extends Utilities {
 				ee()->db->count_all($source),
 				array('toolbar_items' => array(
 					'sync' => array(
-						'href' => ee('CP/URL', 'utilities/stats/sync/' . $source),
+						'href' => ee('CP/URL')->make('utilities/stats/sync/' . $source),
 						'title' => lang('sync')
 					)
 				)),
@@ -99,7 +99,7 @@ class Stats extends Utilities {
 
 		$table->setData($data);
 
-		$vars['base_url'] = ee('CP/URL', 'utilities/stats');
+		$vars['base_url'] = ee('CP/URL')->make('utilities/stats');
 		$vars['table'] = $table->viewData($vars['base_url']);
 		$vars['cp_page_title'] = lang('manage_stats');
 
@@ -426,7 +426,7 @@ class Stats extends Utilities {
 		}
 
 		ee()->view->set_message('success', lang('sync_completed'), '', TRUE);
-		ee()->functions->redirect(ee('CP/URL', 'utilities/stats'));
+		ee()->functions->redirect(ee('CP/URL')->make('utilities/stats'));
 	}
 }
 // END CLASS

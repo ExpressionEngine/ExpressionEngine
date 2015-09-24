@@ -70,7 +70,7 @@
 						</a>
 					<?php else: ?>
 						<?php if (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
-							<a class="btn no-reg" href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
+							<a class="btn no-reg" href="<?=ee('CP/URL')->make('settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>
 						<?php endif ?>
@@ -108,7 +108,7 @@
 						<a class="m-close" href="#"></a>
 						<div class="box">
 							<h1>Log into <?=ee()->config->item('site_name')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-							<?=form_open(ee('CP/URL', 'login/authenticate'), array('class' => 'settings'))?>
+							<?=form_open(ee('CP/URL')->make('login/authenticate'), array('class' => 'settings'))?>
 								<div class="alert inline warn">
 									<p><?=lang('session_timeout')?></p>
 								</div>

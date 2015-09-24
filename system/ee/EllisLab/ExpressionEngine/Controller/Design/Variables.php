@@ -57,7 +57,7 @@ class Variables extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'design/variables', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL')->make('design/variables', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
@@ -93,7 +93,7 @@ class Variables extends AbstractDesignController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$base_url = ee('CP/URL', 'design/variables');
+		$base_url = ee('CP/URL')->make('design/variables');
 
 		foreach($variables as $variable)
 		{
@@ -105,7 +105,7 @@ class Variables extends AbstractDesignController {
 			{
 				$all_sites = '<b class="no">' . lang('no') . '</b>';
 			}
-			$edit_url = ee('CP/URL', 'design/variables/edit/' . $variable->variable_id);
+			$edit_url = ee('CP/URL')->make('design/variables/edit/' . $variable->variable_id);
 			$column = array(
 				array(
 					'content' => $variable->variable_name,
@@ -118,7 +118,7 @@ class Variables extends AbstractDesignController {
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => ee('CP/URL', 'design/template/search', array('search' => '{' . $variable->variable_name . '}')),
+						'href' => ee('CP/URL')->make('design/template/search', array('search' => '{' . $variable->variable_name . '}')),
 						'title' => lang('find')
 					),
 				)),
@@ -184,7 +184,7 @@ class Variables extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/variables/create'),
+			'base_url' => ee('CP/URL')->make('design/variables/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_variable')),
 			'save_btn_text_working' => 'btn_create_template_variable_working',
 			'sections' => array(
@@ -270,7 +270,7 @@ class Variables extends AbstractDesignController {
 				->addToBody(sprintf(lang('create_template_variable_success_desc'), $variable->variable_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/variables'));
+			ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -285,7 +285,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_template_variable');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/variables')->compile() => lang('template_variables'),
+			ee('CP/URL')->make('design/variables')->compile() => lang('template_variables'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -310,7 +310,7 @@ class Variables extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/variables/edit/' . $variable_id),
+			'base_url' => ee('CP/URL')->make('design/variables/edit/' . $variable_id),
 			'form_hidden' => array(
 				'old_name' => $variable->variable_name
 			),
@@ -398,7 +398,7 @@ class Variables extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_variable_success_desc'), $variable->variable_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/variables'));
+			ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -413,7 +413,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_template_variable');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/variables')->compile() => lang('template_variables'),
+			ee('CP/URL')->make('design/variables')->compile() => lang('template_variables'),
 		);
 
 		ee()->cp->render('settings/form', $vars);

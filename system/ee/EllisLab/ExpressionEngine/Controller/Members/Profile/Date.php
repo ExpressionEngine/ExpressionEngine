@@ -38,7 +38,7 @@ class Date extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 		$fields = ee()->config->prep_view_vars('localization_cfg');
 		$fields = $fields['fields'];
 		$timezone = ee()->localize->timezone_menu($this->member->timezone, 'timezone');

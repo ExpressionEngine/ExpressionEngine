@@ -1860,7 +1860,7 @@ class Wizard extends CI_Controller {
 			'gzip_output'               => 'n',
 			'is_system_on'              => 'y',
 			'allow_extensions'          => 'y',
-			'date_format'               => '%n/%j/%y',
+			'date_format'               => '%n/%j/%Y',
 			'time_format'               => '12',
 			'include_seconds'           => 'n',
 			'server_offset'             => '',

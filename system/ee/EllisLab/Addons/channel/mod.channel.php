@@ -2629,7 +2629,7 @@ class Channel {
 
 		if ($cat_groups->num_rows() == 0)
 		{
-			return;
+			return ee()->TMPL->no_results();
 		}
 
 		$channel_ids = array();
@@ -2660,7 +2660,7 @@ class Channel {
 
 			if (count($groups) == 0)
 			{
-				return '';
+				return ee()->TMPL->no_results();
 			}
 			else
 			{
@@ -2759,7 +2759,7 @@ class Channel {
 				// No categories exist?  Let's go home..
 				if ($query->num_rows() == 0)
 				{
-					return FALSE;
+					return ee()->TMPL->no_results();
 				}
 
 				foreach($query->result_array() as $row)
@@ -2823,7 +2823,7 @@ class Channel {
 
 				if ($query->num_rows() == 0)
 				{
-					return FALSE;
+					return ee()->TMPL->no_results();
 				}
 
 				// All the magic happens here, baby!!
@@ -2858,7 +2858,7 @@ class Channel {
 
 				if ($query->num_rows() == 0)
 				{
-					return FALSE;
+					return ee()->TMPL->no_results();
 				}
 			}
 			else
@@ -2879,7 +2879,7 @@ class Channel {
 
 				if ($query->num_rows() == 0)
 				{
-					return '';
+					return ee()->TMPL->no_results();
 				}
 			}
 
@@ -3106,7 +3106,7 @@ class Channel {
 
 		if ($cat_groups->num_rows() == 0)
 		{
-			return;
+			return ee()->TMPL->no_results();
 		}
 
 		$group_ids = $cat_groups->row('cat_group');
@@ -4086,7 +4086,7 @@ class Channel {
 	{
 		if ($this->query_string == '')
 		{
-			return;
+			return ee()->TMPL->no_results();
 		}
 
 		// -------------------------------------------

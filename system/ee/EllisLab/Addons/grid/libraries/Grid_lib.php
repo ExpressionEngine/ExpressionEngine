@@ -169,7 +169,8 @@ class Grid_lib {
 			$column,
 			NULL,
 			$this->field_id,
-			$this->entry_id
+			$this->entry_id,
+			$this->content_type
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
@@ -308,7 +309,8 @@ class Grid_lib {
 					$column,
 					$row_name,
 					$this->field_id,
-					$this->entry_id
+					$this->entry_id,
+					$this->content_type
 				);
 
 				if ( ! empty($rows[$i]['row_id']))
@@ -374,7 +376,7 @@ class Grid_lib {
 		// the row IDs
 		foreach ($columns as $column)
 		{
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 			ee()->grid_parser->call('delete', $row_ids);
 		}
 
@@ -457,7 +459,8 @@ class Grid_lib {
 					$column,
 					$row_id,
 					$this->field_id,
-					$this->entry_id
+					$this->entry_id,
+					$this->content_type
 				);
 
 				// Pass Grid row ID to fieldtype if it's an existing row
@@ -661,7 +664,7 @@ class Grid_lib {
 			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
 			$column['col_settings']['field_required'] = $column['col_required'];
 
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 			// Let fieldtypes validate their Grid column settings
 			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
@@ -781,7 +784,7 @@ class Grid_lib {
 			$column['col_settings'] = array();
 		}
 
-		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 		if ( ! ($settings = ee()->grid_parser->call('save_settings', $column['col_settings'])))
 		{
@@ -871,7 +874,7 @@ class Grid_lib {
 			);
 		}
 
-		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 		$settings = ee()->grid_parser->call('display_settings', $column['col_settings']);
 

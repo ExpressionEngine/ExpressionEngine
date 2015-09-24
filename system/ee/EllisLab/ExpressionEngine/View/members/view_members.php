@@ -6,7 +6,7 @@
 		<h1>
 			<ul class="toolbar">
 				<li class="settings">
-					<a href="<?=ee('CP/URL', 'settings/members')?>" title="<?=lang('member_settings')?>"></a>
+					<a href="<?=ee('CP/URL')->make('settings/members')?>" title="<?=lang('member_settings')?>"></a>
 				</li>
 			</ul>
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
@@ -26,7 +26,7 @@
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 			</select>
-			<button class="btn submit" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL', '/members/confirm')?>"><?=lang('submit')?></button>
+			<button class="btn submit" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL')->make('/members/confirm')?>"><?=lang('submit')?></button>
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>

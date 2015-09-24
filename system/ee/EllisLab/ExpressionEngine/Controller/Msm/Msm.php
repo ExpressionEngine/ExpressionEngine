@@ -51,20 +51,12 @@ class Msm extends CP_Controller {
 
 	protected function sidebarMenu($active = NULL)
 	{
-		$site_backlink = ee()->cp->get_safe_refresh();
-
-		if ($site_backlink)
-		{
-			$site_backlink = implode('|', explode(AMP, $site_backlink));
-			$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
-		}
-
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
-			->withButton(lang('new'), ee('CP/URL', 'msm/create'))
+		$sidebar->addHeader(lang('sites'), ee('CP/URL')->make('msm'))
+			->withButton(lang('new'), ee('CP/URL')->make('msm/create'))
 			->isActive();
 
 		$sites = $sidebar->addHeader(lang('switch_to'))
@@ -72,7 +64,7 @@ class Msm extends CP_Controller {
 
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites->addItem($site->site_label, ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
+			$sites->addItem($site->site_label, ee('CP/URL')->make('msm/switch_to/' . $site->site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode())));
 		}
 	}
 
@@ -80,10 +72,10 @@ class Msm extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('msm_manager'),
-			'form_url' => ee('CP/URL', 'msm'),
+			'form_url' => ee('CP/URL')->make('msm'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/general'),
+					'href' => ee('CP/URL')->make('settings/general'),
 					'title' => lang('settings')
 				)
 			),
@@ -101,12 +93,12 @@ class Msm extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'msm'));
+			ee()->functions->redirect(ee('CP/URL')->make('msm'));
 		}
 
-		$base_url = ee('CP/URL', 'msm');
+		$base_url = ee('CP/URL')->make('msm');
 
-		$vars['create_url'] = ee('CP/URL', 'msm/create');
+		$vars['create_url'] = ee('CP/URL')->make('msm/create');
 
 		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
 
@@ -150,7 +142,7 @@ class Msm extends CP_Controller {
 					'content' => lang('offline')
 				);
 			}
-			$edit_url = ee('CP/URL', 'msm/edit/' . $site->site_id);
+			$edit_url = ee('CP/URL')->make('msm/edit/' . $site->site_id);
 			$column = array(
 				$site->site_id,
 				array(
@@ -229,7 +221,7 @@ class Msm extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
+			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
 
 		$errors = NULL;
@@ -341,7 +333,7 @@ class Msm extends CP_Controller {
 					->addToBody(sprintf(lang('create_site_success_desc'), $site->site_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'msm'));
+				ee()->functions->redirect(ee('CP/URL')->make('msm'));
 			}
 			else
 			{
@@ -355,8 +347,8 @@ class Msm extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL')->make('msm/create'),
 			'errors' => $errors,
-			'base_url' => ee('CP/URL', 'msm/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->getForm($site, $can_add),
@@ -437,7 +429,7 @@ class Msm extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
+			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
 
 		$errors = NULL;
@@ -459,7 +451,7 @@ class Msm extends CP_Controller {
 
 				ee()->logger->log_action(lang('site_updated') . ': ' . $site->site_label);
 
-				ee()->functions->redirect(ee('CP/URL', 'msm/edit/' . $site_id));
+				ee()->functions->redirect(ee('CP/URL')->make('msm/edit/' . $site_id));
 			}
 			else
 			{
@@ -473,8 +465,8 @@ class Msm extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
 			'errors' => $errors,
-			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->getForm($site),
@@ -627,9 +619,7 @@ class Msm extends CP_Controller {
 		$page = ee()->input->get_post('page');
 		if ($page)
 		{
-			$return_path = base64_decode($page);
-			$uri_elements = json_decode($return_path, TRUE);
-			$redirect = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$redirect = ee('CP/URL')->decodeUrl($page);
 		}
 
 		ee()->cp->switch_site($site_id, $redirect);
@@ -693,5 +683,32 @@ class Msm extends CP_Controller {
 
 		ee()->session->userdata['assigned_sites'] = $assigned_sites;
 	}
+
+	public function onAfterInsert()
+    {
+        $this->setId($this->group_id);
+
+		$already_done = $this->getFrontend()->get('MemberGroup')
+			->fields('site_id')
+			->filter('group_id', $this->group_id)
+			->all()
+			->pluck('site_id');
+
+        $todo = $this->getFrontend()->get('Site')
+			->fields('site_id')
+            ->filter('site_id', 'NOT IN', $already_done)
+            ->all();
+
+        if ($sites->count() > 0)
+        {
+            foreach ($sites->pluck('site_id') as $site_id)
+            {
+                $data = $this->getValues();
+                $data['site_id'] = (int) $site_id;
+                $this->getFrontend()->make('MemberGroup', $data)->save();
+            }
+        }
+    }
+
 }
 // EOF
