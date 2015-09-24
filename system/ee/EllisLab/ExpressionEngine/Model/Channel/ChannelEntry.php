@@ -197,7 +197,7 @@ class ChannelEntry extends ContentModel {
 		}
 
 		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') == 'y'))
+			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
 		{
 			return 'not_authorized';
 		}
