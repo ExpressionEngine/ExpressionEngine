@@ -253,10 +253,10 @@ class Wiki_mcp {
 	{
 		$this->member_groups = ee('Model')->get('MemberGroup')
 			->filter('group_id', 'NOT IN', array(2,3,4))
+			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title')
 			->all();
 	}
-
 
 	// -------------------------------------------------------------------------
 
@@ -264,7 +264,7 @@ class Wiki_mcp {
 	 * Provides Wiki Edit Screen HTML
 	 *
 	 * @access	public
-	 * @param	int $toolset_id The Toolset ID to be edited (optional)
+	 * @param	int $wiki_id The ID of the wiki to edit 
 	 * @return	string The page
 	 */
 	public function edit_wiki($wiki_id = 0)
@@ -641,7 +641,6 @@ class Wiki_mcp {
 	 */
 	private function getNamespaceGrid($wiki_id = NULL)
 	{
-
 		// Namespace Grid
 		$grid = ee('CP/GridInput', array(
 			'field_name' => 'wiki_namespaces_data',
@@ -657,14 +656,15 @@ class Wiki_mcp {
 				'namespace_name' => array(
 					'desc'  => 'namespace_name_desc'
 				),
-				'namespace_users' => array(
-					'desc'  => 'namespace_users_desc'
-				),
 				'namespace_admins' => array(
 					'desc'  => 'namespace_admins_desc'
+				),
+				'namespace_users' => array(
+					'desc'  => 'namespace_users_desc'
 				)
 			)
 		);
+
 		$grid->setNoResultsText('no_namespaces', 'add_namespaces');
 
 		$member_choices = array();
@@ -683,6 +683,7 @@ class Wiki_mcp {
 		// the POST data
 		if ( ! empty($validation_data))
 		{
+
 			foreach ($validation_data['rows'] as $row_id => $columns)
 			{
 				// Checkboxes may not be set
@@ -691,8 +692,7 @@ class Wiki_mcp {
 				$ns_post_admins = (isset($columns['namespace_admins'])) ? $columns['namespace_admins'] : array();
 
 				$namespaces[$row_id] = array(
-					// Fix this, multiple new rows won't namespace right
-					'id'           => str_replace('row_id_', '', $row_id),
+					'namespace_id'           => str_replace('row_id_', '', $row_id),
 					'namespace_label'   => $columns['namespace_label'],
 					'namespace_name'  => $columns['namespace_name'],
 					'namespace_users'  => $ns_post_users,
@@ -795,7 +795,7 @@ class Wiki_mcp {
 			$selected = (in_array($group_id, $namespace['namespace_admins'])) ? 'chosen' : '';
 			$check = ( ! empty($selected)) ? 'y' : '';
 
-			$admin_checkboxes .= '<label class="choice block '. $selected.'">'.form_checkbox('namespace_admins[]', $group_id).' '.$group_name.'</label>'."\n";
+			$admin_checkboxes .= '<label class="choice block '. $selected.'">'.form_checkbox('namespace_admins[]', $group_id, $check).' '.$group_name.'</label>'."\n";
 		}
 
 		return array(

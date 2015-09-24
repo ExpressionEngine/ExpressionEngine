@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class Revision extends Model {
 
-	protected static $_primary_key = 'page_id';
+	protected static $_primary_key = 'revision_id';
 	protected static $_table_name = 'wiki_revisions';
 
 	protected static $_relationships = array(
@@ -51,6 +51,9 @@ class Revision extends Model {
         )
 	);
 	
+	protected static $_events = array(
+		'afterInsert'
+	);	
 
 	protected $revision_id;
 	protected $page_id;
@@ -60,4 +63,18 @@ class Revision extends Model {
 	protected $revision_notes;
 	protected $revision_status;
 	protected $page_content;
+
+
+	public function onAfterInsert()
+	{
+		$data = array(
+				'last_revision_id'        => $this->revision_id
+			);
+
+			$this->getFrontend()->get('wiki:Page', $this->page_id)->first()->set($data)->save();
+			
+
+	}
+
+
 }
