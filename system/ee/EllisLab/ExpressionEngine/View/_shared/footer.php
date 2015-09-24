@@ -69,7 +69,7 @@
 							<?=($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact')?>
 						</a>
 					<?php else: ?>
-						<?php if (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
+						<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
 							<a class="btn no-reg" href="<?=ee('CP/URL')->make('settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>

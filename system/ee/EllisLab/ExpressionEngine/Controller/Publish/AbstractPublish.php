@@ -41,11 +41,6 @@ abstract class AbstractPublish extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		ee()->lang->loadfile('content');
 
 		ee()->cp->get_installed_modules();
