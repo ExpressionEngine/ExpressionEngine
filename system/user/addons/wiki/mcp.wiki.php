@@ -188,11 +188,6 @@ class Wiki_mcp {
 	{
 		$wiki_id = ee()->input->get_post('wiki_id');
 
-	// todo????
-		// Grid validation results
-		ee()->view->wiki_errors = isset($this->wiki_errors['namespaces'])
-			? $this->wiki_errors['namespaces'] : array();
-
 		return array(
 			'body'			=> $this->edit_wiki($wiki_id),
 			'heading'		=> lang('edit_wiki'),
@@ -328,12 +323,17 @@ class Wiki_mcp {
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $this->wiki_errors;
 
+
+//var_dump($this->wiki_errors);
+// missing the namespace errors
+
 				// Do some fenagling to fit our namespace errors into
 				//  Form Validation
-				if (isset(ee()->form_validation->_error_array['wiki_namespaces_list']))
+				if (isset(ee()->form_validation->_error_array['wiki_namespaces']))
 				{
+
 					// This is an array, Form Validation expects strings
-					unset(ee()->form_validation->_error_array['wiki_namespaces_list']);
+					unset(ee()->form_validation->_error_array['wiki_namespaces']);
 
 					// We need a dummy error here to set the invalid class on the parent fieldset
 					ee()->form_validation->_error_array['wiki_namespaces_data'] = 'asdf';
@@ -379,15 +379,15 @@ class Wiki_mcp {
 			$this->wiki_errors = $result->renderErrors();
 		}
 
-		$namespaces = ee()->input->post('wiki_namespaces_data');
+		$wiki_namespaces = ee()->input->post('wiki_namespaces_data');
 
 		$existing_ids = array();
 		$new_ids = array();
 
 		// collect existing to keep, and new ones to add
-		if (isset($namespaces['rows']))
+		if (isset($wiki_namespaces['rows']))
 		{
-			foreach ($namespaces['rows'] as $row_id => $columns)
+			foreach ($wiki_namespaces['rows'] as $row_id => $columns)
 			{
 				if (strpos($row_id, 'row_id_') !== FALSE)
 				{
@@ -411,14 +411,14 @@ class Wiki_mcp {
 
 		$validate = array();
 
+
 		foreach ($wiki->WikiNamespaces as $model)
 		{
 			$row_id = 'row_id_'.$model->getId();
-			$model->set($namespaces['rows'][$row_id]);
+			$model->set($wiki_namespaces['rows'][$row_id]);
 
 			$validate[$row_id] = $model;
 		}
-
 
 		foreach ($new_ids as $row_id => $columns)
 		{
@@ -427,6 +427,7 @@ class Wiki_mcp {
 
 			$validate[$row_id] = $model;
 		}
+		
 
 		foreach ($validate as $row_id => $model)
 		{
@@ -434,14 +435,12 @@ class Wiki_mcp {
 
 			if ( ! $result->isValid())
 			{
-				$this->wiki_errors['namespaces'][$row_id] = $result->renderErrors();
+				$this->wiki_errors['wiki_namespaces'][$row_id] = $result->renderErrors();
 			}
 		}
 
 		return empty($this->wiki_errors);
 	}
-
-
 
 
 	function make_form($wiki_id, $wiki = NULL)
@@ -628,6 +627,18 @@ class Wiki_mcp {
 
 		$form[] = $form_element;
 
+		// Grid validation results
+		ee()->view->wiki_namespaces_errors = isset($this->wiki_errors['wiki_namespaces'])
+			? $this->wiki_errors['wiki_namespaces'] : array();
+
+if (! empty($this->wiki_errors))
+{
+//var_dump($this->wiki_errors);
+
+//NEW ones work
+//existing ones it's not checking properly!
+}
+
 		return array($form);
 
 	}
@@ -677,7 +688,7 @@ class Wiki_mcp {
 		$grid->setBlankRow($this->getGridRow($member_choices));
 
 		$validation_data = ee()->input->post('wiki_namespaces_data');
-		$namespaces = array();
+		$wiki_namespaces = array();
 
 		// If we're coming back on a validation error, load the Grid from
 		// the POST data
@@ -691,7 +702,7 @@ class Wiki_mcp {
 
 				$ns_post_admins = (isset($columns['namespace_admins'])) ? $columns['namespace_admins'] : array();
 
-				$namespaces[$row_id] = array(
+				$wiki_namespaces[$row_id] = array(
 					'namespace_id'           => str_replace('row_id_', '', $row_id),
 					'namespace_label'   => $columns['namespace_label'],
 					'namespace_name'  => $columns['namespace_name'],
@@ -700,16 +711,16 @@ class Wiki_mcp {
 				);
 			}
 
-			if (isset($this->wiki_errors['namespaces']))
+			if (isset($this->wiki_errors['wiki_namespaces']))
 			{
-				foreach ($this->wiki_errors['namespaces'] as $row_id => $columns)
+				foreach ($this->wiki_errors['wiki_namespaces'] as $row_id => $columns)
 				{
-					$namespaces[$row_id]['errors'] = array_map('strip_tags', $columns);
+					$wiki_namespaces[$row_id]['errors'] = array_map('strip_tags', $columns);
 				}
 			}
 		}
 		// Otherwise, pull from the database if we're editing
-		elseif ($namespaces !== NULL)
+		elseif ($wiki_namespaces !== NULL)
 		{
 				// Namespaces
 				$namespaces_query = ee()->db->get_where('wiki_namespaces',
@@ -717,16 +728,16 @@ class Wiki_mcp {
 
 			if ($namespaces_query->num_rows() > 0)
 			{
-					$namespaces = $namespaces_query->result_array();
+					$wiki_namespaces = $namespaces_query->result_array();
 			}
 		}
 
 		// Populate Namespace Grid
-		if ( ! empty($namespaces))
+		if ( ! empty($wiki_namespaces))
 		{
 			$data = array();
-//echo '<pre>'; print_r($namespaces);
-			foreach($namespaces as $namespace)
+
+			foreach($wiki_namespaces as $namespace)
 			{
 				$data[] = array(
 					'attrs' => array('row_id' => $namespace['namespace_id']),

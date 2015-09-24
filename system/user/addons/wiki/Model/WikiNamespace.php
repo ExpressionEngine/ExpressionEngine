@@ -47,7 +47,7 @@ class WikiNamespace extends Model {
 
 
 	protected static $_validation_rules = array(
-		'namespace_name' => 'required|uniqueWithinSiblings[Wiki,WikiNamespaces]',
+		'namespace_name' => 'required|validateShortName|uniqueWithinSiblings[Wiki,WikiNamespaces]',
 		'namespace_label'       => 'required|uniqueWithinSiblings[Wiki,WikiNamespaces]]'
 	);
 
@@ -59,6 +59,17 @@ class WikiNamespace extends Model {
 	protected $namespace_label;
 	protected $namespace_users;
 	protected $namespace_admins;
+
+
+	public function validateShortName($key, $value, $params, $rule)
+	{
+		if (preg_match('/[^a-z0-9\-\_]/i', $value))
+		{
+			return 'invalid_short_name';
+		}
+
+		return TRUE;
+	}
 
 
 }
