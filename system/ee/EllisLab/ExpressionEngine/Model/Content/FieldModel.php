@@ -14,7 +14,7 @@ abstract class FieldModel extends Model {
 	);
 
 
-	protected $_facade;
+	protected $_field_facade;
 
 	/**
 	 * Return the storing table
@@ -38,22 +38,22 @@ abstract class FieldModel extends Model {
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) ||
-			$this->_facade->getType() != $this->getFieldType() ||
-			$this->_facade->getId() != $this->getId())
+		if ( ! isset($this->_field_facade) ||
+			$this->_field_facade->getType() != $this->getFieldType() ||
+			$this->_field_facade->getId() != $this->getId())
 		{
 			$values = array_merge($this->getValues(), $override);
 
-			$this->_facade = new FieldFacade($this->getId(), $values);
-			$this->_facade->setContentType($this->getContentType());
+			$this->_field_facade = new FieldFacade($this->getId(), $values);
+			$this->_field_facade->setContentType($this->getContentType());
 		}
 
 		if (isset($this->field_fmt))
 		{
-			$this->_facade->setFormat($this->field_fmt);
+			$this->_field_facade->setFormat($this->field_fmt);
 		}
 
-		return $this->_facade;
+		return $this->_field_facade;
 	}
 
 	public function getSettingsForm()
