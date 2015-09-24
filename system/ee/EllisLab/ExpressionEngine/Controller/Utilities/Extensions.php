@@ -44,7 +44,7 @@ class Extensions extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_extensions'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

@@ -135,7 +135,7 @@ class Profile extends CP_Controller {
 
 		$list->addItem(lang('subscriptions'), ee('CP/URL')->make('members/profile/subscriptions', $this->query_string));
 
-		if (ee()->cp->allowed_group('can_admin_members'))
+		if (ee()->cp->allowed_group('can_edit_members'))
 		{
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();

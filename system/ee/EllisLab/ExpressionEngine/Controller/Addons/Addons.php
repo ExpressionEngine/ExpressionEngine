@@ -1759,7 +1759,7 @@ class Addons extends CP_Controller {
 
 	private function getFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1801,7 +1801,7 @@ class Addons extends CP_Controller {
 
 	private function saveFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

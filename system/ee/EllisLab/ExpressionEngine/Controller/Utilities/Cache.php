@@ -37,7 +37,7 @@ class Cache extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_data'))
+		if ( ! ee()->cp->allowed_group('can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

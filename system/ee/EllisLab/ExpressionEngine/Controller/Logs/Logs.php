@@ -123,7 +123,7 @@ class Logs extends CP_Controller {
 	 */
 	protected function delete($model, $log_type)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

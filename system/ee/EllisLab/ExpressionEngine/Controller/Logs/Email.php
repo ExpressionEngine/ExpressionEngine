@@ -42,7 +42,7 @@ class Email extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -148,7 +148,7 @@ class Email extends Logs {
 	 */
 	public function view($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
