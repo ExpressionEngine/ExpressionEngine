@@ -7,7 +7,7 @@
 		</fieldset>
 		<h1>
 			<?=$cp_heading?>
-			<?php if ($can_admin_upload_prefs): ?>
+			<?php if ($can_edit_upload_directories): ?>
 			<ul class="toolbar">
 				<li class="sync"><a href="<?=ee('CP/URL')->make('files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
 			</ul>
