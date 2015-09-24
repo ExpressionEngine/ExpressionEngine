@@ -190,7 +190,7 @@ class Filepicker_mcp {
 
 		$result = $file->getValues();
 
-		$result['path'] = $file->getAbsoluteThumbnailURL();
+		$result['path'] = $file->getAbsoluteURL();
 		$result['thumb_path'] = ee('Thumbnail')->get($file)->url;
 		$result['isImage'] = $file->isImage();
 
