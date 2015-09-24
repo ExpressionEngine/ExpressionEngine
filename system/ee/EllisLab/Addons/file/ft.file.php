@@ -96,7 +96,7 @@ class File_ft extends EE_Fieldtype {
 					if (isset($this->settings['grid_row_id']))
 					{
 						ee()->load->model('grid_model');
-						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->content_type);
+						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->settings['grid_content_type']);
 
 						// If this filed was we need to check permissions.
 						if ($rows[$this->settings['grid_row_id']] != $data)
