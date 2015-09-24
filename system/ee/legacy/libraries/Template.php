@@ -1098,13 +1098,20 @@ class EE_Template {
 					$no_results = '';
 					$no_results_block = '';
 
-					if (strpos($block, 'if no_results') !== FALSE && preg_match("/".LD."if no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $block, $match))
+					// Remove {categories} for the {if no_results} search
+					$block_temp = preg_replace(
+						'/{categories[^}]*}(.+?){\/categories[^}]*}/is',
+						'',
+						$block
+					);
+
+					if (strpos($block_temp, 'if no_results') !== FALSE && preg_match("/".LD."if no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $block_temp, $match))
 					{
 						// Match the entirety of the conditional, dude.  Bad Rick!
 
 						if (stristr($match[1], LD.'if'))
 						{
-							$match[0] = ee()->functions->full_tag($match[0], $block, LD.'if', LD.'\/'."if".RD);
+							$match[0] = ee()->functions->full_tag($match[0], $block_temp, LD.'if', LD.'\/'."if".RD);
 						}
 
 						$no_results = substr($match[0], strlen(LD."if no_results".RD), -strlen(LD.'/'."if".RD));
