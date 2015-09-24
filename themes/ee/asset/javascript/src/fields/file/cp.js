@@ -26,7 +26,7 @@
 					input.val('{filedir_' + data.upload_location_id + '}' + data.file_name);
 
 					// Set the thumbnail
-					references.input_img.attr('src', data.path);
+					references.input_img.attr('src', data.thumb_path);
 
 					// Show the figure
 					input.siblings('figure').show();
