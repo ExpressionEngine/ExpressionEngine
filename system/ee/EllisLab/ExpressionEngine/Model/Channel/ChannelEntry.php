@@ -89,6 +89,7 @@ class ChannelEntry extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
+		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
@@ -183,6 +184,25 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Validate the author ID for permissions
+	 */
+	public function validateAuthorId($key, $value, $params, $rule)
+	{
+		if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+		{
+			return 'not_authorized';
+		}
+
+		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') == 'y'))
+		{
+			return 'not_authorized';
+		}
+
+		return TRUE;
 	}
 
 	public function onAfterSave()
