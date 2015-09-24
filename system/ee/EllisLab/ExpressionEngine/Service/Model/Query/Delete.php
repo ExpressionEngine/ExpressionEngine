@@ -35,7 +35,6 @@ class Delete extends Query {
 	{
 		$builder  = $this->builder;
 		$from     = $this->builder->getFrom();
-		$frontend = $builder->getFrontend();
 		$from_pk  = $this->store->getMetaDataReader($from)->getPrimaryKey();
 
 		$parent_ids = $this->getParentIds($from, $from_pk);
@@ -69,7 +68,7 @@ class Delete extends Query {
 			 );
 
 			 $basic_query = $builder
-				 ->getFrontend()
+				 ->getFacade()
 				 ->get($get)
 				 ->filter("{$from_alias}.{$from_pk}", 'IN', $parent_ids);
 
