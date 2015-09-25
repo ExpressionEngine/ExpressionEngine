@@ -44,16 +44,13 @@ class Wiki extends Model {
 		'wiki_label_name'	     => 'required|unique',
 		'wiki_short_name'       => 'required|validateShortName|unique',
 		'wiki_moderation_emails'   => 'validateEmails',
-		'wiki_upload_dir' => 'required',
-		'wiki_users' => 'required',
-		'wiki_admins' => 'required',
 		'wiki_html_format' => 'required',
 		'wiki_text_format' => 'required',
-		'wiki_revision_limit' => 'is_natural',
-		'wiki_author_limit' => 'is_natural'
+		'wiki_revision_limit' => 'is_natural_no_zero|required',
+		'wiki_author_limit' => 'is_natural_no_zero|required'
 	);
 
-/*
+
 
 	protected static $_relationships = array(
 		'WikiNamespaces' => array(
@@ -73,18 +70,9 @@ class Wiki extends Model {
 			'model' => 'Upload'
 		)
 	);
-*/
 
-	protected static $_relationships = array(
-		'WikiNamespaces' => array(
-			'type' => 'hasMany',
-			'model' => 'WikiNamespace'
-		),
-		'Pages' => array(
-			'type'  => 'hasMany',
-			'model' => 'Page'
-		)		
-	);
+
+
 	
 	protected static $_events = array(
 		'afterInsert'

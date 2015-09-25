@@ -5,10 +5,6 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 
 
-//use EllisLab\ExpressionEngine\Model\File\UploadDestination;
-//use EllisLab\ExpressionEngine\Module\Member\Model;
-
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -247,7 +243,7 @@ class Wiki_mcp {
 	function get_member_groups()
 	{
 		$this->member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(2,3,4))
+			->filter('group_id', 'NOT IN', array(1,2,3,4))
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title')
 			->all();
@@ -281,7 +277,11 @@ class Wiki_mcp {
 		else
 		{
 			$valid_wiki = ee('Model')->make('wiki:Wiki');
-
+			
+			// Let's give it some default values
+			$valid_wiki->wiki_revision_limit = 200;
+			$valid_wiki->wiki_author_limit = 75;
+			
 			// Only auto-complete short name for new wikis
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
@@ -324,9 +324,6 @@ class Wiki_mcp {
 				ee()->form_validation->_error_array = $this->wiki_errors;
 
 
-//var_dump($this->wiki_errors);
-// missing the namespace errors
-
 				// Do some fenagling to fit our namespace errors into
 				//  Form Validation
 				if (isset(ee()->form_validation->_error_array['wiki_namespaces']))
@@ -362,15 +359,21 @@ class Wiki_mcp {
 
 
 	/**
-	 * Sets information on the UploadDestination object and its children and
+	 * Sets information on the validateWikiSettings object and its children and
 	 * validates them all
 	 *
-	 * @param	model	$upload_destination		Model object for upload destination
+	 * @param	model	$wiki		Model object for wiki settings
 	 * @return	boolean	Success or failure of validation
 	 */
 	private function validateWikiSettings($wiki)
 	{
-			$wiki->wiki_moderation_emails = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['wiki_moderation_emails']), ','));
+		$wiki->wiki_moderation_emails = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['wiki_moderation_emails']), ','));
+
+		// Clean up for MySQL strict mode
+		if ($wiki->wiki_upload_dir === '')
+		{
+			$wiki->wiki_upload_dir = 0;
+		}
 
 		$result = $wiki->validate();
 
@@ -519,17 +522,21 @@ class Wiki_mcp {
 
 		$form[] = $form_element;
 
+		$directory_choices = array('' => lang('none'));
+		$directory_choices += ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all()
+			->getDictionary('id', 'name');
+
 		$form_element = array(
 			'title' => 'upload_dir',
 			'fields' => array(
 				'wiki_upload_dir' => array(
 					'type' => 'select',
 					'value' => $wiki->wiki_upload_dir,
-					'choices' => ee('Model')->get('UploadDestination')
-						->filter('site_id', ee()->config->item('site_id'))
-						->filter('module_id', 0)
-						->all()
-						->getDictionary('id', 'name')
+					'choices' => $directory_choices
 				)
 			)
 		);
@@ -573,7 +580,8 @@ class Wiki_mcp {
 			'fields' => array(
 				'wiki_revision_limit' => array(
 					'type' => 'text',
-					'value' => $wiki->wiki_revision_limit
+					'value' => $wiki->wiki_revision_limit, 
+					'required' => TRUE
 				)
 			)
 		);
@@ -588,6 +596,7 @@ class Wiki_mcp {
 				'wiki_author_limit' => array(
 					'type' => 'text',
 					'value' => $wiki->wiki_author_limit,
+					'required' => TRUE
 				)
 			)
 		);
@@ -630,14 +639,6 @@ class Wiki_mcp {
 		// Grid validation results
 		ee()->view->wiki_namespaces_errors = isset($this->wiki_errors['wiki_namespaces'])
 			? $this->wiki_errors['wiki_namespaces'] : array();
-
-if (! empty($this->wiki_errors))
-{
-//var_dump($this->wiki_errors);
-
-//NEW ones work
-//existing ones it's not checking properly!
-}
 
 		return array($form);
 
