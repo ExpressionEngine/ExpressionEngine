@@ -13,12 +13,13 @@ use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
-use EllisLab\ExpressionEngine\Service\Validation;
-use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Profiler;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
+use EllisLab\ExpressionEngine\Service\URL;
+use EllisLab\ExpressionEngine\Service\Validation;
+use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
-use EllisLab\ExpressionEngine\Service\Profiler;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -66,12 +67,17 @@ return array(
 			return Library\CP\Table::fromGlobals($config);
 		},
 
-		'CP/URL' => function($ee, $path, $qs = array(), $cp_url = '', $session_id = NULL)
+		'CP/URL' => function($ee, $path = NULL)
 		{
-			$session_id = $session_id ?: ee()->session->session_id();
-			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
+			$cp_url = ee()->config->item('cp_url');
+			$site_index = ee()->functions->fetch_site_index(0,0);
+			$uri_string = ee()->uri->uri_string();
+			$session_id = ee()->session->session_id();
+			$default_cp_url = SELF;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
+			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+
+			return (is_null($path)) ? $factory : $factory->make($path);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
@@ -107,10 +113,10 @@ return array(
 
 		'Model' => function($ee)
 		{
-			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
-			$frontend->setValidationFactory($ee->make('Validation'));
+			$facade = new Model\Facade($ee->make('Model/Datastore'));
+			$facade->setValidationFactory($ee->make('Validation'));
 
-			return $frontend;
+			return $facade;
 		},
 
 		'Spam' => function($ee)

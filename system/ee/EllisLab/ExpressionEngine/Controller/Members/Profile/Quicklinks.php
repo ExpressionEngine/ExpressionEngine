@@ -41,7 +41,7 @@ class Quicklinks extends Profile {
 		ee()->load->model('member_model');
 		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}
 
 	/**
@@ -51,8 +51,8 @@ class Quicklinks extends Profile {
 	{
 		$data = array(
 			'table' => $this->makeTable(),
-			'new' => ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string),
-			'form_url' => ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string)
+			'new' => ee('CP/URL')->make('members/profile/quicklinks/create', $this->query_string),
+			'form_url' => ee('CP/URL')->make('members/profile/quicklinks/delete', $this->query_string)
 		);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
@@ -73,7 +73,7 @@ class Quicklinks extends Profile {
 			->withTitle(lang('quick_links_ajax_reorder_fail'))
 			->addToBody(lang('quick_links_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('quick_links.reorder_url', ee('CP/URL', 'members/profile/quicklinks/order/', $this->query_string)->compile());
+		ee()->javascript->set_global('quick_links.reorder_url', ee('CP/URL')->make('members/profile/quicklinks/order/', $this->query_string)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
@@ -91,7 +91,7 @@ class Quicklinks extends Profile {
 	public function create()
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
-		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_quick_link'),
@@ -99,12 +99,8 @@ class Quicklinks extends Profile {
 
 		$values = array(
 			'name' => ee()->input->get('name'),
-			'url'  => ''
+			'url'  => ee('CP/URL')->decodeUrl(ee()->input->get('url'))
 		);
-
-		$url = base64_decode(ee()->input->get('url'));
-		$uri_elements = json_decode($url, TRUE);
-		$values['url'] = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 		if ( ! empty($_POST))
 		{
@@ -130,7 +126,7 @@ class Quicklinks extends Profile {
 	public function edit($id)
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
-		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_quick_link')
@@ -168,7 +164,7 @@ class Quicklinks extends Profile {
 		$this->quicklinks = array_diff_key($this->quicklinks, array_flip($selection));
 		$this->saveQuicklinks();
 
-		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 	}
 
 	/**
@@ -274,7 +270,7 @@ class Quicklinks extends Profile {
 		{
 			if ($this->saveQuicklinks())
 			{
-				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+				ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -303,7 +299,7 @@ class Quicklinks extends Profile {
 
 		foreach ($this->quicklinks as $quicklink)
 		{
-			$edit_url = ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
+			$edit_url = ee('CP/URL')->make('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
 
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
@@ -319,7 +315,7 @@ class Quicklinks extends Profile {
 					'name' => 'selection[]',
 					'value' => $quicklink['order'],
 					'data'	=> array(
-						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES) . '</b>'
+						'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

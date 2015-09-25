@@ -73,7 +73,7 @@ EE.cp.form_group_toggle = function(element) {
 
 			var input = $(this),
 				name = input.attr('name'),
-				clean_name = name.replace('el_disabled_'+group_name+'_', '');
+				clean_name = (name) ? name.replace('el_disabled_'+group_name+'_', '') : '';
 
 			// Disable inputs that aren't shown, we don't need those in POST
 			input.attr('disabled', ! enable);
@@ -82,10 +82,12 @@ EE.cp.form_group_toggle = function(element) {
 			// when changing the visible group, as well as any JS handlers
 			// based on name should take note of and inputs that are no
 			// longer in their scope
-			if (enable) {
-				input.attr('name', clean_name);
-			} else {
-				input.attr('name', 'el_disabled_'+group_name+'_'+clean_name);
+			if (name) {
+				if (enable) {
+					input.attr('name', clean_name);
+				} else {
+					input.attr('name', 'el_disabled_'+group_name+'_'+clean_name);
+				}
 			}
 		});
 	}

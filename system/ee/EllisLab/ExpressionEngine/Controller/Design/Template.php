@@ -241,7 +241,7 @@ class Template extends AbstractDesignController {
 				// Save a new revision
 				$this->saveNewTemplateRevision($template);
 
-				$alert = ee('CP/Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
@@ -291,7 +291,6 @@ class Template extends AbstractDesignController {
 			$vars['tabs']['revisions'] = $this->renderRevisionsPartial($template, $version_id);
 		}
 
-
 		$view_url = ee()->functions->fetch_site_index();
 		$view_url = rtrim($view_url, '/').'/';
 
@@ -310,8 +309,8 @@ class Template extends AbstractDesignController {
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . ' <a class="btn action ta" href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . lang('view_rendered') . '</a>';
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -487,10 +486,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! $search_terms)
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-			ee()->functions->redirect($return);
+			$return = ee('CP/URL')->decodeUrl($return);
 		}
 		else
 		{
@@ -502,7 +498,7 @@ class Template extends AbstractDesignController {
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
 			->all();
 
-		$base_url = ee('CP/URL', 'design/template/search');
+		$base_url = ee('CP/URL')->make('design/template/search');
 
 		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
 
@@ -525,7 +521,7 @@ class Template extends AbstractDesignController {
 			$search_terms
 		);
 
-		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###')->compile());
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(

@@ -107,7 +107,7 @@ class Template extends Settings {
 			),
 		));
 
-		$base_url = ee('CP/URL', 'settings/template');
+		$base_url = ee('CP/URL')->make('settings/template');
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
@@ -123,6 +123,8 @@ class Template extends Settings {
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
 
+			$this->updateTemplateFiles();
+
 			ee()->functions->redirect($base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -136,9 +138,23 @@ class Template extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'design'), lang('template_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('design'), lang('template_manager'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * If templates need to be saved as files, then write them.
+	 */
+	protected function updateTemplateFiles()
+	{
+		$save_template_files = ee()->input->post('save_tmpl_files');
+
+		if ($save_template_files == 'y')
+		{
+			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')->all();
+			$tgs->Templates->save();
+		}
 	}
 }
 // END CLASS

@@ -36,6 +36,12 @@ function DB($params = NULL)
 		$database_config->set('username', $params['username']);
 		$database_config->set('password', $params['password']);
 		$database_config->set('dbprefix', $params['dbprefix']);
+
+		if (isset($params['port']))
+		{
+			$database_config->set('port', $params['port']);
+		}
+
 		$database->setConfig($database_config);
 	}
 

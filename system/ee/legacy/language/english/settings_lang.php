@@ -340,6 +340,8 @@ $lang = array(
 
 'thumbnail_suffix_desc' => 'Added to all auto-generated thumbnails. <b>Example</b>: photo_thumb.jpg',
 
+'emoticons' => 'Emoticons',
+
 'enable_emoticons' => 'Enable emoticons?',
 
 'enable_emoticons_desc' => 'When set to <b>yes</b>, text based emoticons will be converted to image based emoticons.',

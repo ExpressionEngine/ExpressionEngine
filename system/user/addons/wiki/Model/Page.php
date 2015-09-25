@@ -43,7 +43,9 @@ class Page extends Model {
 			'model' => 'Revision'
 		)
 	);
-	
+	protected static $_events = array(
+		'afterInsert'
+	);		
 
 	protected $page_id;
 	protected $wiki_id;
@@ -55,4 +57,22 @@ class Page extends Model {
 	protected $last_updated;
 	protected $last_revision_id;
 	protected $has_categories;
+
+
+	public function onAfterInsert()
+	{
+			$data = array('page_id'		=> $this->page_id,
+				'wiki_id'			=> $this->wiki_id,
+				'revision_date'	=> ee()->localize->now,
+				'revision_author'	=> ee()->session->userdata('member_id'),
+				'revision_notes'	=> lang('default_index_note'),
+				'page_content'		=> lang('default_index_content')
+			 );
+
+        $this->getFrontend()->make('wiki:Revision', $data)->save();
+	}
+
+
 }
+
+

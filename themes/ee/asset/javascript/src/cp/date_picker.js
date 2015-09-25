@@ -183,6 +183,11 @@ $(document).ready(function(){
 
 					e.preventDefault();
 				});
+
+				// Prevent manual scrolling of the huge inner clip div
+				$('.date-picker-clip-inner').on('mousewheel', function(e){
+					e.preventDefault();
+				});
 			}
 
 			if ($(this.element).val()) {

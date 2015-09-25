@@ -465,7 +465,7 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
-		if (ee()->db->table_exists('layout_publish_member_groups'))
+		if ( ! ee()->db->field_exists('member_group', 'layout_publish'))
 		{
 			return;
 		}
@@ -584,6 +584,8 @@ class Updater {
 				}
 
 				$layouts[$index]['field_layout'] = serialize($new_field_layout);
+				unset($layouts[$index]['cat_group']);
+				unset($layouts[$index]['member_group']);
 			}
 
 			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
@@ -738,6 +740,11 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
+		if ( ! ee()->db->field_exists('can_access_extensions', 'member_groups'))
+		{
+			return;
+		}
+
 		ee()->smartforge->add_column('member_groups', array(
 			'include_in_mailinglist' => array(
 				'type'       => 'char',

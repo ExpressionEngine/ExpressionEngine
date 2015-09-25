@@ -59,7 +59,7 @@ class Pages_mcp {
 			'title' => lang('pages_manager'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'addons/settings/pages/settings'),
+					'href' => ee('CP/URL')->make('addons/settings/pages/settings'),
 					'title' => lang('settings')
 				)
 			)
@@ -78,7 +78,7 @@ class Pages_mcp {
 			$this->delete();
 		}
 
-		$base_url = ee('CP/URL', 'addons/settings/pages');
+		$base_url = ee('CP/URL')->make('addons/settings/pages');
 		$site_id = ee()->config->item('site_id');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
@@ -114,11 +114,11 @@ class Pages_mcp {
 					'name' => 'selection[]',
 					'value' => $entry_id,
 					'data'	=> array(
-						'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES) . '</b>'
+						'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 
-				$edit_url = ee('CP/URL', 'publish/edit/entry/' . $entry_id);
+				$edit_url = ee('CP/URL')->make('publish/edit/entry/' . $entry_id);
 				$data[] = array(
 					'name' => array(
 							'content' => $titles[$entry_id],
@@ -287,7 +287,7 @@ class Pages_mcp {
 			)
 		);
 
-		$base_url = ee('CP/URL', 'addons/settings/pages/settings');
+		$base_url = ee('CP/URL')->make('addons/settings/pages/settings');
 
 		if ( ! empty($_POST))
 		{
@@ -307,7 +307,7 @@ class Pages_mcp {
 		return array(
 			'heading' => $vars['cp_page_title'],
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/pages')->compile() => lang('pages_manager')
+				ee('CP/URL')->make('addons/settings/pages')->compile() => lang('pages_manager')
 			),
 			'body' => ee('View')->make('pages:form')->render($vars)
 		);

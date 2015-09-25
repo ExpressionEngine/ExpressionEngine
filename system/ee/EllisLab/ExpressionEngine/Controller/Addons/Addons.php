@@ -56,7 +56,7 @@ class Addons extends CP_Controller {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = ee('CP/URL', 'addons');
+		$this->base_url = ee('CP/URL')->make('addons');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
@@ -276,8 +276,10 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL', 'addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode())),
 						'title' => lang('install'),
+						'content' => lang('install'),
+						'type' => 'txt-only',
 						'class' => 'add'
 					)
 				);
@@ -312,7 +314,7 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL', 'addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode())),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -343,7 +345,7 @@ class Addons extends CP_Controller {
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', base64_encode(ee()->cp->get_safe_refresh()));
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode());
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
@@ -411,7 +413,7 @@ class Addons extends CP_Controller {
 			{
 				if (file_exists($info->getPath() . '/README.md'))
 				{
-					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+					$addon['manual_url'] = ee('CP/URL')->make('addons/manual/' . $name);
 					$addon['manual_external'] = FALSE;
 				}
 				elseif ($info->get('docs_url'))
@@ -570,9 +572,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -679,9 +679,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -775,9 +773,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -797,12 +793,12 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->view->header = array(
 			'title' => lang('addon_manager'),
-			'form_url' => ee('CP/URL', 'addons'),
+			'form_url' => ee('CP/URL')->make('addons'),
 			'search_button_value' => lang('search_addons_button')
 		);
 
@@ -852,7 +848,7 @@ class Addons extends CP_Controller {
 				if ($method == 'save')
 				{
 					$this->saveFieldtypeSettings($fieldtype);
-					ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
+					ee()->functions->redirect(ee('CP/URL')->make('addons/settings/' . $addon));
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
@@ -867,7 +863,7 @@ class Addons extends CP_Controller {
 					if ($method == 'save')
 					{
 						$this->saveExtensionSettings($addon);
-						ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
+						ee()->functions->redirect(ee('CP/URL')->make('addons/settings/' . $addon));
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
@@ -994,7 +990,7 @@ class Addons extends CP_Controller {
 		ee()->menu->register_left_nav($nav);
 		ee()->view->header = array(
 			'title' => lang('addon_manager'),
-			'form_url' => ee('CP/URL', 'addons'),
+			'form_url' => ee('CP/URL')->make('addons'),
 			'search_button_value' => lang('search_addons_button')
 		);
 
@@ -1003,7 +999,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
@@ -1064,7 +1060,7 @@ class Addons extends CP_Controller {
 
 			if ($info->get('settings_exist'))
 			{
-				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 
 			if ($info->hasInstaller())
@@ -1203,7 +1199,7 @@ class Addons extends CP_Controller {
 				{
 					$data['settings'] = $model->settings;
 				}
-				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 		}
 
@@ -1303,7 +1299,7 @@ class Addons extends CP_Controller {
 
 			if ($info->get('settings_exist'))
 			{
-				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 		}
 
@@ -1558,7 +1554,7 @@ class Addons extends CP_Controller {
 		}
 
 		$vars = array(
-			'base_url' => ee('CP/URL', 'addons/settings/' . $name . '/save'),
+			'base_url' => ee('CP/URL')->make('addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -1765,7 +1761,7 @@ class Addons extends CP_Controller {
 
 	private function getFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1780,7 +1776,7 @@ class Addons extends CP_Controller {
 		if (is_array($fieldtype_settings))
 		{
 			$vars = array(
-				'base_url' => ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'),
+				'base_url' => ee('CP/URL')->make('addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
 				'save_btn_text_working' => 'btn_saving',
@@ -1792,7 +1788,7 @@ class Addons extends CP_Controller {
 		{
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
-			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= form_open(ee('CP/URL')->make('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('CP/Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
@@ -1807,7 +1803,7 @@ class Addons extends CP_Controller {
 
 	private function saveFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

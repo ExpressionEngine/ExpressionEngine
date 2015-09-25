@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
-	<?=form_open(ee('CP/URL', 'utilities/member-import/process-xml'), '', $form_hidden)?>
+	<?=form_open(ee('CP/URL')->make('utilities/member-import/process-xml'), '', $form_hidden)?>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if ($added_fields && count($added_fields) > 0):?>

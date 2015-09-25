@@ -39,7 +39,7 @@ class Spam_mcp {
 	 */
 	public function __construct()
 	{
-		$this->base_url = ee('CP/URL', 'addons/settings/spam');
+		$this->base_url = ee('CP/URL')->make('addons/settings/spam');
 	}
 
 	/**
@@ -135,10 +135,10 @@ class Spam_mcp {
 					'class' => 'spam-detail',
 					'rel' => 'spam-modal',
 					'title' => strtolower(lang('edit')),
-					'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES),
-					'data-type' => htmlentities($spam->class, ENT_QUOTES),
+					'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES, 'UTF-8'),
+					'data-type' => htmlentities($spam->class, ENT_QUOTES, 'UTF-8'),
 					'data-date' => ee()->localize->human_time($spam->date->getTimestamp()),
-					'data-ip' => htmlentities($spam->ip_address, ENT_QUOTES),
+					'data-ip' => htmlentities($spam->ip_address, ENT_QUOTES, 'UTF-8'),
 				)
 			));
 
@@ -152,8 +152,8 @@ class Spam_mcp {
 			}
 
 			$summary = substr($spam->document, 0, 60) . '...';
-			$title = htmlentities($summary, ENT_QUOTES);
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($author, ENT_QUOTES) . '</span>';
+			$title = htmlentities($summary, ENT_QUOTES, 'UTF-8');
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($author, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			$trapped[] = array(
 				'content' => $title,
@@ -165,7 +165,7 @@ class Spam_mcp {
 					'name' => 'selection[]',
 					'value' => $spam->trap_id,
 					'data'	=> array(
-						'confirm' => lang('spam') . ': <b>' . htmlentities($summary, ENT_QUOTES) . '</b>'
+						'confirm' => lang('spam') . ': <b>' . htmlentities($summary, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -176,7 +176,7 @@ class Spam_mcp {
 
 		$data['table'] = $table->viewData($this->base_url);
 		$data['filters'] = $filters->render($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'addons/settings/spam');
+		$data['form_url'] = ee('CP/URL')->make('addons/settings/spam');
 		$data['cp_page_title'] = lang('all_spam');
 
 		// Set search results heading
@@ -215,7 +215,7 @@ class Spam_mcp {
 	 */
 	public function settings()
 	{
-		$base_url = ee('CP/URL', 'addons/settings/spam/settings');
+		$base_url = ee('CP/URL')->make('addons/settings/spam/settings');
 		ee()->load->library('form_validation');
 
 		$settings = array(
@@ -341,7 +341,7 @@ class Spam_mcp {
 		return array(
 			'body'       => ee('View')->make('spam:form')->render(array('data' => $vars)),
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/spam')->compile() => lang('spam')
+				ee('CP/URL')->make('addons/settings/spam')->compile() => lang('spam')
 			),
 			'heading' => lang('spam_settings')
 		);

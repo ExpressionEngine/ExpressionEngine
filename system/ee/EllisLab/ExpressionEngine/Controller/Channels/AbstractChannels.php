@@ -72,10 +72,10 @@ abstract class AbstractChannels extends CP_Controller {
 		// This header is section-wide
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => ee('CP/URL', 'channels/search'),
+			'form_url' => ee('CP/URL')->make('channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/content-design'),
+					'href' => ee('CP/URL')->make('settings/content-design'),
 					'title' => lang('settings')
 				)
 			)
@@ -86,32 +86,32 @@ abstract class AbstractChannels extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('channels'), ee('CP/URL', 'channels'))
-			->withButton(lang('new'), ee('CP/URL', 'channels/create'));
+		$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'))
+			->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
 
 		if ($active == 'channel')
 		{
 			$header->isActive();
 		}
 
-		$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL', 'channels/fields/groups'))
-			->withButton(lang('new'), ee('CP/URL', 'channels/fields/groups/create'));
+		$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'))
+			->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
 
 		if ($active == 'field')
 		{
 			$header->isActive();
 		}
 
-		$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL', 'channels/cat'))
-			->withButton(lang('new'), ee('CP/URL', 'channels/cat/create'));
+		$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'))
+			->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
 
 		if ($active == 'category')
 		{
 			$header->isActive();
 		}
 
-		$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL', 'channels/status'))
-			->withButton(lang('new'), ee('CP/URL', 'channels/status/create'));
+		$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'))
+			->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
 
 		if ($active == 'status')
 		{
@@ -148,7 +148,7 @@ abstract class AbstractChannels extends CP_Controller {
 		}
 
 		$table->setColumns($columns);
-		$table->setNoResultsText('no_channels', 'create_channel', ee('CP/URL', 'channels/create'));
+		$table->setNoResultsText('no_channels', 'create_channel', ee('CP/URL')->make('channels/create'));
 
 		$sort_map = array(
 			'col_id' => 'channel_id',
@@ -164,7 +164,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($channels as $channel)
 		{
-			$edit_url = ee('CP/URL', 'channels/edit/'.$channel->getId());
+			$edit_url = ee('CP/URL')->make('channels/edit/'.$channel->getId());
 
 			$columns = array(
 				$channel->getId(),
@@ -179,11 +179,11 @@ abstract class AbstractChannels extends CP_Controller {
 						'title' => lang('edit')
 					),
 					'settings' => array(
-						'href' => ee('CP/URL', 'channels/settings/'.$channel->getId()),
+						'href' => ee('CP/URL')->make('channels/settings/'.$channel->getId()),
 						'title' => lang('settings')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL', 'channels/layouts/'.$channel->getId()),
+						'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
 						'title' => (lang('layouts')),
 						'content' => strtolower(lang('layouts'))
 					)
@@ -196,7 +196,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'channels[]',
 					'value' => $channel->getId(),
 					'data'	=> array(
-						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -250,7 +250,7 @@ abstract class AbstractChannels extends CP_Controller {
 		}
 
 		$table->setColumns($columns);
-		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL', 'channels/fields/create'));
+		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create'));
 
 		$data = array();
 
@@ -258,7 +258,7 @@ abstract class AbstractChannels extends CP_Controller {
 
 		foreach ($fields->all() as $field)
 		{
-			$edit_url = ee('CP/URL', 'channels/fields/edit/' . $field->field_id);
+			$edit_url = ee('CP/URL')->make('channels/fields/edit/' . $field->field_id);
 
 			$column = array(
 				$field->field_id,
@@ -266,7 +266,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'content' => $field->field_label,
 					'href' => $edit_url
 				),
-				'<var>{' . htmlentities($field->field_name, ENT_QUOTES) . '}</var>',
+				'<var>{' . htmlentities($field->field_name, ENT_QUOTES, 'UTF-8') . '}</var>',
 				$field->field_type,
 				array('toolbar_items' => array(
 					'edit' => array(
@@ -282,7 +282,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $field->field_id,
 					'data' => array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -332,7 +332,7 @@ abstract class AbstractChannels extends CP_Controller {
 		}
 
 		$table->setColumns($columns);
-		$table->setNoResultsText('no_field_groups', 'create_new', ee('CP/URL', 'channels/fields/groups/create'));
+		$table->setNoResultsText('no_field_groups', 'create_new', ee('CP/URL')->make('channels/fields/groups/create'));
 
 		$data = array();
 
@@ -340,7 +340,7 @@ abstract class AbstractChannels extends CP_Controller {
 
 		foreach ($groups->all() as $group)
 		{
-			$edit_url = ee('CP/URL', 'channels/fields/groups/edit/' . $group->group_id);
+			$edit_url = ee('CP/URL')->make('channels/fields/groups/edit/' . $group->group_id);
 
 			$column = array(
 				array(
@@ -353,7 +353,7 @@ abstract class AbstractChannels extends CP_Controller {
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL', 'channels/fields/' . $group->group_id),
+						'href' => ee('CP/URL')->make('channels/fields/' . $group->group_id),
 						'title' => lang('custom_fields'),
 						'content' => strtolower(lang('fields'))
 					)
@@ -366,7 +366,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $group->group_id,
 					'data' => array(
-						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -420,7 +420,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$table->setNoResultsText(
 			'no_category_groups',
 			'create_category_group',
-			ee('CP/URL', 'channels/cat/create')
+			ee('CP/URL')->make('channels/cat/create')
 		);
 
 		$sort_map = array(
@@ -436,7 +436,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$edit_url = ee('CP/URL', 'channels/cat/edit/'.$group->getId());
+			$edit_url = ee('CP/URL')->make('channels/cat/edit/'.$group->getId());
 
 			$columns = array(
 				$group->getId(),
@@ -446,7 +446,7 @@ abstract class AbstractChannels extends CP_Controller {
 				),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => ee('CP/URL', 'channels/cat/cat-list/'.$group->getId()),
+						'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
 						'title' => lang('view')
 					),
 					'edit' => array(
@@ -454,7 +454,7 @@ abstract class AbstractChannels extends CP_Controller {
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL', 'channels/cat/field/'.$group->getId()),
+						'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
 						'title' => strtolower(lang('custom_fields')),
 						'content' => strtolower(lang('fields'))
 					)
@@ -467,7 +467,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'cat_groups[]',
 					'value' => $group->getId(),
 					'data'	=> array(
-						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				);
 			}
@@ -525,7 +525,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($categories as $category)
 		{
-			$edit_url = ee('CP/URL', 'channels/cat/edit-cat/'.$category->group_id.'/'.$category->cat_id);
+			$edit_url = ee('CP/URL')->make('channels/cat/edit-cat/'.$category->group_id.'/'.$category->cat_id);
 
 			$data[] = array(
 				$category->getId(),
@@ -595,11 +595,11 @@ abstract class AbstractChannels extends CP_Controller {
 				$group->group_name,
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => ee('CP/URL', 'channels/status/status-list/'.$group->getId()),
+						'href' => ee('CP/URL')->make('channels/status/status-list/'.$group->getId()),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/status/edit/'.$group->getId()),
+						'href' => ee('CP/URL')->make('channels/status/edit/'.$group->getId()),
 						'title' => lang('edit')
 					)
 				))
@@ -611,7 +611,7 @@ abstract class AbstractChannels extends CP_Controller {
 					'name' => 'status_groups[]',
 					'value' => $group->getId(),
 					'data'	=> array(
-						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
 					// Cannot delete default group
 					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL

@@ -232,7 +232,7 @@ Grid.Publish.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', '.toolbar .remove a', function(event) {
+		this.root.on('click', 'td:last-child .toolbar .remove a', function(event) {
 			event.preventDefault();
 
 			row = $(this).parents('tr');

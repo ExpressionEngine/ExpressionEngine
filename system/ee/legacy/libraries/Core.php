@@ -226,7 +226,7 @@ class EE_Core {
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
-		define('PATH_CP_GBL_IMG', PATH_THEMES_GLOBAL_ASSET.'img/');
+		define('PATH_CP_GBL_IMG', URL_THEMES_GLOBAL_ASSET.'img/');
 		unset($theme_path);
 
 		// Load the very, very base classes

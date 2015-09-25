@@ -38,7 +38,7 @@ class System extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -55,7 +55,7 @@ class System extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = ee('CP/URL', 'design/system/');
+		$base_url = ee('CP/URL')->make('design/system/');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'limit' => 1024));
 		$table->setColumns(
@@ -70,7 +70,7 @@ class System extends AbstractDesignController {
 		$data = array();
 		foreach ($templates as $template)
 		{
-			$edit_url = ee('CP/URL', 'design/system/edit/' . $template->template_id);
+			$edit_url = ee('CP/URL')->make('design/system/edit/' . $template->template_id);
 			$data[] = array(
 				array(
 					'content' => lang($template->template_name),
@@ -133,7 +133,7 @@ class System extends AbstractDesignController {
 			if (ee()->input->post('submit') == 'finish')
 			{
 				$alert->defer();
-				ee()->functions->redirect(ee('CP/URL', 'design/system'));
+				ee()->functions->redirect(ee('CP/URL')->make('design/system'));
 			}
 
 			$alert->now();
@@ -142,7 +142,7 @@ class System extends AbstractDesignController {
 		$author = $template->getLastAuthor();
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/system/edit/' . $template->template_id),
+			'form_url' => ee('CP/URL')->make('design/system/edit/' . $template->template_id),
 			'template' => $template,
 			'author' => (empty($author)) ? '-' : $author->getMemberName(),
 		);
@@ -151,8 +151,8 @@ class System extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/system/')->compile() => sprintf(lang('breadcrumb_group'), lang('system'))
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/system/')->compile() => sprintf(lang('breadcrumb_group'), lang('system'))
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving

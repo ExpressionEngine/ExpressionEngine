@@ -215,7 +215,7 @@ class Date_ft extends EE_Fieldtype {
 			lang('cal_june'),
 			lang('cal_july'),
 			lang('cal_aug'),
-			lang('cal_sept'),
+			lang('cal_sep'),
 			lang('cal_oct'),
 			lang('cal_nov'),
 			lang('cal_dec')
@@ -312,7 +312,7 @@ class Date_ft extends EE_Fieldtype {
 			'field_options' => array(
 				array(
 					'title' => 'localize_date',
-					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL', 'settings/general')),
+					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL')->make('settings/general')),
 					'fields' => array(
 						'localize' => array(
 							'type' => 'yes_no',

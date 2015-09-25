@@ -40,7 +40,7 @@ class Translate extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -109,7 +109,7 @@ class Translate extends Utilities {
 			'pagination' => ''
 		);
 
-		$base_url = ee('CP/URL', 'utilities/translate/' . $language);
+		$base_url = ee('CP/URL')->make('utilities/translate/' . $language);
 
 		$data = array();
 
@@ -134,7 +134,7 @@ class Translate extends Utilities {
 			if (substr($file, -$filename_end_len) && substr($file, -4) == '.php')
 			{
 				$name = str_replace('_lang.php', '', $file);
-				$edit_url = ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $name);
+				$edit_url = ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $name);
 				$data[] = array(
 					'filename' => array(
 							'content' => $file,
@@ -273,7 +273,7 @@ class Translate extends Utilities {
 		{
 			$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
 			ee()->view->set_message('issue', $message, '', TRUE);
-			ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language));
 		}
 
 		ee()->view->cp_page_title = $filename . ' ' . ucfirst(lang('translation'));
@@ -317,7 +317,7 @@ class Translate extends Utilities {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'utilities/translate/' . $language)->compile() => ucfirst($language) . ' ' . lang('language_files')
+			ee('CP/URL')->make('utilities/translate/' . $language)->compile() => ucfirst($language) . ' ' . lang('language_files')
 		);
 
 		ee()->cp->render('utilities/translate/edit', $vars);
@@ -364,7 +364,7 @@ class Translate extends Utilities {
 			{
 				exit($dest_loc);
 				ee()->view->set_message('issue', lang('trans_file_not_writable'), '', TRUE);
-				ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $file));
+				ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
 			}
 		}
 
@@ -378,7 +378,7 @@ class Translate extends Utilities {
 		{
 			ee()->view->set_message('issue', lang('invalid_path'), '', TRUE);
 		}
-		ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $file));
+		ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
 	}
 }
 // END CLASS

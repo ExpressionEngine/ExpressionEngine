@@ -27,7 +27,7 @@ $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-admin',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
-		'return' => base64_encode(ee()->cp->get_safe_refresh()),
+		'return' => ee('CP/URL')->getCurrentUrl()->encode(),
 		'bulk_action'	=> 'remove'
 	)
 );

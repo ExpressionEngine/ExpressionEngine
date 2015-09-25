@@ -46,7 +46,7 @@ class Bookmarks extends Profile {
 		}
 
 		$this->index_url = $this->base_url;
-		$this->base_url  = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url  = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Bookmarks extends Profile {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/profile/bookmarks/edit/' . $id, $this->query_string),
+					'href' => ee('CP/URL')->make('members/profile/bookmarks/edit/' . $id, $this->query_string),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -81,7 +81,7 @@ class Bookmarks extends Profile {
 					'name' => 'selection[]',
 					'value' => $id,
 					'data'	=> array(
-						'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -105,8 +105,8 @@ class Bookmarks extends Profile {
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = ee('CP/URL', 'members/profile/bookmarks/create', $this->query_string)->compile();
-		$data['form_url'] = ee('CP/URL', 'members/profile/bookmarks/delete', $this->query_string)->compile();
+		$data['new'] = ee('CP/URL')->make('members/profile/bookmarks/create', $this->query_string)->compile();
+		$data['form_url'] = ee('CP/URL')->make('members/profile/bookmarks/delete', $this->query_string)->compile();
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('bookmarks') . ': <b>### ' . lang('bookmarks') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -128,7 +128,7 @@ class Bookmarks extends Profile {
 	public function create()
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
-		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_bookmarklet')
@@ -158,7 +158,7 @@ class Bookmarks extends Profile {
 	public function edit($id)
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
-		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_bookmarklet')
@@ -194,7 +194,7 @@ class Bookmarks extends Profile {
 		$this->bookmarks = array_diff_key($this->bookmarks, array_flip($selection));
 		$this->saveBookmarks();
 
-		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 	}
 
 	/**
@@ -317,7 +317,7 @@ class Bookmarks extends Profile {
 			{
 				if ($this->saveBookmarks())
 				{
-					ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+					ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 				}
 			}
 			elseif (ee()->form_validation->errors_exist())

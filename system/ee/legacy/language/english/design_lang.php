@@ -30,7 +30,7 @@ $lang = array(
 
 'create_new_template' => 'Create New Template',
 
-'messages' => 'messages',
+'messages' => 'Messages',
 
 'email' => 'Email',
 

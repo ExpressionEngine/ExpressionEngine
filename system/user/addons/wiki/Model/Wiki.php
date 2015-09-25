@@ -132,16 +132,15 @@ class Wiki extends Model {
 	
 	public function onAfterInsert()
 	{
-	
-		$this->Page->wiki_id = $this->wiki_id;
-		$this->Page->page_name = 'index';
-		$this->Page->page_namespace = '';		
-		$this->Page->last_updated	= $this->localize->now;
-		$this->Page->save();
+			$data = array(
+				'wiki_id'        => $this->wiki_id,
+				'page_name'      => 'index',
+				'page_namespace' => '',
+				'last_updated'   => ee()->localize->now
+			);
 
-		//ee('Model')->make('wiki:Page', $data)->save();`
+        $this->getFrontend()->make('wiki:Page', $data)->save();
 	}
-
 
 
 /*	

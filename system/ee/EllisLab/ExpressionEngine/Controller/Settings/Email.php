@@ -145,7 +145,7 @@ class Email extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/email');
+		$base_url = ee('CP/URL')->make('settings/email');
 
 		if (AJAX_REQUEST)
 		{

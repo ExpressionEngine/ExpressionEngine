@@ -44,7 +44,7 @@ class Extensions extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_extensions'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -56,7 +56,7 @@ class Extensions extends Utilities {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = ee('CP/URL', 'utilities/extensions');
+		$this->base_url = ee('CP/URL')->make('utilities/extensions');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
@@ -371,7 +371,7 @@ class Extensions extends Utilities {
 
 				if ($info->get('settings_exist'))
 				{
-					$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+					$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 				}
 
 				if ($info->get('docs_url'))

@@ -45,7 +45,7 @@ class Fields extends Members\Members {
 		parent::__construct();
 
 		ee()->lang->loadfile('channel');
-		$this->base_url = ee('CP/URL', 'members/fields');
+		$this->base_url = ee('CP/URL')->make('members/fields');
 		$this->generateSidebar('fields');
 	}
 
@@ -57,7 +57,7 @@ class Fields extends Members\Members {
 		$table = ee('CP/Table', array(
 			'sortable' => FALSE,
 			'reorder' => TRUE,
-			'save' => ee('CP/URL', "members/fields/order")
+			'save' => ee('CP/URL')->make("members/fields/order")
 		));
 
 		$table->setColumns(
@@ -82,7 +82,7 @@ class Fields extends Members\Members {
 		$table->setNoResultsText(
 			'no_fields',
 			'create_new',
-			ee('CP/URL', 'members/fields/create')
+			ee('CP/URL')->make('members/fields/create')
 		);
 
 		$data = array();
@@ -97,7 +97,7 @@ class Fields extends Members\Members {
 
 		foreach ($fields as $field)
 		{
-			$edit_url = ee('CP/URL', 'members/fields/edit/' . $field->m_field_id);
+			$edit_url = ee('CP/URL')->make('members/fields/edit/' . $field->m_field_id);
 			$toolbar = array('toolbar_items' => array(
 			'edit' => array(
 					'href' => $edit_url,
@@ -118,7 +118,7 @@ class Fields extends Members\Members {
 					'name' => 'selection[]',
 					'value' => $field->m_field_id,
 					'data'	=> array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -138,8 +138,8 @@ class Fields extends Members\Members {
 
 		$table->setData($fieldData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'members/fields/delete');
-		$data['new'] = ee('CP/URL', 'members/fields/create');
+		$data['form_url'] = ee('CP/URL')->make('members/fields/delete');
+		$data['new'] = ee('CP/URL')->make('members/fields/create');
 		$base_url = $data['table']['base_url'];
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
@@ -154,7 +154,7 @@ class Fields extends Members\Members {
 			->withTitle(lang('member_field_ajax_reorder_fail'))
 			->addToBody(lang('member_field_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL', 'members/fields/order/')->compile());
+		ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL')->make('members/fields/order/')->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
@@ -233,7 +233,7 @@ class Fields extends Members\Members {
 
 			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_member_field');
-			ee()->view->base_url = ee('CP/URL', 'members/fields/edit/' . $field_id);
+			ee()->view->base_url = ee('CP/URL')->make('members/fields/edit/' . $field_id);
 		}
 		else
 		{
@@ -250,7 +250,7 @@ class Fields extends Members\Members {
 
 			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_member_field');
-			ee()->view->base_url = ee('CP/URL', 'members/fields/create');
+			ee()->view->base_url = ee('CP/URL')->make('members/fields/create');
 		}
 
 		if ( ! $field)
@@ -398,7 +398,7 @@ class Fields extends Members\Members {
 					->addToBody(lang('member_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', '/members/fields'));
+				ee()->functions->redirect(ee('CP/URL')->make('/members/fields'));
 			}
 			else
 			{
@@ -425,7 +425,7 @@ class Fields extends Members\Members {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('custom_profile_fields'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields/edit'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/form_group'),

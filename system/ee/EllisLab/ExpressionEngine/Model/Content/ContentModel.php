@@ -225,7 +225,14 @@ abstract class ContentModel extends VariableColumnModel {
 
 		foreach ($facades as $name => $facade)
 		{
-			$rules[$name] = '';
+			if ( ! isset($rules[$name]))
+			{
+				$rules[$name] = '';
+			}
+			else
+			{
+				$rules[$name] .= '|';
+			}
 
 			if ($facade->isRequired())
 			{

@@ -32,7 +32,7 @@ class Ip_to_nation_mcp {
 		ee()->load->helper('array');
 		ee()->load->model('ip_to_nation_data', 'ip_data');
 
-		$this->base_url = ee('CP/URL', 'addons/settings/ip_to_nation')->compile();
+		$this->base_url = ee('CP/URL')->make('addons/settings/ip_to_nation')->compile();
 	}
 
 	// ----------------------------------------------------------------------
@@ -43,7 +43,7 @@ class Ip_to_nation_mcp {
 	function index()
 	{
 		$ip_search = array(
-			'base_url' => ee('CP/URL', 'addons/settings/ip_to_nation/search'),
+			'base_url' => ee('CP/URL')->make('addons/settings/ip_to_nation/search'),
 			'cp_page_title' => lang('ip_search'),
 			'save_btn_text' => 'btn_search',
 			'save_btn_text_working' => 'btn_searching',
@@ -133,7 +133,7 @@ class Ip_to_nation_mcp {
 		}
 
 		$banned_list = array(
-			'base_url' => ee('CP/URL', 'addons/settings/ip_to_nation/update'),
+			'base_url' => ee('CP/URL')->make('addons/settings/ip_to_nation/update'),
 			'cp_page_title' => lang('banlist'),
 			'save_btn_text' => 'btn_save_banlist',
 			'save_btn_text_working' => 'btn_saving',
@@ -147,7 +147,7 @@ class Ip_to_nation_mcp {
 							'action_button' => array(
 								'type' => 'action_button',
 								'text' => 'update_ips',
-								'link' => ee('CP/URL', 'addons/settings/ip_to_nation/download_data'),
+								'link' => ee('CP/URL')->make('addons/settings/ip_to_nation/download_data'),
 								'class' => ''
 							)
 						)
