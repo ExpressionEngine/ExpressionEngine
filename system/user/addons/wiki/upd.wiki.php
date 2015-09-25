@@ -24,7 +24,7 @@
  */
 class Wiki_upd {
 
-	var $version = '2.3';
+	var $version = '3.0';
 
 	/**
 	 * Module Installer
@@ -140,17 +140,6 @@ class Wiki_upd {
 			ee()->db->query($query);
 		}
 
-		// Add Extension Hook
-		ee()->db->insert('extensions', array(
-			'class'    => 'Wiki_ext',
-			'hook'     => 'files_after_delete',
-			'method'   => 'files_after_delete',
-			'settings' => '',
-			'priority' => 5,
-			'version'  => $this->version,
-			'enabled'  => 'y'
-		));
-
 		return TRUE;
 	}
 
@@ -183,9 +172,6 @@ class Wiki_upd {
 		{
 			ee()->db->query($query);
 		}
-
-		// Disable extension
-		ee()->db->delete('extensions', array('class' => 'Wiki_ext'));
 
 		return TRUE;
 	}
@@ -313,6 +299,14 @@ class Wiki_upd {
 				'enabled'  => 'y'
 			));
 		}
+		
+		
+		if (version_compare($current, '3.0', '<'))
+		{		
+			// With 3.0 we no longer need the extension as the model 
+			// takes care of it
+			ee()->db->delete('extensions', array('class' => 'Wiki_ext'));	
+		}	
 
 		return TRUE;
 	}

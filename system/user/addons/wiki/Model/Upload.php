@@ -38,15 +38,26 @@ class Upload extends Model {
 		'Wiki' => array(
 			'type' => 'belongsTo'
 		),
-        'UploadAuthor' => array(
-            'type'     => 'belongsTo',
-            'from_key' => 'upload_author',
-            'to_key'   => 'member_id',
-            'model'    => 'ee:Member',
-            'weak'     => TRUE,
-            'inverse' => array(
-                'name' => 'Upload',
-                'type' => 'hasMany'
+      'Author' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'upload_author',
+			'to_key'   => 'member_id',
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Uploads',
+				'type' => 'hasMany'
+            )
+        ),
+      'File' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'file_name',
+			'to_key'   => 'file_name',
+			'model'    => 'ee:File',
+			'weak'     => FALSE,  // we want to delete them
+			'inverse' => array(
+				'name' => 'Uploads',
+				'type' => 'hasMany'
             )
         )	
 	);	

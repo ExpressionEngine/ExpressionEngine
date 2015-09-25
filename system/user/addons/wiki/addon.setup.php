@@ -13,39 +13,21 @@ return array(
 		'WikiNamespace' => 'Model\WikiNamespace',
 		'Wiki' => 'Model\Wiki',
 		'Page' => 'Model\Page',
-		'Revision' => 'Model\Revision'
-	),
-	'models.dependencies' => array(
-		'Revision'   => array(
-			'ee:Member'
-		)
-	)	
-	
-
-
-/*
-	'models' => array(
+		'Revision' => 'Model\Revision',
 		'Category' => 'Model\Category',
 		'CategoryArticle' => 'Model\CategoryArticle',
-		'WikiNamespace' => 'Model\WikiNamespace',
-		'Page' => 'Model\Page',
-		'Revision' => 'Model\Revision',
 		'Search' => 'Model\Search',
-		'Upload' => 'Model\Upload',
-		'Wiki' => 'Model\Wiki'
+		'Upload' => 'Model\Upload'		
 		
 	),
-
 	'models.dependencies' => array(
 		'Revision'   => array(
 			'ee:Member'
 		),
 		'Upload'   => array(
-			'ee:Member'
+			'ee:Member',
+			'ee:File'
 		)
-	)	
+	)
 
-	
-	
-*/
 );
