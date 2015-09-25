@@ -445,53 +445,55 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function set__categories($categories)
 	{
-		if (empty($categories))
-		{
-			$categories = array();
-		}
-
-		if ( ! is_array($categories))
-		{
-			$categories = array($categories);
-		}
-
-		// annoyingly needed to trigger validation on the field
-		$this->setRawProperty('categories', implode('|', $categories));
-
 		// Currently cannot get multiple category groups through relationships
 		$cat_groups = array();
+
 		if ($this->Channel->cat_group)
 		{
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
+		$this->Categories = NULL;
+
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
 			{
-				$this->getCustomField('cat_group_id_'.$cat_group)->setData('');
+				$this->setRawProperty('cat_group_id_'.$cat_group, '');
+				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
-			$this->Categories = NULL;
+
 			return;
 		}
 
-		$this->Categories = $this
-			->getFrontend()
-			->get('Category')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('cat_id', 'IN', $categories)
-			->all();
+		$set_cats = array();
 
 		// Set the data on the fields in case we come back from a validation error
 		foreach ($cat_groups as $cat_group)
 		{
-			$cats_in_group = $this->Categories->filter(function($category) use ($cat_group)
+			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
 			{
-				return $category->group_id == $cat_group;
-			});
+				$group_cats = $categories['cat_group_id_'.$cat_group];
 
-			$this->getCustomField('cat_group_id_'.$cat_group)->setData(implode('|', $this->Categories->pluck('cat_name')));
+				$cats = implode('|', $group_cats);
+
+				$this->setRawProperty('cat_group_id_'.$cat_group, $cats);
+				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData($cats);
+
+				$group_cat_objects = $this->getModelFacade()
+					->get('Category')
+					->filter('site_id', ee()->config->item('site_id'))
+					->filter('cat_id', 'IN', $group_cats)
+					->all();
+
+				foreach ($group_cat_objects as $cat)
+				{
+					$set_cats[] = $cat;
+				}
+			}
 		}
+
+		$this->Categories = $set_cats;
 	}
 
 	/**
@@ -658,7 +660,7 @@ class ChannelEntry extends ContentModel {
 
 				foreach ($cat_groups as $cat_group)
 				{
-					$default_fields['cat_group_id_'.$cat_group->getId()] = array(
+					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
 						'field_id'				=> 'categories',
 						'cat_group_id'			=> $cat_group->getId(),
 						'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
@@ -799,9 +801,6 @@ class ChannelEntry extends ContentModel {
 
 	public function populateCategories($field)
 	{
-		// Rename the field so that we get the proper field facade later
-		$field->setName('categories');
-
 		$categories = ee('Model')->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
@@ -813,7 +812,7 @@ class ChannelEntry extends ContentModel {
 		$category_list = $this->buildCategoryList($categories);
 		$field->setItem('field_list_items', $category_list);
 
-		$set_categories = $this->Categories->pluck('cat_name');
+		$set_categories = $this->Categories->filter('group_id', $field->getItem('cat_group_id'))->pluck('cat_name');
 		$field->setData(implode('|', $set_categories));
 	}
 

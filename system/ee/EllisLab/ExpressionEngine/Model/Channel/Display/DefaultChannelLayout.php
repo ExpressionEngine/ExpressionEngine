@@ -92,7 +92,7 @@ class DefaultChannelLayout extends DefaultLayout {
 		foreach ($cat_groups as $cat_group)
 		{
 			$category_group_fields[] = array(
-				'field' => 'cat_group_id_'.$cat_group->getId(),
+				'field' => 'categories[cat_group_id_'.$cat_group->getId().']',
 				'visible' => TRUE,
 				'collapsed' => FALSE
 			);
