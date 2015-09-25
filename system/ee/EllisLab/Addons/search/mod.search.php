@@ -1362,6 +1362,14 @@ class Search {
 			}
 		}
 
+		$switch = ee()->TMPL->fetch_param('switch');
+		if ( ! empty($switch) && strpos(ee()->TMPL->tagdata, '{switch}') !== FALSE)
+		{
+			ee()->TMPL->tagdata = str_replace("{switch}", "{switch='{$switch}'}", ee()->TMPL->tagdata);
+			ee()->load->library('logger');
+			ee()->logger->developer('The search module\'s {switch} variable has been deprecated, use standard {switch=} tags in your search results template.', TRUE, 604800);
+		}
+
 		$channel = new Channel;
 
 		// This allows the channel {absolute_count} variable to work
@@ -1369,7 +1377,7 @@ class Search {
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
-		$channel->query = ee()->db->query($sql);
+		$channel->query = $query;
 
 		if ($channel->query->num_rows() == 0)
 		{
@@ -1383,118 +1391,10 @@ class Search {
 		));
 
 		$channel->fetch_categories();
-		$channel->parse_channel_entries();
-
-		$output = $channel->return_data;
-
-		// Fetch member path variable
-		// We do it here in case it's used in multiple places.
-		$m_paths = array();
-
-		if (preg_match_all("/".LD."member_path(\s*=.*?)".RD."/s", ee()->TMPL->tagdata, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				$m_paths[] = array($matches['0'][$j], ee()->functions->extract_path($matches['1'][$j]));
-			}
-		}
-
-		// Fetch switch param
-		$switch1 = '';
-		$switch2 = '';
-
-		if ($switch = ee()->TMPL->fetch_param('switch'))
-		{
-			if (strpos($switch, '|') !== FALSE)
-			{
-				$x = explode("|", $switch);
-
-				$switch1 = $x['0'];
-				$switch2 = $x['1'];
-			}
-			else
-			{
-				$switch1 = $switch;
-			}
-		}
-
-		/** -----------------------------
-		/**  Result Loop - Legacy!
-		/** -----------------------------*/
-
-		$i = 0;
-
-		foreach ($query->result_array() as $row)
-		{
-			if (isset($row['field_id_'.$row['search_excerpt']]) AND $row['field_id_'.$row['search_excerpt']])
-			{
-				$format = ( ! isset($row['field_ft_'.$row['search_excerpt']])) ? 'xhtml' : $row['field_ft_'.$row['search_excerpt']];
-
-				$full_text = ee()->typography->parse_type(
-					// Replace block HTML tags with spaces so words don't run together in case
-					// they're saved with no spaces in between the markup
-					strip_tags(
-						preg_replace('/\s+/', ' ',
-							preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_'.$row['search_excerpt']])
-						)
-					),
-					array(
-						'text_format'	=> $format,
-						'html_format'	=> 'safe',
-						'auto_links'	=> 'y',
-						'allow_img_url' => 'n'
-					)
-				);
-
-				$excerpt = trim(strip_tags($full_text));
-
-				if (strpos($excerpt, "\r") !== FALSE OR strpos($excerpt, "\n") !== FALSE)
-				{
-					$excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
-				}
-
-				$excerpt = ee()->functions->word_limiter($excerpt, 50);
-			}
-			else
-			{
-				$excerpt = '';
-				$full_text = '';
-			}
-
-			// Parse permalink path
-			$url = ($row['search_results_url'] != '') ? $row['search_results_url'] : $row['channel_url'];
-
-			$path = reduce_double_slashes(ee()->functions->prep_query_string($url).'/'.$row['url_title']);
-			$idpath = reduce_double_slashes(ee()->functions->prep_query_string($url).'/'.$row['entry_id']);
-
-			$switch = ($i++ % 2) ? $switch1 : $switch2;
-			$output = preg_replace("/".LD.'switch'.RD."/", $switch, $output, count(explode(LD.'switch'.RD, ee()->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'auto_path'.RD."/", $path, $output, count(explode(LD.'auto_path'.RD, ee()->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'id_auto_path'.RD."/", $idpath, $output, count(explode(LD.'id_auto_path'.RD, ee()->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'excerpt'.RD."/", $this->_escape_replacement_pattern($excerpt), $output, count(explode(LD.'excerpt'.RD, ee()->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'full_text'.RD."/", $this->_escape_replacement_pattern($full_text), $output, count(explode(LD.'full_text'.RD, ee()->TMPL->tagdata)) - 1);
-
-			// Parse member_path
-
-			if (count($m_paths) > 0)
-			{
-				foreach ($m_paths as $val)
-				{
-					$output = preg_replace(
-						"/".preg_quote($val['0'], '/')."/",
-						ee()->functions->create_url($val['1'].'/'.$row['member_id']),
-						$output,
-						1
-					);
-				}
-			}
-
-		}
-
-		ee()->TMPL->tagdata = $output;
+		$channel->parse_channel_entries(array($this, 'callback_search_result_row'));
 
 		// Add new pagination
-		ee()->TMPL->tagdata = $pagination->render(ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = $pagination->render($channel->return_data);
 
 		// Parse lang variables
 		$swap = array(
@@ -1514,6 +1414,149 @@ class Search {
 		ee()->TMPL->template = ee()->functions->var_swap(ee()->TMPL->template, $swap);
 
 		return ee()->TMPL->tagdata;
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Callback called by Channel Entries parser so we can parse search results
+	 * tags
+	 * @param  String $tagdata Individual tagdata variable for a given row
+	 * @param  Array  $row     Data associated with current row
+	 * @return String          Parsed tagdata
+	 */
+	public function callback_search_result_row($tagdata, $row)
+	{
+		if (isset($row['field_id_'.$row['search_excerpt']]) AND $row['field_id_'.$row['search_excerpt']])
+		{
+			$format = ( ! isset($row['field_ft_'.$row['search_excerpt']])) ? 'xhtml' : $row['field_ft_'.$row['search_excerpt']];
+
+			$full_text = ee()->typography->parse_type(
+				// Replace block HTML tags with spaces so words don't run together in case
+				// they're saved with no spaces in between the markup
+				strip_tags(
+					preg_replace('/\s+/', ' ',
+						preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_'.$row['search_excerpt']])
+					)
+				),
+				array(
+					'text_format'	=> $format,
+					'html_format'	=> 'safe',
+					'auto_links'	=> 'y',
+					'allow_img_url' => 'n'
+				)
+			);
+
+			$excerpt = trim(strip_tags($full_text));
+
+			if (strpos($excerpt, "\r") !== FALSE OR strpos($excerpt, "\n") !== FALSE)
+			{
+				$excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
+			}
+
+			$excerpt = ee()->functions->word_limiter($excerpt, 50);
+		}
+		else
+		{
+			$excerpt = '';
+			$full_text = '';
+		}
+
+		// Parse permalink path
+		$url = ($row['search_results_url'] != '') ? $row['search_results_url'] : $row['channel_url'];
+
+		$path = reduce_double_slashes(ee()->functions->prep_query_string($url).'/'.$row['url_title']);
+		$idpath = reduce_double_slashes(ee()->functions->prep_query_string($url).'/'.$row['entry_id']);
+
+		$tagdata = preg_replace(
+			"/".LD.'auto_path'.RD."/",
+			$path,
+			$tagdata,
+			$this->tag_count('auto_path', $tagdata)
+		);
+		$tagdata = preg_replace(
+			"/".LD.'id_auto_path'.RD."/",
+			$idpath,
+			$tagdata,
+			$this->tag_count('id_auto_path', $tagdata)
+		);
+		$tagdata = preg_replace(
+			"/".LD.'excerpt'.RD."/",
+			$this->_escape_replacement_pattern($excerpt),
+			$tagdata,
+			$this->tag_count('excerpt', $tagdata)
+		);
+		$tagdata = preg_replace(
+			"/".LD.'full_text'.RD."/",
+			$this->_escape_replacement_pattern($full_text),
+			$tagdata,
+			$this->tag_count('full_text', $tagdata)
+		);
+
+		$m_paths = $this->get_member_path_tags($tagdata);
+
+		// Parse member_path
+		if (count($m_paths) > 0)
+		{
+			foreach ($m_paths as $val)
+			{
+				$tagdata = preg_replace(
+					"/".preg_quote($val['0'], '/')."/",
+					ee()->functions->create_url($val['1'].'/'.$row['member_id']),
+					$tagdata,
+					1
+				);
+			}
+		}
+
+		return $tagdata;
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Retrieve the Member Path tags for a set of tagdata
+	 *
+	 * @param String $tagdata The tagdata to get member_path tags from
+	 * @return Array Nested array containing tag and resulting paths for member
+	 *               path tags (e.g. {member_path="member/index"})
+	 */
+	private function get_member_path_tags($tagdata = NULL)
+	{
+		if (isset($this->m_paths))
+		{
+			return $this->m_paths;
+		}
+
+		$tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
+
+		// Fetch member path variable
+		// We do it here in case it's used in multiple places.
+		$this->m_paths = array();
+
+		if (preg_match_all("/".LD."member_path(\s*=.*?)".RD."/s", ee()->TMPL->tagdata, $matches))
+		{
+			for ($j = 0; $j < count($matches['0']); $j++)
+			{
+				$this->m_paths[] = array($matches['0'][$j], ee()->functions->extract_path($matches['1'][$j]));
+			}
+		}
+
+		return $this->m_paths;
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Get the number of tags in a given tagdata
+	 * @param  String $tag_name The name of the tag to look for
+	 * @param  String $tagdata  The tagdata to get member_path tags from
+	 * @return int              The number of tags found
+	 */
+	private function tag_count($tag_name, $tagdata = NULL)
+	{
+		$tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
+		return substr_count($tagdata, LD.$tag_name.RD);
 	}
 
 	// --------------------------------------------------------------------------
