@@ -278,6 +278,8 @@ class Addons extends CP_Controller {
 					'install' => array(
 						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->setQueryStringVariable('search', ee()->view->search_value)->encode())),
 						'title' => lang('install'),
+						'content' => lang('install'),
+						'type' => 'txt-only',
 						'class' => 'add'
 					)
 				);
