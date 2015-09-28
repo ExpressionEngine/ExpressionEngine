@@ -48,9 +48,9 @@ class Members extends CP_Controller {
 	{
 		parent::__construct();
 
-		$this->perpage = $this->config->item('memberlist_row_limit');
+		$this->perpage = ee()->config->item('memberlist_row_limit');
 
-		if ( ! $this->cp->allowed_group('can_access_members'))
+		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -83,7 +83,10 @@ class Members extends CP_Controller {
 			$pending->isActive();
 		}
 
-		$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/bans'));
+		if (ee()->cp->allowed_group('can_ban_users'))
+		{
+			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/bans'));
+		}
 
 		$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'))
 			->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
@@ -228,6 +231,11 @@ class Members extends CP_Controller {
 
 	public function bans()
 	{
+		if ( ! ee()->cp->allowed_group('can_ban_users'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->base_url = ee('CP/URL')->make('members/bans');
 		$this->group = 2;
 		$this->filter = FALSE;
