@@ -5,7 +5,7 @@ return array(
 	'author_url'  => 'http://ellislab.com/',
 	'name'        => 'Wiki',
 	'description' => '',
-	'version'     => '2.3',
+	'version'     => '3.0',
 	'namespace'   => 'User\Addons\Wiki',
 	'settings_exist' => TRUE,
 	'docs_url'    => 'http://github/wiki/index.html',
