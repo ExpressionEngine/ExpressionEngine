@@ -811,6 +811,12 @@ class Members extends CP_Controller {
 
 		ee()->view->header = array(
 			'title' => lang('member_manager'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL')->make('settings/members'),
+					'title' => lang('member_settings')
+				),
+			),
 			'form_url' => $form_url,
 			'search_button_value' => $search_button_value
 		);
