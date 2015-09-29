@@ -254,9 +254,9 @@ $lang = array(
 
 'allowed_member_groups_super_admin' => 'Super Administrators are <b>always</b> allowed.',
 
-'non_access_redirect' => 'Non-access redirect',
+'no_access_redirect' => 'No access redirect',
 
-'non_access_redirect_desc' => 'Page to redirect users without permissions to.',
+'no_access_redirect_desc' => 'Page to redirect unauthorized users to.',
 
 'enable_http_authentication' => 'Enable HTTP Authentication?',
 
