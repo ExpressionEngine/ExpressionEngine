@@ -59,12 +59,16 @@ abstract class AbstractDesign extends CP_Controller {
 		$sidebar = ee('CP/Sidebar')->make();
 
 		// Template Groups
-		$template_group_list = $sidebar->addHeader(lang('template_groups'))
-			->withButton(lang('new'), ee('CP/URL')->make('design/group/create'))
+		$template_group_list = $sidebar->addHeader(lang('template_groups'));
+
+		if (ee()->cp->allowed_group('can_create_template_groups'))
+		{
+			$template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'))
 			->addFolderList('template-group')
 				->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
 				->withRemovalKey('group_name')
 				->withNoResultsText(lang('zero_template_groups_found'));
+		}
 
 		$template_groups = ee('Model')->get('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -77,10 +81,18 @@ abstract class AbstractDesign extends CP_Controller {
 
 		foreach ($template_groups->all() as $group)
 		{
-			$item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name))
-				->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name))
-				->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
-				->identifiedBy($group->group_name);
+			$item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
+
+			if (ee()->cp->allowed_group('can_edit_template_groups'))
+			{
+				$item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+			}
+
+			if (ee()->cp->allowed_group('can_delete_template_groups'))
+			{
+				$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
+					->identifiedBy($group->group_name);
+			}
 
 			if ($active_group_id == $group->group_id)
 			{
