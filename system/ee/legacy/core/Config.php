@@ -82,8 +82,9 @@ class EE_Config {
 
 		// Set any config overrides.  These are the items that used to be in
 		// the path.php file, which are now located in the main index file
-		//global $assign_to_config;
-		$assign_to_config = array();
+		// @todo - rewrite the feature of 'global_vars' to be out of the index.php
+		// file and properly live somewhere in system/user
+		global $assign_to_config;
 
 		// Override enable_query_strings to always be false on the frontend
 		// and true on the backend. We need this to get the pagination library
