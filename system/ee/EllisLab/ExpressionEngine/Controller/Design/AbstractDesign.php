@@ -63,12 +63,13 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_create_template_groups'))
 		{
-			$template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'))
-			->addFolderList('template-group')
-				->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
-				->withRemovalKey('group_name')
-				->withNoResultsText(lang('zero_template_groups_found'));
+			$template_group_list = $template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'));
 		}
+
+		$template_group_list = $template_group_list->addFolderList('template-group')
+			->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
+			->withRemovalKey('group_name')
+			->withNoResultsText(lang('zero_template_groups_found'));
 
 		$template_groups = ee('Model')->get('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
