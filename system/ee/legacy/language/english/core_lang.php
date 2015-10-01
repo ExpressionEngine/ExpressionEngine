@@ -102,10 +102,10 @@ $lang = array(
 'nonexistent_page' => 'The page you requested was not found',
 
 'unable_to_load_field_type' => 'Unable to load requested field type file:  %s.<br />
-Confirm the fieldtype file is located in the system/addons/ directory',
+Confirm the fieldtype file is located in the /system/user/addons/ directory',
 
 'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br>
-To fix: Set the cache folder (/system/cache/) permissions to 777 (or equivalent for your server).',
+To fix: Set the cache folder (/system/user/cache/) permissions to 777 (or equivalent for your server).',
 
 'unwritable_config_file' => 'Your configuration file does not have the proper permissions.<br>
 To fix: Set the config file (/system/user/config/config.php) permissions to 666 (or equivalent for your server).',

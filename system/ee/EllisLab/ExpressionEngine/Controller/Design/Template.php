@@ -961,8 +961,8 @@ class Template extends AbstractDesignController {
 					)
 				),
 				array(
-					'title' => 'non_access_redirect',
-					'desc' => 'non_access_redirect_desc',
+					'title' => 'no_access_redirect',
+					'desc' => 'no_access_redirect_desc',
 					'fields' => array(
 						'no_auth_bounce' => array(
 							'type' => 'select',

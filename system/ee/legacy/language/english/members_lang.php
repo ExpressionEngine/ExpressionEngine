@@ -441,7 +441,8 @@ $lang = array(
 	"settings" => "Settings",
 	"can_access_content_settings" => "Content",
 	"can_access_security_settings" => "Security &amp; Privacy",
-	"can_access_addon_settings" => "Add-ons"
+	"can_access_addon_settings" => "Add-ons",
+	"member_settings" => "Member Settings"
 );
 /* End of file members_lang.php */
 /* Location: ./system/expressionengine/language/english/members_lang.php */

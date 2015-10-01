@@ -154,4 +154,31 @@ class Site extends Model {
 		}
 	}
 
+
+	public function onAfterInsert()
+    {
+        $this->setId($this->group_id);
+
+		$already_done = $this->getFrontend()->get('MemberGroup')
+			->fields('site_id')
+			->filter('group_id', $this->group_id)
+			->all()
+			->pluck('site_id');
+
+        $todo = $this->getFrontend()->get('Site')
+			->fields('site_id')
+            ->filter('site_id', 'NOT IN', $already_done)
+            ->all();
+
+        if ($sites->count() > 0)
+        {
+            foreach ($sites->pluck('site_id') as $site_id)
+            {
+                $data = $this->getValues();
+                $data['site_id'] = (int) $site_id;
+                $this->getFrontend()->make('MemberGroup', $data)->save();
+            }
+        }
+    }
+
 }
