@@ -127,7 +127,7 @@ class EE_Menu {
 				$menu['create'][$channel->channel_title] = ee('CP/URL', 'publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 			}
 		}
 
