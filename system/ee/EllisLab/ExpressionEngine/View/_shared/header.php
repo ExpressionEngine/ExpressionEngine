@@ -96,7 +96,16 @@
 											<a href="<?=ee('CP/URL', 'publish/edit')?>"><?= lang('view_all') ?></a>
 										</li>
 										<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
-											<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+
+											<?php
+											$class = 'search-channel';
+											if ($link == end($cp_main_menu['channels']['edit']))
+											{
+												$class .= ' last';
+											}
+											?>
+
+											<li class="<?=$class?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 										<?php endforeach ?>
 									</ul>
 								</div>
