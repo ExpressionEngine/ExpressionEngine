@@ -62,7 +62,7 @@ class Image_rte {
 				'folders'		=> $this->folders,
 				'filedirs'		=> $this->filedirs,
 				'title'			=> lang('img_title'),
-				'url'			=> ee('CP/URL', $fp->controller, array('directory' => 'all'))->compile()
+				'url'			=> ee('CP/URL')->make($fp->controller, array('directory' => 'all'))->compile()
 			)
 		);
 	}
