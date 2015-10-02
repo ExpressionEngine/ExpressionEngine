@@ -113,6 +113,11 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if (IS_CORE && ee('Model')->get('Channel')->count() >= 3)
+		{
+			show_error(lang('maximum_channels_reached'));
+		}
+
 		$this->form();
 	}
 
@@ -138,6 +143,11 @@ class Channels extends AbstractChannelsController {
 	{
 		if (is_null($channel_id))
 		{
+			if (IS_CORE && ee('Model')->get('Channel')->count() >= 3)
+			{
+				show_error(lang('maximum_channels_reached'));
+			}
+
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
