@@ -268,12 +268,12 @@ class EE_Core {
 
 		$this->ee_loaded = TRUE;
 
-		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
+		$this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
-			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'search', 'simple_commerce', 'spam', 'stats', 'wiki', 'filepicker'
+			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
+			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
+			'search', 'simple_commerce', 'spam', 'stats'
 		);
 		$this->standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
