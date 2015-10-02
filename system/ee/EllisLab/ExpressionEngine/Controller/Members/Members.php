@@ -67,8 +67,13 @@ class Members extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile())
-			->withButton(lang('new'), ee('CP/URL')->make('members/create'));
+		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile());
+
+		if ( ! $this->hasMaximumMembers())
+		{
+			$header->withButton(lang('new'), ee('CP/URL')->make('members/create'));
+		}
+
 		$list = $header->addBasicList();
 
 		if ($active == 'all_members')
@@ -103,6 +108,16 @@ class Members extends CP_Controller {
 		{
 			$header->isActive();
 		}
+	}
+
+	/**
+	 * Maximum number of members reached?
+	 *
+	 * @return bool
+	 **/
+	protected function hasMaximumMembers()
+	{
+		return (IS_CORE && ee('Model')->get('Member')->count() >= 3);
 	}
 
 	/**
