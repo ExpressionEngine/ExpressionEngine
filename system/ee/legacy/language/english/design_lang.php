@@ -411,10 +411,6 @@ $lang = array(
 
 'save_tmpl_files_exp' => 'Saves templates as files on your server. Click Help for more information.',
 
-'tmpl_file_basepath' => 'Server path to site\'s templates',
-
-'tmpl_file_basepath_exp' => 'Server path to the directory in which the template files should be saved.',
-
 'email_notification_template' => 'Email Notification Templates',
 
 'email_notification' => 'Email Notification',

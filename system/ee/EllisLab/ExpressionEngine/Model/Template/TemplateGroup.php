@@ -149,7 +149,7 @@ class TemplateGroup extends Model {
 			return NULL;
 		}
 
-		$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/');
+		$basepath = PATH_TMPL;
 
 		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
 		{

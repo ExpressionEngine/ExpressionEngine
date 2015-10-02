@@ -64,14 +64,6 @@ feature 'Updater' do
       test_update
     end
 
-    it 'updates using old template basepath' do
-      @installer.revert_config
-      @installer.replace_config(@config, tmpl_file_basepath: '../system/expressionengine/templates')
-      test_update
-      File.exist?('../../system/user/templates/default_site/').should == true
-      File.exist?('../../system/expressionengine/templates/default_site/').should == false
-    end
-
     it 'updates using new template basepath' do
       @installer.revert_config
       @installer.replace_config(@config, tmpl_file_basepath: '../system/user/templates')

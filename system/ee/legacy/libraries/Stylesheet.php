@@ -88,10 +88,10 @@ class EE_Stylesheet {
 			/**  Retreive template file if necessary
 			/** -----------------------------------------*/
 
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
 				ee()->load->helper('file');
-				$basepath = ee()->config->slash_item('tmpl_file_basepath').'/'.ee()->config->item('site_short_name').'/';
+				$basepath = PATH_TMPL.'/'.ee()->config->item('site_short_name').'/';
 				$basepath .= $ex['0'].'.group/'.$row['template_name'].'.css';
 
 				$str = read_file($basepath);

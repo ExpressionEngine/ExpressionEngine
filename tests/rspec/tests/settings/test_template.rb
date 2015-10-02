@@ -17,7 +17,6 @@ feature 'Template Settings' do
     strict_urls = ee_config(item: 'strict_urls')
     save_tmpl_revisions = ee_config(item: 'save_tmpl_revisions')
     save_tmpl_files = ee_config(item: 'save_tmpl_files')
-    tmpl_file_basepath = ee_config(item: 'tmpl_file_basepath')
 
     @page.strict_urls_y.checked?.should == (strict_urls == 'y')
     @page.strict_urls_n.checked?.should == (strict_urls == 'n')
@@ -27,7 +26,6 @@ feature 'Template Settings' do
     @page.max_tmpl_revisions.value.should == ee_config(item: 'max_tmpl_revisions')
     @page.save_tmpl_files_y.checked?.should == (save_tmpl_files == 'y')
     @page.save_tmpl_files_n.checked?.should == (save_tmpl_files == 'n')
-    @page.tmpl_file_basepath.value.should == ee_config(item: 'tmpl_file_basepath')
   end
 
   it 'should validate the form' do
@@ -43,16 +41,6 @@ feature 'Template Settings' do
     @page.should have_text max_revs_error
     @page.should have_no_text invalid_path
 
-    @page.load
-    @page.tmpl_file_basepath.set 'sdfsdfsd'
-    @page.submit
-
-    no_php_js_errors
-    should_have_form_errors(@page)
-    @page.should have_text 'Attention: Settings not saved'
-    @page.should have_text invalid_path
-    @page.should have_no_text max_revs_error
-
     # AJAX validation
     @page.load
     @page.max_tmpl_revisions.set 'sdfsdfsd'
@@ -61,20 +49,9 @@ feature 'Template Settings' do
     should_have_form_errors(@page)
     @page.should have_text max_revs_error
 
-    @page.tmpl_file_basepath.set 'sdfsdfsd'
-    @page.tmpl_file_basepath.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    should_have_form_errors(@page)
-    @page.should have_text invalid_path
-
     @page.max_tmpl_revisions.set '100'
     @page.max_tmpl_revisions.trigger 'blur'
     @page.wait_for_error_message_count(1)
-
-    @page.tmpl_file_basepath.set '/'
-    @page.tmpl_file_basepath.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-    should_have_no_form_errors(@page)
   end
 
   it 'should save and load the settings' do
@@ -83,7 +60,6 @@ feature 'Template Settings' do
     @page.save_tmpl_revisions_y.click
     @page.max_tmpl_revisions.set '300'
     @page.save_tmpl_files_y.click
-    @page.tmpl_file_basepath.set '/var'
     @page.submit
 
     @page.should have_text 'Preferences updated'
@@ -92,6 +68,5 @@ feature 'Template Settings' do
     @page.save_tmpl_revisions_y.checked?.should == true
     @page.max_tmpl_revisions.value.should == '300'
     @page.save_tmpl_files_y.checked?.should == true
-    @page.tmpl_file_basepath.value.should == '/var'
   end
 end

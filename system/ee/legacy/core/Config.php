@@ -648,7 +648,6 @@ class EE_Config {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'save_tmpl_files',
-			'tmpl_file_basepath',
 			'strict_urls',
 			'enable_template_routes'
 		);
@@ -1416,7 +1415,6 @@ class EE_Config {
 				'save_tmpl_revisions'    => array('r', array('y' => 'yes', 'n' => 'no')),
 				'max_tmpl_revisions'     => array('i', ''),
 				'save_tmpl_files'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'tmpl_file_basepath'     => array('i', '')
 			),
 
 			'censoring_cfg'		=>	array(
@@ -1712,7 +1710,6 @@ class EE_Config {
 			'enable_template_routes'	=> array('enable_template_routes_exp'),
 			'tmpl_display_mode'			=> array('tmpl_display_mode_exp'),
 			'save_tmpl_files'			=> array('save_tmpl_files_exp'),
-			'tmpl_file_basepath'		=> array('tmpl_file_basepath_exp'),
 			'site_404'					=> array('site_404_exp'),
 			'channel_nomenclature'		=> array('channel_nomenclature_exp'),
 			'enable_sql_caching'		=> array('enable_sql_caching_exp'),
