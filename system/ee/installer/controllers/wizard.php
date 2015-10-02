@@ -156,13 +156,11 @@ class Wizard extends CI_Controller {
 		define('IS_CORE', FALSE);
 		define('PASSWORD_MAX_LENGTH', 72);
 		define('PATH_CACHE',  SYSPATH.'user/cache/');
+		define('PATH_TMPL',   SYSPATH.'user/templates/');
 
 		// Third party constants
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
-		define('PATH_THIRD', $addon_path);
+		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
+		define('PATH_THIRD',  SYSPATH.'user/addons/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
