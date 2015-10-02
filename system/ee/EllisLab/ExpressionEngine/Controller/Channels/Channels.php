@@ -57,6 +57,8 @@ class Channels extends AbstractChannelsController {
 			->currentPage($vars['table']['page'])
 			->render($vars['table']['base_url']);
 
+		$vars['disable'] = $this->hasMaximumChannels() ? 'disable' : '';
+
 		ee()->view->cp_page_title = lang('manage_channels');
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('channels') . ': <b>### ' . lang('channels') . '</b>');
