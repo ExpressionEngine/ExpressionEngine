@@ -75,6 +75,11 @@ class Application {
 	 */
 	public function setupAddons($path)
 	{
+		$standard_modules = array(
+			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
+			'simple_commerce', 'wiki', 'filepicker'
+		);
+
 		$folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);
 
 		foreach ($folders as $item)
@@ -85,6 +90,11 @@ class Application {
 
 				// for now only setup those that define an addon.setup file
 				if ( ! file_exists($path.'/addon.setup.php'))
+				{
+					continue;
+				}
+
+				if (IS_CORE && in_array($item->getFileName(), $standard_modules))
 				{
 					continue;
 				}

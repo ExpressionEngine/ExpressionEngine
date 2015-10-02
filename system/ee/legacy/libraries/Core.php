@@ -105,6 +105,7 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
 
 		// Set ->api on the legacy facade to the model factory
@@ -274,10 +275,6 @@ class EE_Core {
 			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
 			'search', 'simple_commerce', 'spam', 'stats'
-		);
-		$this->standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
-			'simple_commerce', 'wiki', 'filepicker'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
