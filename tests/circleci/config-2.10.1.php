@@ -94,21 +94,6 @@ $config['log_threshold'] = 0;
 
 /*
 |--------------------------------------------------------------------------
-| Error Logging Directory Path
-|--------------------------------------------------------------------------
-|
-| Leave this BLANK unless you would like to set something other than the
-| default system/expressionengine/logs/ directory. Use a full server path
-| with trailing slash.
-|
-| Note: You may need to create this directory if your server does not
-| create it automatically.
-|
-*/
-$config['log_path'] = '';
-
-/*
-|--------------------------------------------------------------------------
 | Date Format for Logs
 |--------------------------------------------------------------------------
 |

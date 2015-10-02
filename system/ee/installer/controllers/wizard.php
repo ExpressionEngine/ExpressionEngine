@@ -135,7 +135,6 @@ class Wizard extends CI_Controller {
 		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
-		'log_path'           => '',
 		'log_date_format'    => 'Y-m-d H:i:s',
 		'encryption_key'     => '',
 

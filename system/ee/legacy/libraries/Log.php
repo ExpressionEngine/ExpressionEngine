@@ -39,9 +39,9 @@ class EE_Log {
 	{
 		$config =& get_config();
 
-		$this->_log_path = ($config['log_path'] != '') ? $config['log_path'] : APPPATH.'logs/';
+		$this->_log_path = SYSTEM.'user/logs/';
 
-		if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
+		if ( ! is_dir($this->_log_path) || ! is_really_writable($this->_log_path))
 		{
 			$this->_enabled = FALSE;
 		}
