@@ -1899,17 +1899,7 @@ class EE_Template {
 
 			// Build the path to the page cache and get the number of files we have in
 			// the cache; this is more memory-efficient than using Cache::cache_info
-			$cache_path = APPPATH.'cache'.DIRECTORY_SEPARATOR;
-
-			// Attempt to grab cache_path config if it's set
-			if ($path = ee()->config->item('cache_path'))
-			{
-				$path = ee()->config->item('cache_path');
-				$cache_path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-			}
-
-			// Build the path to the page cache, should be site_short_name/page_cache
-			// as no page cache is set globally
+			$cache_path  = PATH_CACHE;
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
 

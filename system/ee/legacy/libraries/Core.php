@@ -77,6 +77,7 @@ class EE_Core {
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
 			: SYSPATH.'user/addons/';
 		define('PATH_THIRD', $addon_path);
+		define('PATH_CACHE',  SYSPATH . 'user/cache/');
 
 		// application constants
 		define('IS_CORE',		FALSE);
