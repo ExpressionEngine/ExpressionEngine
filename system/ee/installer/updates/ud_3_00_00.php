@@ -67,6 +67,7 @@ class Updater {
 				'_export_mailing_lists',
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
+				'_remove_path_configs',
 				'_remove_show_button_cluster_column',
 				'_add_cp_homepage_columns'
 			)
@@ -1466,6 +1467,25 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+
+	/**
+	 * Remove user configurable paths since user-servicable directory covers
+	 * them now
+	 * @return void
+	 */
+	private function _remove_path_configs()
+	{
+		ee()->config->_update_config(array(), array(
+			'addons_path'        => '',
+			'third_party_path'   => '',
+			'tmpl_file_basepath' => '',
+			'cache_path'         => '',
+			'log_path'           => ''
+		));
 	}
 }
 /* END CLASS */
