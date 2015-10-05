@@ -345,9 +345,9 @@ class Group extends AbstractDesignController {
 			}
 
 			// Delete the group folder if it exists
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
-				$basepath = ee()->config->slash_item('tmpl_file_basepath');
+				$basepath = PATH_TMPL;
 				$basepath .= ee()->config->item('site_short_name') . '/' . $group->group_name . '.group/';
 
 				ee()->load->helper('file');

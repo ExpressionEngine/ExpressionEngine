@@ -417,28 +417,6 @@ class Updater {
 
 			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
-				$tmpl_file_basepath = ee()->config->item('tmpl_file_basepath');
-
-				// Continue to the next site if there's no basepath
-				if (empty($tmpl_file_basepath))
-				{
-					continue;
-				}
-
-				// Change the config for basepath to the new normal if they're
-				// using the old default
-				if (stripos($tmpl_file_basepath, SYSDIR.'/expressionengine/templates') !== FALSE)
-				{
-					ee()->config->set_item(
-						'tmpl_file_basepath',
-						str_replace(
-							'/expressionengine/templates',
-							'/user/templates',
-							$tmpl_file_basepath
-						)
-					);
-				}
-
 				$templates = ee()->template_model->fetch_last_edit(
 					array('templates.site_id' => $site['site_id']),
 					TRUE
@@ -1490,6 +1468,24 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Remove user configurable paths since user-servicable directory covers
+	 * them now
+	 * @return void
+	 */
+	private function _remove_path_configs()
+	{
+		ee()->config->_update_config(array(), array(
+			'addons_path'        => '',
+			'third_party_path'   => '',
+			'tmpl_file_basepath' => '',
+			'cache_path'         => '',
+			'log_path'           => ''
+		));
 	}
 
 	// -------------------------------------------------------------------------

@@ -400,10 +400,6 @@ $lang = array(
 
 'save_tmpl_files_desc' => 'When set to yes, ExpressionEngine will store your templates as files on your server.',
 
-'tmpl_file_basepath' => 'Template directory',
-
-'tmpl_file_basepath_desc' => 'Full path location of your <mark>template</mark> directory.',
-
 /**
  * Word Censoring
  */

@@ -72,11 +72,9 @@ class EE_Core {
 		define('PATH_EXT',    SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_FT',     SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_RTE',    APPPATH . 'rte_tools/');
-
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_THIRD', $addon_path);
+		define('PATH_THIRD',  SYSPATH . 'user/addons/');
+		define('PATH_CACHE',  SYSPATH . 'user/cache/');
+		define('PATH_TMPL',   SYSPATH . 'user/templates/');
 
 		// application constants
 		define('IS_CORE',		FALSE);

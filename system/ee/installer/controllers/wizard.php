@@ -135,9 +135,7 @@ class Wizard extends CI_Controller {
 		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
-		'log_path'           => '',
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'cache_path'         => '',
 		'encryption_key'     => '',
 
 		// Enabled for cleaner view files and compatibility
@@ -156,13 +154,12 @@ class Wizard extends CI_Controller {
 
 		define('IS_CORE', FALSE);
 		define('PASSWORD_MAX_LENGTH', 72);
+		define('PATH_CACHE',  SYSPATH.'user/cache/');
+		define('PATH_TMPL',   SYSPATH.'user/templates/');
 
 		// Third party constants
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
-		define('PATH_THIRD', $addon_path);
+		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
+		define('PATH_THIRD',  SYSPATH.'user/addons/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -341,13 +338,8 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Attempt to grab cache_path config if it's set
-		$cache_path = (ee()->config->item('cache_path'))
-			? ee()->config->item('cache_path')
-			: SYSPATH.'user/cache';
-
 		// Is the cache folder writable?
-		if ( ! is_really_writable($cache_path))
+		if ( ! is_really_writable(PATH_CACHE))
 		{
 			$this->set_output('error', array('error' => lang('unwritable_cache_folder')));
 			return FALSE;
@@ -1926,7 +1918,6 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
 			'save_tmpl_files'           => 'n',
-			'tmpl_file_basepath'        => realpath('./user/templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -2132,7 +2123,6 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'save_tmpl_files',
-			'tmpl_file_basepath'
 		);
 		$site_prefs = array();
 
