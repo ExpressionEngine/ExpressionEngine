@@ -86,8 +86,6 @@ $lang = array(
 
 'member_group(s)_desc' => 'Choose the member group(s) to apply this layout to.',
 
-'btn_create_layout' => 'Create Layout',
-
 'create_layout_success' => 'Form Layout Created',
 
 'create_layout_success_desc' => 'The form layout <b>%s</b> has been created.',
@@ -95,8 +93,6 @@ $lang = array(
 'create_layout_error' => 'Cannot Create Form Layout',
 
 'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
-
-'btn_edit_layout' => 'Edit Layout',
 
 'btn_preview_layout' => 'Preview Layout',
 
@@ -548,9 +544,7 @@ $lang = array(
 
 'select_dropdown' => 'Select Dropdown',
 
-'btn_create_field' => 'Create Field',
-
-'btn_edit_field' => 'Edit Field',
+'field' => 'Field',
 
 'category_field_created' => 'Category Field Created',
 

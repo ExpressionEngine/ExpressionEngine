@@ -7,6 +7,8 @@ if (is_string($setting))
 	return;
 }
 
+$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
+
 // Gather classes needed to set on the fieldset
 $fieldset_classes = '';
 // Any fields required?
@@ -29,6 +31,14 @@ if (isset($setting['caution']) && $setting['caution'] == TRUE)
 if (isset($setting['hide']) && $setting['hide'] == TRUE)
 {
 	$fieldset_classes .= ' hidden';
+}
+if ($grid)
+{
+	$fieldset_classes .= ' grid-publish';
+}
+else
+{
+	$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']));
 }
 // If a validation result object is set, see if any of our fields have errors
 if (isset($errors))
@@ -54,11 +64,9 @@ if (isset($setting['group']))
 	$setting_group = $setting['group'];
 }
 
-$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
-
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
-<<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?>>
+<<?=$element?> class="col-group<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 	<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
 		<?php if (isset($setting['title'])): ?>
 		<h3><?=lang($setting['title'])?></h3>
