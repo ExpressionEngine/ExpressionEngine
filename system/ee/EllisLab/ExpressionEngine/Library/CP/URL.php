@@ -186,13 +186,13 @@ class URL implements \Serializable {
 
 	public function unserialize($serialized)
 	{
-		$data = json_decode($serialized);
+		$data = json_decode($serialized, TRUE);
 
-		$this->path = $data->path;
-		$this->session_id = $data->session_id;
-		$this->qs = $data->qs;
-		$this->base = $data->base;
-		$this->requested_uri = $data->requested_uri;
+		$this->path = $data['path'];
+		$this->session_id = $data['session_id'];
+		$this->qs = $data['qs'];
+		$this->base = $data['base'];
+		$this->requested_uri = $data['requested_uri'];
 	}
 
 	public function encode()
