@@ -66,7 +66,7 @@ if (isset($setting['group']))
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
-<<?=$element?> class="col-group<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?>>
+<<?=$element?> class="col-group<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 	<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
 		<?php if (isset($setting['title'])): ?>
 		<h3><?=lang($setting['title'])?></h3>
