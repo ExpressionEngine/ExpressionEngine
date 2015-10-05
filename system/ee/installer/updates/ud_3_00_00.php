@@ -68,7 +68,9 @@ class Updater {
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
 				'_remove_show_button_cluster_column',
-				'_add_cp_homepage_columns'
+				'_add_cp_homepage_columns',
+				'_remove_path_configs',
+				'_install_plugins',
 			)
 		);
 
@@ -1488,6 +1490,37 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Install all plugins found
+	 * @return  void
+	 */
+	private function _install_plugins()
+	{
+		foreach (ee('Addon')->all() as $name => $info)
+		{
+			$info = ee('Addon')->get($name);
+
+			// Check that it's a plugin ONLY
+			if ($info->hasInstaller()
+				|| $info->hasControlPanel()
+				|| $info->hasModule()
+				|| $info->hasExtension()
+				|| $info->hasFieldtype())
+			{
+				continue;
+			}
+
+			$model = ee('Model')->make('Plugin');
+			$model->plugin_name = $info->getName();
+			$model->plugin_package = $name;
+			$model->plugin_version = $info->getVersion();
+			$model->is_typography_related = ($info->get('plugin.typography')) ? 'y' : 'n';
+			$model->save();
+		}
 	}
 }
 /* END CLASS */
