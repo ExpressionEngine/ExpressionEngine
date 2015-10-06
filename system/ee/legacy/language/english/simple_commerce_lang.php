@@ -160,7 +160,7 @@ $lang = array(
 
 'email_template' => 'Email Template',
 
-'email_template_name_desc' => 'Name of this e-mail template.',
+'email_template_name_desc' => 'Name of this email template.',
 
 'simple_commerce_home' => 'Control Panel',
 
@@ -303,9 +303,9 @@ and provide them with the URL below.',
 
 'customer_email_subscribe' => 'Customer Email Subscribe Template',
 
-'customer_email_unsubscribe' => 'Customer <mark>cancel</mark> e-mail template',
+'customer_email_unsubscribe' => 'Customer <mark>cancel</mark> email template',
 
-'customer_email_unsubscribe_desc' => 'Template to use when sending cancel confirmation e-mail to canceler.',
+'customer_email_unsubscribe_desc' => 'Template to use when sending cancel confirmation email to canceler.',
 
 'admin_email_address' => 'Admin email address',
 
@@ -323,7 +323,7 @@ and provide them with the URL below.',
 
 'new_member_group_desc' => 'Upon purchase, purchaser\'s member group will be changed to the chosen group.',
 
-'admin_email_template_unsubscribe' => 'Admin <mark>cancel</mark> e-mail template',
+'admin_email_template_unsubscribe' => 'Admin <mark>cancel</mark> email template',
 
 'admin_email_template_unsubscribe_desc' => 'Template to use for notifying an admin of a cancellation.',
 
@@ -373,7 +373,7 @@ and provide them with the URL below.',
 
 'paypal_variables' => 'PayPal variables',
 
-'paypal_variables_desc' => 'When a purchase is confirmed, an e-mail will be sent for that item. These variables are sent back from PayPal.',
+'paypal_variables_desc' => 'When a purchase is confirmed, an email will be sent for that item. These variables are sent back from PayPal.',
 
 'add_email_instructions' => 'When the purchase of an item is confirmed, an email can be sent out to one or many email addresses for that item.  These emails can contain certain variables sent back from PayPal, which are as follows: ',
 
