@@ -93,7 +93,7 @@ feature 'Add-On Manager' do
 
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
 			@page.should have_css 'tr.not-installed'
-			@page.all('tr.not-installed').count().should == 20 
+			@page.all('tr.not-installed').count().should == 20
 			@page.should have(20).first_party_addons
 
 			# By 'needs updates'
@@ -242,7 +242,7 @@ feature 'Add-On Manager' do
 			addon_name = @page.first_party_addon_names[0].text
 
 			# Header at 0, first "real" row is 1
-			@page.first_party_addons[0].find('ul.toolbar li.install a.add').click
+			@page.first_party_addons[0].find('ul.toolbar li.txt-only a.add').click
 			no_php_js_errors
 
 			# The filter should not change
@@ -266,7 +266,7 @@ feature 'Add-On Manager' do
 			@page.should have_text addon_name
 
 			# Install
-			@page.first_party_addons[0].find('ul.toolbar li.install a.add').click
+			@page.first_party_addons[0].find('ul.toolbar li.txt-only a.add').click
 			no_php_js_errors
 
 			@page.first_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
@@ -646,7 +646,7 @@ feature 'Add-On Manager' do
 				addon_name = @page.third_party_addon_names[0].text
 
 				# Header at 0, first "real" row is 1
-				@page.third_party_addons[0].find('ul.toolbar li.install a.add').click
+				@page.third_party_addons[0].find('ul.toolbar li.txt-only a.add').click
 				no_php_js_errors
 
 				# The filter should not change
@@ -670,7 +670,7 @@ feature 'Add-On Manager' do
 				@page.should have_text addon_name
 
 				# Install
-				@page.third_party_addons[0].find('ul.toolbar li.install a.add').click
+				@page.third_party_addons[0].find('ul.toolbar li.txt-only a.add').click
 				no_php_js_errors
 
 				@page.third_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
