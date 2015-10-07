@@ -41,18 +41,20 @@ class DataStore {
 	protected $db;
 	protected $aliases;
 	protected $default_prefix;
+	protected $enabled_prefixes;
 	protected $metadata = array();
 
 	/**
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
 	 * @param $aliases Array of model aliases
 	 */
-	public function __construct(Database $db, $aliases, $foreign_models, $default_prefix)
+	public function __construct(Database $db, $aliases, $foreign_models, $default_prefix, $enabled_prefixes)
 	{
 		$this->db = $db;
 		$this->aliases = $aliases;
 		$this->default_prefix = $default_prefix;
 		$this->foreign_models = $foreign_models;
+		$this->enabled_prefixes = $enabled_prefixes;
 	}
 
 	/**
@@ -188,6 +190,11 @@ class DataStore {
 
 		foreach ($this->foreign_models as $model => $dependencies)
 		{
+			if ( ! $this->modelIsEnabled($model))
+			{
+				continue;
+			}
+
 			if (in_array($model_name, $dependencies))
 			{
 				$ships = $this->fetchRelationships($model);
@@ -206,6 +213,11 @@ class DataStore {
 		}
 
 		return $relations;
+	}
+
+	protected function modelIsEnabled($model_name)
+	{
+		return in_array(strstr($model_name, ':', TRUE), $this->enabled_prefixes);
 	}
 
 	public function getInverseRelation(Relation $relation)

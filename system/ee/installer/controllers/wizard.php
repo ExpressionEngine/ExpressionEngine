@@ -493,7 +493,9 @@ class Wizard extends CI_Controller {
 		// Assign the _POST array values
 		$this->assign_install_values();
 
-		$vars = array();
+		$vars = array(
+			'action' => $this->set_qstr('do_install')
+		);
 
 		// Are there any errors to display? When the user submits the
 		// installation form, the $this->do_install() function is called. In
@@ -501,7 +503,6 @@ class Wizard extends CI_Controller {
 		// message
 		$vars['errors'] = $errors;
 
-		$vars['action'] = $this->set_qstr('do_install');
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
@@ -629,6 +630,22 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	public function license_agreement($value)
+	{
+		if ($value !== 'y')
+		{
+			ee()->form_validation->set_message(
+				'license_agreement',
+				lang('license_agreement_not_accepted')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Perform the installation
 	 * @return void
@@ -691,6 +708,11 @@ class Wizard extends CI_Controller {
 				'label' => 'lang:email_address',
 				'rules' => 'required|valid_email'
 			),
+			array(
+				'field' => 'license_agreement',
+				'label' => 'lang:license_agreement',
+				'rules' => 'callback_license_agreement'
+			)
 		));
 
 		// Bounce if anything failed

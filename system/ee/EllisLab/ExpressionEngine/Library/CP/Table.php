@@ -165,7 +165,7 @@ class Table {
 			$defaults['page'] = $_GET['page'];
 		}
 
-		return new static(array_merge($defaults, $config));
+		return new static(array_merge($config, $defaults));
 	}
 
 	/**

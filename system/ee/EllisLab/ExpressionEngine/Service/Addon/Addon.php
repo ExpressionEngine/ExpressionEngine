@@ -48,6 +48,30 @@ class Addon {
 	}
 
 	/**
+	 * Is this addon installed?
+	 *
+	 * @return bool Is installed?
+	 */
+	public function isInstalled()
+	{
+		$types = array('modules', 'fieldtypes', 'extensions');
+
+		ee()->load->library('addons');
+
+		foreach ($types as $type)
+		{
+			$installed = ee()->addons->get_installed($type, TRUE);
+
+			if (array_key_exists($this->shortname, $installed))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+	/**
 	 * Get the plugin or module class
 	 */
 	public function getFrontendClass()
@@ -187,6 +211,16 @@ class Addon {
 	{
 		return $this->hasFile('ft');
 	}
+
+	/**
+	 * Get the addon Provider
+	 *
+	 * @return EllisLab\ExpressionEngine\Core\Provider
+	 */
+	 public function getProvider()
+	 {
+		 return $this->provider;
+	 }
 
 	/**
 	 * Get the fully qualified class name

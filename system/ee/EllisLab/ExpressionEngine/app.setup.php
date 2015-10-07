@@ -190,12 +190,21 @@ return array(
 		'Model/Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
+			$addons = $ee->make('Addon')->installed();
+
+			$installed_prefixes = array('ee');
+
+			foreach ($addons as $addon)
+			{
+				$installed_prefixes[] = $addon->getProvider()->getPrefix();
+			}
 
 			return new Model\DataStore(
 				$ee->make('Database'),
 				$app->getModels(),
 				$app->forward('getModelDependencies'),
-				$ee->getPrefix()
+				$ee->getPrefix(),
+				$installed_prefixes
 			);
 		},
 
