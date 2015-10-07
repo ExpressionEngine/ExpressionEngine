@@ -94,7 +94,7 @@ class Email_upd {
 
 	function update($current='')
 	{
-		return FALSE;
+		return TRUE;
 	}
 
 }
