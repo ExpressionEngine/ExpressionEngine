@@ -163,7 +163,9 @@ case 'image': ?>
 	<figure class="file-chosen">
 		<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
 		<ul class="toolbar">
+			<?php if( ! array_key_exists('edit', $field) || $field['edit']): ?>
 			<li class="edit"><a href="" title="edit"></a></li>
+			<?php endif; ?>
 			<li class="remove"><a href="" title="remove"></a></li>
 		</ul>
 		<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
