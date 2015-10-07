@@ -84,7 +84,7 @@ class Urls extends Settings {
 					'title' => 'member_segment_trigger',
 					'desc' => 'member_segment_trigger_desc',
 					'fields' => array(
-						'profile_trigger' => array('type' => 'text', 'required' => TRUE)
+						'profile_trigger' => array('type' => 'text')
 					)
 				),
 				array(
@@ -152,7 +152,7 @@ class Urls extends Settings {
 			array(
 				'field' => 'profile_trigger',
 				'label' => 'lang:member_segment_trigger',
-				'rules' => 'required|alpha_dash'
+				'rules' => 'alpha_dash'
 			),
 			array(
 				'field' => 'doc_url',

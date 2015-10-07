@@ -718,7 +718,9 @@ class EE_Config {
 		unset($new_values['submit']);
 
 		// Safety check for member profile trigger
-		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
+		if (isset($new_values['profile_trigger'])
+			&& $new_values['profile_trigger'] == ''
+			&& $new_values['members_frontend'] == 'y')
 		{
 			ee()->lang->loadfile('admin');
 			show_error(lang('empty_profile_trigger'));
