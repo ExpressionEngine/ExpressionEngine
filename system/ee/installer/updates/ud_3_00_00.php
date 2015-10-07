@@ -504,7 +504,7 @@ class Updater {
 				{
 					$tab = array(
 						'id' => $tab_id,
-						'name' => $old_tab['_tab_label'],
+						'name' => isset($old_tab['_tab_label']) ? $old_tab['_tab_label'] : $tab_id,
 						'visible' => TRUE,
 						'fields' => array()
 					);
@@ -522,7 +522,7 @@ class Updater {
 							foreach (explode('|', $layout['cat_group']) as $cat_group_id)
 							{
 								$tab['fields'][] = array(
-									'field' => 'cat_group_id_' . $cat_group_id,
+									'field' => 'categories[cat_group_id_' . $cat_group_id . ']',
 									'visible' => $info['visible'],
 									'collapsed' => $info['collapse']
 								);
