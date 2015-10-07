@@ -37,6 +37,9 @@ $lang = array(
 	'install_default_theme'      => 'Install default theme?',
 	'install_default_theme_info' => 'When set to <b>yes</b>, ExpressionEngine will install a default theme.',
 
+	// License Agreement
+	'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',
+
 	'start_installation'         => 'Start Installation',
 
 // Update Form
@@ -68,6 +71,7 @@ $lang = array(
 'database_prefix_invalid_characters' => 'There are invalid characters in the database prefix. Only 0-9, a-z, A-Z, $, and _ are allowed.',
 'database_prefix_contains_exp_'      => 'The database prefix cannot contain the string "exp_".',
 'database_prefix_too_long'           => 'The database prefix cannot be longer than 30 characters.',
+'license_agreement_not_accepted'     => 'You must accept the terms and conditions of the license agreement.',
 'unreadable_update'                  => 'Unable to read the contents of your /expressionengine/installer/updates directory. Please check the file permissions and re-run this installation wizard.',
 'unreadable_files'                   => 'One of your update files is unreadable. Please make sure all of the files located in this folder are readable: system/ee/installer/updates/',
 'unreadable_language'                => 'The language files needed for your current language selection (%x) are unavailable. Please put the language pack in this folder: system/user/language/',

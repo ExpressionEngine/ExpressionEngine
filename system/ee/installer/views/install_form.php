@@ -94,6 +94,15 @@
 		<?=form_error('password');?>
 	</div>
 </fieldset>
-<fieldset class="form-ctrls">
+<fieldset class="form-ctrls <?=form_error_class('license_agreement')?>">
+	<div class="password-req required">
+		<div class="setting-txt col w-8">
+			<h3><?=lang('license_agreement')?></h3>
+		</div>
+		<div class="setting-field col w-8 last">
+			<label class="choice"><input type="checkbox" name="license_agreement" value="y" <?=set_checkbox('license_agreement', 'y')?>> yes</label>
+			<?=form_error('license_agreement');?>
+		</div>
+	</div>
 	<input class="btn" type="submit" value="<?=lang('start_installation')?>">
 </fieldset>
