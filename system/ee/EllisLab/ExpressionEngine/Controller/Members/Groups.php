@@ -732,6 +732,7 @@ class Groups extends Members\Members {
 							'comment_actions' => array(
 								'type' => 'checkbox',
 								'choices' => array(
+									'can_moderate_comments' => lang('can_moderate_comments'),
 									'can_edit_own_comments' => lang('can_edit_own_comments'),
 									'can_delete_own_comments' => lang('can_delete_own_comments'),
 									'can_edit_all_comments' => lang('can_edit_all_comments'),
