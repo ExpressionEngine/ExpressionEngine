@@ -1191,6 +1191,7 @@ class Groups extends Members\Members {
 							'access_settings' => array(
 								'type' => 'checkbox',
 								'choices' => array(
+									'can_access_addons' => lang('can_access_addons'),
 									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
 									'can_access_design' => lang('can_access_design'),
 									'can_access_members' => lang('can_access_members'),
