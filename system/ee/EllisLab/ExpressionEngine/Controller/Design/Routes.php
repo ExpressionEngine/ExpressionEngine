@@ -181,6 +181,7 @@ class Routes extends Design {
 		foreach ($templates as $template)
 		{
 			$id = $template->template_id;
+			$submitted[$id]['route'] = trim($submitted[$id]['route']);
 
 			if ( ! $template->TemplateRoute)
 			{
