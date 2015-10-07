@@ -319,7 +319,7 @@ class Buttons extends Profile {
 					'title' => 'tag_close',
 					'desc' => 'tag_close_desc',
 					'fields' => array(
-						'tag_close' => array('type' => 'text', 'value' => $close, 'required' => TRUE)
+						'tag_close' => array('type' => 'text', 'value' => $close)
 					)
 				),
 				array(
@@ -347,7 +347,7 @@ class Buttons extends Profile {
 			array(
 				 'field'   => 'tag_close',
 				 'label'   => 'lang:tag_close',
-				 'rules'   => 'required|valid_xss_check'
+				 'rules'   => 'valid_xss_check'
 			),
 			array(
 				 'field'   => 'accesskey',
