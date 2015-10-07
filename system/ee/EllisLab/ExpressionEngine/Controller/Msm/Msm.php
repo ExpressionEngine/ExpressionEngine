@@ -207,7 +207,7 @@ class Msm extends CP_Controller {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_sites'))
+		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
 		{
 			show_error(lang('unauthorized_access'));
 		}
