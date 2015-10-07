@@ -160,6 +160,7 @@ class Wizard extends CI_Controller {
 		// Third party constants
 		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
+		define('PATH_RTE',    EE_APPPATH . 'rte_tools/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
