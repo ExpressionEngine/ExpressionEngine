@@ -97,7 +97,10 @@ class Template extends AbstractDesignController {
 			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
 				->first()
 				->getValues();
+
 			unset($master_template['template_id']);
+			unset($master_template['group_id']);
+			unset($master_template['hits']);
 
 			$template->set($master_template);
 		}
