@@ -284,6 +284,8 @@ class Fields extends AbstractChannelsController {
 
 		$field->field_type = ($field->field_type) ?: 'text';
 
+		$fieldtype_disabled = ! $field->isNew();
+
 		$sections = array(
 			array(
 				array(
@@ -294,7 +296,8 @@ class Fields extends AbstractChannelsController {
 							'type' => 'select',
 							'choices' => $fieldtype_choices,
 							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
-							'value' => $field->field_type
+							'value' => $field->field_type,
+							'disabled' => $fieldtype_disabled
 						)
 					)
 				),
