@@ -99,7 +99,7 @@ class Urls extends Settings {
 					'desc' => 'category_url_desc',
 					'fields' => array(
 						'use_category_name' =>	array(
-							'type' => 'select',
+							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => lang('category_url_opt_titles'),
 								'n' => lang('category_url_opt_ids')
