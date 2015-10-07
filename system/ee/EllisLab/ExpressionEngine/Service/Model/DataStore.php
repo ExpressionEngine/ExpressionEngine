@@ -316,10 +316,16 @@ class DataStore {
 		$relationship = $this->fetchRelationship($model, $name);
 
 		$to_model = isset($relationship['model']) ? $relationship['model'] : $name;
+		$as_defined_to = $to_model;
 
 		if (strpos($to_model, ':') == 0)
 		{
 			$to_model = $this->getPrefix($model).':'.$to_model;
+		}
+
+		if ( ! isset($this->aliases[$to_model]))
+		{
+			throw new \Exception('Unknown model "'.$as_defined_to.'". Used in model "'.$model.'" for a relationship called "'.$name.'".');
 		}
 
 		$defaults = array(
