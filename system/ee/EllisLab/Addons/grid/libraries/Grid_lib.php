@@ -609,15 +609,18 @@ class Grid_lib {
 	public function validate_settings($settings)
 	{
 		$errors = array();
+		$col_labels = array();
 		$col_names = array();
 
-		// Create an array of column names for counting to see if there are
-		// duplicate column names; they should be unique
+		// Create an array of column names and labels for counting to see if
+		//  there are duplicates; they should be unique
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
+			$col_labels[] = $column['col_label'];
 			$col_names[] = $column['col_name'];
 		}
 
+		$col_label_count = array_count_values($col_labels);
 		$col_name_count = array_count_values($col_names);
 
 		ee()->load->library('grid_parser');
@@ -628,6 +631,11 @@ class Grid_lib {
 			if (empty($column['col_label']))
 			{
 				$errors[$col_field]['col_label'] = 'grid_col_label_required';
+			}
+			// There cannot be duplicate column labels
+			elseif ($col_label_count[$column['col_label']] > 1)
+			{
+				$errors[$col_field]['col_label'] = 'grid_duplicate_col_label';
 			}
 
 			// Column names are required
