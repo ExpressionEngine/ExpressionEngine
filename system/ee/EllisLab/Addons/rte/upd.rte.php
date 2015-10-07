@@ -240,6 +240,20 @@ class Rte_upd {
 			);
 		}
 
+		$module = ee('Model')->get('Module')
+			->filter('module_name', $this->name)
+			->first();
+
+		$module->module_version = $this->version;
+		$module->save();
+
+		$extensions = ee('Model')->get('Extension')
+			->filter('class', $this->name . '_ext')
+			->all();
+
+		$extensions->version = $this->version;
+		$extensions->save();
+
 		return TRUE;
 	}
 

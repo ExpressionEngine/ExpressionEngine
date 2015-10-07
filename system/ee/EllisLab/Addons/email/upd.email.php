@@ -94,7 +94,14 @@ class Email_upd {
 
 	function update($current='')
 	{
-		return FALSE;
+		$module = ee('Model')->get('Module')
+			->filter('module_name', 'Email')
+			->first();
+
+		$module->module_version = $this->version;
+		$module->save();
+
+		return TRUE;
 	}
 
 }
