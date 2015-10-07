@@ -84,13 +84,6 @@ class Template extends Settings {
 						'save_tmpl_files' => array('type' => 'yes_no')
 					)
 				),
-				array(
-					'title' => 'tmpl_file_basepath',
-					'desc' => 'tmpl_file_basepath_desc',
-					'fields' => array(
-						'tmpl_file_basepath' => array('type' => 'text')
-					)
-				),
 			)
 		);
 
@@ -99,11 +92,6 @@ class Template extends Settings {
 				'field' => 'max_tmpl_revisions',
 				'label' => 'lang:max_tmpl_revisions',
 				'rules' => 'integer'
-			),
-			array(
-				'field' => 'tmpl_file_basepath',
-				'label' => 'lang:tmpl_file_basepath',
-				'rules' => 'file_exists'
 			),
 		));
 

@@ -305,7 +305,7 @@ EE.cp.formValidation = {
 
 				if (button.is('input')) {
 					button.attr('value', button.data('submit-text'));
-				} else if ($button.is('button')) {
+				} else if (button.is('button')) {
 					button.text(button.data('submit-text'));
 				}
 			}
@@ -345,7 +345,7 @@ EE.cp.formValidation = {
 
 			if (button.is('input')) {
 				button.attr('value', EE.lang.btn_fix_errors);
-			} else if ($button.is('button')) {
+			} else if (button.is('button')) {
 				button.text(EE.lang.btn_fix_errors);
 			}
 		}

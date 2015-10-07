@@ -1899,17 +1899,7 @@ class EE_Template {
 
 			// Build the path to the page cache and get the number of files we have in
 			// the cache; this is more memory-efficient than using Cache::cache_info
-			$cache_path = APPPATH.'cache'.DIRECTORY_SEPARATOR;
-
-			// Attempt to grab cache_path config if it's set
-			if ($path = ee()->config->item('cache_path'))
-			{
-				$path = ee()->config->item('cache_path');
-				$cache_path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-			}
-
-			// Build the path to the page cache, should be site_short_name/page_cache
-			// as no page cache is set globally
+			$cache_path  = PATH_CACHE;
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
 
@@ -2040,7 +2030,7 @@ class EE_Template {
 				else // A valid template was not found
 				{
 					// is there a file we can automatically create this template from?
-					if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+					if (ee()->config->item('save_tmpl_files') == 'y')
 					{
 						if ($this->_create_from_file($template_group, ee()->uri->segment(2)))
 						{
@@ -2080,7 +2070,7 @@ class EE_Template {
 			if ($duplicate == TRUE OR $this->strict_urls == TRUE)
 			{
 				// is there a file we can automatically create this template from?
-				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -2147,8 +2137,7 @@ class EE_Template {
 			else
 			{
 				// is there a file we can automatically create this template from?
-				if (ee()->config->item('save_tmpl_files') == 'y'
-					&& ee()->config->item('tmpl_file_basepath') != '')
+				if (ee()->config->item('save_tmpl_files') == 'y')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -2337,7 +2326,7 @@ class EE_Template {
 		if ($query->num_rows() == 0)
 		{
 			// is there a file we can automatically create this template from?
-			if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
 				$t_group = ($show_404) ? $template_group_404 : $template_group;
 				$t_template = ($show_404) ? $template_404 : $template;
@@ -2525,7 +2514,7 @@ class EE_Template {
 		}
 
 		// Retrieve template file if necessary
-		if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+		if (ee()->config->item('save_tmpl_files') == 'y')
 		{
 			$site_switch = FALSE;
 
@@ -2548,9 +2537,7 @@ class EE_Template {
 			ee()->load->library('api');
 			ee()->legacy_api->instantiate('template_structure');
 
-			$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
-
-			$basepath .= ee()->config->item('site_short_name').'/'
+			$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/'
 				.$row['group_name'].'.group/'.$row['template_name']
 				.ee()->api_template_structure->file_extensions($row['template_type']);
 
@@ -2600,7 +2587,7 @@ class EE_Template {
 	 */
 	function _create_from_file($template_group, $template, $db_check = FALSE)
 	{
-		if (ee()->config->item('save_tmpl_files') != 'y' OR ee()->config->item('tmpl_file_basepath') == '')
+		if (ee()->config->item('save_tmpl_files') != 'y')
 		{
 			return FALSE;
 		}
@@ -2632,7 +2619,7 @@ class EE_Template {
 		ee()->legacy_api->instantiate('template_structure');
 		ee()->load->model('template_model');
 
-		$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/'.$template_group.'.group';
+		$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/'.$template_group.'.group';
 
 		if ( ! is_dir($basepath))
 		{
@@ -2990,9 +2977,9 @@ class EE_Template {
 					{
 						$css_versions[$row['group_name'].'/'.$row['template_name']] = $row['edit_date'];
 
-						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+						if (ee()->config->item('save_tmpl_files') == 'y')
 						{
-							$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/';
+							$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/';
 							$basepath .= $row['group_name'].'.group/'.$row['template_name'].'.css';
 
 							if (is_file($basepath))

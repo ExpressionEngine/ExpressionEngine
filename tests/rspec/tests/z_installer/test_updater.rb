@@ -27,10 +27,27 @@ feature 'Updater' do
   after :each do
     @installer.revert_config
     @installer.revert_database_config
-    FileUtils.rm_rf '../../system/user/templates/default_site/'
+
+    if File.exist?('../../system/user/templates/default_site.old/')
+      FileUtils.rm_rf '../../system/user/templates/default_site.old/'
+    end
+
+    if File.exist?('../../system/user/templates/default_site/')
+      FileUtils.mv(
+        '../../system/user/templates/default_site/',
+        '../../system/user/templates/default_site.old/'
+      )
+    end
   end
 
   after :all do
+    if File.exist?('../../system/user/templates/default_site.old/')
+      FileUtils.mv(
+        '../../system/user/templates/default_site.old/',
+        '../../system/user/templates/default_site/'
+      )
+    end
+
     @installer.disable_installer
     @installer.delete_database_config
   end
@@ -45,38 +62,56 @@ feature 'Updater' do
     @installer.delete_database_config
     @page.load
     @page.header.text.should match /Error While Installing \d+\.\d+\.\d+/
-    @page.error.text.should include "Unable to locate any database connection information."
+    @page.error.text.should include 'Unable to locate any database connection information.'
   end
 
   context 'when updating from 2.x to 3.x' do
     it 'updates using mysql as the dbdriver' do
       @installer.replace_database_config(@database, dbdriver: 'mysql')
       test_update
+      test_templates
     end
 
     it 'updates using localhost as the database host' do
       @installer.replace_database_config(@database, hostname: 'localhost')
       test_update
+      test_templates
     end
 
     it 'updates using 127.0.0.1 as the database host' do
       @installer.replace_database_config(@database, hostname: '127.0.0.1')
       test_update
+      test_templates
     end
 
-    it 'updates using old template basepath' do
+    it 'updates with the old tmpl_file_basepath' do
       @installer.revert_config
-      @installer.replace_config(@config, tmpl_file_basepath: '../system/expressionengine/templates')
+      @installer.replace_config(
+        @config,
+        tmpl_file_basepath: '../system/expressionengine/templates'
+      )
       test_update
-      File.exist?('../../system/user/templates/default_site/').should == true
-      File.exist?('../../system/expressionengine/templates/default_site/').should == false
+      test_templates
+    end
+
+    it 'updates with invalid tmpl_file_basepath' do
+      @installer.revert_config
+      @installer.replace_config(
+        @config,
+        tmpl_file_basepath: '../system/not/a/directory/templates'
+      )
+      test_update
+      test_templates
     end
 
     it 'updates using new template basepath' do
       @installer.revert_config
-      @installer.replace_config(@config, tmpl_file_basepath: '../system/user/templates')
+      @installer.replace_config(
+        @config,
+        tmpl_file_basepath: '../system/user/templates'
+      )
       test_update
-      File.exist?('../../system/user/templates/default_site/').should == true
+      test_templates
     end
   end
 
@@ -93,7 +128,9 @@ feature 'Updater' do
     @installer.revert_config
     @installer.replace_config(File.expand_path('../circleci/config-2.1.3.php'))
     @installer.revert_database_config
-    @installer.replace_database_config(File.expand_path('../circleci/database-2.1.3.php'))
+    @installer.replace_database_config(
+      File.expand_path('../circleci/database-2.1.3.php')
+    )
 
     clean_db do
       $db.query(IO.read('sql/database_2.1.3.sql'))
@@ -107,7 +144,9 @@ feature 'Updater' do
     page.driver.allow_url($test_config[:app_host])
 
     # Delete any stored mailing lists
-    mailing_list_zip = File.expand_path('../../system/user/cache/mailing_list.zip')
+    mailing_list_zip = File.expand_path(
+      '../../system/user/cache/mailing_list.zip'
+    )
     File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
 
     @page.load
@@ -134,6 +173,18 @@ feature 'Updater' do
     else
       @page.has_download?.should == true
       File.exist?(mailing_list_zip).should == true
+    end
+  end
+
+  def test_templates
+    File.exist?('../../system/user/templates/default_site/').should == true
+
+    # Ensure none of the templates say anything about Directory access being
+    # forbidden
+    Dir.glob('../../system/user/templates/default_site/**/*.html') do |filename|
+      File.open(filename, 'r') do |file|
+        file.each { |l| l.should_not include 'Directory access is forbidden.' }
+      end
     end
   end
 end

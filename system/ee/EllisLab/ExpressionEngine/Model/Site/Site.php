@@ -108,6 +108,10 @@ class Site extends Model {
 			'model' => 'HTMLButton',
 			'type' => 'hasMany'
 		),
+		'Snippets' => array(
+			'model' => 'Snippet',
+			'type' => 'hasMany'
+		)
 	);
 
 	protected static $_validation_rules = array(

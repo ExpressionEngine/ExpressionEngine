@@ -245,7 +245,7 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('btn_create_layout')
+			'submit_button_text' => sprintf(lang('btn_save'), lang('layout'))
 		);
 
 		ee()->view->cp_breadcrumbs = array(
@@ -340,7 +340,7 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('btn_edit_layout')
+			'submit_button_text' => sprintf(lang('btn_save'), lang('layout'))
 		);
 
 		ee()->view->cp_breadcrumbs = array(

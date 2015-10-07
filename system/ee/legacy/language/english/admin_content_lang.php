@@ -28,11 +28,7 @@ $lang = array(
 
 'create_new_field' => 'Create New Field',
 
-'btn_create_field_group' => 'Create Field Group',
-
 'edit_field_group' => 'Edit Field Group',
-
-'btn_edit_field_group' => 'Edit Field Group',
 
 'create_field_group_success' => 'Field Group Created',
 

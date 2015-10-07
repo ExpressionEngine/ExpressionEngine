@@ -15,7 +15,7 @@ feature 'Pages Settings' do
 		no_php_js_errors
 		addon_manager.first_party_addons.each do |addon|
 			if addon.text.include? 'Pages'
-				addon.find('li.install a').click
+				addon.find('li.txt-only a.add').click
 				break
 			end
 		end

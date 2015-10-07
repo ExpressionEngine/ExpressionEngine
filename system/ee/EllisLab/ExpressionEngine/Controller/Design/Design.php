@@ -186,7 +186,7 @@ class Design extends AbstractDesignController {
 
 	protected function _sync_from_files()
 	{
-		if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('tmpl_file_basepath') == '')
+		if (ee()->config->item('save_tmpl_files') != 'y')
 		{
 			return FALSE;
 		}
@@ -207,7 +207,7 @@ class Design extends AbstractDesignController {
 			);
 		}
 
-		$basepath = ee()->config->slash_item('tmpl_file_basepath');
+		$basepath = PATH_TMPL;
 		$basepath .= '/'.ee()->config->item('site_short_name');
 		ee()->load->helper('directory');
 		$files = directory_map($basepath, 0, 1);

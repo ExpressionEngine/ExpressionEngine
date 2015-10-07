@@ -68,7 +68,9 @@ class Updater {
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
 				'_remove_show_button_cluster_column',
-				'_add_cp_homepage_columns'
+				'_add_cp_homepage_columns',
+				'_remove_path_configs',
+				'_install_plugins',
 			)
 		);
 
@@ -415,28 +417,6 @@ class Updater {
 
 			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
-				$tmpl_file_basepath = ee()->config->item('tmpl_file_basepath');
-
-				// Continue to the next site if there's no basepath
-				if (empty($tmpl_file_basepath))
-				{
-					continue;
-				}
-
-				// Change the config for basepath to the new normal if they're
-				// using the old default
-				if (stripos($tmpl_file_basepath, SYSDIR.'/expressionengine/templates') !== FALSE)
-				{
-					ee()->config->set_item(
-						'tmpl_file_basepath',
-						str_replace(
-							'/expressionengine/templates',
-							'/user/templates',
-							$tmpl_file_basepath
-						)
-					);
-				}
-
 				$templates = ee()->template_model->fetch_last_edit(
 					array('templates.site_id' => $site['site_id']),
 					TRUE
@@ -1488,6 +1468,55 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Remove user configurable paths since user-servicable directory covers
+	 * them now
+	 * @return void
+	 */
+	private function _remove_path_configs()
+	{
+		ee()->config->_update_config(array(), array(
+			'addons_path'        => '',
+			'third_party_path'   => '',
+			'tmpl_file_basepath' => '',
+			'cache_path'         => '',
+			'log_path'           => ''
+		));
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Install all plugins found
+	 * @return  void
+	 */
+	private function _install_plugins()
+	{
+		foreach (ee('Addon')->all() as $name => $info)
+		{
+			$info = ee('Addon')->get($name);
+
+			// Check that it's a plugin ONLY
+			if ($info->hasInstaller()
+				|| $info->hasControlPanel()
+				|| $info->hasModule()
+				|| $info->hasExtension()
+				|| $info->hasFieldtype())
+			{
+				continue;
+			}
+
+			$model = ee('Model')->make('Plugin');
+			$model->plugin_name = $info->getName();
+			$model->plugin_package = $name;
+			$model->plugin_version = $info->getVersion();
+			$model->is_typography_related = ($info->get('plugin.typography')) ? 'y' : 'n';
+			$model->save();
+		}
 	}
 }
 /* END CLASS */
