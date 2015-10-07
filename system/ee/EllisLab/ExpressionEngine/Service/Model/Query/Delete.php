@@ -98,6 +98,11 @@ class Delete extends Query {
 					$fetch_query->fields("{$alias}.{$to_pk}");
 				}
 
+				if ($model == 'MemberGroup' || $model == 'ee:MemberGroup')
+				{
+					$fetch_query->fields("{$alias}.site_id");
+				}
+
 				$delete_models = $fetch_query->all();
 				$delete_ids = $this->deleteCollection($delete_models, $to_meta);
 
@@ -113,16 +118,22 @@ class Delete extends Query {
 	 */
 	protected function deleteCollection($collection, $to_meta)
 	{
-		$delete_ids = $collection->getIds();
-
-		$collection->emit('beforeDelete');
-
-		if ( ! count($delete_ids))
+		if ( ! count($collection))
 		{
 			return array();
 		}
 
-		$this->deleteAsLeaf($to_meta, $delete_ids);
+		$delete_ids = $collection->getIds();
+		$extra_where = array();
+
+		if (array_key_exists('member_groups', $to_meta->getTables()))
+		{
+			$extra_where['site_id'] = array_unique($collection->pluck('site_id'));
+		}
+
+		$collection->emit('beforeDelete');
+
+		$this->deleteAsLeaf($to_meta, $delete_ids, $extra_where);
 
 		$collection->emit('afterDelete');
 
@@ -137,13 +148,19 @@ class Delete extends Query {
 	 * @param String $model       Model name to delete from
 	 * @param Int[]  $delete_ids  Array of primary key ids to remove
 	 */
-	protected function deleteAsLeaf($reader, $delete_ids)
+	protected function deleteAsLeaf($reader, $delete_ids, $extra_where = array())
 	{
 		$tables = array_keys($reader->getTables());
 		$key = $reader->getPrimaryKey();
 
-		$this->store->rawQuery()
-			->where_in($key, $delete_ids)
+		$query = $this->store->rawQuery();
+
+		foreach ($extra_where as $field => $value)
+		{
+			$query->where_in($field, $value);
+		}
+
+		$query->where_in($key, $delete_ids)
 			->delete($tables);
 	}
 
@@ -219,10 +236,6 @@ class Delete extends Query {
 
 				$final[1] = $this->nest($final[1]);
 			}
-			else
-			{
-				$final[0] .= ' AS '.$delete_alias;
-			}
 		}
 
 		return array_reverse($this->delete_list);
@@ -242,6 +255,12 @@ class Delete extends Query {
 			if ($relation->isWeak())
 			{
 				$to_model = $relation->getSourceModel();
+
+				if ( ! count($path))
+				{
+					$to_model .= ' AS CurrentlyDeleting';
+				}
+
 				$this->delete_list[] = array($to_model, $this->weak($relation, $path));
 				continue;
 			}
@@ -291,7 +310,6 @@ class Delete extends Query {
 	private function recursive($relation, $withs)
 	{
 		$withs = $this->nest(array_reverse($withs));
-
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
@@ -317,10 +335,23 @@ class Delete extends Query {
 	 */
 	private function weak($relation, $withs)
 	{
-		$withs = $this->nest(array_reverse($withs));
+		$withs = array_reverse($withs);
+
+		if (count($withs))
+		{
+			$withs[count($withs) - 1] .= ' AS CurrentlyDeleting';
+		}
+
+		$withs = $this->nest($withs);
 
 		return function($query) use ($relation, $withs)
 		{
+			if (($relation->getSourceModel() == 'MemberGroup' || $relation->getSourceModel() == 'ee:MemberGroup') &&
+				($relation->getTargetModel() == 'Member' || $relation->getTargetModel() == 'ee:Member'))
+			{
+				return array();
+			}
+
 			$name = $relation->getName();
 			$models = $query->with($withs)->all();
 
