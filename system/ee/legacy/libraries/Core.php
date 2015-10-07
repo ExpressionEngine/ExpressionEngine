@@ -60,7 +60,7 @@ class EE_Core {
 
 		// If someone's trying to access the CP but EE_APPPATH is defined, it likely
 		// means the installer is still active; redirect to clean path
-		if (defined('EE_APPPATH') && ee()->router->fetch_class() == 'cp')
+		if (defined('EE_APPPATH') && ee()->uri->segment(1) == 'cp')
 		{
 			header('Location: '.SELF);
 		}
