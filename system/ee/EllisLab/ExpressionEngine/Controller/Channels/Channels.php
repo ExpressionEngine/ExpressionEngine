@@ -57,6 +57,8 @@ class Channels extends AbstractChannelsController {
 			->currentPage($vars['table']['page'])
 			->render($vars['table']['base_url']);
 
+		$vars['disable'] = $this->hasMaximumChannels() ? 'disable' : '';
+
 		ee()->view->cp_page_title = lang('manage_channels');
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('channels') . ': <b>### ' . lang('channels') . '</b>');
@@ -113,6 +115,11 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ($this->hasMaximumChannels())
+		{
+			show_error(lang('maximum_channels_reached'));
+		}
+
 		$this->form();
 	}
 
@@ -138,6 +145,11 @@ class Channels extends AbstractChannelsController {
 	{
 		if (is_null($channel_id))
 		{
+			if ($this->hasMaximumChannels())
+			{
+				show_error(lang('maximum_channels_reached'));
+			}
+
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
@@ -528,6 +540,16 @@ class Channels extends AbstractChannelsController {
 		}
 
 		return $channel;
+	}
+
+	/**
+	 * Maximum number of channels reached?
+	 *
+	 * @return bool
+	 **/
+	private function hasMaximumChannels()
+	{
+		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
 	}
 
 	/**

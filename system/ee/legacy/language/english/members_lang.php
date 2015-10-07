@@ -5,6 +5,7 @@ $lang = array(
 	"view_members" => "View Members",
 	"all_members" => "All Members",
 	"member_updated" => "Member saved",
+	"maximum_members_reached" => "You have reached the maximum number of Members allowed.",
 	"member_updated_desc" => "Member has been saved successfully.",
 	"member_group_updated" => "Member Group saved",
 	"member_group_updated_desc" => "Member Group has been saved successfully.",

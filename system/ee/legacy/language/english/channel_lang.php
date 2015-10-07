@@ -62,6 +62,8 @@ $lang = array(
 
 'channels_removed_desc' => '%d channels were removed.',
 
+'maximum_channels_reached' => 'You have reached the maximum number of Channels allowed.',
+
 'edit' => 'edit',
 
 'settings' => 'settings',
