@@ -24,6 +24,8 @@ $lang = array(
 
 'template_settings' => 'Template Settings',
 
+'hit_tracking' => 'Hit Tracking',
+
 'pages_settings' => 'Pages Settings',
 
 'upload_directories' => 'Upload Directories',
@@ -399,6 +401,27 @@ $lang = array(
 'save_tmpl_files' => 'Save templates as files?',
 
 'save_tmpl_files_desc' => 'When set to yes, ExpressionEngine will store your templates as files on your server.',
+
+/**
+ * Hit Tracking
+ */
+
+'enable_online_user_tracking' => 'Enable online user tracking?',
+'enable_online_user_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will track logged in users.',
+
+'enable_hit_tracking' => 'Enable template hit tracking?',
+'enable_hit_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a template is viewed.',
+
+'enable_entry_view_tracking' => 'Enable entry view tracking?',
+'enable_entry_view_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a channel entry is viewed.',
+
+'log_referrers' => 'Enable referrer tracking?',
+'log_referrers_desc' => 'When set to <b>yes</b>, ExpressionEngine will track all incoming links.',
+
+'max_referrers' => 'Maximum recent referrers to save',
+
+'dynamic_tracking_disabling' => 'Suspend threshold?',
+'dynamic_tracking_disabling_desc' => 'All tracking will be suspended when the number of online visitors exceeds this number.</em> <em>Online user tracking must be enabled to use this feature. <a href="%s" ref="external">Learn more</a>',
 
 /**
  * Word Censoring

@@ -73,6 +73,7 @@ class Settings extends CP_Controller {
 		$list->addItem(lang('comment_settings'), ee('CP/URL')->make('settings/comments'));
 		$list->addItem(lang('html_buttons'), ee('CP/URL')->make('settings/buttons'));
 		$list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
+		$list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit_tracking'));
 
 		if (ee()->addons_model->module_installed('pages'))
 		{
