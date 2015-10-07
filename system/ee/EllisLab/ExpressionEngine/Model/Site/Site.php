@@ -76,6 +76,10 @@ class Site extends Model {
 			'model' => 'Template',
 			'type' => 'hasMany'
 		),
+		'SpecialtyTemplates' => array(
+			'model' => 'SpecialtyTemplate',
+			'type' => 'hasMany'
+		),
 		'SearchLogs' => array(
 			'model' => 'SearchLog',
 			'type' => 'hasMany'
