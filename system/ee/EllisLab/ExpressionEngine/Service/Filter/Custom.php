@@ -71,6 +71,7 @@ class Custom extends Filter {
 
 	/**
 	 * Disables the custom value by setting has_custom_value to False.
+	 *
 	 * @see Filter::has_custom_value
 	 * @return self This returns a reference to itself
 	 */
@@ -78,6 +79,22 @@ class Custom extends Filter {
 	{
 		$this->has_custom_value = FALSE;
 		return $this;
+	}
+
+	/**
+	 * Checks if the selection is valid
+	 *
+	 * @see Filter::has_custom_value
+	 * @return self This returns a reference to itself
+	 */
+	public function isValid()
+	{
+		if ($this->has_custom_value)
+		{
+			return TRUE;
+		}
+
+		return parent::isValid();
 	}
 
 }
