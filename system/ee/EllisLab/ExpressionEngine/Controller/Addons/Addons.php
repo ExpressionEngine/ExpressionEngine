@@ -480,7 +480,7 @@ class Addons extends CP_Controller {
 				{
 					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
 						->first();
-					$module->module_version = $UPD->version;
+					$module->module_version = $addon_info->getVersion();
 					$module->save();
 
 					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
@@ -503,7 +503,7 @@ class Addons extends CP_Controller {
 							->filter('name', $addon)
 							->first();
 
-						$model->version = $FT->info['version'];
+						$model->version = $addon_info->getVersion();
 						$model->save();
 
 						if ( ! isset($updated[$party][$addon]))
@@ -524,7 +524,7 @@ class Addons extends CP_Controller {
 				$class_name = $extension['class'];
 				$Extension = new $class();
 				$Extension->update_extension($extension['version']);
-				ee()->extensions->version_numbers[$class_name] = $Extension->version;
+				ee()->extensions->version_numbers[$class_name] = $addon_info->getVersion();
 
 				if ( ! isset($updated[$party][$addon]))
 				{

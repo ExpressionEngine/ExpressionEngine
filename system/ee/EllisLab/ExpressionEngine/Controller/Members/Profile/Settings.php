@@ -218,7 +218,9 @@ class Settings extends Profile {
 						'avatar_filename' => array(
 							'type' => 'image',
 							'id' => 'avatar',
-							'image' => $directory->url . $this->member->avatar_filename
+							'edit' => FALSE,
+							'image' => $directory->url . $this->member->avatar_filename,
+							'value' => $this->member->avatar_filename
 						)
 					)
 				),

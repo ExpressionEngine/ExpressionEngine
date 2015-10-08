@@ -85,7 +85,7 @@ $lang = array(
 	'visibility' => 'Visibility',
 	"index" => "Main Index Page",
 	"member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
-	"can_moderate_comments" => "Can Moderate Comments",
+	"can_moderate_comments" => "Moderate Comments",
 	"exclude_from_moderation" => "Bypass moderation",
 	"exclude_from_moderation_desc" => "When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default <a href='%s'>comment settings</a>.",
 	"moderation_actions" => "Moderation actions",

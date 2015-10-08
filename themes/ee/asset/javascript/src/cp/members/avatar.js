@@ -15,6 +15,12 @@
 (function ($) {
 	$(document).ready(function () {
 
+		$('li.remove a').click(function (e) {
+			$(this).closest('figure').find('input[type="hidden"]').val('');
+			$(this).closest('fieldset').hide();
+			e.preventDefault();
+		});
+
 		$('.avatarPicker').FilePicker({
 			ajax: false,
 			filters: false,

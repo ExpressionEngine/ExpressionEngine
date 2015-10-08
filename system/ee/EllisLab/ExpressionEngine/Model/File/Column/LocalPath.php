@@ -38,14 +38,8 @@ class LocalPath extends SerializedType {
 	*/
 	public function unserialize($db_data)
 	{
-		return $db_data;
-	}
-
-	public function load($data)
-	{
-		$this->data = $data;
-
-		return $data;
+		$this->path = $db_data;
+		return $this;
 	}
 
 	public function store($data)

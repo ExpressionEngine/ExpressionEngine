@@ -117,7 +117,7 @@ class DebugOutput extends Settings {
 			)
 		);
 
-		if ( ! extension_loaded('newrelic'))
+		if (extension_loaded('newrelic'))
 		{
 			$vars['sections']['new_relic'] = array(
 				array(

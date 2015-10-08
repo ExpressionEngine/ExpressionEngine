@@ -238,6 +238,19 @@ class Template extends AbstractDesignController {
 		{
 			$errors = $result;
 
+			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
+			{
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
 			if ($result->isValid())
 			{
 				$template->save();
@@ -426,6 +439,19 @@ class Template extends AbstractDesignController {
 		if ($result instanceOf ValidationResult)
 		{
 			$errors = $result;
+
+			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
+			{
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
 
 			if ($result->isValid())
 			{

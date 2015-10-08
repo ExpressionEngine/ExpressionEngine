@@ -84,7 +84,7 @@ class Urls extends Settings {
 					'title' => 'member_segment_trigger',
 					'desc' => 'member_segment_trigger_desc',
 					'fields' => array(
-						'profile_trigger' => array('type' => 'text', 'required' => TRUE)
+						'profile_trigger' => array('type' => 'text')
 					)
 				),
 				array(
@@ -99,7 +99,7 @@ class Urls extends Settings {
 					'desc' => 'category_url_desc',
 					'fields' => array(
 						'use_category_name' =>	array(
-							'type' => 'select',
+							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => lang('category_url_opt_titles'),
 								'n' => lang('category_url_opt_ids')
@@ -152,7 +152,7 @@ class Urls extends Settings {
 			array(
 				'field' => 'profile_trigger',
 				'label' => 'lang:member_segment_trigger',
-				'rules' => 'required|alpha_dash'
+				'rules' => 'alpha_dash'
 			),
 			array(
 				'field' => 'doc_url',
