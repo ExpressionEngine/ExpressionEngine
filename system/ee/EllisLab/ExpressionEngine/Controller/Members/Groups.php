@@ -1047,7 +1047,7 @@ class Groups extends Members\Members {
 						)
 					)
 				),
-				'design' => array(
+				'template_manager' => array(
 					array(
 						'title' => 'can_access_design',
 						'desc' => 'can_access_design_desc',
@@ -1106,11 +1106,10 @@ class Groups extends Members\Members {
 							)
 						)
 					),
-				),
-				'template_management' => array(
 					array(
-						'title' => 'allowed_actions',
+						'title' => 'templates',
 						'desc' => 'template_permissions_desc',
+						'caution' => TRUE,
 						'fields' => array(
 							'template_permissions' => array(
 								'type' => 'checkbox',
@@ -1157,9 +1156,7 @@ class Groups extends Members\Members {
 								'value' => element('can_admin_modules', $values)
 							)
 						)
-					)
-				),
-				'addon_access' => array(
+					),
 					array(
 						'title' => 'addons_access',
 						'desc' => 'addons_access_desc',
