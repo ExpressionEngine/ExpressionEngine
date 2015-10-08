@@ -116,7 +116,7 @@ class File extends Model {
 	 */
 	public function getAbsoluteURL()
 	{
-		return rtrim($this->UploadDestination->url, '/') . '/' . $this->file_name;
+		return rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($this->file_name);
 	}
 
 	/**
@@ -132,7 +132,7 @@ class File extends Model {
 			return $this->getAbsoluteURL();
 		}
 
-		return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . $this->file_name;
+		return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . rawurlencode($this->file_name);
 	}
 
 	public function onBeforeDelete()
