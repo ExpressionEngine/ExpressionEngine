@@ -501,7 +501,7 @@ class Groups extends Members\Members {
 					if ( ! in_array($field, $ignore))
 					{
 						$submitted = ee()->input->post($field);
-						$default = NULL;
+						$default = $group->hasProperty($field) ? $group->$field : NULL;
 
 						if ($options['type'] == 'checkbox')
 						{
