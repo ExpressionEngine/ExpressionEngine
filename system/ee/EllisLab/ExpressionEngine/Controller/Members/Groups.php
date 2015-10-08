@@ -1177,14 +1177,14 @@ class Groups extends Members\Members {
 							)
 						),
 						array(
-							'title' => 'can_admin_modules',
-							'desc' => 'can_admin_modules_desc',
+							'title' => 'can_admin_addons',
+							'desc' => 'can_admin_addons_desc',
 							'group' => 'can_access_addons',
 							'caution' => TRUE,
 							'fields' => array(
-								'can_admin_modules' => array(
+								'can_admin_addons' => array(
 									'type' => 'yes_no',
-									'value' => element('can_admin_modules', $values)
+									'value' => element('can_admin_addons', $values)
 								)
 							)
 						),
@@ -1198,7 +1198,7 @@ class Groups extends Members\Members {
 									'type' => 'checkbox',
 									'choices' => $addons,
 									'value' => element('addons_access', $values)
-								),
+								)
 							)
 						)
 					)
@@ -1212,13 +1212,27 @@ class Groups extends Members\Members {
 							'access_tools' => array(
 								'type' => 'checkbox',
 								'choices' => array(
-									'can_access_comm' => lang('can_access_comm'),
 									'can_access_utilities' => lang('can_access_utilities'),
-									'can_access_data' => lang('can_access_data'),
-									'can_access_logs' => lang('can_access_logs')
+									'can_access_comm' => lang('can_access_communicate'),
+									'can_access_translate' => lang('can_access_translate'),
+									'can_access_import' => lang('can_access_import'),
+									'can_access_sql_manager' => lang('can_access_sql'),
+									'can_access_data' => lang('can_access_data')
 								),
 								'value' => element('access_tools', $values)
 							),
+						)
+					)
+				),
+				'logs' => array(
+					array(
+						'title' => 'can_access_logs',
+						'desc' => 'can_access_logs_desc',
+						'fields' => array(
+							'can_access_logs' => array(
+								'type' => 'yes_no',
+								'value' => element('can_access_logs', $values)
+							)
 						)
 					)
 				),

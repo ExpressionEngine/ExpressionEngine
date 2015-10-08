@@ -36,7 +36,7 @@ class Sql extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_sql_manager'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

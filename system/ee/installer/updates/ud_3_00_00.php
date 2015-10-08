@@ -808,7 +808,10 @@ class Updater {
 			'can_create_template_variables',
 			'can_delete_template_variables',
 			'can_edit_template_variables',
-			'can_access_security_settings'
+			'can_access_security_settings',
+			'can_access_translate',
+			'can_access_import',
+			'can_access_sql_manager'
 		);
 
 		foreach ($permissions as $permission)
@@ -929,6 +932,43 @@ class Updater {
 				),
 				array('can_admin_templates' => 'y')
 			);
+		}
+
+		if (ee()->db->field_exists('can_access_utilities', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_access_translate' => 'y',
+					'can_access_import' => 'y'
+				),
+				array('can_access_utilities' => 'y')
+			);
+		}
+
+		if (ee()->db->field_exists('can_access_data', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_access_sql_manager' => 'y'
+				),
+				array('can_access_data' => 'y')
+			);
+		}
+
+		// Rename can_admin_modules to can_admin_addons
+		if (ee()->db->field_exists('can_admin_modules', 'member_groups'))
+		{
+			$can_admin_addons = array(
+				'can_admin_modules' => array(
+					'name' => 'can_admin_addons',
+					'type' => 'CHAR',
+					'constraint' => 1,
+					'default' => 'n'
+				));
+
+			ee()->dbforge->modify_column('member_groups', $can_admin_addons);
 		}
 
 		// Drop all superfluous permissions columns

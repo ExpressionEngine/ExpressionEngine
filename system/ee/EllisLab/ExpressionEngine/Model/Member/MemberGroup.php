@@ -39,7 +39,7 @@ class MemberGroup extends Model {
 		'can_admin_mbr_groups'           => 'boolString',
 		'can_admin_mbr_templates'        => 'boolString',
 		'can_ban_users'                  => 'boolString',
-		'can_admin_modules'              => 'boolString',
+		'can_admin_addons'              => 'boolString',
 		'can_edit_categories'            => 'boolString',
 		'can_delete_categories'          => 'boolString',
 		'can_view_other_entries'         => 'boolString',
@@ -108,7 +108,10 @@ class MemberGroup extends Model {
 		'can_create_template_variables'  => 'boolString',
 		'can_delete_template_variables'  => 'boolString',
 		'can_edit_template_variables'    => 'boolString',
-		'can_access_security_settings'   => 'boolString'
+		'can_access_security_settings'   => 'boolString',
+		'can_access_translate'           => 'boolString',
+		'can_access_import'	             => 'boolString',
+		'can_access_sql_manager'         => 'boolString'
 	);
 
 
@@ -221,7 +224,7 @@ class MemberGroup extends Model {
 	protected $can_admin_mbr_groups;
 	protected $can_admin_mbr_templates;
 	protected $can_ban_users;
-	protected $can_admin_modules;
+	protected $can_admin_addons;
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 	protected $can_view_other_entries;
@@ -298,6 +301,9 @@ class MemberGroup extends Model {
 	protected $can_delete_template_variables;
 	protected $can_edit_template_variables;
 	protected $can_access_security_settings;
+	protected $can_access_translate;
+	protected $can_access_import;
+	protected $can_access_sql_manager;
 
 	/**
 	 * Ensure group ID is set for new records

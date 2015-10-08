@@ -46,7 +46,7 @@ feature 'Member Group List' do
       @page.edit.allowed_channels.each { |e| e.checked?.should == true }
       @page.edit.can_admin_design[0].checked?.should == true
       @page.edit.allowed_template_groups.each { |e| e.checked?.should == true }
-      @page.edit.can_admin_modules[0].checked?.should == true
+      @page.edit.can_admin_addons[0].checked?.should == true
       @page.edit.addons_access.each { |e| e.checked?.should == true }
       @page.edit.access_tools.each { |e| e.checked?.should == true }
     end
@@ -132,7 +132,7 @@ feature 'Member Group List' do
       can_access_cp
       cp_homepage
       can_admin_design
-      can_admin_modules
+      can_admin_addons
     )
 
     radios.each do |name|
@@ -247,7 +247,7 @@ feature 'Member Group List' do
     @page.edit.template_groups.each(&:click)
     @page.edit.can_admin_design[0].click
     @page.edit.allowed_template_groups.each(&:click)
-    @page.edit.can_admin_modules[0].click
+    @page.edit.can_admin_addons[0].click
     @page.edit.addons_access.each(&:click)
     @page.edit.access_tools.each(&:click)
     @page.edit.submit.click
