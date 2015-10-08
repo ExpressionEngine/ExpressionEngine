@@ -53,7 +53,7 @@ class MemberGroupsEdit < SitePrism::Section
   elements :template_permissions, 'input[name="template_permissions[]"]'
   elements :allowed_template_groups, 'input[name="allowed_template_groups[]"]'
 
-  elements :can_admin_modules, 'input[name="can_admin_modules"]'
+  elements :can_admin_addons, 'input[name="can_admin_addons"]'
 
   elements :addons_access, 'input[name="addons_access[]"]'
 
