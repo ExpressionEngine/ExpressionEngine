@@ -14,7 +14,7 @@ class Filepicker_mcp {
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
 
-		if (ee()->cp->allowed_group('can_access_files'))
+		if (ee()->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
 			$this->access = TRUE;
 		}
@@ -44,7 +44,10 @@ class Filepicker_mcp {
 
 		$directories = $dirs->indexBy('id');
 
-		$id = ee()->input->get('directory');
+		if ( ! empty(ee()->input->get('directory')))
+		{
+			$id = ee()->input->get('directory');
+		}
 
 		if (empty($id) || $id == 'all')
 		{
@@ -58,7 +61,8 @@ class Filepicker_mcp {
 		{
 			if (empty($directories[$id]))
 			{
-				show_error(lang('invalid_upload_destination'));
+				$id = 1;
+				//show_error(lang('invalid_upload_destination'));
 			}
 
 			$dir = $directories[$id];
@@ -83,7 +87,7 @@ class Filepicker_mcp {
 		// Filter out any files that are no longer on disk
 		$files->filter(function($file) { return $file->exists(); });
 
-		$base_url = ee('CP/URL')->make($this->base_url);
+		$base_url = ee('CP/URL', $this->base_url);
 
 		if (ee()->input->get('hasFilters') !== '0')
 		{
@@ -108,8 +112,7 @@ class Filepicker_mcp {
 				->setDefaultValue($type);
 			$filters = $filters->add($imgFilter);
 
-			$filter_values = $filters->values();
-			$perpage = $filter_values['perpage'];
+			$perpage = $filters->values()['perpage'];
 			$vars['filters'] = $filters->render($base_url);
 		}
 
@@ -133,8 +136,10 @@ class Filepicker_mcp {
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
 
-		$vars['upload'] = ee('CP/URL')->make($this->picker->base_url."upload" ,array('directory' => $id));
+		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
+		$vars['upload']->setQueryStringVariable('directory', $id);
 		$vars['dir'] = $id;
+
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
@@ -223,7 +228,7 @@ class Filepicker_mcp {
 
 		if ( ! $dir->exists())
 		{
-			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+			$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
 			ee('CP/Alert')->makeStandard()
 				->asIssue()
 				->withTitle(lang('file_not_found'))
@@ -358,13 +363,7 @@ class Filepicker_mcp {
 				$file->save();
 				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
 
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('upload_filedata_success'))
-					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
-					->defer();
-
-				ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $dir_id));
+				return $this->fileInfo($file->getId());
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -377,11 +376,29 @@ class Filepicker_mcp {
 		}
 
 		$vars['cp_page_title'] = lang('file_upload');
-
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
+		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
 		ee()->output->_display($out);
 		exit();
 	}
 
+	protected function ajaxValidation(ValidationResult $result)
+	{
+		if (ee()->input->is_ajax_request())
+		{
+			$field = ee()->input->post('ee_fv_field');
+
+			if ($result->hasErrors($field))
+			{
+				return array('error' => $result->renderError($field));
+			}
+			else
+			{
+				return array('success');
+			}
+		}
+
+		return NULL;
+	}
 }
 ?>
