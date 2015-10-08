@@ -40,6 +40,7 @@ class Spam_mcp {
 	public function __construct()
 	{
 		$this->base_url = ee('CP/URL', 'addons/settings/spam');
+		$update = ee('spam:Update');
 	}
 
 	/**
@@ -241,6 +242,16 @@ class Spam_mcp {
 			),
 			'engine_training' => array(
 				array(
+					'title' => "update_training",
+					'desc' => 'update_training_desc',
+					'fields' => array(
+						'update_training' => array(
+							'type' => 'html',
+							'content' => "<a class='btn tn action update' href='" . ee('CP/URL', 'addons/settings/spam/') . "'>" .  lang('update_training') . "</a>"
+						)
+					)
+				),
+				array(
 					'title' => 'spam_word_limit',
 					'desc' => 'spam_word_limit_desc',
 					'fields' => array(
@@ -332,6 +343,10 @@ class Spam_mcp {
 			ee()->functions->redirect($base_url);
 		}
 
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/addons/spam'),
+		));
+
 		$vars['base_url'] = $base_url;
 		$vars['ajax_validate'] = TRUE;
 		$vars['cp_page_title'] = lang('spam_settings');
@@ -402,6 +417,119 @@ class Spam_mcp {
 
 		$this->moderate($trapped, 'spam');
 		ee()->functions->redirect($this->base_url);
+	}
+
+	public function download()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			ee('spam:Update')->download();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		ee()->output->send_ajax_response(array(
+			'success' => lang('training_downloaded')
+		));
+	}
+
+	public function prepare()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			ee('spam:Update')->prepare();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		ee()->output->send_ajax_response(array(
+			'success' => lang('training_prepared'),
+			'finished' => lang('training_finished')
+		));
+	}
+
+	public function updateparams()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			$processing = ee('spam:Update')->updateParameters();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		if ($processing === TRUE)
+		{
+			$status = 'processing';
+		}
+		else
+		{
+			$status = 'finished';
+		}
+
+		ee()->output->send_ajax_response(array(
+			'message' => lang('updating_parameters'),
+			'status' => $status
+		));
+	}
+
+	public function updatevocab()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			$processing = ee('spam:Update')->updateVocabulary();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		if ($processing === TRUE)
+		{
+			$status = 'proccessing';
+		}
+		else
+		{
+			$status = 'finished';
+		}
+
+		ee()->output->send_ajax_response(array(
+			'message' => lang('updating_vocabulary'),
+			'status' => $status
+		));
 	}
 
 	/**
