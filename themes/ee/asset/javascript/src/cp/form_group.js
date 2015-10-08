@@ -62,6 +62,15 @@ EE.cp.form_group_toggle = function(element) {
 		if (key == value) {
 			toggleInputs(group, key, true);
 		}
+
+		group.removeClass('last');
+
+		if (key == value) {
+			group.last().addClass('last');
+			group.filter(':not(h2)').prev('fieldset:visible').removeClass('last');
+		} else {
+			group.prev('fieldset:visible').addClass('last');
+		}
 	});
 
 	// This all kind of came about from needing to preserve radio button
