@@ -1204,54 +1204,63 @@ class Groups extends Members\Members {
 					)
 				),
 				'tools' => array(
-					array(
-						'title' => 'access_tools',
-						'desc' => 'access_tools_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'access_tools' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_access_utilities' => lang('can_access_utilities'),
-									'can_access_comm' => lang('can_access_communicate'),
-									'can_access_translate' => lang('can_access_translate'),
-									'can_access_import' => lang('can_access_import'),
-									'can_access_sql_manager' => lang('can_access_sql'),
-									'can_access_data' => lang('can_access_data')
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'access_tools',
+							'desc' => 'access_tools_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'access_tools' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_access_utilities' => lang('can_access_utilities'),
+										'can_access_comm' => lang('can_access_communicate'),
+										'can_access_translate' => lang('can_access_translate'),
+										'can_access_import' => lang('can_access_import'),
+										'can_access_sql_manager' => lang('can_access_sql'),
+										'can_access_data' => lang('can_access_data')
+									),
+									'value' => element('access_tools', $values)
 								),
-								'value' => element('access_tools', $values)
-							),
+							)
 						)
 					)
 				),
 				'logs' => array(
-					array(
-						'title' => 'can_access_logs',
-						'desc' => 'can_access_logs_desc',
-						'fields' => array(
-							'can_access_logs' => array(
-								'type' => 'yes_no',
-								'value' => element('can_access_logs', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_logs',
+							'desc' => 'can_access_logs_desc',
+							'fields' => array(
+								'can_access_logs' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_logs', $values)
+								)
 							)
 						)
 					)
 				),
 				'settings' => array(
-					array(
-						'title' => 'access_settings',
-						'desc' => 'access_settings_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'access_settings' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
-									'can_admin_design' => lang('can_admin_design'),
-									'can_access_members' => lang('can_access_members'),
-									'can_access_security_settings' => lang('can_access_security_settings'),
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'access_settings',
+							'desc' => 'access_settings_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'access_settings' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_access_sys_prefs' => lang('can_access_sys_prefs'),
+										'can_admin_design' => lang('can_admin_design'),
+										'can_access_members' => lang('can_access_members'),
+										'can_access_security_settings' => lang('can_access_security_settings'),
+									),
+									'value' => element('access_settings', $values)
 								),
-								'value' => element('access_settings', $values)
-							),
+							)
 						)
 					)
 				)
