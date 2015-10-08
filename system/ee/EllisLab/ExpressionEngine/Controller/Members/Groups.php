@@ -1063,136 +1063,143 @@ class Groups extends Members\Members {
 				),
 				'template_manager' => array(
 					'group' => 'can_access_cp',
-
-				'settings' => array(
-					array(
-						'title' => 'can_access_design',
-						'desc' => 'can_access_design_desc',
-						'fields' => array(
-							'can_access_design' => array(
-								'type' => 'yes_no',
-								'value' => element('can_access_design', $values),
-								'group_toggle' => array(
-									'y' => 'can_access_design'
+					'settings' => array(
+						array(
+							'title' => 'can_access_design',
+							'desc' => 'can_access_design_desc',
+							'fields' => array(
+								'can_access_design' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_design', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_design'
+									)
 								)
 							)
-						)
-					),
-					array(
-						'title' => 'template_groups',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_design',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_group_permissions' => array(
-								'choices' => array(
-									'can_create_template_groups' => lang('create_template_groups'),
-									'can_edit_template_groups' => lang('edit_template_groups'),
-									'can_delete_template_groups' => lang('delete_template_groups'),
+						),
+						array(
+							'title' => 'template_groups',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_group_permissions' => array(
+									'choices' => array(
+										'can_create_template_groups' => lang('create_template_groups'),
+										'can_edit_template_groups' => lang('edit_template_groups'),
+										'can_delete_template_groups' => lang('delete_template_groups'),
+									),
+									'type' => 'checkbox',
+									'value' => element('template_group_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'template_partials',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_partials' => array(
+									'choices' => array(
+										'can_create_template_partials' => lang('create_template_partials'),
+										'can_edit_template_partials' => lang('edit_template_partials'),
+										'can_delete_template_partials' => lang('delete_template_partials'),
+									),
+									'type' => 'checkbox',
+									'value' => element('template_partials', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'template_variables',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_variables' => array(
+									'choices' => array(
+										'can_create_template_variables' => lang('create_template_variables'),
+										'can_edit_template_variables' => lang('edit_template_variables'),
+										'can_delete_template_variables' => lang('delete_template_variables'),
+									),
+									'type' => 'checkbox',
+									'value' => element('template_variables', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'templates',
+							'desc' => 'template_permissions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_permissions' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_manage_template_settings' => lang('manage_template_settings'),
+										'can_create_new_templates' => lang('create_new_templates'),
+										'can_edit_templates' => lang('edit_templates'),
+										'can_delete_templates' => lang('delete_templates')
+									),
+									'value' => element('template_permissions', $values)
 								),
-								'type' => 'checkbox',
-								'value' => element('template_group_permissions', $values)
+							)
+						),
+						array(
+							'title' => 'allowed_template_groups',
+							'desc' => 'allowed_template_groups_desc',
+							'group' => 'can_access_design',
+							'fields' => array(
+								'allowed_template_groups' => array(
+									'type' => 'checkbox',
+									'choices' => $template_groups,
+									'value' => element('template_groups', $values)
+								),
 							)
 						)
-					),
-					array(
-						'title' => 'template_partials',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_design',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_partials' => array(
-								'choices' => array(
-									'can_create_template_partials' => lang('create_template_partials'),
-									'can_edit_template_partials' => lang('edit_template_partials'),
-									'can_delete_template_partials' => lang('delete_template_partials'),
-								),
-								'type' => 'checkbox',
-								'value' => element('template_partials', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'template_variables',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_design',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_variables' => array(
-								'choices' => array(
-									'can_create_template_variables' => lang('create_template_variables'),
-									'can_edit_template_variables' => lang('edit_template_variables'),
-									'can_delete_template_variables' => lang('delete_template_variables'),
-								),
-								'type' => 'checkbox',
-								'value' => element('template_variables', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'templates',
-						'desc' => 'template_permissions_desc',
-						'group' => 'can_access_design',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_permissions' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_manage_template_settings' => lang('manage_template_settings'),
-									'can_create_new_templates' => lang('create_new_templates'),
-									'can_edit_templates' => lang('edit_templates'),
-									'can_delete_templates' => lang('delete_templates')
-								),
-								'value' => element('template_permissions', $values)
-							),
-						)
-					),
-					array(
-						'title' => 'allowed_template_groups',
-						'desc' => 'allowed_template_groups_desc',
-						'group' => 'can_access_design',
-						'fields' => array(
-							'allowed_template_groups' => array(
-								'type' => 'checkbox',
-								'choices' => $template_groups,
-								'value' => element('template_groups', $values)
-							),
-						)
-					)
 					)
 				),
 				'addons' => array(
-					array(
-						'title' => 'can_access_addons',
-						'desc' => 'can_access_addons_desc',
-						'fields' => array(
-							'can_access_addons' => array(
-								'type' => 'yes_no',
-								'value' => element('can_access_addons', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_addons',
+							'desc' => 'can_access_addons_desc',
+							'fields' => array(
+								'can_access_addons' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_addons', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_addons'
+									)
+								)
 							)
-						)
-					),
-					array(
-						'title' => 'can_admin_modules',
-						'desc' => 'can_admin_modules_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'can_admin_modules' => array(
-								'type' => 'yes_no',
-								'value' => element('can_admin_modules', $values)
+						),
+						array(
+							'title' => 'can_admin_modules',
+							'desc' => 'can_admin_modules_desc',
+							'group' => 'can_access_addons',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_admin_modules' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_modules', $values)
+								)
 							)
-						)
-					),
-					array(
-						'title' => 'addons_access',
-						'desc' => 'addons_access_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'addons_access' => array(
-								'type' => 'checkbox',
-								'choices' => $addons,
-								'value' => element('addons_access', $values)
-							),
+						),
+						array(
+							'title' => 'addons_access',
+							'desc' => 'addons_access_desc',
+							'group' => 'can_access_addons',
+							'caution' => TRUE,
+							'fields' => array(
+								'addons_access' => array(
+									'type' => 'checkbox',
+									'choices' => $addons,
+									'value' => element('addons_access', $values)
+								),
+							)
 						)
 					)
 				),
