@@ -1147,13 +1147,13 @@ class Groups extends Members\Members {
 						)
 					),
 					array(
-						'title' => 'can_admin_modules',
-						'desc' => 'can_admin_modules_desc',
+						'title' => 'can_admin_addons',
+						'desc' => 'can_admin_addons_desc',
 						'caution' => TRUE,
 						'fields' => array(
-							'can_admin_modules' => array(
+							'can_admin_addons' => array(
 								'type' => 'yes_no',
-								'value' => element('can_admin_modules', $values)
+								'value' => element('can_admin_addons', $values)
 							)
 						)
 					),

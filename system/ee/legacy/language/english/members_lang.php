@@ -266,6 +266,7 @@ $lang = array(
 	'can_access_sql'  => ' SQL Management <i>— Utility</i>',
 	'can_access_data' => 'Data Operations<i>— Utility</i>',
 	'can_access_logs' => 'Logs',
+	'can_access_logs_desc' => 'Can access and edit all logs (Developer, Control Panel, Throttling, Email and Search).',
 	'can_access_sys_prefs' => 'General Settings',
 	'can_access_content_prefs' => 'Content &amp; Design',
 	"can_delete_members" => "Delete members",
