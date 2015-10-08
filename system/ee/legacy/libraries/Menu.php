@@ -181,7 +181,35 @@ class EE_Menu {
 
 		if (ee()->cp->allowed_group('can_access_utilities'))
 		{
-			$menu['utilities'] = ee('CP/URL')->make('utilities');
+
+			$utility_options = array(
+				'can_access_comm' => ee('CP/URL')->make('utilities'),
+				'can_access_translate' => ee('CP/URL')->make('utilities/translate'),
+				'can_access_import' => ee('CP/URL')->make('utilities/member-import'),
+				'can_access_sql_manager' => ee('CP/URL')->make('utilities/sql'),
+				'can_access_data' => ee('CP/URL')->make('utilities/cache')
+				);
+
+			foreach ($utility_options as $allow => $link)
+			{
+				if (ee()->cp->allowed_group($allow))
+				{
+					$menu['utilities'] = $link;
+					break;
+				}
+			}
+
+			// If none of the above are allowed, see if addon admin is
+			// If so, land on extension debug page
+
+			if ( ! isset($menu['utilities']))
+			{
+				if (ee()->cp->allowed_group('can_access_addons')
+					&& ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$menu['utilities'] = ee('CP/URL')->make('utilities/extensions');
+				}
+			}
 		}
 
 		if (ee()->cp->allowed_group('can_access_logs'))
