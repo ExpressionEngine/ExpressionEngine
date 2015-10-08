@@ -415,7 +415,7 @@ class EE_Schema {
 			`can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
 			`can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
 			`can_ban_users` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_modules` char(1) NOT NULL DEFAULT 'n',
+			`can_admin_addons` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_categories` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_categories` char(1) NOT NULL DEFAULT 'n',
 			`can_view_other_entries` char(1) NOT NULL DEFAULT 'n',

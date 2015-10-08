@@ -1194,6 +1194,18 @@ class Groups extends Members\Members {
 						)
 					)
 				),
+				'logs' => array(
+					array(
+						'title' => 'can_access_logs',
+						'desc' => 'can_access_logs_desc',
+						'fields' => array(
+							'can_access_logs' => array(
+								'type' => 'yes_no',
+								'value' => element('can_access_logs', $values)
+							)
+						)
+					)
+				),
 				'settings' => array(
 					array(
 						'title' => 'access_settings',
