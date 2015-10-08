@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Library\Request;
+namespace EllisLab\ExpressionEngine\Library\Curl;
 
 class PostRequest extends Request {
 
@@ -10,8 +10,8 @@ class PostRequest extends Request {
 
 		if ( ! empty($data))
 		{
-			$config['CURLOPT_POST'] = 1;
-			$config['CURLOPT_POSTFIELDS'] = $data;
+			$config[CURLOPT_POST] = 1;
+			$config[CURLOPT_POSTFIELDS] = $data;
 		}
 
 		return parent::__construct($url, $config, $callback);

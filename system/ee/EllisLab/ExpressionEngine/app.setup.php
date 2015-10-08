@@ -3,7 +3,7 @@
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
-use EllisLab\ExpressionEngine\Library\Request;
+use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
@@ -101,9 +101,9 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
-		'Request' => function($ee)
+		'Curl' => function($ee)
 		{
-			return new Request\RequestFactory();
+			return new Curl\RequestFactory();
 		},
 
 		'View' => function($ee)

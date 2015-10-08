@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Library\Request;
+namespace EllisLab\ExpressionEngine\Library\Curl;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 

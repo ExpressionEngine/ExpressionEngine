@@ -1,14 +1,14 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Library\Request;
+namespace EllisLab\ExpressionEngine\Library\Curl;
 
 abstract class Request {
 
 	public function __construct($url, $data, $callback = NULL)
 	{
-		$default = array(
-			'CURLOPT_URL' => $url,
-    		'CURLOPT_RETURNTRANSFER' => 1,
+		$this->config = array(
+			CURLOPT_URL => $url,
+    		CURLOPT_RETURNTRANSFER => 1,
 		);
 
 		foreach ($data as $key => $val)
