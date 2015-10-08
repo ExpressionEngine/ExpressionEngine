@@ -423,6 +423,11 @@ class Groups extends Members\Members {
 
 		foreach ($form as $section)
 		{
+			if (array_key_exists('settings', $section))
+			{
+				$section = $section['settings'];
+			}
+
 			foreach ($section as $fieldset)
 			{
 				foreach ($fieldset['fields'] as $name => $field)
@@ -831,8 +836,7 @@ class Groups extends Members\Members {
 								'type' => 'yes_no',
 								'value' => element('can_access_cp', $values),
 								'group_toggle' => array(
-									'y' => 'can_access_cp',
-									'n' => ''
+									'y' => 'can_access_cp'
 								)
 							)
 						)
@@ -1058,19 +1062,26 @@ class Groups extends Members\Members {
 					)
 				),
 				'template_manager' => array(
+					'group' => 'can_access_cp',
+
+				'settings' => array(
 					array(
 						'title' => 'can_access_design',
 						'desc' => 'can_access_design_desc',
 						'fields' => array(
 							'can_access_design' => array(
 								'type' => 'yes_no',
-								'value' => element('can_access_design', $values)
+								'value' => element('can_access_design', $values),
+								'group_toggle' => array(
+									'y' => 'can_access_design'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'template_groups',
 						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_design',
 						'caution' => TRUE,
 						'fields' => array(
 							'template_group_permissions' => array(
@@ -1087,6 +1098,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'template_partials',
 						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_design',
 						'caution' => TRUE,
 						'fields' => array(
 							'template_partials' => array(
@@ -1103,6 +1115,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'template_variables',
 						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_design',
 						'caution' => TRUE,
 						'fields' => array(
 							'template_variables' => array(
@@ -1119,6 +1132,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'templates',
 						'desc' => 'template_permissions_desc',
+						'group' => 'can_access_design',
 						'caution' => TRUE,
 						'fields' => array(
 							'template_permissions' => array(
@@ -1136,6 +1150,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'allowed_template_groups',
 						'desc' => 'allowed_template_groups_desc',
+						'group' => 'can_access_design',
 						'fields' => array(
 							'allowed_template_groups' => array(
 								'type' => 'checkbox',
@@ -1143,6 +1158,7 @@ class Groups extends Members\Members {
 								'value' => element('template_groups', $values)
 							),
 						)
+					)
 					)
 				),
 				'addons' => array(
