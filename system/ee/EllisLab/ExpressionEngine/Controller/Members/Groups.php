@@ -1182,10 +1182,12 @@ class Groups extends Members\Members {
 							'access_tools' => array(
 								'type' => 'checkbox',
 								'choices' => array(
-									'can_access_comm' => lang('can_access_comm'),
 									'can_access_utilities' => lang('can_access_utilities'),
-									'can_access_data' => lang('can_access_data'),
-									'can_access_logs' => lang('can_access_logs')
+									'can_access_comm' => lang('can_access_communicate'),
+									'can_access_translate' => lang('can_access_translate'),
+									'can_access_import' => lang('can_access_import'),
+									'can_access_sql_manager' => lang('can_access_sql'),
+									'can_access_data' => lang('can_access_data')
 								),
 								'value' => element('access_tools', $values)
 							),

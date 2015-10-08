@@ -34,7 +34,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_import'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

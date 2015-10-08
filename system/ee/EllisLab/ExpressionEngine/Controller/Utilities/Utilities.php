@@ -52,59 +52,69 @@ class Utilities extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'))
+		if (ee()->cp->allowed_group('can_access_comm'))
+		{
+			$sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'))
 			->addBasicList()
 				->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
-
-		$langauge_list = $sidebar->addHeader(lang('cp_translation'))
-			->addBasicList();
-
-		$default_language = ee()->config->item('deft_lang') ?: 'english';
-		$languages = array();
-
-		foreach (ee()->lang->language_pack_names() as $key => $value)
-		{
-			$menu_title = $value;
-			$url = ee('CP/URL')->make('utilities/translate/' . $key);
-
-			if ($key == $default_language)
-			{
-				$menu_title .= ' (' . lang('default') . ')';
-
-				// Make the default language first
-				$languages = array_merge(array($menu_title => $url), $languages);
-				continue;
-			}
-
-			$languages[$menu_title] = $url;
 		}
 
-		foreach ($languages as $menu_title => $url)
+		if (ee()->cp->allowed_group('can_access_translate'))
 		{
-			$langauge_list->addItem($menu_title, $url);
+			$langauge_list = $sidebar->addHeader(lang('cp_translation'))
+				->addBasicList();
+			$default_language = ee()->config->item('deft_lang') ?: 'english';
+			$languages = array();
+			foreach (ee()->lang->language_pack_names() as $key => $value)
+			{
+				$menu_title = $value;
+				$url = ee('CP/URL')->make('utilities/translate/' . $key);
+				if ($key == $default_language)
+				{
+					$menu_title .= ' (' . lang('default') . ')';
+					// Make the default language first
+					$languages = array_merge(array($menu_title => $url), $languages);
+					continue;
+				}
+				$languages[$menu_title] = $url;
+			}
+			foreach ($languages as $menu_title => $url)
+			{
+				$langauge_list->addItem($menu_title, $url);
+			}
 		}
 
 		$sidebar->addHeader(lang('php_info'), ee('CP/URL')->make('utilities/php'))
 			->urlIsExternal();
 
-		$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
+		if (ee()->cp->allowed_group('can_access_addons') && ee()->cp->allowed_group('can_admin_addons'))
+		{
+			$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
+		}
 
-		$import_list = $sidebar->addHeader(lang('import_tools'))
-			->addBasicList();
+		if (ee()->cp->allowed_group('can_access_import'))
+		{
+			$import_list = $sidebar->addHeader(lang('import_tools'))
+				->addBasicList();
+			$import_list->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
+			$import_list->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
+		}
 
-		$import_list->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
-		$import_list->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
-
-		$sidebar->addHeader(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'))
+		if (ee()->cp->allowed_group('can_access_sql_manager'))
+		{
+			$sidebar->addHeader(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'))
 			->addBasicList()
 				->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
+		}
 
-		$data_list = $sidebar->addHeader(lang('data_operations'))
+		if (ee()->cp->allowed_group('can_access_data'))
+		{
+			$data_list = $sidebar->addHeader(lang('data_operations'))
 			->addBasicList();
-
-		$data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
-		$data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
-		$data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
+			$data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
+			$data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
+			$data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
+		}
 	}
 
 	/**

@@ -492,7 +492,9 @@ class EE_Schema {
 			`can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
 			`can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
-
+			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
+			`can_access_import` char(1) NOT NULL DEFAULT 'n',
+			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -1516,7 +1518,7 @@ class EE_Schema {
 				'can_admin_mbr_groups'           => 'y',
 				'can_admin_mbr_templates'        => 'y',
 				'can_ban_users'                  => 'y',
-				'can_admin_modules'              => 'y',
+				'can_admin_addons'              => 'y',
 				'can_manage_template_settings'   => 'y',
 				'can_create_new_templates'       => 'y',
 				'can_edit_templates'             => 'y',
