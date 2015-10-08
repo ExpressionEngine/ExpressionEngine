@@ -984,25 +984,25 @@ class Groups extends Members\Members {
 				),
 				'content' => array(
 					array(
-						'title' => 'asset_upload_directories',
+						'title' => 'file_upload_directories',
 						'desc' => 'allowed_actions_desc',
 						'fields' => array(
-							'asset_upload_directories' => array(
+							'file_upload_directories' => array(
 								'choices' => array(
 									'can_create_upload_directories' => lang('create_upload_directories'),
 									'can_edit_upload_directories' => lang('edit_upload_directories'),
 									'can_delete_upload_directories' => lang('delete_upload_directories'),
 									),
 								'type' => 'checkbox',
-								'value' => element('asset_upload_directories', $values)
+								'value' => element('file_upload_directories', $values)
 							)
 						)
 					),
 					array(
-						'title' => 'assets',
+						'title' => 'files',
 						'desc' => 'allowed_actions_desc',
 						'fields' => array(
-							'assets' => array(
+							'files' => array(
 								'choices' => array(
 									'can_access_files' => lang('can_access_files'),
 									'can_upload_new_files' => lang('upload_new_files'),
@@ -1010,7 +1010,7 @@ class Groups extends Members\Members {
 									'can_delete_files' => lang('delete_files'),
 								),
 								'type' => 'checkbox',
-								'value' => element('assets', $values)
+								'value' => element('files', $values)
 							)
 						)
 					),
