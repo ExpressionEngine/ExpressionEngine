@@ -489,6 +489,11 @@ class Groups extends Members\Members {
 
 		foreach ($sections as $section)
 		{
+			if (count(array_keys($section)) == 2 && array_key_exists('settings', $section))
+			{
+				$section = $section['settings'];
+			}
+
 			foreach ($section as $item)
 			{
 				foreach ($item['fields'] as $field => $options)
@@ -496,13 +501,16 @@ class Groups extends Members\Members {
 					if ( ! in_array($field, $ignore))
 					{
 						$submitted = ee()->input->post($field);
+						$default = NULL;
 
 						if ($options['type'] == 'checkbox')
 						{
+							$default = array();
 							$submitted = ee()->input->post($field);
 						}
 
-						$submitted = $submitted === FALSE ? array() : $submitted;
+						$submitted = $submitted === FALSE ? $default : $submitted;
+
 						if (is_array($submitted))
 						{
 							$choices = array_keys($options['choices']);
