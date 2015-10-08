@@ -35,7 +35,8 @@ feature 'URL and Path Settings' do
     @page.doc_url.value.should == @doc_url
     @page.profile_trigger.value.should == @profile_trigger
     @page.category_segment_trigger.value.should == @reserved_category_word
-    @page.category_url.value.should == @use_category_name
+    @page.use_category_name[0].checked?.should == (@use_category_name == 'y')
+    @page.use_category_name[1].checked?.should == (@use_category_name == 'n')
     @page.url_title_separator.value.should == @word_separator
   end
 

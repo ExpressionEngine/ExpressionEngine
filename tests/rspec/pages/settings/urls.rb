@@ -8,7 +8,7 @@ class UrlsSettings < ControlPanelPage
 	element :doc_url, 'input[name=doc_url]'
 	element :profile_trigger, 'input[name=profile_trigger]'
 	element :category_segment_trigger, 'input[name=reserved_category_word]'
-	element :category_url, 'select[name=use_category_name]'
+	elements :category_url, 'input[name=use_category_name]'
 	element :url_title_separator, 'select[name=word_separator]'
 
 	def load
