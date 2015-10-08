@@ -543,6 +543,10 @@ class Groups extends Members\Members {
 		// `element()` method
 		ee()->load->helper('array');
 
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/form_group'),
+		));
+
 		if (isset($values['group_id']) && $values['group_id'] == 1)
 		{
 			$vars = array(
@@ -596,7 +600,7 @@ class Groups extends Members\Members {
 				->all()
 				->getDictionary('channel_id', 'channel_title');
 
-			$vars= array(
+			$vars = array(
 				array(
 					array(
 						'title' => 'group_name',
@@ -825,13 +829,18 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_access_cp' => array(
 								'type' => 'yes_no',
-								'value' => element('can_access_cp', $values)
+								'value' => element('can_access_cp', $values),
+								'group_toggle' => array(
+									'y' => 'can_access_cp',
+									'n' => ''
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'default_cp_homepage',
 						'desc' => 'default_cp_homepage_desc',
+						'group' => 'can_access_cp',
 						'fields' => array(
 							'cp_homepage' => array(
 								'type' => 'radio',
@@ -853,6 +862,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'footer_helper_links',
 						'desc' => 'footer_helper_links_desc',
+						'group' => 'can_access_cp',
 						'fields' => array(
 							'footer_helper_links' => array(
 								'type' => 'checkbox',
