@@ -111,7 +111,8 @@ class MemberGroup extends Model {
 		'can_access_security_settings'   => 'boolString',
 		'can_access_translate'           => 'boolString',
 		'can_access_import'	             => 'boolString',
-		'can_access_sql_manager'         => 'boolString'
+		'can_access_sql_manager'         => 'boolString',
+		'can_admin_channels'             => 'boolString'
 	);
 
 
@@ -304,6 +305,7 @@ class MemberGroup extends Model {
 	protected $can_access_translate;
 	protected $can_access_import;
 	protected $can_access_sql_manager;
+	protected $can_admin_channels;
 
 	/**
 	 * Ensure group ID is set for new records

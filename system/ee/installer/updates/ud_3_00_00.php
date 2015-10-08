@@ -978,7 +978,6 @@ class Updater {
 			'can_access_modules',
 			'can_access_plugins',
 			'can_access_content',
-			'can_admin_channels',
 			'can_admin_members',
 			'can_admin_templates',
 			'can_access_admin',
