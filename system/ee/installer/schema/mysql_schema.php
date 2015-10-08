@@ -1558,15 +1558,13 @@ class EE_Schema {
 				'can_send_private_messages'      => 'y',
 				'can_attach_in_private_messages' => 'y',
 				'can_send_bulletins'             => 'y',
-				`can_access_translate`           => 'y',
-				`can_access_import`              => 'y',
-				`can_access_sql_manager`         => 'y',
 				'include_in_authorlist'          => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(
 				'group_title'                    => 'Banned',
 				'group_id'                       => 2,
+				'can_access_cp'                  => 'n',
 				'can_view_online_system'         => 'n',
 				'can_search'                     => 'n',
 				'can_post_comments'              => 'n',
@@ -1576,16 +1574,19 @@ class EE_Schema {
 			array(
 				'group_title'                    => 'Guests',
 				'group_id'                       => 3,
+				'can_access_cp'                  => 'n',
 				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Pending',
 				'group_id'                       => 4,
+				'can_access_cp'                  => 'n',
 				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Members',
 				'group_id'                       => 5,
+				'can_access_cp'                  => 'n',
 				'can_email_from_profile'         => 'y',
 				'can_view_profiles'              => 'y',
 				'can_edit_html_buttons'          => 'y',
