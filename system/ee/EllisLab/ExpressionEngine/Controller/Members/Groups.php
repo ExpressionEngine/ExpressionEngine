@@ -1138,6 +1138,16 @@ class Groups extends Members\Members {
 				),
 				'addons' => array(
 					array(
+						'title' => 'can_access_addons',
+						'desc' => 'can_access_addons_desc',
+						'fields' => array(
+							'can_access_addons' => array(
+								'type' => 'yes_no',
+								'value' => element('can_access_addons', $values)
+							)
+						)
+					),
+					array(
 						'title' => 'can_admin_modules',
 						'desc' => 'can_admin_modules_desc',
 						'caution' => TRUE,
@@ -1191,7 +1201,6 @@ class Groups extends Members\Members {
 							'access_settings' => array(
 								'type' => 'checkbox',
 								'choices' => array(
-									'can_access_addons' => lang('can_access_addons'),
 									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
 									'can_access_design' => lang('can_access_design'),
 									'can_access_members' => lang('can_access_members'),
