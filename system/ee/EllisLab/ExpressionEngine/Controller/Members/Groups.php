@@ -982,7 +982,22 @@ class Groups extends Members\Members {
 						)
 					)
 				),
-				'content' => array(
+				'file_manager' => array(
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_file_manager',
+							'desc' => 'file_manager_desc',
+							'fields' => array(
+								'can_access_files' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_files', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_files'
+									)
+								)
+							)
+						),
 					array(
 						'title' => 'file_upload_directories',
 						'desc' => 'allowed_actions_desc',
@@ -1004,7 +1019,6 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'files' => array(
 								'choices' => array(
-									'can_access_files' => lang('can_access_files'),
 									'can_upload_new_files' => lang('upload_new_files'),
 									'can_edit_files' => lang('edit_files'),
 									'can_delete_files' => lang('delete_files'),
@@ -1026,9 +1040,10 @@ class Groups extends Members\Members {
 								),
 								'type' => 'checkbox',
 								'value' => element('rte_toolsets', $values)
+								),
 							)
 						)
-					),
+					)
 				),
 				'member_groups' => array(
 					array(
