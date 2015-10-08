@@ -71,9 +71,9 @@ class MemberGroup extends Model {
 		'include_in_authorlist'          => 'boolString',
 		'include_in_memberlist'          => 'boolString',
 		'include_in_mailinglist'         => 'boolString',
-		'can_upload_new_assets'          => 'boolString',
-		'can_edit_assets'                => 'boolString',
-		'can_delete_assets'              => 'boolString',
+		'can_upload_new_files'          => 'boolString',
+		'can_edit_files'                => 'boolString',
+		'can_delete_files'              => 'boolString',
 		'can_upload_new_toolsets'        => 'boolString',
 		'can_edit_toolsets'              => 'boolString',
 		'can_delete_toolsets'            => 'boolString',
@@ -263,9 +263,9 @@ class MemberGroup extends Model {
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
-	protected $can_upload_new_assets;
-	protected $can_edit_assets;
-	protected $can_delete_assets;
+	protected $can_upload_new_files;
+	protected $can_edit_files;
+	protected $can_delete_files;
 	protected $can_upload_new_toolsets;
 	protected $can_edit_toolsets;
 	protected $can_delete_toolsets;

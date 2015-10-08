@@ -69,7 +69,7 @@ class File extends AbstractFilesController {
 
 	public function edit($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_assets'))
+		if ( ! ee()->cp->allowed_group('can_edit_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -206,7 +206,7 @@ class File extends AbstractFilesController {
 
 	public function crop($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_assets'))
+		if ( ! ee()->cp->allowed_group('can_edit_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

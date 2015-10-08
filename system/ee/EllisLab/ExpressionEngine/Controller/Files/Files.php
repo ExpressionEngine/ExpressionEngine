@@ -191,7 +191,7 @@ class Files extends AbstractFilesController {
 
 	public function upload($dir_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_assets'))
+		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -513,7 +513,7 @@ class Files extends AbstractFilesController {
 
 	private function remove($file_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_assets'))
+		if ( ! ee()->cp->allowed_group('can_delete_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

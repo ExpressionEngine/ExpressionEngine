@@ -771,9 +771,9 @@ class Updater {
 		$permissions = array(
 			'can_create_entries',
 			'can_edit_self_entries',
-			'can_upload_new_assets',
-			'can_edit_assets',
-			'can_delete_assets',
+			'can_upload_new_files',
+			'can_edit_files',
+			'can_delete_files',
 			'can_upload_new_toolsets',
 			'can_edit_toolsets',
 			'can_delete_toolsets',
@@ -852,9 +852,9 @@ class Updater {
 			ee()->db->update(
 				'member_groups',
 				array(
-					'can_upload_new_assets' => 'y',
-					'can_edit_assets' => 'y',
-					'can_delete_assets' => 'y',
+					'can_upload_new_files' => 'y',
+					'can_edit_files' => 'y',
+					'can_delete_files' => 'y',
 					'can_upload_new_toolsets' => 'y',
 					'can_edit_toolsets' => 'y',
 					'can_delete_toolsets' => 'y',

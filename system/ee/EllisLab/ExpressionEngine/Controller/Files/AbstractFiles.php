@@ -41,9 +41,9 @@ abstract class AbstractFiles extends CP_Controller {
 		parent::__construct();
 
 		if ( ! ee()->cp->allowed_group_any(
-			'can_upload_new_assets',
-			'can_edit_assets',
-			'can_delete_assets',
+			'can_upload_new_files',
+			'can_edit_files',
+			'can_delete_files',
 			'can_create_upload_directories',
 			'can_edit_upload_directories',
 			'can_delete_upload_directories'
@@ -192,7 +192,7 @@ abstract class AbstractFiles extends CP_Controller {
 				),
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_assets'))
+			if ( ! ee()->cp->allowed_group('can_edit_files'))
 			{
 				unset($toolbar['view']);
 				unset($toolbar['crop']);

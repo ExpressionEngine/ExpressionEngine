@@ -1004,9 +1004,10 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'assets' => array(
 								'choices' => array(
-									'can_upload_new_assets' => lang('upload_new_assets'),
-									'can_edit_assets' => lang('edit_assets'),
-									'can_delete_assets' => lang('delete_assets'),
+									'can_access_files' => lang('can_access_files'),
+									'can_upload_new_files' => lang('upload_new_files'),
+									'can_edit_files' => lang('edit_files'),
+									'can_delete_files' => lang('delete_files'),
 								),
 								'type' => 'checkbox',
 								'value' => element('assets', $values)
