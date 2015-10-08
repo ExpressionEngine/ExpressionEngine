@@ -33,12 +33,6 @@ $(document).ready(function() {
 			elements.find(':radio').each(function() {
 				$(this).prop('checked', $(this).attr('checked') == 'checked');
 			});
-
-			// Add 'last' class to the last fieldset of each group, and
-			// the last fieldset to come before a new section heading
-			// within a group
-			$('h2[data-group="'+data+'"]').prev('*[data-group="'+data+'"]').addClass('last');
-			elements.last().addClass('last');
 		});
 	});
 
@@ -71,6 +65,10 @@ EE.cp.form_group_toggle = function(element) {
 		} else {
 			group.prev('fieldset:visible').addClass('last');
 		}
+
+		$('h2').each(function() {
+			$(this).prevAll('fieldset:visible').first().addClass('last');
+		});
 	});
 
 	// This all kind of came about from needing to preserve radio button
