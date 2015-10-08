@@ -1049,12 +1049,12 @@ class Groups extends Members\Members {
 				),
 				'design' => array(
 					array(
-						'title' => 'can_admin_design',
-						'desc' => 'can_admin_design_desc',
+						'title' => 'can_access_design',
+						'desc' => 'can_access_design_desc',
 						'fields' => array(
-							'can_admin_design' => array(
+							'can_access_design' => array(
 								'type' => 'yes_no',
-								'value' => element('can_admin_design', $values)
+								'value' => element('can_access_design', $values)
 							)
 						)
 					),
@@ -1202,7 +1202,7 @@ class Groups extends Members\Members {
 								'type' => 'checkbox',
 								'choices' => array(
 									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
-									'can_access_design' => lang('can_access_design'),
+									'can_admin_design' => lang('can_admin_design'),
 									'can_access_members' => lang('can_access_members'),
 									'can_access_security_settings' => lang('can_access_security_settings'),
 								),
