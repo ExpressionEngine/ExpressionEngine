@@ -52,6 +52,10 @@ EE.cp.form_group_toggle = function(element) {
 	var config = $(element).data('groupToggle'),
 		value  = $(element).val();
 
+	if ($(element).is(':hidden')) {
+		return;
+	}
+
 	// First, disable all inputs
 	$.each(config, function (key, data) {
 		toggleInputs($('*[data-group="'+data+'"]'), key, false);
@@ -61,6 +65,9 @@ EE.cp.form_group_toggle = function(element) {
 	$.each(config, function (key, data) {
 		var group = $('*[data-group="'+data+'"]');
 		group.toggle(key == value);
+
+		// if this is a nested one
+		group.filter('h2').nextUntil('h2, .form-ctrls').toggle(key == value);
 
 		if (key == value) {
 			toggleInputs(group, key, true);
