@@ -52,4 +52,9 @@ $lang = array(
 	'spam_trap_approved' => '<b>%s</b> items in the Spam Trap have been approved and marked as ham',
 	'spam_settings_updated' => 'Your Spam settings have been saved',
 	'success' => 'Success',
+	'update_training' => 'Update Training',
+	'update_training_desc' => 'This will download up-to-date training data from EllisLab and update your database.',
+	'updating_vocabulary' => 'Updating Vocabulary',
+	'updating_parameters' => 'Updating Parameters',
+	'training_finished' => 'Training Finished',
 );
