@@ -100,7 +100,26 @@ class Settings extends CP_Controller {
 	 */
 	public function index()
 	{
-		ee()->functions->redirect(ee('CP/URL')->make('settings/general'));
+		$landing = ee('CP/URL')->make('settings');
+
+		// Redirect to the first section they have permission
+			$settings_options = array(
+				'can_access_sys_prefs' => ee('CP/URL')->make('settings/general'),
+				'can_admin_design' => ee('CP/URL')->make('settings/content-design'),
+				'can_access_members' => ee('CP/URL')->make('settings/members'),
+				'can_access_security_settings' => ee('CP/URL')->make('settings/security-privacy')
+				);
+
+			foreach ($settings_options as $allow => $link)
+			{
+				if (ee()->cp->allowed_group($allow))
+				{
+					$landing = $link;
+					break;
+				}
+			}
+
+		ee()->functions->redirect($landing);
 	}
 
 	/**

@@ -45,7 +45,7 @@
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-						<a href="<?=ee('CP/URL', 'settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
+						<a href="<?=ee('CP/URL', 'settings')?>" class="no-name"><?=lang('name_your_site')?></a>
 					<?php else: ?>
 						<a href="<?=ee()->config->item('site_url')?>" rel="external"><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
@@ -142,7 +142,7 @@
 						</div>
 					</li>
 					<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
-					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
+					<li class="settings"><a href="<?=ee('CP/URL', 'settings')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 					<?php endif; ?>
 				</ul>
 			</nav>
