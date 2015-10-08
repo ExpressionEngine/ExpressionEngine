@@ -17,6 +17,15 @@
 $(document).ready(function() {
 
 	$('*[data-group-toggle]').each(function(index, el) {
+
+		if ($(this).is(':radio'))
+		{
+			if ( ! $(this).is(':checked'))
+			{
+				return;
+			}
+		}
+
 		EE.cp.form_group_toggle(this);
 
 		var config = $(this).data('groupToggle');
