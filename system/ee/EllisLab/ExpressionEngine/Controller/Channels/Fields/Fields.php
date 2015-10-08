@@ -254,7 +254,13 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
-		$field->field_type = $_POST['field_type'];
+
+		if ($field->isNew())
+		{
+			// This field is disabled and not present in POST when editing and existing field
+			$field->field_type = $_POST['field_type'];
+		}
+
 		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
