@@ -889,66 +889,87 @@ class Groups extends Members\Members {
 					)
 				),
 				'channels' => array(
-					array(
-						'title' => 'channels',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_permissions' => array(
-								'choices' => array(
-									'can_create_channels' => lang('create_channels'),
-									'can_edit_channels' => lang('edit_channels'),
-									'can_delete_channels' => lang('delete_channels')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_permissions', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_admin_channels',
+							'desc' => 'can_admin_channels_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_admin_channels' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_channels', $values),
+									'group_toggle' => array(
+										'y' => 'can_admin_channels'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'channels',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_permissions' => array(
+									'choices' => array(
+										'can_create_channels' => lang('create_channels'),
+										'can_edit_channels' => lang('edit_channels'),
+										'can_delete_channels' => lang('delete_channels')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'channel_fields',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_field_permissions' => array(
+									'choices' => array(
+										'can_create_channel_fields' => lang('create_channel_fields'),
+										'can_edit_channel_fields' => lang('edit_channel_fields'),
+										'can_delete_channel_fields' => lang('delete_channel_fields')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_field_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'channel_categories',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_category_permissions' => array(
+									'choices' => array(
+										'can_create_categories' => lang('create_categories'),
+										'can_edit_categories' => lang('edit_categories'),
+										'can_delete_categories' => lang('delete_categories')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_category_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'channel_statuses',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_status_permissions' => array(
+									'choices' => array(
+										'can_create_statuses' => lang('create_statuses'),
+										'can_edit_statuses' => lang('edit_statuses'),
+										'can_delete_statuses' => lang('delete_statuses')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_status_permissions', $values)
+								)
 							)
 						)
-					),
-					array(
-						'title' => 'channel_fields',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_field_permissions' => array(
-								'choices' => array(
-									'can_create_channel_fields' => lang('create_channel_fields'),
-									'can_edit_channel_fields' => lang('edit_channel_fields'),
-									'can_delete_channel_fields' => lang('delete_channel_fields')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_field_permissions', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'channel_categories',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_category_permissions' => array(
-								'choices' => array(
-									'can_create_categories' => lang('create_categories'),
-									'can_edit_categories' => lang('edit_categories'),
-									'can_delete_categories' => lang('delete_categories')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_category_permissions', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'channel_statuses',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_status_permissions' => array(
-								'choices' => array(
-									'can_create_statuses' => lang('create_statuses'),
-									'can_edit_statuses' => lang('edit_statuses'),
-									'can_delete_statuses' => lang('delete_statuses')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_status_permissions', $values)
-							)
-						)
-					),
+					)
 				),
 				'channel_entries_management' => array(
 					array(
@@ -1001,6 +1022,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'file_upload_directories',
 						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_files',
 						'fields' => array(
 							'file_upload_directories' => array(
 								'choices' => array(
@@ -1016,6 +1038,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'files',
 						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_files',
 						'fields' => array(
 							'files' => array(
 								'choices' => array(
@@ -1031,6 +1054,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'rte_toolsets',
 						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_files',
 						'fields' => array(
 							'rte_toolsets' => array(
 								'choices' => array(
@@ -1238,7 +1262,7 @@ class Groups extends Members\Members {
 									'type' => 'yes_no',
 									'value' => element('can_access_utilities', $values),
 									'group_toggle' => array(
-										'y' => 'can_access_addons'
+										'y' => 'can_access_utilities'
 									)
 								)
 							)
@@ -1246,6 +1270,7 @@ class Groups extends Members\Members {
 						array(
 							'title' => 'utilities_section',
 							'desc' => 'utilities_section_desc',
+							'group' => 'can_access_utilities',
 							'caution' => TRUE,
 							'fields' => array(
 								'access_tools' => array(
