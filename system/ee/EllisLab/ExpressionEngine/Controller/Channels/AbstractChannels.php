@@ -48,7 +48,6 @@ abstract class AbstractChannels extends CP_Controller {
 		}
 		else
 		{
-
 			if ( ! $this->cp->allowed_group('can_admin_channels'))
 			{
 				show_error(lang('unauthorized_access'));
@@ -102,28 +101,49 @@ abstract class AbstractChannels extends CP_Controller {
 			$header->isActive();
 		}
 
-		$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
-
-		if ($active == 'field')
+		if (ee()->cp->allowed_group_any(
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'))
+				->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
+
+			if ($active == 'field')
+			{
+				$header->isActive();
+			}
 		}
 
-		$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
-
-		if ($active == 'category')
+		if (ee()->cp->allowed_group_any(
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'))
+				->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
+
+			if ($active == 'category')
+			{
+				$header->isActive();
+			}
 		}
 
-		$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
-
-		if ($active == 'status')
+		if (ee()->cp->allowed_group_any(
+			'can_create_statuses',
+			'can_delete_statuses',
+			'can_edit_statuses'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'))
+				->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
+
+			if ($active == 'status')
+			{
+				$header->isActive();
+			}
 		}
 	}
 
