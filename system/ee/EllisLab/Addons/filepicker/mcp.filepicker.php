@@ -72,6 +72,12 @@ class Filepicker_mcp {
 				if ($dir->server_path == ee()->config->item('avatar_path'))
 				{
 					$files = $dir->server_path->files;
+
+					// Only show system avatars
+					$files = $files->filter(function($file) use($dir) {
+						$path = $dir->server_path . $file->file_name;
+						return ! is_writable($path);
+					});
 				}
 				else
 				{
@@ -83,7 +89,7 @@ class Filepicker_mcp {
 		}
 
 		// Filter out any files that are no longer on disk
-		$files->filter(function($file) { return $file->exists(); });
+		$files = $files->filter(function($file) { return $file->exists(); });
 
 		$base_url = ee('CP/URL', $this->base_url);
 
