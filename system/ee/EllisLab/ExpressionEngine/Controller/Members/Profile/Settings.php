@@ -34,6 +34,16 @@ class Settings extends Profile {
 
 	private $base_url = 'members/profile/settings';
 
+	protected function permissionCheck()
+	{
+		$id = ee()->input->get('id');
+
+		if ($id != $this->session->userdata['member_id'] && ! empty($id))
+		{
+			parent::permissionCheck();
+		}
+	}
+
 	/**
 	 * Personal Settings
 	 */

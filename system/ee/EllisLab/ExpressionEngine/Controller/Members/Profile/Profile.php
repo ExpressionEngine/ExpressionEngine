@@ -46,14 +46,11 @@ class Profile extends CP_Controller {
 		ee()->lang->loadfile('settings');
 		ee()->lang->loadfile('myaccount');
 
-		if ( ! $this->cp->allowed_group('can_access_members'))
+		// check permissions everywhere except for this landing page controller,
+		// which redirects in its index function
+		if (ee()->uri->segments != array(1 => 'cp', 2 => 'members', 3 => 'profile'))
 		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_edit_members'))
-		{
-			show_error(lang('unauthorized_access'));
+			$this->permissionCheck();
 		}
 
 		$id = ee()->input->get('id');
@@ -86,6 +83,19 @@ class Profile extends CP_Controller {
 		ee()->view->header = array(
 			'title' => sprintf(lang('profile_header'), $this->member->username)
 		);
+	}
+
+	protected function permissionCheck()
+	{
+		if ( ! $this->cp->allowed_group('can_access_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ( ! $this->cp->allowed_group('can_edit_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 	}
 
 	protected function generateSidebar($active = NULL)

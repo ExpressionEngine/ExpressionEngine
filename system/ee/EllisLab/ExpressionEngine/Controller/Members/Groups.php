@@ -51,6 +51,11 @@ class Groups extends Members\Members {
 	{
 		parent::__construct();
 
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->base_url = ee('CP/URL')->make('members/groups');
 		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
