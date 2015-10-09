@@ -727,13 +727,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_post_comments' => array(
 								'type' => 'yes_no',
-								'value' => element('can_post_comments', $values)
+								'value' => element('can_post_comments', $values),
+								'group_toggle' => array(
+									'y' => 'can_post_comments'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'exclude_from_moderation',
 						'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
+						'group' => 'can_post_comments',
 						'fields' => array(
 							'exclude_from_moderation' => array(
 								'type' => 'yes_no',
@@ -1321,14 +1325,27 @@ class Groups extends Members\Members {
 					'group' => 'can_access_cp',
 					'settings' => array(
 						array(
+							'title' => 'can_access_sys_prefs',
+							'desc' => 'can_access_sys_prefs_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_access_sys_prefs' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_logs', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_sys_prefs'
+									)
+								)
+							)
+						),
+						array(
 							'title' => 'access_settings',
 							'desc' => 'access_settings_desc',
-							'caution' => TRUE,
+							'group' => 'can_access_sys_prefs',
 							'fields' => array(
 								'access_settings' => array(
 									'type' => 'checkbox',
 									'choices' => array(
-										'can_access_sys_prefs' => lang('can_access_sys_prefs'),
 										'can_admin_design' => lang('can_admin_design'),
 										'can_access_members' => lang('can_access_members'),
 										'can_access_security_settings' => lang('can_access_security_settings'),
