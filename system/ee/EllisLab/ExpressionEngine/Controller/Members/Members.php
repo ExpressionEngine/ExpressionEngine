@@ -864,7 +864,7 @@ class Members extends CP_Controller {
 	{
 		$search_button_value = ($search_button_value) ?: lang('search_members_button');
 
-		ee()->view->header = array(
+		$header = array(
 			'title' => lang('member_manager'),
 			'toolbar_items' => array(
 				'settings' => array(
@@ -875,6 +875,13 @@ class Members extends CP_Controller {
 			'form_url' => $form_url,
 			'search_button_value' => $search_button_value
 		);
+
+		if ( ! ee()->cp->allowed_group('can_access_settings'))
+		{
+			unset($header['toolbar_items']);
+		}
+
+		ee()->view->header = $header;
 	}
 }
 // END CLASS
