@@ -55,7 +55,6 @@ class MemberGroup extends Model {
 		'can_edit_all_comments'          => 'boolString',
 		'can_delete_all_comments'        => 'boolString',
 		'can_moderate_comments'          => 'boolString',
-		'can_send_email'                 => 'boolString',
 		'can_send_cached_email'          => 'boolString',
 		'can_email_member_groups'        => 'boolString',
 		'can_email_from_profile'         => 'boolString',
@@ -241,7 +240,6 @@ class MemberGroup extends Model {
 	protected $can_edit_all_comments;
 	protected $can_delete_all_comments;
 	protected $can_moderate_comments;
-	protected $can_send_email;
 	protected $can_send_cached_email;
 	protected $can_email_member_groups;
 	protected $can_email_from_profile;

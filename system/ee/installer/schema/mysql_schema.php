@@ -430,7 +430,6 @@ class EE_Schema {
 			`can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
 			`can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_send_email` char(1) NOT NULL DEFAULT 'n',
 			`can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
 			`can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
 			`can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
