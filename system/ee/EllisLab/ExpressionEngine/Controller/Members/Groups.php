@@ -1074,12 +1074,26 @@ class Groups extends Members\Members {
 						)
 					)
 				),
-				'member_groups' => array(
+				'members' => array(
 					'group' => 'can_access_cp',
 					'settings' => array(
 						array(
-							'title' => 'allowed_actions',
+							'title' => 'can_access_members',
+							'desc' => 'can_access_members_desc',
+							'fields' => array(
+								'can_access_members' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_members', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_members'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'member_groups',
 							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_members',
 							'caution' => TRUE,
 							'fields' => array(
 								'member_group_actions' => array(
@@ -1092,40 +1106,26 @@ class Groups extends Members\Members {
 									'value' => element('member_group_actions', $values)
 								)
 							)
-						)
-					)
-				),
-				'members' => array(
-					array(
-						'title' => 'can_access_members',
-						'desc' => 'can_access_members_desc',
-						'fields' => array(
-							'can_access_files' => array(
-								'type' => 'yes_no',
-								'value' => element('can_access_members', $values),
-								'group_toggle' => array(
-									'y' => 'can_access_members'
+						),
+						array(
+							'title' => 'members',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_members',
+							'caution' => TRUE,
+							'fields' => array(
+								'member_actions' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_create_members' => lang('create_members'),
+										'can_edit_members' => lang('edit_members'),
+										'can_delete_members' => lang('can_delete_members'),
+										'can_ban_users' => lang('can_ban_users'),
+										'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
+										'can_email_from_profile' => lang('can_email_from_profile'),
+										'can_edit_html_buttons' => lang('can_edit_html_buttons')
+									),
+									'value' => element('member_actions', $values)
 								)
-							)
-						)
-					),
-					array(
-						'title' => 'allowed_actions',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'member_actions' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_create_members' => lang('create_members'),
-									'can_edit_members' => lang('edit_members'),
-									'can_delete_members' => lang('can_delete_members'),
-									'can_ban_users' => lang('can_ban_users'),
-									'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
-									'can_email_from_profile' => lang('can_email_from_profile'),
-									'can_edit_html_buttons' => lang('can_edit_html_buttons')
-								),
-								'value' => element('member_actions', $values)
 							)
 						)
 					)
@@ -1349,7 +1349,6 @@ class Groups extends Members\Members {
 									'type' => 'checkbox',
 									'choices' => array(
 										'can_admin_design' => lang('can_admin_design'),
-										'can_access_members' => lang('can_access_members'),
 										'can_access_security_settings' => lang('can_access_security_settings'),
 									),
 									'value' => element('access_settings', $values)
