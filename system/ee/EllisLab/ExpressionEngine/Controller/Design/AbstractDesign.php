@@ -77,7 +77,13 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
-			$template_groups->filter('group_id', 'IN', array_keys(ee()->session->userdata['assigned_template_groups']));
+			$assigned_groups =  array_keys(ee()->session->userdata['assigned_template_groups']);
+			$template_groups->filter('group_id', 'IN', $assigned_groups);
+
+			if (empty($assigned_groups))
+			{
+				$template_groups->markAsFutile();
+			}
 		}
 
 		foreach ($template_groups->all() as $group)
