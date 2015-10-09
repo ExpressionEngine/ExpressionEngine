@@ -93,20 +93,23 @@ class Members extends CP_Controller {
 			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/bans'));
 		}
 
-		$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'))
-			->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
-
-		$item = $header->addBasicList()
-			->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
-
-		if ($active == 'fields')
+		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			$item->isActive();
-		}
+			$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'))
+				->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
 
-		if ($active == 'groups')
-		{
-			$header->isActive();
+			$item = $header->addBasicList()
+				->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
+
+			if ($active == 'fields')
+			{
+				$item->isActive();
+			}
+
+			if ($active == 'groups')
+			{
+				$header->isActive();
+			}
 		}
 	}
 
