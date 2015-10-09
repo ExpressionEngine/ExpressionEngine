@@ -2,6 +2,7 @@
 
 use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\Spam\Service\Training;
+use EllisLab\Addons\Spam\Service\Update;
 
 return array(
 	'author'      => 'EllisLab',
@@ -17,6 +18,7 @@ return array(
 			$kernel = empty($kernel) ? 'default' : $kernel;
 			return new Training($kernel);
 		},
+		'Update' => 'Service\Update',
 		'Classifier' => 'Library\Classifier',
 		'Collection' => 'Library\Collection',
 		'Distribution' => 'Library\Distribution',
