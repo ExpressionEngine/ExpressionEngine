@@ -48,9 +48,6 @@
 						success: function(data) {
 							if ('success' in data) {
 								updateVocabulary(link);
-								updateParameters(link);
-								$(link).toggleClass('work');
-								$(link).html(data.finished);
 							}
 						},
 						dataType: 'json'
@@ -66,11 +63,12 @@ function updateVocabulary(link) {
 	var path = $(link).attr('href');
 	$.ajax({
 		url: path + "/updatevocab",
-		async: false,
 		success: function(data) {
 			if (data.status !== 'finished') {
 				$(link).html(data.message);
 				updateVocabulary(link);
+			} else {
+				updateParameters(link);
 			}
 		},
 		dataType: 'json'
@@ -81,11 +79,13 @@ function updateParameters(link) {
 	var path = $(link).attr('href');
 	$.ajax({
 		url: path + "/updateparams",
-		async: false,
 		success: function(data) {
 			if (data.status !== 'finished') {
 				$(link).html(data.message);
 				updateParameters(link);
+			} else {
+				$(link).html(data.finished);
+				$(link).toggleClass('work');
 			}
 		},
 		dataType: 'json'
