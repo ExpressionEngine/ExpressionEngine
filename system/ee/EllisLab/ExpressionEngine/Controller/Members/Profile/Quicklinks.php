@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Quicklinks extends Profile {
+class Quicklinks extends Settings {
 
 	private $base_url = 'members/profile/quicklinks';
 

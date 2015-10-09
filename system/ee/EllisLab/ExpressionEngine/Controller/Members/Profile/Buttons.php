@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Buttons extends Profile {
+class Buttons extends Settings {
 
 	private $base_url = 'members/profile/buttons';
 
@@ -39,6 +39,11 @@ class Buttons extends Profile {
 		parent::__construct();
 
 		ee()->lang->load('admin_content');
+
+		if ( ! $this->cp->allowed_group('can_edit_html_buttons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 		// load the predefined buttons
 		include_once(APPPATH.'config/html_buttons.php');

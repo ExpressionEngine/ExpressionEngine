@@ -87,12 +87,7 @@ class Profile extends CP_Controller {
 
 	protected function permissionCheck()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_edit_members'))
+		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -119,15 +114,26 @@ class Profile extends CP_Controller {
 			$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
 		}
 
-		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL')->make('members/profile/publishing', $this->query_string))
+		$publishing_link = NULL;
+
+		if ($this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		{
+			$publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
+		}
+
+		$list = $sidebar->addHeader(lang('publishing_settings'), $publishing_link)
 			->addBasicList();
 
-		$url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
-		$item = $list->addItem(lang('html_buttons'), $url);
-		if ($url->matchesTheRequestedURI())
+		if ($this->cp->allowed_group('can_edit_html_buttons'))
 		{
-			$item->isActive();
+			$url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
+			$item = $list->addItem(lang('html_buttons'), $url);
+			if ($url->matchesTheRequestedURI())
+			{
+				$item->isActive();
+			}
 		}
+
 
 		$url = ee('CP/URL')->make('members/profile/quicklinks', $this->query_string);
 		$item = $list->addItem(lang('quick_links'), $url);

@@ -29,7 +29,7 @@ use CP_Controller;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Date extends Profile {
+class Date extends Settings {
 
 	private $base_url = 'members/profile/date';
 
