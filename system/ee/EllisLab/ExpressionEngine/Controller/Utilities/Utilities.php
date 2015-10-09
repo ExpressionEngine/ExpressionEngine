@@ -39,6 +39,11 @@ class Utilities extends CP_Controller {
 	{
 		parent::__construct();
 
+		if ( ! $this->cp->allowed_group('can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->lang->loadfile('utilities');
 
 		$this->generateSidebar();

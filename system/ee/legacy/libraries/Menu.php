@@ -146,7 +146,8 @@ class EE_Menu {
 	{
 		$menu = array();
 
-		if (ee()->cp->allowed_group_any(
+		if (ee()->cp->allowed_group('can_admin_channels') &&
+			ee()->cp->allowed_group_any(
 			'can_create_channels',
 			'can_edit_channels',
 			'can_delete_channels',

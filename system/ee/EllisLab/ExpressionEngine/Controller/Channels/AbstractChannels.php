@@ -46,22 +46,30 @@ abstract class AbstractChannels extends CP_Controller {
 				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! ee()->cp->allowed_group_any(
-			'can_create_channels',
-			'can_edit_channels',
-			'can_delete_channels',
-			'can_create_channel_fields',
-			'can_edit_channel_fields',
-			'can_delete_channel_fields',
-			'can_create_statuses',
-			'can_delete_statuses',
-			'can_edit_statuses',
-			'can_create_categories',
-			'can_edit_categories',
-			'can_delete_categories'
-		))
+		else
 		{
-			show_error(lang('unauthorized_access'));
+
+			if ( ! $this->cp->allowed_group('can_admin_channels'))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+			elseif ( ! ee()->cp->allowed_group_any(
+				'can_create_channels',
+				'can_edit_channels',
+				'can_delete_channels',
+				'can_create_channel_fields',
+				'can_edit_channel_fields',
+				'can_delete_channel_fields',
+				'can_create_statuses',
+				'can_delete_statuses',
+				'can_edit_statuses',
+				'can_create_categories',
+				'can_edit_categories',
+				'can_delete_categories'
+				))
+			{
+				show_error(lang('unauthorized_access'));
+			}
 		}
 
 		ee()->lang->loadfile('content');
