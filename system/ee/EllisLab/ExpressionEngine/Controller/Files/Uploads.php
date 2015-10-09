@@ -681,10 +681,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function sync($upload_id = NULL)
 	{
-		if ( ! ee()->cp->allowed_group_any(
-			'can_upload_new_assets',
-			'can_edit_assets'
-		))
+		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -702,6 +699,11 @@ class Uploads extends AbstractFilesController {
 			ee()->session->userdata('group_id'),
 			$upload_id
 		);
+
+		if (empty($upload_destination))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 		// Get a listing of raw files in the directory
 		ee()->load->library('filemanager');
