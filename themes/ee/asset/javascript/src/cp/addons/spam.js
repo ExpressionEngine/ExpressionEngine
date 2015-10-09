@@ -44,7 +44,7 @@
 				if ('success' in data) {
 					$(link).html(data.success);
 					$.ajax({
-						url: path + "/prepare",
+						url: path + "&method=prepare",
 						success: function(data) {
 							if ('success' in data) {
 								updateVocabulary(link);
