@@ -2,8 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
+use EllisLab\ExpressionEngine\Service\Model\Query\Result;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -143,7 +143,7 @@ class Builder {
 
 		if ($this->isFutile())
 		{
-			return new Collection();
+			return new Result($this, array(), array(), array());
 		}
 
 		return $this->datastore
