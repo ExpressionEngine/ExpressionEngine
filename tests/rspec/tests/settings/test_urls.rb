@@ -80,40 +80,34 @@ feature 'URL and Path Settings' do
     @page.theme_folder_path.trigger 'blur'
     @page.wait_for_error_message_count(4)
 
-    @page.profile_trigger.set ''
-    @page.profile_trigger.trigger 'blur'
-    @page.wait_for_error_message_count(5)
-
     should_have_form_errors(@page)
     should_have_error_text(@page.site_url, field_required)
     should_have_error_text(@page.cp_url, field_required)
     should_have_error_text(@page.theme_folder_url, field_required)
     should_have_error_text(@page.theme_folder_path, field_required)
-    should_have_error_text(@page.profile_trigger, field_required)
 
     @page.theme_folder_path.set '/'
     # When a text field is invalid, shouldn't need to blur
     # @page.theme_folder_path.trigger 'blur'
-    @page.wait_for_error_message_count(4)
+    @page.wait_for_error_message_count(3)
     # Make sure validation timer is still bound to field
     @page.theme_folder_path.set ''
-    @page.wait_for_error_message_count(5)
-    @page.theme_folder_path.set '/'
     @page.wait_for_error_message_count(4)
+    @page.theme_folder_path.set '/'
+    @page.wait_for_error_message_count(3)
     # Timer should be unbound on blur
     @page.theme_folder_path.trigger 'blur'
 
     # Invalid theme path
     @page.theme_folder_path.set '/dfsdfsdfd'
     @page.theme_folder_path.trigger 'blur'
-    @page.wait_for_error_message_count(5)
+    @page.wait_for_error_message_count(4)
 
     should_have_form_errors(@page)
     should_have_error_text(@page.site_url, field_required)
     should_have_error_text(@page.cp_url, field_required)
     should_have_error_text(@page.theme_folder_url, field_required)
     should_have_error_text(@page.theme_folder_path, theme_path_invalid)
-    should_have_error_text(@page.profile_trigger, field_required)
   end
 
   it 'should reject XSS' do

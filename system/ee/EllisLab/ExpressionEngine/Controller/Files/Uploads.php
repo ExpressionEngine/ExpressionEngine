@@ -681,6 +681,14 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function sync($upload_id = NULL)
 	{
+		if ( ! ee()->cp->allowed_group_any(
+			'can_upload_new_assets',
+			'can_edit_assets'
+		))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if (empty($upload_id))
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('files/uploads'));
