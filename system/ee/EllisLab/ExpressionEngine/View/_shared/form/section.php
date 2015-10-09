@@ -12,11 +12,11 @@ if (isset($settings['group']))
 }?>
 
 <?php if (is_string($name)): ?>
-	<h2<?php if ($group): ?> data-group="<?=$group?>"<?php endif ?>><?=lang($name)?></h2>
+	<h2<?php if ($group): ?> data-section-group="<?=$group?>"<?php endif ?>><?=lang($name)?></h2>
 <?php endif ?>
 <?php
 foreach ($settings as $setting)
 {
-	$this->embed('ee:_shared/form/fieldset', array('setting' => $setting, 'group' => $group));
+	$this->embed('ee:_shared/form/fieldset', array('setting' => $setting, 'group' => FALSE));
 }
 ?>
