@@ -77,6 +77,13 @@ class Classifier {
 		// to calculcate the probability the source is spam
 		foreach($source as $feature => $freq)
 		{
+			if (empty($class[$feature]) || empty($other[$feature]))
+			{
+				// We might have more features then currently trained
+				// so we'll ignore them until retrained
+				continue;
+			}
+
 			$class_dist = $class[$feature];
 			$other_dist = $other[$feature];
 			$class_prob = $class_dist->probability($freq);

@@ -30,7 +30,7 @@ class Update {
 
 	public function download()
 	{
-		$location = 'localhost/spam.zip';
+		$location = 'https://ellislab.com/asset/file/spam.zip';
 		$compressed = ee('Curl')->get($location)->exec();
 
 		// Write the training data to a tmp file and return the file name
@@ -56,8 +56,8 @@ class Update {
 
 	public function prepare()
 	{
-		$prep = file_get_contents($this->path() . "training/prepare.sql");
-
+		$path = $this->path() . "training/prepare.sql";
+		$prep = file_get_contents($path);
 		ee()->db->query($prep);
 
 	}
