@@ -1024,52 +1024,36 @@ class Groups extends Members\Members {
 								)
 							)
 						),
-					array(
-						'title' => 'file_upload_directories',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_files',
-						'fields' => array(
-							'file_upload_directories' => array(
-								'choices' => array(
-									'can_create_upload_directories' => lang('create_upload_directories'),
-									'can_edit_upload_directories' => lang('edit_upload_directories'),
-									'can_delete_upload_directories' => lang('delete_upload_directories'),
+						array(
+							'title' => 'file_upload_directories',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_files',
+							'fields' => array(
+								'file_upload_directories' => array(
+									'choices' => array(
+										'can_create_upload_directories' => lang('create_upload_directories'),
+										'can_edit_upload_directories' => lang('edit_upload_directories'),
+										'can_delete_upload_directories' => lang('delete_upload_directories'),
+										),
+									'type' => 'checkbox',
+									'value' => element('file_upload_directories', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'files',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_files',
+							'fields' => array(
+								'files' => array(
+									'choices' => array(
+										'can_upload_new_files' => lang('upload_new_files'),
+										'can_edit_files' => lang('edit_files'),
+										'can_delete_files' => lang('delete_files'),
 									),
-								'type' => 'checkbox',
-								'value' => element('file_upload_directories', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'files',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_files',
-						'fields' => array(
-							'files' => array(
-								'choices' => array(
-									'can_upload_new_files' => lang('upload_new_files'),
-									'can_edit_files' => lang('edit_files'),
-									'can_delete_files' => lang('delete_files'),
-								),
-								'type' => 'checkbox',
-								'value' => element('files', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'rte_toolsets',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_files',
-						'fields' => array(
-							'rte_toolsets' => array(
-								'choices' => array(
-									'can_upload_new_toolsets' => lang('upload_new_toolsets'),
-									'can_edit_toolsets' => lang('edit_toolsets'),
-									'can_delete_toolsets' => lang('delete_toolsets')
-								),
-								'type' => 'checkbox',
-								'value' => element('rte_toolsets', $values)
-								),
+									'type' => 'checkbox',
+									'value' => element('files', $values)
+								)
 							)
 						)
 					)
@@ -1091,9 +1075,24 @@ class Groups extends Members\Members {
 							)
 						),
 						array(
+							'title' => 'can_admin_mbr_groups',
+							'desc' => 'can_admin_mbr_groups_desc',
+							'caution' => TRUE,
+							'group' => 'can_access_members',
+							'fields' => array(
+								'can_admin_mbr_groups' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_mbr_groups', $values),
+									'group_toggle' => array(
+										'y' => 'can_admin_mbr_groups'
+									)
+								)
+							)
+						),
+						array(
 							'title' => 'member_groups',
 							'desc' => 'allowed_actions_desc',
-							'group' => 'can_access_members',
+							'group' => 'can_admin_mbr_groups',
 							'caution' => TRUE,
 							'fields' => array(
 								'member_group_actions' => array(
@@ -1120,7 +1119,6 @@ class Groups extends Members\Members {
 										'can_edit_members' => lang('edit_members'),
 										'can_delete_members' => lang('can_delete_members'),
 										'can_ban_users' => lang('can_ban_users'),
-										'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
 										'can_email_from_profile' => lang('can_email_from_profile'),
 										'can_edit_html_buttons' => lang('can_edit_html_buttons')
 									),
@@ -1143,6 +1141,18 @@ class Groups extends Members\Members {
 									'group_toggle' => array(
 										'y' => 'can_access_design'
 									)
+								)
+							)
+						),
+						array(
+							'title' => 'can_admin_design',
+							'desc' => 'can_admin_design_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_admin_design' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_design', $values)
 								)
 							)
 						),
@@ -1268,8 +1278,25 @@ class Groups extends Members\Members {
 									'value' => element('addons_access', $values)
 								)
 							)
+						),
+						array(
+							'title' => 'rte_toolsets',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_addons',
+							'fields' => array(
+								'rte_toolsets' => array(
+									'choices' => array(
+										'can_upload_new_toolsets' => lang('upload_new_toolsets'),
+										'can_edit_toolsets' => lang('edit_toolsets'),
+										'can_delete_toolsets' => lang('delete_toolsets')
+									),
+									'type' => 'checkbox',
+									'value' => element('rte_toolsets', $values)
+								),
+							)
 						)
 					)
+
 				),
 				'tools_utilities' => array(
 					'group' => 'can_access_cp',
@@ -1341,18 +1368,15 @@ class Groups extends Members\Members {
 							)
 						),
 						array(
-							'title' => 'access_settings',
-							'desc' => 'access_settings_desc',
+							'title' => 'can_access_security_settings',
+							'desc' => 'can_access_security_settings_desc',
 							'group' => 'can_access_sys_prefs',
+							'caution' => TRUE,
 							'fields' => array(
-								'access_settings' => array(
-									'type' => 'checkbox',
-									'choices' => array(
-										'can_admin_design' => lang('can_admin_design'),
-										'can_access_security_settings' => lang('can_access_security_settings'),
-									),
-									'value' => element('access_settings', $values)
-								),
+								'can_access_security_settings' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_security_settings', $values)
+								)
 							)
 						)
 					)
