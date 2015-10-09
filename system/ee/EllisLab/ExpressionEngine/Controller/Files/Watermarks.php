@@ -39,7 +39,7 @@ class Watermarks extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
