@@ -69,7 +69,7 @@ class Members extends CP_Controller {
 
 		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile());
 
-		if ( ! $this->hasMaximumMembers())
+		if ( ! $this->hasMaximumMembers() && ee()->cp->allowed_group('can_create_members'))
 		{
 			$header->withButton(lang('new'), ee('CP/URL')->make('members/create'));
 		}
@@ -95,8 +95,12 @@ class Members extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'))
-				->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
+			$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'));
+
+			if (ee()->cp->allowed_group('can_create_member_groups'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
+			}
 
 			$item = $header->addBasicList()
 				->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
@@ -179,28 +183,39 @@ class Members extends CP_Controller {
 
 		$data = $this->_member_search($state, $params);
 
-		$table->setColumns(
-			array(
-				'member_id' => array(
-					'type'	=> Table::COL_ID
-				),
-				'username' => array(
-					'encode' => FALSE
-				),
-				'dates' => array(
-					'encode' => FALSE
-				),
-				'member_group' => array(
-					'encode' => FALSE
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
+ 		$columns = array(
+			'member_id' => array(
+				'type'	=> Table::COL_ID
+			),
+			'username' => array(
+				'encode' => FALSE
+			),
+			'dates' => array(
+				'encode' => FALSE
+			),
+			'member_group' => array(
+				'encode' => FALSE
 			)
 		);
+
+
+		// add the toolbar if they can edit members
+		if (ee()->cp->allowed_group('can_edit_members'))
+		{
+			$columns['manage'] = array(
+				'type'	=> Table::COL_TOOLBAR
+			);
+		}
+
+		// add the checkbox if they can delete members
+		if (ee()->cp->allowed_group('can_delete_members'))
+		{
+			$columns[] = array(
+				'type'	=> Table::COL_CHECKBOX
+			);
+		}
+
+		$table->setColumns($columns);
 
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data['rows']);
@@ -240,6 +255,8 @@ class Members extends CP_Controller {
 			default: $active = 'all_members'; break;
 		}
 		$this->generateSidebar($active);
+
+		$data['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -494,10 +511,19 @@ class Members extends CP_Controller {
 			}
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
-			$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
+
+			if (ee()->cp->allowed_group('can_edit_members'))
+			{
+				$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
+			}
+			else
+			{
+				$username_display = $member['username'];
+			}
+
 			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
 			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
-			$rows[] = array(
+			$row = array(
 				'columns' => array(
 					'id' => $member['member_id'],
 					'username' => $username_display,
@@ -505,18 +531,30 @@ class Members extends CP_Controller {
 						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
 						<b>'.lang('last_visit').'</b>: '.$last_visit.'
 					</span>',
-					'member_group' => $group,
-					$toolbar,
-					array(
-						'name' => 'selection[]',
-						'value' => $member['member_id'],
-						'data'	=> array(
-							'confirm' => lang('member') . ': <b>' . htmlentities($member['screen_name'], ENT_QUOTES, 'UTF-8') . '</b>'
-						)
-					)
+					'member_group' => $group
 				),
 				'attrs' => $attributes
 			);
+
+			// add the toolbar if they can edit members
+			if (ee()->cp->allowed_group('can_edit_members'))
+			{
+				$row['columns'][] = $toolbar;
+			}
+
+			// add the checkbox if they can delete members
+			if (ee()->cp->allowed_group('can_delete_members'))
+			{
+				$row['columns'][] = array(
+					'name' => 'selection[]',
+					'value' => $member['member_id'],
+					'data'	=> array(
+						'confirm' => lang('member') . ': <b>' . htmlentities($member['screen_name'], ENT_QUOTES, 'UTF-8') . '</b>'
+					)
+				);
+			}
+
+			$rows[] = $row;
 		}
 
 		return array(
@@ -657,8 +695,7 @@ class Members extends CP_Controller {
 	public function delete()
 	{
 		// Verify the member is allowed to delete
-		if ( ! ee()->cp->allowed_group('can_access_members')
-			OR ! ee()->cp->allowed_group('can_delete_members'))
+		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
