@@ -795,7 +795,6 @@ class Updater {
 			'can_edit_member_groups',
 			'can_create_members',
 			'can_edit_members',
-			'can_manage_template_settings',
 			'can_create_new_templates',
 			'can_edit_templates',
 			'can_delete_templates',
@@ -916,7 +915,6 @@ class Updater {
 			ee()->db->update(
 				'member_groups',
 				array(
-					'can_manage_template_settings' => 'y',
 					'can_create_new_templates' => 'y',
 					'can_edit_templates' => 'y',
 					'can_delete_templates' => 'y',

@@ -1097,6 +1097,19 @@ class Groups extends Members\Members {
 				),
 				'members' => array(
 					array(
+						'title' => 'can_access_members',
+						'desc' => 'can_access_members_desc',
+						'fields' => array(
+							'can_access_files' => array(
+								'type' => 'yes_no',
+								'value' => element('can_access_members', $values),
+								'group_toggle' => array(
+									'y' => 'can_access_members'
+								)
+							)
+						)
+					),
+					array(
 						'title' => 'allowed_actions',
 						'desc' => 'allowed_actions_desc',
 						'caution' => TRUE,
@@ -1193,7 +1206,6 @@ class Groups extends Members\Members {
 								'template_permissions' => array(
 									'type' => 'checkbox',
 									'choices' => array(
-										'can_manage_template_settings' => lang('manage_template_settings'),
 										'can_create_new_templates' => lang('create_new_templates'),
 										'can_edit_templates' => lang('edit_templates'),
 										'can_delete_templates' => lang('delete_templates')

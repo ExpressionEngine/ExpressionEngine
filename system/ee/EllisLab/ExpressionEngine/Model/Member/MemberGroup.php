@@ -94,7 +94,6 @@ class MemberGroup extends Model {
 		'can_edit_member_groups'         => 'boolString',
 		'can_create_members'             => 'boolString',
 		'can_edit_members'               => 'boolString',
-		'can_manage_template_settings'   => 'boolString',
 		'can_create_new_templates'       => 'boolString',
 		'can_edit_templates'             => 'boolString',
 		'can_delete_templates'           => 'boolString',
@@ -286,7 +285,6 @@ class MemberGroup extends Model {
 	protected $can_edit_member_groups;
 	protected $can_create_members;
 	protected $can_edit_members;
-	protected $can_manage_template_settings;
 	protected $can_create_new_templates;
 	protected $can_edit_templates;
 	protected $can_delete_templates;
