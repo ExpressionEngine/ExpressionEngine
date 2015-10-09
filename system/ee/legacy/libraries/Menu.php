@@ -170,7 +170,7 @@ class EE_Menu {
 			$menu['template_manager'] = ee('CP/URL')->make('design');
 		}
 
-		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_access_addons'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_admin_sites'))
 		{
 			$menu['msm_manager'] = ee('CP/URL')->make('msm');
 		}
