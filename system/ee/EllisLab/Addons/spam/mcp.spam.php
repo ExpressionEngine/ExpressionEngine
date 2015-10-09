@@ -52,6 +52,12 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
+		if (AJAX_REQUEST && ! empty(ee()->input->get('method')))
+		{
+			$method = ee()->input->get('method');
+			return $this->$method();
+		}
+
 		if ( ! empty($_POST['bulk_action']))
 		{
 			$action = ee()->input->post('bulk_action');

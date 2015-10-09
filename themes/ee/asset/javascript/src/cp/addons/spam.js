@@ -39,7 +39,7 @@
 		$(link).toggleClass('work');
 
 		$.ajax({
-			url: path + "/download",
+			url: path + "&method=download",
 			success: function(data) {
 				if ('success' in data) {
 					$(link).html(data.success);
@@ -62,7 +62,7 @@
 function updateVocabulary(link) {
 	var path = $(link).attr('href');
 	$.ajax({
-		url: path + "/updatevocab",
+		url: path + "&method=updatevocab",
 		success: function(data) {
 			if (data.status !== 'finished') {
 				$(link).html(data.message);
@@ -78,7 +78,7 @@ function updateVocabulary(link) {
 function updateParameters(link) {
 	var path = $(link).attr('href');
 	$.ajax({
-		url: path + "/updateparams",
+		url: path + "&method=updateparams",
 		success: function(data) {
 			if (data.status !== 'finished') {
 				$(link).html(data.message);
