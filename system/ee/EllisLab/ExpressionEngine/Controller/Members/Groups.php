@@ -767,13 +767,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_search' => array(
 								'type' => 'yes_no',
-								'value' => element('can_search', $values)
+								'value' => element('can_search', $values),
+								'group_toggle' => array(
+									'y' => 'can_search'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'search_flood_control',
 						'desc' => 'search_flood_control_desc',
+						'group' => 'can_search',
 						'fields' => array(
 							'search_flood_control' => array(
 								'type' => 'text',
@@ -789,13 +793,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_send_private_messages' => array(
 								'type' => 'yes_no',
-								'value' => element('can_send_private_messages', $values)
+								'value' => element('can_send_private_messages', $values),
+								'group_toggle' => array(
+									'y' => 'can_access_pms'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'prv_msg_send_limit',
 						'desc' => 'prv_msg_send_limit_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'prv_msg_send_limit' => array(
 								'type' => 'text',
@@ -806,6 +814,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'prv_msg_storage_limit',
 						'desc' => 'prv_msg_storage_limit_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'prv_msg_storage_limit' => array(
 								'type' => 'text',
@@ -816,6 +825,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'can_attach_in_private_messages',
 						'desc' => 'can_attach_in_private_messages_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'can_attach_in_private_messages' => array(
 								'type' => 'yes_no',
@@ -826,6 +836,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'can_send_bulletins',
 						'desc' => 'can_send_bulletins_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'can_send_bulletins' => array(
 								'type' => 'yes_no',
@@ -1070,19 +1081,22 @@ class Groups extends Members\Members {
 					)
 				),
 				'member_groups' => array(
-					array(
-						'title' => 'allowed_actions',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'member_group_actions' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_create_member_groups' => lang('create_member_groups'),
-									'can_edit_member_groups' => lang('edit_member_groups'),
-									'can_delete_member_groups' => lang('delete_member_groups'),
-								),
-								'value' => element('member_group_actions', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'allowed_actions',
+							'desc' => 'allowed_actions_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'member_group_actions' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_create_member_groups' => lang('create_member_groups'),
+										'can_edit_member_groups' => lang('edit_member_groups'),
+										'can_delete_member_groups' => lang('delete_member_groups'),
+									),
+									'value' => element('member_group_actions', $values)
+								)
 							)
 						)
 					)
