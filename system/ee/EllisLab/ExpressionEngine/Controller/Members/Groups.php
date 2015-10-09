@@ -675,16 +675,6 @@ class Groups extends Members\Members {
 						)
 					),
 					array(
-						'title' => 'can_send_email',
-						'desc' => 'can_send_email_desc',
-						'fields' => array(
-							'can_send_email' => array(
-								'type' => 'yes_no',
-								'value' => element('can_send_email', $values)
-							)
-						)
-					),
-					array(
 						'title' => 'can_delete_self',
 						'desc' => 'can_delete_self_desc',
 						'fields' => array(

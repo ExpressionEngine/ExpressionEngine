@@ -8,7 +8,6 @@ class MemberGroupsEdit < SitePrism::Section
 
   elements :website_access, 'input[name="website_access[]"]'
   elements :can_view_profiles, 'input[name="can_view_profiles"]'
-  elements :can_send_email, 'input[name="can_send_email"]'
   elements :can_delete_self, 'input[name="can_delete_self"]'
   element :mbr_delete_notify_emails, 'input[name="mbr_delete_notify_emails"]'
   elements :include_members_in, 'input[name="include_members_in[]"]'
