@@ -727,13 +727,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_post_comments' => array(
 								'type' => 'yes_no',
-								'value' => element('can_post_comments', $values)
+								'value' => element('can_post_comments', $values),
+								'group_toggle' => array(
+									'y' => 'can_post_comments'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'exclude_from_moderation',
 						'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
+						'group' => 'can_post_comments',
 						'fields' => array(
 							'exclude_from_moderation' => array(
 								'type' => 'yes_no',
