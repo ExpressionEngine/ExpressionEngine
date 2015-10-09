@@ -15,6 +15,24 @@
 (function ($) {
 	$(document).ready(function () {
 
+		$("input[name='avatar_picker']").each(function(){
+			if ( ! $(this).is(':checked')) {
+				$(this).parent().next().hide();
+			}
+		});
+
+		$('input[name="avatar_picker"]').click(function(){
+			if ($(this).is(':checked'))
+			{
+				$(this).parent().next().show();
+				$("input[name='avatar_picker']").each(function(){
+					if ( ! $(this).is(':checked')) {
+						$(this).parent().next().hide();
+					}
+				});
+			}
+		});
+
 		$('li.remove a').click(function (e) {
 			$(this).closest('figure').find('input[type="hidden"]').val('');
 			$(this).closest('fieldset').hide();

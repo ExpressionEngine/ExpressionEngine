@@ -44,6 +44,11 @@ class FilePicker {
 			$qs['hasFilters'] = $data['hasFilters'];
 		}
 
+		if ( isset($data['hasUpload']))
+		{
+			$qs['hasUpload'] = $data['hasUpload'];
+		}
+
 		$href = ee('CP/URL')->make($this->controller, $qs);
 		$extra = "";
 		$class = "";

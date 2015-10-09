@@ -112,6 +112,7 @@ class Settings extends Profile {
 				'image' => 'avatar',
 				'input' => 'avatar_filename',
 				'hasFilters' => FALSE,
+				'hasUpload' => FALSE,
 				'selected' => $this->member->avatar_filename,
 				'class' => 'avatarPicker'
 			));

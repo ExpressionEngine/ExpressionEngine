@@ -1,6 +1,5 @@
 <?php
 
-
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
@@ -117,7 +116,7 @@ class Filepicker_mcp {
 
 		$base_url->setQueryStringVariable('directory', $id);
 		$base_url->setQueryStringVariable('type', $type);
-
+		
 		if ($this->images || $type == 'thumb')
 		{
 			$vars['type'] = 'thumb';
@@ -135,8 +134,12 @@ class Filepicker_mcp {
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
 
-		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
-		$vars['upload']->setQueryStringVariable('directory', $id);
+		if (ee()->input->get('hasUpload') !== '0')
+		{
+			$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
+			$vars['upload']->setQueryStringVariable('directory', $id);
+		}
+
 		$vars['dir'] = $id;
 
 		if ( ! empty($vars['table']['data']))
