@@ -36,7 +36,7 @@ class Update extends Query {
 		{
 			$object = $this->store->make(
 				$builder->getFrom(),
-				$builder->getFrontend()
+				$builder->getFacade()
 			);
 		}
 

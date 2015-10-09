@@ -39,7 +39,7 @@ class Watermarks extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
+		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -68,7 +68,7 @@ class Watermarks extends AbstractFilesController {
 				)
 			)
 		);
-		$table->setNoResultsText('no_watermarks', 'create_watermark', ee('CP/URL', 'files/watermarks/create'));
+		$table->setNoResultsText('no_watermarks', 'create_watermark', ee('CP/URL')->make('files/watermarks/create'));
 
 		$watermarks = ee('Model')->get('Watermark');
 		$total_rows = $watermarks->count();
@@ -86,8 +86,8 @@ class Watermarks extends AbstractFilesController {
 		$data = array();
 		foreach ($watermarks as $watermark)
 		{
-			$edit_url = ee('CP/URL', 'files/watermarks/edit/'.$watermark->getId());
-			$data[] = array(
+			$edit_url = ee('CP/URL')->make('files/watermarks/edit/'.$watermark->getId());
+			$columns = array(
 				array(
 					'content' => $watermark->wm_name,
 					'href' => $edit_url
@@ -103,17 +103,28 @@ class Watermarks extends AbstractFilesController {
 					'name' => 'watermarks[]',
 					'value' => $watermark->getId(),
 					'data'	=> array(
-						'confirm' => lang('watermark') . ': <b>' . htmlentities($watermark->wm_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('watermark') . ': <b>' . htmlentities($watermark->wm_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
 					// Cannot delete default group
 					'disabled' => ($watermark->wm_name == 'Default') ? 'disabled' : NULL
 				)
 			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $watermark->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'files/watermarks'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('files/watermarks'));
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
@@ -158,7 +169,7 @@ class Watermarks extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'files/watermarks', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('files/watermarks', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -186,8 +197,9 @@ class Watermarks extends AbstractFilesController {
 	{
 		if (is_null($watermark_id))
 		{
+			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_watermark');
-			ee()->view->base_url = ee('CP/URL', 'files/watermarks/create');
+			ee()->view->base_url = ee('CP/URL')->make('files/watermarks/create');
 			$watermark = ee('Model')->make('Watermark');
 		}
 		else
@@ -199,8 +211,9 @@ class Watermarks extends AbstractFilesController {
 				show_error(lang('unauthorized_access'));
 			}
 
+			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_watermark');
-			ee()->view->base_url = ee('CP/URL', 'files/watermarks/edit/'.$watermark_id);
+			ee()->view->base_url = ee('CP/URL')->make('files/watermarks/edit/'.$watermark_id);
 		}
 
 		ee()->load->library('filemanager');
@@ -422,24 +435,29 @@ class Watermarks extends AbstractFilesController {
 
 			if ($result->isValid())
 			{
-				$watermark_id = $watermark->save()->getId();
+				$watermark->save();
+
+				if (is_null($watermark_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $watermark->getId());
+				}
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('watermark_saved'))
-					->addToBody(lang('watermark_saved_desc'))
+					->withTitle(lang('watermark_'.$alert_key))
+					->addToBody(sprintf(lang('watermark_'.$alert_key.'_desc'), $watermark->wm_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'files/watermarks/edit/' . $watermark_id));
+				ee()->functions->redirect(ee('CP/URL')->make('files/watermarks'));
 			}
 			else
 			{
-				ee()->load->library('form_validation');
-				ee()->form_validation->_error_array = $result->renderErrors();
+				$vars['errors'] = $result;
+
 				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
-					->withTitle(lang('watermark_not_saved'))
-					->addToBody(lang('watermark_not_saved_desc'))
+					->withTitle(lang('watermark_not_'.$alert_key))
+					->addToBody(lang('watermark_not_'.$alert_key.'_desc'))
 					->now();
 			}
 		}
@@ -448,8 +466,8 @@ class Watermarks extends AbstractFilesController {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('watermark'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'files/watermarks'), lang('watermarks'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files/watermarks'), lang('watermarks'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/form_group'),

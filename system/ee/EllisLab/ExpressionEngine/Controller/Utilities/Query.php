@@ -48,11 +48,6 @@ class Query extends Utilities {
 				 'field'   => 'thequery',
 				 'label'   => 'lang:sql_query_to_run',
 				 'rules'   => 'required'
-			),
-			array(
-				'field' => 'password_auth',
-				'label' => 'lang:current_password',
-				'rules' => 'required|auth_password'
 			)
 		));
 
@@ -61,7 +56,7 @@ class Query extends Utilities {
 			ee()->form_validation->run_ajax();
 			exit;
 		}
-		elseif (ee()->form_validation->run() !== FALSE)
+		elseif (ee()->form_validation->run() !== FALSE && $show_validation)
 		{
 			return $this->runQuery();
 		}
@@ -84,11 +79,6 @@ class Query extends Utilities {
 	 */
 	public function runQuery($table_name = '')
 	{
-		if (isset($_POST['password_auth']))
-		{
-			unset($_POST['password_auth']);
-		}
-
 		$row_limit	= 25;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
@@ -124,7 +114,7 @@ class Query extends Utilities {
 		if (preg_match("/(^|\s)(".implode('|', $qtypes).")\s/si", $sql))
 		{
 			ee()->view->set_message('issue', lang('sql_not_allowed'), lang('sql_not_allowed_desc'), TRUE);
-			return ee()->functions->redirect(ee('CP/URL', 'utilities/query'));
+			return ee()->functions->redirect(ee('CP/URL')->make('utilities/query'));
 		}
 
 		// If it's a DELETE query, require that a Super Admin be the one submitting it
@@ -252,7 +242,7 @@ class Query extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = ee('CP/URL',
+		$base_url = ee('CP/URL')->make(
 			'utilities/query/run-query/'.$table_name,
 			array('thequery' => rawurlencode(base64_encode($sql)))
 		);
@@ -284,13 +274,13 @@ class Query extends Utilities {
 		// If no table, keep query form labeling
 		if (empty($table_name))
 		{
-			ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/query'), lang('query_form'));
+			ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/query'), lang('query_form'));
 			ee()->view->cp_page_title = lang('query_results');
 		}
 		// Otherwise, we're coming from the SQL Manager
 		else
 		{
-			ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/sql'), lang('sql_manager_abbr'));
+			ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/sql'), lang('sql_manager_abbr'));
 			ee()->view->cp_page_title = $table_name . ' ' . lang('table');
 		}
 

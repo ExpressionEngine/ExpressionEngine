@@ -39,7 +39,6 @@ class Filepicker_mcp {
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('module_id', 0)
 			->all();
 
 		$directories = $dirs->indexBy('id');
@@ -61,7 +60,8 @@ class Filepicker_mcp {
 		{
 			if (empty($directories[$id]))
 			{
-				show_error(lang('invalid_upload_destination'));
+				$id = 1;
+				//show_error(lang('invalid_upload_destination'));
 			}
 
 			$dir = $directories[$id];
@@ -135,8 +135,10 @@ class Filepicker_mcp {
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
 
-		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload" ,array('directory' => $id));
+		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
+		$vars['upload']->setQueryStringVariable('directory', $id);
 		$vars['dir'] = $id;
+
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
@@ -249,7 +251,7 @@ class Filepicker_mcp {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
-			'base_url' => ee('CP/URL', $this->picker->base_url . 'upload', array('directory' => $dir_id)),
+			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -360,13 +362,7 @@ class Filepicker_mcp {
 				$file->save();
 				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
 
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('upload_filedata_success'))
-					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
-					->defer();
-
-				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $dir_id));
+				return $this->fileInfo($file->getId());
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -379,11 +375,29 @@ class Filepicker_mcp {
 		}
 
 		$vars['cp_page_title'] = lang('file_upload');
-
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
+		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
 		ee()->output->_display($out);
 		exit();
 	}
 
+	protected function ajaxValidation(ValidationResult $result)
+	{
+		if (ee()->input->is_ajax_request())
+		{
+			$field = ee()->input->post('ee_fv_field');
+
+			if ($result->hasErrors($field))
+			{
+				return array('error' => $result->renderError($field));
+			}
+			else
+			{
+				return array('success');
+			}
+		}
+
+		return NULL;
+	}
 }
 ?>

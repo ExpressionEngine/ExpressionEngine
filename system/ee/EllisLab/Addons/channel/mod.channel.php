@@ -2332,8 +2332,12 @@ class Channel {
 
 	/**
 	  *  Parse channel entries
+	  *  @param Callable $per_row_callback A callable to send each row's tagdata
+	  *                                    and row data to. Your callable should
+	  *                                    have the following method signature:
+	  *                                    function($tagdata, $row)
 	  */
-	public function parse_channel_entries()
+	public function parse_channel_entries($per_row_callback = NULL)
 	{
 		// For our hook to work, we need to grab the result array
 		$query_result = $this->query->result_array();
@@ -2390,11 +2394,23 @@ class Channel {
 			'absolute_offset'	=> $this->pagination->offset
 		);
 
+		$tagdata_loop_end = array($this, 'callback_tagdata_loop_end');
+
 		$config = array(
 			'callbacks' => array(
-				'entry_row_data'	 => array($this, 'callback_entry_row_data'),
+				'entry_row_data'     => array($this, 'callback_entry_row_data'),
 				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
-				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
+				'tagdata_loop_end'   => function($tagdata, $row) use ($per_row_callback, $tagdata_loop_end)
+				{
+					$tagdata = call_user_func($tagdata_loop_end, $tagdata, $row);
+
+					if (is_callable($per_row_callback))
+					{
+						$tagdata = call_user_func($per_row_callback, $tagdata, $row);
+					}
+
+					return $tagdata;
+				}
 			),
 			'disable' => $disable
 		);
@@ -2629,7 +2645,7 @@ class Channel {
 
 		if ($cat_groups->num_rows() == 0)
 		{
-			return;
+			return ee()->TMPL->no_results();
 		}
 
 		$channel_ids = array();
@@ -2660,7 +2676,7 @@ class Channel {
 
 			if (count($groups) == 0)
 			{
-				return '';
+				return ee()->TMPL->no_results();
 			}
 			else
 			{
@@ -2759,7 +2775,7 @@ class Channel {
 				// No categories exist?  Let's go home..
 				if ($query->num_rows() == 0)
 				{
-					return FALSE;
+					return ee()->TMPL->no_results();
 				}
 
 				foreach($query->result_array() as $row)
@@ -2823,7 +2839,7 @@ class Channel {
 
 				if ($query->num_rows() == 0)
 				{
-					return FALSE;
+					return ee()->TMPL->no_results();
 				}
 
 				// All the magic happens here, baby!!
@@ -2858,7 +2874,7 @@ class Channel {
 
 				if ($query->num_rows() == 0)
 				{
-					return FALSE;
+					return ee()->TMPL->no_results();
 				}
 			}
 			else
@@ -2879,7 +2895,7 @@ class Channel {
 
 				if ($query->num_rows() == 0)
 				{
-					return '';
+					return ee()->TMPL->no_results();
 				}
 			}
 
@@ -3106,7 +3122,7 @@ class Channel {
 
 		if ($cat_groups->num_rows() == 0)
 		{
-			return;
+			return ee()->TMPL->no_results();
 		}
 
 		$group_ids = $cat_groups->row('cat_group');
@@ -4086,7 +4102,7 @@ class Channel {
 	{
 		if ($this->query_string == '')
 		{
-			return;
+			return ee()->TMPL->no_results();
 		}
 
 		// -------------------------------------------

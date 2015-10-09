@@ -34,7 +34,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -120,7 +120,7 @@ class ImportConverter extends Utilities {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('import_converter');
-		ee()->view->base_url = ee('CP/URL', 'utilities/import-converter');
+		ee()->view->base_url = ee('CP/URL')->make('utilities/import-converter');
 		ee()->view->save_btn_text = 'import_convert_btn';
 		ee()->view->save_btn_text_working = 'import_convert_btn_saving';
 		ee()->cp->render('settings/form', $vars);
@@ -188,7 +188,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function import_fieldmap()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -216,7 +216,7 @@ class ImportConverter extends Utilities {
 		{
 			// No point going further if there aren't even the minimum required
 			ee()->view->set_message('issue', lang('not_enough_fields'), lang('not_enough_fields_desc'), TRUE);
-			ee()->functions->redirect(ee('CP/URL', 'utilities/import_converter'));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/import_converter'));
 		}
 
 		// Get member table fields
@@ -258,7 +258,7 @@ class ImportConverter extends Utilities {
 		$vars['encrypt'] = '';
 
 		ee()->view->cp_page_title = lang('import_converter') . ' - ' . lang('assign_fields');
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/import_converter'), lang('import_converter'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/fieldmap', $vars);
 	}
 
@@ -273,7 +273,7 @@ class ImportConverter extends Utilities {
 	 */
 	private function _datafile_to_array($file, $delimiter, $enclosure)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -312,7 +312,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function importFieldmapConfirm()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -381,7 +381,7 @@ class ImportConverter extends Utilities {
 		$vars['form_hidden'] = array_merge($vars['form_hidden'], $paired);
 
 		ee()->view->cp_page_title = lang('confirm_assignments');
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/import_converter'), lang('import_converter'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/fieldmap-confirm', $vars);
 	}
 
@@ -396,7 +396,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function importCodeOutput()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -466,7 +466,7 @@ class ImportConverter extends Utilities {
 		$vars['username'] = ee()->session->userdata('username');
 
 		ee()->view->cp_page_title = lang('xml_code');
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/import_converter'), lang('import_converter'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/code-output', $vars);
 	}
 

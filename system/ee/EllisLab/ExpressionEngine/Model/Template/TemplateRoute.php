@@ -190,6 +190,11 @@ class TemplateRoute extends Model {
 			->all()
 			->pluck('template_id');
 
+		if (empty($template_ids))
+		{
+			return TRUE;
+		}
+
 		// Get all non-empty routes based on the template IDs we just grabbed
 		$routes = $this->getFrontend()->get('TemplateRoute')
 			->fields('route')

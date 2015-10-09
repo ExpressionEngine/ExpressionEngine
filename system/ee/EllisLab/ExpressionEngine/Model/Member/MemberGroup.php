@@ -118,7 +118,8 @@ class MemberGroup extends Model {
 		),
 		'Members' => array(
 			'type' => 'hasMany',
-			'model' => 'Member'
+			'model' => 'Member',
+			'weak' => TRUE
 		),
 		'AssignedChannels' => array(
 			'type' => 'hasAndBelongsToMany',

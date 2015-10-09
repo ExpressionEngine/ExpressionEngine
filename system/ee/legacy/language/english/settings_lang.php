@@ -24,6 +24,8 @@ $lang = array(
 
 'template_settings' => 'Template Settings',
 
+'hit_tracking' => 'Hit Tracking',
+
 'pages_settings' => 'Pages Settings',
 
 'upload_directories' => 'Upload Directories',
@@ -340,6 +342,8 @@ $lang = array(
 
 'thumbnail_suffix_desc' => 'Added to all auto-generated thumbnails. <b>Example</b>: photo_thumb.jpg',
 
+'emoticons' => 'Emoticons',
+
 'enable_emoticons' => 'Enable emoticons?',
 
 'enable_emoticons_desc' => 'When set to <b>yes</b>, text based emoticons will be converted to image based emoticons.',
@@ -364,7 +368,7 @@ $lang = array(
 
 'comment_word_censoring_desc' => 'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
 
-'comment_moderation_override' => 'Moderate expired entires?',
+'comment_moderation_override' => 'Moderate expired entries?',
 
 'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an expired entry will be submitted as closed and require review by a moderator.',
 
@@ -398,9 +402,26 @@ $lang = array(
 
 'save_tmpl_files_desc' => 'When set to yes, ExpressionEngine will store your templates as files on your server.',
 
-'tmpl_file_basepath' => 'Template directory',
+/**
+ * Hit Tracking
+ */
 
-'tmpl_file_basepath_desc' => 'Full path location of your <mark>template</mark> directory.',
+'enable_online_user_tracking' => 'Enable online user tracking?',
+'enable_online_user_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will track logged in users.',
+
+'enable_hit_tracking' => 'Enable template hit tracking?',
+'enable_hit_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a template is viewed.',
+
+'enable_entry_view_tracking' => 'Enable entry view tracking?',
+'enable_entry_view_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a channel entry is viewed.',
+
+'log_referrers' => 'Enable referrer tracking?',
+'log_referrers_desc' => 'When set to <b>yes</b>, ExpressionEngine will track all incoming links.',
+
+'max_referrers' => 'Maximum recent referrers to save',
+
+'dynamic_tracking_disabling' => 'Suspend threshold?',
+'dynamic_tracking_disabling_desc' => 'All tracking will be suspended when the number of online visitors exceeds this number.</em> <em>Online user tracking must be enabled to use this feature. <a href="%s" ref="external">Learn more</a>',
 
 /**
  * Word Censoring

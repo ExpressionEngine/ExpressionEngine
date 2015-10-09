@@ -267,7 +267,7 @@ class Cp {
 				}
 				else
 				{
-					$alert->addToBody(sprintf(lang($key), ee('CP/URL', 'settings/license')));
+					$alert->addToBody(sprintf(lang($key), ee('CP/URL')->make('settings/license')));
 				}
 			}
 
@@ -431,7 +431,14 @@ class Cp {
 					->addToBody(lang('checksum_changed_warning'))
 					->addToBody($changed);
 
-				$button = form_open(ee('CP/URL', 'homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button = form_open(
+					ee('CP/URL')->make('homepage/accept_checksums'),
+					'',
+					array(
+						'return' => ee('CP/URL')->getCurrentUrl()->encode()
+					)
+				);
+
 				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
@@ -697,7 +704,7 @@ class Cp {
 			//   1. index.php?/cp/path/to/controller/with/arugments
 			//   2. index.php?D=cp&C=cp&M=homepage
 			//
-			// In the case of #1 we likely built it with ee('CP/URL', ) thus
+			// In the case of #1 we likely built it with ee('CP/URL')->make() thus
 			// we will store the needed parts to rebuild it.
 			//
 			// In the case of #2 we will build out a string to return
@@ -803,25 +810,11 @@ class Cp {
 
 		foreach ($quick_links as $ql)
 		{
-			if (strncmp($ql['link'], ee()->config->item('cp_url'), $len) == 0)
-			{
-				$l = str_replace(ee()->config->item('cp_url'), '', $ql['link']);
-				$l = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $l);
-
-				$link[$count] = array(
-					'link'		=> BASE.AMP.$l,
-					'title'		=> $ql['title'],
-					'external'	=> FALSE
-				);
-			}
-			else
-			{
-				$link[$count] = array(
-					'link'		=> $ql['link'],
-					'title'		=> $ql['title'],
-					'external'	=> TRUE
-				);
-			}
+			$link[$count] = array(
+				'link'		=> ee('CP/URL')->makeFromString($ql['link']),
+				'title'		=> $ql['title'],
+				'external'	=> TRUE
+			);
 
 			$count++;
 		}
@@ -1183,7 +1176,7 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$redirect = ee('CP/URL', 'homepage');
+			$redirect = ee('CP/URL')->make('homepage');
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings

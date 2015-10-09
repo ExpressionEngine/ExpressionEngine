@@ -98,6 +98,17 @@ class File extends Model {
 	}
 
 	/**
+	 * Uses the file's upload destination's server path to compute the absolute
+	 * thumbnail path of the file
+	 *
+	 * @return string The absolute path to the file
+	 */
+	public function getAbsoluteThumbnailPath()
+	{
+		return rtrim($this->UploadDestination->server_path, '/') . '/_thumbs/' . $this->file_name;
+	}
+
+	/**
 	 * Uses the file's upload destination's url to compute the absolute URL of
 	 * the file
 	 *
@@ -105,7 +116,23 @@ class File extends Model {
 	 */
 	public function getAbsoluteURL()
 	{
-		return rtrim($this->UploadDestination->url, '/') . '/' . $this->file_name;
+		return rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($this->file_name);
+	}
+
+	/**
+	 * Uses the file's upload destination's URL to compute the absolute thumbnail
+	 *  URL of the file
+	 *
+	 * @return string The absolute thumbnail URL to the file
+	 */
+	public function getAbsoluteThumbnailURL()
+	{
+		if ( ! file_exists($this->getAbsoluteThumbnailPath()))
+		{
+			return $this->getAbsoluteURL();
+		}
+
+		return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . rawurlencode($this->file_name);
 	}
 
 	public function onBeforeDelete()

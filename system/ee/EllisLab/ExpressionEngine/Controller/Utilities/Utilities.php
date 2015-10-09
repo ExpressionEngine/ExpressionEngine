@@ -52,9 +52,9 @@ class Utilities extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$sidebar->addHeader(lang('communicate'), ee('CP/URL', 'utilities/communicate'))
+		$sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'))
 			->addBasicList()
-				->addItem(lang('sent'), ee('CP/URL', 'utilities/communicate/sent'));
+				->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
 
 		$langauge_list = $sidebar->addHeader(lang('cp_translation'))
 			->addBasicList();
@@ -65,7 +65,7 @@ class Utilities extends CP_Controller {
 		foreach (ee()->lang->language_pack_names() as $key => $value)
 		{
 			$menu_title = $value;
-			$url = ee('CP/URL', 'utilities/translate/' . $key);
+			$url = ee('CP/URL')->make('utilities/translate/' . $key);
 
 			if ($key == $default_language)
 			{
@@ -84,27 +84,27 @@ class Utilities extends CP_Controller {
 			$langauge_list->addItem($menu_title, $url);
 		}
 
-		$sidebar->addHeader(lang('php_info'), ee('CP/URL', 'utilities/php'))
+		$sidebar->addHeader(lang('php_info'), ee('CP/URL')->make('utilities/php'))
 			->urlIsExternal();
 
-		$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL', 'utilities/extensions'));
+		$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
 
 		$import_list = $sidebar->addHeader(lang('import_tools'))
 			->addBasicList();
 
-		$import_list->addItem(lang('file_converter'), ee('CP/URL', 'utilities/import-converter'));
-		$import_list->addItem(lang('member_import'), ee('CP/URL', 'utilities/member-import'));
+		$import_list->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
+		$import_list->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
 
-		$sidebar->addHeader(lang('sql_manager_abbr'), ee('CP/URL', 'utilities/sql'))
+		$sidebar->addHeader(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'))
 			->addBasicList()
-				->addItem(lang('query_form'), ee('CP/URL', 'utilities/query'));
+				->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
 
 		$data_list = $sidebar->addHeader(lang('data_operations'))
 			->addBasicList();
 
-		$data_list->addItem(lang('cache_manager'), ee('CP/URL', 'utilities/cache'));
-		$data_list->addItem(lang('statistics'), ee('CP/URL', 'utilities/stats'));
-		$data_list->addItem(lang('search_and_replace'), ee('CP/URL', 'utilities/sandr'));
+		$data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
+		$data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
+		$data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Utilities extends CP_Controller {
 	public function index()
 	{
 		// Will redirect based on permissions later
-		ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
+		ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 	}
 }
 // END CLASS

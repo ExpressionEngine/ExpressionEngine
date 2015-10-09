@@ -162,7 +162,7 @@ class Textarea_ft extends EE_Fieldtype {
 			{
 				$fp = new FilePicker();
 				$fp->inject(ee()->view);
-				$vars['fp_url'] = ee('CP/URL', $fp->controller, array('directory' => 'all'));
+				$vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
 
 				ee()->cp->add_js_script(array(
 					'file' => array('fields/textarea/cp'),
@@ -195,6 +195,7 @@ class Textarea_ft extends EE_Fieldtype {
 		$field_fmt = ($this->content_type() == 'grid')
 			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
+		ee()->load->library('typography');
 		return ee()->typography->parse_type(
 			$data,
 			array(

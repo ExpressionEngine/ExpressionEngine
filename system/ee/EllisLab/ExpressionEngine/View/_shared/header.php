@@ -11,7 +11,7 @@
 		<?=ee()->view->head_link('css/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
-		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
+		<link rel="stylesheet" href="<?=ee('CP/URL')->make('css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
 		<?php endif;?>
 		<!-- <link href="touch-icon-iphone.png" rel="apple-touch-icon-precomposed" sizes="114x114">
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
@@ -53,11 +53,11 @@
 				<div class="user">
 					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?></a>
 					<ul class="quick-links sub-menu">
-						<a href="<?=ee('CP/URL', 'members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
+						<a href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<?php foreach($cp_quicklinks as $link): ?>
 						<a href="<?=$link['link']?>"><?=$link['title']?></a>
 						<?php endforeach ?>
-						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => base64_encode(ee()->cp->get_safe_refresh()), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => base64_encode(ee()->cp->get_safe_refresh()), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -96,7 +96,16 @@
 											<a href="<?=ee('CP/URL', 'publish/edit')?>"><?= lang('view_all') ?></a>
 										</li>
 										<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
-											<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+
+											<?php
+											$class = 'search-channel';
+											if ($link == end($cp_main_menu['channels']['edit']))
+											{
+												$class .= ' last';
+											}
+											?>
+
+											<li class="<?=$class?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 										<?php endforeach ?>
 									</ul>
 								</div>
@@ -132,7 +141,7 @@
 							</ul>
 						</div>
 					</li>
-					<?php if (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
+					<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
 					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 					<?php endif; ?>
 				</ul>

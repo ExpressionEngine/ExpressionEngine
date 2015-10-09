@@ -122,7 +122,8 @@ Grid.Publish.prototype = {
 		addButton.toggle(rowCount > 0);
 
 		if (rowCount > 0) {
-			if (reorderCol.size() == 0) {
+			// Only show reorder header if table is configured to be reorderable
+			if (reorderCol.size() == 0 && $('td.reorder-col', this.root).size() > 0) {
 				$('thead tr', this.root).prepend(
 					$('<th/>', { class: 'first reorder-col' })
 				);
@@ -231,7 +232,7 @@ Grid.Publish.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', '.toolbar .remove a', function(event) {
+		this.root.on('click', 'td:last-child .toolbar .remove a', function(event) {
 			event.preventDefault();
 
 			row = $(this).parents('tr');

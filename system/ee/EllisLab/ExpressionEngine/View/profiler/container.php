@@ -26,11 +26,37 @@
 </section>
 
 
-<?php
-if (REQ == 'PAGE')
-{
-	ee()->load->library('view');
-	echo ee()->view->script_tag('jquery/jquery.js');
-	echo ee()->view->script_tag('common.js');
-}
-?>
+<?php if (REQ == 'PAGE'): ?>
+	<script>
+	!function() {
+		"use strict";
+
+		var wrap = document.querySelector('#debug .tab-wrap');
+		var tabs = wrap.querySelectorAll('ul.tabs a');
+		var sheets = wrap.querySelectorAll('.tab');
+
+		var removeClassFromAll = function(list, klass) {
+			for (var i = 0; i < list.length; i++) {
+				list[i].classList.remove(klass);
+			}
+		}
+
+		var handleTabClick = function(evt) {
+			evt.preventDefault();
+
+			removeClassFromAll(tabs, 'act');
+			removeClassFromAll(sheets, 'tab-open');
+
+			var tab = this;
+			var sheet = wrap.querySelector('.tab.' + this.rel);
+
+			tab.classList.add('act');
+			sheet.classList.add('tab-open');
+		};
+
+		for (var i = 0; i < tabs.length; i++) {
+			tabs[i].addEventListener('click', handleTabClick, false);
+		}
+	}();
+	</script>
+<?php endif; ?>

@@ -58,6 +58,13 @@ class EE_Core {
 			@set_time_limit((REQ == 'CP') ? 300 : 90);
 		}
 
+		// If someone's trying to access the CP but EE_APPPATH is defined, it likely
+		// means the installer is still active; redirect to clean path
+		if (defined('EE_APPPATH') && ee()->uri->segment(1) == 'cp')
+		{
+			header('Location: '.SELF);
+		}
+
 		// some path constants to simplify things
 		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
@@ -65,11 +72,9 @@ class EE_Core {
 		define('PATH_EXT',    SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_FT',     SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_RTE',    APPPATH . 'rte_tools/');
-
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_THIRD', $addon_path);
+		define('PATH_THIRD',  SYSPATH . 'user/addons/');
+		define('PATH_CACHE',  SYSPATH . 'user/cache/');
+		define('PATH_TMPL',   SYSPATH . 'user/templates/');
 
 		// application constants
 		define('IS_CORE',		FALSE);
@@ -98,6 +103,7 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
 
 		// Set ->api on the legacy facade to the model factory
@@ -219,7 +225,7 @@ class EE_Core {
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
-		define('PATH_CP_GBL_IMG', PATH_THEMES_GLOBAL_ASSET.'img/');
+		define('PATH_CP_GBL_IMG', URL_THEMES_GLOBAL_ASSET.'img/');
 		unset($theme_path);
 
 		// Load the very, very base classes
@@ -261,16 +267,12 @@ class EE_Core {
 
 		$this->ee_loaded = TRUE;
 
-		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
+		$this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
-			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'search', 'simple_commerce', 'spam', 'stats', 'wiki', 'filepicker'
-		);
-		$this->standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
-			'simple_commerce', 'wiki', 'filepicker'
+			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
+			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
+			'search', 'simple_commerce', 'spam', 'stats'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.

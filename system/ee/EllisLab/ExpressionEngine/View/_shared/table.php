@@ -15,7 +15,7 @@ if ($wrap): ?>
 		</tr>
 	</table>
 <?php else: ?>
-	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> class="<?=$class?>">
+	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 		<thead>
 			<tr>
 				<?php
@@ -118,9 +118,9 @@ if ($wrap): ?>
 						<?php foreach ($row['columns'] as $column): ?>
 							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
-								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES)?></a></td>
+								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
-								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
+								<td><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>

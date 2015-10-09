@@ -117,7 +117,7 @@ class DebugOutput extends Settings {
 			)
 		);
 
-		if ( ! extension_loaded('newrelic'))
+		if (extension_loaded('newrelic'))
 		{
 			$vars['sections']['new_relic'] = array(
 				array(
@@ -147,7 +147,7 @@ class DebugOutput extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/debug-output');
+		$base_url = ee('CP/URL')->make('settings/debug-output');
 
 		if (AJAX_REQUEST)
 		{

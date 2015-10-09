@@ -25,8 +25,18 @@
 
 	var modal;
 	var current;
+	var callback;
 
 	var bind_modal = function(url, options) {
+		callback = function(data) {
+			var picker = {
+				modal: modal,
+				input_value: options.input_value,
+				input_name: options.input_name,
+				input_img: options.input_img
+			}
+			options.callback(data, picker);
+		}
 		$.get(url, function(data) {
 			modal.find('div.box').html(data);
 			if (typeof options.selected != 'undefined') {
@@ -41,11 +51,11 @@
 			}
 		});
 
-		$('.modal-file').off('click', 'tbody > tr');
-		$('.modal-file').on('click', ' .filepicker-item, tbody > tr', function(e) {
+		$('.modal-file').off('click', '.filepicker-item, tbody > tr');
+		$('.modal-file').on('click', '.filepicker-item, tbody > tr', function(e) {
 			e.stopPropagation();
 			var id = $(this).data('id');
-			var file_url = options.url.replace(/directory=.+(?=&)?/ig, 'file=' + id);
+			var file_url = $(this).data('url');
 
 			current.data('selected', id);
 			modal.find('tbody .selected').toggleClass('selected');
@@ -66,7 +76,7 @@
 					input_img: options.input_img
 				}
 				options.callback($(this), picker);
-				
+
 			} else {
 				$.ajax({
 					url: file_url,
@@ -82,6 +92,40 @@
 					dataType: 'json'
 				});
 			}
+		});
+
+		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
+			e.preventDefault();
+			$(this).parents('div.box').load($(this).attr('href'));
+		});
+		$('.modal-file').on('click', '.tbl-search a', function(e) {
+			e.preventDefault();
+			$('div.box', modal).html("<iframe></iframe>");
+			$('iframe', modal).css('border', 'none');
+			$('iframe', modal).css('width', '100%');
+			$('iframe', modal).load(function (e) {
+				var response = $(this).contents().find('body');
+				var responseWindow = response;
+				responseWindow.hide();
+
+				if ($(response).find('pre').length)
+				{
+					response = $(response).find('pre');
+				}
+
+				response = response.html();
+
+				try {
+					response  = JSON.parse(response);
+					callback(response);
+				} catch(e) {
+					responseWindow.show();
+					var height = $(this).contents().find('body').height();
+					$('.box', modal).height(height);
+			    	$(this).height(height);
+				}
+			});
+			$('iframe', modal).attr('src', $(this).attr('href'));
 		});
 	};
 
@@ -122,21 +166,7 @@
 	};
 
 	$(document).ready(function () {
-		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""]), .tbl-search a', function(e) {
-			e.preventDefault();
-			$(this).parents('div.box').load($(this).attr('href'));
-		});
-		$('.modal-file').on('submit', 'form', function(e) {
-			e.preventDefault();
-			$.ajax({
-				type: "POST",
-				url: $(this).attr('action'),
-				data: $(this).serialize(),
-				success: function(response) {
-					$(this).parents('div.box').load(response);
-				}
-			});
-		});
+		modal = $("." + $(this).attr('rel'));
 		$('.filepicker').click(function (e) {
 			var options = {};
 			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
@@ -171,8 +201,35 @@
 
 			options['url'] = picker_url;
 			options['callback'] = callback;
-			modal = $("." + $(this).attr('rel'));
 			bind_modal(picker_url, options);
 		});
 	});
+
 })(jQuery);
+
+function loadSettingsModal(modal, data) {
+	$('div.box', modal).html(data);
+
+	// Bind validation
+	EE.cp.formValidation.init(modal);
+
+	$('form', modal).on('submit', function() {
+		$.ajax({
+			type: 'POST',
+			url: this.action,
+			data: $(this).serialize()+'&save_modal=yes',
+			dataType: 'json',
+
+			success: function(result) {
+				console.log(result);
+				if (result.messageType == 'success') {
+					modal.trigger('modal:close');
+				} else {
+					loadSettingsModal(modal, result.body);
+				}
+			}
+		});
+
+		return false;
+	});
+}

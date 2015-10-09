@@ -3,9 +3,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Model;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Model\Frontend;
+use EllisLab\ExpressionEngine\Service\Model\Facade;
 
-class FrontendTest extends \PHPUnit_Framework_TestCase {
+class FacadeTest extends \PHPUnit_Framework_TestCase {
 
 	public function tearDown()
 	{
@@ -17,12 +17,12 @@ class FrontendTest extends \PHPUnit_Framework_TestCase {
 		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
 		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
 
-		$frontend = new Frontend($store);
+		$facade = new Facade($store);
 
 		$store->shouldReceive('get')->with('TestModel')->andReturn($qb);
-		$qb->shouldReceive('setFrontend')->with($frontend);
+		$qb->shouldReceive('setFacade')->with($facade);
 
-		$result = $frontend->get('TestModel');
+		$result = $facade->get('TestModel');
 
 		$this->assertSame($qb, $result);
 	}
@@ -33,13 +33,13 @@ class FrontendTest extends \PHPUnit_Framework_TestCase {
 		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
 		$result = m::mock('EllisLab\ExpressionEngine\Service\Model\Model');
 
-		$frontend = new Frontend($store);
+		$facade = new Facade($store);
 
 		$store->shouldReceive('make')
-			->with('TestModel', $frontend, array())
+			->with('TestModel', $facade, array())
 			->andReturn($result);
 
-		$this->assertSame($result, $frontend->make('TestModel'));
+		$this->assertSame($result, $facade->make('TestModel'));
 	}
 
 	public function testMakeWithExisting()
@@ -47,14 +47,14 @@ class FrontendTest extends \PHPUnit_Framework_TestCase {
 		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
 		$result = m::mock('EllisLab\ExpressionEngine\Service\Model\Model');
 
-		$frontend = new Frontend($store);
+		$facade = new Facade($store);
 
 		$store
 			->shouldReceive('make')
-			->with($result, $frontend, array())
+			->with($result, $facade, array())
 			->andReturn($result);
 
-		$this->assertSame($result, $frontend->make($result));
+		$this->assertSame($result, $facade->make($result));
 	}
 
 	public function testMakeWithData()
@@ -62,14 +62,14 @@ class FrontendTest extends \PHPUnit_Framework_TestCase {
 		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
 		$result = m::mock('EllisLab\ExpressionEngine\Service\Model\Model');
 
-		$frontend = new Frontend($store);
+		$facade = new Facade($store);
 		$data = array('foo' => 'bar');
 
 		$store
 			->shouldReceive('make')
-			->with('TestModel', $frontend, $data)
+			->with('TestModel', $facade, $data)
 			->andReturn($result);
 
-		$this->assertSame($result, $frontend->make('TestModel', $data));
+		$this->assertSame($result, $facade->make('TestModel', $data));
 	}
 }

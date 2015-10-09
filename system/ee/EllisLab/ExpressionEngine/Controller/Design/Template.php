@@ -97,7 +97,10 @@ class Template extends AbstractDesignController {
 			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
 				->first()
 				->getValues();
+
 			unset($master_template['template_id']);
+			unset($master_template['group_id']);
+			unset($master_template['hits']);
 
 			$template->set($master_template);
 		}
@@ -235,13 +238,26 @@ class Template extends AbstractDesignController {
 		{
 			$errors = $result;
 
+			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
+			{
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
 			if ($result->isValid())
 			{
 				$template->save();
 				// Save a new revision
 				$this->saveNewTemplateRevision($template);
 
-				$alert = ee('CP/Alert')->makeInline('template-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
@@ -273,14 +289,14 @@ class Template extends AbstractDesignController {
 					'type' => 'submit',
 					'value' => 'update',
 					'text' => sprintf(lang('btn_save'), lang('template')),
-					'working' => 'btn_create_template_working'
+					'working' => 'btn_saving'
 				),
 				array(
 					'name' => 'submit',
 					'type' => 'submit',
 					'value' => 'finish',
 					'text' => 'btn_update_and_finish_editing',
-					'working' => 'btn_create_template_working'
+					'working' => 'btn_saving'
 				),
 			),
 			'sections' => array(),
@@ -290,7 +306,6 @@ class Template extends AbstractDesignController {
 		{
 			$vars['tabs']['revisions'] = $this->renderRevisionsPartial($template, $version_id);
 		}
-
 
 		$view_url = ee()->functions->fetch_site_index();
 		$view_url = rtrim($view_url, '/').'/';
@@ -310,8 +325,8 @@ class Template extends AbstractDesignController {
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . ' <a class="btn action ta" href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . lang('view_rendered') . '</a>';
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -425,6 +440,19 @@ class Template extends AbstractDesignController {
 		{
 			$errors = $result;
 
+			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
+			{
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
 			if ($result->isValid())
 			{
 				$template->save();
@@ -487,10 +515,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! $search_terms)
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-			ee()->functions->redirect($return);
+			$return = ee('CP/URL')->decodeUrl($return);
 		}
 		else
 		{
@@ -502,7 +527,7 @@ class Template extends AbstractDesignController {
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
 			->all();
 
-		$base_url = ee('CP/URL', 'design/template/search');
+		$base_url = ee('CP/URL')->make('design/template/search');
 
 		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
 
@@ -525,7 +550,7 @@ class Template extends AbstractDesignController {
 			$search_terms
 		);
 
-		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###')->compile());
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -965,8 +990,8 @@ class Template extends AbstractDesignController {
 					)
 				),
 				array(
-					'title' => 'non_access_redirect',
-					'desc' => 'non_access_redirect_desc',
+					'title' => 'no_access_redirect',
+					'desc' => 'no_access_redirect_desc',
 					'fields' => array(
 						'no_auth_bounce' => array(
 							'type' => 'select',

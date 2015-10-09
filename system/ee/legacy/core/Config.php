@@ -82,8 +82,9 @@ class EE_Config {
 
 		// Set any config overrides.  These are the items that used to be in
 		// the path.php file, which are now located in the main index file
-		//global $assign_to_config;
-		$assign_to_config = array();
+		// @todo - rewrite the feature of 'global_vars' to be out of the index.php
+		// file and properly live somewhere in system/user
+		global $assign_to_config;
 
 		// Override enable_query_strings to always be false on the frontend
 		// and true on the backend. We need this to get the pagination library
@@ -647,7 +648,6 @@ class EE_Config {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'save_tmpl_files',
-			'tmpl_file_basepath',
 			'strict_urls',
 			'enable_template_routes'
 		);
@@ -718,7 +718,9 @@ class EE_Config {
 		unset($new_values['submit']);
 
 		// Safety check for member profile trigger
-		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
+		if (isset($new_values['profile_trigger'])
+			&& $new_values['profile_trigger'] == ''
+			&& $new_values['members_frontend'] == 'y')
 		{
 			ee()->lang->loadfile('admin');
 			show_error(lang('empty_profile_trigger'));
@@ -1415,7 +1417,6 @@ class EE_Config {
 				'save_tmpl_revisions'    => array('r', array('y' => 'yes', 'n' => 'no')),
 				'max_tmpl_revisions'     => array('i', ''),
 				'save_tmpl_files'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'tmpl_file_basepath'     => array('i', '')
 			),
 
 			'censoring_cfg'		=>	array(
@@ -1711,7 +1712,6 @@ class EE_Config {
 			'enable_template_routes'	=> array('enable_template_routes_exp'),
 			'tmpl_display_mode'			=> array('tmpl_display_mode_exp'),
 			'save_tmpl_files'			=> array('save_tmpl_files_exp'),
-			'tmpl_file_basepath'		=> array('tmpl_file_basepath_exp'),
 			'site_404'					=> array('site_404_exp'),
 			'channel_nomenclature'		=> array('channel_nomenclature_exp'),
 			'enable_sql_caching'		=> array('enable_sql_caching_exp'),

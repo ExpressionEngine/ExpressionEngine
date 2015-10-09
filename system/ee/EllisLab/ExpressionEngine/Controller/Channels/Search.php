@@ -36,7 +36,7 @@ class Search extends AbstractChannelsController {
 	{
 		if ( ! isset($_POST['search']) && ! isset($_GET['search']))
 		{
-			ee()->functions->redirect(ee('CP/URL', 'channels'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels'));
 		}
 
 		$search_terms = isset($_POST['search']) ? $_POST['search'] : $_GET['search'];
@@ -113,7 +113,7 @@ class Search extends AbstractChannelsController {
 					FALSE
 				);
 
-				$base_url = ee('CP/URL', 'channels/search',	ee()->cp->get_url_state())
+				$base_url = ee('CP/URL')->make('channels/search',	ee()->cp->get_url_state())
 					->setQueryStringVariable('search', $search_terms);
 
 				$vars['results'][] = array(

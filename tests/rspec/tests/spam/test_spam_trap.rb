@@ -12,13 +12,13 @@ feature 'Spam Module' do
 			@page.search_submit_button.click
 			no_php_js_errors
 
-			@page.first_party_addons[0].find('ul.toolbar li.install a.add').click
+			@page.first_party_addons[0].find('ul.toolbar li.txt-only a.add').click
 			no_php_js_errors
 		end
 	end
 
 	describe "Spam Trap Table" do
-		
+
 		before(:each) do
 			cp_session
 

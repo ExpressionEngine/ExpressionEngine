@@ -39,7 +39,7 @@ class Settings extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 		// Birthday Options
 		$birthday['days'] = array();
@@ -53,18 +53,18 @@ class Settings extends Profile {
 
 		$birthday['months'] = array(
 			''	 => lang('month'),
-			'01' => lang('january'),
-			'02' => lang('february'),
-			'03' => lang('march'),
-			'04' => lang('april'),
-			'05' => lang('mayl'),
-			'06' => lang('june'),
-			'07' => lang('july'),
-			'08' => lang('august'),
-			'09' => lang('september'),
-			'10' => lang('october'),
-			'11' => lang('november'),
-			'12' => lang('december')
+			'01' => lang('January'),
+			'02' => lang('February'),
+			'03' => lang('March'),
+			'04' => lang('April'),
+			'05' => lang('May_l'),
+			'06' => lang('June'),
+			'07' => lang('July'),
+			'08' => lang('August'),
+			'09' => lang('September'),
+			'10' => lang('October'),
+			'11' => lang('November'),
+			'12' => lang('December')
 		);
 
 		$birthday['days'][''] = lang('day');
@@ -218,7 +218,9 @@ class Settings extends Profile {
 						'avatar_filename' => array(
 							'type' => 'image',
 							'id' => 'avatar',
-							'image' => $directory->url . $this->member->avatar_filename
+							'edit' => FALSE,
+							'image' => $directory->url . $this->member->avatar_filename,
+							'value' => $this->member->avatar_filename
 						)
 					)
 				),

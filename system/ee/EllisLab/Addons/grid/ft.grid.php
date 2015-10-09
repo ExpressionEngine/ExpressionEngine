@@ -469,7 +469,7 @@ class Grid_ft extends EE_Fieldtype {
 		$vars['columns'] = array();
 
 		// Validation error, repopulate
-		if (isset($_POST['grid']) && $_POST['field_type'] == 'grid')
+		if (isset($_POST['grid']))
 		{
 			$columns = $_POST['grid']['cols'];
 
@@ -584,10 +584,11 @@ class Grid_ft extends EE_Fieldtype {
 
 		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
 
+		$this->error_fields = array();
+
 		if ($validate !== TRUE)
 		{
 			$errors = array();
-			$this->error_fields = array();
 
 			// Gather error messages and fields with errors so that we can
 			// display the error messages and highlight the fields that

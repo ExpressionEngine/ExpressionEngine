@@ -66,7 +66,8 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker'
+		'filepicker',
+		'search'
 	);
 
 	public $theme_required_modules = array();
@@ -134,9 +135,7 @@ class Wizard extends CI_Controller {
 		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
-		'log_path'           => '',
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'cache_path'         => '',
 		'encryption_key'     => '',
 
 		// Enabled for cleaner view files and compatibility
@@ -155,13 +154,13 @@ class Wizard extends CI_Controller {
 
 		define('IS_CORE', FALSE);
 		define('PASSWORD_MAX_LENGTH', 72);
+		define('PATH_CACHE',  SYSPATH.'user/cache/');
+		define('PATH_TMPL',   SYSPATH.'user/templates/');
 
 		// Third party constants
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
-		define('PATH_THIRD', $addon_path);
+		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
+		define('PATH_THIRD',  SYSPATH.'user/addons/');
+		define('PATH_RTE',    EE_APPPATH . 'rte_tools/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -340,13 +339,8 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Attempt to grab cache_path config if it's set
-		$cache_path = (ee()->config->item('cache_path'))
-			? ee()->config->item('cache_path')
-			: SYSPATH.'user/cache';
-
 		// Is the cache folder writable?
-		if ( ! is_really_writable($cache_path))
+		if ( ! is_really_writable(PATH_CACHE))
 		{
 			$this->set_output('error', array('error' => lang('unwritable_cache_folder')));
 			return FALSE;
@@ -500,7 +494,9 @@ class Wizard extends CI_Controller {
 		// Assign the _POST array values
 		$this->assign_install_values();
 
-		$vars = array();
+		$vars = array(
+			'action' => $this->set_qstr('do_install')
+		);
 
 		// Are there any errors to display? When the user submits the
 		// installation form, the $this->do_install() function is called. In
@@ -508,7 +504,6 @@ class Wizard extends CI_Controller {
 		// message
 		$vars['errors'] = $errors;
 
-		$vars['action'] = $this->set_qstr('do_install');
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
@@ -636,6 +631,22 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	public function license_agreement($value)
+	{
+		if ($value !== 'y')
+		{
+			ee()->form_validation->set_message(
+				'license_agreement',
+				lang('license_agreement_not_accepted')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Perform the installation
 	 * @return void
@@ -698,6 +709,11 @@ class Wizard extends CI_Controller {
 				'label' => 'lang:email_address',
 				'rules' => 'required|valid_email'
 			),
+			array(
+				'field' => 'license_agreement',
+				'label' => 'lang:license_agreement',
+				'rules' => 'callback_license_agreement'
+			)
 		));
 
 		// Bounce if anything failed
@@ -732,7 +748,7 @@ class Wizard extends CI_Controller {
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
-		if ($this->db_connect_attempt === 1045)
+		if ($this->db_connect_attempt === 1044 OR $this->db_connect_attempt === 1045)
 		{
 			$errors[] = lang('database_invalid_user');
 		}
@@ -1859,7 +1875,7 @@ class Wizard extends CI_Controller {
 			'gzip_output'               => 'n',
 			'is_system_on'              => 'y',
 			'allow_extensions'          => 'y',
-			'date_format'               => '%n/%j/%y',
+			'date_format'               => '%n/%j/%Y',
 			'time_format'               => '12',
 			'include_seconds'           => 'n',
 			'server_offset'             => '',
@@ -1925,7 +1941,6 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
 			'save_tmpl_files'           => 'n',
-			'tmpl_file_basepath'        => realpath('./user/templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -2131,7 +2146,6 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'save_tmpl_files',
-			'tmpl_file_basepath'
 		);
 		$site_prefs = array();
 

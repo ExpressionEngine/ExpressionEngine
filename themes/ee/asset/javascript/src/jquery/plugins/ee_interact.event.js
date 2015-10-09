@@ -102,58 +102,72 @@ function triggerOnText(el, data, delay) {
 	}, delay);
 }
 
+var handleObjs = {};
+
 $.event.special.interact = {
 
-	/* jQuery Event Bind
-	 *
- 	 * Bind our special interact event.
-	 */
-	setup: function( data, namespaces ) {
+	add: function (handleObj) {
+		if (handleObj.selector === undefined) {
+			// for forms we need to bind on the kids instead
+			if ($.nodeName(this, "form" )) {
+				allFormElements(this, function() {
+					$.event.special.interact.add.call(this, handleObj);
+				});
+				return;
+			}
 
-		// for forms we need to bind on the kids instead
-		if ($.nodeName( this, "form" )) {
-			allFormElements(this, function() {
-				$.event.special.interact.setup.call(this, data, namespaces);
+			// text inputs don't fire a sensible change event,
+			// for live filtering we need to know when something
+			// is changed as soon as the user releases the key.
+			if (isTextInput(this)) {
+
+				// store old value so we don't fire uselessly
+				// this is consistent with other element change events
+				$.data(this, '_interact_cache', this.value);
+
+				// keyup
+				$.event.add(this, 'keyup.specialInteract change.specialInteract', function() {
+					triggerOnText(this, handleObj.data);
+				});
+
+				// cut, paste, and IE's oninput
+				$.event.add(this, 'input.specialInteract cut.specialInteract paste.specialInteract', function() {
+					triggerOnText(this, handleObj.data, 25);
+				});
+
+				return;
+			}
+
+			// and a change event for all other elements as well
+			// as browsers that don't recognize cut and paste events
+			$.event.add(this, 'change.specialInteract', function() {
+				$.event.trigger('interact', data, this);
 			});
-			return;
+		} else {
+			handleObjs[this] = handleObj;
+			$.event.add(this, 'keyup.specialInteract change.specialInteract input.specialInteract cut.specialInteract paste.specialInteract', function(event) {
+				if ($(this).find(handleObjs[this].selector).has(event.target)) {
+					if (isTextInput(event.target)) {
+						$.data(this, '_interact_cache', this.value);
+
+						if ($.inArray(event.type, ['input', 'cut', 'paste'])) {
+							triggerOnText(event.target, handleObjs[this].data, 25);
+						} else {
+							triggerOnText(event.target, handleObjs[this].data);
+						}
+					} else {
+						$.event.trigger('interact', handleObjs[this].data, event.target);
+					}
+				}
+			});
 		}
 
-		// text inputs don't fire a sensible change event,
-		// for live filtering we need to know when something
-		// is changed as soon as the user releases the key.
-		if (isTextInput(this)) {
-
-			// store old value so we don't fire uselessly
-			// this is consistent with other element change events
-			$.data(this, '_interact_cache', this.value);
-
-			// keyup
-			$.event.add(this, 'keyup.specialInteract change.specialInteract', function() {
-				triggerOnText(this, data);
-			});
-
-			// cut, paste, and IE's oninput
-			$.event.add(this, 'input.specialInteract cut.specialInteract paste.specialInteract', function() {
-				triggerOnText(this, data, 25);
-			});
-
-			return;
-		}
-
-		// and a change event for all other elements as well
-		// as browsers that don't recognize cut and paste events
-		$.event.add(this, 'change.specialInteract', function() {
-			$.event.trigger('interact', data, this);
-		});
 	},
 
-	/* jQuery Event Unbind
-	 *
- 	 * Remove all helper events we added
-	 */
-	teardown: function(namespaces) {
+	remove: function (handleObj) {
+		delete handleObjs[this];
 		$(this).unbind('.specialInteract');
-	}
+	},
 
 };
 

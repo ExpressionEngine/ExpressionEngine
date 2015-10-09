@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Database\Database;
  * This is the backend for all model interactions. It should never be exposed
  * directly to any code outside of this namespace. This includes no access from
  * userspace models. The only way to interact with it should be through the
- * model frontend.
+ * model facade.
  *
  * @package		ExpressionEngine
  * @category	Service
@@ -41,25 +41,27 @@ class DataStore {
 	protected $db;
 	protected $aliases;
 	protected $default_prefix;
+	protected $enabled_prefixes;
 	protected $metadata = array();
 
 	/**
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
 	 * @param $aliases Array of model aliases
 	 */
-	public function __construct(Database $db, $aliases, $foreign_models, $default_prefix)
+	public function __construct(Database $db, $aliases, $foreign_models, $default_prefix, $enabled_prefixes)
 	{
 		$this->db = $db;
 		$this->aliases = $aliases;
 		$this->default_prefix = $default_prefix;
 		$this->foreign_models = $foreign_models;
+		$this->enabled_prefixes = $enabled_prefixes;
 	}
 
 	/**
 	 * @param Object|String $name      The name of a model or an existing
 	 *                                 model instance
-	 * @param Frontend      $frontend  A frontend instance. The datastore
-	 *                                 doesn't care about the frontend, but
+	 * @param Facade      $facade      A facade instance. The datastore
+	 *                                 doesn't care about the facade, but
 	 *                                 the model and associations need it, so
 	 *                                 we pass it in to keep things properly
 	 *                                 isolated.
@@ -67,7 +69,7 @@ class DataStore {
 	 *                                 This will be marked as dirty! Use fill()
 	 *                                 if you need clean data (i.e. from db).
 	 */
-	public function make($name, Frontend $frontend, array $data = array())
+	public function make($name, Facade $facade, array $data = array())
 	{
 		if ($name instanceOf Model)
 		{
@@ -92,7 +94,7 @@ class DataStore {
 		}
 
 		$model->setName($name);
-		$model->setFrontend($frontend);
+		$model->setFacade($facade);
 
 		$this->initializeAssociationsOn($model);
 
@@ -188,6 +190,11 @@ class DataStore {
 
 		foreach ($this->foreign_models as $model => $dependencies)
 		{
+			if ( ! $this->modelIsEnabled($model))
+			{
+				continue;
+			}
+
 			if (in_array($model_name, $dependencies))
 			{
 				$ships = $this->fetchRelationships($model);
@@ -206,6 +213,11 @@ class DataStore {
 		}
 
 		return $relations;
+	}
+
+	protected function modelIsEnabled($model_name)
+	{
+		return in_array(strstr($model_name, ':', TRUE), $this->enabled_prefixes);
 	}
 
 	public function getInverseRelation(Relation $relation)
@@ -304,10 +316,16 @@ class DataStore {
 		$relationship = $this->fetchRelationship($model, $name);
 
 		$to_model = isset($relationship['model']) ? $relationship['model'] : $name;
+		$as_defined_to = $to_model;
 
 		if (strpos($to_model, ':') == 0)
 		{
 			$to_model = $this->getPrefix($model).':'.$to_model;
+		}
+
+		if ( ! isset($this->aliases[$to_model]))
+		{
+			throw new \Exception('Unknown model "'.$as_defined_to.'". Used in model "'.$model.'" for a relationship called "'.$name.'".');
 		}
 
 		$defaults = array(

@@ -41,7 +41,7 @@ abstract class SerializedType implements Type {
 		$data = $this->unserialize($db_data);
 		$this->data = $data;
 
-		return $db_data;
+		return $data;
 	}
 
 	public function store($data)

@@ -265,6 +265,8 @@ $lang = array(
 
 'no_watermark' => 'No watermark',
 
+'image_manip_dimension_required' => 'A height or width must be entered if no watermark is selected.',
+
 'no_manipulations' => 'No manipulations created',
 
 'add_manipulation' => 'Add New Manipulation',
@@ -416,13 +418,22 @@ $lang = array(
 
 'y_axis' => 'y-axis',
 
-'watermark_saved' => 'Watermark saved',
+'watermark_created' => 'Watermark Created',
 
-'watermark_saved_desc' => 'Your watermark has been saved successfully.',
+'watermark_created_desc' => 'The watermark <b>%s</b> has been created.',
 
-'watermark_not_saved' => 'Attention: Watermark not saved',
+'watermark_not_created' => 'Cannot Create Watermark',
 
-'watermark_not_saved_desc' => 'We were unable to save your watermark, please review and fix errors below.',
+'watermark_not_created_desc' => 'We were unable to create this watermark, please review and fix errors below.',
+
+'watermark_updated' => 'Watermark Updated',
+
+'watermark_updated_desc' => 'The watermark <b>%s</b> has been updated.',
+
+'watermark_not_updated' => 'Cannot Update Watermark',
+
+'watermark_not_updated_desc' => 'We were unable to update this watermark, please review and fix errors below.',
+
 
 // 2.x
 

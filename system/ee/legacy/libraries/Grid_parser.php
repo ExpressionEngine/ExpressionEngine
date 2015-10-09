@@ -491,7 +491,8 @@ class Grid_parser {
 						'params'	=> $params
 					),
 					$channel_row,
-					$content
+					$content,
+					$content_type
 				);
 
 				// Replace tag pair
@@ -510,7 +511,9 @@ class Grid_parser {
 					$entry_id,
 					$row['row_id'],
 					$field,
-					$channel_row
+					$channel_row,
+					FALSE,
+					$content_type
 				);
 			}
 			// Check to see if this is a field in the table for
@@ -616,7 +619,7 @@ class Grid_parser {
 	 * @param	int		Entry ID being processed or parsed
 	 * @return	object	Fieldtype object
 	 */
-	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0)
+	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0, $content_type = 'channel')
 	{
 		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
 		{
@@ -656,7 +659,8 @@ class Grid_parser {
 				'col_required'		=> $column['col_required'],
 				'entry_id'			=> $entry_id,
 				'grid_field_id'		=> $field_id,
-				'grid_row_name'		=> $row_name
+				'grid_row_name'		=> $row_name,
+				'grid_content_type'	=> $content_type
 			)
 		);
 
@@ -717,9 +721,9 @@ class Grid_parser {
 	 * @param	string	Tag data for tag pairs being parsed
 	 * @return	string	Tag data with all Grid fields parsed
 	 */
-	protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = FALSE)
+	protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = FALSE, $content_type = 'channel')
 	{
-		$fieldtype = $this->instantiate_fieldtype($column, NULL, $field_id, $entry_id);
+		$fieldtype = $this->instantiate_fieldtype($column, NULL, $field_id, $entry_id, $content_type);
 
 		// Return the raw data if no fieldtype found
 		if ( ! $fieldtype)

@@ -38,7 +38,7 @@ class Auth extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 		$vars['sections'] = array(
 			array(

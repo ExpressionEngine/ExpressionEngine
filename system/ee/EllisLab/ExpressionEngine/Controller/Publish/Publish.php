@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -29,6 +30,40 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
  */
 class Publish extends AbstractPublishController {
 
+	/**
+	 * Renders a single field for a given channel or channel entry
+	 *
+	 * @param int $channel_id The Channel ID
+	 * @param int $entry_id The Entry ID
+	 * @param string $field_name The name of the field to render
+	 * @return array An associative array (for JSON) containing the rendered HTML
+	 */
+	public function field($channel_id, $entry_id, $field_name)
+	{
+		if ($entry_id)
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Channel = ee('Model')->get('Channel', $channel_id)->first();
+		}
+
+		$entry->set($_POST);
+
+		return array('html' => $entry->getCustomField($field_name)->getForm());
+	}
+
+	/**
+	 * Autosaves a channel entry
+	 *
+	 * @param int $channel_id The Channel ID
+	 * @param int $entry_id The Entry ID
+	 * @return void
+	 */
 	public function autosave($channel_id, $entry_id)
 	{
 		$site_id = ee()->config->item('site_id');
@@ -81,8 +116,21 @@ class Publish extends AbstractPublishController {
 		));
 	}
 
+	/**
+	 * Creates a new channel entry
+	 *
+	 * @param int $channel_id The Channel ID
+	 * @param int|NULL $autosave_id An optional autosave ID, for pre-populating
+	 *   the form
+	 * @return string Rendered HTML
+	 */
 	public function create($channel_id, $autosave_id = NULL)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$channel = ee('Model')->get('Channel', $channel_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -113,7 +161,7 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'publish/create/' . $channel_id),
+			'form_url' => ee('CP/URL')->make('publish/create/' . $channel_id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_publish'),
@@ -136,6 +184,11 @@ class Publish extends AbstractPublishController {
 
 		if (count($_POST))
 		{
+			if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+			{
+				unset($_POST['author_id']);
+			}
+
 			$entry->set($_POST);
 			$result = $entry->validate();
 
@@ -170,7 +223,7 @@ class Publish extends AbstractPublishController {
 						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
 						->defer();
 
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
 				}
 				else
 				{
@@ -182,7 +235,7 @@ class Publish extends AbstractPublishController {
 						->addToBody(sprintf(lang('create_entry_success_desc'), $entry->title))
 						->defer();
 
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 				}
 			}
 			else
@@ -220,13 +273,19 @@ class Publish extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/channel/publish', 'cp/channel/category_edit')
+			'file' => array('cp/publish/publish', 'cp/channel/category_edit')
 		));
 
 		ee()->cp->render('publish/entry', $vars);
 	}
 
-	private function populateFromBookmarklet($entry)
+	/**
+	 * Populates a channel entry entity from a bookmarklet action
+	 *
+	 * @param ChannelEntry $entry A Channel Entry entity to populate
+	 * @return void
+	 */
+	private function populateFromBookmarklet(ChannelEntry $entry)
 	{
 		$field = '';
 

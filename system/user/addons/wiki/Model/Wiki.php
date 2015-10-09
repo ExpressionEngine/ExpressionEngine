@@ -44,16 +44,13 @@ class Wiki extends Model {
 		'wiki_label_name'	     => 'required|unique',
 		'wiki_short_name'       => 'required|validateShortName|unique',
 		'wiki_moderation_emails'   => 'validateEmails',
-		'wiki_upload_dir' => 'required',
-		'wiki_users' => 'required',
-		'wiki_admins' => 'required',
 		'wiki_html_format' => 'required',
 		'wiki_text_format' => 'required',
-		'wiki_revision_limit' => 'is_natural',
-		'wiki_author_limit' => 'is_natural'
+		'wiki_revision_limit' => 'is_natural_no_zero|required',
+		'wiki_author_limit' => 'is_natural_no_zero|required'
 	);
 
-/*
+
 
 	protected static $_relationships = array(
 		'WikiNamespaces' => array(
@@ -73,14 +70,13 @@ class Wiki extends Model {
 			'model' => 'Upload'
 		)
 	);
-*/
 
-	protected static $_relationships = array(
-		'WikiNamespaces' => array(
-			'type' => 'hasMany',
-			'model' => 'WikiNamespace'
-		)
-	);
+
+
+	
+	protected static $_events = array(
+		'afterInsert'
+	);	
 
 	protected $wiki_id;
 	protected $wiki_label_name;
@@ -121,5 +117,46 @@ class Wiki extends Model {
 
 		return TRUE;
 	}
+	
+	public function onAfterInsert()
+	{
+			$data = array(
+				'wiki_id'        => $this->wiki_id,
+				'page_name'      => 'index',
+				'page_namespace' => '',
+				'last_updated'   => ee()->localize->now
+			);
+
+        $this->getFrontend()->make('wiki:Page', $data)->save();
+	}
+
+
+/*	
+		//  Default Index Page
+		$this->lang->loadfile('wiki');
+
+		$data = array(	'wiki_id'		=> $wiki_id,
+						'page_name'		=> 'index',
+						'page_namespace'	=> '',
+						'last_updated'	=> $this->localize->now);
+
+		$this->db->insert('wiki_page', $data);
+		$page_id = $this->db->insert_id();
+
+		$data = array(	'page_id'			=> $page_id,
+						'wiki_id'			=> $wiki_id,
+						'revision_date'		=> $this->localize->now,
+						'revision_author'	=> $this->session->userdata('member_id'),
+						'revision_notes'	=> $this->lang->line('default_index_note'),
+						'page_content'		=> $this->lang->line('default_index_content')
+					 );
+
+		$this->db->insert('wiki_revisions', $data);
+		$last_revision_id = $this->db->insert_id();
+
+		$this->db->where('page_id', $page_id);
+		$this->db->update('wiki_page', array('last_revision_id' => $last_revision_id));
+	
+*/	
 
 }

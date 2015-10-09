@@ -5,6 +5,7 @@ $lang = array(
 	"view_members" => "View Members",
 	"all_members" => "All Members",
 	"member_updated" => "Member saved",
+	"maximum_members_reached" => "You have reached the maximum number of Members allowed.",
 	"member_updated_desc" => "Member has been saved successfully.",
 	"member_group_updated" => "Member Group saved",
 	"member_group_updated_desc" => "Member Group has been saved successfully.",
@@ -84,7 +85,7 @@ $lang = array(
 	'visibility' => 'Visibility',
 	"index" => "Main Index Page",
 	"member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
-	"can_moderate_comments" => "Can Moderate Comments",
+	"can_moderate_comments" => "Moderate Comments",
 	"exclude_from_moderation" => "Bypass moderation",
 	"exclude_from_moderation_desc" => "When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default <a href='%s'>comment settings</a>.",
 	"moderation_actions" => "Moderation actions",
@@ -239,7 +240,8 @@ $lang = array(
 	"footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",
 	"can_access_content" => "Content",
 	"can_access_design" => "Design &amp; Content",
-	"can_access_addons" => "Add-ons",
+	"can_access_addons" => "Access Add-ons",
+	"can_access_addons_desc" => "When set to <b>yes</b>, users assigned to this group may access the add-on manager.",
 	"can_access_members" => "Members",
 	"can_ban_users" => "Ban members",
 	"cp_admin_privs" => "Control Panel Administration",
@@ -441,7 +443,8 @@ $lang = array(
 	"settings" => "Settings",
 	"can_access_content_settings" => "Content",
 	"can_access_security_settings" => "Security &amp; Privacy",
-	"can_access_addon_settings" => "Add-ons"
+	"can_access_addon_settings" => "Add-ons",
+	"member_settings" => "Member Settings"
 );
 /* End of file members_lang.php */
 /* Location: ./system/expressionengine/language/english/members_lang.php */

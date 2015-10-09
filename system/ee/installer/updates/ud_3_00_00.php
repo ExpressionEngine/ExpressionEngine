@@ -68,7 +68,9 @@ class Updater {
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
 				'_remove_show_button_cluster_column',
-				'_add_cp_homepage_columns'
+				'_add_cp_homepage_columns',
+				'_remove_path_configs',
+				'_install_plugins',
 			)
 		);
 
@@ -119,7 +121,7 @@ class Updater {
 		ee()->load->library('addons');
 
 		$installed_modules = ee()->db->select('module_name')->get('modules');
-		$required_modules = array('filepicker', 'comment');
+		$required_modules = array('filepicker', 'comment', 'search');
 
 		foreach ($installed_modules->result() as $installed_module)
 		{
@@ -415,28 +417,6 @@ class Updater {
 
 			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
-				$tmpl_file_basepath = ee()->config->item('tmpl_file_basepath');
-
-				// Continue to the next site if there's no basepath
-				if (empty($tmpl_file_basepath))
-				{
-					continue;
-				}
-
-				// Change the config for basepath to the new normal if they're
-				// using the old default
-				if (stripos($tmpl_file_basepath, SYSDIR.'/expressionengine/templates') !== FALSE)
-				{
-					ee()->config->set_item(
-						'tmpl_file_basepath',
-						str_replace(
-							'/expressionengine/templates',
-							'/user/templates',
-							$tmpl_file_basepath
-						)
-					);
-				}
-
 				$templates = ee()->template_model->fetch_last_edit(
 					array('templates.site_id' => $site['site_id']),
 					TRUE
@@ -465,7 +445,7 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
-		if (ee()->db->table_exists('layout_publish_member_groups'))
+		if ( ! ee()->db->field_exists('member_group', 'layout_publish'))
 		{
 			return;
 		}
@@ -524,7 +504,7 @@ class Updater {
 				{
 					$tab = array(
 						'id' => $tab_id,
-						'name' => $old_tab['_tab_label'],
+						'name' => isset($old_tab['_tab_label']) ? $old_tab['_tab_label'] : $tab_id,
 						'visible' => TRUE,
 						'fields' => array()
 					);
@@ -542,7 +522,7 @@ class Updater {
 							foreach (explode('|', $layout['cat_group']) as $cat_group_id)
 							{
 								$tab['fields'][] = array(
-									'field' => 'cat_group_id_' . $cat_group_id,
+									'field' => 'categories[cat_group_id_' . $cat_group_id . ']',
 									'visible' => $info['visible'],
 									'collapsed' => $info['collapse']
 								);
@@ -584,6 +564,8 @@ class Updater {
 				}
 
 				$layouts[$index]['field_layout'] = serialize($new_field_layout);
+				unset($layouts[$index]['cat_group']);
+				unset($layouts[$index]['member_group']);
 			}
 
 			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
@@ -738,6 +720,11 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
+		if ( ! ee()->db->field_exists('can_access_extensions', 'member_groups'))
+		{
+			return;
+		}
+
 		ee()->smartforge->add_column('member_groups', array(
 			'include_in_mailinglist' => array(
 				'type'       => 'char',
@@ -857,77 +844,92 @@ class Updater {
 			}
 		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_upload_new_assets' => 'y',
-				'can_edit_assets' => 'y',
-				'can_delete_assets' => 'y',
-				'can_upload_new_toolsets' => 'y',
-				'can_edit_toolsets' => 'y',
-				'can_delete_toolsets' => 'y',
-				'can_create_upload_directories' => 'y',
-				'can_edit_upload_directories' => 'y',
-				'can_delete_upload_directories' => 'y'
-			),
-			array('can_access_content' => 'y')
-		);
+		if (ee()->db->field_exists('can_access_content', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_upload_new_assets' => 'y',
+					'can_edit_assets' => 'y',
+					'can_delete_assets' => 'y',
+					'can_upload_new_toolsets' => 'y',
+					'can_edit_toolsets' => 'y',
+					'can_delete_toolsets' => 'y',
+					'can_create_upload_directories' => 'y',
+					'can_edit_upload_directories' => 'y',
+					'can_delete_upload_directories' => 'y'
+				),
+				array('can_access_content' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_create_channels' => 'y',
-				'can_edit_channels' => 'y',
-				'can_delete_channels' => 'y',
-				'can_create_channel_fields' => 'y',
-				'can_edit_channel_fields' => 'y',
-				'can_delete_channel_fields' => 'y',
-				'can_create_statuses' => 'y',
-				'can_delete_statuses' => 'y',
-				'can_edit_statuses' => 'y',
-				'can_create_categories' => 'y'
-			),
-			array('can_admin_channels' => 'y')
-		);
+		if (ee()->db->field_exists('can_admin_channels', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_channels' => 'y',
+					'can_edit_channels' => 'y',
+					'can_delete_channels' => 'y',
+					'can_create_channel_fields' => 'y',
+					'can_edit_channel_fields' => 'y',
+					'can_delete_channel_fields' => 'y',
+					'can_create_statuses' => 'y',
+					'can_delete_statuses' => 'y',
+					'can_edit_statuses' => 'y',
+					'can_create_categories' => 'y'
+				),
+				array('can_admin_channels' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_create_member_groups' => 'y',
-				'can_delete_member_groups' => 'y',
-				'can_edit_member_groups' => 'y'
-			),
-			array('can_admin_mbr_groups' => 'y')
-		);
+		if (ee()->db->field_exists('can_admin_mbr_groups', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_member_groups' => 'y',
+					'can_delete_member_groups' => 'y',
+					'can_edit_member_groups' => 'y'
+				),
+				array('can_admin_mbr_groups' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_create_members' => 'y',
-				'can_edit_members' => 'y'
-			),
-			array('can_admin_members' => 'y')
-		);
+		if (ee()->db->field_exists('can_admin_members', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_create_members' => 'y',
+					'can_edit_members' => 'y'
+				),
+				array('can_admin_members' => 'y')
+			);
+		}
 
-		ee()->db->update(
-			'member_groups',
-			array(
-				'can_manage_template_settings' => 'y',
-				'can_create_new_templates' => 'y',
-				'can_edit_templates' => 'y',
-				'can_delete_templates' => 'y',
-				'can_create_template_groups' => 'y',
-				'can_edit_template_groups' => 'y',
-				'can_delete_template_groups' => 'y',
-				'can_create_template_partials' => 'y',
-				'can_edit_template_partials' => 'y',
-				'can_delete_template_partials' => 'y',
-				'can_create_template_variables' => 'y',
-				'can_delete_template_variables' => 'y',
-				'can_edit_template_variables' => 'y'
-			),
-			array('can_admin_templates' => 'y')
-		);
+		if (ee()->db->field_exists('can_admin_templates', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_manage_template_settings' => 'y',
+					'can_create_new_templates' => 'y',
+					'can_edit_templates' => 'y',
+					'can_delete_templates' => 'y',
+					'can_create_template_groups' => 'y',
+					'can_edit_template_groups' => 'y',
+					'can_delete_template_groups' => 'y',
+					'can_create_template_partials' => 'y',
+					'can_edit_template_partials' => 'y',
+					'can_delete_template_partials' => 'y',
+					'can_create_template_variables' => 'y',
+					'can_delete_template_variables' => 'y',
+					'can_edit_template_variables' => 'y'
+				),
+				array('can_admin_templates' => 'y')
+			);
+		}
 
 		// Drop all superfluous permissions columns
 		$old = array(
@@ -1466,6 +1468,55 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Remove user configurable paths since user-servicable directory covers
+	 * them now
+	 * @return void
+	 */
+	private function _remove_path_configs()
+	{
+		ee()->config->_update_config(array(), array(
+			'addons_path'        => '',
+			'third_party_path'   => '',
+			'tmpl_file_basepath' => '',
+			'cache_path'         => '',
+			'log_path'           => ''
+		));
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Install all plugins found
+	 * @return  void
+	 */
+	private function _install_plugins()
+	{
+		foreach (ee('Addon')->all() as $name => $info)
+		{
+			$info = ee('Addon')->get($name);
+
+			// Check that it's a plugin ONLY
+			if ($info->hasInstaller()
+				|| $info->hasControlPanel()
+				|| $info->hasModule()
+				|| $info->hasExtension()
+				|| $info->hasFieldtype())
+			{
+				continue;
+			}
+
+			$model = ee('Model')->make('Plugin');
+			$model->plugin_name = $info->getName();
+			$model->plugin_package = $name;
+			$model->plugin_version = $info->getVersion();
+			$model->is_typography_related = ($info->get('plugin.typography')) ? 'y' : 'n';
+			$model->save();
+		}
 	}
 }
 /* END CLASS */

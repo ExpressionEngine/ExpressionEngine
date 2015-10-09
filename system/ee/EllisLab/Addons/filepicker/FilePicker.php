@@ -44,7 +44,7 @@ class FilePicker {
 			$qs['hasFilters'] = $data['hasFilters'];
 		}
 
-		$href = ee('CP/URL', $this->controller, $qs);
+		$href = ee('CP/URL')->make($this->controller, $qs);
 		$extra = "";
 		$class = "";
 
@@ -122,7 +122,10 @@ class FilePicker {
 				ee()->localize->human_time($file->upload_date),
 			);
 
-			$attrs = array('data-id' => $file->file_id);
+			$attrs = array(
+				'data-id' => $file->file_id,
+				'data-url' => ee('CP/URL')->make($this->controller, array('file' => $file->file_id))
+			);
 
 			if ($file->file_id == $selected)
 			{

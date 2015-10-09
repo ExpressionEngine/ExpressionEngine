@@ -74,7 +74,7 @@ class Fields extends AbstractChannelsController {
 			->filter('group_id', $group_id);
 
 		$table = $this->buildTableFromChannelFieldsQuery($fields);
-		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL', 'channels/fields/create/' . $group_id));
+		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
 		$vars['table'] = $table->viewData($base_url);
 
@@ -90,7 +90,7 @@ class Fields extends AbstractChannelsController {
 			),
 		));
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/fields/groups'), lang('field_groups'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/fields/groups'), lang('field_groups'));
 		ee()->view->cp_page_title = sprintf(lang('custom_fields_for'), $group->group_name);
 
 		ee()->cp->render('channels/fields/index', $vars);
@@ -104,8 +104,8 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/' . $group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -134,7 +134,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/'.$group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/'.$group_id));
 			}
 			else
 			{
@@ -151,7 +151,7 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/create/' . $group_id),
+			'base_url' => ee('CP/URL')->make('channels/fields/create/' . $group_id),
 			'sections' => $this->form(),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',
@@ -192,8 +192,8 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/' . $field->group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -218,7 +218,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/' . $field->group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/' . $field->group_id));
 			}
 			else
 			{
@@ -235,7 +235,7 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',
@@ -254,7 +254,13 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
-		$field->field_type = $_POST['field_type'];
+
+		if ($field->isNew())
+		{
+			// This field is disabled and not present in POST when editing and existing field
+			$field->field_type = $_POST['field_type'];
+		}
+
 		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
@@ -284,6 +290,8 @@ class Fields extends AbstractChannelsController {
 
 		$field->field_type = ($field->field_type) ?: 'text';
 
+		$fieldtype_disabled = ! $field->isNew();
+
 		$sections = array(
 			array(
 				array(
@@ -294,7 +302,8 @@ class Fields extends AbstractChannelsController {
 							'type' => 'select',
 							'choices' => $fieldtype_choices,
 							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
-							'value' => $field->field_type
+							'value' => $field->field_type,
+							'disabled' => $fieldtype_disabled
 						)
 					)
 				),

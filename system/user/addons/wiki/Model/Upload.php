@@ -37,7 +37,29 @@ class Upload extends Model {
 	protected static $_relationships = array(
 		'Wiki' => array(
 			'type' => 'belongsTo'
-		)
+		),
+      'Author' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'upload_author',
+			'to_key'   => 'member_id',
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Uploads',
+				'type' => 'hasMany'
+            )
+        ),
+      'File' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'file_name',
+			'to_key'   => 'file_name',
+			'model'    => 'ee:File',
+			'weak'     => FALSE,  // we want to delete them
+			'inverse' => array(
+				'name' => 'Uploads',
+				'type' => 'hasMany'
+            )
+        )	
 	);	
 
 	protected $wiki_upload_id;

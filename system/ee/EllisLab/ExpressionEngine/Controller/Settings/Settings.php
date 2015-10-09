@@ -39,7 +39,7 @@ class Settings extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs'))
+		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -59,39 +59,40 @@ class Settings extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL', 'settings/general'))
+		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL')->make('settings/general'))
 			->addBasicList();
 
-		$list->addItem(lang('license_and_reg'), ee('CP/URL', 'settings/license'));
-		$list->addItem(lang('url_path_settings'), ee('CP/URL', 'settings/urls'));
-		$list->addItem(lang('outgoing_email'), ee('CP/URL', 'settings/email'));
-		$list->addItem(lang('debugging_output'), ee('CP/URL', 'settings/debug-output'));
+		$list->addItem(lang('license_and_reg'), ee('CP/URL')->make('settings/license'));
+		$list->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
+		$list->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
+		$list->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
 
-		$list = $sidebar->addHeader(lang('content_and_design'), ee('CP/URL', 'settings/content-design'))
+		$list = $sidebar->addHeader(lang('content_and_design'), ee('CP/URL')->make('settings/content-design'))
 			->addBasicList();
 
-		$list->addItem(lang('comment_settings'), ee('CP/URL', 'settings/comments'));
-		$list->addItem(lang('html_buttons'), ee('CP/URL', 'settings/buttons'));
-		$list->addItem(lang('template_settings'), ee('CP/URL', 'settings/template'));
+		$list->addItem(lang('comment_settings'), ee('CP/URL')->make('settings/comments'));
+		$list->addItem(lang('html_buttons'), ee('CP/URL')->make('settings/buttons'));
+		$list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
+		$list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit_tracking'));
 
 		if (ee()->addons_model->module_installed('pages'))
 		{
-			$list->addItem(lang('pages_settings'), ee('CP/URL', 'addons/settings/pages/settings'));
+			$list->addItem(lang('pages_settings'), ee('CP/URL')->make('addons/settings/pages/settings'));
 		}
 
-		$list->addItem(lang('word_censoring'), ee('CP/URL', 'settings/word-censor'));
+		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 
-		$list = $sidebar->addHeader(lang('members'), ee('CP/URL', 'settings/members'))
+		$list = $sidebar->addHeader(lang('members'), ee('CP/URL')->make('settings/members'))
 			->addBasicList();
 
-		$list->addItem(lang('messages'), ee('CP/URL', 'settings/messages'));
-		$list->addItem(lang('avatars'), ee('CP/URL', 'settings/avatars'));
+		$list->addItem(lang('messages'), ee('CP/URL')->make('settings/messages'));
+		$list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
 
-		$list = $sidebar->addHeader(lang('security_privacy'), ee('CP/URL', 'settings/security-privacy'))
+		$list = $sidebar->addHeader(lang('security_privacy'), ee('CP/URL')->make('settings/security-privacy'))
 			->addBasicList();
 
-		$list->addItem(lang('access_throttling'), ee('CP/URL', 'settings/throttling'));
-		$list->addItem(lang('captcha'), ee('CP/URL', 'settings/captcha'));
+		$list->addItem(lang('access_throttling'), ee('CP/URL')->make('settings/throttling'));
+		$list->addItem(lang('captcha'), ee('CP/URL')->make('settings/captcha'));
 	}
 
 	/**
@@ -99,7 +100,7 @@ class Settings extends CP_Controller {
 	 */
 	public function index()
 	{
-		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
+		ee()->functions->redirect(ee('CP/URL')->make('settings/general'));
 	}
 
 	/**

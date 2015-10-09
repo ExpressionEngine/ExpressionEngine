@@ -224,14 +224,20 @@ $(document).ready(function(){
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('fast').css('height',heightIs);
+			$('.overlay').fadeIn('fast').css('height', heightIs);
 			// fade in modal
 			$(this).fadeIn('slow');
 
-			// scroll up, if needed
-			$('#top').animate({ scrollTop: 0 }, 100);
+			// remember the scroll location on open
+			$(this).data('scroll', $(document).scrollTop());
 
-			$(document).one('keypress', function(e) {
+			// scroll up, if needed, but only do so after a significant
+			// portion of the overlay is show so as not to disorient the user
+			setTimeout(function() {
+				$(document).scrollTop(0);
+			}, 100);
+
+			$(document).one('keydown', function(e) {
 				if (e.keyCode === 27) {
 					$('.modal-wrap').trigger('modal:close');
 				}
@@ -243,6 +249,8 @@ $(document).ready(function(){
 			$('.overlay').fadeOut('slow');
 			// fade out the modal
 			$('.modal-wrap').fadeOut('fast');
+
+			$(document).scrollTop($(this).data('scroll'));
 		});
 
 		// listen for clicks to elements with a class of m-link

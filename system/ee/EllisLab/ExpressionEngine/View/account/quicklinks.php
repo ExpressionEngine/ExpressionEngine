@@ -8,13 +8,13 @@
 	<h1>
 		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 	</h1>
-	
+
 	<?php if (isset($filters)) echo $filters; ?>
-	
-	<?php $this->embed('_shared/table', $table); ?>
-	
+
+	<?= $table; ?>
+
 	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
-	
+
 	<?php if ( ! empty($table['data'])): ?>
 	<fieldset class="tbl-bulk-act hidden">
 		<select name="bulk_action">

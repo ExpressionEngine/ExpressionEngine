@@ -50,9 +50,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected $_new = TRUE;
 
 	/**
-	 * @var Query frontend object
+	 * @var Model facade object
 	 */
-	protected $_frontend = NULL;
+	protected $_facade = NULL;
 
 	/**
 	 * @var Validator object
@@ -403,29 +403,37 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
-	 * Set the frontend
+	 * Set the facade
 	 *
-	 * @param Frontend $frontend The frontend to use
+	 * @param Facade $facade The model facade to use
 	 * @return $this
 	 */
-	public function setFrontend(Frontend $frontend)
+	public function setFacade(Facade $facade)
 	{
-		if (isset($this->_frontend))
+		if (isset($this->_facade))
 		{
-			throw new OverflowException('Cannot override existing frontend.');
+			throw new OverflowException('Cannot override existing model facade.');
 		}
 
-		$this->_frontend = $frontend;
+		$this->_facade = $facade;
 
 		return $this;
 	}
 
 	/**
+	 * Get the model facade
 	 *
+	 * @return Facade The model facade object
 	 */
+	public function getModelFacade()
+	{
+		return $this->_facade;
+	}
+
+	// alias
 	public function getFrontend()
 	{
-		return $this->_frontend;
+		return $this->getModelFacade();
 	}
 
 	/**
@@ -511,7 +519,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function validateUnique($key, $value, array $params = array())
 	{
-		$unique = $this->getFrontend()
+		$unique = $this->getModelFacade()
 			->get($this->getName())
 			->filter($key, $value);
 
@@ -728,7 +736,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	*/
 	public function setAssociation($name, Association $association)
 	{
-		$association->setFrontend($this->getFrontend());
+		$association->setFacade($this->getModelFacade());
 
 		$this->_associations[$name] = $association;
 
@@ -759,7 +767,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	protected function newSelfReferentialQuery()
 	{
-		return $this->_frontend->get($this);
+		return $this->_facade->get($this);
 	}
 
 	public function __toString()

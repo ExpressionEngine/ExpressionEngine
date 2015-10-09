@@ -42,7 +42,7 @@ class Email extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -52,7 +52,7 @@ class Email extends Logs {
 			$this->delete('EmailConsoleCache', lang('email_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(ee('CP/URL', 'logs/email'));
+				return ee()->functions->redirect(ee('CP/URL')->make('logs/email'));
 			}
 		}
 
@@ -148,7 +148,7 @@ class Email extends Logs {
 	 */
 	public function view($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -159,12 +159,12 @@ class Email extends Logs {
 		{
 			ee()->lang->load('communicate');
 			ee()->view->set_message('issue', lang('no_cached_email'), '', TRUE);
-			$this->functions->redirect(ee('CP/URL', 'logs/email'));
+			$this->functions->redirect(ee('CP/URL')->make('logs/email'));
 		}
 
 		ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'logs/email')->compile() => lang('view_email_logs')
+			ee('CP/URL')->make('logs/email')->compile() => lang('view_email_logs')
 		);
 		ee()->view->email = $email;
 		ee()->cp->render('logs/email/detail');

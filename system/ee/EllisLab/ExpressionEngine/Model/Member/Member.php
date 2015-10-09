@@ -85,6 +85,12 @@ class Member extends Model {
 			'type' => 'hasMany',
 			'model' => 'RevisionTracker',
 			'to_key' => 'item_author_id'
+		),
+		'SiteStatsIfLastMember' => array(
+			'type' => 'hasOne',
+			'model' => 'Stats',
+			'to_key' => 'recent_member_id',
+			'weak' => TRUE
 		)
 	);
 

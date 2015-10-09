@@ -46,7 +46,7 @@ class Rte_mcp {
 		ee()->load->model('rte_tool_model');
 
 		// set some properties
-		$this->_base_url = ee('CP/URL', 'addons/settings/rte');
+		$this->_base_url = ee('CP/URL')->make('addons/settings/rte');
 		ee()->rte_lib->form_url = 'addons/settings/rte';
 
 		// Delete missing tools
@@ -82,13 +82,13 @@ class Rte_mcp {
 
 		foreach ($toolsets as $t)
 		{
-			$url = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
-			$toolset_name = htmlentities($t['name'], ENT_QUOTES);
+			$url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
+			$toolset_name = htmlentities($t['name'], ENT_QUOTES, 'UTF-8');
 			$checkbox = array(
 				'name' => 'selection[]',
 				'value' => $t['toolset_id'],
 				'data'	=> array(
-					'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
+					'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES, 'UTF-8') . '</b>'
 				)
 			);
 
@@ -113,7 +113,7 @@ class Rte_mcp {
 
 			if ($t['enabled'] == 'y')
 			{
-				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES);
+				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES, 'UTF-8');
 				$toolset['status'] = lang('enabled');
 			}
 
@@ -274,7 +274,7 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset(0),
 			'heading'		=> lang('create_tool_set_header'),
 			'breadcrumb' 	=> array(
-				ee('CP/URL', 'addons/settings/rte')->compile() => lang('rte_module_name') . ' ' . lang('configuration')
+				ee('CP/URL')->make('addons/settings/rte')->compile() => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
 	}
@@ -299,7 +299,7 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset($toolset_id),
 			'heading'		=> lang('edit_tool_set_header'),
 			'breadcrumb' 	=> array(
-				ee('CP/URL', 'addons/settings/rte')->compile() => lang('rte_module_name') . ' ' . lang('configuration')
+				ee('CP/URL')->make('addons/settings/rte')->compile() => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
 	}

@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Addon;
 
 use EllisLab\ExpressionEngine\Core\Application;
+use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -29,6 +30,9 @@ use EllisLab\ExpressionEngine\Core\Application;
  */
 class Factory {
 
+	/**
+	 * @var Application object
+	 */
 	protected $app;
 
 	public function __construct(Application $app)
@@ -46,7 +50,12 @@ class Factory {
 	{
 		$provider = $this->app->get($name);
 
-		return new Addon($provider);
+		if ($this->isAddon($provider))
+		{
+			return new Addon($provider);
+		}
+
+		return NULL;
 	}
 
 	/**
@@ -60,14 +69,35 @@ class Factory {
 
 		foreach ($providers as $key => $obj)
 		{
-			$path = $obj->getPath();
-
-			if (strpos($path, PATH_ADDONS) === 0 || strpos($path, PATH_THIRD) === 0)
+			if ($this->isAddon($obj))
 			{
 				$all[$key] = new Addon($obj);
 			}
 		}
 
 		return $all;
+	}
+
+	/**
+	 * Fetch all installed addons
+	 */
+	public function installed()
+	{
+		return array_filter($this->all(), function($addon)
+		{
+			return $addon->isInstalled();
+		});
+	}
+
+	/**
+	 * Is a given provider an addon?
+	 *
+	 * @return bool Is an addon?
+	 */
+	protected function isAddon(Provider $provider)
+	{
+		$path = $provider->getPath();
+
+		return (strpos($path, PATH_ADDONS) === 0 || strpos($path, PATH_THIRD) === 0);
 	}
 }

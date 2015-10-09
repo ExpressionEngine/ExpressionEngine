@@ -30,7 +30,7 @@ $lang = array(
 
 'create_new_template' => 'Create New Template',
 
-'messages' => 'messages',
+'messages' => 'Messages',
 
 'email' => 'Email',
 
@@ -254,9 +254,9 @@ $lang = array(
 
 'allowed_member_groups_super_admin' => 'Super Administrators are <b>always</b> allowed.',
 
-'non_access_redirect' => 'Non-access redirect',
+'no_access_redirect' => 'No access redirect',
 
-'non_access_redirect_desc' => 'Page to redirect users without permissions to.',
+'no_access_redirect_desc' => 'Page to redirect unauthorized users to.',
 
 'enable_http_authentication' => 'Enable HTTP Authentication?',
 
@@ -411,10 +411,6 @@ $lang = array(
 
 'save_tmpl_files_exp' => 'Saves templates as files on your server. Click Help for more information.',
 
-'tmpl_file_basepath' => 'Server path to site\'s templates',
-
-'tmpl_file_basepath_exp' => 'Server path to the directory in which the template files should be saved.',
-
 'email_notification_template' => 'Email Notification Templates',
 
 'email_notification' => 'Email Notification',
@@ -498,6 +494,18 @@ $lang = array(
 'css_stylesheet' => 'CSS',
 
 'rss' => 'RSS Page',
+
+'webpage_type_col' => '<abbr title="Hyper-Text Markup Language">HTML</abbr>',
+
+'feed_type_col' => '<abbr title="Really Simple Syndication">RSS</abbr>',
+
+'css_type_col' => '<abbr title="Cascading Style Sheet">CSS</abbr>',
+
+'js_type_col' => 'JavaScript',
+
+'static_type_col' => 'Static',
+
+'xml_type_col' => '<abbr title="Extensible Markup Language">XML</abbr>',
 
 'missing_name' => 'Your template must have a name',
 

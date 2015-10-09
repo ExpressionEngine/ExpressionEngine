@@ -1,5 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\Addons\FilePicker\FilePicker;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -42,6 +44,8 @@ class Image_rte {
 	 */
 	function globals()
 	{
+		$fp = new FilePicker();
+
 		ee()->lang->loadfile('rte');
 		return array(
 			'rte.image'	=> array(
@@ -57,7 +61,8 @@ class Image_rte {
 				'center_error'	=> lang('rte_center_error'),
 				'folders'		=> $this->folders,
 				'filedirs'		=> $this->filedirs,
-				'title'			=> lang('img_title')
+				'title'			=> lang('img_title'),
+				'url'			=> ee('CP/URL')->make($fp->controller, array('directory' => 'all'))->compile()
 			)
 		);
 	}
@@ -67,8 +72,9 @@ class Image_rte {
 	/** -------------------------------------*/
 	function libraries()
 	{
+		$fp = new FilePicker();
+		$fp->inject(ee()->view);
 		return array();
-
 		// @todo The following should already be loaded in the CP...
 /*
 		return array(

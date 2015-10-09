@@ -442,23 +442,7 @@ class Channel_form_lib
 
 			foreach (ee()->TMPL->var_single as $key)
 			{
-				if ($this->entry($key) !== FALSE)
-				{
-					if (in_array($key, $this->date_fields) || $this->get_field_type($key) == 'date')
-					{
-						$this->parse_variables[$key] = ($this->entry($key)) ? ee()->localize->human_time($this->entry($key)) : '';
-					}
-					elseif (in_array($key, $this->checkboxes))
-					{
-						$this->parse_variables[$key] = ($this->entry($key) == 'y') ? 'checked="checked"' : '';
-					}
-					else
-					{
-						$this->parse_variables[$key] = form_prep($this->entry($key), $key);
-					}
-				}
-
-				elseif (preg_match('/entry_id_path=([\042\047])?([^\042\047]*)[\042\047]?/', $key, $match))
+				if (preg_match('/entry_id_path=([\042\047])?([^\042\047]*)[\042\047]?/', $key, $match))
 				{
 					$this->parse_variables[$match[0]] = ee()->functions->create_url($match[2].'/'.$this->entry('entry_id'));
 				}
@@ -518,6 +502,29 @@ class Channel_form_lib
 				{
 					$this->parse_variables[$match[0]] = ( ! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
 				}
+				else
+				{
+					$name = $key;
+
+					if (array_key_exists($key, $this->custom_fields))
+					{
+						$field = $this->custom_fields[$key];
+						$name = 'field_id_'.$field->field_id;
+					}
+
+					if (in_array($key, $this->date_fields) || $this->get_field_type($name) == 'date')
+					{
+						$this->parse_variables[$key] = ($this->entry($name)) ? ee()->localize->human_time($this->entry($name)) : '';
+					}
+					elseif (in_array($key, $this->checkboxes))
+					{
+						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
+					}
+					else
+					{
+						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
+					}
+				}
 			}
 
 			$this->form_hidden(
@@ -527,7 +534,6 @@ class Channel_form_lib
 				      'author_id'=> $this->entry('author_id')
 				)
 			);
-
 		}
 		elseif ($this->channel('channel_id'))
 		{
@@ -630,10 +636,12 @@ class Channel_form_lib
 						$checkbox_fields[] = $field->field_name;
 					}
 
-					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields)) ? $this->display_field($field['field_name']) : '';
+					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields)) ? $this->display_field($field->field_name) : '';
 				}
 			}
 		}
+
+		var_dump($this->parse_variables);
 
 		$this->form_hidden('checkbox_fields', implode('|', array_unique($checkbox_fields)));
 
@@ -1930,6 +1938,8 @@ GRID_FALLBACK;
 		ee()->load->library('javascript');
 		ee()->load->helper('custom_field');
 
+		$field_id = $this->get_field_id($field_name);
+
 		if (isset($this->extra_js[$this->get_field_type($field_name)]))
 		{
 			ee()->javascript->output($this->extra_js[$this->get_field_type($field_name)]);
@@ -1941,7 +1951,7 @@ GRID_FALLBACK;
 
 		$fieldtype->_init(
 			array(
-				'field_id'		=> $this->get_field_id($field_name),
+				'field_id'		=> $field_id,
 				'field_name'	=> $field_name,
 				'content_id'	=> $this->entry('entry_id'),
 				'content_type'	=> 'channel'
@@ -1957,7 +1967,7 @@ GRID_FALLBACK;
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
 
-		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
+		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry('field_id_'.$field_id)));
 	}
 
 	// --------------------------------------------------------------------

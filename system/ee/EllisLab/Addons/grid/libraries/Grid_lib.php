@@ -74,6 +74,22 @@ class Grid_lib {
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
+		if (AJAX_REQUEST)
+		{
+			$column_id = ee()->input->post('column_id');
+			$row_id = ee()->input->post('row_id');
+
+			if ($column_id)
+			{
+				if ($row_id)
+				{
+					return $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+				}
+
+				return $this->_publish_field_cell($columns[$column_id]);
+			}
+		}
+
 		$column_headings = array();
 		$blank_column = array();
 		foreach ($columns as $column)
@@ -95,7 +111,8 @@ class Grid_lib {
 				'html' => $this->_publish_field_cell($column),
 				'attrs' => array(
 					'data-fieldtype' => $column['col_type'],
-					'data-column-id' => $column['col_id']
+					'data-column-id' => $column['col_id'],
+					'width' => $column['col_width'].'%',
 				)
 			);
 		}
@@ -122,6 +139,7 @@ class Grid_lib {
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
 						'data-row-id' => $row_id,
+						'width' => $column['col_width'].'%',
 					)
 				);
 			}
@@ -151,7 +169,8 @@ class Grid_lib {
 			$column,
 			NULL,
 			$this->field_id,
-			$this->entry_id
+			$this->entry_id,
+			$this->content_type
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
@@ -290,7 +309,8 @@ class Grid_lib {
 					$column,
 					$row_name,
 					$this->field_id,
-					$this->entry_id
+					$this->entry_id,
+					$this->content_type
 				);
 
 				if ( ! empty($rows[$i]['row_id']))
@@ -356,7 +376,7 @@ class Grid_lib {
 		// the row IDs
 		foreach ($columns as $column)
 		{
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 			ee()->grid_parser->call('delete', $row_ids);
 		}
 
@@ -439,7 +459,8 @@ class Grid_lib {
 					$column,
 					$row_id,
 					$this->field_id,
-					$this->entry_id
+					$this->entry_id,
+					$this->content_type
 				);
 
 				// Pass Grid row ID to fieldtype if it's an existing row
@@ -588,15 +609,18 @@ class Grid_lib {
 	public function validate_settings($settings)
 	{
 		$errors = array();
+		$col_labels = array();
 		$col_names = array();
 
-		// Create an array of column names for counting to see if there are
-		// duplicate column names; they should be unique
+		// Create an array of column names and labels for counting to see if
+		//  there are duplicates; they should be unique
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
+			$col_labels[] = $column['col_label'];
 			$col_names[] = $column['col_name'];
 		}
 
+		$col_label_count = array_count_values($col_labels);
 		$col_name_count = array_count_values($col_names);
 
 		ee()->load->library('grid_parser');
@@ -607,6 +631,11 @@ class Grid_lib {
 			if (empty($column['col_label']))
 			{
 				$errors[$col_field]['col_label'] = 'grid_col_label_required';
+			}
+			// There cannot be duplicate column labels
+			elseif ($col_label_count[$column['col_label']] > 1)
+			{
+				$errors[$col_field]['col_label'] = 'grid_duplicate_col_label';
 			}
 
 			// Column names are required
@@ -643,7 +672,7 @@ class Grid_lib {
 			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
 			$column['col_settings']['field_required'] = $column['col_required'];
 
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 			// Let fieldtypes validate their Grid column settings
 			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
@@ -763,7 +792,7 @@ class Grid_lib {
 			$column['col_settings'] = array();
 		}
 
-		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 		if ( ! ($settings = ee()->grid_parser->call('save_settings', $column['col_settings'])))
 		{
@@ -853,7 +882,7 @@ class Grid_lib {
 			);
 		}
 
-		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 		$settings = ee()->grid_parser->call('display_settings', $column['col_settings']);
 

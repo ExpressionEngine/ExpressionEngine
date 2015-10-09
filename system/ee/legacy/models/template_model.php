@@ -57,7 +57,7 @@ class Template_model extends CI_Model {
 	public function fetch(array $fields=array(), $load_groups=FALSE)
 	{
 		$templates = $this->fetch_from_db($fields, $load_groups);
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
+		if ($this->config->item('save_tmpl_files') == 'y')
 		{
 			foreach($templates as $template)
 			{
@@ -106,9 +106,7 @@ class Template_model extends CI_Model {
 		// Get the filepath to the template's saved file.
 		$this->load->library('api');
 		$this->legacy_api->instantiate('template_structure');
-		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-
-		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
+		$filepath = PATH_TMPL . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
 			. $template->get_group()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
 			. $this->api_template_structure->file_extensions($template->template_type);
 
@@ -235,7 +233,7 @@ class Template_model extends CI_Model {
 	public function fetch_last_edit(array $fields=array(), $load_groups=FALSE)
 	{
 		$templates = $this->fetch_from_db($fields, $load_groups);
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
+		if ($this->config->item('save_tmpl_files') == 'y')
 		{
 			foreach($templates as $template)
 			{
@@ -259,7 +257,7 @@ class Template_model extends CI_Model {
 	{
 		$this->save_to_database($entity);
 
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
+		if ($this->config->item('save_tmpl_files') == 'y')
 		{
 			$this->save_to_file($entity);
 		}
@@ -300,7 +298,7 @@ class Template_model extends CI_Model {
 		}
 
 		// check the main template path
-		$basepath = $this->config->slash_item('tmpl_file_basepath');
+		$basepath = PATH_TMPL;
 
 		if ( ! is_dir($basepath) OR ! is_really_writable($basepath))
 		{
@@ -629,7 +627,7 @@ class Template_model extends CI_Model {
 		$this->legacy_api->instantiate('template_structure');
 		$ext = $this->api_template_structure->file_extensions($template_type);
 
-		$basepath  = $this->config->slash_item('tmpl_file_basepath');
+		$basepath  = PATH_TMPL;
 		$basepath .= $this->config->item('site_short_name');
 		$basepath .= '/'.$template_group.'.group';
 

@@ -38,7 +38,7 @@ class Layouts extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_channels'))
+		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -53,7 +53,7 @@ class Layouts extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_id));
+			ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/' . $channel_id));
 		}
 
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -66,7 +66,7 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		$vars['channel_id'] = $channel_id;
-		$vars['create_url'] = ee('CP/URL', 'channels/layouts/create/' . $channel_id);
+		$vars['create_url'] = ee('CP/URL')->make('channels/layouts/create/' . $channel_id);
 
 		$table = ee('CP/Table');
 		$table->setColumns(
@@ -90,7 +90,7 @@ class Layouts extends AbstractChannelsController {
 
 		foreach ($channel->ChannelLayouts as $layout)
 		{
-			$edit_url = ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id);
+			$edit_url = ee('CP/URL')->make('channels/layouts/edit/' . $layout->layout_id);
 			$column = array(
 				array(
 					'content' => $layout->layout_name,
@@ -107,7 +107,7 @@ class Layouts extends AbstractChannelsController {
 					'name' => 'selection[]',
 					'value' => $layout->layout_id,
 					'data' => array(
-						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -127,7 +127,7 @@ class Layouts extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/layout/' . $channel_id));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/layout/' . $channel_id));
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
@@ -142,7 +142,7 @@ class Layouts extends AbstractChannelsController {
 		));
 
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('channels/layout/index', $vars);
 	}
@@ -245,12 +245,12 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('btn_create_layout')
+			'submit_button_text' => sprintf(lang('btn_save'), lang('layout'))
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels')->compile() => lang('channels'),
-			ee('CP/URL', 'channels/layouts/' . $channel_id)->compile() => lang('form_layouts')
+			ee('CP/URL')->make('channels')->compile() => lang('channels'),
+			ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => lang('form_layouts')
 		);
 
 		ee()->view->cp_page_title = lang('create_form_layout');
@@ -323,7 +323,7 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $layout->Channel->channel_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_layout->Channel->channel_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -340,12 +340,12 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('btn_edit_layout')
+			'submit_button_text' => sprintf(lang('btn_save'), lang('layout'))
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels')->compile() => lang('channels'),
-			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
+			ee('CP/URL')->make('channels')->compile() => lang('channels'),
+			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
 		$alert_required = ee('CP/Alert')->makeBanner('tab-has-required-fields')

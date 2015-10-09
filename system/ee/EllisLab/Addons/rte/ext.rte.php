@@ -250,9 +250,7 @@ class Rte_ext {
 				->get()
 				->row('count');
 
-			$has_access = $access
-				AND ee()->cp->allowed_group('can_access_addons')
-				AND ee()->cp->allowed_group('can_access_modules');
+			$has_access = $access AND ee()->cp->allowed_group('can_access_addons');
 		}
 
 		if (ee()->session->userdata('group_id') == 1 OR $has_access)
