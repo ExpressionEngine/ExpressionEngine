@@ -172,6 +172,13 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_page_title = lang('file_manager');
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
+		// Check to see if they can sync the directory
+		$upload_destination = ee('Model')->get('UploadDestination')
+			->filter('id', $id)
+			->first();
+		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
+			&& $upload_destination->memberGroupHasAccess(ee()->session->userdata('group_id'));
+
 		ee()->cp->render('files/directory', $vars);
 	}
 
