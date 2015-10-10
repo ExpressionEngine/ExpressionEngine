@@ -50,7 +50,7 @@ $lang = array(
 
 'content' => 'Content',
 
-'content_desc' => 'Entries in channels, this is what folks visit to experience.',
+'content_desc' => 'Channel entries, why folks visit.',
 
 'entries_with_comments' => 'Entries with %d comments',
 
