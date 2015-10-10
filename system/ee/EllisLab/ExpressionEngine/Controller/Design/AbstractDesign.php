@@ -68,7 +68,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$template_group_list = $template_group_list->addFolderList('template-group')
 			->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
-			->withRemovalKey('group_name')
+				->withRemovalKey('group_name')
 			->withNoResultsText(lang('zero_template_groups_found'));
 
 		$template_groups = ee('Model')->get('TemplateGroup')
@@ -90,15 +90,19 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
 
-			if (ee()->cp->allowed_group('can_edit_template_groups'))
+			$item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+
+			$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
+				->identifiedBy($group->group_name);
+
+			if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
 			{
-				$item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+				$item->cannotEdit();
 			}
 
-			if (ee()->cp->allowed_group('can_delete_template_groups'))
+			if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
 			{
-				$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
-					->identifiedBy($group->group_name);
+				$item->cannotRemove();
 			}
 
 			if ($active_group_id == $group->group_id)
@@ -159,25 +163,40 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Partials
-		$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'))
-			->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
-
-		if ($active == 'partials')
+		if (ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'));
+
+			if (ee()->cp->allowed_group('can_create_template_partials'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
+			}
+
+			if ($active == 'partials')
+			{
+				$header->isActive();
+			}
 		}
 
 		// Template Variables
-		$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'))
-			->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
-
-		if ($active == 'variables')
+		if (ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'));
+
+			if (ee()->cp->allowed_group('can_create_template_variables'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
+			}
+
+			if ($active == 'variables')
+			{
+				$header->isActive();
+			}
 		}
 
+
 		// Template Routes
-		if ( ! TemplateRoute::getConfig())
+		if ( ! TemplateRoute::getConfig() && ee()->cp->allowed_group('can_admin_design'))
 		{
 			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
 
@@ -211,7 +230,7 @@ abstract class AbstractDesign extends CP_Controller {
 			'search_button_value' => lang('search_templates')
 		);
 
-		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
+		if ( ! ee()->cp->allowed_group('can_access_sys_prefs', 'can_admin_design'))
 		{
 			unset($header['toolbar_items']['settings']);
 		}

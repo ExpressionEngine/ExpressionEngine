@@ -41,7 +41,7 @@ class Snippets extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design'))
+		if ( ! ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

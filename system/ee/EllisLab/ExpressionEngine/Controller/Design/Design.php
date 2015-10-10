@@ -134,7 +134,7 @@ class Design extends AbstractDesignController {
 		$this->_sync_from_files();
 
 		$vars = array();
-		$vars['show_new_template_button'] = TRUE;
+		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_templates');
 		$vars['group_id'] = $group->group_name;
 
 		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
