@@ -89,6 +89,10 @@
 			</div>
 		</div>
 	</div>
+	<?php
+	$menu = ee()->menu->generate_menu();
+	if ($can_create_channels || count($menu['channels']['create'])): ?>
+
 	<div class="col-group snap">
 		<div class="col w-16 last">
 			<div class="box">
@@ -106,8 +110,7 @@
 								<a class="has-sub" href=""><?=lang('create_new')?></a>
 								<div class="sub-menu">
 									<ul>
-										<?php $menu = ee()->menu->generate_menu();
-										foreach ($menu['channels']['create'] as $channel_name => $link): ?>
+										<?php foreach ($menu['channels']['create'] as $channel_name => $link): ?>
 											<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 										<?php endforeach ?>
 									</ul>
@@ -128,6 +131,7 @@
 			</div>
 		</div>
 	</div>
+	<?php endif; ?>
 </div>
 
 <?php
