@@ -470,15 +470,11 @@ abstract class AbstractChannels extends CP_Controller {
 
 		$columns = array(
 			'col_id',
-			'group_name'
-		);
-
-		if (ee()->cp->allowed_group('can_edit_categories'))
-		{
-			$columns['manage'] = array(
+			'group_name',
+			'manage' => array(
 				'type'	=> Table::COL_TOOLBAR
-			);
-		}
+			)
+		);
 
 		if ($mutable)
 		{
@@ -509,39 +505,34 @@ abstract class AbstractChannels extends CP_Controller {
 		{
 			$edit_url = ee('CP/URL')->make('channels/cat/edit/'.$group->getId());
 
-			if (ee()->cp->allowed_group('can_edit_categories'))
-			{
-				$columns = array(
-					$group->getId(),
-					array(
-						'content' => $group->group_name . ' ('.count($group->getCategories()).')',
-						'href' => $edit_url
+			$columns = array(
+				$group->getId(),
+				array(
+					'content' => $group->group_name . ' ('.count($group->getCategories()).')',
+					'href' => $edit_url
+				),
+				array('toolbar_items' => array(
+					'view' => array(
+						'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
+						'title' => lang('view')
 					),
-					array('toolbar_items' => array(
-						'view' => array(
-							'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
-							'title' => lang('view')
-						),
-						'edit' => array(
-							'href' => $edit_url,
-							'title' => lang('edit')
-						),
-						'txt-only' => array(
-							'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
-							'title' => strtolower(lang('custom_fields')),
-							'content' => strtolower(lang('fields'))
-						)
-					))
-				);
-			}
-			else
-			{
-				$columns = array(
-					$group->getId(),
-					array(
-						'content' => $group->group_name . ' ('.count($group->getCategories()).')'
+					'edit' => array(
+						'href' => $edit_url,
+						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
+						'title' => strtolower(lang('custom_fields')),
+						'content' => strtolower(lang('fields'))
 					)
-				);
+				))
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_categories'))
+			{
+				unset($columns[1]['href']);
+				unset($columns[2]['toolbar_items']['edit']);
+				unset($columns[2]['toolbar_items']['txt-only']);
 			}
 
 			if ($mutable)
@@ -687,6 +678,11 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_statueses'))
+			{
+				unset($columns[2]['toolbar_items']['edit']);
+			}
 
 			if ($mutable)
 			{

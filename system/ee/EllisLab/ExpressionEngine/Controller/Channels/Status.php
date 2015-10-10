@@ -57,7 +57,7 @@ class Status extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $status_groups->count();
 
-		$table = $this->buildTableFromStatusGroupsQuery($status_groups);
+		$table = $this->buildTableFromStatusGroupsQuery($status_groups, array(), ee()->cp->allowed_group('can_delete_statuses'));
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/status'));
 
@@ -65,6 +65,9 @@ class Status extends AbstractChannelsController {
 			->perPage($vars['table']['limit'])
 			->currentPage($vars['table']['page'])
 			->render($vars['table']['base_url']);
+
+		$vars['can_create_statuses'] = ee()->cp->allowed_group('can_create_statuses');
+		$vars['can_delete_statuses'] = ee()->cp->allowed_group('can_delete_statuses');
 
 		ee()->view->cp_page_title = lang('status_groups');
 
