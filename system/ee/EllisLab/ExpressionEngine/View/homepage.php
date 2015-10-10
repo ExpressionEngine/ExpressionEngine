@@ -81,8 +81,8 @@
 					<p><?=lang('content_desc')?></p>
 					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
 					<ul class="arrow-list">
-						<li><a href="<?=ee('CP/URL', 'publish/edit')?>"><b><?=$number_of_entries?></b> <?=sprintf(lang('entries_with_comments'), $number_of_comments)?></a></li>
-						<li><a href="<?=ee('CP/URL')->make('publish/edit', array('filter_by_status' => 'closed'))?>"><b><?=$number_of_closed_entries?></b> <?=sprintf(lang('closed_entries_with_comments'), $number_of_comments_on_closed_entries)?></a></li>
+						<li><a href="<?=ee('CP/URL', 'publish/edit')?>"><?=sprintf(lang('entries_with_comments'), $number_of_entries, $number_of_comments)?></a></li>
+						<li><a href="<?=ee('CP/URL')->make('publish/edit', array('filter_by_status' => 'closed'))?>"><?=sprintf(lang('closed_entries_with_comments'), $number_of_closed_entries, $number_of_comments_on_closed_entries)?></a></li>
 					</ul>
 				</div>
 			</div>

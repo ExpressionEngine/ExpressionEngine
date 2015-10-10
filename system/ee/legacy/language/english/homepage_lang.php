@@ -52,9 +52,9 @@ $lang = array(
 
 'content_desc' => 'Channel entries, why folks visit.',
 
-'entries_with_comments' => 'Entries with %d comments',
+'entries_with_comments' => '<b>%d</b> Entries with %d comments',
 
-'closed_entries_with_comments' => 'Closed entries with %d comments.',
+'closed_entries_with_comments' => '<b>%d</b> Closed entries with %d comments.',
 
 ''=>''
 );
