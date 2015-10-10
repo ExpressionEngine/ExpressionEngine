@@ -77,6 +77,7 @@ class Fields extends AbstractChannelsController {
 		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
 		$vars['table'] = $table->viewData($base_url);
+		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
