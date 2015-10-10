@@ -1,10 +1,10 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
+		<?php if (ee()->cp->allowed_group('can_create_entries')): ?>
 		<fieldset class="tbl-search right">
-			<?php if (ee()->cp->allowed_group('can_create_entries')): ?>
 			<?= $create_button ?>
-			<?php endif; ?>
 		</fieldset>
+		<?php endif; ?>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
