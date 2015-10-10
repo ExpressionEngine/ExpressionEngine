@@ -1092,17 +1092,14 @@ class Groups extends Members\Members {
 							'fields' => array(
 								'can_admin_mbr_groups' => array(
 									'type' => 'yes_no',
-									'value' => element('can_admin_mbr_groups', $values),
-									'group_toggle' => array(
-										'y' => 'can_admin_mbr_groups'
-									)
+									'value' => element('can_admin_mbr_groups', $values)
 								)
 							)
 						),
 						array(
 							'title' => 'member_groups',
 							'desc' => 'allowed_actions_desc',
-							'group' => 'can_admin_mbr_groups',
+							'group' => 'can_access_members',
 							'caution' => TRUE,
 							'fields' => array(
 								'member_group_actions' => array(
