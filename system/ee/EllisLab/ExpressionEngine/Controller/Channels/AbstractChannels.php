@@ -93,12 +93,23 @@ abstract class AbstractChannels extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
-
-		if ($active == 'channel')
+		if (ee()->cp->allowed_group_any(
+			'can_create_channels',
+			'can_edit_channels',
+			'can_delete_channels'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'));
+
+			if (ee()->cp->allowed_group('can_create_channels'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
+			}
+
+			if ($active == 'channel')
+			{
+				$header->isActive();
+			}
 		}
 
 		if (ee()->cp->allowed_group_any(
@@ -107,8 +118,12 @@ abstract class AbstractChannels extends CP_Controller {
 			'can_delete_channel_fields'
 		))
 		{
-			$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'))
-				->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
+			$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'));
+
+			if (ee()->cp->allowed_group('can_create_channel_fields'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
+			}
 
 			if ($active == 'field')
 			{
@@ -122,8 +137,12 @@ abstract class AbstractChannels extends CP_Controller {
 			'can_delete_categories'
 		))
 		{
-			$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'))
-				->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
+			$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'));
+
+			if (ee()->cp->allowed_group('can_create_categories'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
+			}
 
 			if ($active == 'category')
 			{
@@ -137,8 +156,12 @@ abstract class AbstractChannels extends CP_Controller {
 			'can_edit_statuses'
 		))
 		{
-			$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'))
-				->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
+			$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'));
+
+			if (ee()->cp->allowed_group('can_create_statuses'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
+			}
 
 			if ($active == 'status')
 			{

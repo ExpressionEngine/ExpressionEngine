@@ -51,6 +51,7 @@ class Channels extends AbstractChannelsController {
 		$table = $this->buildTableFromChannelQuery($channels);
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
+		$vars['show_new_channel_button'] = ee()->cp->allowed_group('can_create_channels');
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
