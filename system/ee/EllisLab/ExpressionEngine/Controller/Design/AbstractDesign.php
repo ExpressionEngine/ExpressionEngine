@@ -211,6 +211,11 @@ abstract class AbstractDesign extends CP_Controller {
 			'search_button_value' => lang('search_templates')
 		);
 
+		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
+		{
+			unset($header['toolbar_items']['settings']);
+		}
+
 		if (ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
 			->count() > 0)
