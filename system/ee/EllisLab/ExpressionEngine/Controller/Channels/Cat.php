@@ -65,7 +65,7 @@ class Cat extends AbstractChannelsController {
 
 		$total_rows = $cat_groups->count();
 
-		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups);
+		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups, array(), ee()->cp->allowed_group('can_delete_categories'));
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/cat'));
 
@@ -73,6 +73,9 @@ class Cat extends AbstractChannelsController {
 			->perPage($vars['table']['limit'])
 			->currentPage($vars['table']['page'])
 			->render($vars['table']['base_url']);
+
+		$vars['can_create_categories'] = ee()->cp->allowed_group('can_create_categories');
+		$vars['can_delete_categories'] = ee()->cp->allowed_group('can_delete_categories');
 
 		ee()->view->cp_page_title = lang('category_groups');
 
@@ -89,7 +92,6 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
-
 		if ( ! $this->cp->allowed_group('can_delete_categories'))
 		{
 			show_error(lang('unauthorized_access'));

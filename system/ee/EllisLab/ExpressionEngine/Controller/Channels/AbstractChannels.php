@@ -470,11 +470,15 @@ abstract class AbstractChannels extends CP_Controller {
 
 		$columns = array(
 			'col_id',
-			'group_name',
-			'manage' => array(
-				'type'	=> Table::COL_TOOLBAR
-			)
+			'group_name'
 		);
+
+		if (ee()->cp->allowed_group('can_edit_categories'))
+		{
+			$columns['manage'] = array(
+				'type'	=> Table::COL_TOOLBAR
+			);
+		}
 
 		if ($mutable)
 		{
@@ -505,28 +509,40 @@ abstract class AbstractChannels extends CP_Controller {
 		{
 			$edit_url = ee('CP/URL')->make('channels/cat/edit/'.$group->getId());
 
-			$columns = array(
-				$group->getId(),
-				array(
-					'content' => $group->group_name . ' ('.count($group->getCategories()).')',
-					'href' => $edit_url
-				),
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
-						'title' => lang('view')
+			if (ee()->cp->allowed_group('can_edit_categories'))
+			{
+				$columns = array(
+					$group->getId(),
+					array(
+						'content' => $group->group_name . ' ('.count($group->getCategories()).')',
+						'href' => $edit_url
 					),
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					),
-					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
-						'title' => strtolower(lang('custom_fields')),
-						'content' => strtolower(lang('fields'))
+					array('toolbar_items' => array(
+						'view' => array(
+							'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
+							'title' => lang('view')
+						),
+						'edit' => array(
+							'href' => $edit_url,
+							'title' => lang('edit')
+						),
+						'txt-only' => array(
+							'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
+							'title' => strtolower(lang('custom_fields')),
+							'content' => strtolower(lang('fields'))
+						)
+					))
+				);
+			}
+			else
+			{
+				$columns = array(
+					$group->getId(),
+					array(
+						'content' => $group->group_name . ' ('.count($group->getCategories()).')'
 					)
-				))
-			);
+				);
+			}
 
 			if ($mutable)
 			{
