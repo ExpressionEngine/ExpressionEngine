@@ -564,6 +564,11 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! ee()->cp->allowed_group('can_edit_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->all();
