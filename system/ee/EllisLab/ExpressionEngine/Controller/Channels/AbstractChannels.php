@@ -307,6 +307,11 @@ abstract class AbstractChannels extends CP_Controller {
 			)
 		);
 
+		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		{
+			unset($columns['manage']);
+		}
+
 		if ($mutable)
 		{
 			$columns[] = array(
@@ -340,6 +345,12 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+			{
+				unset($column[1]['href']);
+				unset($column[4]);
+			}
 
 			if ($mutable)
 			{
@@ -425,7 +436,7 @@ abstract class AbstractChannels extends CP_Controller {
 				))
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_custom_fields'))
+			if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
 			{
 				unset($column[0]['href']);
 				unset($column[1]['toolbar_items']['edit']);

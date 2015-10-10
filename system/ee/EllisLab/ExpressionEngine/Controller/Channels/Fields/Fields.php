@@ -73,7 +73,7 @@ class Fields extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $group_id);
 
-		$table = $this->buildTableFromChannelFieldsQuery($fields);
+		$table = $this->buildTableFromChannelFieldsQuery($fields, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
 		$vars['table'] = $table->viewData($base_url);
