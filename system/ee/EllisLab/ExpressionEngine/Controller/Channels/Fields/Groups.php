@@ -65,7 +65,7 @@ class Groups extends AbstractChannelsController {
 			'create_url' => ee('CP/URL')->make('channels/fields/groups/create')
 		);
 
-		$table = $this->buildTableFromChannelGroupsQuery($groups);
+		$table = $this->buildTableFromChannelGroupsQuery($groups, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/fields/groups'));
 		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');

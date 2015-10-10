@@ -217,16 +217,14 @@ abstract class AbstractChannels extends CP_Controller {
 		{
 			$edit_url = ee('CP/URL')->make('channels/edit/'.$channel->getId());
 
-			if (ee()->cp->allowed_group('can_edit_channels'))
+			$main_link = array(
+				'content' => $channel->channel_title,
+				'href' => $edit_url
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channels'))
 			{
-				$main_link = array(
-					'content' => $channel->channel_title,
-					'href' => $edit_url
-				);
-			}
-			else
-			{
-				$main_link = $channel->channel_title;
+				unset($main_link['href']);
 			}
 
 			$toolbar = array(
@@ -426,6 +424,12 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_custom_fields'))
+			{
+				unset($column[0]['href']);
+				unset($column[1]['toolbar_items']['edit']);
+			}
 
 			if ($mutable)
 			{

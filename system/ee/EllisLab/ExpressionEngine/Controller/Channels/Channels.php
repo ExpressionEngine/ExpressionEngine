@@ -48,7 +48,7 @@ class Channels extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $channels->count();
 
-		$table = $this->buildTableFromChannelQuery($channels);
+		$table = $this->buildTableFromChannelQuery($channels, array(), ee()->cp->allowed_group('can_delete_channels'));
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
 		$vars['show_new_channel_button'] = ee()->cp->allowed_group('can_create_channels');
