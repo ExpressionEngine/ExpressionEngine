@@ -428,7 +428,10 @@ abstract class AbstractDesign extends CP_Controller {
 				$template_name = $group->group_name . '/' . $template_name;
 			}
 
-			$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
+			if (ee()->cp->allowed_group('can_edit_templates'))
+			{
+				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
+			}
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -458,28 +461,36 @@ abstract class AbstractDesign extends CP_Controller {
 				$type_col = lang($template->template_type.'_type_col');
 			}
 
+			$toolbar = array(
+				'view' => array(
+					'href' => ee()->cp->masked_url($view_url),
+					'title' => lang('view'),
+					'rel' => 'external'
+				),
+				'edit' => array(
+					'href' => $edit_url,
+					'title' => lang('edit')
+				),
+				'settings' => array(
+					'href' => '',
+					'rel' => 'modal-template-settings',
+					'class' => 'm-link',
+					'title' => lang('settings'),
+					'data-template-id' => $template->template_id
+				)
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_templates'))
+			{
+				unset($toolbar['edit']);
+				unset($toolbar['settings']);
+			}
+
 			$column = array(
 				$template_name,
 				'<span class="st-info">'.$type_col.'</span>',
 				$template->hits,
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee()->cp->masked_url($view_url),
-						'title' => lang('view'),
-						'rel' => 'external'
-					),
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					),
-					'settings' => array(
-						'href' => '',
-						'rel' => 'modal-template-settings',
-						'class' => 'm-link',
-						'title' => lang('settings'),
-						'data-template-id' => $template->template_id
-					),
-				)),
+				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $template->template_id,
