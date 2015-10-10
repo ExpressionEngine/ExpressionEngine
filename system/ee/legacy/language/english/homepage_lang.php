@@ -44,7 +44,9 @@ $lang = array(
 
 'register_new' => 'Register New',
 
-'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator. You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
+'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator.',
+
+'new_members_permission_desc' => 'You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
 
 'banned_members' => 'Banned Members',
 
