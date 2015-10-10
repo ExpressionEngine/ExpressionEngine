@@ -1444,7 +1444,7 @@ class EE_Schema {
 		// Default system stats
 
 		$Q[] = "INSERT INTO exp_stats (total_members, total_entries, last_entry_date, recent_member, recent_member_id, last_cache_clear)
-			VALUES ('1', '1', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
+			VALUES ('1', '0', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
