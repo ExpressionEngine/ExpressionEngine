@@ -162,7 +162,25 @@ class EE_Menu {
 			'can_delete_categories'
 		))
 		{
-			$menu['channel_manager'] = ee('CP/URL')->make('channels');
+			$sections = array(
+				'channels' => 'channels',
+				'channel_fields' => 'channels/fields/groups',
+				'statuses' => 'channels/status',
+				'categories' => 'channels/cat'
+			);
+
+			foreach ($sections as $name => $path)
+			{
+				if (ee()->cp->allowed_group_any(
+					"can_create_{$name}",
+					"can_edit_{$name}",
+					"can_delete_{$name}"
+				))
+				{
+					$menu['channel_manager'] = ee('CP/URL')->make($path);
+					break;
+				}
+			}
 		}
 
 		if (ee()->cp->allowed_group('can_access_design'))
