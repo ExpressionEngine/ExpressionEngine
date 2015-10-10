@@ -9,10 +9,14 @@
 				<span class="faded">ID#</span> <?=$category->data->cat_id?> <span class="faded">/</span> <?=$category->data->cat_url_title?>
 			</div>
 		</div>
+		<?php if ($can_edit_categories): ?>
 		<ul class="toolbar">
 			<li class="edit"><a href="<?=ee('CP/URL')->make('channels/cat/edit-cat/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
 		</ul>
+		<?php endif; ?>
+		<?php if ($can_delete_categories): ?>
 		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES, 'UTF-8') . '</b>'?>"></div>
+		<?php endif; ?>
 	</div>
 	<?php if (count($category->children())): ?>
 		<ul class="tbl-list">

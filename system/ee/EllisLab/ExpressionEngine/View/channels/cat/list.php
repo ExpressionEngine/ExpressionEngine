@@ -2,13 +2,15 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($base_url)?>
+		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
 		</fieldset>
+		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<div class="tbl-list-wrap">
-			<?php if (count($categories->children()) != 0): ?>
+			<?php if (count($categories->children()) != 0 && $can_delete_categories): ?>
 				<div class="tbl-list-ctrl">
 					<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
 				</div>

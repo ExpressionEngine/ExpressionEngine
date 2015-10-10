@@ -438,7 +438,13 @@ class Cat extends AbstractChannelsController {
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/cat'), lang('category_groups'));
 
-		ee()->cp->render('channels/cat/list');
+		$data = array(
+			'can_create_categories' => ee()->cp->allowed_group('can_create_categories'),
+			'can_edit_categories' => ee()->cp->allowed_group('can_edit_categories'),
+			'can_delete_categories' => ee()->cp->allowed_group('can_delete_categories')
+		);
+
+		ee()->cp->render('channels/cat/list', $data);
 	}
 
 	/**
@@ -446,6 +452,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function catReorder($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$cat_group = ee('Model')->get('CategoryGroup')
 			->filter('group_id', $group_id)
 			->first();
@@ -518,6 +529,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function removeCat()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$cat_ids = ee()->input->post('categories');
 
 		if ( ! empty($cat_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -555,6 +571,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function createCat($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		return $this->categoryForm($group_id);
 	}
 
@@ -566,6 +587,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function editCat($group_id, $category_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		return $this->categoryForm($group_id, $category_id);
 	}
 
@@ -999,6 +1025,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function catFieldReorder($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$cat_group = ee('Model')->get('CategoryGroup')
 			->filter('group_id', $group_id)
 			->first();
@@ -1036,6 +1067,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function removeField()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$field_ids = ee()->input->post('fields');
 
 		if ( ! empty($field_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -1073,6 +1109,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function createField($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		return $this->categoryFieldForm($group_id);
 	}
 
@@ -1084,6 +1125,11 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function editField($group_id, $field_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		return $this->categoryFieldForm($group_id, $field_id);
 	}
 
