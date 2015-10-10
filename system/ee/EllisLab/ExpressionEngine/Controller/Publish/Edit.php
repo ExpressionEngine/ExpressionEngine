@@ -129,10 +129,30 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
+			if (ee()->cp->allowed_group('can_edit_other_entries')
+				|| (ee()->cp->allowed_group('can_edit_self_entries') &&
+					$entry->author_id == ee()->session->userdata('member_id')
+					)
+				)
+			{
+				$can_edit = TRUE;
+			}
+			else
+			{
+				$can_edit = FALSE;
+			}
+
 			$autosaves = $entry->Autosaves->count();
 
-			$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8'). '</a>';
+			if ($can_edit)
+			{
+				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+				$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</a>';
+			}
+			else
+			{
+				$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+			}
 
 			if ($autosaves)
 			{
@@ -143,7 +163,14 @@ class Edit extends AbstractPublishController {
 
 			if ($entry->comment_total > 0)
 			{
-				$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+				if (ee()->cp->allowed_group('can_moderate_comments'))
+				{
+					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+				}
+				else
+				{
+					$comments = '(' . $entry->comment_total . ')';
+				}
 			}
 			else
 			{
@@ -164,10 +191,28 @@ class Edit extends AbstractPublishController {
 				);
 			}
 
-			$toolbar['edit'] = array(
-				'href' => $edit_link,
-				'title' => lang('edit')
-			);
+			if ($can_edit)
+			{
+				$toolbar['edit'] = array(
+					'href' => $edit_link,
+					'title' => lang('edit')
+				);
+			}
+
+			if (ee()->cp->allowed_group('can_delete_all_entries')
+				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
+					$entry->author_id == ee()->session->userdata('member_id')
+					)
+				)
+			{
+				$can_delete = TRUE;
+			}
+			else
+			{
+				$can_delete = FALSE;
+			}
+
+			$disabled_checkbox = ! $can_delete;
 
 			$column = array(
 				$entry->entry_id,
@@ -179,6 +224,7 @@ class Edit extends AbstractPublishController {
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
+					'disabled' => $disabled_checkbox,
 					'data' => array(
 						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
