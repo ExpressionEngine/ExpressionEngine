@@ -35,8 +35,10 @@ class Edit extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
-			&& ! ee()->cp->allowed_group('can_edit_self_entries'))
+		if ( ! ee()->cp->allowed_group_any(
+			'can_edit_other_entries',
+			'can_edit_self_entries'
+			))
 		{
 			show_error(lang('unauthorized_access'));
 		}
