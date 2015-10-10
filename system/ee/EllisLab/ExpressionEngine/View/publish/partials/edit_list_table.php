@@ -1,7 +1,9 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<fieldset class="tbl-search right">
+			<?php if (ee()->cp->allowed_group('can_create_entries')): ?>
 			<?= $create_button ?>
+			<?php endif; ?>
 		</fieldset>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
