@@ -1544,7 +1544,6 @@ class EE_Schema {
 				'can_edit_all_comments'          => 'y',
 				'can_delete_all_comments'        => 'y',
 				'can_moderate_comments'          => 'y',
-				'can_send_email'                 => 'y',
 				'can_send_cached_email'          => 'y',
 				'can_email_member_groups'        => 'y',
 				'can_email_from_profile'         => 'y',
