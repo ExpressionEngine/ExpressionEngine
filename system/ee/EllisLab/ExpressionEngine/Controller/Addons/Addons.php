@@ -446,6 +446,11 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -710,7 +715,7 @@ class Addons extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
