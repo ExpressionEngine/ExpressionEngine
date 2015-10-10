@@ -194,28 +194,44 @@ abstract class AbstractChannels extends CP_Controller {
 		{
 			$edit_url = ee('CP/URL')->make('channels/edit/'.$channel->getId());
 
-			$columns = array(
-				$channel->getId(),
-				array(
+			if (ee()->cp->allowed_group('can_edit_channels'))
+			{
+				$main_link = array(
 					'content' => $channel->channel_title,
 					'href' => $edit_url
+				);
+			}
+			else
+			{
+				$main_link = $channel->channel_title;
+			}
+
+			$toolbar = array(
+				'edit' => array(
+					'href' => $edit_url,
+					'title' => lang('edit')
 				),
+				'settings' => array(
+					'href' => ee('CP/URL')->make('channels/settings/'.$channel->getId()),
+					'title' => lang('settings')
+				),
+				'txt-only' => array(
+					'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
+					'title' => (lang('layouts')),
+					'content' => strtolower(lang('layouts'))
+				)
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channels'))
+			{
+				$toolbar = array();
+			}
+
+			$columns = array(
+				$channel->getId(),
+				$main_link,
 				$channel->channel_name,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					),
-					'settings' => array(
-						'href' => ee('CP/URL')->make('channels/settings/'.$channel->getId()),
-						'title' => lang('settings')
-					),
-					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
-						'title' => (lang('layouts')),
-						'content' => strtolower(lang('layouts'))
-					)
-				))
+				array('toolbar_items' => $toolbar)
 			);
 
 			if ($mutable)
