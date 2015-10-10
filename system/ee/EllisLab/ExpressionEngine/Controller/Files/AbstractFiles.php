@@ -40,7 +40,8 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee()->cp->allowed_group('can_access_files')
+			|| ! ee()->cp->allowed_group_any(
 			'can_upload_new_files',
 			'can_edit_files',
 			'can_delete_files',
@@ -105,9 +106,14 @@ abstract class AbstractFiles extends CP_Controller {
 				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $destination->name . '</b>')
 				->identifiedBy($destination->id);
 
+			if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+			{
+				$item->cannotEdit();
+			}
+
 			if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
 			{
-				$item->cannotEdit()->cannotRemove();
+				$item->cannotRemove();
 			}
 
 			if ($active_id == $destination->id)
