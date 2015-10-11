@@ -92,7 +92,7 @@ class Subscriptions extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_subscriptions_found');
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);

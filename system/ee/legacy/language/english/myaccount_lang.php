@@ -32,7 +32,10 @@ Used in the control panel only.',
 'subscriptions' => 'Current Subscriptions',
 
 'search_subscriptions' => 'Search Subscriptions',
+
 'unsubscribe_success' => 'You have been succesfully unsubscribed.',
+
+'no_subscriptions_found' => 'No <b>Subscriptions</b> found.',
 
 'utilities' => 'Utilities',
 
