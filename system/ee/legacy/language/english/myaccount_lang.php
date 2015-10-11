@@ -433,6 +433,8 @@ Used in the control panel only.',
 
 'bookmarklet_instructions' => 'Drag links to your bookmarks bar to save them.',
 
+'no_bookmarklets_found' => 'No <b>Bookmarklets</b> found.',
+
 'smart_notifications' => 'Enable smart notifications',
 
 'smart_notifications_desc' => 'When set to <b>enable</b>, smart notifications will be possible.',
