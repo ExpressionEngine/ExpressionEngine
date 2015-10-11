@@ -452,6 +452,8 @@ $lang = array(
 
 'row' => 'Row',
 
+'no_buttons_found' => 'No <b>HTML Buttons</b> found.',
+
 //----------------------------
 // Generic Phrases
 //----------------------------
