@@ -24,7 +24,6 @@ feature 'Member Group List' do
       @page.edit.security_lock[0].checked?.should == true
       @page.edit.website_access.each { |e| e.checked?.should == true }
       @page.edit.can_view_profiles[0].checked?.should == true
-      @page.edit.can_send_email[0].checked?.should == true
       @page.edit.can_delete_self[0].checked?.should == true
       @page.edit.mbr_delete_notify_emails.value.should == 'team@ellislab.com'
       @page.edit.include_members_in.each { |e| e.checked?.should == true }
@@ -79,9 +78,8 @@ feature 'Member Group List' do
       channel_status_permissions
       channel_entry_actions
       allowed_channels
-      asset_upload_directories
-      assets
-      rte_toolsets
+      file_upload_directories
+      files
       member_group_actions
       member_actions
       template_groups
@@ -90,8 +88,8 @@ feature 'Member Group List' do
       template_permissions
       allowed_template_groups
       addons_access
+      rte_toolsets
       access_tools
-      access_settings
     )
 
     checkboxes.each do |name|
@@ -121,9 +119,9 @@ feature 'Member Group List' do
 
     radios = %w(
       can_view_profiles
-      can_send_email
       can_delete_self
       can_post_comments
+      can_admin_channels
       exclude_from_moderation
       can_search
       can_send_private_messages
@@ -131,8 +129,16 @@ feature 'Member Group List' do
       can_send_bulletins
       can_access_cp
       cp_homepage
+      can_admin_channels
+      can_access_files
+      can_access_members
+      can_admin_mbr_groups
       can_admin_design
       can_admin_addons
+      can_access_utilities
+      can_access_logs
+      can_access_sys_prefs
+      can_access_security_settings
     )
 
     radios.each do |name|
@@ -222,7 +228,6 @@ feature 'Member Group List' do
     @page.edit.security_lock[0].click
     @page.edit.website_access.each(&:click)
     @page.edit.can_view_profiles[0].click
-    @page.edit.can_send_email[0].click
     @page.edit.can_delete_self[0].click
     @page.edit.mbr_delete_notify_emails.set 'team@ellislab.com'
     @page.edit.include_members_in.each(&:click)
@@ -239,17 +244,24 @@ feature 'Member Group List' do
     @page.edit.can_access_cp[0].click
     @page.edit.cp_homepage[1].click
     @page.edit.footer_helper_links.each(&:click)
+    @page.edit.can_admin_channels[0].click
     @page.edit.channel_permissions.each(&:click)
     @page.edit.channel_category_permissions.each(&:click)
     @page.edit.channel_entry_actions.each(&:click)
+    @page.edit.can_access_files[0].click
+    @page.edit.can_access_members[0].click
     @page.edit.member_actions.each(&:click)
     @page.edit.allowed_channels.each(&:click)
-    @page.edit.template_groups.each(&:click)
+    @page.edit.can_access_design[0].click
     @page.edit.can_admin_design[0].click
+    @page.edit.template_groups.each(&:click)
     @page.edit.allowed_template_groups.each(&:click)
+    @page.edit.can_access_addons[0].click
     @page.edit.can_admin_addons[0].click
     @page.edit.addons_access.each(&:click)
+    @page.edit.can_access_utilities[0].click
     @page.edit.access_tools.each(&:click)
+    @page.edit.can_access_sys_prefs[0].click
     @page.edit.submit.click
 
     @page.list.groups.last.find('li.edit a').click

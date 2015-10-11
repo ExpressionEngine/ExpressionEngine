@@ -13,49 +13,57 @@ class MemberGroupsEdit < SitePrism::Section
   elements :include_members_in, 'input[name="include_members_in[]"]'
 
   elements :can_post_comments, 'input[name="can_post_comments"]'
-  elements :exclude_from_moderation, 'input[name="exclude_from_moderation"]'
+  elements :exclude_from_moderation, 'input[name="exclude_from_moderation"]', visible: false
   elements :comment_actions, 'input[name="comment_actions[]"]'
 
   elements :can_search, 'input[name="can_search"]'
-  element :search_flood_control, 'input[name="search_flood_control"]'
+  element :search_flood_control, 'input[name="search_flood_control"]', visible: false
 
   elements :can_send_private_messages, 'input[name="can_send_private_messages"]'
-  element :prv_msg_send_limit, 'input[name="prv_msg_send_limit"]'
-  element :prv_msg_storage_limit, 'input[name="prv_msg_storage_limit"]'
-  elements :can_attach_in_private_messages, 'input[name="can_attach_in_private_messages"]'
-  elements :can_send_bulletins, 'input[name="can_send_bulletins"]'
+  element :prv_msg_send_limit, 'input[name="prv_msg_send_limit"]', visible: false
+  element :prv_msg_storage_limit, 'input[name="prv_msg_storage_limit"]', visible: false
+  elements :can_attach_in_private_messages, 'input[name="can_attach_in_private_messages"]', visible: false
+  elements :can_send_bulletins, 'input[name="can_send_bulletins"]', visible: false
 
   elements :can_access_cp, 'input[name="can_access_cp"]'
-  elements :cp_homepage, 'input[name="cp_homepage"]'
-  elements :footer_helper_links, 'input[name="footer_helper_links[]"]'
+  elements :cp_homepage, 'input[name="cp_homepage"]', visible: false
+  elements :footer_helper_links, 'input[name="footer_helper_links[]"]', visible: false
 
-  elements :channel_permissions, 'input[name="channel_permissions[]"]'
-  elements :channel_field_permissions, 'input[name="channel_field_permissions[]"]'
-  elements :channel_category_permissions, 'input[name="channel_category_permissions[]"]'
-  elements :channel_status_permissions, 'input[name="channel_status_permissions[]"]'
+  elements :can_admin_channels, 'input[name="can_admin_channels"]', visible: false
+  elements :channel_permissions, 'input[name="channel_permissions[]"]', visible: false
+  elements :channel_field_permissions, 'input[name="channel_field_permissions[]"]', visible: false
+  elements :channel_category_permissions, 'input[name="channel_category_permissions[]"]', visible: false
+  elements :channel_status_permissions, 'input[name="channel_status_permissions[]"]', visible: false
 
   elements :channel_entry_actions, 'input[name="channel_entry_actions[]"]'
   elements :allowed_channels, 'input[name="allowed_channels[]"]'
 
-  elements :asset_upload_directories, 'input[name="asset_upload_directories[]"]'
-  elements :assets, 'input[name="assets[]"]'
-  elements :rte_toolsets, 'input[name="rte_toolsets[]"]'
+  elements :can_access_files, 'input[name="can_access_files"]', visible: false
+  elements :file_upload_directories, 'input[name="file_upload_directories[]"]', visible: false
+  elements :files, 'input[name="files[]"]', visible: false
 
-  elements :member_group_actions, 'input[name="member_group_actions[]"]'
-  elements :member_actions, 'input[name="member_actions[]"]'
+  elements :can_access_members, 'input[name="can_access_members"]', visible: false
+  elements :can_admin_mbr_groups, 'input[name="can_admin_mbr_groups"]', visible: false
+  elements :member_group_actions, 'input[name="member_group_actions[]"]', visible: false
+  elements :member_actions, 'input[name="member_actions[]"]', visible: false
 
-  elements :can_admin_design, 'input[name="can_admin_design"]'
-  elements :template_groups, 'input[name="template_group_permissions[]"]'
-  elements :template_partials, 'input[name="template_partials[]"]'
-  elements :template_variables, 'input[name="template_variables[]"]'
+  elements :can_access_design, 'input[name="can_access_design"]', visible: false
+  elements :can_admin_design, 'input[name="can_admin_design"]', visible: false
+  elements :template_groups, 'input[name="template_group_permissions[]"]', visible: false
+  elements :template_partials, 'input[name="template_partials[]"]', visible: false
+  elements :template_variables, 'input[name="template_variables[]"]', visible: false
 
-  elements :template_permissions, 'input[name="template_permissions[]"]'
-  elements :allowed_template_groups, 'input[name="allowed_template_groups[]"]'
+  elements :template_permissions, 'input[name="template_permissions[]"]', visible: false
+  elements :allowed_template_groups, 'input[name="allowed_template_groups[]"]', visible: false
 
-  elements :can_admin_addons, 'input[name="can_admin_addons"]'
+  elements :can_access_addons, 'input[name="can_access_addons"]', visible: false
+  elements :can_admin_addons, 'input[name="can_admin_addons"]', visible: false
+  elements :addons_access, 'input[name="addons_access[]"]', visible: false
+  elements :rte_toolsets, 'input[name="rte_toolsets[]"]', visible: false
 
-  elements :addons_access, 'input[name="addons_access[]"]'
-
-  elements :access_tools, 'input[name="access_tools[]"]'
-  elements :access_settings, 'input[name="access_settings[]"]'
+  elements :can_access_utilities, 'input[name="can_access_utilities"]', visible: false
+  elements :access_tools, 'input[name="access_tools[]"]', visible: false
+  elements :can_access_logs, 'input[name="can_access_logs"]', visible: false
+  elements :can_access_sys_prefs, 'input[name="can_access_sys_prefs"]', visible: false
+  elements :can_access_security_settings, 'input[name="can_access_security_settings"]', visible: false
 end

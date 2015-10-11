@@ -1367,7 +1367,7 @@ class Groups extends Members\Members {
 							'fields' => array(
 								'can_access_sys_prefs' => array(
 									'type' => 'yes_no',
-									'value' => element('can_access_logs', $values),
+									'value' => element('can_access_sys_prefs', $values),
 									'group_toggle' => array(
 										'y' => 'can_access_sys_prefs'
 									)
