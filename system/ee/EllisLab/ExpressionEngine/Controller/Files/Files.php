@@ -152,6 +152,7 @@ class Files extends AbstractFilesController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
+		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
