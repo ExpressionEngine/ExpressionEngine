@@ -8,7 +8,7 @@
 		<?php $this->embed('_shared/pagination'); ?>
 		<?php if ( ! empty($table['data'])): ?>
 			<fieldset class="tbl-bulk-act">
-				<button class="btn submit"><?=sprintf(lang('btn_save'), lang('routes'))?></button>
+				<button class="btn submit"><?=lang('update')?></button>
 			</fieldset>
 		<?php endif ?>
 	<?=form_close()?>
