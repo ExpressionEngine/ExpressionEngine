@@ -513,6 +513,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'quick_links_ajax_reorder_fail' => 'Attention: Failed to save quick links order',
 'quick_links_ajax_reorder_fail_desc' => 'We failed to save your new quick links order. Refresh the page and make sure you\'re logged in.',
 
+'no_quick_links_found' => 'No <b>Quick links</b> found.',
+
 ''=>''
 );
 
