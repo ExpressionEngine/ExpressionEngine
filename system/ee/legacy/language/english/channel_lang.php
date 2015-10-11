@@ -54,7 +54,7 @@ $lang = array(
 
 'status_groups' => 'Status Groups',
 
-'no_channels' => 'No Channels',
+'no_channels' => 'No <b>Channels</b> found.',
 
 'create_channel' => 'Create Channel',
 
