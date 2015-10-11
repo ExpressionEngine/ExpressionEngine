@@ -175,7 +175,7 @@ feature 'Member Group List' do
       rows = []
       fields = 'group_title, group_description, is_locked, can_create_template_groups,
         can_edit_template_groups, can_delete_template_groups,
-        can_access_comm, can_access_utilities, can_access_data, can_access_logs'
+        can_access_comm, can_access_translate, can_access_data, can_access_logs'
       $db.query("SELECT #{fields} FROM exp_member_groups WHERE group_id=6").each do |row|
         rows << row
       end
@@ -190,7 +190,7 @@ feature 'Member Group List' do
       rows[0]['can_edit_template_groups'].should_not == rows[1]['can_edit_template_groups']
       rows[0]['can_delete_template_groups'].should_not == rows[1]['can_delete_template_groups']
       rows[0]['can_access_comm'].should_not == rows[1]['can_access_comm']
-      rows[0]['can_access_utilities'].should_not == rows[1]['can_access_utilities']
+      rows[0]['can_access_translate'].should_not == rows[1]['can_access_translate']
 
       # These fields were not changed and should remain the same
       rows[0]['can_access_data'].should == rows[1]['can_access_data']
