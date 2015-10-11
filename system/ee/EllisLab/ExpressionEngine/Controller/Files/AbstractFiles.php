@@ -40,15 +40,7 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_files')
-			|| ! ee()->cp->allowed_group_any(
-			'can_upload_new_files',
-			'can_edit_files',
-			'can_delete_files',
-			'can_create_upload_directories',
-			'can_edit_upload_directories',
-			'can_delete_upload_directories'
-		))
+		if ( ! ee()->cp->allowed_group('can_access_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -160,6 +152,7 @@ abstract class AbstractFiles extends CP_Controller {
 				)
 			)
 		);
+
 		$table->setNoResultsText(lang('no_uploaded_files'));
 
 		$data = array();
@@ -201,6 +194,7 @@ abstract class AbstractFiles extends CP_Controller {
 			if ( ! ee()->cp->allowed_group('can_edit_files'))
 			{
 				unset($toolbar['view']);
+				unset($toolbar['edit']);
 				unset($toolbar['crop']);
 			}
 
@@ -210,9 +204,15 @@ abstract class AbstractFiles extends CP_Controller {
 				unset($toolbar['crop']);
 			}
 
+			$file_description = $file->title;
+
+			if (ee()->cp->allowed_group('can_edit_files'))
+			{
+				$file_description = '<a href="'.$edit_link.'">'.$file->title.'</a>';
+			}
+
 			$column = array(
-				'<a href="' . $edit_link . '"> ' . $file->title
-					. '</a><br><em class="faded">' . $file->file_name . '</em>',
+				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),
