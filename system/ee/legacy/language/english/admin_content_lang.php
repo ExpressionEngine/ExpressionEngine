@@ -617,7 +617,7 @@ $lang = array(
 
 'custom_field_created' => 'Custom Field Created',
 
-'no_field_groups' => 'No field groups found',
+'no_field_groups' => 'No <b>Field Groups</b> found.',
 
 'delete_field' => 'Delete Field',
 
