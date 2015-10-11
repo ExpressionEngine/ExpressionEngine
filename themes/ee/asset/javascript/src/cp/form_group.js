@@ -23,6 +23,10 @@ var states = {};
 
 $(document).ready(function() {
 
+	var fields = $('*[data-group-toggle]');
+
+	toggleInputs(fields, '', false);
+
 	// loop through all of the toggles and record their current state
 	// we need this so that we can check if a section's visiblity should
 	// override the visibility of a child.
@@ -58,6 +62,7 @@ $(document).ready(function() {
 		// checked will be checked, so we need to prefix those inputs
 		// in form_group_toggle and then tell the browser to populate
 		// the radio buttons with their default checked state
+		/*
 		$.each(config, function (key, data) {
 			var elements = $('*[data-group="'+data+'"]');
 
@@ -65,6 +70,7 @@ $(document).ready(function() {
 				$(this).prop('checked', $(this).attr('checked') == 'checked');
 			});
 		});
+		*/
 	});
 });
 
@@ -125,15 +131,33 @@ EE.cp.form_group_toggle = function(element) {
 // In an effort not to need to prefix those input names, we'll handle
 // it automatically with this function.
 function toggleInputs(container, group_name, enable) {
-	container.find(':input').each(function() {
+	//return;
+	container.find(':radio').each(function() {
 
-		var input = $(this),
-			name = input.attr('name'),
-			clean_name = (name) ? name.replace('el_disabled_'+group_name+'_', '') : '';
+//		var input = $(this),
+//			name = input.attr('name'),
+//			clean_name = (name) ? name.replace('el_disabled_'+group_name+'_', '') : '';
+
+		var input = $(this);
 
 		// Disable inputs that aren't shown, we don't need those in POST
 		input.attr('disabled', ! enable);
 
+		var state = input.data('el_checked');
+
+		if ( ! state) {
+			state = ($(this).attr('checked') == 'checked');
+			input.data('el_checked', state);
+
+			input.change(function() {
+				input.data('el_checked', input.prop('checked'));
+			});
+		}
+
+		if (enable) {
+			input.prop('checked', state);
+		}
+		/*
 		// Prefixing the name ensures radio buttons will keep their state
 		// when changing the visible group, as well as any JS handlers
 		// based on name should take note of and inputs that are no
@@ -145,6 +169,7 @@ function toggleInputs(container, group_name, enable) {
 				input.attr('name', 'el_disabled_'+group_name+'_'+clean_name);
 			}
 		}
+		*/
 	});
 }
 
