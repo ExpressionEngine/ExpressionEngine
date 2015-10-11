@@ -304,23 +304,32 @@ class Status extends AbstractChannelsController {
 		}
 
 		$table = ee('CP/Table', array(
-			'reorder' => TRUE,
+			'reorder' => ee()->cp->allowed_group('can_edit_statuses'),
 			'sortable' => FALSE
 		));
-		$table->setColumns(
-			array(
-				'col_id' => array(
-					'encode' => FALSE
-				),
-				'status_name',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
+
+		$columns = array(
+			'col_id' => array(
+				'encode' => FALSE
+			),
+			'status_name'
 		);
+
+		if (ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			$columns['manage'] = array(
+				'type'	=> CP\Table::COL_TOOLBAR
+			);
+		}
+
+		if (ee()->cp->allowed_group('can_delete_statuses'))
+		{
+			$columns[] = array(
+				'type'	=> CP\Table::COL_CHECKBOX
+			);
+		}
+
+		$table->setColumns($columns);
 
 		$statuses = $status_group->getStatuses()->sortBy('status_order');
 
@@ -332,15 +341,25 @@ class Status extends AbstractChannelsController {
 				$status->getId().form_hidden('order[]', $status->getId()),
 				array(
 					'content' => $status->status,
-					'href' => $edit_url
+					'href' => $edit_url,
 				),
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
 					)
-				)),
-				array(
+				))
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+			{
+				unset($columns[1]['href']);
+				unset($columns[2]);
+			}
+
+			if (ee()->cp->allowed_group('can_delete_statuses'))
+			{
+				$columns[] = array(
 					'name' => 'statuses[]',
 					'value' => $status->getId(),
 					'data'	=> array(
@@ -348,8 +367,8 @@ class Status extends AbstractChannelsController {
 					),
 					// Cannot delete default statuses
 					'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
-				)
-			);
+				);
+			}
 
 			$attrs = array();
 			if (ee()->session->flashdata('highlight_id') == $status->getId())
@@ -366,6 +385,7 @@ class Status extends AbstractChannelsController {
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/status/status-list/'.$group_id));
+		$vars['can_create_statuses'] = ee()->cp->allowed_group('can_create_statuses');
 
 		ee()->view->group_id = $group_id;
 
@@ -395,6 +415,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function statusReorder($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$status_group = ee('Model')->get('StatusGroup')
 			->filter('group_id', $group_id)
 			->first();
@@ -432,6 +457,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function removeStatus()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$status_ids = ee()->input->post('statuses');
 
 		if ( ! empty($status_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -467,6 +497,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function createStatus($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->statusForm($group_id);
 	}
 
@@ -475,6 +510,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function editStatus($group_id, $status_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->statusForm($group_id, $status_id);
 	}
 
