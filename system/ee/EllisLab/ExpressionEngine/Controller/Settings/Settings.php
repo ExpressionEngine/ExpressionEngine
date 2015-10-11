@@ -65,7 +65,7 @@ class Settings extends CP_Controller {
 		$list->addItem(lang('license_and_reg'), ee('CP/URL')->make('settings/license'));
 		$list->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
-		if (ee()->cp->allowed_group('can_access_communicate'))
+		if (ee()->cp->allowed_group('can_access_comm'))
 		{
 			$list->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
 		}
