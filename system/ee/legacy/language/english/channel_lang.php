@@ -412,7 +412,7 @@ $lang = array(
 
 'group_name' => 'Group Name',
 
-'no_category_groups' => 'No Category Groups',
+'no_category_groups' => 'No <b>Category Groups</b> found.',
 
 'create_category_group' => 'Create Category Group',
 
@@ -434,7 +434,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'No <b>categories</b> found',
+'categories_not_found' => 'No <b>Categories</b> found.',
 
 'create_category' => 'Create Category',
 
@@ -518,7 +518,7 @@ $lang = array(
 
 'category_fields' => 'Category Fields',
 
-'no_category_fields' => 'No Category Fields',
+'no_category_fields' => 'No <b>Category Fields</b> found.',
 
 'create_category_field' => 'Create Category Field',
 
