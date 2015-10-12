@@ -184,6 +184,14 @@ class MetaDataReader {
 	 */
 	public function getTableForField($field)
 	{
+		$class = $this->class;
+		$table = $class::getMetaData('table_name');
+		
+		if ($table)
+		{
+			return $table;
+		}
+
 		foreach ($this->getTables() as $table => $fields)
 		{
 			if (in_array($field, $fields))
