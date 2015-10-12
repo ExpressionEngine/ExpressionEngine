@@ -903,6 +903,13 @@ class Grid_lib {
 	 */
 	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
 	{
+		// shared form does a set_value() by default, but since we're dealing with
+		// un-namespaced fields here and namespaced fields in POST that can lead
+		// to extremely unexpected behavior. So we'll kill $_POST and thus rely on
+		// the value in col_settings.
+		$post = $_POST;
+		$_POST = array();
+
 		$settings_view = ee('View')
 			->make('grid:col_settings_tmpl')
 			->render(
@@ -916,6 +923,8 @@ class Grid_lib {
 		{
 			$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
 		}
+
+		$_POST = $post;
 
 		// Namespace form field names
 		return $this->_namespace_inputs(
