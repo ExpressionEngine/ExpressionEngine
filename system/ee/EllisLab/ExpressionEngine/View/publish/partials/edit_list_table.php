@@ -11,7 +11,7 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-			<?php if ( ! ee()->cp->allowed_group('can_delete_all_entries') && ! ee()->cp->allowed_group('can_delete_self_entries')): ?>
+			<?php if (ee()->cp->allowed_group('can_delete_all_entries') || ee()->cp->allowed_group('can_delete_self_entries')): ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>

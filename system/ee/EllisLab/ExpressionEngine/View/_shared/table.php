@@ -138,7 +138,7 @@ if ($wrap): ?>
 												data-<?=$key?>="<?=$value?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
-										<?php if (isset($column['disabled'])):?>
+										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>
 											disabled="disabled"
 										<?php endif; ?>
 										type="checkbox"
