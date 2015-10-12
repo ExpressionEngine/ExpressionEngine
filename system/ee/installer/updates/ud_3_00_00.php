@@ -771,9 +771,9 @@ class Updater {
 		$permissions = array(
 			'can_create_entries',
 			'can_edit_self_entries',
-			'can_upload_new_assets',
-			'can_edit_assets',
-			'can_delete_assets',
+			'can_upload_new_files',
+			'can_edit_files',
+			'can_delete_files',
 			'can_upload_new_toolsets',
 			'can_edit_toolsets',
 			'can_delete_toolsets',
@@ -795,7 +795,6 @@ class Updater {
 			'can_edit_member_groups',
 			'can_create_members',
 			'can_edit_members',
-			'can_manage_template_settings',
 			'can_create_new_templates',
 			'can_edit_templates',
 			'can_delete_templates',
@@ -808,7 +807,10 @@ class Updater {
 			'can_create_template_variables',
 			'can_delete_template_variables',
 			'can_edit_template_variables',
-			'can_access_security_settings'
+			'can_access_security_settings',
+			'can_access_translate',
+			'can_access_import',
+			'can_access_sql_manager'
 		);
 
 		foreach ($permissions as $permission)
@@ -849,9 +851,9 @@ class Updater {
 			ee()->db->update(
 				'member_groups',
 				array(
-					'can_upload_new_assets' => 'y',
-					'can_edit_assets' => 'y',
-					'can_delete_assets' => 'y',
+					'can_upload_new_files' => 'y',
+					'can_edit_files' => 'y',
+					'can_delete_files' => 'y',
 					'can_upload_new_toolsets' => 'y',
 					'can_edit_toolsets' => 'y',
 					'can_delete_toolsets' => 'y',
@@ -913,7 +915,6 @@ class Updater {
 			ee()->db->update(
 				'member_groups',
 				array(
-					'can_manage_template_settings' => 'y',
 					'can_create_new_templates' => 'y',
 					'can_edit_templates' => 'y',
 					'can_delete_templates' => 'y',
@@ -931,14 +932,51 @@ class Updater {
 			);
 		}
 
+		if (ee()->db->field_exists('can_access_utilities', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_access_translate' => 'y',
+					'can_access_import' => 'y'
+				),
+				array('can_access_utilities' => 'y')
+			);
+		}
+
+		if (ee()->db->field_exists('can_access_data', 'member_groups'))
+		{
+			ee()->db->update(
+				'member_groups',
+				array(
+					'can_access_sql_manager' => 'y'
+				),
+				array('can_access_data' => 'y')
+			);
+		}
+
+		// Rename can_admin_modules to can_admin_addons
+		if (ee()->db->field_exists('can_admin_modules', 'member_groups'))
+		{
+			$can_admin_addons = array(
+				'can_admin_modules' => array(
+					'name' => 'can_admin_addons',
+					'type' => 'CHAR',
+					'constraint' => 1,
+					'default' => 'n'
+				));
+
+			ee()->dbforge->modify_column('member_groups', $can_admin_addons);
+		}
+
 		// Drop all superfluous permissions columns
 		$old = array(
+			'can_send_email',
 			'can_access_extensions',
 			'can_access_fieldtypes',
 			'can_access_modules',
 			'can_access_plugins',
 			'can_access_content',
-			'can_admin_channels',
 			'can_admin_members',
 			'can_admin_templates',
 			'can_access_admin',

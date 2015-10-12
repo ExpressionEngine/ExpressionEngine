@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Quicklinks extends Profile {
+class Quicklinks extends Settings {
 
 	private $base_url = 'members/profile/quicklinks';
 
@@ -335,7 +335,7 @@ class Quicklinks extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_quick_links_found');
 		$table->setData($links);
 
 		return ee('View')->make('_shared/table')->render($table->viewData($this->base_url));

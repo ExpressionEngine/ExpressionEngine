@@ -389,7 +389,7 @@ class Ip_to_nation_mcp {
 
 	function _cache_path()
 	{
-		$cache_path .= PATH_CACHE.'ip2nation/';
+		$cache_path = PATH_CACHE.'ip2nation/';
 
 		if ( ! is_dir($cache_path))
 		{

@@ -181,8 +181,16 @@ return array(
 			$config = $ee->make('Config')->getFile();
 
 			$db_config = new Database\DBConfig($config);
+			$db = new Database\Database($db_config);
 
-			return new Database\Database($db_config);
+			// we'll go by what's in the config file first - site prefs
+			// may end up turning this off, but we load those so late that
+			// it has led to some early query loops being missed. Better to
+			// be more aggressive on this front.
+			$save_queries = ($config->get('show_profiler', 'n') == 'y' OR DEBUG == 1);
+			$db->getLog()->saveQueries($save_queries);
+
+			return $db;
 		},
 
 		'License' => function($ee)

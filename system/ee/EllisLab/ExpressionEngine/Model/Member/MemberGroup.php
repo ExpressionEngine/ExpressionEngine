@@ -39,7 +39,7 @@ class MemberGroup extends Model {
 		'can_admin_mbr_groups'           => 'boolString',
 		'can_admin_mbr_templates'        => 'boolString',
 		'can_ban_users'                  => 'boolString',
-		'can_admin_modules'              => 'boolString',
+		'can_admin_addons'              => 'boolString',
 		'can_edit_categories'            => 'boolString',
 		'can_delete_categories'          => 'boolString',
 		'can_view_other_entries'         => 'boolString',
@@ -55,7 +55,6 @@ class MemberGroup extends Model {
 		'can_edit_all_comments'          => 'boolString',
 		'can_delete_all_comments'        => 'boolString',
 		'can_moderate_comments'          => 'boolString',
-		'can_send_email'                 => 'boolString',
 		'can_send_cached_email'          => 'boolString',
 		'can_email_member_groups'        => 'boolString',
 		'can_email_from_profile'         => 'boolString',
@@ -71,9 +70,9 @@ class MemberGroup extends Model {
 		'include_in_authorlist'          => 'boolString',
 		'include_in_memberlist'          => 'boolString',
 		'include_in_mailinglist'         => 'boolString',
-		'can_upload_new_assets'          => 'boolString',
-		'can_edit_assets'                => 'boolString',
-		'can_delete_assets'              => 'boolString',
+		'can_upload_new_files'          => 'boolString',
+		'can_edit_files'                => 'boolString',
+		'can_delete_files'              => 'boolString',
 		'can_upload_new_toolsets'        => 'boolString',
 		'can_edit_toolsets'              => 'boolString',
 		'can_delete_toolsets'            => 'boolString',
@@ -95,7 +94,6 @@ class MemberGroup extends Model {
 		'can_edit_member_groups'         => 'boolString',
 		'can_create_members'             => 'boolString',
 		'can_edit_members'               => 'boolString',
-		'can_manage_template_settings'   => 'boolString',
 		'can_create_new_templates'       => 'boolString',
 		'can_edit_templates'             => 'boolString',
 		'can_delete_templates'           => 'boolString',
@@ -108,7 +106,11 @@ class MemberGroup extends Model {
 		'can_create_template_variables'  => 'boolString',
 		'can_delete_template_variables'  => 'boolString',
 		'can_edit_template_variables'    => 'boolString',
-		'can_access_security_settings'   => 'boolString'
+		'can_access_security_settings'   => 'boolString',
+		'can_access_translate'           => 'boolString',
+		'can_access_import'	             => 'boolString',
+		'can_access_sql_manager'         => 'boolString',
+		'can_admin_channels'             => 'boolString'
 	);
 
 
@@ -221,7 +223,7 @@ class MemberGroup extends Model {
 	protected $can_admin_mbr_groups;
 	protected $can_admin_mbr_templates;
 	protected $can_ban_users;
-	protected $can_admin_modules;
+	protected $can_admin_addons;
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 	protected $can_view_other_entries;
@@ -237,7 +239,6 @@ class MemberGroup extends Model {
 	protected $can_edit_all_comments;
 	protected $can_delete_all_comments;
 	protected $can_moderate_comments;
-	protected $can_send_email;
 	protected $can_send_cached_email;
 	protected $can_email_member_groups;
 	protected $can_email_from_profile;
@@ -260,9 +261,9 @@ class MemberGroup extends Model {
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
-	protected $can_upload_new_assets;
-	protected $can_edit_assets;
-	protected $can_delete_assets;
+	protected $can_upload_new_files;
+	protected $can_edit_files;
+	protected $can_delete_files;
 	protected $can_upload_new_toolsets;
 	protected $can_edit_toolsets;
 	protected $can_delete_toolsets;
@@ -284,7 +285,6 @@ class MemberGroup extends Model {
 	protected $can_edit_member_groups;
 	protected $can_create_members;
 	protected $can_edit_members;
-	protected $can_manage_template_settings;
 	protected $can_create_new_templates;
 	protected $can_edit_templates;
 	protected $can_delete_templates;
@@ -298,6 +298,10 @@ class MemberGroup extends Model {
 	protected $can_delete_template_variables;
 	protected $can_edit_template_variables;
 	protected $can_access_security_settings;
+	protected $can_access_translate;
+	protected $can_access_import;
+	protected $can_access_sql_manager;
+	protected $can_admin_channels;
 
 	/**
 	 * Ensure group ID is set for new records

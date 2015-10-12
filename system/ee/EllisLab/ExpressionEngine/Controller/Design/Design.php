@@ -59,17 +59,41 @@ class Design extends AbstractDesignController {
 	{
 		if (is_null($group_name))
 		{
+			$assigned_groups = NULL;
+
+			if (ee()->session->userdata['group_id'] != 1)
+			{
+				$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
+
+				if (empty($assigned_groups))
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('design/system'));
+				}
+			}
+
 			$group = ee('Model')->get('TemplateGroup')
 				->filter('is_site_default', 'y')
-				->filter('site_id', ee()->config->item('site_id'))
-				->first();
+				->filter('site_id', ee()->config->item('site_id'));
+
+			if ($assigned_groups)
+			{
+				$group->filter('group_id', 'IN', $assigned_groups);
+			}
+
+			$group = $group->first();
 
 			if ( ! $group)
 			{
 				$group = ee('Model')->get('TemplateGroup')
 					->filter('site_id', ee()->config->item('site_id'))
-					->order('group_name', 'asc')
-					->first();
+					->order('group_name', 'asc');
+
+				if ($assigned_groups)
+				{
+					$group->filter('group_id', 'IN', $assigned_groups);
+				}
+
+				$group = $group->first();
 			}
 
 			if ( ! $group)
@@ -88,11 +112,6 @@ class Design extends AbstractDesignController {
 			{
 				show_error(sprintf(lang('error_no_template_group'), $group_name));
 			}
-		}
-
-		if ( ! $this->hasEditTemplatePrivileges($group->group_id))
-		{
-			show_error(lang('unauthorized_access'));
 		}
 
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -115,8 +134,8 @@ class Design extends AbstractDesignController {
 		$this->_sync_from_files();
 
 		$vars = array();
-
-		$vars['show_new_template_button'] = TRUE;
+		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_templates');
+		$vars['$show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 		$vars['group_id'] = $group->group_name;
 
 		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);

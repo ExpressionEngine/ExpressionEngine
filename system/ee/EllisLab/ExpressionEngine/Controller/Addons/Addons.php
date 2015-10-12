@@ -37,6 +37,8 @@ class Addons extends CP_Controller {
 	var $params			= array();
 	var $base_url;
 
+	protected $assigned_modules = array();
+
 	/**
 	 * Constructor
 	 */
@@ -61,6 +63,11 @@ class Addons extends CP_Controller {
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
 		ee()->legacy_api->instantiate('channel_fields');
+
+		$this->assigned_modules = ee('Model')->get('MemberGroup', ee()->session->userdata('group_id'))
+			->first()
+			->AssignedModules
+			->pluck('module_name');
 	}
 
 	// --------------------------------------------------------------------
@@ -215,7 +222,7 @@ class Addons extends CP_Controller {
 
 		foreach (array('first', 'third') as $party)
 		{
-			if ( ! count($addons[$party]))
+			if ($party == 'third' && ! count($addons[$party]))
 			{
 				continue;
 			}
@@ -398,11 +405,15 @@ class Addons extends CP_Controller {
 			'third' => array()
 		);
 
-		// @TODO move these 2 things out of "add-ons" entirely
-		$uninstallable = array('channel', 'comment', 'filepicker');
+		$group_id = ee()->session->userdata('group_id');
 
 		foreach ($addon_infos as $name => $info)
 		{
+			if ($group_id != 1 && ! in_array($name, $this->assigned_modules))
+			{
+				continue;
+			}
+
 			$info = ee('Addon')->get($name);
 
 			if ($info->get('built_in'))
@@ -446,6 +457,11 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -594,6 +610,11 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -701,6 +722,11 @@ class Addons extends CP_Controller {
 	 */
 	private function remove($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -795,6 +821,11 @@ class Addons extends CP_Controller {
 	 */
 	public function settings($addon, $method = NULL)
 	{
+		if (ee()->session->userdata('group_id') != 1 && ! in_array($name, $this->assigned_modules))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->view->cp_page_title = lang('addon_manager');
 
 		$vars = array();
@@ -899,6 +930,11 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
+		if (ee()->session->userdata('group_id') != 1 && ! in_array($name, $this->assigned_modules))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		try
 		{
 			$info = ee('Addon')->get($addon);

@@ -46,22 +46,29 @@ abstract class AbstractChannels extends CP_Controller {
 				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! ee()->cp->allowed_group_any(
-			'can_create_channels',
-			'can_edit_channels',
-			'can_delete_channels',
-			'can_create_channel_fields',
-			'can_edit_channel_fields',
-			'can_delete_channel_fields',
-			'can_create_statuses',
-			'can_delete_statuses',
-			'can_edit_statuses',
-			'can_create_categories',
-			'can_edit_categories',
-			'can_delete_categories'
-		))
+		else
 		{
-			show_error(lang('unauthorized_access'));
+			if ( ! $this->cp->allowed_group('can_admin_channels'))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+			elseif ( ! ee()->cp->allowed_group_any(
+				'can_create_channels',
+				'can_edit_channels',
+				'can_delete_channels',
+				'can_create_channel_fields',
+				'can_edit_channel_fields',
+				'can_delete_channel_fields',
+				'can_create_statuses',
+				'can_delete_statuses',
+				'can_edit_statuses',
+				'can_create_categories',
+				'can_edit_categories',
+				'can_delete_categories'
+				))
+			{
+				show_error(lang('unauthorized_access'));
+			}
 		}
 
 		ee()->lang->loadfile('content');
@@ -86,36 +93,80 @@ abstract class AbstractChannels extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
-
-		if ($active == 'channel')
+		if (ee()->cp->allowed_group_any(
+			'can_create_channels',
+			'can_edit_channels',
+			'can_delete_channels'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'));
+
+			if (ee()->cp->allowed_group('can_create_channels'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
+			}
+
+			if ($active == 'channel')
+			{
+				$header->isActive();
+			}
 		}
 
-		$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
-
-		if ($active == 'field')
+		if (ee()->cp->allowed_group_any(
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'));
+
+			if (ee()->cp->allowed_group('can_create_channel_fields'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
+			}
+
+			if ($active == 'field')
+			{
+				$header->isActive();
+			}
 		}
 
-		$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
-
-		if ($active == 'category')
+		if (ee()->cp->allowed_group_any(
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'));
+
+			if (ee()->cp->allowed_group('can_create_categories'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
+			}
+
+			if ($active == 'category')
+			{
+				$header->isActive();
+			}
 		}
 
-		$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'))
-			->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
-
-		if ($active == 'status')
+		if (ee()->cp->allowed_group_any(
+			'can_create_statuses',
+			'can_delete_statuses',
+			'can_edit_statuses'
+		))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'));
+
+			if (ee()->cp->allowed_group('can_create_statuses'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
+			}
+
+			if ($active == 'status')
+			{
+				$header->isActive();
+			}
 		}
 	}
 
@@ -166,28 +217,42 @@ abstract class AbstractChannels extends CP_Controller {
 		{
 			$edit_url = ee('CP/URL')->make('channels/edit/'.$channel->getId());
 
+			$main_link = array(
+				'content' => $channel->channel_title,
+				'href' => $edit_url
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channels'))
+			{
+				unset($main_link['href']);
+			}
+
+			$toolbar = array(
+				'edit' => array(
+					'href' => $edit_url,
+					'title' => lang('edit')
+				),
+				'settings' => array(
+					'href' => ee('CP/URL')->make('channels/settings/'.$channel->getId()),
+					'title' => lang('settings')
+				),
+				'txt-only' => array(
+					'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
+					'title' => (lang('layouts')),
+					'content' => strtolower(lang('layouts'))
+				)
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channels'))
+			{
+				$toolbar = array();
+			}
+
 			$columns = array(
 				$channel->getId(),
-				array(
-					'content' => $channel->channel_title,
-					'href' => $edit_url
-				),
+				$main_link,
 				$channel->channel_name,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					),
-					'settings' => array(
-						'href' => ee('CP/URL')->make('channels/settings/'.$channel->getId()),
-						'title' => lang('settings')
-					),
-					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
-						'title' => (lang('layouts')),
-						'content' => strtolower(lang('layouts'))
-					)
-				))
+				array('toolbar_items' => $toolbar)
 			);
 
 			if ($mutable)
@@ -242,6 +307,11 @@ abstract class AbstractChannels extends CP_Controller {
 			)
 		);
 
+		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		{
+			unset($columns['manage']);
+		}
+
 		if ($mutable)
 		{
 			$columns[] = array(
@@ -275,6 +345,12 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+			{
+				unset($column[1]['href']);
+				unset($column[4]);
+			}
 
 			if ($mutable)
 			{
@@ -359,6 +435,12 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+			{
+				unset($column[0]['href']);
+				unset($column[1]['toolbar_items']['edit']);
+			}
 
 			if ($mutable)
 			{
@@ -460,6 +542,13 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_categories'))
+			{
+				unset($columns[1]['href']);
+				unset($columns[2]['toolbar_items']['edit']);
+				unset($columns[2]['toolbar_items']['txt-only']);
+			}
 
 			if ($mutable)
 			{
@@ -604,6 +693,11 @@ abstract class AbstractChannels extends CP_Controller {
 					)
 				))
 			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_statueses'))
+			{
+				unset($columns[2]['toolbar_items']['edit']);
+			}
 
 			if ($mutable)
 			{

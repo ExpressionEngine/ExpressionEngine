@@ -198,6 +198,8 @@ $lang = array(
 
 'create_upload_directory' => 'Create Upload Directory',
 
+'new_upload_directory' => 'New Upload Directory',
+
 'edit_upload_directory' => 'Edit Upload Directory',
 
 'upload_url' => 'Upload directory',
@@ -333,8 +335,6 @@ $lang = array(
 'watermark' => 'Watermark',
 
 'watermarks' => 'Watermarks',
-
-'no_watermarks' => 'No Watermarks',
 
 'create_watermark' => 'Create Watermark',
 

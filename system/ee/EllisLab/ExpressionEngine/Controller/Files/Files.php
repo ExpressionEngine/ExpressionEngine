@@ -152,6 +152,7 @@ class Files extends AbstractFilesController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
+		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
@@ -198,7 +199,7 @@ class Files extends AbstractFilesController {
 
 	public function upload($dir_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_assets'))
+		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -520,7 +521,7 @@ class Files extends AbstractFilesController {
 
 	private function remove($file_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_assets'))
+		if ( ! ee()->cp->allowed_group('can_delete_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

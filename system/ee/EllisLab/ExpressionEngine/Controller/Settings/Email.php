@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Email extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_comm'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */

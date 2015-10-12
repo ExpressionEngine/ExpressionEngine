@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Bookmarks extends Profile {
+class Bookmarks extends Settings {
 
 	private $base_url = 'members/profile/bookmarks';
 
@@ -101,7 +101,7 @@ class Bookmarks extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_bookmarklets_found');
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);

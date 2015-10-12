@@ -68,7 +68,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$template_group_list = $template_group_list->addFolderList('template-group')
 			->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
-			->withRemovalKey('group_name')
+				->withRemovalKey('group_name')
 			->withNoResultsText(lang('zero_template_groups_found'));
 
 		$template_groups = ee('Model')->get('TemplateGroup')
@@ -77,22 +77,32 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
-			$template_groups->filter('group_id', 'IN', array_keys(ee()->session->userdata['assigned_template_groups']));
+			$assigned_groups =  array_keys(ee()->session->userdata['assigned_template_groups']);
+			$template_groups->filter('group_id', 'IN', $assigned_groups);
+
+			if (empty($assigned_groups))
+			{
+				$template_groups->markAsFutile();
+			}
 		}
 
 		foreach ($template_groups->all() as $group)
 		{
 			$item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
 
-			if (ee()->cp->allowed_group('can_edit_template_groups'))
+			$item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+
+			$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
+				->identifiedBy($group->group_name);
+
+			if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
 			{
-				$item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+				$item->cannotEdit();
 			}
 
-			if (ee()->cp->allowed_group('can_delete_template_groups'))
+			if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
 			{
-				$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
-					->identifiedBy($group->group_name);
+				$item->cannotRemove();
 			}
 
 			if ($active_group_id == $group->group_id)
@@ -128,7 +138,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->isActive();
 		}
 
-		if (ee('Model')->get('Module')->filter('module_name', 'Member')->first())
+		if (ee()->cp->allowed_group('can_admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
 				->withEditUrl(ee('CP/URL')->make('design/members'))
@@ -153,25 +163,40 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Partials
-		$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'))
-			->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
-
-		if ($active == 'partials')
+		if (ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'));
+
+			if (ee()->cp->allowed_group('can_create_template_partials'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
+			}
+
+			if ($active == 'partials')
+			{
+				$header->isActive();
+			}
 		}
 
 		// Template Variables
-		$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'))
-			->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
-
-		if ($active == 'variables')
+		if (ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
-			$header->isActive();
+			$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'));
+
+			if (ee()->cp->allowed_group('can_create_template_variables'))
+			{
+				$header->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
+			}
+
+			if ($active == 'variables')
+			{
+				$header->isActive();
+			}
 		}
 
+
 		// Template Routes
-		if ( ! TemplateRoute::getConfig())
+		if ( ! TemplateRoute::getConfig() && ee()->cp->allowed_group('can_admin_design'))
 		{
 			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
 
@@ -204,6 +229,11 @@ abstract class AbstractDesign extends CP_Controller {
 			),
 			'search_button_value' => lang('search_templates')
 		);
+
+		if ( ! ee()->cp->allowed_group('can_access_sys_prefs', 'can_admin_design'))
+		{
+			unset($header['toolbar_items']['settings']);
+		}
 
 		if (ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -398,7 +428,10 @@ abstract class AbstractDesign extends CP_Controller {
 				$template_name = $group->group_name . '/' . $template_name;
 			}
 
-			$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
+			if (ee()->cp->allowed_group('can_edit_templates'))
+			{
+				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
+			}
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -428,28 +461,36 @@ abstract class AbstractDesign extends CP_Controller {
 				$type_col = lang($template->template_type.'_type_col');
 			}
 
+			$toolbar = array(
+				'view' => array(
+					'href' => ee()->cp->masked_url($view_url),
+					'title' => lang('view'),
+					'rel' => 'external'
+				),
+				'edit' => array(
+					'href' => $edit_url,
+					'title' => lang('edit')
+				),
+				'settings' => array(
+					'href' => '',
+					'rel' => 'modal-template-settings',
+					'class' => 'm-link',
+					'title' => lang('settings'),
+					'data-template-id' => $template->template_id
+				)
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_templates'))
+			{
+				unset($toolbar['edit']);
+				unset($toolbar['settings']);
+			}
+
 			$column = array(
 				$template_name,
 				'<span class="st-info">'.$type_col.'</span>',
 				$template->hits,
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee()->cp->masked_url($view_url),
-						'title' => lang('view'),
-						'rel' => 'external'
-					),
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					),
-					'settings' => array(
-						'href' => '',
-						'rel' => 'modal-template-settings',
-						'class' => 'm-link',
-						'title' => lang('settings'),
-						'data-template-id' => $template->template_id
-					),
-				)),
+				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $template->template_id,

@@ -41,11 +41,6 @@ class Template extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		$this->stdHeader();
 	}
 
@@ -416,6 +411,11 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
+		if ( ! ee()->cp->allowed_group('can_edit_templates'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -524,8 +524,20 @@ class Template extends AbstractDesignController {
 
 		$templates = ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
-			->all();
+			->filter('template_data', 'LIKE', '%' . $search_terms . '%');
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
+			$templates->filter('group_id', 'IN', $assigned_groups);
+
+			if (empty($assigned_groups))
+			{
+				$templates->markAsFutile();
+			}
+		}
+
+		$templates = $templates->all();
 
 		$base_url = ee('CP/URL')->make('design/template/search');
 

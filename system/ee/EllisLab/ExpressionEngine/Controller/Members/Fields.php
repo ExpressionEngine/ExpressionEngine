@@ -44,6 +44,11 @@ class Fields extends Members\Members {
 	{
 		parent::__construct();
 
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->lang->loadfile('channel');
 		$this->base_url = ee('CP/URL')->make('members/fields');
 		$this->generateSidebar('fields');
@@ -80,7 +85,7 @@ class Fields extends Members\Members {
 		);
 
 		$table->setNoResultsText(
-			'no_fields',
+			sprintf(lang('no_found'), lang('custom_member_fields')),
 			'create_new',
 			ee('CP/URL')->make('members/fields/create')
 		);

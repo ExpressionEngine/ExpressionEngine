@@ -34,8 +34,9 @@
 					<a class="home" href="<?=$cp_homepage_url?>" title="<?=lang('nav_homepage')?>"></a>
 					<a class="overview" href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>"></a>
 					<?php endif; ?>
-					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
-						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
+					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 1 || ee()->cp->allowed_group('can_admin_sites'))): ?>
+						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a>
+						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
@@ -45,7 +46,7 @@
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-						<a href="<?=ee('CP/URL', 'settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
+						<a href="<?=ee('CP/URL', 'settings')?>" class="no-name"><?=lang('name_your_site')?></a>
 					<?php else: ?>
 						<a href="<?=ee()->config->item('site_url')?>" rel="external"><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
@@ -57,7 +58,7 @@
 						<?php foreach($cp_quicklinks as $link): ?>
 						<a href="<?=$link['link']?>"><?=$link['title']?></a>
 						<?php endforeach ?>
-						<a class="last add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => base64_encode(ee()->cp->get_safe_refresh()), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -142,7 +143,7 @@
 						</div>
 					</li>
 					<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
-					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
+					<li class="settings"><a href="<?=ee('CP/URL', 'settings')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 					<?php endif; ?>
 				</ul>
 			</nav>
@@ -150,4 +151,3 @@
 		<section class="wrap">
 
 <?php
-

@@ -36,9 +36,13 @@ class Comments extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_moderate_comments')
-		  && ! ee()->cp->allowed_group('can_edit_all_comments')
-		  && ! ee()->cp->allowed_group('can_edit_own_comments'))
+		if ( ! ee()->cp->allowed_group_any(
+			'can_moderate_comments',
+			'can_edit_own_comments',
+			'can_delete_own_comments',
+			'can_edit_all_comments',
+			'can_delete_all_comments'
+			))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -57,7 +61,11 @@ class Comments extends AbstractPublishController {
 			ee()->functions->redirect(ee('CP/URL')->make('publish/comments', ee()->cp->get_url_state()));
 		}
 
-		$vars = array();
+		$vars = array(
+			'can_delete' => ee()->cp->allowed_group('can_delete_all_comments') && ee()->cp->allowed_group('can_delete_own_comments'),
+			'can_moderate' => ee()->cp->allowed_group('can_moderate_comments'),
+		);
+
 		$channel = NULL;
 		$base_url = ee('CP/URL')->make('publish/comments');
 

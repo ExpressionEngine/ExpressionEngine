@@ -51,6 +51,11 @@ class Groups extends Members\Members {
 	{
 		parent::__construct();
 
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->base_url = ee('CP/URL')->make('members/groups');
 		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
@@ -423,6 +428,11 @@ class Groups extends Members\Members {
 
 		foreach ($form as $section)
 		{
+			if (array_key_exists('settings', $section))
+			{
+				$section = $section['settings'];
+			}
+
 			foreach ($section as $fieldset)
 			{
 				foreach ($fieldset['fields'] as $name => $field)
@@ -484,6 +494,11 @@ class Groups extends Members\Members {
 
 		foreach ($sections as $section)
 		{
+			if (count(array_keys($section)) == 2 && array_key_exists('settings', $section))
+			{
+				$section = $section['settings'];
+			}
+
 			foreach ($section as $item)
 			{
 				foreach ($item['fields'] as $field => $options)
@@ -491,13 +506,16 @@ class Groups extends Members\Members {
 					if ( ! in_array($field, $ignore))
 					{
 						$submitted = ee()->input->post($field);
+						$default = $group->hasProperty($field) ? $group->$field : NULL;
 
 						if ($options['type'] == 'checkbox')
 						{
+							$default = array();
 							$submitted = ee()->input->post($field);
 						}
 
-						$submitted = $submitted === FALSE ? array() : $submitted;
+						$submitted = $submitted === FALSE ? $default : $submitted;
+
 						if (is_array($submitted))
 						{
 							$choices = array_keys($options['choices']);
@@ -542,6 +560,10 @@ class Groups extends Members\Members {
 		// @TODO: This should be refactored to remove the need for the
 		// `element()` method
 		ee()->load->helper('array');
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/form_group'),
+		));
 
 		if (isset($values['group_id']) && $values['group_id'] == 1)
 		{
@@ -590,13 +612,18 @@ class Groups extends Members\Members {
 				->filter('site_id', ee()->config->item('site_id'))
 				->all()
 				->getDictionary('group_id', 'group_name');
-			$addons = ee('Model')->get('Module')->all()->getDictionary('module_id', 'module_name');
+
+			$addons = ee('Model')->get('Module')
+				->filter('module_name', 'NOT IN', array('channel', 'comment', 'filepicker')) // @TODO This REALLY needs abstracting.
+				->all()
+				->getDictionary('module_id', 'module_name');
+
 			$allowed_channels = ee('Model')->get('Channel')
 				->filter('site_id', ee()->config->item('site_id'))
 				->all()
 				->getDictionary('channel_id', 'channel_title');
 
-			$vars= array(
+			$vars = array(
 				array(
 					array(
 						'title' => 'group_name',
@@ -658,16 +685,6 @@ class Groups extends Members\Members {
 						)
 					),
 					array(
-						'title' => 'can_send_email',
-						'desc' => 'can_send_email_desc',
-						'fields' => array(
-							'can_send_email' => array(
-								'type' => 'yes_no',
-								'value' => element('can_send_email', $values)
-							)
-						)
-					),
-					array(
 						'title' => 'can_delete_self',
 						'desc' => 'can_delete_self_desc',
 						'fields' => array(
@@ -710,13 +727,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_post_comments' => array(
 								'type' => 'yes_no',
-								'value' => element('can_post_comments', $values)
+								'value' => element('can_post_comments', $values),
+								'group_toggle' => array(
+									'y' => 'can_post_comments'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'exclude_from_moderation',
 						'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
+						'group' => 'can_post_comments',
 						'fields' => array(
 							'exclude_from_moderation' => array(
 								'type' => 'yes_no',
@@ -750,13 +771,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_search' => array(
 								'type' => 'yes_no',
-								'value' => element('can_search', $values)
+								'value' => element('can_search', $values),
+								'group_toggle' => array(
+									'y' => 'can_search'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'search_flood_control',
 						'desc' => 'search_flood_control_desc',
+						'group' => 'can_search',
 						'fields' => array(
 							'search_flood_control' => array(
 								'type' => 'text',
@@ -772,13 +797,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_send_private_messages' => array(
 								'type' => 'yes_no',
-								'value' => element('can_send_private_messages', $values)
+								'value' => element('can_send_private_messages', $values),
+								'group_toggle' => array(
+									'y' => 'can_access_pms'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'prv_msg_send_limit',
 						'desc' => 'prv_msg_send_limit_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'prv_msg_send_limit' => array(
 								'type' => 'text',
@@ -789,6 +818,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'prv_msg_storage_limit',
 						'desc' => 'prv_msg_storage_limit_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'prv_msg_storage_limit' => array(
 								'type' => 'text',
@@ -799,6 +829,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'can_attach_in_private_messages',
 						'desc' => 'can_attach_in_private_messages_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'can_attach_in_private_messages' => array(
 								'type' => 'yes_no',
@@ -809,6 +840,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'can_send_bulletins',
 						'desc' => 'can_send_bulletins_desc',
+						'group' => 'can_access_pms',
 						'fields' => array(
 							'can_send_bulletins' => array(
 								'type' => 'yes_no',
@@ -825,13 +857,17 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'can_access_cp' => array(
 								'type' => 'yes_no',
-								'value' => element('can_access_cp', $values)
+								'value' => element('can_access_cp', $values),
+								'group_toggle' => array(
+									'y' => 'can_access_cp'
+								)
 							)
 						)
 					),
 					array(
 						'title' => 'default_cp_homepage',
 						'desc' => 'default_cp_homepage_desc',
+						'group' => 'can_access_cp',
 						'fields' => array(
 							'cp_homepage' => array(
 								'type' => 'radio',
@@ -853,6 +889,7 @@ class Groups extends Members\Members {
 					array(
 						'title' => 'footer_helper_links',
 						'desc' => 'footer_helper_links_desc',
+						'group' => 'can_access_cp',
 						'fields' => array(
 							'footer_helper_links' => array(
 								'type' => 'checkbox',
@@ -867,66 +904,87 @@ class Groups extends Members\Members {
 					)
 				),
 				'channels' => array(
-					array(
-						'title' => 'channels',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_permissions' => array(
-								'choices' => array(
-									'can_create_channels' => lang('create_channels'),
-									'can_edit_channels' => lang('edit_channels'),
-									'can_delete_channels' => lang('delete_channels')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_permissions', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_admin_channels',
+							'desc' => 'can_admin_channels_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_admin_channels' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_channels', $values),
+									'group_toggle' => array(
+										'y' => 'can_admin_channels'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'channels',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_permissions' => array(
+									'choices' => array(
+										'can_create_channels' => lang('create_channels'),
+										'can_edit_channels' => lang('edit_channels'),
+										'can_delete_channels' => lang('delete_channels')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'channel_fields',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_field_permissions' => array(
+									'choices' => array(
+										'can_create_channel_fields' => lang('create_channel_fields'),
+										'can_edit_channel_fields' => lang('edit_channel_fields'),
+										'can_delete_channel_fields' => lang('delete_channel_fields')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_field_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'channel_categories',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_category_permissions' => array(
+									'choices' => array(
+										'can_create_categories' => lang('create_categories'),
+										'can_edit_categories' => lang('edit_categories'),
+										'can_delete_categories' => lang('delete_categories')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_category_permissions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'channel_statuses',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_admin_channels',
+							'fields' => array(
+								'channel_status_permissions' => array(
+									'choices' => array(
+										'can_create_statuses' => lang('create_statuses'),
+										'can_edit_statuses' => lang('edit_statuses'),
+										'can_delete_statuses' => lang('delete_statuses')
+									),
+									'type' => 'checkbox',
+									'value' => element('channel_status_permissions', $values)
+								)
 							)
 						)
-					),
-					array(
-						'title' => 'channel_fields',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_field_permissions' => array(
-								'choices' => array(
-									'can_create_channel_fields' => lang('create_channel_fields'),
-									'can_edit_channel_fields' => lang('edit_channel_fields'),
-									'can_delete_channel_fields' => lang('delete_channel_fields')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_field_permissions', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'channel_categories',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_category_permissions' => array(
-								'choices' => array(
-									'can_create_categories' => lang('create_categories'),
-									'can_edit_categories' => lang('edit_categories'),
-									'can_delete_categories' => lang('delete_categories')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_category_permissions', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'channel_statuses',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'channel_status_permissions' => array(
-								'choices' => array(
-									'can_create_statuses' => lang('create_statuses'),
-									'can_edit_statuses' => lang('edit_statuses'),
-									'can_delete_statuses' => lang('delete_statuses')
-								),
-								'type' => 'checkbox',
-								'value' => element('channel_status_permissions', $values)
-							)
-						)
-					),
+					)
 				),
 				'channel_entries_management' => array(
 					array(
@@ -960,254 +1018,373 @@ class Groups extends Members\Members {
 						)
 					)
 				),
-				'content' => array(
-					array(
-						'title' => 'asset_upload_directories',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'asset_upload_directories' => array(
-								'choices' => array(
-									'can_create_upload_directories' => lang('create_upload_directories'),
-									'can_edit_upload_directories' => lang('edit_upload_directories'),
-									'can_delete_upload_directories' => lang('delete_upload_directories'),
+				'file_manager' => array(
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_file_manager',
+							'desc' => 'file_manager_desc',
+							'fields' => array(
+								'can_access_files' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_files', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_files'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'file_upload_directories',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_files',
+							'fields' => array(
+								'file_upload_directories' => array(
+									'choices' => array(
+										'can_create_upload_directories' => lang('create_upload_directories'),
+										'can_edit_upload_directories' => lang('edit_upload_directories'),
+										'can_delete_upload_directories' => lang('delete_upload_directories'),
+										),
+									'type' => 'checkbox',
+									'value' => element('file_upload_directories', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'files',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_files',
+							'fields' => array(
+								'files' => array(
+									'choices' => array(
+										'can_upload_new_files' => lang('upload_new_files'),
+										'can_edit_files' => lang('edit_files'),
+										'can_delete_files' => lang('delete_files'),
 									),
-								'type' => 'checkbox',
-								'value' => element('asset_upload_directories', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'assets',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'assets' => array(
-								'choices' => array(
-									'can_upload_new_assets' => lang('upload_new_assets'),
-									'can_edit_assets' => lang('edit_assets'),
-									'can_delete_assets' => lang('delete_assets'),
-								),
-								'type' => 'checkbox',
-								'value' => element('assets', $values)
-							)
-						)
-					),
-					array(
-						'title' => 'rte_toolsets',
-						'desc' => 'allowed_actions_desc',
-						'fields' => array(
-							'rte_toolsets' => array(
-								'choices' => array(
-									'can_upload_new_toolsets' => lang('upload_new_toolsets'),
-									'can_edit_toolsets' => lang('edit_toolsets'),
-									'can_delete_toolsets' => lang('delete_toolsets')
-								),
-								'type' => 'checkbox',
-								'value' => element('rte_toolsets', $values)
-							)
-						)
-					),
-				),
-				'member_groups' => array(
-					array(
-						'title' => 'allowed_actions',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'member_group_actions' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_create_member_groups' => lang('create_member_groups'),
-									'can_edit_member_groups' => lang('edit_member_groups'),
-									'can_delete_member_groups' => lang('delete_member_groups'),
-								),
-								'value' => element('member_group_actions', $values)
+									'type' => 'checkbox',
+									'value' => element('files', $values)
+								)
 							)
 						)
 					)
 				),
 				'members' => array(
-					array(
-						'title' => 'allowed_actions',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'member_actions' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_create_members' => lang('create_members'),
-									'can_edit_members' => lang('edit_members'),
-									'can_delete_members' => lang('can_delete_members'),
-									'can_ban_users' => lang('can_ban_users'),
-									'can_admin_mbr_groups' => lang('can_admin_mbr_groups'),
-									'can_email_from_profile' => lang('can_email_from_profile'),
-									'can_edit_html_buttons' => lang('can_edit_html_buttons')
-								),
-								'value' => element('member_actions', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_members',
+							'desc' => 'can_access_members_desc',
+							'fields' => array(
+								'can_access_members' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_members', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_members'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'can_admin_mbr_groups',
+							'desc' => 'can_admin_mbr_groups_desc',
+							'caution' => TRUE,
+							'group' => 'can_access_members',
+							'fields' => array(
+								'can_admin_mbr_groups' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_mbr_groups', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'member_groups',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_members',
+							'caution' => TRUE,
+							'fields' => array(
+								'member_group_actions' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_create_member_groups' => lang('create_member_groups'),
+										'can_edit_member_groups' => lang('edit_member_groups'),
+										'can_delete_member_groups' => lang('delete_member_groups'),
+									),
+									'value' => element('member_group_actions', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'members',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_members',
+							'caution' => TRUE,
+							'fields' => array(
+								'member_actions' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_create_members' => lang('create_members'),
+										'can_edit_members' => lang('edit_members'),
+										'can_delete_members' => lang('can_delete_members'),
+										'can_ban_users' => lang('can_ban_users'),
+										'can_email_from_profile' => lang('can_email_from_profile'),
+										'can_edit_html_buttons' => lang('can_edit_html_buttons')
+									),
+									'value' => element('member_actions', $values)
+								)
 							)
 						)
 					)
 				),
-				'design' => array(
-					array(
-						'title' => 'can_admin_design',
-						'desc' => 'can_admin_design_desc',
-						'fields' => array(
-							'can_admin_design' => array(
-								'type' => 'yes_no',
-								'value' => element('can_admin_design', $values)
+				'template_manager' => array(
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_design',
+							'desc' => 'can_access_design_desc',
+							'fields' => array(
+								'can_access_design' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_design', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_design'
+									)
+								)
 							)
-						)
-					),
-					array(
-						'title' => 'template_groups',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_group_permissions' => array(
-								'choices' => array(
-									'can_create_template_groups' => lang('create_template_groups'),
-									'can_edit_template_groups' => lang('edit_template_groups'),
-									'can_delete_template_groups' => lang('delete_template_groups'),
-								),
-								'type' => 'checkbox',
-								'value' => element('template_group_permissions', $values)
+						),
+						array(
+							'title' => 'can_admin_design',
+							'desc' => 'can_admin_design_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_admin_design' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_design', $values)
+								)
 							)
-						)
-					),
-					array(
-						'title' => 'template_partials',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_partials' => array(
-								'choices' => array(
-									'can_create_template_partials' => lang('create_template_partials'),
-									'can_edit_template_partials' => lang('edit_template_partials'),
-									'can_delete_template_partials' => lang('delete_template_partials'),
-								),
-								'type' => 'checkbox',
-								'value' => element('template_partials', $values)
+						),
+						array(
+							'title' => 'template_groups',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_group_permissions' => array(
+									'choices' => array(
+										'can_create_template_groups' => lang('create_template_groups'),
+										'can_edit_template_groups' => lang('edit_template_groups'),
+										'can_delete_template_groups' => lang('delete_template_groups'),
+									),
+									'type' => 'checkbox',
+									'value' => element('template_group_permissions', $values)
+								)
 							)
-						)
-					),
-					array(
-						'title' => 'template_variables',
-						'desc' => 'allowed_actions_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'template_variables' => array(
-								'choices' => array(
-									'can_create_template_variables' => lang('create_template_variables'),
-									'can_edit_template_variables' => lang('edit_template_variables'),
-									'can_delete_template_variables' => lang('delete_template_variables'),
-								),
-								'type' => 'checkbox',
-								'value' => element('template_variables', $values)
+						),
+						array(
+							'title' => 'template_partials',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_partials' => array(
+									'choices' => array(
+										'can_create_template_partials' => lang('create_template_partials'),
+										'can_edit_template_partials' => lang('edit_template_partials'),
+										'can_delete_template_partials' => lang('delete_template_partials'),
+									),
+									'type' => 'checkbox',
+									'value' => element('template_partials', $values)
+								)
 							)
-						)
-					),
-				),
-				'template_management' => array(
-					array(
-						'title' => 'allowed_actions',
-						'desc' => 'template_permissions_desc',
-						'fields' => array(
-							'template_permissions' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_manage_template_settings' => lang('manage_template_settings'),
-									'can_create_new_templates' => lang('create_new_templates'),
-									'can_edit_templates' => lang('edit_templates'),
-									'can_delete_templates' => lang('delete_templates')
+						),
+						array(
+							'title' => 'template_variables',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_variables' => array(
+									'choices' => array(
+										'can_create_template_variables' => lang('create_template_variables'),
+										'can_edit_template_variables' => lang('edit_template_variables'),
+										'can_delete_template_variables' => lang('delete_template_variables'),
+									),
+									'type' => 'checkbox',
+									'value' => element('template_variables', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'templates',
+							'desc' => 'template_permissions_desc',
+							'group' => 'can_access_design',
+							'caution' => TRUE,
+							'fields' => array(
+								'template_permissions' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_create_new_templates' => lang('create_new_templates'),
+										'can_edit_templates' => lang('edit_templates'),
+										'can_delete_templates' => lang('delete_templates')
+									),
+									'value' => element('template_permissions', $values)
 								),
-								'value' => element('template_permissions', $values)
-							),
-						)
-					),
-					array(
-						'title' => 'allowed_template_groups',
-						'desc' => 'allowed_template_groups_desc',
-						'fields' => array(
-							'allowed_template_groups' => array(
-								'type' => 'checkbox',
-								'choices' => $template_groups,
-								'value' => element('template_groups', $values)
-							),
+							)
+						),
+						array(
+							'title' => 'allowed_template_groups',
+							'desc' => 'allowed_template_groups_desc',
+							'group' => 'can_access_design',
+							'fields' => array(
+								'allowed_template_groups' => array(
+									'type' => 'checkbox',
+									'choices' => $template_groups,
+									'value' => element('template_groups', $values)
+								),
+							)
 						)
 					)
 				),
 				'addons' => array(
-					array(
-						'title' => 'can_access_addons',
-						'desc' => 'can_access_addons_desc',
-						'fields' => array(
-							'can_access_addons' => array(
-								'type' => 'yes_no',
-								'value' => element('can_access_addons', $values)
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_addons',
+							'desc' => 'can_access_addons_desc',
+							'fields' => array(
+								'can_access_addons' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_addons', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_addons'
+									)
+								)
 							)
-						)
-					),
-					array(
-						'title' => 'can_admin_modules',
-						'desc' => 'can_admin_modules_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'can_admin_modules' => array(
-								'type' => 'yes_no',
-								'value' => element('can_admin_modules', $values)
+						),
+						array(
+							'title' => 'can_admin_addons',
+							'desc' => 'can_admin_addons_desc',
+							'group' => 'can_access_addons',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_admin_addons' => array(
+									'type' => 'yes_no',
+									'value' => element('can_admin_addons', $values)
+								)
 							)
-						)
-					)
-				),
-				'addon_access' => array(
-					array(
-						'title' => 'addons_access',
-						'desc' => 'addons_access_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'addons_access' => array(
-								'type' => 'checkbox',
-								'choices' => $addons,
-								'value' => element('addons_access', $values)
-							),
-						)
-					)
-				),
-				'tools' => array(
-					array(
-						'title' => 'access_tools',
-						'desc' => 'access_tools_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'access_tools' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_access_comm' => lang('can_access_comm'),
-									'can_access_utilities' => lang('can_access_utilities'),
-									'can_access_data' => lang('can_access_data'),
-									'can_access_logs' => lang('can_access_logs')
+						),
+						array(
+							'title' => 'addons_access',
+							'desc' => 'addons_access_desc',
+							'group' => 'can_access_addons',
+							'caution' => TRUE,
+							'fields' => array(
+								'addons_access' => array(
+									'type' => 'checkbox',
+									'choices' => $addons,
+									'value' => element('addons_access', $values)
+								)
+							)
+						),
+						array(
+							'title' => 'rte_toolsets',
+							'desc' => 'allowed_actions_desc',
+							'group' => 'can_access_addons',
+							'fields' => array(
+								'rte_toolsets' => array(
+									'choices' => array(
+										'can_upload_new_toolsets' => lang('upload_new_toolsets'),
+										'can_edit_toolsets' => lang('edit_toolsets'),
+										'can_delete_toolsets' => lang('delete_toolsets')
+									),
+									'type' => 'checkbox',
+									'value' => element('rte_toolsets', $values)
 								),
-								'value' => element('access_tools', $values)
-							),
+							)
+						)
+					)
+
+				),
+				'tools_utilities' => array(
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'access_utilities',
+							'desc' => 'access_utilities_desc',
+							'fields' => array(
+								'can_access_utilities' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_utilities', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_utilities'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'utilities_section',
+							'desc' => 'utilities_section_desc',
+							'group' => 'can_access_utilities',
+							'caution' => TRUE,
+							'fields' => array(
+								'access_tools' => array(
+									'type' => 'checkbox',
+									'choices' => array(
+										'can_access_comm' => lang('can_access_communicate'),
+										'can_access_translate' => lang('can_access_translate'),
+										'can_access_import' => lang('can_access_import'),
+										'can_access_sql_manager' => lang('can_access_sql'),
+										'can_access_data' => lang('can_access_data')
+									),
+									'value' => element('access_tools', $values)
+								)
+							)
+						)
+					)
+				),
+				'logs' => array(
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_logs',
+							'desc' => 'can_access_logs_desc',
+							'fields' => array(
+								'can_access_logs' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_logs', $values)
+								)
+							)
 						)
 					)
 				),
 				'settings' => array(
-					array(
-						'title' => 'access_settings',
-						'desc' => 'access_settings_desc',
-						'caution' => TRUE,
-						'fields' => array(
-							'access_settings' => array(
-								'type' => 'checkbox',
-								'choices' => array(
-									'can_access_sys_prefs' => lang('can_access_sys_prefs'),
-									'can_access_design' => lang('can_access_design'),
-									'can_access_members' => lang('can_access_members'),
-									'can_access_security_settings' => lang('can_access_security_settings'),
-								),
-								'value' => element('access_settings', $values)
-							),
+					'group' => 'can_access_cp',
+					'settings' => array(
+						array(
+							'title' => 'can_access_sys_prefs',
+							'desc' => 'can_access_sys_prefs_desc',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_access_sys_prefs' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_sys_prefs', $values),
+									'group_toggle' => array(
+										'y' => 'can_access_sys_prefs'
+									)
+								)
+							)
+						),
+						array(
+							'title' => 'can_access_security_settings',
+							'desc' => 'can_access_security_settings_desc',
+							'group' => 'can_access_sys_prefs',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_access_security_settings' => array(
+									'type' => 'yes_no',
+									'value' => element('can_access_security_settings', $values)
+								)
+							)
 						)
 					)
 				)

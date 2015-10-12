@@ -52,9 +52,9 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
-		if (AJAX_REQUEST && ! empty(ee()->input->get('method')))
+		$method = ee()->input->get('method');
+		if (AJAX_REQUEST && ! empty($method))
 		{
-			$method = ee()->input->get('method');
 			return $this->$method();
 		}
 
@@ -100,6 +100,8 @@ class Spam_mcp {
 			->add($types)
 			->add('Date', 'date')
 			->add('Perpage', $total, 'show_all_spam');
+
+		$data['filters'] = $filters->render($this->base_url);
 
 		$filter_values = $filters->values();
 		$filter_fields = array();
@@ -179,11 +181,10 @@ class Spam_mcp {
 			);
 		}
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('spam')));
 		$table->setData($trapped);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['filters'] = $filters->render($this->base_url);
 		$data['form_url'] = ee('CP/URL')->make('addons/settings/spam');
 		$data['cp_page_title'] = lang('all_spam');
 
@@ -721,7 +722,7 @@ class Spam_mcp {
 			}
 
 			$lookup = array();
-			
+
 			foreach ($collection->vectorizers as $i => $vectorizer)
 			{
 				if ($vectorizer instanceof EllisLab\Addons\Spam\Library\Vectorizers\Tfidf)

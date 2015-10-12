@@ -307,7 +307,7 @@ class Addons_installer {
 	 */
 	function _module_install_setup($module)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_modules'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

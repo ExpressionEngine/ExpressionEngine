@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Messages extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_members', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */

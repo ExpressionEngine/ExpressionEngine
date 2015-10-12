@@ -469,7 +469,7 @@ class Msm extends CP_Controller {
 			'errors' => $errors,
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
-			'sections' => $this->getForm($site),
+			'sections' => $this->getForm($site, TRUE),
 		);
 
 		ee()->view->cp_page_title = lang('edit_site');

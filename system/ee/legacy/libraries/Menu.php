@@ -146,7 +146,8 @@ class EE_Menu {
 	{
 		$menu = array();
 
-		if (ee()->cp->allowed_group_any(
+		if (ee()->cp->allowed_group('can_admin_channels') &&
+			ee()->cp->allowed_group_any(
 			'can_create_channels',
 			'can_edit_channels',
 			'can_delete_channels',
@@ -161,7 +162,25 @@ class EE_Menu {
 			'can_delete_categories'
 		))
 		{
-			$menu['channel_manager'] = ee('CP/URL')->make('channels');
+			$sections = array(
+				'channels' => 'channels',
+				'channel_fields' => 'channels/fields/groups',
+				'statuses' => 'channels/status',
+				'categories' => 'channels/cat'
+			);
+
+			foreach ($sections as $name => $path)
+			{
+				if (ee()->cp->allowed_group_any(
+					"can_create_{$name}",
+					"can_edit_{$name}",
+					"can_delete_{$name}"
+				))
+				{
+					$menu['channel_manager'] = ee('CP/URL')->make($path);
+					break;
+				}
+			}
 		}
 
 		if (ee()->cp->allowed_group('can_access_design'))
@@ -169,7 +188,7 @@ class EE_Menu {
 			$menu['template_manager'] = ee('CP/URL')->make('design');
 		}
 
-		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_access_addons'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_admin_sites'))
 		{
 			$menu['msm_manager'] = ee('CP/URL')->make('msm');
 		}
@@ -181,7 +200,35 @@ class EE_Menu {
 
 		if (ee()->cp->allowed_group('can_access_utilities'))
 		{
-			$menu['utilities'] = ee('CP/URL')->make('utilities');
+
+			$utility_options = array(
+				'can_access_comm' => ee('CP/URL')->make('utilities'),
+				'can_access_translate' => ee('CP/URL')->make('utilities/translate'),
+				'can_access_import' => ee('CP/URL')->make('utilities/member-import'),
+				'can_access_sql_manager' => ee('CP/URL')->make('utilities/sql'),
+				'can_access_data' => ee('CP/URL')->make('utilities/cache')
+				);
+
+			foreach ($utility_options as $allow => $link)
+			{
+				if (ee()->cp->allowed_group($allow))
+				{
+					$menu['utilities'] = $link;
+					break;
+				}
+			}
+
+			// If none of the above are allowed, see if addon admin is
+			// If so, land on extension debug page
+
+			if ( ! isset($menu['utilities']))
+			{
+				if (ee()->cp->allowed_group('can_access_addons')
+					&& ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$menu['utilities'] = ee('CP/URL')->make('utilities/extensions');
+				}
+			}
 		}
 
 		if (ee()->cp->allowed_group('can_access_logs'))

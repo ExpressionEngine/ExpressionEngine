@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Throttling extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_security_settings'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	public function index()
 	{
 		$vars['sections'] = array(

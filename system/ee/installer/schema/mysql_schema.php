@@ -410,12 +410,13 @@ class EE_Schema {
 			`can_access_utilities` char(1) NOT NULL DEFAULT 'n',
 			`can_access_data` char(1) NOT NULL DEFAULT 'n',
 			`can_access_logs` char(1) NOT NULL DEFAULT 'n',
+			`can_admin_channels` char(1) NOT NULL DEFAULT 'n',
 			`can_admin_design` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_members` char(1) NOT NULL DEFAULT 'n',
 			`can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
 			`can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
 			`can_ban_users` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_modules` char(1) NOT NULL DEFAULT 'n',
+			`can_admin_addons` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_categories` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_categories` char(1) NOT NULL DEFAULT 'n',
 			`can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
@@ -429,7 +430,6 @@ class EE_Schema {
 			`can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
 			`can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_send_email` char(1) NOT NULL DEFAULT 'n',
 			`can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
 			`can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
 			`can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
@@ -454,9 +454,9 @@ class EE_Schema {
 			`include_in_mailinglist` char(1) NOT NULL DEFAULT 'n',
 			`can_create_entries` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_upload_new_assets` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_assets` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_assets` char(1) NOT NULL DEFAULT 'n',
+			`can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
+			`can_edit_files` char(1) NOT NULL DEFAULT 'n',
+			`can_delete_files` char(1) NOT NULL DEFAULT 'n',
 			`can_upload_new_toolsets` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_toolsets` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_toolsets` char(1) NOT NULL DEFAULT 'n',
@@ -478,7 +478,6 @@ class EE_Schema {
 			`can_edit_member_groups` char(1) NOT NULL DEFAULT 'n',
 			`can_create_members` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_members` char(1) NOT NULL DEFAULT 'n',
-			`can_manage_template_settings` char(1) NOT NULL DEFAULT 'n',
 			`can_create_new_templates` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_templates` char(1) NOT NULL DEFAULT 'n',
 			`can_delete_templates` char(1) NOT NULL DEFAULT 'n',
@@ -492,7 +491,9 @@ class EE_Schema {
 			`can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
 			`can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
 			`can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
-
+			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
+			`can_access_import` char(1) NOT NULL DEFAULT 'n',
+			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -1443,7 +1444,7 @@ class EE_Schema {
 		// Default system stats
 
 		$Q[] = "INSERT INTO exp_stats (total_members, total_entries, last_entry_date, recent_member, recent_member_id, last_cache_clear)
-			VALUES ('1', '1', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
+			VALUES ('1', '0', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
@@ -1476,9 +1477,9 @@ class EE_Schema {
 				'can_access_footer_report_bug'   => 'y',
 				'can_access_footer_new_ticket'   => 'y',
 				'can_access_footer_user_guide'   => 'y',
-				'can_upload_new_assets'          => 'y',
-				'can_edit_assets'                => 'y',
-				'can_delete_assets'              => 'y',
+				'can_upload_new_files'          => 'y',
+				'can_edit_files'                => 'y',
+				'can_delete_files'              => 'y',
 				'can_upload_new_toolsets'        => 'y',
 				'can_edit_toolsets'              => 'y',
 				'can_delete_toolsets'            => 'y',
@@ -1496,6 +1497,7 @@ class EE_Schema {
 				'can_access_utilities'           => 'y',
 				'can_access_data'                => 'y',
 				'can_access_logs'                => 'y',
+				'can_admin_channels'             => 'y',
 				'can_create_channels'            => 'y',
 				'can_edit_channels'              => 'y',
 				'can_delete_channels'            => 'y',
@@ -1516,8 +1518,7 @@ class EE_Schema {
 				'can_admin_mbr_groups'           => 'y',
 				'can_admin_mbr_templates'        => 'y',
 				'can_ban_users'                  => 'y',
-				'can_admin_modules'              => 'y',
-				'can_manage_template_settings'   => 'y',
+				'can_admin_addons'              => 'y',
 				'can_create_new_templates'       => 'y',
 				'can_edit_templates'             => 'y',
 				'can_delete_templates'           => 'y',
@@ -1543,7 +1544,6 @@ class EE_Schema {
 				'can_edit_all_comments'          => 'y',
 				'can_delete_all_comments'        => 'y',
 				'can_moderate_comments'          => 'y',
-				'can_send_email'                 => 'y',
 				'can_send_cached_email'          => 'y',
 				'can_email_member_groups'        => 'y',
 				'can_email_from_profile'         => 'y',
@@ -1560,6 +1560,7 @@ class EE_Schema {
 			array(
 				'group_title'                    => 'Banned',
 				'group_id'                       => 2,
+				'can_access_cp'                  => 'n',
 				'can_view_online_system'         => 'n',
 				'can_search'                     => 'n',
 				'can_post_comments'              => 'n',
@@ -1569,16 +1570,19 @@ class EE_Schema {
 			array(
 				'group_title'                    => 'Guests',
 				'group_id'                       => 3,
+				'can_access_cp'                  => 'n',
 				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Pending',
 				'group_id'                       => 4,
+				'can_access_cp'                  => 'n',
 				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Members',
 				'group_id'                       => 5,
+				'can_access_cp'                  => 'n',
 				'can_email_from_profile'         => 'y',
 				'can_view_profiles'              => 'y',
 				'can_edit_html_buttons'          => 'y',

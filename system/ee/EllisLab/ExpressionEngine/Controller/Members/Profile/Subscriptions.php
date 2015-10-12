@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Subscriptions extends Profile {
+class Subscriptions extends Settings {
 
 	private $base_url = 'members/profile/subscriptions';
 
@@ -92,7 +92,7 @@ class Subscriptions extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_subscriptions_found');
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);

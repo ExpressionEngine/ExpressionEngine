@@ -651,12 +651,15 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		{
 			$set = $this->getRawProperty($name);
 
-			$value = $this->getBackup($name, $set);
-			$new_value = $this->typedStore($set, $name);
+			if ($this->isDirty($name))
+			{				
+				$value = $this->getBackup($name, $set);
+				$new_value = $this->typedStore($set, $name);
 
-			if ($new_value !== $value)
-			{
-				$changed[$name] = $set;
+				if ($new_value !== $value)
+				{
+					$changed[$name] = $set;
+				}
 			}
 		}
 

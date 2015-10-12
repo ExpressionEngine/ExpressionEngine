@@ -52,7 +52,8 @@ class Routes extends Design {
 		}
 
 		// Only show this page if we're not using a file based config
-		if ( ! empty(ee()->config->item('routes')))
+		$routes_config = ee()->config->item('routes');
+		if ( ! empty($routes_config))
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('design'));
 		}

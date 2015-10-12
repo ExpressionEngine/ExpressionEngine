@@ -67,7 +67,7 @@ feature 'Member Settings' do
     @page.req_mbr_activation.select 'No activation required'
     @page.require_terms_of_service_n.click
     @page.allow_member_localization_n.click
-    @page.default_member_group.select 'Super Admins'
+    @page.default_member_group.select 'Super Admin'
     @page.member_theme.select 'Default'
     @page.memberlist_order_by.select 'Total entries'
     @page.memberlist_sort_order.select 'Ascending (A-Z)'

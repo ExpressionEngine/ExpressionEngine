@@ -31,12 +31,24 @@ use CP_Controller;
  */
 class Template extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */
 	public function index()
 	{
 		ee()->load->model('admin_model');
+
+		ee()->lang->load('design');
 
 		$vars['sections'] = array(
 			array(
@@ -59,7 +71,12 @@ class Template extends Settings {
 					'fields' => array(
 						'site_404' => array(
 							'type' => 'select',
-							'choices' => (ee()->admin_model->get_template_list()) ?: array()
+							'choices' => (ee()->admin_model->get_template_list()) ?: array(),
+							'no_results' => array(
+								'text' => 'no_templates_found',
+								'link_text' => 'create_template',
+								'link_href' => ee('CP/URL')->make('design')
+							)
 						)
 					),
 				),

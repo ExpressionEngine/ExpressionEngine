@@ -48,9 +48,10 @@ class Channels extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $channels->count();
 
-		$table = $this->buildTableFromChannelQuery($channels);
+		$table = $this->buildTableFromChannelQuery($channels, array(), ee()->cp->allowed_group('can_delete_channels'));
 
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
+		$vars['show_new_channel_button'] = ee()->cp->allowed_group('can_create_channels');
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
@@ -560,6 +561,11 @@ class Channels extends AbstractChannelsController {
 		$channel = ee('Model')->get('Channel', $channel_id)->first();
 
 		if ( ! $channel)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
