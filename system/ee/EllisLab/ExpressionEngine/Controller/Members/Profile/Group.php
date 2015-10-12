@@ -53,6 +53,11 @@ class Group extends Profile {
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$groups = $groups->filter('is_locked', FALSE);
+		}
+
 		foreach ($groups as $group)
 		{
 			$choices[$group->group_id] = $group->group_title;
@@ -133,7 +138,7 @@ class Group extends Profile {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
@@ -148,9 +153,16 @@ class Group extends Profile {
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->count();
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group);
 
-		if ($groups == 0)
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$groups->filter('is_locked', 'n');
+		}
+
+		$num_groups = $groups->count();
+
+		if ($num_groups == 0)
 		{
 			return FALSE;
 		}

@@ -52,6 +52,11 @@ class Create extends Members {
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$groups = $groups->filter('is_locked', FALSE);
+		}
+
 		foreach ($groups as $group)
 		{
 			$choices[$group->group_id] = $group->group_title;
