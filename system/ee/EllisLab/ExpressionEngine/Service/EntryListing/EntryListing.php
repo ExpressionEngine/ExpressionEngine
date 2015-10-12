@@ -231,7 +231,7 @@ class EntryListing {
 	 */
 	public function createChannelFilter()
 	{
-		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->assigned_channel_ids;
+		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
 			->fields('channel_id', 'channel_title')
 			->filter('site_id', ee()->config->item('site_id'))
