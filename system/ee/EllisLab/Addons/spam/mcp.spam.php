@@ -394,7 +394,7 @@ class Spam_mcp {
 			$class = new $class();
 
 			$data = unserialize($spam->data);
-			call_user_func_array(array($class, $spam->method), $data);
+			call_user_func_array(array($class, $spam->approve), $data);
 		}
 
 		ee('CP/Alert')->makeInline('spam')
@@ -417,6 +417,20 @@ class Spam_mcp {
 	 */
 	public function remove($trapped)
 	{
+		foreach ($trapped as $spam)
+		{
+			if ( ! class_exists($spam->class))
+			{
+				ee()->load->file($spam->file);
+			}
+
+			$class = $spam->class;
+			$class = new $class();
+
+			$data = unserialize($spam->data);
+			call_user_func_array(array($class, $spam->remove), $data);
+		}
+
 		ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
