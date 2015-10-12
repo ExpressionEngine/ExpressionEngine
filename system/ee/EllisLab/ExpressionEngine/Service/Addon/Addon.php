@@ -60,7 +60,7 @@ class Addon {
 
 		foreach ($types as $type)
 		{
-			$installed = ee()->addons->get_installed($type, TRUE);
+			$installed = ee()->addons->get_installed($type);
 
 			if (array_key_exists($this->shortname, $installed))
 			{
