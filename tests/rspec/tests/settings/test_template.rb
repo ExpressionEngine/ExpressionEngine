@@ -62,7 +62,7 @@ feature 'Template Settings' do
     @page.save_tmpl_files_y.click
     @page.submit
 
-    @page.should have_text 'Preferences updated'
+    @page.should have_text 'Preferences Updated'
     @page.strict_urls_n.checked?.should == true
     @page.site_404.value.should == 'search/index'
     @page.save_tmpl_revisions_y.checked?.should == true
