@@ -31,6 +31,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
+	private $error_fields = array();
+
 	public function __construct()
 	{
 		parent::__construct();
