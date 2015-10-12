@@ -738,7 +738,11 @@ class ChannelEntry extends ContentModel {
 
 		// First, get member groups who should be in the list
 		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('include_in_authorlist', 'y')
+			->with('AssignedChannels')
+			->filterGroup()
+			->orFilter('include_in_authorlist', 'y')
+			->orFilter('AssignedChannels.channel_id', $this->channel_id)
+			->endFilterGroup()
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
