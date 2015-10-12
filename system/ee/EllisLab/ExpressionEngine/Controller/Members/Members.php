@@ -199,7 +199,23 @@ class Members extends CP_Controller {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		switch ($this->group)
+		{
+			case 2:
+				$table->setNoResultsText('no_banned_members_found');
+				$active = 'ban';
+				break;
+			case 4:
+				$table->setNoResultsText('no_pending_members_found');
+				$active = 'pending';
+				break;
+			default:
+				$table->setNoResultsText('no_members_found');
+				$active = 'all_members';
+				break;
+		}
+		$this->generateSidebar($active);
+
 		$table->setData($data['rows']);
 		$data['table'] = $table->viewData($this->base_url);
 		$data['form_url'] = ee('CP/URL')->make('members/delete');
@@ -229,14 +245,6 @@ class Members extends CP_Controller {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
 		));
-
-		switch ($this->group)
-		{
-			case 2: $active = 'ban'; break;
-			case 4: $active = 'pending'; break;
-			default: $active = 'all_members'; break;
-		}
-		$this->generateSidebar($active);
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
