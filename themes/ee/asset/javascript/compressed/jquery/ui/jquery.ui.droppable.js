@@ -1,16 +1,62 @@
 /*!
  * jQuery UI Droppable @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Droppables
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- *	jquery.ui.mouse.js
- *	jquery.ui.draggable.js
+ * http://api.jqueryui.com/droppable/
  */
-!function(e){e.widget("ui.droppable",{widgetEventPrefix:"drop",options:{accept:"*",activeClass:!1,addClasses:!0,greedy:!1,hoverClass:!1,scope:"default",tolerance:"intersect"},_create:function(){var t=this.options,i=t.accept;this.isover=0,this.isout=1,this.accept=e.isFunction(i)?i:function(e){return e.is(i)},this.proportions={width:this.element[0].offsetWidth,height:this.element[0].offsetHeight},e.ui.ddmanager.droppables[t.scope]=e.ui.ddmanager.droppables[t.scope]||[],e.ui.ddmanager.droppables[t.scope].push(this),t.addClasses&&this.element.addClass("ui-droppable")},destroy:function(){for(var t=e.ui.ddmanager.droppables[this.options.scope],i=0;i<t.length;i++)t[i]==this&&t.splice(i,1);return this.element.removeClass("ui-droppable ui-droppable-disabled").removeData("droppable").unbind(".droppable"),this},_setOption:function(t,i){"accept"==t&&(this.accept=e.isFunction(i)?i:function(e){return e.is(i)}),e.Widget.prototype._setOption.apply(this,arguments)},_activate:function(t){var i=e.ui.ddmanager.current;this.options.activeClass&&this.element.addClass(this.options.activeClass),i&&this._trigger("activate",t,this.ui(i))},_deactivate:function(t){var i=e.ui.ddmanager.current;this.options.activeClass&&this.element.removeClass(this.options.activeClass),i&&this._trigger("deactivate",t,this.ui(i))},_over:function(t){var i=e.ui.ddmanager.current;i&&(i.currentItem||i.element)[0]!=this.element[0]&&this.accept.call(this.element[0],i.currentItem||i.element)&&(this.options.hoverClass&&this.element.addClass(this.options.hoverClass),this._trigger("over",t,this.ui(i)))},_out:function(t){var i=e.ui.ddmanager.current;i&&(i.currentItem||i.element)[0]!=this.element[0]&&this.accept.call(this.element[0],i.currentItem||i.element)&&(this.options.hoverClass&&this.element.removeClass(this.options.hoverClass),this._trigger("out",t,this.ui(i)))},_drop:function(t,i){var s=i||e.ui.ddmanager.current;if(!s||(s.currentItem||s.element)[0]==this.element[0])return!1;var o=!1;return this.element.find(":data(droppable)").not(".ui-draggable-dragging").each(function(){var t=e.data(this,"droppable");return t.options.greedy&&!t.options.disabled&&t.options.scope==s.options.scope&&t.accept.call(t.element[0],s.currentItem||s.element)&&e.ui.intersect(s,e.extend(t,{offset:t.element.offset()}),t.options.tolerance)?(o=!0,!1):void 0}),o?!1:this.accept.call(this.element[0],s.currentItem||s.element)?(this.options.activeClass&&this.element.removeClass(this.options.activeClass),this.options.hoverClass&&this.element.removeClass(this.options.hoverClass),this._trigger("drop",t,this.ui(s)),this.element):!1},ui:function(e){return{draggable:e.currentItem||e.element,helper:e.helper,position:e.position,offset:e.positionAbs}}}),e.extend(e.ui.droppable,{version:"@VERSION"}),e.ui.intersect=function(t,i,s){if(!i.offset)return!1;var o=(t.positionAbs||t.position.absolute).left,r=o+t.helperProportions.width,n=(t.positionAbs||t.position.absolute).top,a=n+t.helperProportions.height,l=i.offset.left,p=l+i.proportions.width,h=i.offset.top,c=h+i.proportions.height;switch(s){case"fit":return o>=l&&p>=r&&n>=h&&c>=a;case"intersect":return l<o+t.helperProportions.width/2&&r-t.helperProportions.width/2<p&&h<n+t.helperProportions.height/2&&a-t.helperProportions.height/2<c;case"pointer":var d=(t.positionAbs||t.position.absolute).left+(t.clickOffset||t.offset.click).left,u=(t.positionAbs||t.position.absolute).top+(t.clickOffset||t.offset.click).top,f=e.ui.isOver(u,d,h,l,i.proportions.height,i.proportions.width);return f;case"touch":return(n>=h&&c>=n||a>=h&&c>=a||h>n&&a>c)&&(o>=l&&p>=o||r>=l&&p>=r||l>o&&r>p);default:return!1}},e.ui.ddmanager={current:null,droppables:{"default":[]},prepareOffsets:function(t,i){var s=e.ui.ddmanager.droppables[t.options.scope]||[],o=i?i.type:null,r=(t.currentItem||t.element).find(":data(droppable)").andSelf();e:for(var n=0;n<s.length;n++)if(!(s[n].options.disabled||t&&!s[n].accept.call(s[n].element[0],t.currentItem||t.element))){for(var a=0;a<r.length;a++)if(r[a]==s[n].element[0]){s[n].proportions.height=0;continue e}s[n].visible="none"!=s[n].element.css("display"),s[n].visible&&("mousedown"==o&&s[n]._activate.call(s[n],i),s[n].offset=s[n].element.offset(),s[n].proportions={width:s[n].element[0].offsetWidth,height:s[n].element[0].offsetHeight})}},drop:function(t,i){var s=!1;return e.each(e.ui.ddmanager.droppables[t.options.scope]||[],function(){this.options&&(!this.options.disabled&&this.visible&&e.ui.intersect(t,this,this.options.tolerance)&&(s=this._drop.call(this,i)||s),!this.options.disabled&&this.visible&&this.accept.call(this.element[0],t.currentItem||t.element)&&(this.isout=1,this.isover=0,this._deactivate.call(this,i)))}),s},dragStart:function(t,i){t.element.parents(":not(body,html)").bind("scroll.droppable",function(){t.options.refreshPositions||e.ui.ddmanager.prepareOffsets(t,i)})},drag:function(t,i){t.options.refreshPositions&&e.ui.ddmanager.prepareOffsets(t,i),e.each(e.ui.ddmanager.droppables[t.options.scope]||[],function(){if(!this.options.disabled&&!this.greedyChild&&this.visible){var s=e.ui.intersect(t,this,this.options.tolerance),o=s||1!=this.isover?s&&0==this.isover?"isover":null:"isout";if(o){var r;if(this.options.greedy){var n=this.element.parents(":data(droppable):eq(0)");n.length&&(r=e.data(n[0],"droppable"),r.greedyChild="isover"==o?1:0)}r&&"isover"==o&&(r.isover=0,r.isout=1,r._out.call(r,i)),this[o]=1,this["isout"==o?"isover":"isout"]=0,this["isover"==o?"_over":"_out"].call(this,i),r&&"isout"==o&&(r.isout=0,r.isover=1,r._over.call(r,i))}}})},dragStop:function(t,i){t.element.parents(":not(body,html)").unbind("scroll.droppable"),t.options.refreshPositions||e.ui.ddmanager.prepareOffsets(t,i)}}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./core","./widget","./mouse","./draggable"],e):
+// Browser globals
+e(jQuery)}(function(e){/*
+	This manager tracks offsets of draggables and droppables
+*/
+return e.widget("ui.droppable",{version:"@VERSION",widgetEventPrefix:"drop",options:{accept:"*",activeClass:!1,addClasses:!0,greedy:!1,hoverClass:!1,scope:"default",tolerance:"intersect",
+// callbacks
+activate:null,deactivate:null,drop:null,out:null,over:null},_create:function(){var t,i=this.options,s=i.accept;this.isover=!1,this.isout=!0,this.accept=e.isFunction(s)?s:function(e){return e.is(s)},this.proportions=function(){
+// Store the droppable's proportions
+return arguments.length?void(t=arguments[0]):t?t:t={width:this.element[0].offsetWidth,height:this.element[0].offsetHeight}},this._addToManager(i.scope),i.addClasses&&this.element.addClass("ui-droppable")},_addToManager:function(t){
+// Add the reference and positions to the manager
+e.ui.ddmanager.droppables[t]=e.ui.ddmanager.droppables[t]||[],e.ui.ddmanager.droppables[t].push(this)},_splice:function(e){for(var t=0;t<e.length;t++)e[t]===this&&e.splice(t,1)},_destroy:function(){var t=e.ui.ddmanager.droppables[this.options.scope];this._splice(t),this.element.removeClass("ui-droppable ui-droppable-disabled")},_setOption:function(t,i){if("accept"===t)this.accept=e.isFunction(i)?i:function(e){return e.is(i)};else if("scope"===t){var s=e.ui.ddmanager.droppables[this.options.scope];this._splice(s),this._addToManager(i)}this._super(t,i)},_activate:function(t){var i=e.ui.ddmanager.current;this.options.activeClass&&this.element.addClass(this.options.activeClass),i&&this._trigger("activate",t,this.ui(i))},_deactivate:function(t){var i=e.ui.ddmanager.current;this.options.activeClass&&this.element.removeClass(this.options.activeClass),i&&this._trigger("deactivate",t,this.ui(i))},_over:function(t){var i=e.ui.ddmanager.current;
+// Bail if draggable and droppable are same element
+i&&(i.currentItem||i.element)[0]!==this.element[0]&&this.accept.call(this.element[0],i.currentItem||i.element)&&(this.options.hoverClass&&this.element.addClass(this.options.hoverClass),this._trigger("over",t,this.ui(i)))},_out:function(t){var i=e.ui.ddmanager.current;
+// Bail if draggable and droppable are same element
+i&&(i.currentItem||i.element)[0]!==this.element[0]&&this.accept.call(this.element[0],i.currentItem||i.element)&&(this.options.hoverClass&&this.element.removeClass(this.options.hoverClass),this._trigger("out",t,this.ui(i)))},_drop:function(t,i){var s=i||e.ui.ddmanager.current,o=!1;
+// Bail if draggable and droppable are same element
+// Bail if draggable and droppable are same element
+return s&&(s.currentItem||s.element)[0]!==this.element[0]?(this.element.find(":data(ui-droppable)").not(".ui-draggable-dragging").each(function(){var i=e(this).droppable("instance");return i.options.greedy&&!i.options.disabled&&i.options.scope===s.options.scope&&i.accept.call(i.element[0],s.currentItem||s.element)&&e.ui.intersect(s,e.extend(i,{offset:i.element.offset()}),i.options.tolerance,t)?(o=!0,!1):void 0}),o?!1:this.accept.call(this.element[0],s.currentItem||s.element)?(this.options.activeClass&&this.element.removeClass(this.options.activeClass),this.options.hoverClass&&this.element.removeClass(this.options.hoverClass),this._trigger("drop",t,this.ui(s)),this.element):!1):!1},ui:function(e){return{draggable:e.currentItem||e.element,helper:e.helper,position:e.position,offset:e.positionAbs}}}),e.ui.intersect=function(){function e(e,t,i){return e>=t&&t+i>e}return function(t,i,s,o){if(!i.offset)return!1;var n=(t.positionAbs||t.position.absolute).left+t.margins.left,r=(t.positionAbs||t.position.absolute).top+t.margins.top,a=n+t.helperProportions.width,l=r+t.helperProportions.height,p=i.offset.left,h=i.offset.top,c=p+i.proportions().width,d=h+i.proportions().height;switch(s){case"fit":return n>=p&&c>=a&&r>=h&&d>=l;case"intersect":// Right Half
+// Left Half
+// Bottom Half
+return p<n+t.helperProportions.width/2&&a-t.helperProportions.width/2<c&&h<r+t.helperProportions.height/2&&l-t.helperProportions.height/2<d;// Top Half
+case"pointer":return e(o.pageY,h,i.proportions().height)&&e(o.pageX,p,i.proportions().width);case"touch":// Top edge touching
+// Bottom edge touching
+// Left edge touching
+// Right edge touching
+return(r>=h&&d>=r||l>=h&&d>=l||h>r&&l>d)&&(n>=p&&c>=n||a>=p&&c>=a||p>n&&a>c);default:return!1}}}(),e.ui.ddmanager={current:null,droppables:{"default":[]},prepareOffsets:function(t,i){var s,o,n=e.ui.ddmanager.droppables[t.options.scope]||[],r=i?i.type:null,// workaround for #2317
+a=(t.currentItem||t.element).find(":data(ui-droppable)").addBack();e:for(s=0;s<n.length;s++)
+// No disabled and non-accepted
+if(!(n[s].options.disabled||t&&!n[s].accept.call(n[s].element[0],t.currentItem||t.element))){
+// Filter out elements in the current dragged item
+for(o=0;o<a.length;o++)if(a[o]===n[s].element[0]){n[s].proportions().height=0;continue e}n[s].visible="none"!==n[s].element.css("display"),n[s].visible&&(
+// Activate the droppable if used directly from draggables
+"mousedown"===r&&n[s]._activate.call(n[s],i),n[s].offset=n[s].element.offset(),n[s].proportions({width:n[s].element[0].offsetWidth,height:n[s].element[0].offsetHeight}))}},drop:function(t,i){var s=!1;
+// Create a copy of the droppables in case the list changes during the drop (#9116)
+return e.each((e.ui.ddmanager.droppables[t.options.scope]||[]).slice(),function(){this.options&&(!this.options.disabled&&this.visible&&e.ui.intersect(t,this,this.options.tolerance,i)&&(s=this._drop.call(this,i)||s),!this.options.disabled&&this.visible&&this.accept.call(this.element[0],t.currentItem||t.element)&&(this.isout=!0,this.isover=!1,this._deactivate.call(this,i)))}),s},dragStart:function(t,i){
+// Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
+t.element.parentsUntil("body").bind("scroll.droppable",function(){t.options.refreshPositions||e.ui.ddmanager.prepareOffsets(t,i)})},drag:function(t,i){
+// If you have a highly dynamic page, you might try this option. It renders positions every time you move the mouse.
+t.options.refreshPositions&&e.ui.ddmanager.prepareOffsets(t,i),
+// Run through all droppables and check their positions based on specific tolerance options
+e.each(e.ui.ddmanager.droppables[t.options.scope]||[],function(){if(!this.options.disabled&&!this.greedyChild&&this.visible){var s,o,n,r=e.ui.intersect(t,this,this.options.tolerance,i),a=!r&&this.isover?"isout":r&&!this.isover?"isover":null;a&&(this.options.greedy&&(
+// find droppable parents with same scope
+o=this.options.scope,n=this.element.parents(":data(ui-droppable)").filter(function(){return e(this).droppable("instance").options.scope===o}),n.length&&(s=e(n[0]).droppable("instance"),s.greedyChild="isover"===a)),
+// we just moved into a greedy child
+s&&"isover"===a&&(s.isover=!1,s.isout=!0,s._out.call(s,i)),this[a]=!0,this["isout"===a?"isover":"isout"]=!1,this["isover"===a?"_over":"_out"].call(this,i),
+// we just moved out of a greedy child
+s&&"isout"===a&&(s.isout=!1,s.isover=!0,s._over.call(s,i)))}})},dragStop:function(t,i){t.element.parentsUntil("body").unbind("scroll.droppable"),
+// Call prepareOffsets one final time since IE does not fire return scroll events when overflow was caused by drag (see #5003)
+t.options.refreshPositions||e.ui.ddmanager.prepareOffsets(t,i)}},e.ui.droppable});

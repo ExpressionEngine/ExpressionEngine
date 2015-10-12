@@ -1,13 +1,30 @@
 /*!
  * jQuery UI Effects Explode @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Explode
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/explode-effect/
  */
-!function(o){o.effects.explode=function(i){return this.queue(function(){var t=i.options.pieces?Math.round(Math.sqrt(i.options.pieces)):3,e=i.options.pieces?Math.round(Math.sqrt(i.options.pieces)):3;i.options.mode="toggle"==i.options.mode?o(this).is(":visible")?"hide":"show":i.options.mode;var s=o(this).show().css("visibility","hidden"),p=s.offset();p.top-=parseInt(s.css("marginTop"),10)||0,p.left-=parseInt(s.css("marginLeft"),10)||0;for(var n=s.outerWidth(!0),a=s.outerHeight(!0),d=0;t>d;d++)for(var l=0;e>l;l++)s.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-l*(n/e),top:-d*(a/t)}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:n/e,height:a/t,left:p.left+l*(n/e)+("show"==i.options.mode?(l-Math.floor(e/2))*(n/e):0),top:p.top+d*(a/t)+("show"==i.options.mode?(d-Math.floor(t/2))*(a/t):0),opacity:"show"==i.options.mode?0:1}).animate({left:p.left+l*(n/e)+("show"==i.options.mode?0:(l-Math.floor(e/2))*(n/e)),top:p.top+d*(a/t)+("show"==i.options.mode?0:(d-Math.floor(t/2))*(a/t)),opacity:"show"==i.options.mode?1:0},i.duration||500);setTimeout(function(){"show"==i.options.mode?s.css({visibility:"visible"}):s.css({visibility:"visible"}).hide(),i.callback&&i.callback.apply(s[0]),s.dequeue(),o("div.ui-effects-explode").remove()},i.duration||500)})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.explode=function(i,t){
+// children animate complete:
+function o(){M.push(this),M.length===l*p&&s()}function s(){u.css({visibility:"visible"}),e(M).remove(),v||u.hide(),t()}var
+// loop
+f,n,d,c,a,h,l=i.pieces?Math.round(Math.sqrt(i.pieces)):3,p=l,u=e(this),r=e.effects.setMode(u,i.mode||"hide"),v="show"===r,
+// show and then visibility:hidden the element before calculating offset
+y=u.show().css("visibility","hidden").offset(),
+// width and height of a piece
+b=Math.ceil(u.outerWidth()/p),w=Math.ceil(u.outerHeight()/l),M=[];
+// clone the element for each row and cell.
+for(f=0;l>f;f++)for(// ===>
+c=y.top+f*w,h=f-(l-1)/2,n=0;p>n;n++)// |||
+d=y.left+n*b,a=n-(p-1)/2,
+// Create a clone of the now hidden main element that will be absolute positioned
+// within a wrapper div off the -left and -top equal to size of our pieces
+u.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-n*b,top:-f*w}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:b,height:w,left:d+(v?a*b:0),top:c+(v?h*w:0),opacity:v?0:1}).animate({left:d+(v?0:a*b),top:c+(v?0:h*w),opacity:v?1:0},i.duration||500,i.easing,o)}});

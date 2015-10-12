@@ -1,1 +1,7 @@
-jQuery(function(e){e.datepicker.regional.gl={closeText:"Pechar",prevText:"&#x3c;Ant",nextText:"Seg&#x3e;",currentText:"Hoxe",monthNames:["Xaneiro","Febreiro","Marzo","Abril","Maio","Xu\xf1o","Xullo","Agosto","Setembro","Outubro","Novembro","Decembro"],monthNamesShort:["Xan","Feb","Mar","Abr","Mai","Xu\xf1","Xul","Ago","Set","Out","Nov","Dec"],dayNames:["Domingo","Luns","Martes","M&eacute;rcores","Xoves","Venres","S&aacute;bado"],dayNamesShort:["Dom","Lun","Mar","M&eacute;r","Xov","Ven","S&aacute;b"],dayNamesMin:["Do","Lu","Ma","M&eacute;","Xo","Ve","S&aacute;"],weekHeader:"Sm",dateFormat:"dd/mm/yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.datepicker.setDefaults(e.datepicker.regional.gl)});
+/* Galician localization for 'UI date picker' jQuery extension. */
+/* Translated by Jorge Barreiro <yortx.barry@gmail.com>. */
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],e):
+// Browser globals
+e(jQuery.datepicker)}(function(e){return e.regional.gl={closeText:"Pechar",prevText:"&#x3C;Ant",nextText:"Seg&#x3E;",currentText:"Hoxe",monthNames:["Xaneiro","Febreiro","Marzo","Abril","Maio","Xuño","Xullo","Agosto","Setembro","Outubro","Novembro","Decembro"],monthNamesShort:["Xan","Feb","Mar","Abr","Mai","Xuñ","Xul","Ago","Set","Out","Nov","Dec"],dayNames:["Domingo","Luns","Martes","Mércores","Xoves","Venres","Sábado"],dayNamesShort:["Dom","Lun","Mar","Mér","Xov","Ven","Sáb"],dayNamesMin:["Do","Lu","Ma","Mé","Xo","Ve","Sá"],weekHeader:"Sm",dateFormat:"dd/mm/yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.setDefaults(e.regional.gl),e.regional.gl});

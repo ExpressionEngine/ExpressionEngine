@@ -1,1 +1,7 @@
-jQuery(function(e){e.datepicker.regional.ja={closeText:"\u9589\u3058\u308b",prevText:"&#x3c;\u524d",nextText:"\u6b21&#x3e;",currentText:"\u4eca\u65e5",monthNames:["1\u6708","2\u6708","3\u6708","4\u6708","5\u6708","6\u6708","7\u6708","8\u6708","9\u6708","10\u6708","11\u6708","12\u6708"],monthNamesShort:["1\u6708","2\u6708","3\u6708","4\u6708","5\u6708","6\u6708","7\u6708","8\u6708","9\u6708","10\u6708","11\u6708","12\u6708"],dayNames:["\u65e5\u66dc\u65e5","\u6708\u66dc\u65e5","\u706b\u66dc\u65e5","\u6c34\u66dc\u65e5","\u6728\u66dc\u65e5","\u91d1\u66dc\u65e5","\u571f\u66dc\u65e5"],dayNamesShort:["\u65e5","\u6708","\u706b","\u6c34","\u6728","\u91d1","\u571f"],dayNamesMin:["\u65e5","\u6708","\u706b","\u6c34","\u6728","\u91d1","\u571f"],weekHeader:"\u9031",dateFormat:"yy/mm/dd",firstDay:0,isRTL:!1,showMonthAfterYear:!0,yearSuffix:"\u5e74"},e.datepicker.setDefaults(e.datepicker.regional.ja)});
+/* Japanese initialisation for the jQuery UI date picker plugin. */
+/* Written by Kentaro SATO (kentaro@ranvis.com). */
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],e):
+// Browser globals
+e(jQuery.datepicker)}(function(e){return e.regional.ja={closeText:"閉じる",prevText:"&#x3C;前",nextText:"次&#x3E;",currentText:"今日",monthNames:["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],monthNamesShort:["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],dayNames:["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"],dayNamesShort:["日","月","火","水","木","金","土"],dayNamesMin:["日","月","火","水","木","金","土"],weekHeader:"週",dateFormat:"yy/mm/dd",firstDay:0,isRTL:!1,showMonthAfterYear:!0,yearSuffix:"年"},e.setDefaults(e.regional.ja),e.regional.ja});

@@ -1,10 +1,93 @@
 /*!
  * jQuery UI Widget @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Widget
+ * http://api.jqueryui.com/jQuery.widget/
  */
-!function(t,e){if(t.cleanData){var i=t.cleanData;t.cleanData=function(e){for(var n,s=0;null!=(n=e[s]);s++)try{t(n).triggerHandler("remove")}catch(a){}i(e)}}else{var n=t.fn.remove;t.fn.remove=function(e,i){return this.each(function(){return i||(!e||t.filter(e,[this]).length)&&t("*",this).add([this]).each(function(){try{t(this).triggerHandler("remove")}catch(e){}}),n.call(t(this),e,i)})}}t.widget=function(e,i,n){var s,a=e.split(".")[0];e=e.split(".")[1],s=a+"-"+e,n||(n=i,i=t.Widget),t.expr[":"][s]=function(i){return!!t.data(i,e)},t[a]=t[a]||{},t[a][e]=function(t,e){arguments.length&&this._createWidget(t,e)};var r=new i;r.options=t.extend(!0,{},r.options),t[a][e].prototype=t.extend(!0,r,{namespace:a,widgetName:e,widgetEventPrefix:t[a][e].prototype.widgetEventPrefix||e,widgetBaseClass:s},n),t.widget.bridge(e,t[a][e])},t.widget.bridge=function(i,n){t.fn[i]=function(s){var a="string"==typeof s,r=Array.prototype.slice.call(arguments,1),o=this;return s=!a&&r.length?t.extend.apply(null,[!0,s].concat(r)):s,a&&"_"===s.charAt(0)?o:(this.each(a?function(){var n=t.data(this,i),a=n&&t.isFunction(n[s])?n[s].apply(n,r):n;return a!==n&&a!==e?(o=a,!1):void 0}:function(){var e=t.data(this,i);e?e.option(s||{})._init():t.data(this,i,new n(s,this))}),o)}},t.Widget=function(t,e){arguments.length&&this._createWidget(t,e)},t.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",options:{disabled:!1},_createWidget:function(e,i){t.data(i,this.widgetName,this),this.element=t(i),this.options=t.extend(!0,{},this.options,this._getCreateOptions(),e);var n=this;this.element.bind("remove."+this.widgetName,function(){n.destroy()}),this._create(),this._trigger("create"),this._init()},_getCreateOptions:function(){return t.metadata&&t.metadata.get(this.element[0])[this.widgetName]},_create:function(){},_init:function(){},destroy:function(){this.element.unbind("."+this.widgetName).removeData(this.widgetName),this.widget().unbind("."+this.widgetName).removeAttr("aria-disabled").removeClass(this.widgetBaseClass+"-disabled ui-state-disabled")},widget:function(){return this.element},option:function(i,n){var s=i;if(0===arguments.length)return t.extend({},this.options);if("string"==typeof i){if(n===e)return this.options[i];s={},s[i]=n}return this._setOptions(s),this},_setOptions:function(e){var i=this;return t.each(e,function(t,e){i._setOption(t,e)}),this},_setOption:function(t,e){return this.options[t]=e,"disabled"===t&&this.widget()[e?"addClass":"removeClass"](this.widgetBaseClass+"-disabled ui-state-disabled").attr("aria-disabled",e),this},enable:function(){return this._setOption("disabled",!1)},disable:function(){return this._setOption("disabled",!0)},_trigger:function(e,i,n){var s,a,r=this.options[e];if(n=n||{},i=t.Event(i),i.type=(e===this.widgetEventPrefix?e:this.widgetEventPrefix+e).toLowerCase(),i.target=this.element[0],a=i.originalEvent)for(s in a)s in i||(i[s]=a[s]);return this.element.trigger(i,n),!(t.isFunction(r)&&r.call(this.element[0],i,n)===!1||i.isDefaultPrevented())}}}(jQuery);
+!function(t){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery"],t):
+// Browser globals
+t(jQuery)}(function(t){var e=0,i=Array.prototype.slice;return t.cleanData=function(e){return function(i){var n,s,o;for(o=0;null!=(s=i[o]);o++)try{
+// Only trigger remove when necessary to save time
+n=t._data(s,"events"),n&&n.remove&&t(s).triggerHandler("remove")}catch(r){}e(i)}}(t.cleanData),t.widget=function(e,i,n){var s,o,r,a,
+// proxiedPrototype allows the provided prototype to remain unmodified
+// so that it can be used as a mixin for multiple widgets (#8876)
+u={},d=e.split(".")[0];
+// create selector for plugin
+// extend with the existing constructor to carry over any static properties
+// we need to make the options hash a property directly on the new instance
+// otherwise we'll modify the options hash on the prototype that we're
+// inheriting from
+// If this widget is being redefined then we need to find all widgets that
+// are inheriting from it and redefine all of them so that they inherit from
+// the new version of this widget. We're essentially trying to replace one
+// level in the prototype chain.
+// remove the list of existing child constructors from the old constructor
+// so the old child constructors can be garbage collected
+return e=e.split(".")[1],s=d+"-"+e,n||(n=i,i=t.Widget),t.expr[":"][s.toLowerCase()]=function(e){return!!t.data(e,s)},t[d]=t[d]||{},o=t[d][e],r=t[d][e]=function(t,e){
+// allow instantiation without "new" keyword
+// allow instantiation without "new" keyword
+// allow instantiation without initializing for simple inheritance
+// must use "new" keyword (the code above always passes args)
+return this._createWidget?void(arguments.length&&this._createWidget(t,e)):new r(t,e)},t.extend(r,o,{version:n.version,
+// copy the object used to create the prototype in case we need to
+// redefine the widget later
+_proto:t.extend({},n),
+// track widgets that inherit from this widget in case this widget is
+// redefined after a widget inherits from it
+_childConstructors:[]}),a=new i,a.options=t.widget.extend({},a.options),t.each(n,function(e,n){return t.isFunction(n)?void(u[e]=function(){var t=function(){return i.prototype[e].apply(this,arguments)},s=function(t){return i.prototype[e].apply(this,t)};return function(){var e,i=this._super,o=this._superApply;return this._super=t,this._superApply=s,e=n.apply(this,arguments),this._super=i,this._superApply=o,e}}()):void(u[e]=n)}),r.prototype=t.widget.extend(a,{
+// TODO: remove support for widgetEventPrefix
+// always use the name + a colon as the prefix, e.g., draggable:start
+// don't prefix for widgets that aren't DOM-based
+widgetEventPrefix:o?a.widgetEventPrefix||e:e},u,{constructor:r,namespace:d,widgetName:e,widgetFullName:s}),o?(t.each(o._childConstructors,function(e,i){var n=i.prototype;
+// redefine the child widget using the same prototype that was
+// originally used, but inherit from the new version of the base
+t.widget(n.namespace+"."+n.widgetName,r,i._proto)}),delete o._childConstructors):i._childConstructors.push(r),t.widget.bridge(e,r),r},t.widget.extend=function(e){for(var n,s,o=i.call(arguments,1),r=0,a=o.length;a>r;r++)for(n in o[r])s=o[r][n],o[r].hasOwnProperty(n)&&void 0!==s&&(
+// Clone objects
+t.isPlainObject(s)?e[n]=t.isPlainObject(e[n])?t.widget.extend({},e[n],s):
+// Don't extend strings, arrays, etc. with objects
+t.widget.extend({},s):e[n]=s);return e},t.widget.bridge=function(e,n){var s=n.prototype.widgetFullName||e;t.fn[e]=function(o){var r="string"==typeof o,a=i.call(arguments,1),u=this;
+// allow multiple hashes to be passed on init
+return o=!r&&a.length?t.widget.extend.apply(null,[o].concat(a)):o,r?this.each(function(){var i,n=t.data(this,s);return"instance"===o?(u=n,!1):n?t.isFunction(n[o])&&"_"!==o.charAt(0)?(i=n[o].apply(n,a),i!==n&&void 0!==i?(u=i&&i.jquery?u.pushStack(i.get()):i,!1):void 0):t.error("no such method '"+o+"' for "+e+" widget instance"):t.error("cannot call methods on "+e+" prior to initialization; attempted to call method '"+o+"'")}):this.each(function(){var e=t.data(this,s);e?(e.option(o||{}),e._init&&e._init()):t.data(this,s,new n(o,this))}),u}},t.Widget=function(){},t.Widget._childConstructors=[],t.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",defaultElement:"<div>",options:{disabled:!1,
+// callbacks
+create:null},_createWidget:function(i,n){n=t(n||this.defaultElement||this)[0],this.element=t(n),this.uuid=e++,this.eventNamespace="."+this.widgetName+this.uuid,this.bindings=t(),this.hoverable=t(),this.focusable=t(),n!==this&&(t.data(n,this.widgetFullName,this),this._on(!0,this.element,{remove:function(t){t.target===n&&this.destroy()}}),this.document=t(n.style?
+// element within the document
+n.ownerDocument:
+// element is window or document
+n.document||n),this.window=t(this.document[0].defaultView||this.document[0].parentWindow)),this.options=t.widget.extend({},this.options,this._getCreateOptions(),i),this._create(),this._trigger("create",null,this._getCreateEventData()),this._init()},_getCreateOptions:t.noop,_getCreateEventData:t.noop,_create:t.noop,_init:t.noop,destroy:function(){this._destroy(),
+// we can probably remove the unbind calls in 2.0
+// all event bindings should go through this._on()
+this.element.unbind(this.eventNamespace).removeData(this.widgetFullName).removeData(t.camelCase(this.widgetFullName)),this.widget().unbind(this.eventNamespace).removeAttr("aria-disabled").removeClass(this.widgetFullName+"-disabled ui-state-disabled"),
+// clean up events and states
+this.bindings.unbind(this.eventNamespace),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")},_destroy:t.noop,widget:function(){return this.element},option:function(e,i){var n,s,o,r=e;if(0===arguments.length)
+// don't return a reference to the internal hash
+return t.widget.extend({},this.options);if("string"==typeof e)if(
+// handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
+r={},n=e.split("."),e=n.shift(),n.length){for(s=r[e]=t.widget.extend({},this.options[e]),o=0;o<n.length-1;o++)s[n[o]]=s[n[o]]||{},s=s[n[o]];if(e=n.pop(),1===arguments.length)return void 0===s[e]?null:s[e];s[e]=i}else{if(1===arguments.length)return void 0===this.options[e]?null:this.options[e];r[e]=i}return this._setOptions(r),this},_setOptions:function(t){var e;for(e in t)this._setOption(e,t[e]);return this},_setOption:function(t,e){
+// If the widget is becoming disabled, then nothing is interactive
+return this.options[t]=e,"disabled"===t&&(this.widget().toggleClass(this.widgetFullName+"-disabled",!!e),e&&(this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus"))),this},enable:function(){return this._setOptions({disabled:!1})},disable:function(){return this._setOptions({disabled:!0})},_on:function(e,i,n){var s,o=this;
+// no suppressDisabledCheck flag, shuffle arguments
+"boolean"!=typeof e&&(n=i,i=e,e=!1),
+// no element argument, shuffle and use this.element
+n?(i=s=t(i),this.bindings=this.bindings.add(i)):(n=i,i=this.element,s=this.widget()),t.each(n,function(n,r){function a(){
+// allow widgets to customize the disabled handling
+// - disabled as an array instead of boolean
+// - disabled class as method for disabling individual parts
+// allow widgets to customize the disabled handling
+// - disabled as an array instead of boolean
+// - disabled class as method for disabling individual parts
+return e||o.options.disabled!==!0&&!t(this).hasClass("ui-state-disabled")?("string"==typeof r?o[r]:r).apply(o,arguments):void 0}
+// copy the guid so direct unbinding works
+"string"!=typeof r&&(a.guid=r.guid=r.guid||a.guid||t.guid++);var u=n.match(/^([\w:-]*)\s*(.*)$/),d=u[1]+o.eventNamespace,h=u[2];h?s.delegate(h,d,a):i.bind(d,a)})},_off:function(e,i){i=(i||"").split(" ").join(this.eventNamespace+" ")+this.eventNamespace,e.unbind(i).undelegate(i),
+// Clear the stack to avoid memory leaks (#10056)
+this.bindings=t(this.bindings.not(e).get()),this.focusable=t(this.focusable.not(e).get()),this.hoverable=t(this.hoverable.not(e).get())},_delay:function(t,e){function i(){return("string"==typeof t?n[t]:t).apply(n,arguments)}var n=this;return setTimeout(i,e||0)},_hoverable:function(e){this.hoverable=this.hoverable.add(e),this._on(e,{mouseenter:function(e){t(e.currentTarget).addClass("ui-state-hover")},mouseleave:function(e){t(e.currentTarget).removeClass("ui-state-hover")}})},_focusable:function(e){this.focusable=this.focusable.add(e),this._on(e,{focusin:function(e){t(e.currentTarget).addClass("ui-state-focus")},focusout:function(e){t(e.currentTarget).removeClass("ui-state-focus")}})},_trigger:function(e,i,n){var s,o,r=this.options[e];if(n=n||{},i=t.Event(i),i.type=(e===this.widgetEventPrefix?e:this.widgetEventPrefix+e).toLowerCase(),
+// the original event may come from any element
+// so we need to reset the target on the new event
+i.target=this.element[0],
+// copy original event properties over to the new event
+o=i.originalEvent)for(s in o)s in i||(i[s]=o[s]);return this.element.trigger(i,n),!(t.isFunction(r)&&r.apply(this.element[0],[i].concat(n))===!1||i.isDefaultPrevented())}},t.each({show:"fadeIn",hide:"fadeOut"},function(e,i){t.Widget.prototype["_"+e]=function(n,s,o){"string"==typeof s&&(s={effect:s});var r,a=s?s===!0||"number"==typeof s?i:s.effect||i:e;s=s||{},"number"==typeof s&&(s={duration:s}),r=!t.isEmptyObject(s),s.complete=o,s.delay&&n.delay(s.delay),r&&t.effects&&t.effects.effect[a]?n[e](s):a!==e&&n[a]?n[a](s.duration,s.easing,o):n.queue(function(i){t(this)[e](),o&&o.call(n[0]),i()})}}),t.widget});

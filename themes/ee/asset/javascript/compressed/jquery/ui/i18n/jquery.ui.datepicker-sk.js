@@ -1,1 +1,7 @@
-jQuery(function(e){e.datepicker.regional.sk={closeText:"Zavrie\u0165",prevText:"&#x3c;Predch\xe1dzaj\xfaci",nextText:"Nasleduj\xfaci&#x3e;",currentText:"Dnes",monthNames:["Janu\xe1r","Febru\xe1r","Marec","Apr\xedl","M\xe1j","J\xfan","J\xfal","August","September","Okt\xf3ber","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","M\xe1j","J\xfan","J\xfal","Aug","Sep","Okt","Nov","Dec"],dayNames:["Nede\u013ea","Pondelok","Utorok","Streda","\u0160tvrtok","Piatok","Sobota"],dayNamesShort:["Ned","Pon","Uto","Str","\u0160tv","Pia","Sob"],dayNamesMin:["Ne","Po","Ut","St","\u0160t","Pia","So"],weekHeader:"Ty",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.datepicker.setDefaults(e.datepicker.regional.sk)});
+/* Slovak initialisation for the jQuery UI date picker plugin. */
+/* Written by Vojtech Rinik (vojto@hmm.sk). */
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],e):
+// Browser globals
+e(jQuery.datepicker)}(function(e){return e.regional.sk={closeText:"Zavrieť",prevText:"&#x3C;Predchádzajúci",nextText:"Nasledujúci&#x3E;",currentText:"Dnes",monthNames:["január","február","marec","apríl","máj","jún","júl","august","september","október","november","december"],monthNamesShort:["Jan","Feb","Mar","Apr","Máj","Jún","Júl","Aug","Sep","Okt","Nov","Dec"],dayNames:["nedeľa","pondelok","utorok","streda","štvrtok","piatok","sobota"],dayNamesShort:["Ned","Pon","Uto","Str","Štv","Pia","Sob"],dayNamesMin:["Ne","Po","Ut","St","Št","Pia","So"],weekHeader:"Ty",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.setDefaults(e.regional.sk),e.regional.sk});

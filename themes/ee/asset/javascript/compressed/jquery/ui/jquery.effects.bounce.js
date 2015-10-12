@@ -1,13 +1,38 @@
 /*!
  * jQuery UI Effects Bounce @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Bounce
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/bounce-effect/
  */
-!function(e){e.effects.bounce=function(t){return this.queue(function(){var o=e(this),i=["position","top","bottom","left","right"],s=e.effects.setMode(o,t.options.mode||"effect"),a=t.options.direction||"up",n=t.options.distance||20,p=t.options.times||5,c=t.duration||250;/show|hide/.test(s)&&i.push("opacity"),e.effects.save(o,i),o.show(),e.effects.createWrapper(o);var r="up"==a||"down"==a?"top":"left",f="up"==a||"left"==a?"pos":"neg",n=t.options.distance||("top"==r?o.outerHeight({margin:!0})/3:o.outerWidth({margin:!0})/3);if("show"==s&&o.css("opacity",0).css(r,"pos"==f?-n:n),"hide"==s&&(n/=2*p),"hide"!=s&&p--,"show"==s){var u={opacity:1};u[r]=("pos"==f?"+=":"-=")+n,o.animate(u,c/2,t.options.easing),n/=2,p--}for(var h=0;p>h;h++){var d={},m={};d[r]=("pos"==f?"-=":"+=")+n,m[r]=("pos"==f?"+=":"-=")+n,o.animate(d,c/2,t.options.easing).animate(m,c/2,t.options.easing),n="hide"==s?2*n:n/2}if("hide"==s){var u={opacity:0};u[r]=("pos"==f?"-=":"+=")+n,o.animate(u,c/2,t.options.easing,function(){o.hide(),e.effects.restore(o,i),e.effects.removeWrapper(o),t.callback&&t.callback.apply(this,arguments)})}else{var d={},m={};d[r]=("pos"==f?"-=":"+=")+n,m[r]=("pos"==f?"+=":"-=")+n,o.animate(d,c/2,t.options.easing).animate(m,c/2,t.options.easing,function(){e.effects.restore(o,i),e.effects.removeWrapper(o),t.callback&&t.callback.apply(this,arguments)})}o.queue("fx",function(){o.dequeue()}),o.dequeue()})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.bounce=function(t,i){var o,f,c,n=e(this),a=["position","top","bottom","left","right","height","width"],
+// defaults:
+s=e.effects.setMode(n,t.mode||"effect"),p="hide"===s,u="show"===s,r=t.direction||"up",d=t.distance,h=t.times||5,
+// number of internal animations
+m=2*h+(u||p?1:0),y=t.duration/m,l=t.easing,
+// utility:
+g="up"===r||"down"===r?"top":"left",w="up"===r||"left"===r,
+// we will need to re-assemble the queue to stack our animations in place
+q=n.queue(),v=q.length;
+// Bounces up/down/left/right then back to 0 -- times * 2 animations happen here
+for(
+// Avoid touching opacity to prevent clearType and PNG issues in IE
+(u||p)&&a.push("opacity"),e.effects.save(n,a),n.show(),e.effects.createWrapper(n),// Create Wrapper
+// default distance for the BIGGEST bounce is the outer Distance / 3
+d||(d=n["top"===g?"outerHeight":"outerWidth"]()/3),u&&(c={opacity:1},c[g]=0,
+// if we are showing, force opacity 0 and set the initial position
+// then do the "first" animation
+n.css("opacity",0).css(g,w?2*-d:2*d).animate(c,y,l)),
+// start at the smallest distance if we are hiding
+p&&(d/=Math.pow(2,h-1)),c={},c[g]=0,o=0;h>o;o++)f={},f[g]=(w?"-=":"+=")+d,n.animate(f,y,l).animate(c,y,l),d=p?2*d:d/2;
+// Last Bounce when Hiding
+p&&(f={opacity:0},f[g]=(w?"-=":"+=")+d,n.animate(f,y,l)),n.queue(function(){p&&n.hide(),e.effects.restore(n,a),e.effects.removeWrapper(n),i()}),
+// inject all the animations we just queued to be first in line (after "inprogress")
+v>1&&q.splice.apply(q,[1,0].concat(q.splice(v,m+1))),n.dequeue()}});

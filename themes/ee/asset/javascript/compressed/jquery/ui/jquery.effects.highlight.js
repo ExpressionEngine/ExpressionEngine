@@ -1,13 +1,15 @@
 /*!
  * jQuery UI Effects Highlight @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Highlight
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/highlight-effect/
  */
-!function(o){o.effects.highlight=function(e){return this.queue(function(){var t=o(this),i=["backgroundImage","backgroundColor","opacity"],n=o.effects.setMode(t,e.options.mode||"show"),s={backgroundColor:t.css("backgroundColor")};"hide"==n&&(s.opacity=0),o.effects.save(t,i),t.show().css({backgroundImage:"none",backgroundColor:e.options.color||"#ffff99"}).animate(s,{queue:!1,duration:e.duration,easing:e.options.easing,complete:function(){"hide"==n&&t.hide(),o.effects.restore(t,i),"show"==n&&!o.support.opacity&&this.style.removeAttribute("filter"),e.callback&&e.callback.apply(this,arguments),t.dequeue()}})})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.highlight=function(o,n){var f=e(this),c=["backgroundImage","backgroundColor","opacity"],t=e.effects.setMode(f,o.mode||"show"),i={backgroundColor:f.css("backgroundColor")};"hide"===t&&(i.opacity=0),e.effects.save(f,c),f.show().css({backgroundImage:"none",backgroundColor:o.color||"#ffff99"}).animate(i,{queue:!1,duration:o.duration,easing:o.easing,complete:function(){"hide"===t&&f.hide(),e.effects.restore(f,c),n()}})}});

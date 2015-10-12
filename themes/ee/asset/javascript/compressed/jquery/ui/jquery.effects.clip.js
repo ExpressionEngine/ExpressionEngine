@@ -1,13 +1,27 @@
 /*!
  * jQuery UI Effects Clip @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Clip
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/clip-effect/
  */
-!function(e){e.effects.clip=function(t){return this.queue(function(){var i=e(this),o=["position","top","bottom","left","right","height","width"],s=e.effects.setMode(i,t.options.mode||"hide"),a=t.options.direction||"vertical";e.effects.save(i,o),i.show();var c=e.effects.createWrapper(i).css({overflow:"hidden"}),n="IMG"==i[0].tagName?c:i,r={size:"vertical"==a?"height":"width",position:"vertical"==a?"top":"left"},h="vertical"==a?n.height():n.width();"show"==s&&(n.css(r.size,0),n.css(r.position,h/2));var f={};f[r.size]="show"==s?h:0,f[r.position]="show"==s?0:h/2,n.animate(f,{queue:!1,duration:t.duration,easing:t.options.easing,complete:function(){"hide"==s&&i.hide(),e.effects.restore(i,o),e.effects.removeWrapper(i),t.callback&&t.callback.apply(i[0],arguments),i.dequeue()}})})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.clip=function(t,i){
+// Create element
+var f,o,c,n=e(this),s=["position","top","bottom","left","right","height","width"],r=e.effects.setMode(n,t.mode||"hide"),a="show"===r,d=t.direction||"vertical",h="vertical"===d,u=h?"height":"width",p=h?"top":"left",l={};
+// Save & Show
+e.effects.save(n,s),n.show(),
+// Create Wrapper
+f=e.effects.createWrapper(n).css({overflow:"hidden"}),o="IMG"===n[0].tagName?f:n,c=o[u](),
+// Shift
+a&&(o.css(u,0),o.css(p,c/2)),
+// Create Animation Object:
+l[u]=a?c:0,l[p]=a?0:c/2,
+// Animate
+o.animate(l,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){a||n.hide(),e.effects.restore(n,s),e.effects.removeWrapper(n),i()}})}});

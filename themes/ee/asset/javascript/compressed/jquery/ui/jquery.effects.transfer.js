@@ -1,13 +1,15 @@
 /*!
  * jQuery UI Effects Transfer @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Transfer
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/transfer-effect/
  */
-!function(t){t.effects.transfer=function(e){return this.queue(function(){var i=t(this),n=t(e.options.to),o=n.offset(),s={top:o.top,left:o.left,height:n.innerHeight(),width:n.innerWidth()},a=i.offset(),f=t('<div class="ui-effects-transfer"></div>').appendTo(document.body).addClass(e.options.className).css({top:a.top,left:a.left,height:i.innerHeight(),width:i.innerWidth(),position:"absolute"}).animate(s,e.duration,e.options.easing,function(){f.remove(),e.callback&&e.callback.apply(i[0],arguments),i.dequeue()})})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.transfer=function(t,i){var n=e(this),f=e(t.to),o="fixed"===f.css("position"),s=e("body"),d=o?s.scrollTop():0,r=o?s.scrollLeft():0,c=f.offset(),a={top:c.top-d,left:c.left-r,height:f.innerHeight(),width:f.innerWidth()},l=n.offset(),u=e("<div class='ui-effects-transfer'></div>").appendTo(document.body).addClass(t.className).css({top:l.top-d,left:l.left-r,height:n.innerHeight(),width:n.innerWidth(),position:o?"fixed":"absolute"}).animate(a,t.duration,t.easing,function(){u.remove(),i()})}});

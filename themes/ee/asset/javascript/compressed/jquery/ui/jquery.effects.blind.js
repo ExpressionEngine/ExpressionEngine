@@ -1,13 +1,23 @@
 /*!
  * jQuery UI Effects Blind @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Blind
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/blind-effect/
  */
-!function(e){e.effects.blind=function(t){return this.queue(function(){var i=e(this),o=["position","top","bottom","left","right"],s=e.effects.setMode(i,t.options.mode||"hide"),r=t.options.direction||"vertical";e.effects.save(i,o),i.show();var c=e.effects.createWrapper(i).css({overflow:"hidden"}),a="vertical"==r?"height":"width",n="vertical"==r?c.height():c.width();"show"==s&&c.css(a,0);var f={};f[a]="show"==s?n:0,c.animate(f,t.duration,t.options.easing,function(){"hide"==s&&i.hide(),e.effects.restore(i,o),e.effects.removeWrapper(i),t.callback&&t.callback.apply(i[0],arguments),i.dequeue()})})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.blind=function(t,s){
+// Create element
+var i,o,f,n=e(this),c=/up|down|vertical/,r=/up|left|vertical|horizontal/,a=["position","top","bottom","left","right","height","width"],p=e.effects.setMode(n,t.mode||"hide"),d=t.direction||"up",u=c.test(d),h=u?"height":"width",l=u?"top":"left",m=r.test(d),v={},w="show"===p;
+// if already wrapped, the wrapper's properties are my property. #6245
+n.parent().is(".ui-effects-wrapper")?e.effects.save(n.parent(),a):e.effects.save(n,a),n.show(),i=e.effects.createWrapper(n).css({overflow:"hidden"}),o=i[h](),f=parseFloat(i.css(l))||0,v[h]=w?o:0,m||(n.css(u?"bottom":"right",0).css(u?"top":"left","auto").css({position:"absolute"}),v[l]=w?f:o+f),
+// start at 0 if we are showing
+w&&(i.css(h,0),m||i.css(l,f+o)),
+// Animate
+i.animate(v,{duration:t.duration,easing:t.easing,queue:!1,complete:function(){"hide"===p&&n.hide(),e.effects.restore(n,a),e.effects.removeWrapper(n),s()}})}});

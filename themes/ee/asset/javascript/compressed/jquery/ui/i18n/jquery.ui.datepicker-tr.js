@@ -1,1 +1,7 @@
-jQuery(function(a){a.datepicker.regional.tr={closeText:"kapat",prevText:"&#x3c;geri",nextText:"ileri&#x3e",currentText:"bug\xfcn",monthNames:["Ocak","\u015eubat","Mart","Nisan","May\u0131s","Haziran","Temmuz","A\u011fustos","Eyl\xfcl","Ekim","Kas\u0131m","Aral\u0131k"],monthNamesShort:["Oca","\u015eub","Mar","Nis","May","Haz","Tem","A\u011fu","Eyl","Eki","Kas","Ara"],dayNames:["Pazar","Pazartesi","Sal\u0131","\xc7ar\u015famba","Per\u015fembe","Cuma","Cumartesi"],dayNamesShort:["Pz","Pt","Sa","\xc7a","Pe","Cu","Ct"],dayNamesMin:["Pz","Pt","Sa","\xc7a","Pe","Cu","Ct"],weekHeader:"Hf",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},a.datepicker.setDefaults(a.datepicker.regional.tr)});
+/* Turkish initialisation for the jQuery UI date picker plugin. */
+/* Written by Izzet Emre Erkan (kara@karalamalar.net). */
+!function(a){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],a):
+// Browser globals
+a(jQuery.datepicker)}(function(a){return a.regional.tr={closeText:"kapat",prevText:"&#x3C;geri",nextText:"ileri&#x3e",currentText:"bugün",monthNames:["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],monthNamesShort:["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"],dayNames:["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"],dayNamesShort:["Pz","Pt","Sa","Ça","Pe","Cu","Ct"],dayNamesMin:["Pz","Pt","Sa","Ça","Pe","Cu","Ct"],weekHeader:"Hf",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},a.setDefaults(a.regional.tr),a.regional.tr});

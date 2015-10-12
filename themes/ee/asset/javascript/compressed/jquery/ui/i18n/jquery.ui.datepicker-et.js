@@ -1,1 +1,7 @@
-jQuery(function(e){e.datepicker.regional.et={closeText:"Sulge",prevText:"Eelnev",nextText:"J\xe4rgnev",currentText:"T\xe4na",monthNames:["Jaanuar","Veebruar","M\xe4rts","Aprill","Mai","Juuni","Juuli","August","September","Oktoober","November","Detsember"],monthNamesShort:["Jaan","Veebr","M\xe4rts","Apr","Mai","Juuni","Juuli","Aug","Sept","Okt","Nov","Dets"],dayNames:["P\xfchap\xe4ev","Esmasp\xe4ev","Teisip\xe4ev","Kolmap\xe4ev","Neljap\xe4ev","Reede","Laup\xe4ev"],dayNamesShort:["P\xfchap","Esmasp","Teisip","Kolmap","Neljap","Reede","Laup"],dayNamesMin:["P","E","T","K","N","R","L"],weekHeader:"n\xe4d",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.datepicker.setDefaults(e.datepicker.regional.et)});
+/* Estonian initialisation for the jQuery UI date picker plugin. */
+/* Written by Mart Sõmermaa (mrts.pydev at gmail com). */
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],e):
+// Browser globals
+e(jQuery.datepicker)}(function(e){return e.regional.et={closeText:"Sulge",prevText:"Eelnev",nextText:"Järgnev",currentText:"Täna",monthNames:["Jaanuar","Veebruar","Märts","Aprill","Mai","Juuni","Juuli","August","September","Oktoober","November","Detsember"],monthNamesShort:["Jaan","Veebr","Märts","Apr","Mai","Juuni","Juuli","Aug","Sept","Okt","Nov","Dets"],dayNames:["Pühapäev","Esmaspäev","Teisipäev","Kolmapäev","Neljapäev","Reede","Laupäev"],dayNamesShort:["Pühap","Esmasp","Teisip","Kolmap","Neljap","Reede","Laup"],dayNamesMin:["P","E","T","K","N","R","L"],weekHeader:"näd",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.setDefaults(e.regional.et),e.regional.et});

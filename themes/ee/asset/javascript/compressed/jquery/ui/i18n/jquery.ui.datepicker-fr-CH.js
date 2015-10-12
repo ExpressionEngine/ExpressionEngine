@@ -1,1 +1,7 @@
-jQuery(function(e){e.datepicker.regional["fr-CH"]={closeText:"Fermer",prevText:"&#x3c;Pr\xe9c",nextText:"Suiv&#x3e;",currentText:"Courant",monthNames:["Janvier","F\xe9vrier","Mars","Avril","Mai","Juin","Juillet","Ao\xfbt","Septembre","Octobre","Novembre","D\xe9cembre"],monthNamesShort:["Jan","F\xe9v","Mar","Avr","Mai","Jun","Jul","Ao\xfb","Sep","Oct","Nov","D\xe9c"],dayNames:["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"],dayNamesShort:["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],dayNamesMin:["Di","Lu","Ma","Me","Je","Ve","Sa"],weekHeader:"Sm",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.datepicker.setDefaults(e.datepicker.regional["fr-CH"])});
+/* Swiss-French initialisation for the jQuery UI date picker plugin. */
+/* Written Martin Voelkle (martin.voelkle@e-tc.ch). */
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],e):
+// Browser globals
+e(jQuery.datepicker)}(function(e){return e.regional["fr-CH"]={closeText:"Fermer",prevText:"&#x3C;Préc",nextText:"Suiv&#x3E;",currentText:"Courant",monthNames:["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],monthNamesShort:["janv.","févr.","mars","avril","mai","juin","juil.","août","sept.","oct.","nov.","déc."],dayNames:["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],dayNamesShort:["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],dayNamesMin:["D","L","M","M","J","V","S"],weekHeader:"Sm",dateFormat:"dd.mm.yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.setDefaults(e.regional["fr-CH"]),e.regional["fr-CH"]});

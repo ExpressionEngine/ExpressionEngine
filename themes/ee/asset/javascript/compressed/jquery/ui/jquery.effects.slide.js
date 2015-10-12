@@ -1,13 +1,23 @@
 /*!
  * jQuery UI Effects Slide @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Slide
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/slide-effect/
  */
-!function(e){e.effects.slide=function(t){return this.queue(function(){var o=e(this),s=["position","top","bottom","left","right"],i=e.effects.setMode(o,t.options.mode||"show"),n=t.options.direction||"left";e.effects.save(o,s),o.show(),e.effects.createWrapper(o).css({overflow:"hidden"});var r="up"==n||"down"==n?"top":"left",a="up"==n||"left"==n?"pos":"neg",f=t.options.distance||("top"==r?o.outerHeight({margin:!0}):o.outerWidth({margin:!0}));"show"==i&&o.css(r,"pos"==a?isNaN(f)?"-"+f:-f:f);var p={};p[r]=("show"==i?"pos"==a?"+=":"-=":"pos"==a?"-=":"+=")+f,o.animate(p,{queue:!1,duration:t.duration,easing:t.options.easing,complete:function(){"hide"==i&&o.hide(),e.effects.restore(o,s),e.effects.removeWrapper(o),t.callback&&t.callback.apply(this,arguments),o.dequeue()}})})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.slide=function(t,f){
+// Create element
+var i,o=e(this),n=["position","top","bottom","left","right","width","height"],s=e.effects.setMode(o,t.mode||"show"),r="show"===s,c=t.direction||"left",d="up"===c||"down"===c?"top":"left",u="up"===c||"left"===c,a={};
+// Adjust
+e.effects.save(o,n),o.show(),i=t.distance||o["top"===d?"outerHeight":"outerWidth"](!0),e.effects.createWrapper(o).css({overflow:"hidden"}),r&&o.css(d,u?isNaN(i)?"-"+i:-i:i),
+// Animation
+a[d]=(r?u?"+=":"-=":u?"-=":"+=")+i,
+// Animate
+o.animate(a,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){"hide"===s&&o.hide(),e.effects.restore(o,n),e.effects.removeWrapper(o),f()}})}});

@@ -1,1 +1,7 @@
-jQuery(function(e){e.datepicker.regional.fo={closeText:"Lat aftur",prevText:"&#x3c;Fyrra",nextText:"N\xe6sta&#x3e;",currentText:"\xcd dag",monthNames:["Januar","Februar","Mars","Apr\xedl","Mei","Juni","Juli","August","September","Oktober","November","Desember"],monthNamesShort:["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des"],dayNames:["Sunnudagur","M\xe1nadagur","T\xfdsdagur","Mikudagur","H\xf3sdagur","Fr\xedggjadagur","Leyardagur"],dayNamesShort:["Sun","M\xe1n","T\xfds","Mik","H\xf3s","Fr\xed","Ley"],dayNamesMin:["Su","M\xe1","T\xfd","Mi","H\xf3","Fr","Le"],weekHeader:"Vk",dateFormat:"dd-mm-yy",firstDay:0,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.datepicker.setDefaults(e.datepicker.regional.fo)});
+/* Faroese initialisation for the jQuery UI date picker plugin */
+/* Written by Sverri Mohr Olsen, sverrimo@gmail.com */
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["../datepicker"],e):
+// Browser globals
+e(jQuery.datepicker)}(function(e){return e.regional.fo={closeText:"Lat aftur",prevText:"&#x3C;Fyrra",nextText:"Næsta&#x3E;",currentText:"Í dag",monthNames:["Januar","Februar","Mars","Apríl","Mei","Juni","Juli","August","September","Oktober","November","Desember"],monthNamesShort:["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des"],dayNames:["Sunnudagur","Mánadagur","Týsdagur","Mikudagur","Hósdagur","Fríggjadagur","Leyardagur"],dayNamesShort:["Sun","Mán","Týs","Mik","Hós","Frí","Ley"],dayNamesMin:["Su","Má","Tý","Mi","Hó","Fr","Le"],weekHeader:"Vk",dateFormat:"dd-mm-yy",firstDay:1,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},e.setDefaults(e.regional.fo),e.regional.fo});

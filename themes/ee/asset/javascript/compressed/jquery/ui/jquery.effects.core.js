@@ -1,46 +1,197 @@
 /*!
  * jQuery UI Effects @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/
+ * http://api.jqueryui.com/category/effects-core/
  */
-jQuery.effects||function(e,t){function n(t){var n;return t&&t.constructor==Array&&3==t.length?t:(n=/rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(t))?[parseInt(n[1],10),parseInt(n[2],10),parseInt(n[3],10)]:(n=/rgb\(\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*\)/.exec(t))?[2.55*parseFloat(n[1]),2.55*parseFloat(n[2]),2.55*parseFloat(n[3])]:(n=/#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/.exec(t))?[parseInt(n[1],16),parseInt(n[2],16),parseInt(n[3],16)]:(n=/#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/.exec(t))?[parseInt(n[1]+n[1],16),parseInt(n[2]+n[2],16),parseInt(n[3]+n[3],16)]:(n=/rgba\(0, 0, 0, 0\)/.exec(t))?c.transparent:c[e.trim(t).toLowerCase()]}function a(t,a){var r;do{if(r=e.curCSS(t,a),""!=r&&"transparent"!=r||e.nodeName(t,"body"))break;a="backgroundColor"}while(t=t.parentNode);return n(r)}function r(){var e,t,n=document.defaultView?document.defaultView.getComputedStyle(this,null):this.currentStyle,a={};if(n&&n.length&&n[0]&&n[n[0]])for(var r=n.length;r--;)e=n[r],"string"==typeof n[e]&&(t=e.replace(/\-(\w)/g,function(e,t){return t.toUpperCase()}),a[t]=n[e]);else for(e in n)"string"==typeof n[e]&&(a[e]=n[e]);return a}function s(t){var n,a;for(n in t)a=t[n],(null==a||e.isFunction(a)||n in l||/scrollbar/.test(n)||!/color/i.test(n)&&isNaN(parseFloat(a)))&&delete t[n];return t}function i(e,t){var n,a={_:0};for(n in t)e[n]!=t[n]&&(a[n]=t[n]);return a}function o(t,n,a,r){return"object"==typeof t&&(r=n,a=null,n=t,t=n.effect),e.isFunction(n)&&(r=n,a=null,n={}),("number"==typeof n||e.fx.speeds[n])&&(r=a,a=n,n={}),e.isFunction(a)&&(r=a,a=null),n=n||{},a=a||n.duration,a=e.fx.off?0:"number"==typeof a?a:a in e.fx.speeds?e.fx.speeds[a]:e.fx.speeds._default,r=r||n.complete,[t,n,a,r]}function u(t){return!t||"number"==typeof t||e.fx.speeds[t]?!0:"string"!=typeof t||e.effects[t]?!1:!0}e.effects={},e.each(["backgroundColor","borderBottomColor","borderLeftColor","borderRightColor","borderTopColor","borderColor","color","outlineColor"],function(t,r){e.fx.step[r]=function(e){e.colorInit||(e.start=a(e.elem,r),e.end=n(e.end),e.colorInit=!0),e.elem.style[r]="rgb("+Math.max(Math.min(parseInt(e.pos*(e.end[0]-e.start[0])+e.start[0],10),255),0)+","+Math.max(Math.min(parseInt(e.pos*(e.end[1]-e.start[1])+e.start[1],10),255),0)+","+Math.max(Math.min(parseInt(e.pos*(e.end[2]-e.start[2])+e.start[2],10),255),0)+")"}});var c={aqua:[0,255,255],azure:[240,255,255],beige:[245,245,220],black:[0,0,0],blue:[0,0,255],brown:[165,42,42],cyan:[0,255,255],darkblue:[0,0,139],darkcyan:[0,139,139],darkgrey:[169,169,169],darkgreen:[0,100,0],darkkhaki:[189,183,107],darkmagenta:[139,0,139],darkolivegreen:[85,107,47],darkorange:[255,140,0],darkorchid:[153,50,204],darkred:[139,0,0],darksalmon:[233,150,122],darkviolet:[148,0,211],fuchsia:[255,0,255],gold:[255,215,0],green:[0,128,0],indigo:[75,0,130],khaki:[240,230,140],lightblue:[173,216,230],lightcyan:[224,255,255],lightgreen:[144,238,144],lightgrey:[211,211,211],lightpink:[255,182,193],lightyellow:[255,255,224],lime:[0,255,0],magenta:[255,0,255],maroon:[128,0,0],navy:[0,0,128],olive:[128,128,0],orange:[255,165,0],pink:[255,192,203],purple:[128,0,128],violet:[128,0,128],red:[255,0,0],silver:[192,192,192],white:[255,255,255],yellow:[255,255,0],transparent:[255,255,255]},f=["add","remove","toggle"],l={border:1,borderBottom:1,borderColor:1,borderLeft:1,borderRight:1,borderTop:1,borderWidth:1,margin:1,padding:1};e.effects.animateClass=function(t,n,a,o){return e.isFunction(a)&&(o=a,a=null),this.queue(function(){var u,c=e(this),l=c.attr("style")||" ",h=s(r.call(this)),p=c.attr("class")||"";e.each(f,function(e,n){t[n]&&c[n+"Class"](t[n])}),u=s(r.call(this)),c.attr("class",p),c.animate(i(h,u),{queue:!1,duration:n,easing:a,complete:function(){e.each(f,function(e,n){t[n]&&c[n+"Class"](t[n])}),"object"==typeof c.attr("style")?(c.attr("style").cssText="",c.attr("style").cssText=l):c.attr("style",l),o&&o.apply(this,arguments),e.dequeue(this)}})})},e.fn.extend({_addClass:e.fn.addClass,addClass:function(t,n,a,r){return n?e.effects.animateClass.apply(this,[{add:t},n,a,r]):this._addClass(t)},_removeClass:e.fn.removeClass,removeClass:function(t,n,a,r){return n?e.effects.animateClass.apply(this,[{remove:t},n,a,r]):this._removeClass(t)},_toggleClass:e.fn.toggleClass,toggleClass:function(n,a,r,s,i){return"boolean"==typeof a||a===t?r?e.effects.animateClass.apply(this,[a?{add:n}:{remove:n},r,s,i]):this._toggleClass(n,a):e.effects.animateClass.apply(this,[{toggle:n},a,r,s])},switchClass:function(t,n,a,r,s){return e.effects.animateClass.apply(this,[{add:n,remove:t},a,r,s])}}),e.extend(e.effects,{version:"@VERSION",save:function(e,t){for(var n=0;n<t.length;n++)null!==t[n]&&e.data("ec.storage."+t[n],e[0].style[t[n]])},restore:function(e,t){for(var n=0;n<t.length;n++)null!==t[n]&&e.css(t[n],e.data("ec.storage."+t[n]))},setMode:function(e,t){return"toggle"==t&&(t=e.is(":hidden")?"show":"hide"),t},getBaseline:function(e,t){var n,a;switch(e[0]){case"top":n=0;break;case"middle":n=.5;break;case"bottom":n=1;break;default:n=e[0]/t.height}switch(e[1]){case"left":a=0;break;case"center":a=.5;break;case"right":a=1;break;default:a=e[1]/t.width}return{x:a,y:n}},createWrapper:function(t){if(t.parent().is(".ui-effects-wrapper"))return t.parent();var n={width:t.outerWidth(!0),height:t.outerHeight(!0),"float":t.css("float")},a=e("<div></div>").addClass("ui-effects-wrapper").css({fontSize:"100%",background:"transparent",border:"none",margin:0,padding:0}),r=document.activeElement;return t.wrap(a),(t[0]===r||e.contains(t[0],r))&&e(r).focus(),a=t.parent(),"static"==t.css("position")?(a.css({position:"relative"}),t.css({position:"relative"})):(e.extend(n,{position:t.css("position"),zIndex:t.css("z-index")}),e.each(["top","left","bottom","right"],function(e,a){n[a]=t.css(a),isNaN(parseInt(n[a],10))&&(n[a]="auto")}),t.css({position:"relative",top:0,left:0,right:"auto",bottom:"auto"})),a.css(n).show()},removeWrapper:function(t){var n,a=document.activeElement;return t.parent().is(".ui-effects-wrapper")?(n=t.parent().replaceWith(t),(t[0]===a||e.contains(t[0],a))&&e(a).focus(),n):t},setTransition:function(t,n,a,r){return r=r||{},e.each(n,function(e,n){var s=t.cssUnit(n);s[0]>0&&(r[n]=s[0]*a+s[1])}),r}}),e.fn.extend({effect:function(t){var n=o.apply(this,arguments),a={options:n[1],duration:n[2],callback:n[3]},r=a.options.mode,s=e.effects[t];return e.fx.off||!s?r?this[r](a.duration,a.callback):this.each(function(){a.callback&&a.callback.call(this)}):s.call(this,a)},_show:e.fn.show,show:function(e){if(u(e))return this._show.apply(this,arguments);var t=o.apply(this,arguments);return t[1].mode="show",this.effect.apply(this,t)},_hide:e.fn.hide,hide:function(e){if(u(e))return this._hide.apply(this,arguments);var t=o.apply(this,arguments);return t[1].mode="hide",this.effect.apply(this,t)},__toggle:e.fn.toggle,toggle:function(t){if(u(t)||"boolean"==typeof t||e.isFunction(t))return this.__toggle.apply(this,arguments);var n=o.apply(this,arguments);return n[1].mode="toggle",this.effect.apply(this,n)},cssUnit:function(t){var n=this.css(t),a=[];return e.each(["em","px","%","pt"],function(e,t){n.indexOf(t)>0&&(a=[parseFloat(n),t])}),a}}),/*
- * jQuery Easing v1.3 - http://gsgd.co.uk/sandbox/jquery/easing/
+!function(t){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery"],t):
+// Browser globals
+t(jQuery)}(function(t){var e="ui-effects-",
+// Create a local jQuery because jQuery Color relies on it and the
+// global may not exist with AMD and a custom build (#10199)
+n=t;/*!
+ * jQuery Color Animations v2.1.2
+ * https://github.com/jquery/jquery-color
  *
- * Uses the built in easing capabilities added In jQuery 1.1
- * to offer multiple easing options
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
  *
- * TERMS OF USE - jQuery Easing
- *
- * Open source under the BSD License.
- *
- * Copyright 2008 George McGinley Smith
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list of
- * conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list
- * of conditions and the following disclaimer in the documentation and/or other materials
- * provided with the distribution.
- *
- * Neither the name of the author nor the names of contributors may be used to endorse
- * or promote products derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
-e.easing.jswing=e.easing.swing,e.extend(e.easing,{def:"easeOutQuad",swing:function(t,n,a,r,s){return e.easing[e.easing.def](t,n,a,r,s)},easeInQuad:function(e,t,n,a,r){return a*(t/=r)*t+n},easeOutQuad:function(e,t,n,a,r){return-a*(t/=r)*(t-2)+n},easeInOutQuad:function(e,t,n,a,r){return(t/=r/2)<1?a/2*t*t+n:-a/2*(--t*(t-2)-1)+n},easeInCubic:function(e,t,n,a,r){return a*(t/=r)*t*t+n},easeOutCubic:function(e,t,n,a,r){return a*((t=t/r-1)*t*t+1)+n},easeInOutCubic:function(e,t,n,a,r){return(t/=r/2)<1?a/2*t*t*t+n:a/2*((t-=2)*t*t+2)+n},easeInQuart:function(e,t,n,a,r){return a*(t/=r)*t*t*t+n},easeOutQuart:function(e,t,n,a,r){return-a*((t=t/r-1)*t*t*t-1)+n},easeInOutQuart:function(e,t,n,a,r){return(t/=r/2)<1?a/2*t*t*t*t+n:-a/2*((t-=2)*t*t*t-2)+n},easeInQuint:function(e,t,n,a,r){return a*(t/=r)*t*t*t*t+n},easeOutQuint:function(e,t,n,a,r){return a*((t=t/r-1)*t*t*t*t+1)+n},easeInOutQuint:function(e,t,n,a,r){return(t/=r/2)<1?a/2*t*t*t*t*t+n:a/2*((t-=2)*t*t*t*t+2)+n},easeInSine:function(e,t,n,a,r){return-a*Math.cos(t/r*(Math.PI/2))+a+n},easeOutSine:function(e,t,n,a,r){return a*Math.sin(t/r*(Math.PI/2))+n},easeInOutSine:function(e,t,n,a,r){return-a/2*(Math.cos(Math.PI*t/r)-1)+n},easeInExpo:function(e,t,n,a,r){return 0==t?n:a*Math.pow(2,10*(t/r-1))+n},easeOutExpo:function(e,t,n,a,r){return t==r?n+a:a*(-Math.pow(2,-10*t/r)+1)+n},easeInOutExpo:function(e,t,n,a,r){return 0==t?n:t==r?n+a:(t/=r/2)<1?a/2*Math.pow(2,10*(t-1))+n:a/2*(-Math.pow(2,-10*--t)+2)+n},easeInCirc:function(e,t,n,a,r){return-a*(Math.sqrt(1-(t/=r)*t)-1)+n},easeOutCirc:function(e,t,n,a,r){return a*Math.sqrt(1-(t=t/r-1)*t)+n},easeInOutCirc:function(e,t,n,a,r){return(t/=r/2)<1?-a/2*(Math.sqrt(1-t*t)-1)+n:a/2*(Math.sqrt(1-(t-=2)*t)+1)+n},easeInElastic:function(e,t,n,a,r){var s=1.70158,i=0,o=a;if(0==t)return n;if(1==(t/=r))return n+a;if(i||(i=.3*r),o<Math.abs(a)){o=a;var s=i/4}else var s=i/(2*Math.PI)*Math.asin(a/o);return-(o*Math.pow(2,10*(t-=1))*Math.sin(2*(t*r-s)*Math.PI/i))+n},easeOutElastic:function(e,t,n,a,r){var s=1.70158,i=0,o=a;if(0==t)return n;if(1==(t/=r))return n+a;if(i||(i=.3*r),o<Math.abs(a)){o=a;var s=i/4}else var s=i/(2*Math.PI)*Math.asin(a/o);return o*Math.pow(2,-10*t)*Math.sin(2*(t*r-s)*Math.PI/i)+a+n},easeInOutElastic:function(e,t,n,a,r){var s=1.70158,i=0,o=a;if(0==t)return n;if(2==(t/=r/2))return n+a;if(i||(i=.3*r*1.5),o<Math.abs(a)){o=a;var s=i/4}else var s=i/(2*Math.PI)*Math.asin(a/o);return 1>t?-.5*o*Math.pow(2,10*(t-=1))*Math.sin(2*(t*r-s)*Math.PI/i)+n:o*Math.pow(2,-10*(t-=1))*Math.sin(2*(t*r-s)*Math.PI/i)*.5+a+n},easeInBack:function(e,n,a,r,s,i){return i==t&&(i=1.70158),r*(n/=s)*n*((i+1)*n-i)+a},easeOutBack:function(e,n,a,r,s,i){return i==t&&(i=1.70158),r*((n=n/s-1)*n*((i+1)*n+i)+1)+a},easeInOutBack:function(e,n,a,r,s,i){return i==t&&(i=1.70158),(n/=s/2)<1?r/2*n*n*(((i*=1.525)+1)*n-i)+a:r/2*((n-=2)*n*(((i*=1.525)+1)*n+i)+2)+a},easeInBounce:function(t,n,a,r,s){return r-e.easing.easeOutBounce(t,s-n,0,r,s)+a},easeOutBounce:function(e,t,n,a,r){return(t/=r)<1/2.75?7.5625*a*t*t+n:2/2.75>t?a*(7.5625*(t-=1.5/2.75)*t+.75)+n:2.5/2.75>t?a*(7.5625*(t-=2.25/2.75)*t+.9375)+n:a*(7.5625*(t-=2.625/2.75)*t+.984375)+n},easeInOutBounce:function(t,n,a,r,s){return s/2>n?.5*e.easing.easeInBounce(t,2*n,0,r,s)+a:.5*e.easing.easeOutBounce(t,2*n-s,0,r,s)+.5*r+a}})}(jQuery);
+ * Date: Wed Jan 16 08:47:09 2013 -0600
+ */
+/******************************************************************************/
+/****************************** CLASS ANIMATIONS ******************************/
+/******************************************************************************/
+/******************************************************************************/
+/*********************************** EFFECTS **********************************/
+/******************************************************************************/
+/******************************************************************************/
+/*********************************** EASING ***********************************/
+/******************************************************************************/
+return t.effects={effect:{}},function(t,e){function n(t,e,n){var r=l[e.type]||{};
+// ~~ is an short way of doing floor for positive numbers
+// IE will pass in empty strings as value for alpha,
+// which will hit this case
+return null==t?n||!e.def?null:e.def:(t=r.floor?~~t:parseFloat(t),isNaN(t)?e.def:r.mod?(t+r.mod)%r.mod:0>t?0:r.max<t?r.max:t)}function r(e){var n=f(),r=n._rgba=[];
+// Found a stringParser that handled it
+// Found a stringParser that handled it
+// if this came from a parsed string, force "transparent" when alpha is 0
+// chrome, (and maybe others) return "transparent" as rgba(0,0,0,0)
+return e=e.toLowerCase(),h(u,function(t,o){var a,i=o.re.exec(e),s=i&&o.parse(i),u=o.space||"rgba";
+// if this was an rgba parse the assignment might happen twice
+// oh well....
+return s?(a=n[u](s),n[c[u].cache]=a[c[u].cache],r=n._rgba=a._rgba,!1):void 0}),r.length?("0,0,0,0"===r.join()&&t.extend(r,a.transparent),n):a[e]}
+// hsla conversions adapted from:
+// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
+function o(t,e,n){return n=(n+1)%1,1>6*n?t+(e-t)*n*6:1>2*n?e:2>3*n?t+(e-t)*(2/3-n)*6:t}var
+// colors = jQuery.Color.names
+a,i="backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",
+// plusequals test for += 100 -= 100
+s=/^([\-+])=\s*(\d+\.?\d*)/,
+// a set of RE's that can match strings and generate color tuples.
+u=[{re:/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,parse:function(t){return[t[1],t[2],t[3],t[4]]}},{re:/rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,parse:function(t){return[2.55*t[1],2.55*t[2],2.55*t[3],t[4]]}},{
+// this regex ignores A-F because it's compared against an already lowercased string
+re:/#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/,parse:function(t){return[parseInt(t[1],16),parseInt(t[2],16),parseInt(t[3],16)]}},{
+// this regex ignores A-F because it's compared against an already lowercased string
+re:/#([a-f0-9])([a-f0-9])([a-f0-9])/,parse:function(t){return[parseInt(t[1]+t[1],16),parseInt(t[2]+t[2],16),parseInt(t[3]+t[3],16)]}},{re:/hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,space:"hsla",parse:function(t){return[t[1],t[2]/100,t[3]/100,t[4]]}}],
+// jQuery.Color( )
+f=t.Color=function(e,n,r,o){return new t.Color.fn.parse(e,n,r,o)},c={rgba:{props:{red:{idx:0,type:"byte"},green:{idx:1,type:"byte"},blue:{idx:2,type:"byte"}}},hsla:{props:{hue:{idx:0,type:"degrees"},saturation:{idx:1,type:"percent"},lightness:{idx:2,type:"percent"}}}},l={"byte":{floor:!0,max:255},percent:{max:1},degrees:{mod:360,floor:!0}},d=f.support={},
+// element for support tests
+p=t("<p>")[0],
+// local aliases of functions called often
+h=t.each;
+// determine rgba support immediately
+p.style.cssText="background-color:rgba(1,1,1,.5)",d.rgba=p.style.backgroundColor.indexOf("rgba")>-1,
+// define cache name and alpha properties
+// for rgba and hsla spaces
+h(c,function(t,e){e.cache="_"+t,e.props.alpha={idx:3,type:"percent",def:1}}),f.fn=t.extend(f.prototype,{parse:function(o,i,s,u){if(o===e)return this._rgba=[null,null,null,null],this;(o.jquery||o.nodeType)&&(o=t(o).css(i),i=e);var l=this,d=t.type(o),p=this._rgba=[];
+// more than 1 argument specified - assume ( red, green, blue, alpha )
+return i!==e&&(o=[o,i,s,u],d="array"),"string"===d?this.parse(r(o)||a._default):"array"===d?(h(c.rgba.props,function(t,e){p[e.idx]=n(o[e.idx],e)}),this):"object"===d?(o instanceof f?h(c,function(t,e){o[e.cache]&&(l[e.cache]=o[e.cache].slice())}):h(c,function(e,r){var a=r.cache;h(r.props,function(t,e){
+// if the cache doesn't exist, and we know how to convert
+if(!l[a]&&r.to){
+// if the value was null, we don't need to copy it
+// if the key was alpha, we don't need to copy it either
+if("alpha"===t||null==o[t])return;l[a]=r.to(l._rgba)}
+// this is the only case where we allow nulls for ALL properties.
+// call clamp with alwaysAllowEmpty
+l[a][e.idx]=n(o[t],e,!0)}),
+// everything defined but alpha?
+l[a]&&t.inArray(null,l[a].slice(0,3))<0&&(
+// use the default of 1
+l[a][3]=1,r.from&&(l._rgba=r.from(l[a])))}),this):void 0},is:function(t){var e=f(t),n=!0,r=this;return h(c,function(t,o){var a,i=e[o.cache];return i&&(a=r[o.cache]||o.to&&o.to(r._rgba)||[],h(o.props,function(t,e){return null!=i[e.idx]?n=i[e.idx]===a[e.idx]:void 0})),n}),n},_space:function(){var t=[],e=this;return h(c,function(n,r){e[r.cache]&&t.push(n)}),t.pop()},transition:function(t,e){var r=f(t),o=r._space(),a=c[o],i=0===this.alpha()?f("transparent"):this,s=i[a.cache]||a.to(i._rgba),u=s.slice();return r=r[a.cache],h(a.props,function(t,o){var a=o.idx,i=s[a],f=r[a],c=l[o.type]||{};
+// if null, don't override start value
+null!==f&&(
+// if null - use end
+null===i?u[a]=f:(c.mod&&(f-i>c.mod/2?i+=c.mod:i-f>c.mod/2&&(i-=c.mod)),u[a]=n((f-i)*e+i,o)))}),this[o](u)},blend:function(e){
+// if we are already opaque - return ourself
+if(1===this._rgba[3])return this;var n=this._rgba.slice(),r=n.pop(),o=f(e)._rgba;return f(t.map(n,function(t,e){return(1-r)*o[e]+r*t}))},toRgbaString:function(){var e="rgba(",n=t.map(this._rgba,function(t,e){return null==t?e>2?1:0:t});return 1===n[3]&&(n.pop(),e="rgb("),e+n.join()+")"},toHslaString:function(){var e="hsla(",n=t.map(this.hsla(),function(t,e){
+// catch 1 and 2
+return null==t&&(t=e>2?1:0),e&&3>e&&(t=Math.round(100*t)+"%"),t});return 1===n[3]&&(n.pop(),e="hsl("),e+n.join()+")"},toHexString:function(e){var n=this._rgba.slice(),r=n.pop();return e&&n.push(~~(255*r)),"#"+t.map(n,function(t){
+// default to 0 when nulls exist
+return t=(t||0).toString(16),1===t.length?"0"+t:t}).join("")},toString:function(){return 0===this._rgba[3]?"transparent":this.toRgbaString()}}),f.fn.parse.prototype=f.fn,c.hsla.to=function(t){if(null==t[0]||null==t[1]||null==t[2])return[null,null,null,t[3]];var e,n,r=t[0]/255,o=t[1]/255,a=t[2]/255,i=t[3],s=Math.max(r,o,a),u=Math.min(r,o,a),f=s-u,c=s+u,l=.5*c;
+// chroma (diff) == 0 means greyscale which, by definition, saturation = 0%
+// otherwise, saturation is based on the ratio of chroma (diff) to lightness (add)
+return e=u===s?0:r===s?60*(o-a)/f+360:o===s?60*(a-r)/f+120:60*(r-o)/f+240,n=0===f?0:.5>=l?f/c:f/(2-c),[Math.round(e)%360,n,l,null==i?1:i]},c.hsla.from=function(t){if(null==t[0]||null==t[1]||null==t[2])return[null,null,null,t[3]];var e=t[0]/360,n=t[1],r=t[2],a=t[3],i=.5>=r?r*(1+n):r+n-r*n,s=2*r-i;return[Math.round(255*o(s,i,e+1/3)),Math.round(255*o(s,i,e)),Math.round(255*o(s,i,e-1/3)),a]},h(c,function(r,o){var a=o.props,i=o.cache,u=o.to,c=o.from;
+// makes rgba() and hsla()
+f.fn[r]=function(r){if(
+// generate a cache for this space if it doesn't exist
+u&&!this[i]&&(this[i]=u(this._rgba)),r===e)return this[i].slice();var o,s=t.type(r),l="array"===s||"object"===s?r:arguments,d=this[i].slice();return h(a,function(t,e){var r=l["object"===s?t:e.idx];null==r&&(r=d[e.idx]),d[e.idx]=n(r,e)}),c?(o=f(c(d)),o[i]=d,o):f(d)},
+// makes red() green() blue() alpha() hue() saturation() lightness()
+h(a,function(e,n){
+// alpha is included in more than one space
+f.fn[e]||(f.fn[e]=function(o){var a,i=t.type(o),u="alpha"===e?this._hsla?"hsla":"rgba":r,f=this[u](),c=f[n.idx];return"undefined"===i?c:("function"===i&&(o=o.call(this,c),i=t.type(o)),null==o&&n.empty?this:("string"===i&&(a=s.exec(o),a&&(o=c+parseFloat(a[2])*("+"===a[1]?1:-1))),f[n.idx]=o,this[u](f)))})})}),
+// add cssHook and .fx.step function for each named hook.
+// accept a space separated string of properties
+f.hook=function(e){var n=e.split(" ");h(n,function(e,n){t.cssHooks[n]={set:function(e,o){var a,i,s="";if("transparent"!==o&&("string"!==t.type(o)||(a=r(o)))){if(o=f(a||o),!d.rgba&&1!==o._rgba[3]){for(i="backgroundColor"===n?e.parentNode:e;(""===s||"transparent"===s)&&i&&i.style;)try{s=t.css(i,"backgroundColor"),i=i.parentNode}catch(u){}o=o.blend(s&&"transparent"!==s?s:"_default")}o=o.toRgbaString()}try{e.style[n]=o}catch(u){}}},t.fx.step[n]=function(e){e.colorInit||(e.start=f(e.elem,n),e.end=f(e.end),e.colorInit=!0),t.cssHooks[n].set(e.elem,e.start.transition(e.end,e.pos))}})},f.hook(i),t.cssHooks.borderColor={expand:function(t){var e={};return h(["Top","Right","Bottom","Left"],function(n,r){e["border"+r+"Color"]=t}),e}},
+// Basic color names only.
+// Usage of any of the other color names requires adding yourself or including
+// jquery.color.svg-names.js.
+a=t.Color.names={
+// 4.1. Basic color keywords
+aqua:"#00ffff",black:"#000000",blue:"#0000ff",fuchsia:"#ff00ff",gray:"#808080",green:"#008000",lime:"#00ff00",maroon:"#800000",navy:"#000080",olive:"#808000",purple:"#800080",red:"#ff0000",silver:"#c0c0c0",teal:"#008080",white:"#ffffff",yellow:"#ffff00",
+// 4.2.3. "transparent" color keyword
+transparent:[null,null,null,0],_default:"#ffffff"}}(n),function(){function e(e){var n,r,o=e.ownerDocument.defaultView?e.ownerDocument.defaultView.getComputedStyle(e,null):e.currentStyle,a={};if(o&&o.length&&o[0]&&o[o[0]])for(r=o.length;r--;)n=o[r],"string"==typeof o[n]&&(a[t.camelCase(n)]=o[n]);else for(n in o)"string"==typeof o[n]&&(a[n]=o[n]);return a}function r(e,n){var r,o,i={};for(r in n)o=n[r],e[r]!==o&&(a[r]||(t.fx.step[r]||!isNaN(parseFloat(o)))&&(i[r]=o));return i}var o=["add","remove","toggle"],a={border:1,borderBottom:1,borderColor:1,borderLeft:1,borderRight:1,borderTop:1,borderWidth:1,margin:1,padding:1};t.each(["borderLeftStyle","borderRightStyle","borderBottomStyle","borderTopStyle"],function(e,r){t.fx.step[r]=function(t){("none"!==t.end&&!t.setAttr||1===t.pos&&!t.setAttr)&&(n.style(t.elem,r,t.end),t.setAttr=!0)}}),
+// support: jQuery <1.8
+t.fn.addBack||(t.fn.addBack=function(t){return this.add(null==t?this.prevObject:this.prevObject.filter(t))}),t.effects.animateClass=function(n,a,i,s){var u=t.speed(a,i,s);return this.queue(function(){var a,i=t(this),s=i.attr("class")||"",f=u.children?i.find("*").addBack():i;
+// map the animated objects to store the original styles.
+f=f.map(function(){var n=t(this);return{el:n,start:e(this)}}),
+// apply class change
+a=function(){t.each(o,function(t,e){n[e]&&i[e+"Class"](n[e])})},a(),
+// map all animated objects again - calculate new styles and diff
+f=f.map(function(){return this.end=e(this.el[0]),this.diff=r(this.start,this.end),this}),
+// apply original class
+i.attr("class",s),
+// map all animated objects again - this time collecting a promise
+f=f.map(function(){var e=this,n=t.Deferred(),r=t.extend({},u,{queue:!1,complete:function(){n.resolve(e)}});return this.el.animate(this.diff,r),n.promise()}),
+// once all animations have completed:
+t.when.apply(t,f.get()).done(function(){
+// set the final class
+a(),
+// for each animated element,
+// clear all css properties that were animated
+t.each(arguments,function(){var e=this.el;t.each(this.diff,function(t){e.css(t,"")})}),
+// this is guarnteed to be there if you use jQuery.speed()
+// it also handles dequeuing the next anim...
+u.complete.call(i[0])})})},t.fn.extend({addClass:function(e){return function(n,r,o,a){return r?t.effects.animateClass.call(this,{add:n},r,o,a):e.apply(this,arguments)}}(t.fn.addClass),removeClass:function(e){return function(n,r,o,a){return arguments.length>1?t.effects.animateClass.call(this,{remove:n},r,o,a):e.apply(this,arguments)}}(t.fn.removeClass),toggleClass:function(e){return function(n,r,o,a,i){return"boolean"==typeof r||void 0===r?o?t.effects.animateClass.call(this,r?{add:n}:{remove:n},o,a,i):e.apply(this,arguments):t.effects.animateClass.call(this,{toggle:n},r,o,a)}}(t.fn.toggleClass),switchClass:function(e,n,r,o,a){return t.effects.animateClass.call(this,{add:n,remove:e},r,o,a)}})}(),function(){
+// return an effect options object for the given parameters:
+function n(e,n,r,o){
+// allow passing all options as the first parameter
+// convert to an object
+// catch (effect, null, ...)
+// catch (effect, callback)
+// catch (effect, speed, ?)
+// catch (effect, options, callback)
+// add options to effect
+return t.isPlainObject(e)&&(n=e,e=e.effect),e={effect:e},null==n&&(n={}),t.isFunction(n)&&(o=n,r=null,n={}),("number"==typeof n||t.fx.speeds[n])&&(o=r,r=n,n={}),t.isFunction(r)&&(o=r,r=null),n&&t.extend(e,n),r=r||n.duration,e.duration=t.fx.off?0:"number"==typeof r?r:r in t.fx.speeds?t.fx.speeds[r]:t.fx.speeds._default,e.complete=o||n.complete,e}function r(e){
+// Valid standard speeds (nothing, number, named speed)
+// Valid standard speeds (nothing, number, named speed)
+// Invalid strings - treat as "normal" speed
+// Complete callback
+// Options hash (but not naming an effect)
+return!e||"number"==typeof e||t.fx.speeds[e]?!0:"string"!=typeof e||t.effects.effect[e]?t.isFunction(e)?!0:"object"!=typeof e||e.effect?!1:!0:!0}t.extend(t.effects,{version:"@VERSION",
+// Saves a set of properties in a data storage
+save:function(t,n){for(var r=0;r<n.length;r++)null!==n[r]&&t.data(e+n[r],t[0].style[n[r]])},
+// Restores a set of previously saved properties from a data storage
+restore:function(t,n){var r,o;for(o=0;o<n.length;o++)null!==n[o]&&(r=t.data(e+n[o]),
+// support: jQuery 1.6.2
+// http://bugs.jquery.com/ticket/9917
+// jQuery 1.6.2 incorrectly returns undefined for any falsy value.
+// We can't differentiate between "" and 0 here, so we just assume
+// empty string since it's likely to be a more common value...
+void 0===r&&(r=""),t.css(n[o],r))},setMode:function(t,e){return"toggle"===e&&(e=t.is(":hidden")?"show":"hide"),e},
+// Translates a [top,left] array into a baseline value
+// this should be a little more flexible in the future to handle a string & hash
+getBaseline:function(t,e){var n,r;switch(t[0]){case"top":n=0;break;case"middle":n=.5;break;case"bottom":n=1;break;default:n=t[0]/e.height}switch(t[1]){case"left":r=0;break;case"center":r=.5;break;case"right":r=1;break;default:r=t[1]/e.width}return{x:r,y:n}},
+// Wraps the element around a wrapper that copies position properties
+createWrapper:function(e){
+// if the element is already wrapped, return it
+if(e.parent().is(".ui-effects-wrapper"))return e.parent();
+// wrap the element
+var n={width:e.outerWidth(!0),height:e.outerHeight(!0),"float":e.css("float")},r=t("<div></div>").addClass("ui-effects-wrapper").css({fontSize:"100%",background:"transparent",border:"none",margin:0,padding:0}),
+// Store the size in case width/height are defined in % - Fixes #5245
+o={width:e.width(),height:e.height()},a=document.activeElement;
+// support: Firefox
+// Firefox incorrectly exposes anonymous content
+// https://bugzilla.mozilla.org/show_bug.cgi?id=561664
+try{a.id}catch(i){a=document.body}
+// Fixes #7595 - Elements lose focus when wrapped.
+//Hotfix for jQuery 1.4 since some change in wrap() seems to actually lose the reference to the wrapped element
+// transfer positioning properties to the wrapper
+return e.wrap(r),(e[0]===a||t.contains(e[0],a))&&t(a).focus(),r=e.parent(),"static"===e.css("position")?(r.css({position:"relative"}),e.css({position:"relative"})):(t.extend(n,{position:e.css("position"),zIndex:e.css("z-index")}),t.each(["top","left","bottom","right"],function(t,r){n[r]=e.css(r),isNaN(parseInt(n[r],10))&&(n[r]="auto")}),e.css({position:"relative",top:0,left:0,right:"auto",bottom:"auto"})),e.css(o),r.css(n).show()},removeWrapper:function(e){var n=document.activeElement;
+// Fixes #7595 - Elements lose focus when wrapped.
+return e.parent().is(".ui-effects-wrapper")&&(e.parent().replaceWith(e),(e[0]===n||t.contains(e[0],n))&&t(n).focus()),e},setTransition:function(e,n,r,o){return o=o||{},t.each(n,function(t,n){var a=e.cssUnit(n);a[0]>0&&(o[n]=a[0]*r+a[1])}),o}}),t.fn.extend({effect:function(){function e(e){function n(){t.isFunction(a)&&a.call(o[0]),t.isFunction(e)&&e()}var o=t(this),a=r.complete,s=r.mode;
+// If the element already has the correct final state, delegate to
+// the core methods so the internal tracking of "olddisplay" works.
+(o.is(":hidden")?"hide"===s:"show"===s)?(o[s](),n()):i.call(o[0],r,n)}var r=n.apply(this,arguments),o=r.mode,a=r.queue,i=t.effects.effect[r.effect];
+// delegate to the original method (e.g., .show()) if possible
+return t.fx.off||!i?o?this[o](r.duration,r.complete):this.each(function(){r.complete&&r.complete.call(this)}):a===!1?this.each(e):this.queue(a||"fx",e)},show:function(t){return function(e){if(r(e))return t.apply(this,arguments);var o=n.apply(this,arguments);return o.mode="show",this.effect.call(this,o)}}(t.fn.show),hide:function(t){return function(e){if(r(e))return t.apply(this,arguments);var o=n.apply(this,arguments);return o.mode="hide",this.effect.call(this,o)}}(t.fn.hide),toggle:function(t){return function(e){if(r(e)||"boolean"==typeof e)return t.apply(this,arguments);var o=n.apply(this,arguments);return o.mode="toggle",this.effect.call(this,o)}}(t.fn.toggle),
+// helper functions
+cssUnit:function(e){var n=this.css(e),r=[];return t.each(["em","px","%","pt"],function(t,e){n.indexOf(e)>0&&(r=[parseFloat(n),e])}),r}})}(),function(){
+// based on easing equations from Robert Penner (http://www.robertpenner.com/easing)
+var e={};t.each(["Quad","Cubic","Quart","Quint","Expo"],function(t,n){e[n]=function(e){return Math.pow(e,t+2)}}),t.extend(e,{Sine:function(t){return 1-Math.cos(t*Math.PI/2)},Circ:function(t){return 1-Math.sqrt(1-t*t)},Elastic:function(t){return 0===t||1===t?t:-Math.pow(2,8*(t-1))*Math.sin((80*(t-1)-7.5)*Math.PI/15)},Back:function(t){return t*t*(3*t-2)},Bounce:function(t){for(var e,n=4;t<((e=Math.pow(2,--n))-1)/11;);return 1/Math.pow(4,3-n)-7.5625*Math.pow((3*e-2)/22-t,2)}}),t.each(e,function(e,n){t.easing["easeIn"+e]=n,t.easing["easeOut"+e]=function(t){return 1-n(1-t)},t.easing["easeInOut"+e]=function(t){return.5>t?n(2*t)/2:1-n(-2*t+2)/2}})}(),t.effects});

@@ -1,13 +1,25 @@
 /*!
  * jQuery UI Effects Shake @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Shake
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/shake-effect/
  */
-!function(e){e.effects.shake=function(t){return this.queue(function(){var o=e(this),n=["position","top","bottom","left","right"],i=(e.effects.setMode(o,t.options.mode||"effect"),t.options.direction||"left"),s=t.options.distance||20,a=t.options.times||3,f=t.duration||t.options.duration||140;e.effects.save(o,n),o.show(),e.effects.createWrapper(o);var p="up"==i||"down"==i?"top":"left",r="up"==i||"left"==i?"pos":"neg",u={},c={},m={};u[p]=("pos"==r?"-=":"+=")+s,c[p]=("pos"==r?"+=":"-=")+2*s,m[p]=("pos"==r?"-=":"+=")+2*s,o.animate(u,f,t.options.easing);for(var d=1;a>d;d++)o.animate(c,f,t.options.easing).animate(m,f,t.options.easing);o.animate(c,f,t.options.easing).animate(u,f/2,t.options.easing,function(){e.effects.restore(o,n),e.effects.removeWrapper(o),t.callback&&t.callback.apply(this,arguments)}),o.queue("fx",function(){o.dequeue()}),o.dequeue()})}}(jQuery);
+!function(e){"function"==typeof define&&define.amd?
+// AMD. Register as an anonymous module.
+define(["jquery","./effect"],e):
+// Browser globals
+e(jQuery)}(function(e){return e.effects.effect.shake=function(t,i){var f,n=e(this),a=["position","top","bottom","left","right","height","width"],o=e.effects.setMode(n,t.mode||"effect"),s=t.direction||"left",c=t.distance||20,r=t.times||3,u=2*r+1,d=Math.round(t.duration/u),p="up"===s||"down"===s?"top":"left",h="up"===s||"left"===s,m={},g={},l={},
+// we will need to re-assemble the queue to stack our animations in place
+q=n.queue(),y=q.length;
+// Shakes
+for(e.effects.save(n,a),n.show(),e.effects.createWrapper(n),
+// Animation
+m[p]=(h?"-=":"+=")+c,g[p]=(h?"+=":"-=")+2*c,l[p]=(h?"-=":"+=")+2*c,
+// Animate
+n.animate(m,d,t.easing),f=1;r>f;f++)n.animate(g,d,t.easing).animate(l,d,t.easing);n.animate(g,d,t.easing).animate(m,d/2,t.easing).queue(function(){"hide"===o&&n.hide(),e.effects.restore(n,a),e.effects.removeWrapper(n),i()}),
+// inject all the animations we just queued to be first in line (after "inprogress")
+y>1&&q.splice.apply(q,[1,0].concat(q.splice(y,u+1))),n.dequeue()}});
