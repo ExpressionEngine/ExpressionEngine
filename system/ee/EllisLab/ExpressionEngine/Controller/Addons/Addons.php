@@ -241,20 +241,26 @@ class Addons extends CP_Controller {
 			);
 
 			$table = ee('CP/Table', $config);
-			$table->setColumns(
-				array(
-					'addon',
-					'version' => array(
-						'encode' => FALSE
-					),
-					'manage' => array(
-						'type'	=> Table::COL_TOOLBAR
-					),
-					array(
-						'type'	=> Table::COL_CHECKBOX
-					)
+			$columns =	array(
+				'addon',
+				'version' => array(
+					'encode' => FALSE
+				),
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
 				)
 			);
+
+
+			if (ee()->cp->allowed_group('can_admin_addons'))
+			{
+				$columns[] = array(
+					'type'	=> Table::COL_CHECKBOX
+				);
+			}
+
+			$table->setColumns($columns);
+
 			$table->setNoResultsText('no_addon_search_results');
 
 			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
@@ -342,21 +348,27 @@ class Addons extends CP_Controller {
 					unset($toolbar['install']);
 				}
 
-				$data[] = array(
+				$row = array(
 					'attrs' => $attrs,
 					'columns' => array(
 						'addon' => $info['name'],
 						'version' => $this->formatVersionNumber($info['version']),
-						array('toolbar_items' => $toolbar),
-						array(
-							'name' => 'selection[]',
-							'value' => $info['package'],
-							'data'	=> array(
-								'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
-							)
-						)
+						array('toolbar_items' => $toolbar)
 					)
 				);
+
+				if (ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$row['columns'][] = array(
+						'name' => 'selection[]',
+						'value' => $info['package'],
+						'data'	=> array(
+							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
+						)
+					);
+				}
+
+				$data[] = $row;
 			}
 
 			$table->setData($data);
