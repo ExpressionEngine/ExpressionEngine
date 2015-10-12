@@ -4934,6 +4934,87 @@ class Forum_Core extends Forum {
 	// ----------------------------------------------------------------------
 
 	/**
+	 * Moderation method used by the spam module. Takes a query generated from 
+	 * the submit_post method.
+	 */
+	public function moderate_post($query)
+	{
+		ee()->db->query($sql);
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Display errors
+	 */
+	public function display_errors()
+	{
+		if (ee()->input->post('preview') !== FALSE OR $this->submission_error != '')
+		{
+			$type = array(
+					'newtopic'		=> 'new_topic_page',
+					'edittopic'		=> 'edit_topic_page',
+					'newreply'		=> 'new_reply_page',
+					'editreply'		=> 'edit_reply_page',
+					'quotetopic'	=> 'new_reply_page',
+					'quotereply'	=> 'new_reply_page'
+					);
+
+			if ($this->use_trigger())
+			{
+				return $this->display_forum($type[$this->current_request]);
+			}
+
+			if (count($this->attachments) > 0)
+			{
+				$_POST['attach'] = implode('|', $this->attachments);
+			}
+
+			// Then we are in a template.  We have to call this template.  Dude.
+			// We still have to send the preview information though.  Curious.
+
+			ee()->functions->clear_caching('all');
+
+			unset($_POST['ACT']);
+
+			if ( ! isset(ee()->TMPL))
+			{
+				ee()->load->library('template', NULL, 'TMPL');
+			}
+
+			$x = explode('/',$this->trigger);
+
+			if ( ! isset($x[1]))
+			{
+				$query = ee()->db->query("SELECT tg.group_name
+									 FROM exp_templates t, exp_template_groups tg
+									 WHERE t.group_id = tg.group_id
+									 AND t.template_name = '".ee()->db->escape_str($x['0'])."'
+									 AND tg.is_site_default = 'y'");
+
+				if ($query->num_rows() == 1)
+				{
+					$x['1'] = $x['0'];
+					$x['0'] = $query->row('group_name') ;
+				}
+				else
+				{
+					$x['1'] = 'index';
+				}
+			}
+
+			// a new copy of the class will be instantiated when it runs the tag in the template
+			// so we need to store the submission errors that will be needed for display
+			ee()->session->cache['forum']['submission_error'] = $this->submission_error;
+
+			ee()->TMPL->run_template_engine($x['0'], (( ! isset($x['1'])) ? 'index' : $x['1']));
+
+			return;
+		}
+	}
+	// ----------------------------------------------------------------------
+
+	/**
 	 * Submission Error Display
 	 */
 	function submission_errors()
@@ -5703,77 +5784,10 @@ class Forum_Core extends Forum {
 			$body = ee()->input->get_post('body');
 			$title = ee()->input->get_post('title');
 			$text = "$title $body";
-
-			if (ee('Spam')->isSpam($text))
-			{
-				ee()->spam->moderate(NULL, NULL, NULL, NULL, $text);
-				$this->submission_error = lang('spam');
-			}
+			$spam = ee('Spam')->isSpam($text);
 		}
 
-		if (ee()->input->post('preview') !== FALSE OR $this->submission_error != '')
-		{
-			$type = array(
-					'newtopic'		=> 'new_topic_page',
-					'edittopic'		=> 'edit_topic_page',
-					'newreply'		=> 'new_reply_page',
-					'editreply'		=> 'edit_reply_page',
-					'quotetopic'	=> 'new_reply_page',
-					'quotereply'	=> 'new_reply_page'
-					);
-
-			if ($this->use_trigger())
-			{
-				return $this->display_forum($type[$this->current_request]);
-			}
-
-			if (count($this->attachments) > 0)
-			{
-				$_POST['attach'] = implode('|', $this->attachments);
-			}
-
-			// Then we are in a template.  We have to call this template.  Dude.
-			// We still have to send the preview information though.  Curious.
-
-			ee()->functions->clear_caching('all');
-
-			unset($_POST['ACT']);
-
-			if ( ! isset(ee()->TMPL))
-			{
-				ee()->load->library('template', NULL, 'TMPL');
-			}
-
-			$x = explode('/',$this->trigger);
-
-			if ( ! isset($x[1]))
-			{
-				$query = ee()->db->query("SELECT tg.group_name
-									 FROM exp_templates t, exp_template_groups tg
-									 WHERE t.group_id = tg.group_id
-									 AND t.template_name = '".ee()->db->escape_str($x['0'])."'
-									 AND tg.is_site_default = 'y'");
-
-				if ($query->num_rows() == 1)
-				{
-					$x['1'] = $x['0'];
-					$x['0'] = $query->row('group_name') ;
-				}
-				else
-				{
-					$x['1'] = 'index';
-				}
-			}
-
-			// a new copy of the class will be instantiated when it runs the tag in the template
-			// so we need to store the submission errors that will be needed for display
-			ee()->session->cache['forum']['submission_error'] = $this->submission_error;
-
-			ee()->TMPL->run_template_engine($x['0'], (( ! isset($x['1'])) ? 'index' : $x['1']));
-
-			return;
-		}
-
+		$this->display_errors();
 		$announcement = 'n';
 
 		if (ee()->input->get_post('announcement') == 'y')
@@ -5855,7 +5869,13 @@ class Forum_Core extends Forum {
 						$data['topic_date']				= ee()->localize->now;
 						$data['board_id']				= $this->fetch_pref('board_id');
 
-						ee()->db->query(ee()->db->insert_string('exp_forum_topics', $data));
+						$sql = ee()->db->insert_string('exp_forum_topics', $data);
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
+
 						$data['topic_id'] = ee()->db->insert_id();
 
 						// Where should we send the user to?  Normally we'll send them to either
@@ -5897,7 +5917,14 @@ class Forum_Core extends Forum {
 						$data['topic_edit_author']	= ee()->session->userdata['member_id'];
 						$data['topic_edit_date']	= ee()->localize->now;
 
-						ee()->db->query(ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->get_post('topic_id'))));
+						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->get_post('topic_id')));
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
+
+
 						$data['topic_id'] = $this->current_id;
 
 						if ($announcement == 'n')
@@ -5949,7 +5976,12 @@ class Forum_Core extends Forum {
 						$data['post_date']	= ee()->localize->now;
 						$data['board_id']	= $this->fetch_pref('board_id');
 
-						ee()->db->query(ee()->db->insert_string('exp_forum_posts', $data));
+						$sql = ee()->db->insert_string('exp_forum_posts', $data);
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
 
 						$data['post_id'] = ee()->db->insert_id();
 
@@ -5976,7 +6008,12 @@ class Forum_Core extends Forum {
 						$data['post_edit_author']	= ee()->session->userdata['member_id'];
 						$data['post_edit_date']		= ee()->localize->now;
 
-						ee()->db->query(ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'"));
+						$sql = ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'");
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
 
 						// Determine the redirect location
 						ee()->db->select('COUNT(*) as count');
@@ -5989,6 +6026,15 @@ class Forum_Core extends Forum {
 					}
 
 				break;
+		}
+
+		if ($spam)
+		{
+			$args = array($sql);
+			ee('Spam')->moderate(__FILE__, 'Forum Post', 'moderate_post', NULL, $args, $text);
+
+			$this->submission_error = lang('spam');
+			$this->display_errors();
 		}
 
 		// Fetch/Set the "topic tracker" cookie
