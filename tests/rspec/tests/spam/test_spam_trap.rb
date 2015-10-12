@@ -30,7 +30,7 @@ feature 'Spam Module' do
 			@page.load
 
 			@page.displayed?
-			@page.heading.text.should eq 'All SPAM'
+			@page.heading.text.should have_text 'All SPAM'
 			@page.should have_phrase_search
 		end
 
