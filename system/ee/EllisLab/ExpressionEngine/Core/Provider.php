@@ -254,15 +254,17 @@ class Provider extends InjectionBindingDecorator {
 	 */
 	protected function registerServices($prefix)
 	{
+		$self = $this;
+
 		foreach ($this->getServices() as $name => $closure)
 		{
 			if (is_string($closure))
 			{
-				$closure = function () use ($closure)
+				$closure = function() use ($closure, $self)
 				{
 					$args = func_get_args();
 					array_shift($args);
-					$class = $this->getNamespace() . '\\' . $closure;
+					$class = $self->getNamespace() . '\\' . $closure;
 					$object = new \ReflectionClass($class);
 					return $object->newInstanceArgs($args);
 				};
