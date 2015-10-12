@@ -158,8 +158,10 @@ class Profile extends CP_Controller {
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
-			if ( ! ($this->member->member_id == ee()->session->userdata['member_id']
-				    && $this->member->group_id == 1))
+			$sa_editing_self = ($this->member->group_id == 1 && $this->member->member_id == ee()->session->userdata['member_id']);
+			$group_locked = (ee()->session->userdata['member_id'] != 1 && $this->member->MemberGroup->is_locked);
+
+			if ( ! $sa_editing_self && ! $group_locked)
 			{
 				$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
 			}
