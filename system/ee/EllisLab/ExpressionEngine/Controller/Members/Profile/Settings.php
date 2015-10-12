@@ -376,9 +376,10 @@ class Settings extends Profile {
 		        }
 		}
 		
+		unlink($original);
 		$result = (array) ee()->upload;
 
-		return $result['file_name'];
+		return $filename;
 	}
 
 	private function uploadRemoteAvatar()
