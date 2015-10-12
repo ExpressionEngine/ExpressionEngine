@@ -121,6 +121,7 @@
 					<?php endif; ?>
 				</ul>
 				<ul class="dev-menu">
+					<?php if (count($cp_main_menu['develop'])): ?>
 					<li class="develop">
 						<a class="has-sub" href="" title="<?=lang('nav_developer_tools')?>"></a>
 						<div class="sub-menu">
@@ -142,6 +143,7 @@
 							</ul>
 						</div>
 					</li>
+					<?php endif; ?>
 					<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
 					<li class="settings"><a href="<?=ee('CP/URL', 'settings')?>" title="<?=lang('nav_settings')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 					<?php endif; ?>
