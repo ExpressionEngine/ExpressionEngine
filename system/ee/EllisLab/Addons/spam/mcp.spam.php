@@ -52,9 +52,9 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
-		if (AJAX_REQUEST && ! empty(ee()->input->get('method')))
+		$method = ee()->input->get('method');
+		if (AJAX_REQUEST && ! empty($method))
 		{
-			$method = ee()->input->get('method');
 			return $this->$method();
 		}
 
