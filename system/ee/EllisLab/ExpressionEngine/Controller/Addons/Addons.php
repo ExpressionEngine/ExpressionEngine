@@ -337,6 +337,11 @@ class Addons extends CP_Controller {
 					$attrs = array();
 				}
 
+				if ( ! ee()->cp->allowed_group('can_admin_addons'))
+				{
+					unset($toolbar['install']);
+				}
+
 				$data[] = array(
 					'attrs' => $attrs,
 					'columns' => array(
@@ -405,15 +410,8 @@ class Addons extends CP_Controller {
 			'third' => array()
 		);
 
-		$group_id = ee()->session->userdata('group_id');
-
 		foreach ($addon_infos as $name => $info)
 		{
-			if ($group_id != 1 && ! in_array($name, $this->assigned_modules))
-			{
-				continue;
-			}
-
 			$info = ee('Addon')->get($name);
 
 			if ($info->get('built_in'))
@@ -1081,6 +1079,13 @@ class Addons extends CP_Controller {
 
 		ee()->lang->loadfile($name);
 		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+
+		$group_id = ee()->session->userdata('group_id');
+
+		if ($group_id != 1 && ! in_array($display_name, $this->assigned_modules))
+		{
+			return array();
+		}
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),
