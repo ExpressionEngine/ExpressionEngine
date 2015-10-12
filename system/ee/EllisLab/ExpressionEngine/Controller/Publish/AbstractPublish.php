@@ -193,12 +193,17 @@ abstract class AbstractPublish extends CP_Controller {
 			{
 				$attrs = array('class' => 'selected');
 			}
+
 			// Current
+			$edit_date = ($entry->edit_date)
+				? ee()->localize->human_time($entry->edit_date->format('U'))
+				: NULL;
+
 			$data[] = array(
 				'attrs'   => $attrs,
 				'columns' => array(
 					$i,
-					ee()->localize->human_time($entry->edit_date->format('U')),
+					$edit_date,
 					$entry->Author->getMemberName(),
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
