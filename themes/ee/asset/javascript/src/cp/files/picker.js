@@ -55,7 +55,7 @@
 		$('.modal-file').on('click', '.filepicker-item, tbody > tr', function(e) {
 			e.stopPropagation();
 			var id = $(this).data('id');
-			var file_url = options.url.replace(/directory=.+(?=&)?/ig, 'file=' + id);
+			var file_url = $(this).data('url');
 
 			current.data('selected', id);
 			modal.find('tbody .selected').toggleClass('selected');

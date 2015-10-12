@@ -128,7 +128,7 @@ class Buttons extends Settings {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_buttons_found');
 		$table->setData($rows);
 
 		$data['table'] = $table->viewData($this->base_url);

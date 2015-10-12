@@ -514,7 +514,7 @@ class ChannelEntry extends ContentModel {
 					'field_instructions'	=> '',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',
-					'field_maxl'			=> 100
+					'field_maxl'			=> 200
 				),
 				'url_title' => array(
 					'field_id'				=> 'url_title',
@@ -525,7 +525,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',
-					'field_maxl'			=> 75
+					'field_maxl'			=> 200
 				),
 				'entry_date' => array(
 					'field_id'				=> 'entry_date',

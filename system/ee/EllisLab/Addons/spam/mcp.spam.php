@@ -1,3 +1,4 @@
+
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -40,6 +41,7 @@ class Spam_mcp {
 	public function __construct()
 	{
 		$this->base_url = ee('CP/URL')->make('addons/settings/spam');
+		$update = ee('spam:Update');
 	}
 
 	/**
@@ -50,6 +52,12 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
+		if (AJAX_REQUEST && ! empty(ee()->input->get('method')))
+		{
+			$method = ee()->input->get('method');
+			return $this->$method();
+		}
+
 		if ( ! empty($_POST['bulk_action']))
 		{
 			$action = ee()->input->post('bulk_action');
@@ -92,6 +100,8 @@ class Spam_mcp {
 			->add($types)
 			->add('Date', 'date')
 			->add('Perpage', $total, 'show_all_spam');
+
+		$data['filters'] = $filters->render($this->base_url);
 
 		$filter_values = $filters->values();
 		$filter_fields = array();
@@ -171,11 +181,10 @@ class Spam_mcp {
 			);
 		}
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('spam')));
 		$table->setData($trapped);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['filters'] = $filters->render($this->base_url);
 		$data['form_url'] = ee('CP/URL')->make('addons/settings/spam');
 		$data['cp_page_title'] = lang('all_spam');
 
@@ -240,6 +249,16 @@ class Spam_mcp {
 				),
 			),
 			'engine_training' => array(
+				array(
+					'title' => "update_training",
+					'desc' => 'update_training_desc',
+					'fields' => array(
+						'update_training' => array(
+							'type' => 'html',
+							'content' => "<a class='btn tn action update' href='" . ee('CP/URL', 'addons/settings/spam/') . "'>" .  lang('update_training') . "</a>"
+						)
+					)
+				),
 				array(
 					'title' => 'spam_word_limit',
 					'desc' => 'spam_word_limit_desc',
@@ -332,6 +351,10 @@ class Spam_mcp {
 			ee()->functions->redirect($base_url);
 		}
 
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/addons/spam'),
+		));
+
 		$vars['base_url'] = $base_url;
 		$vars['ajax_validate'] = TRUE;
 		$vars['cp_page_title'] = lang('spam_settings');
@@ -404,6 +427,126 @@ class Spam_mcp {
 		ee()->functions->redirect($this->base_url);
 	}
 
+	public function download()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			ee('spam:Update')->download();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		ee()->output->send_ajax_response(array(
+			'success' => lang('training_downloaded')
+		));
+	}
+
+	public function prepare()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			ee('spam:Update')->prepare();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		ee()->output->send_ajax_response(array(
+			'success' => lang('training_prepared')
+		));
+	}
+
+	public function updateparams()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			$processing = ee('spam:Update')->updateParameters();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		if ($processing === TRUE)
+		{
+			$status = 'processing';
+		}
+		else
+		{
+			$status = 'finished';
+		}
+
+		$spam_training = ee('spam:Training', 'default');
+		$spam_training->deleteClassifier();
+
+		ee()->output->send_ajax_response(array(
+			'message' => lang('updating_parameters'),
+			'finished' => lang('training_finished'),
+			'status' => $status
+		));
+	}
+
+	public function updatevocab()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		try
+		{
+			$processing = ee('spam:Update')->updateVocabulary();
+		}
+		catch (\Exception $error)
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => $error->getMessage()
+			));
+		}
+
+		if ($processing === TRUE)
+		{
+			$status = 'proccessing';
+		}
+		else
+		{
+			$status = 'finished';
+		}
+
+		$spam_training = ee('spam:Training', 'default');
+		$spam_training->deleteClassifier();
+
+		ee()->output->send_ajax_response(array(
+			'message' => lang('updating_vocabulary'),
+			'finished' => lang('training_finished'),
+			'status' => $status
+		));
+	}
+
 	/**
 	 * Moderate content. Will insert record into training table and either delete
 	 * or reinsert the data if it's spam or ham respectively.
@@ -427,6 +570,7 @@ class Spam_mcp {
 		}
 
 		$result = new CoreCollection($result);
+		$this->trainParameters($result);
 		$result->save();
 	}
 
@@ -549,14 +693,14 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function setMaximumLikelihood($training_collection, $kernel)
+	private function setMaximumLikelihood($classes, $collection, $existing,$kernel)
 	{
 		$training = array();
 		$update = array();
 		$insert = array();
 
 
-		foreach ($training_collection as $class => $sources)
+		foreach ($classes as $class => $sources)
 		{
 			$count = count($sources[0]);
 			$zipped = array();
@@ -577,15 +721,36 @@ class Spam_mcp {
 				$parameters[$parameter->index] = $parameter;
 			}
 
+			$lookup = array();
+
+			foreach ($collection->vectorizers as $i => $vectorizer)
+			{
+				if ($vectorizer instanceof EllisLab\Addons\Spam\Library\Vectorizers\Tfidf)
+				{
+					$vocab = array_keys($vectorizer->vocabulary);
+
+					for ($j = 0; $j < count($vocab); $j++)
+					{
+						$lookup[$i + $j] = array('term' => $existing[$vocab[$j]]);
+					}
+				}
+				else
+				{
+					$lookup[$i] = array('index' => $i);
+				}
+			}
+
 			foreach ($zipped as $index => $feature)
 			{
 				$count = 0;
 				$mean = 0;
 				$variance = 0;
 				$new = TRUE;
+				$id = NULL;
 
 				if ( ! empty($parameters[$index]))
 				{
+					$id = $parameters[$index]->parameter_id;
 					$mean = $parameters[$index]->mean;
 					$variance = $parameters[$index]->variance;
 					$count = $kernel->count;
@@ -597,10 +762,20 @@ class Spam_mcp {
 				$training = array(
 					'kernel_id' => $kernel->kernel_id,
 					'class' => $class,
-					'index' => $index,
 					'mean' => $updated['mean'],
-					'variance' => $updated['variance']
+					'variance' => $updated['variance'],
+					'index' => NULL,
+					'term' => NULL,
 				);
+
+				if (empty($lookup[$index]['term']))
+				{
+					$training['index'] = $lookup[$index]['index'];
+				}
+				else
+				{
+					$training['term'] = (int)$lookup[$index]['term']->vocabulary_id;
+				}
 
 				if ($new)
 				{
@@ -608,6 +783,7 @@ class Spam_mcp {
 				}
 				else
 				{
+					$training['parameter_id'] = $id;
 					$update[] = $training;
 				}
 			}
@@ -620,7 +796,7 @@ class Spam_mcp {
 
 		if ( ! empty($update))
 		{
-			ee()->db->update_batch('exp_spam_parameters', $update, 'index');
+			ee()->db->update_batch('exp_spam_parameters', $update, 'parameter_id');
 		}
 	}
 
@@ -657,7 +833,7 @@ class Spam_mcp {
 			{
 				$update[] = array(
 					'term' => $term,
-					'count' => $existing[$term]->count + $count,
+					'count' => (int)$existing[$term]->count + (int)$count,
 					'kernel_id' => $kernel->kernel_id
 				);
 			}
@@ -665,7 +841,7 @@ class Spam_mcp {
 			{
 				$insert[] = array(
 					'term' => $term,
-					'count' => $count,
+					'count' => (int) $count,
 					'kernel_id' => $kernel->kernel_id
 				);
 			}
@@ -682,16 +858,15 @@ class Spam_mcp {
 			ee()->db->update_batch('exp_spam_vocabulary', $update, 'term');
 		}
 
-		// Now grab the entire stored vocabulary
-		$query = ee()->db->limit(ee()->config->item('spam_word_limit') ?: 5000)->get('spam_vocabulary');
-		$vocabulary = array();
+		// Add all our new vocab ids to the existing array for later use
+		ee()->db->where_in('term', array_keys($tfidf->vocabulary));
+		$query = ee()->db->get('spam_vocabulary');
 
-		foreach ($query->result() as $vocab)
+		foreach ($query->result() as $term)
 		{
-			$vocabulary[$vocab->term] = $vocab->count;
+			$existing[$term->term] = $term;
 		}
 
-		$tfidf->vocabulary = $vocabulary;
 
 		// Increment the total document count
 		$kernel->count += count($data);
@@ -701,12 +876,12 @@ class Spam_mcp {
 
 		// Calculate our new feature vectors
 		$vectorizers = array();
-		$vectorizers[] = $tfidf;
 		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
 		$vectorizers[] = ee('spam:Vectorizers/Entropy');
 		$vectorizers[] = ee('spam:Vectorizers/Links');
 		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
 		$vectorizers[] = ee('spam:Vectorizers/Spaces');
+		$vectorizers[] = $tfidf;
 		$training_collection = ee('spam:Collection', $vectorizers);
 		$training_classes = array();
 
@@ -715,7 +890,7 @@ class Spam_mcp {
 			$training_classes[$classes[$key]][] = $vector;
 		}
 
-		$this->setMaximumLikelihood($training_classes, $kernel);
+		$this->setMaximumLikelihood($training_classes, $training_collection, $existing,  $kernel);
 		$spam_training = ee('spam:Training', 'default');
 		$spam_training->deleteClassifier();
 	}

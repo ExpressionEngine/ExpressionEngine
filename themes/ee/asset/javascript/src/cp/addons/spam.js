@@ -31,4 +31,63 @@
 		modal.find('.ip').html($(this).data('ip'));
 		modal.find('.content').html($(this).data('content'));
 	});
+	$(".update").on('click', function(e) {
+		e.preventDefault();
+		var link = this;
+		var path = $(this).attr('href');
+
+		$(link).toggleClass('work');
+
+		$.ajax({
+			url: path + "&method=download",
+			success: function(data) {
+				if ('success' in data) {
+					$(link).html(data.success);
+					$.ajax({
+						url: path + "&method=prepare",
+						success: function(data) {
+							if ('success' in data) {
+								updateVocabulary(link);
+							}
+						},
+						dataType: 'json'
+					});
+				}
+			},
+			dataType: 'json'
+		});
+	});
 })(jQuery);
+
+function updateVocabulary(link) {
+	var path = $(link).attr('href');
+	$.ajax({
+		url: path + "&method=updatevocab",
+		success: function(data) {
+			if (data.status !== 'finished') {
+				$(link).html(data.message);
+				updateVocabulary(link);
+			} else {
+				updateParameters(link);
+			}
+		},
+		dataType: 'json'
+	});
+}
+
+function updateParameters(link) {
+	var path = $(link).attr('href');
+	$.ajax({
+		url: path + "&method=updateparams",
+		success: function(data) {
+			if (data.status !== 'finished') {
+				$(link).html(data.message);
+				updateParameters(link);
+			} else {
+				$(link).html(data.finished);
+				$(link).toggleClass('work');
+			}
+		},
+		dataType: 'json'
+	});
+}

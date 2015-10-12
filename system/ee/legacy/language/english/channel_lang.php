@@ -54,7 +54,7 @@ $lang = array(
 
 'status_groups' => 'Status Groups',
 
-'no_channels' => 'No Channels',
+'no_channels' => 'No <b>Channels</b> found.',
 
 'create_channel' => 'Create Channel',
 
@@ -412,7 +412,7 @@ $lang = array(
 
 'group_name' => 'Group Name',
 
-'no_category_groups' => 'No Category Groups',
+'no_category_groups' => 'No <b>Category Groups</b> found.',
 
 'create_category_group' => 'Create Category Group',
 
@@ -426,7 +426,7 @@ $lang = array(
 
 'categories_removed_desc' => '%d categories were removed.',
 
-'no_fields' => 'No fields found',
+'no_fields' => 'No <b>Fields</b> found.',
 
 'fields' => 'Fields',
 
@@ -434,7 +434,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'No <b>categories</b> found',
+'categories_not_found' => 'No <b>Categories</b> found.',
 
 'create_category' => 'Create Category',
 
@@ -518,7 +518,7 @@ $lang = array(
 
 'category_fields' => 'Category Fields',
 
-'no_category_fields' => 'No Category Fields',
+'no_category_fields' => 'No <b>Category Fields</b> found.',
 
 'create_category_field' => 'Create Category Field',
 

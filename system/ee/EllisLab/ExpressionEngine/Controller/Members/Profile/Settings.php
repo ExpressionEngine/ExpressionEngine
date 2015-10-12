@@ -122,6 +122,7 @@ class Settings extends Profile {
 				'image' => 'avatar',
 				'input' => 'avatar_filename',
 				'hasFilters' => FALSE,
+				'hasUpload' => FALSE,
 				'selected' => $this->member->avatar_filename,
 				'class' => 'avatarPicker'
 			));
@@ -333,6 +334,13 @@ class Settings extends Profile {
 
 	private function uploadAvatar()
 	{
+		$existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
+
+		if (file_exists($existing))
+		{
+			unlink($existing);
+		}
+
 		ee()->load->library('filemanager');
 		$current = ee()->config->item('avatar_path');
 		$directory = ee('Model')->get('UploadDestination')
@@ -352,7 +360,35 @@ class Settings extends Profile {
 			return;
 		}
 
-		return $upload_response['file_name'];
+		$name = $_FILES['upload_avatar']['name'];
+		$file_path = ee()->filemanager->clean_filename(
+		        basename($name),
+		        $directory->id,
+		        array('ignore_dupes' => FALSE)
+		);
+		$filename = basename($file_path);
+		
+		// Upload the file
+		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
+		ee()->upload->do_upload('file');
+		$original = ee()->upload->upload_path . ee()->upload->file_name;
+		
+		if ( ! @copy($original, $file_path))
+		{
+		        if ( ! @move_uploaded_file($original, $file_path))
+		        {
+		                ee('CP/Alert')->makeInline('shared-form')
+		                        ->asIssue()
+		                        ->withTitle(lang('upload_filedata_error'))
+		                        ->now();
+		
+		                return FALSE;
+		        }
+		}
+		
+		$result = (array) ee()->upload;
+
+		return $result['file_name'];
 	}
 
 	private function uploadRemoteAvatar()
@@ -386,16 +422,6 @@ class Settings extends Profile {
 		{
 			return FALSE;
 		}
-
-		$upload_response = ee()->filemanager->save_file(
-			$file_path,
-			$directory->id,
-			array(
-				'title'     => $filename,
-				'rel_path'  => dirname($file_path),
-				'file_name' => $filename
-			)
-		);
 
 		return $filename;
 	}

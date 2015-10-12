@@ -116,7 +116,7 @@ class Ignore extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_blocked_members_found');
 		$table->setData($ignored);
 
 		$data['table'] = $table->viewData($this->base_url);

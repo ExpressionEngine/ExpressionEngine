@@ -258,6 +258,7 @@ class Fields extends AbstractChannelsController {
 
 		if ($field->isNew())
 		{
+			// This field is disabled and not present in POST when editing and existing field
 			$field->field_type = $_POST['field_type'];
 		}
 

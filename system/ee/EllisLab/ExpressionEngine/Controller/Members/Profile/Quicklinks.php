@@ -335,7 +335,7 @@ class Quicklinks extends Settings {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_quick_links_found');
 		$table->setData($links);
 
 		return ee('View')->make('_shared/table')->render($table->viewData($this->base_url));

@@ -49,8 +49,13 @@ class Tfidf implements Vectorizer {
 	 * @param bool    	 $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($source, $tokenizer, $stop_words = array(), $limit = 1000, $clean = TRUE)
+	public function __construct($source, $tokenizer, $stop_words = array(), $limit = NULL, $clean = TRUE)
 	{
+		if (empty($limit))
+		{
+			$limit = ee()->config->item('spam_word_limit') ?: 1000;
+		}
+
 		$this->tokenizer = $tokenizer;
 		$this->clean = $clean;
 		$this->limit = $limit;

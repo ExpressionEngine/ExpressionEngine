@@ -101,7 +101,7 @@ class Bookmarks extends Settings {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_bookmarklets_found');
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);

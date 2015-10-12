@@ -9,7 +9,7 @@
 		<?php endif; ?>
 		<h1>
 			<?=$cp_heading?>
-			<?php if ($can_edit_upload_directories): ?>
+			<?php if ($can_sync_directory): ?>
 			<ul class="toolbar">
 				<li class="sync"><a href="<?=ee('CP/URL')->make('files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
 			</ul>

@@ -138,12 +138,12 @@ class Spam {
 		$tfidf->generateLookups();
 
 		$vectorizers = array();
-		$vectorizers[] = $tfidf;
 		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
 		$vectorizers[] = ee('spam:Vectorizers/Entropy');
 		$vectorizers[] = ee('spam:Vectorizers/Links');
 		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
 		$vectorizers[] = ee('spam:Vectorizers/Spaces');
+		$vectorizers[] = $tfidf;
 
 		return $training->loadClassifier($vectorizers);
 	}
@@ -166,9 +166,9 @@ class Spam {
 		$tfidf->generateLookups();
 
 		$vectorizers = array();
-		$vectorizers[] = $tfidf;
 		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
 		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
+		$vectorizers[] = $tfidf;
 
 		return $training->loadClassifier($vectorizers);
 	}

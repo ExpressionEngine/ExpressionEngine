@@ -39,7 +39,7 @@ class Watermarks extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -68,7 +68,7 @@ class Watermarks extends AbstractFilesController {
 				)
 			)
 		);
-		$table->setNoResultsText('no_watermarks', 'create_watermark', ee('CP/URL')->make('files/watermarks/create'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('watermarks')), 'create_watermark', ee('CP/URL')->make('files/watermarks/create'));
 
 		$watermarks = ee('Model')->get('Watermark');
 		$total_rows = $watermarks->count();

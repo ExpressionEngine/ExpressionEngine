@@ -153,7 +153,7 @@ abstract class AbstractFiles extends CP_Controller {
 			)
 		);
 
-		$table->setNoResultsText(lang('no_uploaded_files'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('files')));
 
 		$data = array();
 		$missing_files = FALSE;

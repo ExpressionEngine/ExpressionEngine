@@ -32,7 +32,10 @@ Used in the control panel only.',
 'subscriptions' => 'Current Subscriptions',
 
 'search_subscriptions' => 'Search Subscriptions',
+
 'unsubscribe_success' => 'You have been succesfully unsubscribed.',
+
+'no_subscriptions_found' => 'No <b>Subscriptions</b> found.',
 
 'utilities' => 'Utilities',
 
@@ -433,6 +436,8 @@ Used in the control panel only.',
 
 'bookmarklet_instructions' => 'Drag links to your bookmarks bar to save them.',
 
+'no_bookmarklets_found' => 'No <b>Bookmarklets</b> found.',
+
 'smart_notifications' => 'Enable smart notifications',
 
 'smart_notifications_desc' => 'When set to <b>enable</b>, smart notifications will be possible.',
@@ -469,6 +474,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'change_avatar_desc' => 'Add an avatar to your profile.',
 
 'blocked_members' => 'Blocked Members',
+
+'no_blocked_members_found' => 'No <b>Blocked members</b> found.',
 
 'cp_settings' => 'CP Settings',
 
@@ -512,6 +519,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'quick_links_ajax_reorder_fail' => 'Attention: Failed to save quick links order',
 'quick_links_ajax_reorder_fail_desc' => 'We failed to save your new quick links order. Refresh the page and make sure you\'re logged in.',
+
+'no_quick_links_found' => 'No <b>Quick links</b> found.',
 
 ''=>''
 );

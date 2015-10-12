@@ -1,6 +1,5 @@
 <?php
 
-
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
@@ -73,6 +72,12 @@ class Filepicker_mcp {
 				if ($dir->server_path == ee()->config->item('avatar_path'))
 				{
 					$files = $dir->server_path->files;
+
+					// Only show system avatars
+					$files = $files->filter(function($file) use($dir) {
+						$path = $dir->server_path . $file->file_name;
+						return ! is_writable($path);
+					});
 				}
 				else
 				{
@@ -84,7 +89,7 @@ class Filepicker_mcp {
 		}
 
 		// Filter out any files that are no longer on disk
-		$files->filter(function($file) { return $file->exists(); });
+		$files = $files->filter(function($file) { return $file->exists(); });
 
 		$base_url = ee('CP/URL', $this->base_url);
 
@@ -117,7 +122,7 @@ class Filepicker_mcp {
 
 		$base_url->setQueryStringVariable('directory', $id);
 		$base_url->setQueryStringVariable('type', $type);
-
+		
 		if ($this->images || $type == 'thumb')
 		{
 			$vars['type'] = 'thumb';
@@ -135,8 +140,12 @@ class Filepicker_mcp {
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
 
-		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
-		$vars['upload']->setQueryStringVariable('directory', $id);
+		if (ee()->input->get('hasUpload') !== '0')
+		{
+			$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
+			$vars['upload']->setQueryStringVariable('directory', $id);
+		}
+
 		$vars['dir'] = $id;
 
 		if ( ! empty($vars['table']['data']))

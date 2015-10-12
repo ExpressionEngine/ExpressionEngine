@@ -1,6 +1,6 @@
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<?php if (is_numeric($dir)): ?>
+	<?php if ( ! empty($upload) && is_numeric($dir)): ?>
 	<fieldset class="tbl-search right">
 		<a class="btn tn action" href="<?=$upload?>">Upload New File</a>
 	</fieldset>
