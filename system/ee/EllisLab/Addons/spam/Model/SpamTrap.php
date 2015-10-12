@@ -32,7 +32,8 @@ class SpamTrap extends Model {
 	protected $date;
 	protected $file;
 	protected $class;
-	protected $method;
+	protected $approve;
+	protected $remove;
 	protected $data;
 	protected $document;
 
