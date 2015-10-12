@@ -111,7 +111,8 @@ class Spam {
 			'date' => time(),
 			'ip_address' => $_SERVER['REMOTE_ADDR'],
 			'class' => $class,
-			'method' => $method,
+			'approve' => $approve_method,
+			'remove' => $remove_method,
 			'data' => serialize($content),
 			'document' => $doc
 		);
