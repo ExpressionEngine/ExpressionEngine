@@ -23,7 +23,7 @@ var states = {};
 
 $(document).ready(function() {
 
-	var fields = $('*[data-group-toggle]');
+	var fields = $('*[data-group-toggle]:radio');
 
 	toggleInputs(fields, '', false);
 
