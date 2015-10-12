@@ -205,8 +205,6 @@ class MemberGroup extends Model {
 	protected $can_access_footer_report_bug;
 	protected $can_access_footer_new_ticket;
 	protected $can_access_footer_user_guide;
-	protected $can_access_publish;
-	protected $can_access_edit;
 	protected $can_access_files;
 	protected $can_access_design;
 	protected $can_access_addons;
