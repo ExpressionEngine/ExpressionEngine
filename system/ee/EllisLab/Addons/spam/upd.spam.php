@@ -106,7 +106,8 @@ class Spam_upd {
 			'date'	     => array('type' => 'int', 'constraint' => '10'),
 			'file'		 => array('type' => 'varchar', 'constraint' => '129'),
 			'class'		 => array('type' => 'varchar', 'constraint' => '64'),
-			'method'	 => array('type' => 'varchar', 'constraint' => '64'),
+			'approve'	 => array('type' => 'varchar', 'constraint' => '64'),
+			'remove'	 => array('type' => 'varchar', 'constraint' => '64'),
 			'data'		 => array('type' => 'text'),
 			'document'	 => array('type' => 'text')
 		);
