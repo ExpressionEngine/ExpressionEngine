@@ -15,10 +15,14 @@
 "use strict";
 
 // fields that are children of hidden parent fields
-var hidden = {};
+var hidden = {
+	"always-hidden": false
+};
 
 // real visibility states of hidden children
-var states = {};
+var states = {
+	"always-hidden": false
+};
 
 
 $(document).ready(function() {
