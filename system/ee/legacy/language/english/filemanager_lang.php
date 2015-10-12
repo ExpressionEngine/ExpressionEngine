@@ -334,8 +334,6 @@ $lang = array(
 
 'watermarks' => 'Watermarks',
 
-'no_watermarks' => 'No Watermarks',
-
 'create_watermark' => 'Create Watermark',
 
 'edit_watermark' => 'Edit Watermark',
