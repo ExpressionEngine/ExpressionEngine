@@ -103,7 +103,7 @@ class Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate($file, $class, $method, $content, $doc)
+	public function moderate($file, $class, $approve_method, $remove_method, $content, $doc)
 	{
 		$data = array(
 			'file' => $file,
