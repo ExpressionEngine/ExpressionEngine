@@ -8,8 +8,6 @@ $lang = array(
 
 'moblogs' => 'Moblogs',
 
-'no_moblogs' => 'No Moblogs',
-
 'moblogs_removed' => 'Moblogs removed',
 
 'moblogs_removed_desc' => '%d moblogs were removed.',
