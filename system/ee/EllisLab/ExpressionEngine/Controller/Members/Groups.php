@@ -81,25 +81,34 @@ class Groups extends Members\Members {
 			'limit' => $perpage
 		));
 
-		$table->setColumns(
-			array(
-				'id' => array(
-					'type'	=> Table::COL_ID,
-				),
-				'group_title' => array(
-					'encode' => FALSE
-				),
-				'status' => array(
-					'type' => Table::COL_STATUS
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
+		$columns = array(
+			'id' => array(
+				'type'	=> Table::COL_ID,
+			),
+			'group_title' => array(
+				'encode' => FALSE
+			),
+			'status' => array(
+				'type' => Table::COL_STATUS
+			),
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
 			)
 		);
+
+		if ( ! ee()->cp->allowed_group_any('can_create_member_groups', 'can_edit_member_groups'))
+		{
+			unset($columns['manage']);
+		}
+
+		if (ee()->cp->allowed_group('can_delete_member_groups'))
+		{
+			$columns[] = array(
+				'type'	=> Table::COL_CHECKBOX
+			);
+		}
+
+		$table->setColumns($columns);
 
 		$data = array();
 		$groupData = array();
@@ -128,28 +137,51 @@ class Groups extends Members\Members {
 				)
 			));
 
+
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = $group->getMembers()->count();
 			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
 			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+
+			if ( ! ee()->cp->allowed_group('can_create_member_groups'))
+			{
+				unset($toolbar['toolbar_items']['copy']);
+			}
+
+			if ( ! ee()->cp->allowed_group('can_edit_member_groups') || ($group->is_locked == 'y' && ee()->session->userdata('group_id') != 1))
+			{
+				$title = $group->group_title;
+				unset($toolbar['toolbar_items']['edit']);
+			}
+
 			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
 
 			$bulk_checkbox_diabled = (in_array($group->group_id, $this->no_delete)) ? TRUE : NULL;
 
-			$groupData[] = array(
+			$row = array(
 				'id' => $group->group_id,
 				'title' => $title,
-				'status' => array('class' => $status, 'content' => lang($status)),
-				$toolbar,
-				array(
+				'status' => array('class' => $status, 'content' => lang($status))
+			);
+
+			if (isset($columns['manage']))
+			{
+				$row[] = $toolbar;
+			}
+
+			if (ee()->cp->allowed_group('can_delete_member_groups'))
+			{
+				$row[] = array(
 					'name' => 'selection[]',
 					'value' => $group->group_id,
 					'disabled' => $bulk_checkbox_diabled,
 					'data'	=> array(
 						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
-				)
-			);
+				);
+			}
+
+			$groupData[] = $row;
 		}
 
 		$table->setNoResultsText('no_search_results');
@@ -234,6 +266,12 @@ class Groups extends Members\Members {
 		}
 
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
+
+		if ($this->group->is_locked == 'y' && ! $this->super_admin)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->group_id = (int) $this->group->group_id;
 		$this->base_url = ee('CP/URL')->make('members/groups/edit/' . $group_id, $this->query_string);
 		$vars = $this->group->getValues();
@@ -266,6 +304,19 @@ class Groups extends Members\Members {
 			$replacement = NULL;
 		}
 
+		$group_info = ee('Model')->get('MemberGroup', $groups)->all();
+
+		foreach ($group_info as $group)
+		{
+			if ($group->is_locked == 'y' && ! $this->super_admin)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+
+		$group_names = $group_info->pluck('group_title');
+
+
 		if (is_array($groups))
 		{
 			foreach ($groups as $group)
@@ -273,8 +324,6 @@ class Groups extends Members\Members {
 				$this->delete_member_group($group, $replacement);
 			}
 		}
-
-		$group_names = ee('Model')->get('MemberGroup', $groups)->all()->pluck('group_title');
 
 		ee('CP/Alert')->makeInline('member_groups')
 			->asSuccess()
@@ -296,9 +345,9 @@ class Groups extends Members\Members {
 	public function confirm()
 	{
 		//  Only super admins can delete member groups
-		if ($this->session->userdata['group_id'] != 1)
+		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
 		{
-			show_error(lang('only_superadmins_can_admin_groups'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$groups = ee()->input->post('selection');
@@ -348,11 +397,6 @@ class Groups extends Members\Members {
 
 	private function form($vars = array(), $values = array())
 	{
-		if ( ! $this->super_admin)
-		{
-			show_error(lang('only_superadmins_can_admin_groups'));
-		}
-
 		ee()->load->helper('array');
 
 		ee()->form_validation->set_rules(array(
