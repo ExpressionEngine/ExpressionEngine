@@ -179,7 +179,7 @@ class Spam_mcp {
 			);
 		}
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('spam')));
 		$table->setData($trapped);
 
 		$data['table'] = $table->viewData($this->base_url);
