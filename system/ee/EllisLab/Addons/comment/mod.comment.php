@@ -2065,7 +2065,7 @@ class Comment {
 		/**  Can the user post comments?
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['can_post_comments'] == 'n')
+		if (FALSE && ee()->session->userdata['can_post_comments'] == 'n')
 		{
 			$error[] = ee()->lang->line('cmt_no_authorized_for_comments');
 
@@ -2492,7 +2492,7 @@ class Comment {
 		if ($is_spam == TRUE)
 		{
 			$spam_data = array($comment_id, 'o');
-			ee('Spam')->moderate(__FILE__, 'Comment', 'moderate_comment', $spam_data, $comment_string);
+			ee('Spam')->moderate(__FILE__, 'Comment', 'moderate_comment', 'remove_comment', $spam_data, $comment_string);
 		}
 
 		if ($notify == 'y')
@@ -2850,6 +2850,20 @@ class Comment {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+     * remove_comment is used by the spam module to delete comments that are 
+	 * flagged as spam from the spam trap
+	 *
+	 * @param integer $comment_id  The ID of the comment
+	 * @access public
+	 * @return void
+	 */
+	function remove_comment($id)
+	{
+		ee()->db->delete('comments', array('comment_id' => $id));
+	}
 
 	// --------------------------------------------------------------------
 
