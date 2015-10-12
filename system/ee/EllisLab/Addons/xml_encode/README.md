@@ -12,9 +12,11 @@ To use this plugin, wrap anything you want to be processed.
 
 #### Example Usage
 
-	{exp:xml_encode}
-		text you want processed
-	{/exp:xml_encode}
+```
+{exp:xml_encode}
+    text you want processed
+{/exp:xml_encode}
+```
 
 #### Availalbe Parameters
 
@@ -24,15 +26,19 @@ Values: yes/no (*default no*)
 
 If you have existing entities in the text that you do not wish to be converted, you may use the parameter `protect_entities="yes"`, e.g.:
 
-    {exp:xml_encode}
-        Text &amp; Entities
-    {/exp:xml_encode}
+```
+{exp:xml_encode}
+    Text &amp; Entities
+{/exp:xml_encode}
+```
 
 results in `Text &amp;amp; Entities`
 
-    {exp:xml_encode protect_entities="yes"}
-        Text &amp; Entities
-    {/exp:xml_encode}
+```
+{exp:xml_encode protect_entities="yes"}
+    Text &amp; Entities
+{/exp:xml_encode}
+```
 
 results in `Text &amp; Entities`
 

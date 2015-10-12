@@ -18,16 +18,13 @@ $lang = array(
 'templates' => 'Templates',
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
-'zero_forum_boards_found' => 'No <b>Forum Boards</b> found',
-'no_forum_boards' => 'No forum boards available',
 'create_new_board' => 'Create new forum board',
 
 // List / Index
 'forum_listing' => 'Forum listing',
-'no_categories' => 'No categories available',
 'create_new_category' => 'Create new category',
+'categories' => 'Categories',
 
-'no_forums' => 'No forums available',
 'new_forum' => 'New forum',
 'create_new_forum' => 'Create new forum',
 
@@ -351,7 +348,8 @@ $lang = array(
 'administrators' => 'Administrators',
 'administrators_desc' => 'Have access to all administration tools for all forums in this board.',
 
-'no_admins' => 'No administrators available',
+'forum_admins' => 'Forum Administrators',
+
 'create_new_admin' => 'Create new admin',
 
 'group' => 'group',
