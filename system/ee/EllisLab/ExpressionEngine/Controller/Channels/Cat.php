@@ -414,7 +414,11 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
-		ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
+
+		if (ee()->cp->allowed_group('can_edit_categories'))
+		{
+			ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
+		}
 
 		// Get the category tree with a single query
 		ee()->load->library('datastructures/tree');
