@@ -8,13 +8,18 @@
 					<li>
 						<a class="has-sub" href=""><?=lang('upload_new_file')?></a>
 						<div class="sub-menu">
-							<fieldset class="filter-search">
-								<input type="text" value="" placeholder="<?=lang('filter_upload_directories')?>">
-							</fieldset>
+							<?php if ($directories->count()): ?>
+								<fieldset class="filter-search">
+									<input type="text" value="" placeholder="<?=lang('filter_upload_directories')?>">
+								</fieldset>
+							<?php endif ?>
 							<ul>
 								<?php foreach ($directories as $dir): ?>
 									<li><a href="<?=ee('CP/URL')->make('files/upload/' . $dir->id)?>"><?=$dir->name?></a></li>
 								<?php endforeach ?>
+								<?php if (ee()->cp->allowed_group('can_create_upload_directories')): ?>
+									<li class="last"><a class="add" href="<?=ee('CP/URL', 'uploads/create')?>"><?=lang('new_upload_directory')?></a></li>
+								<?php endif ?>
 							</ul>
 						</div>
 					</li>
