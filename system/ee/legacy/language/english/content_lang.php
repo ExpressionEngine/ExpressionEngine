@@ -350,7 +350,7 @@ $lang = array(
 
 'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
 
-'no_entries_exist' => 'No <b>entries</b> found.',
+'no_entries_exist' => 'No <b>Entries</b> found.',
 
 'select_channel_to_post_in' => 'Choose a channel to post in',
 

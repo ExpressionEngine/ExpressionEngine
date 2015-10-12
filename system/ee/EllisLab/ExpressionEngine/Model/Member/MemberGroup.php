@@ -23,8 +23,6 @@ class MemberGroup extends Model {
 		'can_access_footer_report_bug'   => 'boolString',
 		'can_access_footer_new_ticket'   => 'boolString',
 		'can_access_footer_user_guide'   => 'boolString',
-		'can_access_publish'             => 'boolString',
-		'can_access_edit'                => 'boolString',
 		'can_access_files'               => 'boolString',
 		'can_access_design'              => 'boolString',
 		'can_access_addons'              => 'boolString',

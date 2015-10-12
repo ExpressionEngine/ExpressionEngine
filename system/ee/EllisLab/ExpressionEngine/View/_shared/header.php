@@ -66,7 +66,7 @@
 		<section class="bar menu-wrap">
 			<nav class="snap">
 				<ul class="author-menu">
-					<?php if (ee()->cp->allowed_group('can_access_publish')): ?>
+						<?php if (ee()->cp->allowed_group('can_create_entries') && (count($cp_main_menu['channels']['create']) || ee()->cp->allowed_group('can_create_channels'))): ?>
 						<li>
 							<a class="has-sub" href=""><?=lang('menu_create')?></a>
 							<div class="sub-menu">
@@ -76,41 +76,44 @@
 									</form>
 								<?php endif ?>
 								<ul class="channels-create">
+									<?php $last = ee()->cp->allowed_group('can_create_channels') ? NULL : end($cp_main_menu['channels']['create']); ?>
 									<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
-										<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+										<li class="search-channel<?php if ($last == $link): ?> last<?php endif ?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 									<?php endforeach ?>
+									<?php if (ee()->cp->allowed_group('can_create_channels')): ?>
 									<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('new_channel')?></a></li>
+									<?php endif; ?>
 								</ul>
 							</div>
 						</li>
-						<?php if (ee()->cp->allowed_group('can_access_edit')): ?>
-							<li>
-								<a class="has-sub" href=""><?=lang('menu_edit')?></a>
-								<div class="sub-menu">
-									<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
-										<form class="filter">
-											<input type="text" class="autofocus" value="" placeholder="filter channels">
-										</form>
-									<?php endif ?>
-									<ul class="channels-edit">
-										<li class="search-channel" data-search="<?= strtolower(lang('view_all')) ?>">
-											<a href="<?=ee('CP/URL', 'publish/edit')?>"><?= lang('view_all') ?></a>
-										</li>
-										<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
+						<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')): ?>
+						<li>
+							<a class="has-sub" href=""><?=lang('menu_edit')?></a>
+							<div class="sub-menu">
+								<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
+									<form class="filter">
+										<input type="text" class="autofocus" value="" placeholder="filter channels">
+									</form>
+								<?php endif ?>
+								<ul class="channels-edit">
+									<li class="search-channel<?php if (empty($cp_main_menu['channels']['edit'])): ?> last<?php endif ?>" data-search="<?= strtolower(lang('view_all')) ?>">
+										<a href="<?=ee('CP/URL', 'publish/edit')?>"><?= lang('view_all') ?></a>
+									</li>
+									<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
 
-											<?php
-											$class = 'search-channel';
-											if ($link == end($cp_main_menu['channels']['edit']))
-											{
-												$class .= ' last';
-											}
-											?>
+										<?php
+										$class = 'search-channel';
+										if ($link == end($cp_main_menu['channels']['edit']))
+										{
+											$class .= ' last';
+										}
+										?>
 
-											<li class="<?=$class?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
-										<?php endforeach ?>
-									</ul>
-								</div>
-							</li>
+										<li class="<?=$class?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<?php endforeach ?>
+								</ul>
+							</div>
+						</li>
 						<?php endif; ?>
 					<?php endif; ?>
 					<?php if (ee()->cp->allowed_group('can_access_files')): ?>

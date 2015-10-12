@@ -972,6 +972,8 @@ class Updater {
 		// Drop all superfluous permissions columns
 		$old = array(
 			'can_send_email',
+			'can_access_publish',
+			'can_access_edit',
 			'can_access_extensions',
 			'can_access_fieldtypes',
 			'can_access_modules',

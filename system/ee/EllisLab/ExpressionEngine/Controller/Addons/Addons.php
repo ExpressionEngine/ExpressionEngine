@@ -241,20 +241,26 @@ class Addons extends CP_Controller {
 			);
 
 			$table = ee('CP/Table', $config);
-			$table->setColumns(
-				array(
-					'addon',
-					'version' => array(
-						'encode' => FALSE
-					),
-					'manage' => array(
-						'type'	=> Table::COL_TOOLBAR
-					),
-					array(
-						'type'	=> Table::COL_CHECKBOX
-					)
+			$columns =	array(
+				'addon',
+				'version' => array(
+					'encode' => FALSE
+				),
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
 				)
 			);
+
+
+			if (ee()->cp->allowed_group('can_admin_addons'))
+			{
+				$columns[] = array(
+					'type'	=> Table::COL_CHECKBOX
+				);
+			}
+
+			$table->setColumns($columns);
+
 			$table->setNoResultsText('no_addon_search_results');
 
 			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
@@ -337,21 +343,32 @@ class Addons extends CP_Controller {
 					$attrs = array();
 				}
 
-				$data[] = array(
+				if ( ! ee()->cp->allowed_group('can_admin_addons'))
+				{
+					unset($toolbar['install']);
+				}
+
+				$row = array(
 					'attrs' => $attrs,
 					'columns' => array(
 						'addon' => $info['name'],
 						'version' => $this->formatVersionNumber($info['version']),
-						array('toolbar_items' => $toolbar),
-						array(
-							'name' => 'selection[]',
-							'value' => $info['package'],
-							'data'	=> array(
-								'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
-							)
-						)
+						array('toolbar_items' => $toolbar)
 					)
 				);
+
+				if (ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$row['columns'][] = array(
+						'name' => 'selection[]',
+						'value' => $info['package'],
+						'data'	=> array(
+							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
+						)
+					);
+				}
+
+				$data[] = $row;
 			}
 
 			$table->setData($data);
@@ -405,15 +422,8 @@ class Addons extends CP_Controller {
 			'third' => array()
 		);
 
-		$group_id = ee()->session->userdata('group_id');
-
 		foreach ($addon_infos as $name => $info)
 		{
-			if ($group_id != 1 && ! in_array($name, $this->assigned_modules))
-			{
-				continue;
-			}
-
 			$info = ee('Addon')->get($name);
 
 			if ($info->get('built_in'))
@@ -1081,6 +1091,13 @@ class Addons extends CP_Controller {
 
 		ee()->lang->loadfile($name);
 		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+
+		$group_id = ee()->session->userdata('group_id');
+
+		if ($group_id != 1 && ! in_array($display_name, $this->assigned_modules))
+		{
+			return array();
+		}
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),

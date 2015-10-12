@@ -91,6 +91,7 @@ class Variables extends AbstractDesignController {
 		$data = array();
 		$variables = ee('Model')->get('GlobalVariable')
 			->filter('site_id', ee()->config->item('site_id'))
+			->orFilter('site_id', 0)
 			->all();
 
 		$base_url = ee('CP/URL')->make('design/variables');

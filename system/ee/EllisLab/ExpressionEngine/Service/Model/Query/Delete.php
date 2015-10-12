@@ -309,7 +309,15 @@ class Delete extends Query {
 	 */
 	private function recursive($relation, $withs)
 	{
-		$withs = $this->nest(array_reverse($withs));
+		$withs = array_reverse($withs);
+
+		if (count($withs))
+		{
+			$withs[count($withs) - 1] .= ' AS CurrentlyDeleting';
+		}
+
+		$withs = $this->nest($withs);
+		
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();

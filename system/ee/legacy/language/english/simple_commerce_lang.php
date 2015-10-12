@@ -247,6 +247,8 @@ and provide them with the URL below.',
 
 'invalid_entries' => 'No Valid Entries',
 
+'no_entries' => 'Entries',
+
 'invalid_emails' => 'No Valid Emails',
 
 'invalid_purchases' => 'No Valid Purchases',
@@ -277,7 +279,7 @@ and provide them with the URL below.',
 
 'sales_information' => 'Sales Information',
 
-'no_email_templates' => 'No Email Templates',
+'no_email_templates' => 'Email templates',
 
 'no_purchases' => 'No Purchases',
 

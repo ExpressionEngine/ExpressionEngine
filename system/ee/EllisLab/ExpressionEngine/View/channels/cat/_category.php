@@ -1,6 +1,8 @@
 <li class="tbl-list-item" data-id="<?=$category->data->cat_id?>">
 	<div class="tbl-row<?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> selected<?php endif ?>">
+		<?php if ($can_edit_categories): ?>
 		<div class="reorder"></div>
+		<?php endif; ?>
 		<div class="txt">
 			<div class="main">
 				<b><?=$category->data->cat_name?></b>

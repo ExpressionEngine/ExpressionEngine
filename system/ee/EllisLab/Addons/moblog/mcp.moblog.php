@@ -81,7 +81,7 @@ EOT;
 			)
 		));
 
-		$table->setNoResultsText('no_moblogs', 'create_moblog', ee('CP/URL')->make('addons/settings/moblog/create'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('moblogs')), 'create_moblog', ee('CP/URL')->make('addons/settings/moblog/create'));
 
 		$sort_map = array(
 			'col_id' => 'moblog_id',

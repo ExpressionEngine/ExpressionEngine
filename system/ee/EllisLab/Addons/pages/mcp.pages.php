@@ -94,7 +94,7 @@ class Pages_mcp {
 				)
 			)
 		);
-		$table->setNoResultsText('no_pages');
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('pages_module_name')));
 
 		$data = array();
 

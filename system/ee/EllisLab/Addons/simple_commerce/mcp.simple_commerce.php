@@ -97,7 +97,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText('no_purchases', 'create_new_item', ee('CP/URL')->make('addons/settings/simple_commerce/create-item'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('items')), 'create_new_item', ee('CP/URL')->make('addons/settings/simple_commerce/create-item'));
 
 		$sort_map = array(
 			'name'        => 'ChannelEntry.title',
@@ -252,7 +252,7 @@ class Simple_commerce_mcp {
 				)
 			)
 		);
-		$table->setNoResultsText(lang('no_entries_exist'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('no_entries')));
 
 		$channels = ee('Model')->get('Channel')
 			->fields('channel_id', 'channel_name')
@@ -692,7 +692,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText('no_purchases', 'create_purchase', ee('CP/URL')->make('addons/settings/simple_commerce/create-purchase'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('purchases')), 'create_purchase', ee('CP/URL')->make('addons/settings/simple_commerce/create-purchase'));
 
 		$sort_map = array(
 			// Change when relationships work
@@ -923,7 +923,12 @@ class Simple_commerce_mcp {
 							'type' => 'select',
 							'choices' => $item_choices,
 							'value' => $purchase->item_id,
-							'required' => TRUE
+							'required' => TRUE,
+							'no_results' => array(
+								'text' => sprintf(lang('no_found'), lang('items')),
+								'link_text' => 'create_new_item',
+								'link_href' => ee('CP/URL')->make('addons/settings/simple_commerce/create-item')
+							)
 						)
 					)
 				),
@@ -1025,7 +1030,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText('no_email_templates', 'create_template', ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('no_email_templates')), 'create_template', ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
 
 		$sort_map = array(
 			'name' => 'email_name',

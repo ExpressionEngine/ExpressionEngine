@@ -30,6 +30,16 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  */
 class Publish extends AbstractPublishController {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * Renders a single field for a given channel or channel entry
 	 *

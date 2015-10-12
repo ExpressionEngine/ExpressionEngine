@@ -414,7 +414,11 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
-		ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
+
+		if (ee()->cp->allowed_group('can_edit_categories'))
+		{
+			ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
+		}
 
 		// Get the category tree with a single query
 		ee()->load->library('datastructures/tree');
@@ -812,8 +816,8 @@ class Cat extends AbstractChannelsController {
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('category_group_'.$alert_key))
-					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $category->cat_name))
+					->withTitle(lang('category_'.$alert_key))
+					->addToBody(sprintf(lang('category_'.$alert_key.'_desc'), $category->cat_name))
 					->defer();
 
 				ee()->functions->redirect(ee('CP/URL')->make('channels/cat/cat-list/'.$cat_group->group_id));
