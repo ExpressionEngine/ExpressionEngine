@@ -80,7 +80,7 @@ class Fields extends Members\Members {
 		);
 
 		$table->setNoResultsText(
-			'no_fields',
+			sprintf(lang('no_found'), lang('custom_member_fields')),
 			'create_new',
 			ee('CP/URL')->make('members/fields/create')
 		);
