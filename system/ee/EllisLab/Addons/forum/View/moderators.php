@@ -9,7 +9,7 @@
 			<?php if (empty($categories)): ?>
 			<table cellspacing="0" class="empty no-results">
 				<tr>
-					<td><?=lang('no_categories')?> <a class="btn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
+					<td><?=sprintf(lang('no_found'), lang('categories'))?> <a class="btn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
 				</tr>
 			</table>
 			<?php else: ?>

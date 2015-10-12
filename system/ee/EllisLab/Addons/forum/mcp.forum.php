@@ -53,7 +53,7 @@ class Forum_mcp extends CP_Controller {
 
 		$board_list = $boards->addFolderList('boards')
 			->withRemoveUrl(ee('CP/URL')->make($this->base . 'remove/board', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
-			->withNoResultsText(lang('zero_forum_boards_found'));
+			->withNoResultsText(sprintf(lang('no_found'), lang('forum_boards')));
 
 		$all_boards = ee('Model')->get('forum:Board')
 			->fields('board_id', 'board_label')
@@ -178,7 +178,7 @@ class Forum_mcp extends CP_Controller {
 						)
 					)
 				);
-				$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id));
+				$table->setNoResultsText(sprintf(lang('no_found'), lang('forums')), 'create_new_forum', ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id));
 				$table->addActionButton(ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
 
 				$data = array();
@@ -2493,7 +2493,7 @@ class Forum_mcp extends CP_Controller {
 		);
 
 		$new_url = ee('CP/URL')->make($this->base . 'create/admin/' . $board_id);
-		$table->setNoResultsText('no_admins', 'create_new_admin', $new_url);
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('forum_admins')), 'create_new_admin', $new_url);
 
 		$admin_id = ee()->session->flashdata('admin_id');
 
@@ -2798,7 +2798,7 @@ class Forum_mcp extends CP_Controller {
 					)
 				)
 			);
-			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id));
+			$table->setNoResultsText(sprintf(lang('no_found'), lang('forums')), 'create_new_forum', ee('CP/URL')->make($this->base . 'create/forum/' . $category->forum_id));
 
 			$data = array();
 			foreach ($category->Forums->sortBy('forum_order') as $forum)
