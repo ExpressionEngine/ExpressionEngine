@@ -63,6 +63,11 @@ class Group extends Profile {
 			$choices[$group->group_id] = $group->group_title;
 		}
 
+		if ( ! array_key_exists($this->member->group_id, $choices))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars['sections'] = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
