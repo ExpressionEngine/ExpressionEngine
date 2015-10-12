@@ -2065,7 +2065,7 @@ class Comment {
 		/**  Can the user post comments?
 		/** ----------------------------------------*/
 
-		if (FALSE && ee()->session->userdata['can_post_comments'] == 'n')
+		if (ee()->session->userdata['can_post_comments'] == 'n')
 		{
 			$error[] = ee()->lang->line('cmt_no_authorized_for_comments');
 
