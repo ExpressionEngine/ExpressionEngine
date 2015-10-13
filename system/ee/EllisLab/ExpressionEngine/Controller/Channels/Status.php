@@ -98,7 +98,6 @@ class Status extends AbstractChannelsController {
 
 			if ( ! empty($group_ids))
 			{
-				// TODO: unassign status group from any channels using it
 				ee('Model')->get('StatusGroup')
 					->filter('group_id', 'IN', $group_ids)
 					->delete();
