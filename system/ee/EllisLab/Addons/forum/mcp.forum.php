@@ -57,6 +57,7 @@ class Forum_mcp extends CP_Controller {
 
 		$all_boards = ee('Model')->get('forum:Board')
 			->fields('board_id', 'board_label')
+			->filter('board_alias_id', 0)
 			->all();
 
 		if (count($all_boards))
