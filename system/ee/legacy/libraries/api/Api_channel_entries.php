@@ -611,43 +611,7 @@ class Api_channel_entries extends Api {
 
 		if ($orig_var !== NULL)
 		{
-			if (ee()->extensions->active_hook($hook) !== TRUE)
-			{
-				return $orig_var;
-			}
-		}
-
-		$cp_call = (REQ == 'CP') ? TRUE : FALSE;
-
-		switch($hook)
-		{
-			case 'entry_submission_start':
-					ee()->extensions->call('entry_submission_start', $this->channel_id, $this->autosave);
-					break;
-			case 'entry_submission_ready':
-					ee()->extensions->call('entry_submission_ready', $this->meta, $this->data, $this->autosave);
-					break;
-			case 'entry_submission_redirect':
-					$loc = ee()->extensions->call('entry_submission_redirect', $this->entry_id, $this->meta, $this->data, $cp_call, $orig_var);
-					if (ee()->extensions->end_script === TRUE)
-					{
-						return $loc;
-					}
-					return $loc;
-				break;
-			case 'entry_submission_absolute_end':
-					ee()->extensions->call('entry_submission_absolute_end', $this->entry_id, $this->meta, $this->data, $orig_var);
-				break;
-			case 'entry_submission_end':
-					ee()->extensions->call('entry_submission_end', $this->entry_id, $this->meta, $this->data);
-				break;
-			default:
-				return FALSE;
-		}
-
-		if (ee()->extensions->end_script === TRUE)
-		{
-			return TRUE;
+			return $orig_var;
 		}
 	}
 
