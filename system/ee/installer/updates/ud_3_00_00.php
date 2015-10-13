@@ -725,15 +725,6 @@ class Updater {
 			return;
 		}
 
-		ee()->smartforge->add_column('member_groups', array(
-			'include_in_mailinglist' => array(
-				'type'       => 'char',
-				'constraint' => 1,
-				'default'    => 'n',
-				'null'       => FALSE
-			)
-		));
-
 		// Add footer permissions
 		ee()->smartforge->add_column('member_groups', array(
 			'can_access_footer_report_bug' => array(

@@ -51,7 +51,6 @@ $lang = array(
 	"not_writable_path" => "The path you submitted is not writeable.  Please make sure the file permissions are set to 777.",
 	"include_in_authorlist" => "Author lists",
 	"include_in_memberlist" => "Member lists",
-	"include_in_mailinglist" => "Mailing lists",
 	"field_description" => "Instructions",
 	"field_description_info" => "Field instructions that appear in the member form.",
 	"can_edit_categories" => "Can edit and add new categories",

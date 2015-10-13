@@ -832,7 +832,6 @@ CREATE TABLE `exp_member_groups` (
     `cp_homepage` varchar(20) DEFAULT NULL,
     `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
     `cp_homepage_custom` varchar(100) DEFAULT NULL,
-    `include_in_mailinglist` char(1) NOT NULL DEFAULT 'n',
     `can_create_entries` char(1) NOT NULL DEFAULT 'n',
     `can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
     `can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
