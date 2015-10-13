@@ -1453,16 +1453,12 @@ class Wizard extends CI_Controller {
 
 		if ($this->is_installed)
 		{
-			$msm_config = new MSM_Config();
 			// for some reason 'charset' is not set in this context and will throw a PHP warning
+			$msm_config = new MSM_Config();
 			$msm_config->default_ini['charset'] = 'UTF-8';
 			$msm_config->site_prefs('');
-
-			if ($msm_config->item('theme_folder_url'))
-			{
-				$data['theme_url'] = $msm_config->item('theme_folder_url');
-				$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/compressed/';
-			}
+			$data['theme_url'] = $msm_config->item('theme_folder_url');
+			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/compressed/';
 		}
 
 		$data = array_merge($data, $template_variables);
