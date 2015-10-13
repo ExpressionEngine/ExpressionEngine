@@ -32,6 +32,9 @@ return array(
 		'Attachment'   => array(
 			'ee:Member'
 		),
+		'Board'   => array(
+			'ee:Site'
+		),
 		'Forum'   => array(
 			'ee:Member'
 		),

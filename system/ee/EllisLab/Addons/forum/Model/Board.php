@@ -83,6 +83,10 @@ class Board extends Model {
 			'type'   => 'hasMany',
 			'model'  => 'Moderator',
 		),
+		'Posts' => array(
+			'type'  => 'hasMany',
+			'model' => 'Post'
+		),
 		'Searches' => array(
 			'type'  => 'hasMany',
 			'model' => 'Search'
@@ -91,7 +95,11 @@ class Board extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Site',
 			'from_key' => 'board_site_id',
-			'to_key'   => 'site_id'
+			'to_key'   => 'site_id',
+			'inverse' => array(
+				'name' => 'Board',
+				'type' => 'hasMany'
+			)
 		),
 		'Topics' => array(
 			'type'  => 'hasMany',

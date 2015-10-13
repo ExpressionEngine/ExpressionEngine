@@ -80,8 +80,7 @@ class Topic extends Model {
 			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Topic',
-				'type' => 'hasMany',
-				'weak' => TRUE
+				'type' => 'hasMany'
 			)
 		),
 		'Forum' => array(

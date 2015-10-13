@@ -72,15 +72,26 @@ class Post extends Model {
 			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Post',
-				'type' => 'hasMany',
-				'weak' => TRUE
+				'type' => 'hasMany'
 			)
 		),
 		'Forum' => array(
 			'type' => 'belongsTo'
 		),
+		'ForumLastPost' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'post_id',
+			'to_key'   => 'forum_last_post_id',
+			'model'    => 'Forum',
+		),
 		'Topic' => array(
 			'type' => 'belongsTo'
+		),
+		'TopicLastPost' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'post_id',
+			'to_key'   => 'last_post_id',
+			'model'    => 'Topic',
 		),
 	);
 
