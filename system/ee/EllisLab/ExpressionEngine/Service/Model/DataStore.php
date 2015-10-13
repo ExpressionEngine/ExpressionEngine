@@ -299,7 +299,7 @@ class DataStore {
 
 		if ( ! class_exists($class))
 		{
-			throw new \Exception("Unknown relationship type {$type} in {$model_name}");
+			throw new \Exception("Unknown relationship type {$type} in {$model}");
 		}
 
 		$from_reader = $this->getMetaDataReader($model);
