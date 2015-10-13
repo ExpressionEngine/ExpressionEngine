@@ -455,6 +455,7 @@ class Wizard extends CI_Controller {
 				->count_all_results('members');
 			$type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
 
+			$this->is_installed = TRUE;
 			$this->show_success($type, $vars);
 			return FALSE;
 		}
@@ -1449,6 +1450,15 @@ class Wizard extends CI_Controller {
 			'action'            => '',
 			'method'            => 'post'
 		);
+
+		if ($this->is_installed)
+		{
+			// for some reason 'charset' is not set in this context and will throw a PHP warning
+			ee()->config->default_ini['charset'] = 'UTF-8';
+			ee()->config->site_prefs('');
+			$data['theme_url'] = ee()->config->item('theme_folder_url');
+			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/compressed/';
+		}
 
 		$data = array_merge($data, $template_variables);
 
