@@ -1434,8 +1434,7 @@ class Wizard extends CI_Controller {
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
 			'image_path'        => $this->image_path,
 
-			// TODO-WB: Change src to compressed before launch
-			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/src/'),
+			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/compressed/'),
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
