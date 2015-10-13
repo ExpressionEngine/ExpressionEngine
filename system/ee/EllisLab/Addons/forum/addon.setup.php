@@ -29,6 +29,9 @@ return array(
 			'ee:Member',
 			'ee:MemberGroup'
 		),
+		'Attachment'   => array(
+			'ee:Member'
+		),
 		'Forum'   => array(
 			'ee:Member'
 		),
