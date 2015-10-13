@@ -284,6 +284,12 @@ class Comments extends AbstractPublishController {
 			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), $entry->title);
 		}
 
+		$vars['can_delete'] = ee()->cp->allowed_group_any(
+			'can_delete_own_comments',
+			'can_delete_all_comments'
+		);
+		$vars['can_moderate'] = ee()->cp->allowed_group('can_moderate_comments');
+
 		ee()->cp->render('publish/comments/index', $vars);
 	}
 
