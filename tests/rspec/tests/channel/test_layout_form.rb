@@ -129,6 +129,17 @@ feature 'Channel Layouts: Create/Edit' do
 		@page.fields[0].text.should eq field_text
 	end
 
+	# This was a bug in 3.0
+	it 'can create two layouts for the same channel' do
+		@page.layout_name.set 'Default'
+		@page.submit_button.click
+		no_php_js_errors
+
+		@page.load
+		no_php_js_errors
+		@page.displayed?
+	end
+
 	# Bug #21191
 	context '(Bug #21191) Channel has no Categories' do
 		before(:each) do
