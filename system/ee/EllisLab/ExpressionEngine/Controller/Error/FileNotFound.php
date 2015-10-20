@@ -37,6 +37,7 @@ class FileNotFound extends CP_Controller {
 
 	public function index($url = '')
 	{
+		ee()->output->out_type = 404;
 		ee()->view->cp_page_title = lang('404_does_not_exist');
 		ee()->cp->render('errors/file_not_found', compact('url'));
 	}
