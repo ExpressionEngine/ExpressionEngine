@@ -21,7 +21,8 @@ class ChannelLayoutForm < ControlPanelPage
 	element :submit_button, 'form fieldset.form-ctrls input[type=submit]'
 
 	element :add_tab_modal, 'div.modal-add-new-tab', visible: false
-	element :add_tab_modal_submit_button, 'div.modal-add-new-tab .form-ctrls input.btn', visible: false
+	element :add_tab_modal_tab_name, 'div.modal-add-new-tab input[name="tab_name"]', visible: false
+	element :add_tab_modal_submit_button, 'div.modal-add-new-tab .form-ctrls .btn', visible: false
 
 	def move_tool(node)
 		return node.find('.layout-tools .toolbar .move a')
