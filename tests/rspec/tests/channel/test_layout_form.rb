@@ -131,6 +131,37 @@ feature 'Channel Layouts: Create/Edit' do
 		@page.fields[0].text.should eq field_text
 	end
 
+	it 'can add a new tab' do
+		new_tab_name = "New Tab"
+
+		tabs = @page.tabs.length
+		@page.add_tab_button.click
+		@page.wait_until_add_tab_modal_visible
+		@page.add_tab_modal_tab_name.set new_tab_name
+		@page.add_tab_modal_submit_button.click
+
+		@page.tabs.length.should eq tabs + 1
+		@page.tabs[-1].text.should include new_tab_name
+
+		@page.layout_name.set 'Default'
+		@page.submit_button.click
+		no_php_js_errors
+
+		@page.edit(1)
+		no_php_js_errors
+
+		@page.tab_bar.text.should include new_tab_name
+	end
+
+	it 'can move a field to a new tab' do
+	end
+
+	it 'cannot hide a tab with a required field' do
+	end
+
+	it 'makes a hidden tab visible when a required field is moved into it' do
+	end
+
 	# This was a bug in 3.0
 	it 'can create two layouts for the same channel' do
 		@page.layout_name.set 'Default'
