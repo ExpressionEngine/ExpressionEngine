@@ -60,6 +60,7 @@ feature 'Channel Layouts: Create/Edit' do
 			no_php_js_errors
 
 			@page.edit(1)
+			no_php_js_errors
 			hide_options_tab = @page.hide_tab_4
 			hide_options_tab[:class].should eq 'tab-off'
 		end
@@ -108,6 +109,7 @@ feature 'Channel Layouts: Create/Edit' do
 			no_php_js_errors
 
 			@page.edit(1)
+			no_php_js_errors
 			@page.tab_4.click
 
 			field = @page.fields[0]
@@ -187,6 +189,7 @@ feature 'Channel Layouts: Create/Edit' do
 				no_php_js_errors
 
 				@page.edit(1)
+				no_php_js_errors
 				hide_options_tab = @page.hide_tab_3
 				hide_options_tab[:class].should eq 'tab-off'
 			end
@@ -235,6 +238,7 @@ feature 'Channel Layouts: Create/Edit' do
 				no_php_js_errors
 
 				@page.edit(1)
+				no_php_js_errors
 				@page.tab_3.click
 
 				field = @page.fields[0]
