@@ -6,7 +6,7 @@
 	</h1>
 	<div class="tab-wrap">
 		<ul class="tabs layout">
-			<?php foreach ($layout->getTabs() as $index => $tab): ?>
+			<?php foreach ($layout->getAllTabs() as $index => $tab): ?>
 				<?php
 				$icon = '';
 				if (strpos($tab->id, 'custom_') !== FALSE)
