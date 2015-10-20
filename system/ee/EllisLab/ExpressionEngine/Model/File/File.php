@@ -137,7 +137,10 @@ class File extends Model {
 
 	public function onBeforeDelete()
 	{
-		unlink($this->getAbsolutePath());
+		if ($this->exists())
+		{
+			unlink($this->getAbsolutePath());
+		}
 	}
 
 	/**
