@@ -255,6 +255,7 @@ class Layouts extends AbstractChannelsController {
 
 		ee()->view->cp_page_title = lang('create_form_layout');
 
+		$this->addJSAlerts();
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
 		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
@@ -348,6 +349,20 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
+
+		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
+
+		$this->addJSAlerts();
+		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
+
+		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
+		ee()->cp->add_js_script('file', 'cp/channel/layout');
+
+		ee()->cp->render('channels/layout/form', $vars);
+	}
+
+	private function addJSAlerts()
+	{
 		$alert_required = ee('CP/Alert')->makeBanner('tab-has-required-fields')
 			->asIssue()
 			->canClose()
@@ -360,16 +375,8 @@ class Layouts extends AbstractChannelsController {
 			->withTitle(lang('error_cannot_remove_tab'))
 			->addToBody(lang('error_tab_has_fields'));
 
-		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
-
-		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
 		ee()->javascript->set_global('alert.required', $alert_required->render());
 		ee()->javascript->set_global('alert.not_empty', $alert_not_empty->render());
-
-		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
-		ee()->cp->add_js_script('file', 'cp/channel/layout');
-
-		ee()->cp->render('channels/layout/form', $vars);
 	}
 
 	private function getForm($layout)
