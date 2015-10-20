@@ -66,6 +66,10 @@ $(document).ready(function () {
 				// Add the fieldset to the new tab
 				$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
 
+				if ($(ui.draggable).hasClass('required')) {
+					$('div.tab-open fieldset:first-child').addClass('required');
+				}
+
 				// Add the field to the publish_layout array
 				EE.publish_layout[getTabIndex()].fields.unshift(field);
 				field = null;

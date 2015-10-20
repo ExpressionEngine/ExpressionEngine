@@ -247,4 +247,19 @@ feature 'Channel Layouts: Create/Edit' do
 		end
 	end
 
+	# Bug #21220
+	it 'can move Entry Date to a new tab and retain the "required" class' do
+		@page.date_tab.click
+
+		field = @page.fields[0]
+		# Confirm we have the right field
+		field.text.should include 'Entry date'
+		field[:class].should include 'required'
+		move_tool = @page.move_tool(field)
+
+		move_tool.drag_to(@page.publish_tab)
+		@page.fields[0].text.should include 'Entry date'
+		@page.fields[0][:class].should include 'required'
+	end
+
 end
