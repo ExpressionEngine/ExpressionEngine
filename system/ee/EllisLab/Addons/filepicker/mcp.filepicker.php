@@ -41,10 +41,11 @@ class Filepicker_mcp {
 			->all();
 
 		$directories = $dirs->indexBy('id');
+		$input_directory = ee()->input->get('directory');
 
-		if ( ! empty(ee()->input->get('directory')))
+		if ( ! empty($input_directory))
 		{
-			$id = ee()->input->get('directory');
+			$id = $input_directory;
 		}
 
 		if (empty($id) || $id == 'all')
@@ -122,7 +123,7 @@ class Filepicker_mcp {
 
 		$base_url->setQueryStringVariable('directory', $id);
 		$base_url->setQueryStringVariable('type', $type);
-		
+
 		if ($this->images || $type == 'thumb')
 		{
 			$vars['type'] = 'thumb';
