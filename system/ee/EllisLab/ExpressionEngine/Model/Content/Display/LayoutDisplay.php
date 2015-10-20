@@ -58,22 +58,9 @@ class LayoutDisplay {
 	 *
 	 * @return array An indexed array of LayoutTabs
 	 */
-	public function getAllTabs()
-	{
-		return array_values($this->tabs);
-	}
-
-	/**
-	 * Returns all tabs that have fields
-	 *
-	 * @return array An indexed array of LayoutTabs which have fields
-	 */
 	public function getTabs()
 	{
-		return array_filter(array_values($this->tabs), function($tab) {
-			$fields = $tab->getFields();
-			return ( ! empty($fields));
-		});
+		return array_values($this->tabs);
 	}
 
 	/**

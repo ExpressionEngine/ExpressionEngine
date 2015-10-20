@@ -8,10 +8,10 @@ class ChannelLayoutForm < ControlPanelPage
 	element :publish_tab, 'ul.tabs li:first-child a'
 	element :date_tab, 'ul.tabs li:nth-child(2) a'
 	element :hide_date_tab, 'ul.tabs li:nth-child(2) span'
-	element :tab_3, 'ul.tabs li:nth-child(3) a'
-	element :hide_tab_3, 'ul.tabs li:nth-child(3) span'
-	element :tab_4, 'ul.tabs li:nth-child(4) a'
-	element :hide_tab_4, 'ul.tabs li:nth-child(4) span'
+	element :categories_tab, 'ul.tabs li:nth-child(3) a'
+	element :hide_categories_tab, 'ul.tabs li:nth-child(3) span'
+	element :options_tab, 'ul.tabs li:nth-child(4) a'
+	element :hide_options_tab, 'ul.tabs li:nth-child(4) span'
 
 	elements :fields, 'div.tab fieldset.col-group'
 

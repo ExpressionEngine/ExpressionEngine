@@ -25,35 +25,30 @@ feature 'Channel Layouts: Create/Edit' do
 
 	context 'Hiding the Options Tab' do
 		it 'should still be hidden with an invalid form' do
-			hide_options_tab = @page.hide_tab_4
-
 			# Confirm the icon is for hiding
-			hide_options_tab[:class].should eq 'tab-on'
+			@page.hide_options_tab[:class].should eq 'tab-on'
 
-			hide_options_tab.trigger('click')
+			@page.hide_options_tab.trigger('click')
 
 			# Confirm the icon is for showing
-			hide_options_tab[:class].should eq 'tab-off'
+			@page.hide_options_tab[:class].should eq 'tab-off'
 
 			@page.submit_button.click
 			no_php_js_errors
 
 			@page.should have_alert
 
-			hide_options_tab = @page.hide_tab_4
-			hide_options_tab[:class].should eq 'tab-off'
+			@page.hide_options_tab[:class].should eq 'tab-off'
 		end
 
 		it 'should be hidden when saved' do
-			hide_options_tab = @page.hide_tab_4
-
 			# Confirm the icon is for hiding
-			hide_options_tab[:class].should eq 'tab-on'
+			@page.hide_options_tab[:class].should eq 'tab-on'
 
-			hide_options_tab.trigger('click')
+			@page.hide_options_tab.trigger('click')
 
 			# Confirm the icon is for showing
-			hide_options_tab[:class].should eq 'tab-off'
+			@page.hide_options_tab[:class].should eq 'tab-off'
 
 			@page.layout_name.set 'Default'
 			@page.submit_button.click
@@ -61,14 +56,13 @@ feature 'Channel Layouts: Create/Edit' do
 
 			@page.edit(1)
 			no_php_js_errors
-			hide_options_tab = @page.hide_tab_4
-			hide_options_tab[:class].should eq 'tab-off'
+			@page.hide_options_tab[:class].should eq 'tab-off'
 		end
 	end
 
 	context 'Hiding fields in the Options Tab' do
 		before(:each) do
-			@page.tab_4.click
+			@page.options_tab.click
 		end
 
 		it 'should still be hidden with an invalid form' do
@@ -86,7 +80,7 @@ feature 'Channel Layouts: Create/Edit' do
 			no_php_js_errors
 
 			@page.should have_alert
-			@page.tab_4.click
+			@page.options_tab.click
 
 			field = @page.fields[0]
 			hide_tool = @page.visibiltiy_tool(field)
@@ -110,7 +104,7 @@ feature 'Channel Layouts: Create/Edit' do
 
 			@page.edit(1)
 			no_php_js_errors
-			@page.tab_4.click
+			@page.options_tab.click
 
 			field = @page.fields[0]
 			hide_tool = @page.visibiltiy_tool(field)
@@ -119,7 +113,7 @@ feature 'Channel Layouts: Create/Edit' do
 	end
 
 	it 'can move a field out the Options tab' do
-		@page.tab_4.click
+		@page.options_tab.click
 		field = @page.fields[0]
 		field_text = field.text
 		move_tool = @page.move_tool(field)
@@ -127,7 +121,7 @@ feature 'Channel Layouts: Create/Edit' do
 		move_tool.drag_to(@page.publish_tab)
 
 		@page.publish_tab[:class].should include 'act'
-		@page.tab_4[:class].should_not include 'act'
+		@page.options_tab[:class].should_not include 'act'
 		@page.fields[0].text.should eq field_text
 	end
 
@@ -233,35 +227,30 @@ feature 'Channel Layouts: Create/Edit' do
 
 		context 'Hiding the Options Tab' do
 			it 'should still be hidden with an invalid form' do
-				hide_options_tab = @page.hide_tab_3
-
 				# Confirm the icon is for hiding
-				hide_options_tab[:class].should eq 'tab-on'
+				@page.hide_options_tab[:class].should eq 'tab-on'
 
-				hide_options_tab.trigger('click')
+				@page.hide_options_tab.trigger('click')
 
 				# Confirm the icon is for showing
-				hide_options_tab[:class].should eq 'tab-off'
+				@page.hide_options_tab[:class].should eq 'tab-off'
 
 				@page.submit_button.click
 				no_php_js_errors
 
 				@page.should have_alert
 
-				hide_options_tab = @page.hide_tab_3
-				hide_options_tab[:class].should eq 'tab-off'
+				@page.hide_options_tab[:class].should eq 'tab-off'
 			end
 
 			it 'should be hidden when saved' do
-				hide_options_tab = @page.hide_tab_3
-
 				# Confirm the icon is for hiding
-				hide_options_tab[:class].should eq 'tab-on'
+				@page.hide_options_tab[:class].should eq 'tab-on'
 
-				hide_options_tab.trigger('click')
+				@page.hide_options_tab.trigger('click')
 
 				# Confirm the icon is for showing
-				hide_options_tab[:class].should eq 'tab-off'
+				@page.hide_options_tab[:class].should eq 'tab-off'
 
 				@page.layout_name.set 'Default'
 				@page.submit_button.click
@@ -269,14 +258,14 @@ feature 'Channel Layouts: Create/Edit' do
 
 				@page.edit(1)
 				no_php_js_errors
-				hide_options_tab = @page.hide_tab_3
-				hide_options_tab[:class].should eq 'tab-off'
+
+				@page.hide_options_tab[:class].should eq 'tab-off'
 			end
 		end
 
 		context 'Hiding fields in the Options Tab' do
 			before(:each) do
-				@page.tab_3.click
+				@page.options_tab.click
 			end
 
 			it 'should still be hidden with an invalid form' do
@@ -294,7 +283,7 @@ feature 'Channel Layouts: Create/Edit' do
 				no_php_js_errors
 
 				@page.should have_alert
-				@page.tab_3.click
+				@page.options_tab.click
 
 				field = @page.fields[0]
 				hide_tool = @page.visibiltiy_tool(field)
@@ -318,7 +307,7 @@ feature 'Channel Layouts: Create/Edit' do
 
 				@page.edit(1)
 				no_php_js_errors
-				@page.tab_3.click
+				@page.options_tab.click
 
 				field = @page.fields[0]
 				hide_tool = @page.visibiltiy_tool(field)

@@ -98,15 +98,12 @@ class DefaultChannelLayout extends DefaultLayout {
 			);
 		}
 
-		if ( ! empty($category_group_fields))
-		{
-			$layout[] = array(
-				'id' => 'categories',
-				'name' => 'categories',
-				'visible' => TRUE,
-				'fields' => $category_group_fields
-			);
-		}
+		$layout[] = array(
+			'id' => 'categories',
+			'name' => 'categories',
+			'visible' => TRUE,
+			'fields' => $category_group_fields
+		);
 
 		// Options Tab ---------------------------------------------------------
 
