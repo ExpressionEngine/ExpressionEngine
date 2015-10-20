@@ -154,6 +154,25 @@ feature 'Channel Layouts: Create/Edit' do
 	end
 
 	it 'can move a field to a new tab' do
+		new_tab_name = "New Tab"
+
+		tabs = @page.tabs.length
+		@page.add_tab_button.click
+		@page.wait_until_add_tab_modal_visible
+		@page.add_tab_modal_tab_name.set new_tab_name
+		@page.add_tab_modal_submit_button.click
+
+		new_tab = @page.tabs[-1]
+		@page.tabs.length.should eq tabs + 1
+		new_tab.text.should include new_tab_name
+
+		field = @page.fields[0]
+		field_text = field.text
+		move_tool = @page.move_tool(field)
+
+		move_tool.drag_to(new_tab)
+		new_tab[:class].should include 'act'
+		@page.fields[0].text.should eq field_text
 	end
 
 	it 'cannot hide a tab with a required field' do
