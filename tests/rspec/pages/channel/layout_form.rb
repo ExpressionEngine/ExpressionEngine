@@ -23,6 +23,23 @@ class ChannelLayoutForm < ControlPanelPage
 	element :add_tab_modal, 'div.modal-add-new-tab', visible: false
 	element :add_tab_modal_submit_button, 'div.modal-add-new-tab .form-ctrls input.btn', visible: false
 
+	def move_tool(node)
+		return node.find('.layout-tools .toolbar .move a')
+	end
+
+	def visibiltiy_tool(node)
+		tools = node.all('.layout-tools .toolbar li')
+		if tools.length > 1 then
+			return tools[1]
+		end
+
+		return nil
+	end
+
+	def minimize_tool(node)
+		return node.find('.setting-txt h3 span')
+	end
+
 	def load
 		self.create(1)
 	end
