@@ -236,7 +236,7 @@ $(document).ready(function () {
 	});
 
 	// Saving the hide/unhide state of fields
-	$('li.hide a, li.unhide a').on('click', function(e) {
+	$('div.publish form').on('click', 'li.hide a, li.unhide a', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
