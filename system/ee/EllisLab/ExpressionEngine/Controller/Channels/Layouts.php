@@ -378,26 +378,23 @@ class Layouts extends AbstractChannelsController {
 		$member_groups = $this->getEligibleMemberGroups($layout->Channel)
 			->getDictionary('group_id', 'group_title');
 
-		$assigned_member_groups = ee('Model')->get('ChannelLayout')
+		$other_layouts = ee('Model')->get('ChannelLayout')
+			->with('MemberGroups')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $layout->Channel->channel_id);
 
 		if ( ! $layout->isNew())
 		{
 			// Exclude this layout
-			$assigned_member_groups->filter('layout_id', '!=', $layout->layout_id);
+			$other_layouts->filter('layout_id', '!=', $layout->layout_id);
 		}
 
-		$assigned_member_groups = $assigned_member_groups->all()
-			->indexBy('group_id');
-
-		foreach ($member_groups as $id => $title)
+		foreach ($other_layouts->all() as $other_layout)
 		{
-			if (in_array($id, $assigned_member_groups))
+			foreach ($other_layout->MemberGroups as $group)
 			{
-				$layout = $assigned_member_groups[$member_group->group_id];
-				$member_groups[$id] = '<s>' . $title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
-				$disabled_choices[] = $id;
+				$member_groups[$group->group_id] = '<s>' . $group->group_title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $other_layout->layout_id) . '">' . $other_layout->layout_name . '</a></i>';
+				$disabled_choices[] = $group->group_id;
 			}
 		}
 
@@ -431,7 +428,6 @@ class Layouts extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/section')
 				->render(array('name' => 'layout_options', 'settings' => $section));
-
 	}
 
 	private function getEligibleMemberGroups(Channel $channel)
