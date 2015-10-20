@@ -54,6 +54,16 @@ class LayoutDisplay {
 	}
 
 	/**
+	 * Returns all the tabs
+	 *
+	 * @return array An indexed array of LayoutTabs
+	 */
+	public function getAllTabs()
+	{
+		return array_values($this->tabs);
+	}
+
+	/**
 	 * Returns all tabs that have fields
 	 *
 	 * @return array An indexed array of LayoutTabs which have fields
