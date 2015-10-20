@@ -68,6 +68,10 @@ $(document).ready(function () {
 
 				if ($(ui.draggable).hasClass('required')) {
 					$('div.tab-open fieldset:first-child').addClass('required');
+					var tab = $(this).closest('li');
+					if ($(tab).find('.tab-off').length > 0) {
+						$(tab).find('.tab-off').trigger('click');
+					}
 				}
 
 				// Add the field to the publish_layout array
@@ -135,7 +139,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.has('.required').length > 0) {
+		if (EE.publish_layout[index].visible && tabContents.has('.required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}

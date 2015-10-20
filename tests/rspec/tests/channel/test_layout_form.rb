@@ -202,6 +202,20 @@ feature 'Channel Layouts: Create/Edit' do
 	end
 
 	it 'makes a hidden tab visible when a required field is moved into it' do
+		# Confirm the icon is for hiding
+		@page.hide_options_tab[:class].should eq 'tab-on'
+
+		@page.hide_options_tab.trigger('click')
+
+		# Confirm the icon is for showing
+		@page.hide_options_tab[:class].should eq 'tab-off'
+
+		field = @page.fields[0]
+		field[:class].should include 'required'
+		move_tool = @page.move_tool(field)
+
+		move_tool.drag_to(@page.options_tab)
+		@page.hide_options_tab[:class].should eq 'tab-on'
 	end
 
 	# This was a bug in 3.0
