@@ -1255,7 +1255,7 @@ class EE_Config {
 
 		if (function_exists('apc_delete_file'))
 		{
-			apc_delete_file($path);
+			@apc_delete_file($path) || apc_clear_cache();
 		}
 	}
 
