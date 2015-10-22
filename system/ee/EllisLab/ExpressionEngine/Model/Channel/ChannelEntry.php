@@ -103,10 +103,13 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
-		'afterSave',
-		'afterUpdate',
-		'afterInsert',
 		'afterDelete',
+		'beforeInsert',
+		'afterInsert',
+		'beforeUpdate',
+		'afterUpdate',
+		'beforeSave',
+		'afterSave',
 	);
 
 	// Properties
@@ -205,6 +208,37 @@ class ChannelEntry extends ContentModel {
 		return TRUE;
 	}
 
+	protected $in_hook = array();
+
+	protected function triggerHook($name)
+	{
+		if (in_array($name, $this->in_hook))
+		{
+			return;
+		}
+
+		$this->in_hook[] = $name;
+
+		if (ee()->extensions->active_hook($name) === TRUE)
+		{
+			$args = func_get_args();
+			call_user_func_array(array(ee()->extensions, 'call'), $args);
+		}
+
+		array_pop($this->in_hook);
+	}
+
+	public function onBeforeSave()
+	{
+		// -------------------------------------------
+		// 'before_channel_entry_save' hook.
+		//  - Modify entry before save
+		//  - added 3.1.0
+
+		$this->triggerHook('before_channel_entry_save', $this, $this->getValues());
+		// -------------------------------------------
+	}
+
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
@@ -230,17 +264,110 @@ class ChannelEntry extends ContentModel {
 				$OBJ->save($this, $values);
 			}
 		}
+
+		// -------------------------------------------
+		// 'after_channel_entry_save' hook.
+		//  - Get alerted to saved entries
+		//  - added 3.1.0
+
+		$this->triggerHook('after_channel_entry_save', $this, $this->getValues());
+		// -------------------------------------------
+	}
+
+	public function onBeforeInsert()
+	{
+		// -------------------------------------------
+		// 'before_channel_entry_insert' hook.
+		//  - Modify entry before insertion
+		//  - added 3.1.0
+
+		$this->triggerHook('before_channel_entry_insert', $this, $this->getValues());
+		// -------------------------------------------
 	}
 
 	public function onAfterInsert()
 	{
 		$this->Author->updateAuthorStats();
 		$this->updateEntryStats();
+
+		// -------------------------------------------
+		// 'after_channel_entry_insert' hook.
+		//  - Get alerted to inserted entries
+		//  - added 3.1.0
+
+		$this->triggerHook('after_channel_entry_insert', $this, $this->getValues());
+		// -------------------------------------------
+
 	}
 
-	public function onAfterUpdate()
+	public function onBeforeUpdate($changed)
+	{
+		// -------------------------------------------
+		// 'before_channel_entry_update' hook.
+		//  - Modify entry before update
+		//  - added 3.1.0
+
+		$this->triggerHook('before_channel_entry_update', $this, $this->getValues(), $changed);
+		// -------------------------------------------
+	}
+
+	public function onAfterUpdate($changed)
 	{
 		$this->saveVersion();
+
+		// -------------------------------------------
+		// 'after_channel_entry_update' hook.
+		//  - Get alerted to updated entries
+		//  - added 3.1.0
+
+		$this->triggerHook('after_channel_entry_update', $this, $this->getValues(), $changed);
+		// -------------------------------------------
+
+	}
+
+	public function onBeforeDelete()
+	{
+		parent::onBeforeDelete();
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'delete') === TRUE)
+			{
+				$OBJ->delete(array($this->entry_id));
+			}
+		}
+
+		// -------------------------------------------
+		// 'before_channel_entry_delete' hook.
+		//  - Get alerted to entries that are going to be deleted
+		//  - added 3.1.0
+
+		$this->triggerHook('before_channel_entry_delete', $this, $this->getValues());
+		// -------------------------------------------
+	}
+
+	public function onAfterDelete()
+	{
+		// store the author and dissociate. otherwise saving the author will
+		// attempt to save this entry to ensure relationship integrity.
+		// TODO make sure everything is already dissociated when we hit this
+		$last_author = $this->Author;
+		$this->Author = NULL;
+
+		$last_author->updateAuthorStats();
+		$this->updateEntryStats();
+
+		// -------------------------------------------
+		// 'after_channel_entry_delete' hook.
+		//  - Get alerted to deleted entries
+		//  - added 3.1.0
+
+		$this->triggerHook('after_channel_entry_delete', $this, $this->getValues());
+		// -------------------------------------------
 	}
 
 	public function saveVersion()
@@ -264,35 +391,6 @@ class ChannelEntry extends ContentModel {
 		);
 
 		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
-	}
-
-	public function onBeforeDelete()
-	{
-		parent::onBeforeDelete();
-
-		foreach ($this->getModulesWithTabs() as $name => $info)
-		{
-			include_once($info->getPath() . '/tab.' . $name . '.php');
-			$class_name = ucfirst($name) . '_tab';
-			$OBJ = new $class_name();
-
-			if (method_exists($OBJ, 'delete') === TRUE)
-			{
-				$OBJ->delete(array($this->entry_id));
-			}
-		}
-	}
-
-	public function onAfterDelete()
-	{
-		// store the author and dissociate. otherwise saving the author will
-		// attempt to save this entry to ensure relationship integrity.
-		// TODO make sure everything is already dissociated when we hit this
-		$last_author = $this->Author;
-		$this->Author = NULL;
-
-		$last_author->updateAuthorStats();
-		$this->updateEntryStats();
 	}
 
 	private function updateEntryStats()
