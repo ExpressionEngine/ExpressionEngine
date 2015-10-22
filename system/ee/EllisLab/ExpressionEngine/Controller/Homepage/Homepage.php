@@ -31,30 +31,34 @@ class Homepage extends CP_Controller {
 
 	public function index()
 	{
+
 		$stats = ee('Model')->get('Stats')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		$vars['number_of_members'] = $stats->total_members;
 		$vars['number_of_entries'] = $stats->total_entries;
-		$vars['number_of_comments'] = $stats->total_comments;
 
 		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
-		$vars['number_of_new_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('comment_date', '>', ee()->session->userdata['last_visit'])
-			->count();
+		if (ee()->config->item('enable_comments') == 'y')
+		{
+			$vars['number_of_comments'] = $stats->total_comments;
+			$vars['number_of_new_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('comment_date', '>', ee()->session->userdata['last_visit'])
+				->count();
 
-		$vars['number_of_pending_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('status', 'p')
-			->count();
+			$vars['number_of_pending_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 'p')
+				->count();
 
-		$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('status', 's')
-			->count();
+			$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 's')
+				->count();
+		}
 
 		$vars['number_of_channels'] = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
