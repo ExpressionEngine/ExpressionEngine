@@ -501,7 +501,19 @@ class Table {
 				// String sorting
 				else
 				{
-					$cmp = strcmp(strtolower(strip_tags($a)), strtolower(strip_tags($b)));
+					// Check for dates
+					$date_format = ee()->localize->get_date_format();
+					$date_a = ee()->localize->string_to_timestamp($a, TRUE, $date_format);
+					$date_b = ee()->localize->string_to_timestamp($b, TRUE, $date_format);
+
+					if ($date_a !== FALSE && $date_b !== FALSE)
+					{
+						$cmb = $date_a - $date_b;
+					}
+					else
+					{
+						$cmp = strcmp(strtolower(strip_tags($a)), strtolower(strip_tags($b)));
+					}
 				}
 
 				return ($sort_dir == 'asc') ? $cmp : -$cmp;
