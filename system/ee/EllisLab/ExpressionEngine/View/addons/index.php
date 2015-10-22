@@ -16,7 +16,7 @@
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="install"><?=lang('install')?></option>
-					<option value="remove" data-confirm-trigger-first="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+					<option value="remove" data-confirm-trigger-first="selected" rel="modal-confirm-remove"><?=lang('uninstall')?></option>
 					<option value="update"><?=lang('update')?></option>
 				</select>
 				<button class="btn submit" data-conditional-modal="confirm-trigger-first"><?=lang('submit')?></button>
@@ -38,7 +38,7 @@
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="install"><?=lang('install')?></option>
-					<option value="remove" data-confirm-trigger-third="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+					<option value="remove" data-confirm-trigger-third="selected" rel="modal-confirm-remove"><?=lang('uninstall')?></option>
 					<option value="update"><?=lang('update')?></option>
 				</select>
 				<button class="btn submit" data-conditional-modal="confirm-trigger-third"><?=lang('submit')?></button>
@@ -49,15 +49,36 @@
 </div>
 <?php endif; ?>
 
-<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
-<?php
-$modal_vars = array(
-	'name'      => 'modal-confirm-remove',
-	'form_url'	=> $form_url,
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
-	)
-);
-
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
-?>
+<?php ee('CP/Modal')->startModal('modal-confirm-remove'); ?>
+<div class="modal-wrap modal-confirm-remove hidden">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+					<h1><?=lang('confirm_uninstall')?></h1>
+					<?=form_open($form_url, 'class="settings"', array('bulk_action' => 'remove'))?>
+						<div class="alert inline issue">
+							<p><?=lang('confirm_uninstall_desc')?></p>
+						</div>
+						<div class="txt-wrap">
+							<ul class="checklist">
+								<?php if (isset($checklist)):
+									$end = end($checklist); ?>
+									<?php foreach ($checklist as $item): ?>
+									<li<?php if ($item == $end) echo ' class="last"'; ?>><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
+									<?php endforeach;
+								endif ?>
+							</ul>
+							<div class="ajax"></div>
+						</div>
+						<fieldset class="form-ctrls">
+							<?=cp_form_submit('btn_confirm_and_uninstall', 'btn_confirm_and_uninstall_working')?>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php ee('CP/Modal')->endModal(); ?>

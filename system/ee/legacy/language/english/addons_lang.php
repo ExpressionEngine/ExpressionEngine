@@ -28,6 +28,15 @@ $lang = array(
 'update'						=>		'Update',
 'update_to_version'				=>		'Update to %s',
 
+//----------------------------
+// confirm uninstall modal
+//----------------------------
+
+'confirm_uninstall' => 'Confirm Uninstall',
+'confirm_uninstall_desc' => 'You are attempting to uninstall the following items, please confirm this action.',
+'btn_confirm_and_uninstall' => 'Confirm, and Uninstall',
+'btn_confirm_and_uninstall_working' => 'Uninstalling...',
+
 /* Filters */
 'filters'						=>		'Filters',
 'filter_by_status'				=>		'status',
