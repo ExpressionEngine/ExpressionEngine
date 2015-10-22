@@ -52,8 +52,8 @@ $lang = array(
 'needs_updates'					=>		'Needs Updates',
 'addons_installed'				=>		'Add-Ons Installed',
 'addons_installed_desc'			=>		'The following add-on(s) have been installed: ',
-'addons_uninstalled'			=>		'Add-Ons Removed',
-'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
+'addons_uninstalled'			=>		'Add-Ons Uninstalled',
+'addons_uninstalled_desc'		=>		'The following add-on(s) have been uninstalled: ',
 'addons_updated'				=>		'Add-Ons Updated',
 'addons_updated_desc'			=>		'The following add-on(s) have been updated: ',
 
