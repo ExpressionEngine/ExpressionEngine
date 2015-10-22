@@ -203,6 +203,7 @@ class Template extends FileSyncedModel {
 	{
 		$type = $template_type ?: $this->template_type;
 
+		ee()->load->library('api');
 		ee()->legacy_api->instantiate('template_structure');
 		return ee()->api_template_structure->file_extensions($type);
 	}
