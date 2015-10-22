@@ -109,7 +109,7 @@ class El_pings {
 		{
 			$version_file = array();
 
-			if ( ! $version_info = $this->_do_ping('http://versions.ellislab.com/versions_ee2.txt'))
+			if ( ! $version_info = $this->_do_ping('http://versions.ellislab.com/versions_ee3.txt'))
 			{
 				$version_file['error'] = TRUE;
 			}
