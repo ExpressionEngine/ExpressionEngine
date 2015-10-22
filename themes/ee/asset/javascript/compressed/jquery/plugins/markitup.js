@@ -57,7 +57,7 @@ return e?(e=e.toString(),e=e.replace(/\(\!\(([\s\S]*?)\)\!\)/g,function(e,t){var
 // prepare action
 function prepare(e){return $.isFunction(e)&&(e=e(hash)),magicMarkups(e)}
 // build block to insert
-function build(e){return openWith=prepare(clicked.openWith),placeHolder=prepare(clicked.placeHolder),replaceWith=prepare(clicked.replaceWith),closeWith=prepare(clicked.closeWith),""!==replaceWith?block=openWith+replaceWith+closeWith:""===selection&&""!==placeHolder?block=openWith+placeHolder+closeWith:block=openWith+(e||selection)+closeWith,{block:block,openWith:openWith,replaceWith:replaceWith,placeHolder:placeHolder,closeWith:closeWith}}
+function build(e){return openWith=prepare(clicked.openWith),placeHolder=prepare(clicked.placeHolder),replaceWith=prepare(clicked.replaceWith),closeWith=prepare(clicked.closeWith),block=""!==replaceWith?openWith+replaceWith+closeWith:""===selection&&""!==placeHolder?openWith+placeHolder+closeWith:openWith+(e||selection)+closeWith,{block:block,openWith:openWith,replaceWith:replaceWith,placeHolder:placeHolder,closeWith:closeWith}}
 // define markup to insert
 function markup(e){var t,r,i,n;if(hash=clicked=e,get(),$.extend(hash,{line:"",root:options.root,textarea:textarea,selection:selection||"",caretPosition:caretPosition,ctrlKey:ctrlKey,shiftKey:shiftKey,altKey:altKey}),
 // callbacks before insertion

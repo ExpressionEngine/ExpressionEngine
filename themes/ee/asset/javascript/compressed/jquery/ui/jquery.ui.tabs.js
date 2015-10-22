@@ -24,7 +24,7 @@ try{i=decodeURIComponent(i)}catch(s){}try{a=decodeURIComponent(a)}catch(s){}retu
 // into account and update option properly.
 t.isArray(i.disabled)&&(i.disabled=t.unique(i.disabled.concat(t.map(this.tabs.filter(".ui-state-disabled"),function(t){return e.tabs.index(t)}))).sort()),
 // check for length avoids error when initializing empty list
-this.options.active!==!1&&this.anchors.length?this.active=this._findActive(i.active):this.active=t(),this._refresh(),this.active.length&&this.load(i.active)},_initialActive:function(){var e=this.options.active,i=this.options.collapsible,a=location.hash.substring(1);
+this.active=this.options.active!==!1&&this.anchors.length?this._findActive(i.active):t(),this._refresh(),this.active.length&&this.load(i.active)},_initialActive:function(){var e=this.options.active,i=this.options.collapsible,a=location.hash.substring(1);
 // check the fragment identifier in the URL
 // check for a tab marked active via a class
 // no active tab, set to false

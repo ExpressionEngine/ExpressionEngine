@@ -133,7 +133,7 @@ t.root.animate({scrollTop:n.offset().top-e})})},/**
 		 * proxy of said item at the bottom of the right hand list. Deselecting
 		 * an item on the left, should remove it from the right.
 		 */
-_bindAddActiveOnSelect:function(){var e,i=this;this.listItems;if(
+_bindAddActiveOnSelect:function(){{var e,i=this;this.listItems}if(
 // Utility methods for selecting and deselecting
 e={activeLength:0,moveOver:function(e){var n=t(i.createItem({title:i.cache[e]}));n.data("list-index",e),i.active.find("ul").append(n),i.activeMap[e]=n,this.activeLength++,i.defaultList[e].find("input:text").val(this.activeLength)},moveBack:function(t){var e=i.defaultList[t].find("input:text").val();if(e<this.activeLength){var n=i.activeMap[t],c=n.index()+1,o=n.nextAll();o.each(function(){i.defaultList[i._index(this)].find("input:text").val(c++)})}this.activeLength--,i.defaultList[t].find("input:text").val(0),i.activeMap[t].remove(),delete i.activeMap[t]}},
 // Move over existing ones
@@ -203,7 +203,7 @@ e.find("li").detach(),0==c)return _.each(t,function(t){t[0].style.display=""}),t
 // compute a score for each item in the list
 var o=_.map(this.cache,_.partial(this._scoreString,n));
 // Manually hide and unhide. Could be prettier, but can't be quicker.
-_.each(t,function(t,e){0===o[e]?t[0].style.display="none":t[0].style.display=""});
+_.each(t,function(t,e){t[0].style.display=0===o[e]?"none":""});
 // Create an array of numbers from 0 to n, where n
 // is the total number of items. The numbers shall
 // be sorted in the desired final sorting order.
