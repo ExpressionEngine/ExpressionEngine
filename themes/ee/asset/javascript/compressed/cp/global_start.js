@@ -71,7 +71,7 @@ var t=e(this).parent().siblings("ul").attr("class");
 // selector to filter the table
 a.html("ul."+t+' li.search-channel:not([data-search*="'+this.value.toLowerCase()+'"]) { display: none; }')})}},
 // Close alert modal when close button is clicked
-EE.cp.bindCpMessageClose=function(){e("div.alert a.close").click(function(t){t.preventDefault(),e(this).parent().hide()})},
+EE.cp.bindCpMessageClose=function(){e("body").on("click","div.alert a.close",function(t){t.preventDefault(),e(this).parent().hide()})},
 // Simple function to deal with csrf tokens
 EE.cp.setCsrfToken=function(t,a){e('input[name="XID"]').val(t),e('input[name="csrf_token"]').val(t),EE.XID=t,EE.CSRF_TOKEN=t,a||e(window).trigger("broadcast.setCsrfToken",t)},e(window).bind("broadcast.setCsrfToken",function(e,t){EE.cp.setCsrfToken(t,!0)});
 // Simple function to deal with base paths tokens

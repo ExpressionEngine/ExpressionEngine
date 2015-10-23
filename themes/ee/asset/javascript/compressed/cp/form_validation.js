@@ -66,7 +66,7 @@ return s.target==n?(n.prop("disabled",!0),e.append(t("<input/>",{type:"hidden",n
 	 *
 	 * @param	{jQuery object}	form	Optional jQuery object of form
 	 */
-_bindForms:function(e){var i=this;e.has(".form-ctrls .btn").each(function(e,s){var n=t(this);n.find(".form-ctrls input.btn");i.bindInputs(n),i._dismissSuccessAlert(n)})},/**
+_bindForms:function(e){var i=this;e.has(".form-ctrls .btn").each(function(e,s){{var n=t(this);n.find(".form-ctrls input.btn")}i.bindInputs(n),i._dismissSuccessAlert(n)})},/**
 	 * When a form element is interacted with after the form has been
 	 * successfully submitted, hide the success message
 	 */

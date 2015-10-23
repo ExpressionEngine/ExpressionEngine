@@ -230,7 +230,7 @@ class Settings extends Profile {
 							'type' => 'image',
 							'id' => 'avatar',
 							'edit' => FALSE,
-							'image' => $directory->url . $this->member->avatar_filename,
+							'image' => ($directory) ? $directory->url . $this->member->avatar_filename : '',
 							'value' => $this->member->avatar_filename
 						)
 					)
@@ -367,12 +367,12 @@ class Settings extends Profile {
 		        array('ignore_dupes' => FALSE)
 		);
 		$filename = basename($file_path);
-		
+
 		// Upload the file
 		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
 		ee()->upload->do_upload('file');
 		$original = ee()->upload->upload_path . ee()->upload->file_name;
-		
+
 		if ( ! @copy($original, $file_path))
 		{
 		        if ( ! @move_uploaded_file($original, $file_path))
@@ -381,11 +381,11 @@ class Settings extends Profile {
 		                        ->asIssue()
 		                        ->withTitle(lang('upload_filedata_error'))
 		                        ->now();
-		
+
 		                return FALSE;
 		        }
 		}
-		
+
 		unlink($original);
 		$result = (array) ee()->upload;
 

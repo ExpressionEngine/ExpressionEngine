@@ -12,6 +12,7 @@
 			</div>
 		</div>
 	</div>
+	<?php if (ee()->config->item('enable_comments') == 'y'): ?>
 	<div class="col-group snap mb">
 		<div class="col w-16 last">
 			<div class="box">
@@ -37,6 +38,7 @@
 			</div>
 		</div>
 	</div>
+	<?php endif; ?>
 
 	<div class="col-group snap mb">
 		<div class="col w-8">

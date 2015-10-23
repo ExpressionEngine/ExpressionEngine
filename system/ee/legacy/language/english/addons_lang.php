@@ -28,6 +28,15 @@ $lang = array(
 'update'						=>		'Update',
 'update_to_version'				=>		'Update to %s',
 
+//----------------------------
+// confirm uninstall modal
+//----------------------------
+
+'confirm_uninstall' => 'Confirm Uninstall',
+'confirm_uninstall_desc' => 'You are attempting to uninstall the following items, please confirm this action.',
+'btn_confirm_and_uninstall' => 'Confirm, and Uninstall',
+'btn_confirm_and_uninstall_working' => 'Uninstalling...',
+
 /* Filters */
 'filters'						=>		'Filters',
 'filter_by_status'				=>		'status',
@@ -43,8 +52,8 @@ $lang = array(
 'needs_updates'					=>		'Needs Updates',
 'addons_installed'				=>		'Add-Ons Installed',
 'addons_installed_desc'			=>		'The following add-on(s) have been installed: ',
-'addons_uninstalled'			=>		'Add-Ons Removed',
-'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
+'addons_uninstalled'			=>		'Add-Ons Uninstalled',
+'addons_uninstalled_desc'		=>		'The following add-on(s) have been uninstalled: ',
 'addons_updated'				=>		'Add-Ons Updated',
 'addons_updated_desc'			=>		'The following add-on(s) have been updated: ',
 
