@@ -13,11 +13,20 @@
 (function($) {
 
 $(document).ready(function() {
-
 	EE.cp.formValidation.init();
 });
 
 EE.cp.formValidation = {
+
+	paused: false,
+
+	pause: function() {
+		this.paused = true;
+	},
+
+	resume: function() {
+		this.paused = false;
+	},
 
 	/**
 	 * @param	{jQuery object}	form	Optional jQuery object of form
@@ -48,16 +57,21 @@ EE.cp.formValidation = {
 		var that = this;
 
 		$('input[type=text], input[type=password], textarea', container).blur(function() {
-
 			// Unbind keydown validation when the invalid field loses focus
 			$(this).unbind('keydown');
+			var element = $(this);
 
-			that._sendAjaxRequest($(this));
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
 		});
 
 		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+			var element = $(this);
 
-			that._sendAjaxRequest($(this));
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
 		});
 
 		// Upon loading the page with invalid fields, bind the text field
@@ -217,6 +231,9 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
+		if (this.paused) {
+			return;
+		}
 
 		var form = field.parents('form');
 
