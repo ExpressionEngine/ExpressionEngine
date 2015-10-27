@@ -37,16 +37,21 @@ class Filepicker_mcp {
 
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('site_id', ee()->config->item('site_id'));
 
-		$directories = $dirs->indexBy('id');
 		$input_directory = ee()->input->get('directory');
 
 		if ( ! empty($input_directory))
 		{
 			$id = $input_directory;
+			if ((int) ($id))
+			{
+				$dirs = $dirs->filter('id', $id);
+			}
 		}
+
+		$dirs = $dirs->all();
+		$directories = $dirs->indexBy('id');
 
 		if (empty($id) || $id == 'all')
 		{
@@ -96,15 +101,20 @@ class Filepicker_mcp {
 
 		if (ee()->input->get('hasFilters') !== '0')
 		{
-			$directories = array_filter($directories, function($dir) {return $dir->module_id == 0;});
-			$directories = array_map(function($dir) {return $dir->name;}, $directories);
-			$directories = array('all' => lang('all')) + $directories;
 			$vars['type'] = $type;
+			$filters = ee('CP/Filter');
 
-			$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
-				->disableCustomValue();
+			$directories = array_filter($directories, function($dir) {return $dir->module_id == 0;});
+			if (count($directories) > 1)
+			{
+				$directories = array_map(function($dir) {return $dir->name;}, $directories);
+				$directories = array('all' => lang('all')) + $directories;
 
-			$filters = ee('CP/Filter')->add($dirFilter);
+				$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
+					->disableCustomValue();
+
+				$filters = ee('CP/Filter')->add($dirFilter);
+			}
 
 			$filters = $filters->add('Perpage', $files->count(), 'show_all_files');
 

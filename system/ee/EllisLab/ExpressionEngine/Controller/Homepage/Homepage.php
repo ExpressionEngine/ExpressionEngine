@@ -38,12 +38,12 @@ class Homepage extends CP_Controller {
 
 		$vars['number_of_members'] = $stats->total_members;
 		$vars['number_of_entries'] = $stats->total_entries;
+		$vars['number_of_comments'] = $stats->total_comments;
 
 		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
 		if (ee()->config->item('enable_comments') == 'y')
 		{
-			$vars['number_of_comments'] = $stats->total_comments;
 			$vars['number_of_new_comments'] = ee('Model')->get('Comment')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('comment_date', '>', ee()->session->userdata['last_visit'])
