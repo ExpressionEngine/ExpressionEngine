@@ -581,7 +581,9 @@ class Blacklist_mcp {
 			show_error(lang("ref_no_{$listtype}list_table"));
 		}
 
-		if ( ! ee('License')->getEELicense()->isValid())
+		$license = ee('License')->getEELicense();
+
+		if ( ! $license->isValid())
 		{
 			show_error(lang('ref_no_license'));
 		}
@@ -590,13 +592,16 @@ class Blacklist_mcp {
 		ee()->load->library('xmlrpc');
 		ee()->xmlrpc->server('http://ping.expressionengine.com/index.php', 80);
 		ee()->xmlrpc->method("ExpressionEngine.{$listtype}list");
-		ee()->xmlrpc->request(array($license));
+		ee()->xmlrpc->request(array($license->getData('license_number')));
 
 		if (ee()->xmlrpc->send_request() === FALSE)
 		{
-			// show the error and stop
-			$vars['message'] = lang("ref_{$listtype}list_irretrievable").BR.BR.ee()->xmlrpc->display_error();
-			return ee()->load->view('update', $vars, TRUE);
+			ee('CP/Alert')->makeInline('lists-form')
+				->asIssue()
+				->withTitle(lang("ref_{$listtype}list_irretrievable"))
+				->addToBody(ee()->xmlrpc->display_error())
+				->defer();
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		// Array of our returned info
