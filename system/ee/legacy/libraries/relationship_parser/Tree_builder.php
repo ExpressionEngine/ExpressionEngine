@@ -320,7 +320,14 @@ class EE_relationship_tree_builder {
 			}
 			else
 			{
-				$parent_node = $open_nodes[substr($tag_name, 0, $last_colon)];
+                $parent_node_name = substr($tag_name, 0, $last_colon);
+
+                if ( ! array_key_exists($parent_node_name, $open_nodes))
+                {
+                    throw new EE_Relationship_exception("Found <code>{{$tag_name}}</code> relationship, but no parent <code>{{$parent_node_name}}</code> tag pair was found.");
+                }
+
+				$parent_node = $open_nodes[$parent_node_name];
 				$determinant_relationship = substr($tag_name, $last_colon + 1);
 			}
 
