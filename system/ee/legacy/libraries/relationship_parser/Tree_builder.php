@@ -130,7 +130,11 @@ class EE_relationship_tree_builder {
 			if ( ! $node->is_root() && ! $node->in_grid)
 			{
 				$entry_ids = $node->parent()->entry_ids();
-				$entry_ids = call_user_func_array('array_merge', $entry_ids);
+
+                if (count($entry_ids))
+                {
+				    $entry_ids = call_user_func_array('array_merge', $entry_ids);
+                }
 			}
 
 			// Store flattened ids for the big entry query
