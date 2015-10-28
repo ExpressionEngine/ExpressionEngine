@@ -200,6 +200,7 @@ class Publish extends AbstractPublishController {
 			}
 
 			$entry->set($_POST);
+			$entry->edit_date = ee()->localize->now;
 			$result = $entry->validate();
 
 			if (AJAX_REQUEST)
