@@ -94,9 +94,13 @@ class Pages_tab {
 			$pages_dropdown[$template->group_name][$template->template_id] = $template->template_name;
 		}
 
-		if ($templates->num_rows() === 0)
+		if ($templates->num_rows() !== 0)
 		{
-			$no_templates = lang('no_templates');
+			$no_templates = ee('View')->make('ee:_shared/form/no_results')->render(array(
+				'text' => sprintf(lang('no_found'), lang('pages_templates')),
+				'link_text' => lang('create_template'),
+				'link_href' => ee('CP/URL', 'design'),
+			));
 		}
 
 		$settings = array(
