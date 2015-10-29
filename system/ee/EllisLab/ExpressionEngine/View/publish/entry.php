@@ -68,7 +68,7 @@
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 			<?php foreach ($tab->getFields() as $field): ?>
-			<?php if ( ! $field->isVisible()) continue; ?>
+			<?php if ( ! $field->isRequired() && ! $field->isVisible()) continue; ?>
 				<?php
 					switch ($field->getType())
 					{
