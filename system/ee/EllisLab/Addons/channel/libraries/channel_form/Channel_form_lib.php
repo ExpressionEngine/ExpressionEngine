@@ -641,8 +641,6 @@ class Channel_form_lib
 			}
 		}
 
-		var_dump($this->parse_variables);
-
 		$this->form_hidden('checkbox_fields', implode('|', array_unique($checkbox_fields)));
 
 		$conditional_errors = $this->_add_errors();
