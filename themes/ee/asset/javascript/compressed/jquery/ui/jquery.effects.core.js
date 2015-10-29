@@ -38,15 +38,7 @@ return t.effects={effect:{}},function(t,e){function n(t,e,n){var r=l[e.type]||{}
 // ~~ is an short way of doing floor for positive numbers
 // IE will pass in empty strings as value for alpha,
 // which will hit this case
-return null==t?n||!e.def?null:e.def:(t=r.floor?~~t:parseFloat(t),isNaN(t)?e.def:r.mod?(t+r.mod)%r.mod:0>t?0:r.max<t?r.max:t)}function r(e){var n=f(),r=n._rgba=[];
-// Found a stringParser that handled it
-// Found a stringParser that handled it
-// if this came from a parsed string, force "transparent" when alpha is 0
-// chrome, (and maybe others) return "transparent" as rgba(0,0,0,0)
-return e=e.toLowerCase(),h(u,function(t,o){var a,i=o.re.exec(e),s=i&&o.parse(i),u=o.space||"rgba";
-// if this was an rgba parse the assignment might happen twice
-// oh well....
-return s?(a=n[u](s),n[c[u].cache]=a[c[u].cache],r=n._rgba=a._rgba,!1):void 0}),r.length?("0,0,0,0"===r.join()&&t.extend(r,a.transparent),n):a[e]}
+return null==t?n||!e.def?null:e.def:(t=r.floor?~~t:parseFloat(t),isNaN(t)?e.def:r.mod?(t+r.mod)%r.mod:0>t?0:r.max<t?r.max:t)}function r(e){var n=f(),r=n._rgba=[];return e=e.toLowerCase(),h(u,function(t,o){var a,i=o.re.exec(e),s=i&&o.parse(i),u=o.space||"rgba";return s?(a=n[u](s),n[c[u].cache]=a[c[u].cache],r=n._rgba=a._rgba,!1):void 0}),r.length?("0,0,0,0"===r.join()&&t.extend(r,a.transparent),n):a[e]}
 // hsla conversions adapted from:
 // https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
 function o(t,e,n){return n=(n+1)%1,1>6*n?t+(e-t)*n*6:1>2*n?e:2>3*n?t+(e-t)*(2/3-n)*6:t}var
@@ -84,11 +76,7 @@ l[a][e.idx]=n(o[t],e,!0)}),
 // everything defined but alpha?
 l[a]&&t.inArray(null,l[a].slice(0,3))<0&&(
 // use the default of 1
-l[a][3]=1,r.from&&(l._rgba=r.from(l[a])))}),this):void 0},is:function(t){var e=f(t),n=!0,r=this;return h(c,function(t,o){var a,i=e[o.cache];return i&&(a=r[o.cache]||o.to&&o.to(r._rgba)||[],h(o.props,function(t,e){return null!=i[e.idx]?n=i[e.idx]===a[e.idx]:void 0})),n}),n},_space:function(){var t=[],e=this;return h(c,function(n,r){e[r.cache]&&t.push(n)}),t.pop()},transition:function(t,e){var r=f(t),o=r._space(),a=c[o],i=0===this.alpha()?f("transparent"):this,s=i[a.cache]||a.to(i._rgba),u=s.slice();return r=r[a.cache],h(a.props,function(t,o){var a=o.idx,i=s[a],f=r[a],c=l[o.type]||{};
-// if null, don't override start value
-null!==f&&(
-// if null - use end
-null===i?u[a]=f:(c.mod&&(f-i>c.mod/2?i+=c.mod:i-f>c.mod/2&&(i-=c.mod)),u[a]=n((f-i)*e+i,o)))}),this[o](u)},blend:function(e){
+l[a][3]=1,r.from&&(l._rgba=r.from(l[a])))}),this):void 0},is:function(t){var e=f(t),n=!0,r=this;return h(c,function(t,o){var a,i=e[o.cache];return i&&(a=r[o.cache]||o.to&&o.to(r._rgba)||[],h(o.props,function(t,e){return null!=i[e.idx]?n=i[e.idx]===a[e.idx]:void 0})),n}),n},_space:function(){var t=[],e=this;return h(c,function(n,r){e[r.cache]&&t.push(n)}),t.pop()},transition:function(t,e){var r=f(t),o=r._space(),a=c[o],i=0===this.alpha()?f("transparent"):this,s=i[a.cache]||a.to(i._rgba),u=s.slice();return r=r[a.cache],h(a.props,function(t,o){var a=o.idx,i=s[a],f=r[a],c=l[o.type]||{};null!==f&&(null===i?u[a]=f:(c.mod&&(f-i>c.mod/2?i+=c.mod:i-f>c.mod/2&&(i-=c.mod)),u[a]=n((f-i)*e+i,o)))}),this[o](u)},blend:function(e){
 // if we are already opaque - return ourself
 if(1===this._rgba[3])return this;var n=this._rgba.slice(),r=n.pop(),o=f(e)._rgba;return f(t.map(n,function(t,e){return(1-r)*o[e]+r*t}))},toRgbaString:function(){var e="rgba(",n=t.map(this._rgba,function(t,e){return null==t?e>2?1:0:t});return 1===n[3]&&(n.pop(),e="rgb("),e+n.join()+")"},toHslaString:function(){var e="hsla(",n=t.map(this.hsla(),function(t,e){
 // catch 1 and 2
@@ -118,27 +106,7 @@ aqua:"#00ffff",black:"#000000",blue:"#0000ff",fuchsia:"#ff00ff",gray:"#808080",g
 // 4.2.3. "transparent" color keyword
 transparent:[null,null,null,0],_default:"#ffffff"}}(n),function(){function e(e){var n,r,o=e.ownerDocument.defaultView?e.ownerDocument.defaultView.getComputedStyle(e,null):e.currentStyle,a={};if(o&&o.length&&o[0]&&o[o[0]])for(r=o.length;r--;)n=o[r],"string"==typeof o[n]&&(a[t.camelCase(n)]=o[n]);else for(n in o)"string"==typeof o[n]&&(a[n]=o[n]);return a}function r(e,n){var r,o,i={};for(r in n)o=n[r],e[r]!==o&&(a[r]||(t.fx.step[r]||!isNaN(parseFloat(o)))&&(i[r]=o));return i}var o=["add","remove","toggle"],a={border:1,borderBottom:1,borderColor:1,borderLeft:1,borderRight:1,borderTop:1,borderWidth:1,margin:1,padding:1};t.each(["borderLeftStyle","borderRightStyle","borderBottomStyle","borderTopStyle"],function(e,r){t.fx.step[r]=function(t){("none"!==t.end&&!t.setAttr||1===t.pos&&!t.setAttr)&&(n.style(t.elem,r,t.end),t.setAttr=!0)}}),
 // support: jQuery <1.8
-t.fn.addBack||(t.fn.addBack=function(t){return this.add(null==t?this.prevObject:this.prevObject.filter(t))}),t.effects.animateClass=function(n,a,i,s){var u=t.speed(a,i,s);return this.queue(function(){var a,i=t(this),s=i.attr("class")||"",f=u.children?i.find("*").addBack():i;
-// map the animated objects to store the original styles.
-f=f.map(function(){var n=t(this);return{el:n,start:e(this)}}),
-// apply class change
-a=function(){t.each(o,function(t,e){n[e]&&i[e+"Class"](n[e])})},a(),
-// map all animated objects again - calculate new styles and diff
-f=f.map(function(){return this.end=e(this.el[0]),this.diff=r(this.start,this.end),this}),
-// apply original class
-i.attr("class",s),
-// map all animated objects again - this time collecting a promise
-f=f.map(function(){var e=this,n=t.Deferred(),r=t.extend({},u,{queue:!1,complete:function(){n.resolve(e)}});return this.el.animate(this.diff,r),n.promise()}),
-// once all animations have completed:
-t.when.apply(t,f.get()).done(function(){
-// set the final class
-a(),
-// for each animated element,
-// clear all css properties that were animated
-t.each(arguments,function(){var e=this.el;t.each(this.diff,function(t){e.css(t,"")})}),
-// this is guarnteed to be there if you use jQuery.speed()
-// it also handles dequeuing the next anim...
-u.complete.call(i[0])})})},t.fn.extend({addClass:function(e){return function(n,r,o,a){return r?t.effects.animateClass.call(this,{add:n},r,o,a):e.apply(this,arguments)}}(t.fn.addClass),removeClass:function(e){return function(n,r,o,a){return arguments.length>1?t.effects.animateClass.call(this,{remove:n},r,o,a):e.apply(this,arguments)}}(t.fn.removeClass),toggleClass:function(e){return function(n,r,o,a,i){return"boolean"==typeof r||void 0===r?o?t.effects.animateClass.call(this,r?{add:n}:{remove:n},o,a,i):e.apply(this,arguments):t.effects.animateClass.call(this,{toggle:n},r,o,a)}}(t.fn.toggleClass),switchClass:function(e,n,r,o,a){return t.effects.animateClass.call(this,{add:n,remove:e},r,o,a)}})}(),function(){
+t.fn.addBack||(t.fn.addBack=function(t){return this.add(null==t?this.prevObject:this.prevObject.filter(t))}),t.effects.animateClass=function(n,a,i,s){var u=t.speed(a,i,s);return this.queue(function(){var a,i=t(this),s=i.attr("class")||"",f=u.children?i.find("*").addBack():i;f=f.map(function(){var n=t(this);return{el:n,start:e(this)}}),a=function(){t.each(o,function(t,e){n[e]&&i[e+"Class"](n[e])})},a(),f=f.map(function(){return this.end=e(this.el[0]),this.diff=r(this.start,this.end),this}),i.attr("class",s),f=f.map(function(){var e=this,n=t.Deferred(),r=t.extend({},u,{queue:!1,complete:function(){n.resolve(e)}});return this.el.animate(this.diff,r),n.promise()}),t.when.apply(t,f.get()).done(function(){a(),t.each(arguments,function(){var e=this.el;t.each(this.diff,function(t){e.css(t,"")})}),u.complete.call(i[0])})})},t.fn.extend({addClass:function(e){return function(n,r,o,a){return r?t.effects.animateClass.call(this,{add:n},r,o,a):e.apply(this,arguments)}}(t.fn.addClass),removeClass:function(e){return function(n,r,o,a){return arguments.length>1?t.effects.animateClass.call(this,{remove:n},r,o,a):e.apply(this,arguments)}}(t.fn.removeClass),toggleClass:function(e){return function(n,r,o,a,i){return"boolean"==typeof r||void 0===r?o?t.effects.animateClass.call(this,r?{add:n}:{remove:n},o,a,i):e.apply(this,arguments):t.effects.animateClass.call(this,{toggle:n},r,o,a)}}(t.fn.toggleClass),switchClass:function(e,n,r,o,a){return t.effects.animateClass.call(this,{add:n,remove:e},r,o,a)}})}(),function(){
 // return an effect options object for the given parameters:
 function n(e,n,r,o){
 // allow passing all options as the first parameter
@@ -158,13 +126,7 @@ return!e||"number"==typeof e||t.fx.speeds[e]?!0:"string"!=typeof e||t.effects.ef
 // Saves a set of properties in a data storage
 save:function(t,n){for(var r=0;r<n.length;r++)null!==n[r]&&t.data(e+n[r],t[0].style[n[r]])},
 // Restores a set of previously saved properties from a data storage
-restore:function(t,n){var r,o;for(o=0;o<n.length;o++)null!==n[o]&&(r=t.data(e+n[o]),
-// support: jQuery 1.6.2
-// http://bugs.jquery.com/ticket/9917
-// jQuery 1.6.2 incorrectly returns undefined for any falsy value.
-// We can't differentiate between "" and 0 here, so we just assume
-// empty string since it's likely to be a more common value...
-void 0===r&&(r=""),t.css(n[o],r))},setMode:function(t,e){return"toggle"===e&&(e=t.is(":hidden")?"show":"hide"),e},
+restore:function(t,n){var r,o;for(o=0;o<n.length;o++)null!==n[o]&&(r=t.data(e+n[o]),void 0===r&&(r=""),t.css(n[o],r))},setMode:function(t,e){return"toggle"===e&&(e=t.is(":hidden")?"show":"hide"),e},
 // Translates a [top,left] array into a baseline value
 // this should be a little more flexible in the future to handle a string & hash
 getBaseline:function(t,e){var n,r;switch(t[0]){case"top":n=0;break;case"middle":n=.5;break;case"bottom":n=1;break;default:n=t[0]/e.height}switch(t[1]){case"left":r=0;break;case"center":r=.5;break;case"right":r=1;break;default:r=t[1]/e.width}return{x:r,y:n}},

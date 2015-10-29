@@ -86,10 +86,7 @@ var t=/[&?](S=[A-Za-z0-9]+)/;EE.cp.setBasePath=function(a,n){var a=a.replace(/&a
 EE.BASE=a,n||e(window).trigger("broadcast.setBasePath",a)},e(window).bind("broadcast.setBasePath",function(e,t){EE.cp.setBasePath(t,!0)}),EE.cp.refreshSessionData=function(t,a){a&&EE.cp.setBasePath(a),
 // running the request will return the x-csrf-header, which will trigger
 // our prefilter. We still need to replace the base though.
-e.getJSON(EE.BASE+"&C=login&M=refresh_csrf_token",function(e){EE.cp.setBasePath(e.base)})};var a=/(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,n=/&?[DCM]=/g,o=/^&+/,i=/&+$/,r=/(^|&)S=0(&|$)/;EE.cp.cleanUrl=function(e,t){t=t||e,// i exists if coming from jQuery attr callback
-t=t||"",
-// Move session to the end
-t=t.toString().replace(/^(\S*?)S=(\S+?)&(\S*?)$/g,"$1$3&S=$2");var s=a.exec(t);if(s){
+e.getJSON(EE.BASE+"&C=login&M=refresh_csrf_token",function(e){EE.cp.setBasePath(e.base)})};var a=/(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,n=/&?[DCM]=/g,o=/^&+/,i=/&+$/,r=/(^|&)S=0(&|$)/;EE.cp.cleanUrl=function(e,t){t=t||e,t=t||"",t=t.toString().replace(/^(\S*?)S=(\S+?)&(\S*?)$/g,"$1$3&S=$2");var s=a.exec(t);if(s){
 // result[1] // index.php
 // result[2] // S=49204&
 // result[3] // D=cp&C=foo&M=bar
@@ -133,9 +130,7 @@ o=18e5,// 30 minutes: time before modal if window focused
 i=27e5,// 45 minutes: time before modal if no focus
 r=3e6;
 // Setup Base EE Control Panel
-e(document).ready(function(){
-// Make sure we have our modal available when we need it
-t=e("#idle-modal"),a=e(".overlay"),
+e(document).ready(function(){t=e("#idle-modal"),a=e(".overlay"),
 // If the modal hasn't been interacted with in over 10 minutes we'll send a request for
 // the current csrf token. It can flip on us during long waits due to the session timeout.
 // If the session times out this will get us a cookie based csrf token, which is what you

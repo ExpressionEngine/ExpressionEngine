@@ -57,16 +57,16 @@ e.submit(function(s){
 // If the submit was trigger by a button click, disable it to prevent futher clicks
 // Update the button text to the value of its "work-text" data attribute
 // Replace button text with working text and disable the button to prevent further clicks
-return i.size()>0&&(i.addClass("work"),i.each(function(i,n){
+return i.size()>0&&(i.addClass("work"),i.each(function(i,n){return s.target==n?(n.prop("disabled",!0),
 // Some controllers rely on the presence of the submit button in POST, but it won't
 // make it to the controller if it's disabled, so add it back as a hidden input
-return s.target==n?(n.prop("disabled",!0),e.append(t("<input/>",{type:"hidden",name:n.name,value:n.value})),!1):void 0}),""!=i.data("work-text")&&(i.is("input")?i.attr("value",i.data("work-text")):i.is("button")&&s.target==el&&i.text(i.data("work-text")))),!0})},/**
+e.append(t("<input/>",{type:"hidden",name:n.name,value:n.value})),!1):void 0}),""!=i.data("work-text")&&(i.is("input")?i.attr("value",i.data("work-text")):i.is("button")&&s.target==el&&i.text(i.data("work-text")))),!0})},/**
 	 * Binds forms with a class of 'ajax-validate' to the AJAX
 	 * validation routines
 	 *
 	 * @param	{jQuery object}	form	Optional jQuery object of form
 	 */
-_bindForms:function(e){var i=this;e.has(".form-ctrls .btn").each(function(e,s){{var n=t(this);n.find(".form-ctrls input.btn")}i.bindInputs(n),i._dismissSuccessAlert(n)})},/**
+_bindForms:function(e){var i=this;e.has(".form-ctrls .btn").each(function(e,s){var n=t(this);n.find(".form-ctrls input.btn");i.bindInputs(n),i._dismissSuccessAlert(n)})},/**
 	 * When a form element is interacted with after the form has been
 	 * successfully submitted, hide the success message
 	 */

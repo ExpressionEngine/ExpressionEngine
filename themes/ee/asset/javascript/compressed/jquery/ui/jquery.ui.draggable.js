@@ -120,9 +120,7 @@ t.options.helper=t.options._helper):(
 // either as another connected Sortable may yet handle the removal.
 t.cancelHelperRemoval=!0,t._trigger("deactivate",e,o))})},drag:function(e,s,i){t.each(i.sortables,function(){var o=!1,n=this;
 // Copy over variables that sortable's _intersectsWith uses
-n.positionAbs=i.positionAbs,n.helperProportions=i.helperProportions,n.offset.click=i.offset.click,n._intersectsWith(n.containerCache)&&(o=!0,t.each(i.sortables,function(){
-// Copy over variables that sortable's _intersectsWith uses
-return this.positionAbs=i.positionAbs,this.helperProportions=i.helperProportions,this.offset.click=i.offset.click,this!==n&&this._intersectsWith(this.containerCache)&&t.contains(n.element[0],this.element[0])&&(o=!1),o})),o?(
+n.positionAbs=i.positionAbs,n.helperProportions=i.helperProportions,n.offset.click=i.offset.click,n._intersectsWith(n.containerCache)&&(o=!0,t.each(i.sortables,function(){return this.positionAbs=i.positionAbs,this.helperProportions=i.helperProportions,this.offset.click=i.offset.click,this!==n&&this._intersectsWith(this.containerCache)&&t.contains(n.element[0],this.element[0])&&(o=!1),o})),o?(
 // If it intersects, we use a little isOver variable and set it once,
 // so that the move-in stuff gets fired only once.
 n.isOver||(n.isOver=1,n.currentItem=s.helper.appendTo(n.element).data("ui-sortable-item",!0),

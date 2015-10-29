@@ -51,9 +51,7 @@ t.element.parentsUntil("body").bind("scroll.droppable",function(){t.options.refr
 // If you have a highly dynamic page, you might try this option. It renders positions every time you move the mouse.
 t.options.refreshPositions&&e.ui.ddmanager.prepareOffsets(t,i),
 // Run through all droppables and check their positions based on specific tolerance options
-e.each(e.ui.ddmanager.droppables[t.options.scope]||[],function(){if(!this.options.disabled&&!this.greedyChild&&this.visible){var s,o,n,r=e.ui.intersect(t,this,this.options.tolerance,i),a=!r&&this.isover?"isout":r&&!this.isover?"isover":null;a&&(this.options.greedy&&(
-// find droppable parents with same scope
-o=this.options.scope,n=this.element.parents(":data(ui-droppable)").filter(function(){return e(this).droppable("instance").options.scope===o}),n.length&&(s=e(n[0]).droppable("instance"),s.greedyChild="isover"===a)),
+e.each(e.ui.ddmanager.droppables[t.options.scope]||[],function(){if(!this.options.disabled&&!this.greedyChild&&this.visible){var s,o,n,r=e.ui.intersect(t,this,this.options.tolerance,i),a=!r&&this.isover?"isout":r&&!this.isover?"isover":null;a&&(this.options.greedy&&(o=this.options.scope,n=this.element.parents(":data(ui-droppable)").filter(function(){return e(this).droppable("instance").options.scope===o}),n.length&&(s=e(n[0]).droppable("instance"),s.greedyChild="isover"===a)),
 // we just moved into a greedy child
 s&&"isover"===a&&(s.isover=!1,s.isout=!0,s._out.call(s,i)),this[a]=!0,this["isout"===a?"isover":"isout"]=!1,this["isover"===a?"_over":"_out"].call(this,i),
 // we just moved out of a greedy child
