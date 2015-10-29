@@ -151,13 +151,32 @@ class Publish extends AbstractPublishController {
 		}
 
 		$entry = ee('Model')->make('ChannelEntry');
-		$entry->setChannel($channel);
+		$entry->Channel = $channel;
 		$entry->site_id =  ee()->config->item('site_id');
 		$entry->author_id = ee()->session->userdata('member_id');
 		$entry->ip_address = ee()->session->userdata['ip_address'];
 		$entry->versioning_enabled = $channel->enable_versioning;
 		$entry->sticky = FALSE;
-		$entry->allow_comments = TRUE;
+
+		// Set some defaults based on Channel Settings
+		$entry->allow_comments = (isset($channel->deft_comments)) ? $channel->deft_comments : TRUE;
+
+		if (isset($channel->deft_status))
+		{
+			$entry->status = $channel->deft_status;
+		}
+
+		if (isset($channel->deft_category))
+		{
+			$cat = ee('Model')->get('Category', $channel->deft_category)->first();
+			if ($cat)
+			{
+				$entry->Categories[] = $cat;
+			}
+		}
+
+		$entry->title = $channel->default_entry_title;
+		$entry->url_title = $channel->url_title_prefix;
 
 		if (isset($_GET['BK']))
 		{
