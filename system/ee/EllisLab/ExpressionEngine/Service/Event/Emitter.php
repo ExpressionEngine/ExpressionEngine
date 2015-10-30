@@ -137,20 +137,20 @@ class Emitter implements Publisher {
 		$args = func_get_args();
 		$event = array_shift($args);
 
-		if (isset($this->events[$event]))
-		{
-			foreach ($this->events[$event] as $listener)
-			{
-				call_user_func_array($listener, $args);
-			}
-		}
-
 		foreach ($this->subscribers as $subscriber)
 		{
 			if (in_array($event, $subscriber->getSubscribedEvents()))
 			{
 				$method = 'on'.ucfirst($event);
 				call_user_func_array(array($subscriber, $method), $args);
+			}
+		}
+
+		if (isset($this->events[$event]))
+		{
+			foreach ($this->events[$event] as $listener)
+			{
+				call_user_func_array($listener, $args);
 			}
 		}
 
