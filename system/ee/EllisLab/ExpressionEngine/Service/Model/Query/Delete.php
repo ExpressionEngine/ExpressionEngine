@@ -63,6 +63,7 @@ class Delete extends Query {
 			$events = $to_meta->getEvents();
 
 			$has_delete_event = (
+				$to_meta->publishesHooks() ||
 				in_array('beforeDelete', $events) ||
 				in_array('afterDelete', $events)
 			 );
@@ -317,7 +318,7 @@ class Delete extends Query {
 		}
 
 		$withs = $this->nest($withs);
-		
+
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();

@@ -96,6 +96,17 @@ class MetaDataReader {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function publishesHooks()
+	{
+		$class = $this->class;
+		$name = $class::getMetaData('hook_id');
+
+		return ($name != '');
+	}
+
+	/**
 	 *
 	 */
 	public function getGateways()
@@ -186,7 +197,7 @@ class MetaDataReader {
 	{
 		$class = $this->class;
 		$table = $class::getMetaData('table_name');
-		
+
 		if ($table)
 		{
 			return $table;
