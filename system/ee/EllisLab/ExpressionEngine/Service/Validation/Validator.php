@@ -212,7 +212,8 @@ class Validator {
 				// This means we have an incorrect optional value. Accordingly,
 				// empty values are ok (because optional) anything else is not.
 				if (is_string($value) && trim($value) !== '' ||
-					(is_array($value) && ! empty($value)))
+					(is_array($value) && ! empty($value)) ||
+					is_numeric($value))
 				{
 					$result->addFailed($key, $rule);
 				}
