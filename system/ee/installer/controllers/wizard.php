@@ -1426,9 +1426,9 @@ class Wizard extends CI_Controller {
 		}
 
 		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
-		$javascript_dir = (is_dir($javascript_basepath.'compressed/'))
-			? 'compressed/'
-			: 'src/';
+		$javascript_dir = (is_dir($javascript_basepath.'src/'))
+			? 'src/'
+			: 'compressed/';
 
 		$version = explode('.', $this->version, 2);
 		$data = array(
