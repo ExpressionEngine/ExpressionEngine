@@ -33,6 +33,8 @@ class Category extends ContentModel {
 	protected static $_primary_key = 'cat_id';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
 
+	protected static $_hook_id = 'channel_entry';
+
 	protected static $_relationships = array(
 		'CategoryGroup' => array(
 			'type' => 'belongsTo'

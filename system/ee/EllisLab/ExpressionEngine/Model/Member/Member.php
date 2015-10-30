@@ -16,6 +16,8 @@ class Member extends Model {
 	protected static $_primary_key = 'member_id';
 	protected static $_table_name = 'members';
 
+	protected static $_hook_id = 'member';
+
 	protected static $_typed_columns = array(
 		'cp_homepage_channel' => 'json'
 	);
