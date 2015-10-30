@@ -19,11 +19,9 @@ t.draggable.remove(),
 // Add the fieldset to the new tab
 $('<fieldset class="col-group sortable"></fieldset>').append(t.draggable.html()).prependTo($("div.tab-open")),$(t.draggable).hasClass("required")){$("div.tab-open fieldset:first-child").addClass("required");var s=$(this).closest("li");$(s).find(".tab-off").length>0&&$(s).find(".tab-off").trigger("click")}
 // Add the field to the publish_layout array
-EE.publish_layout[e()].fields.unshift(l),l=null,
-// Make sure the last element has the last class
-$("fieldset.sortable").removeClass("last"),$("fieldset.sortable:last-child").addClass("last")},over:function(e,a){tab=this,i=setTimeout(function(){$(tab).trigger("click"),$("div.tab").sortable("refreshPositions")},s)},out:function(e,a){clearTimeout(i)},deactivate:function(e,a){clearTimeout(i)}})}var l;
+EE.publish_layout[e()].fields.unshift(l),l=null,$("fieldset.sortable").removeClass("last"),$("fieldset.sortable:last-child").addClass("last")},over:function(e,a){tab=this,i=setTimeout(function(){$(tab).trigger("click"),$("div.tab").sortable("refreshPositions")},s)},out:function(e,a){clearTimeout(i)},deactivate:function(e,a){clearTimeout(i)}})}var l;
 // Sorting the tabs
-$("ul.tabs").sortable({cancel:"li:first-child",items:"li",start:function(e,a){tab_index_at_start=$("ul.tabs li").index(a.item[0])},update:function(e,a){var t=$("ul.tabs li").index(a.item[0]),l=EE.publish_layout.splice(tab_index_at_start,1);EE.publish_layout.splice(t,0,l[0]),tab_index_at_start=0/0}});var i,s=500;t(),
+$("ul.tabs").sortable({cancel:"li:first-child",items:"li",start:function(e,a){tab_index_at_start=$("ul.tabs li").index(a.item[0])},update:function(e,a){var t=$("ul.tabs li").index(a.item[0]),l=EE.publish_layout.splice(tab_index_at_start,1);EE.publish_layout.splice(t,0,l[0]),tab_index_at_start=NaN}});var i,s=500;t(),
 // Sorting the fields
 $("div.tab").sortable({appendTo:"div.box.publish",connectWith:"div.tab",cursor:"move",forceHelperSize:!0,forcePlaceholderSize:!0,handle:"li.move a",helper:"clone",items:"fieldset.sortable",placeholder:"drag-placeholder",start:function(a,t){var i=$("div.tab-open fieldset").index(t.item[0]);l=EE.publish_layout[e()].fields.splice(i,1)[0],t.placeholder.append('<div class="none"></div>')},stop:function(a,t){if(t.position!=t.originalPosition){if(null!=l){var i=$("div.tab-open fieldset").index(t.item[0]);EE.publish_layout[e()].fields.splice(i,0,l),l=null}$("fieldset.sortable").removeClass("last"),$("fieldset.sortable:last-child").addClass("last")}}}),
 // Saving the on/off state of tabs

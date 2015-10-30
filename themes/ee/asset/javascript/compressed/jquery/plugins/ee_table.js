@@ -187,8 +187,7 @@ _set_filter:function(e){var i=e.serializeArray(),s=this;t.each(i,function(){s.fi
 	 *
 	 * Should reflect the state most hooks might care about
 	 */
-_ui:function(e){return e=e||{},t.extend({sort:this.sort.get(),// sort order [[column, asc/desc], [column2, asc/desc]]
-filters:this.filters},e)}}),e.prototype={/*
+_ui:function(e){return e=e||{},t.extend({sort:this.sort.get(),filters:this.filters},e)}}),e.prototype={/*
 	 * Get the cache limit
 	 */
 limit:function(){return this.limit},/*

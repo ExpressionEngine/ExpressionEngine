@@ -43,11 +43,7 @@ this.menuInstance._off(this.menu,"mouseleave"),
 // Cancel the menu's collapseAll on document click
 this.menuInstance._closeOnDocumentClick=function(){return!1},
 // Selects often contain empty items, but never contain dividers
-this.menuInstance._isDivider=function(){return!1}},refresh:function(){this._refreshMenu(),this._setText(this.buttonText,this._getSelectedItem().text()),this.options.width||this._resizeButton()},_refreshMenu:function(){this.menu.empty();var e,t=this.element.find("option");t.length&&(this._parseOptions(t),this._renderMenu(this.menu,this.items),this.menuInstance.refresh(),this.menuItems=this.menu.find("li").not(".ui-selectmenu-optgroup"),e=this._getSelectedItem(),
-// Update the menu to have the correct item focused
-this.menuInstance.focus(null,e),this._setAria(e.data("ui-selectmenu-item")),
-// Set disabled state
-this._setOption("disabled",this.element.prop("disabled")))},open:function(e){this.options.disabled||(
+this.menuInstance._isDivider=function(){return!1}},refresh:function(){this._refreshMenu(),this._setText(this.buttonText,this._getSelectedItem().text()),this.options.width||this._resizeButton()},_refreshMenu:function(){this.menu.empty();var e,t=this.element.find("option");t.length&&(this._parseOptions(t),this._renderMenu(this.menu,this.items),this.menuInstance.refresh(),this.menuItems=this.menu.find("li").not(".ui-selectmenu-optgroup"),e=this._getSelectedItem(),this.menuInstance.focus(null,e),this._setAria(e.data("ui-selectmenu-item")),this._setOption("disabled",this.element.prop("disabled")))},open:function(e){this.options.disabled||(
 // If this is the first time the menu is being opened, render the items
 this.menuItems?(
 // Menu clears focus on close, reset focus to selected item

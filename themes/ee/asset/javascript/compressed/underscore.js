@@ -248,9 +248,7 @@ if(r[i]==n)return e[i]==t;
 // Add the first object to the stack of traversed objects.
 r.push(n),e.push(t);var a=0,o=!0;
 // Recursively compare objects and arrays.
-if("[object Array]"==u){if(
-// Compare array lengths to determine if a deep comparison is necessary.
-a=n.length,o=a==t.length)
+if("[object Array]"==u){if(a=n.length,o=a==t.length)
 // Deep compare the contents, ignoring non-numeric properties.
 for(;a--&&(o=S(n[a],t[a],r,e)););}else{
 // Objects with different constructors are not equivalent, but `Object`s
@@ -333,9 +331,7 @@ var T=/(.)^/,q={"'":"'","\\":"\\","\r":"r","\n":"n","	":"t","\u2028":"u2028","\u
 // and correctly escapes quotes within interpolated code.
 j.template=function(n,t,r){var e;r=j.defaults({},r,j.templateSettings);
 // Combine delimiters into one regular expression via alternation.
-var u=new RegExp([(r.escape||T).source,(r.interpolate||T).source,(r.evaluate||T).source].join("|")+"|$","g"),i=0,a="__p+='";n.replace(u,function(t,r,e,u,o){return a+=n.slice(i,o).replace(B,function(n){return"\\"+q[n]}),r&&(a+="'+\n((__t=("+r+"))==null?'':_.escape(__t))+\n'"),e&&(a+="'+\n((__t=("+e+"))==null?'':__t)+\n'"),u&&(a+="';\n"+u+"\n__p+='"),i=o+t.length,t}),a+="';\n",
-// If a variable is not specified, place data values in local scope.
-r.variable||(a="with(obj||{}){\n"+a+"}\n"),a="var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};\n"+a+"return __p;\n";try{e=new Function(r.variable||"obj","_",a)}catch(o){throw o.source=a,o}if(t)return e(t,j);var c=function(n){return e.call(this,n,j)};
+var u=new RegExp([(r.escape||T).source,(r.interpolate||T).source,(r.evaluate||T).source].join("|")+"|$","g"),i=0,a="__p+='";n.replace(u,function(t,r,e,u,o){return a+=n.slice(i,o).replace(B,function(n){return"\\"+q[n]}),r&&(a+="'+\n((__t=("+r+"))==null?'':_.escape(__t))+\n'"),e&&(a+="'+\n((__t=("+e+"))==null?'':__t)+\n'"),u&&(a+="';\n"+u+"\n__p+='"),i=o+t.length,t}),a+="';\n",r.variable||(a="with(obj||{}){\n"+a+"}\n"),a="var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};\n"+a+"return __p;\n";try{e=new Function(r.variable||"obj","_",a)}catch(o){throw o.source=a,o}if(t)return e(t,j);var c=function(n){return e.call(this,n,j)};
 // Provide the compiled function source as a convenience for precompilation.
 return c.source="function("+(r.variable||"obj")+"){\n"+a+"}",c},
 // Add a "chain" function, which will delegate to the wrapper.

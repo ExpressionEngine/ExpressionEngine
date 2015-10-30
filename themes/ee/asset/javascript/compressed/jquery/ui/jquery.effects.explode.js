@@ -22,9 +22,4 @@ y=u.show().css("visibility","hidden").offset(),
 // width and height of a piece
 b=Math.ceil(u.outerWidth()/p),w=Math.ceil(u.outerHeight()/l),M=[];
 // clone the element for each row and cell.
-for(f=0;l>f;f++)for(// ===>
-c=y.top+f*w,h=f-(l-1)/2,n=0;p>n;n++)// |||
-d=y.left+n*b,a=n-(p-1)/2,
-// Create a clone of the now hidden main element that will be absolute positioned
-// within a wrapper div off the -left and -top equal to size of our pieces
-u.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-n*b,top:-f*w}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:b,height:w,left:d+(v?a*b:0),top:c+(v?h*w:0),opacity:v?0:1}).animate({left:d+(v?0:a*b),top:c+(v?0:h*w),opacity:v?1:0},i.duration||500,i.easing,o)}});
+for(f=0;l>f;f++)for(c=y.top+f*w,h=f-(l-1)/2,n=0;p>n;n++)d=y.left+n*b,a=n-(p-1)/2,u.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-n*b,top:-f*w}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:b,height:w,left:d+(v?a*b:0),top:c+(v?h*w:0),opacity:v?0:1}).animate({left:d+(v?0:a*b),top:c+(v?0:h*w),opacity:v?1:0},i.duration||500,i.easing,o)}});

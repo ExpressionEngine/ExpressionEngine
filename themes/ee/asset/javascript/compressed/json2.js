@@ -194,12 +194,7 @@ case"object":
 // so watch out for that case.
 if(!a)return"null";
 // Is the value an array?
-if(
-// Make an array to hold the partial results of stringifying this object value.
-gap+=indent,u=[],"[object Array]"===Object.prototype.toString.apply(a)){for(
-// The value is an array. Stringify every element. Use null as a placeholder
-// for non-JSON values.
-o=a.length,n=0;o>n;n+=1)u[n]=str(n,a)||"null";
+if(gap+=indent,u=[],"[object Array]"===Object.prototype.toString.apply(a)){for(o=a.length,n=0;o>n;n+=1)u[n]=str(n,a)||"null";
 // Join all of the elements together, separated with commas, and wrap them in
 // brackets.
 return f=0===u.length?"[]":gap?"[\n"+gap+u.join(",\n"+gap)+"\n"+i+"]":"["+u.join(",")+"]",gap=i,f}
@@ -221,10 +216,7 @@ return f=0===u.length?"{}":gap?"{\n"+gap+u.join(",\n"+gap)+"\n"+i+"}":"{"+u.join
 var r;
 // If the space parameter is a number, make an indent string containing that
 // many spaces.
-if(gap="",indent="","number"==typeof n)for(r=0;n>r;r+=1)indent+=" ";else"string"==typeof n&&(indent=n);if(
-// If there is a replacer, it must be a function or an array.
-// Otherwise, throw an error.
-rep=e,e&&"function"!=typeof e&&("object"!=typeof e||"number"!=typeof e.length))throw new Error("JSON.stringify");
+if(gap="",indent="","number"==typeof n)for(r=0;n>r;r+=1)indent+=" ";else"string"==typeof n&&(indent=n);if(rep=e,e&&"function"!=typeof e&&("object"!=typeof e||"number"!=typeof e.length))throw new Error("JSON.stringify");
 // Make a fake root object containing our value under the key of ''.
 // Return the result of stringifying the value.
 return str("",{"":t})}),

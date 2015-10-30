@@ -24,9 +24,7 @@ jQuery(document).ready(function(){var i=jQuery;EE.navigation={};
 var n,e,t="active",a="hover",s="#navigationTabs",o="first_level",r="parent",l=i(s),u=i(s+">li."+r),v=!1;
 // Mouse navigation
 // -----------------------------------------------
-EE.navigation.delay_show_next=function(){window.clearTimeout(n),v=!0,n=window.setTimeout(function(){var n=i(e);n.parent().find("."+t+", ."+a).removeClass(t).removeClass(a),n.addClass(t).addClass(a),
-// do not truncate channels
-n.closest("#navigationTabs > li").is(u.first())||EE.navigation.truncate_menus(n.children("ul")),v=!1},100)},EE.navigation.mouse_listen=function(){
+EE.navigation.delay_show_next=function(){window.clearTimeout(n),v=!0,n=window.setTimeout(function(){var n=i(e);n.parent().find("."+t+", ."+a).removeClass(t).removeClass(a),n.addClass(t).addClass(a),n.closest("#navigationTabs > li").is(u.first())||EE.navigation.truncate_menus(n.children("ul")),v=!1},100)},EE.navigation.mouse_listen=function(){
 // Mouse leaves nav - close all
 l.mouseleave(function(){l.find("."+t).removeClass(t)}),
 // Move along the main menu - each should open in turn

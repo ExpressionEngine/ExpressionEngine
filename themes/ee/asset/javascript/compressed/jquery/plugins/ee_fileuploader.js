@@ -21,13 +21,7 @@
 	 *	- after_upload:	function	callback called after the upload is complete
 	 *	- close:		function	callback called when closing the modal
 	 */
-e.ee_fileuploader=function(t){var l={};a=e.extend({},l,t),e.ee_filebrowser.endpoint_request("setup_upload",function(t){i=e(t.uploader),e(document.body).append(i),_EE_uploader_attached()})},e.ee_fileuploader.setSource=function(t,l){i.find(t).attr("src",l),i=i.first(),
-// Hide the Choose File button
-i.removeClass().addClass("before_upload"),
-// Remove unneeded buttons
-"filemanager"==a.type?i.find(".button_bar .filebrowser").remove():"filebrowser"==a.type&&i.find(".button_bar .filemanager").remove(),e(document).ready(function(){e.ee_fileuploader.build_dialog()}),
-// Call load callback
-"function"==typeof a.load&&a.load.call(this,i)},
+e.ee_fileuploader=function(t){var l={};a=e.extend({},l,t),e.ee_filebrowser.endpoint_request("setup_upload",function(t){i=e(t.uploader),e(document.body).append(i),_EE_uploader_attached()})},e.ee_fileuploader.setSource=function(t,l){i.find(t).attr("src",l),i=i.first(),i.removeClass().addClass("before_upload"),"filemanager"==a.type?i.find(".button_bar .filebrowser").remove():"filebrowser"==a.type&&i.find(".button_bar .filemanager").remove(),e(document).ready(function(){e.ee_fileuploader.build_dialog()}),"function"==typeof a.load&&a.load.call(this,i)},
 // --------------------------------------------------------------------
 /**
 	 * Builds the jQuery UI dialog, adds two listeners to the dialog, and adds
@@ -35,17 +29,7 @@ i.removeClass().addClass("before_upload"),
 	 */
 e.ee_fileuploader.build_dialog=function(){i.dialog({width:600,height:370,resizable:!1,position:["center","center"],modal:!0,draggable:!0,title:EE.fileuploader.window_title,autoOpen:!1,zIndex:99999,open:function(){
 // Make sure we're on before_upload
-f("before_upload"),
-// Reset current_file
-l={},
-// Hide loading animation
-e("#file_uploader .button_bar .loading").addClass("visualEscapism"),
-// Disable upload file button
-e.ee_fileuploader.reset_upload(),
-// Save original contents for reset on close
-void 0===t&&(t=i.html()),
-// Call open callback
-"function"==typeof a.open&&a.open.call(this,i),r()},close:function(){"undefined"!=typeof window.upload_iframe.file&&(o&&
+f("before_upload"),l={},e("#file_uploader .button_bar .loading").addClass("visualEscapism"),e.ee_fileuploader.reset_upload(),void 0===t&&(t=i.html()),"function"==typeof a.open&&a.open.call(this,i),r()},close:function(){"undefined"!=typeof window.upload_iframe.file&&(o&&
 // Delete the file
 e.ajax({url:EE.BASE+"&"+EE.fileuploader.delete_url,type:"POST",dataType:"json",data:{file:l.file_id,XID:EE.XID},error:function(e,i,t){console.log(i)}}),
 // Call close callback, passing the file info
@@ -125,15 +109,7 @@ e.ee_fileuploader.file_exists=function(i){e.ee_fileuploader.update_file(i),f("fi
 	 *
 	 * @param {Object} file Object representing the just uploaded file
 	 */
-e.ee_fileuploader.after_upload=function(t){if(e.ee_fileuploader.update_file(t),
-// Make sure the file doesn't get deleted if the window is closed
-o=!1,
-// Call after upload callback
-"function"==typeof a.after_upload&&a.after_upload.call(this,i,l),
-// Change the step to step 2
-f("after_upload"),
-// Show/Hide "Edit Image" link based on whether or not it's an image
-e("#edit_image").toggle(t.is_image),"filemanager"==a.type){
+e.ee_fileuploader.after_upload=function(t){if(e.ee_fileuploader.update_file(t),o=!1,"function"==typeof a.after_upload&&a.after_upload.call(this,i,l),f("after_upload"),e("#edit_image").toggle(t.is_image),"filemanager"==a.type){
 // Create listener for the browse_files button
 e("#file_uploader .button_bar").on("click","#browse_files",function(e){n(),e.preventDefault()});for(var r=["edit_file","edit_image"],d=0,u=r.length;u>d;d++){var _=e(".mainTable tr.new:first td:has(img) a[href*="+r[d]+"]").attr("href");e("#"+r[d],"#file_uploader .button_bar").attr("href",_)}}else"filebrowser"==a.type&&(
 // Create listener for the choose_file button

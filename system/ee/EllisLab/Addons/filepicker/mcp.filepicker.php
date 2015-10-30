@@ -139,6 +139,7 @@ class Filepicker_mcp {
 			$vars['type'] = 'thumb';
 			$vars['files'] = $files;
 			$vars['form_url'] = $base_url;
+			$vars['data_url_base'] = $this->base_url;
 		}
 		else
 		{
