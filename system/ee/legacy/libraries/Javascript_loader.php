@@ -68,7 +68,16 @@ class Javascript_loader {
 			{
 				if ($type == 'package' OR $type == 'fp_module')
 				{
-					$file = $file.'/javascript/'.$file;
+					if (strpos($file, ':') !== FALSE)
+					{
+						list($package, $file) = explode(':', $file);
+					}
+					else
+					{
+						$package = $file;
+					}
+
+					$file = $package.'/javascript/'.$file;
 				}
 				elseif ($type == 'file')
 				{

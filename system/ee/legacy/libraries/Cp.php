@@ -661,7 +661,17 @@ class Cp {
 				break;
 			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/'.$name.'.js';
 				break;
-			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
+			case 'package':
+				if (strpos($name, ':') !== FALSE)
+				{
+					list($package, $name) = explode(':', $name);
+				}
+				else
+				{
+					$package = $name;
+				}
+
+				$file = PATH_THIRD.$package.'/javascript/'.$name.'.js';
 				break;
 			case 'fp_module':	$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
@@ -856,7 +866,8 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
+
+		$this->add_js_script(array('package' => $package.':'.$file));
 	}
 
 	// --------------------------------------------------------------------
