@@ -60,6 +60,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected $_validator = NULL;
 
 	/**
+	 * @var Hook recursion prevention
+	 */
+	protected $_in_hook = array();
+
+	/**
 	 * @var Associated models
 	 */
 	protected $_associations = array();
@@ -128,6 +133,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		$this->addFilter('set', array($this, 'typedSet'));
 		$this->addFilter('fill', array($this, 'typedLoad'));
 		$this->addFilter('store', array($this, 'typedStore'));
+
+		if ($publish_as = $this->getMetaData('hook_id'))
+		{
+			$this->forwardEventsToHooks($publish_as);
+		}
 	}
 
 	/**
@@ -543,6 +553,72 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
+	 * Forwards lifecycle events to consistently named hooks
+	 *
+	 * This is fired automatically from initialize() if `hook_id` is
+	 * given in the model metadata.
+	 *
+	 * @param String $hook_basename The name that identifies the subject of the hook
+	 */
+	protected function forwardEventsToHooks($hook_basename)
+	{
+		$trigger = $this->getHookTrigger();
+
+		$forwarded = array(
+			'beforeInsert' => 'before_'.$hook_basename.'_insert',
+			'afterInsert' => 'after_'.$hook_basename.'_insert',
+			'beforeUpdate' => 'before_'.$hook_basename.'_update',
+			'afterUpdate' => 'after_'.$hook_basename.'_update',
+			'beforeSave' => 'before_'.$hook_basename.'_save',
+			'afterSave' => 'after_'.$hook_basename.'_save',
+			'beforeDelete' => 'before_'.$hook_basename.'_delete',
+			'afterDelete' => 'after_'.$hook_basename.'_delete'
+		);
+
+		$that = $this;
+
+		foreach ($forwarded as $event => $hook)
+		{
+			$this->on($event, function() use ($trigger, $hook)
+			{
+				$addtl_args = func_get_args();
+				$args = array($hook, $this, $this->getValues());
+
+				call_user_func_array($trigger, array_merge($args, $addtl_args));
+			});
+		}
+	}
+
+	/**
+	 * Returns a function that can be used to trigger a hook outside the current
+	 * object scope. Thank you PHP 5.3, you hunk of garbage.
+	 *
+	 * @return Closure Function that takes hookname and parameters and calls the hook
+	 */
+	protected function getHookTrigger()
+	{
+		$in_hook =& $this->_in_hook;
+
+		return function($name) use ($in_hook)
+		{
+			if (in_array($name, $in_hook))
+			{
+				return;
+			}
+
+			$in_hook[] = $name;
+
+			if (ee()->extensions->active_hook($name) === TRUE)
+			{
+				$args = func_get_args();
+				call_user_func_array(array(ee()->extensions, 'call'), $args);
+			}
+
+			array_pop($in_hook);
+		};
+	}
+
+	/**
 	 * Default callback to validate unique columns across siblings
 	 *
 	 * @param String $key    Property name
@@ -652,7 +728,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			$set = $this->getRawProperty($name);
 
 			if ($this->isDirty($name))
-			{				
+			{
 				$value = $this->getBackup($name, $set);
 				$new_value = $this->typedStore($set, $name);
 
