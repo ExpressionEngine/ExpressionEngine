@@ -24,6 +24,8 @@ class ChannelEntry extends ContentModel {
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
+	protected static $_hook_id = 'channel_entry';
+
 	protected static $_typed_columns = array(
 		'versioning_enabled'      => 'boolString',
 		'allow_comments'          => 'boolString',
@@ -104,11 +106,8 @@ class ChannelEntry extends ContentModel {
 	protected static $_events = array(
 		'beforeDelete',
 		'afterDelete',
-		'beforeInsert',
 		'afterInsert',
-		'beforeUpdate',
 		'afterUpdate',
-		'beforeSave',
 		'afterSave',
 	);
 
@@ -208,37 +207,6 @@ class ChannelEntry extends ContentModel {
 		return TRUE;
 	}
 
-	protected $in_hook = array();
-
-	protected function triggerHook($name)
-	{
-		if (in_array($name, $this->in_hook))
-		{
-			return;
-		}
-
-		$this->in_hook[] = $name;
-
-		if (ee()->extensions->active_hook($name) === TRUE)
-		{
-			$args = func_get_args();
-			call_user_func_array(array(ee()->extensions, 'call'), $args);
-		}
-
-		array_pop($this->in_hook);
-	}
-
-	public function onBeforeSave()
-	{
-		// -------------------------------------------
-		// 'before_channel_entry_save' hook.
-		//  - Modify entry before save
-		//  - added 3.1.0
-
-		$this->triggerHook('before_channel_entry_save', $this, $this->getValues());
-		// -------------------------------------------
-	}
-
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
@@ -265,64 +233,17 @@ class ChannelEntry extends ContentModel {
 			}
 		}
 
-		// -------------------------------------------
-		// 'after_channel_entry_save' hook.
-		//  - Get alerted to saved entries
-		//  - added 3.1.0
-
-		$this->triggerHook('after_channel_entry_save', $this, $this->getValues());
-		// -------------------------------------------
-	}
-
-	public function onBeforeInsert()
-	{
-		// -------------------------------------------
-		// 'before_channel_entry_insert' hook.
-		//  - Modify entry before insertion
-		//  - added 3.1.0
-
-		$this->triggerHook('before_channel_entry_insert', $this, $this->getValues());
-		// -------------------------------------------
 	}
 
 	public function onAfterInsert()
 	{
 		$this->Author->updateAuthorStats();
 		$this->updateEntryStats();
-
-		// -------------------------------------------
-		// 'after_channel_entry_insert' hook.
-		//  - Get alerted to inserted entries
-		//  - added 3.1.0
-
-		$this->triggerHook('after_channel_entry_insert', $this, $this->getValues());
-		// -------------------------------------------
-
-	}
-
-	public function onBeforeUpdate($changed)
-	{
-		// -------------------------------------------
-		// 'before_channel_entry_update' hook.
-		//  - Modify entry before update
-		//  - added 3.1.0
-
-		$this->triggerHook('before_channel_entry_update', $this, $this->getValues(), $changed);
-		// -------------------------------------------
 	}
 
 	public function onAfterUpdate($changed)
 	{
 		$this->saveVersion();
-
-		// -------------------------------------------
-		// 'after_channel_entry_update' hook.
-		//  - Get alerted to updated entries
-		//  - added 3.1.0
-
-		$this->triggerHook('after_channel_entry_update', $this, $this->getValues(), $changed);
-		// -------------------------------------------
-
 	}
 
 	public function onBeforeDelete()
@@ -340,14 +261,6 @@ class ChannelEntry extends ContentModel {
 				$OBJ->delete(array($this->entry_id));
 			}
 		}
-
-		// -------------------------------------------
-		// 'before_channel_entry_delete' hook.
-		//  - Get alerted to entries that are going to be deleted
-		//  - added 3.1.0
-
-		$this->triggerHook('before_channel_entry_delete', $this, $this->getValues());
-		// -------------------------------------------
 	}
 
 	public function onAfterDelete()
@@ -360,14 +273,6 @@ class ChannelEntry extends ContentModel {
 
 		$last_author->updateAuthorStats();
 		$this->updateEntryStats();
-
-		// -------------------------------------------
-		// 'after_channel_entry_delete' hook.
-		//  - Get alerted to deleted entries
-		//  - added 3.1.0
-
-		$this->triggerHook('after_channel_entry_delete', $this, $this->getValues());
-		// -------------------------------------------
 	}
 
 	public function saveVersion()
