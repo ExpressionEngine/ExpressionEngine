@@ -116,7 +116,7 @@ feature 'Upload Destination Create/Edit' do
     @page.max_size.set 'sdf'
     @page.max_size.trigger 'blur'
     @page.wait_for_error_message_count(4)
-    should_have_error_text(@page.max_size, $natural_number)
+    should_have_error_text(@page.max_size, $numeric)
     should_have_form_errors(@page)
 
     @page.max_width.set 'sdf'
@@ -528,5 +528,31 @@ feature 'Upload Destination Create/Edit' do
     @page.wait_for_error_message_count(1)
     should_have_error_text(@page.name, $xss_error)
     should_have_form_errors(@page)
+  end
+
+  context "Bug #21157 - File Size Between 0 and 1" do
+	  it 'should allow a file size of .1' do
+	      @page.max_size.set '.1'
+	      @page.max_size.trigger 'blur'
+	      @page.wait_for_error_message_count(4)
+	      should_have_no_error_text(@page.max_size)
+	      should_have_no_form_errors(@page)
+	  end
+
+	  it 'should not allow a file size of 0' do
+	      @page.max_size.set '0'
+	      @page.max_size.trigger 'blur'
+	      @page.wait_for_error_message_count(4)
+	      should_have_error_text(@page.max_size, $greater_than)
+	      should_have_form_errors(@page)
+	  end
+
+	  it 'should not allow a file size of -.1' do
+	      @page.max_size.set '-1'
+	      @page.max_size.trigger 'blur'
+	      @page.wait_for_error_message_count(4)
+	      should_have_error_text(@page.max_size, $greater_than)
+	      should_have_form_errors(@page)
+	  end
   end
 end

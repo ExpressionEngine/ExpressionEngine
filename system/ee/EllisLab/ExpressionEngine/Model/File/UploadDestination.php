@@ -83,7 +83,7 @@ class UploadDestination extends Model {
 		'url'                => 'required|validateUrl',
 		'allowed_types'      => 'enum[img,all]',
 		'default_modal_view' => 'enum[list,thumb]',
-		'max_size'           => 'isNatural',
+		'max_size'           => 'numeric|greaterThan[0]',
 		'max_height'         => 'isNatural',
 		'max_width'          => 'isNatural'
 	);
