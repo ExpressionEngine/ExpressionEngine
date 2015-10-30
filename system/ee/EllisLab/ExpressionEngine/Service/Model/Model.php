@@ -608,7 +608,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 
 			$in_hook[] = $name;
 
-			if (ee()->extensions->active_hook($name) === TRUE)
+			if (isset(ee()->extensions) && ee()->extensions->active_hook($name) === TRUE)
 			{
 				$args = func_get_args();
 				call_user_func_array(array(ee()->extensions, 'call'), $args);
