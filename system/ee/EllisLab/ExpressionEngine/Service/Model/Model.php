@@ -582,7 +582,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			$this->on($event, function() use ($trigger, $hook)
 			{
 				$addtl_args = func_get_args();
-				$args = array($hook, $this, $this->getValues());
+				$args = array($hook, $that, $that->getValues());
 
 				call_user_func_array($trigger, array_merge($args, $addtl_args));
 			});
