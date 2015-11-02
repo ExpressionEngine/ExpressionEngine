@@ -35,8 +35,6 @@ $lang = array(
 'my_toolset'	=> 'My Tool Set',
 
 // Snippets
-'no' => 'No',
-'yes' => 'Yes',
 'enabled' => 'Enabled',
 'enable_button' => 'Enable',
 'disabled' => 'Disabled',

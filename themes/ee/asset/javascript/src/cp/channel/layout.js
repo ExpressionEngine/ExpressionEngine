@@ -66,6 +66,14 @@ $(document).ready(function () {
 				// Add the fieldset to the new tab
 				$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
 
+				if ($(ui.draggable).hasClass('required')) {
+					$('div.tab-open fieldset:first-child').addClass('required');
+					var tab = $(this).closest('li');
+					if ($(tab).find('.tab-off').length > 0) {
+						$(tab).find('.tab-off').trigger('click');
+					}
+				}
+
 				// Add the field to the publish_layout array
 				EE.publish_layout[getTabIndex()].fields.unshift(field);
 				field = null;
@@ -131,7 +139,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.has('.required').length > 0) {
+		if (EE.publish_layout[index].visible && tabContents.has('.required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
@@ -228,7 +236,7 @@ $(document).ready(function () {
 	});
 
 	// Saving the hide/unhide state of fields
-	$('li.hide a, li.unhide a').on('click', function(e) {
+	$('div.publish form').on('click', 'li.hide a, li.unhide a', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 

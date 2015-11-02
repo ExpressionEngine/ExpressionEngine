@@ -181,7 +181,7 @@ l=m(e.display,e.doc,t),l.from>=e.display.viewFrom&&l.to<=e.display.viewTo)break}
 // false.
 function L(e,t,r){var n=e.display,i=e.doc;if(!n.wrapper.offsetWidth)return void it(e);
 // Bail out if the visible area is already rendered and nothing changed.
-if(!(!r&&t.from>=n.viewFrom&&t.to<=n.viewTo&&0==at(e))){b(e)&&it(e);var o=H(e),l=i.first+i.size,s=Math.max(t.from-e.options.viewportMargin,i.first),a=Math.min(l,t.to+e.options.viewportMargin);n.viewFrom<s&&s-n.viewFrom<20&&(s=Math.max(i.first,n.viewFrom)),n.viewTo>a&&n.viewTo-a<20&&(a=Math.min(l,n.viewTo)),oo&&(s=Vr(e.doc,s),a=Ur(e.doc,a));var u=s!=n.viewFrom||a!=n.viewTo||n.lastSizeC!=n.wrapper.clientHeight;st(e,s,a),n.viewOffset=kn(bn(e.doc,n.viewFrom)),
+if(!(!r&&t.from>=n.viewFrom&&t.to<=n.viewTo&&0==at(e))){b(e)&&it(e);var o=N(e),l=i.first+i.size,s=Math.max(t.from-e.options.viewportMargin,i.first),a=Math.min(l,t.to+e.options.viewportMargin);n.viewFrom<s&&s-n.viewFrom<20&&(s=Math.max(i.first,n.viewFrom)),n.viewTo>a&&n.viewTo-a<20&&(a=Math.min(l,n.viewTo)),oo&&(s=Vr(e.doc,s),a=Ur(e.doc,a));var u=s!=n.viewFrom||a!=n.viewTo||n.lastSizeC!=n.wrapper.clientHeight;st(e,s,a),n.viewOffset=kn(bn(e.doc,n.viewFrom)),
 // Position the mover div to align with the current scroll position
 e.display.mover.style.top=n.viewOffset+"px";var c=at(e);if(u||0!=c||r){
 // For big changes, we hide the enclosing element during the
@@ -191,19 +191,19 @@ var f=di();
 // hidden or updated, if so re-focus it.
 // Prevent selection and cursors from interfering with the scroll
 // width.
-return c>4&&(n.lineDiv.style.display="none"),A(e,n.updateLineNumbers,o),c>4&&(n.lineDiv.style.display=""),f&&di()!=f&&f.offsetHeight&&f.focus(),ci(n.cursorDiv),ci(n.selectionDiv),u&&(n.lastSizeC=n.wrapper.clientHeight,ye(e,400)),T(e),!0}}}function S(e){var t=e.display,r=Ne(e,t.maxLine,t.maxLine.text.length).left;t.maxLineChanged=!1;var n=Math.max(0,r+3),i=Math.max(0,t.sizer.offsetLeft+n+tl-t.scroller.clientWidth);t.sizer.style.minWidth=n+"px",i<e.doc.scrollLeft&&Ht(e,Math.min(t.scroller.scrollLeft,i),!0)}function k(e,t){e.display.sizer.style.minHeight=e.display.heightForcer.style.top=t.docHeight+"px",e.display.gutters.style.height=Math.max(t.docHeight,t.clientHeight-tl)+"px"}function M(e,t){
+return c>4&&(n.lineDiv.style.display="none"),A(e,n.updateLineNumbers,o),c>4&&(n.lineDiv.style.display=""),f&&di()!=f&&f.offsetHeight&&f.focus(),ci(n.cursorDiv),ci(n.selectionDiv),u&&(n.lastSizeC=n.wrapper.clientHeight,ye(e,400)),T(e),!0}}}function S(e){var t=e.display,r=He(e,t.maxLine,t.maxLine.text.length).left;t.maxLineChanged=!1;var n=Math.max(0,r+3),i=Math.max(0,t.sizer.offsetLeft+n+tl-t.scroller.clientWidth);t.sizer.style.minWidth=n+"px",i<e.doc.scrollLeft&&Nt(e,Math.min(t.scroller.scrollLeft,i),!0)}function k(e,t){e.display.sizer.style.minHeight=e.display.heightForcer.style.top=t.docHeight+"px",e.display.gutters.style.height=Math.max(t.docHeight,t.clientHeight-tl)+"px"}function M(e,t){
 // Work around Webkit bug where it sometimes reserves space for a
 // non-existing phantom scrollbar in the scroller (Issue #2420)
 e.display.sizer.offsetWidth+e.display.gutters.offsetWidth<e.display.scroller.clientWidth-1&&(e.display.sizer.style.minHeight=e.display.heightForcer.style.top="0px",e.display.gutters.style.height=t.docHeight+"px")}
 // Read the actual heights of the rendered lines, and update their
 // stored heights to match.
-function T(e){for(var t=e.display,r=t.lineDiv.offsetTop,n=0;n<t.view.length;n++){var i,o=t.view[n];if(!o.hidden){if(Fi){var l=o.node.offsetTop+o.node.offsetHeight;i=l-r,r=l}else{var s=o.node.getBoundingClientRect();i=s.bottom-s.top}var a=o.line.height-i;if(2>i&&(i=Xe(t)),(a>.001||-.001>a)&&(Cn(o.line,i),N(o.line),o.rest))for(var u=0;u<o.rest.length;u++)N(o.rest[u])}}}
+function T(e){for(var t=e.display,r=t.lineDiv.offsetTop,n=0;n<t.view.length;n++){var i,o=t.view[n];if(!o.hidden){if(Fi){var l=o.node.offsetTop+o.node.offsetHeight;i=l-r,r=l}else{var s=o.node.getBoundingClientRect();i=s.bottom-s.top}var a=o.line.height-i;if(2>i&&(i=Xe(t)),(a>.001||-.001>a)&&(Cn(o.line,i),H(o.line),o.rest))for(var u=0;u<o.rest.length;u++)H(o.rest[u])}}}
 // Read and store the height of line widgets associated with the
 // given line.
-function N(e){if(e.widgets)for(var t=0;t<e.widgets.length;++t)e.widgets[t].height=e.widgets[t].node.offsetHeight}
+function H(e){if(e.widgets)for(var t=0;t<e.widgets.length;++t)e.widgets[t].height=e.widgets[t].node.offsetHeight}
 // Do a bulk-read of the DOM positions and sizes needed to draw the
 // view, so that we don't interleave reading and writing to the DOM.
-function H(e){for(var t=e.display,r={},n={},i=t.gutters.firstChild,o=0;i;i=i.nextSibling,++o)r[e.options.gutters[o]]=i.offsetLeft,n[e.options.gutters[o]]=i.offsetWidth;return{fixedPos:w(t),gutterTotalWidth:t.gutters.offsetWidth,gutterLeft:r,gutterWidth:n,wrapperWidth:t.wrapper.clientWidth}}
+function N(e){for(var t=e.display,r={},n={},i=t.gutters.firstChild,o=0;i;i=i.nextSibling,++o)r[e.options.gutters[o]]=i.offsetLeft,n[e.options.gutters[o]]=i.offsetWidth;return{fixedPos:w(t),gutterTotalWidth:t.gutters.offsetWidth,gutterLeft:r,gutterWidth:n,wrapperWidth:t.wrapper.clientWidth}}
 // Sync the actual display DOM structure with display.view, removing
 // nodes for lines that are no longer in view, and creating the ones
 // that are not there yet, and updating the ones that are out of
@@ -271,7 +271,7 @@ function oe(e,t,r,n){ae(e,$(t,r),n)}
 // selection update.
 function le(e,t){var r={ranges:t.ranges,update:function(t){this.ranges=[];for(var r=0;r<t.length;r++)this.ranges[r]=new Y(Z(e,t[r].anchor),Z(e,t[r].head))}};return Jo(e,"beforeSelectionChange",e,r),e.cm&&Jo(e.cm,"beforeSelectionChange",e.cm,r),r.ranges!=t.ranges?j(r.ranges,r.ranges.length-1):t}function se(e,t,r){var n=e.history.done,i=ei(n);i&&i.ranges?(n[n.length-1]=t,ue(e,t,r)):ae(e,t,r)}
 // Set a new selection.
-function ae(e,t,r){ue(e,t,r),Dn(e,e.sel,e.cm?e.cm.curOp.id:NaN,r)}function ue(e,t,r){($n(e,"beforeSelectionChange")||e.cm&&$n(e.cm,"beforeSelectionChange"))&&(t=le(e,t));var n=r&&r.bias||(so(t.primary().head,e.sel.primary().head)<0?-1:1);ce(e,he(e,t,n,!0)),r&&r.scroll===!1||!e.cm||lr(e.cm)}function ce(e,t){t.equals(e.sel)||(e.sel=t,e.cm&&(e.cm.curOp.updateInput=e.cm.curOp.selectionChanged=!0,jn(e.cm)),_n(e,"cursorActivity",e))}
+function ae(e,t,r){ue(e,t,r),Dn(e,e.sel,e.cm?e.cm.curOp.id:0/0,r)}function ue(e,t,r){($n(e,"beforeSelectionChange")||e.cm&&$n(e.cm,"beforeSelectionChange"))&&(t=le(e,t));var n=r&&r.bias||(so(t.primary().head,e.sel.primary().head)<0?-1:1);ce(e,he(e,t,n,!0)),r&&r.scroll===!1||!e.cm||lr(e.cm)}function ce(e,t){t.equals(e.sel)||(e.sel=t,e.cm&&(e.cm.curOp.updateInput=e.cm.curOp.selectionChanged=!0,jn(e.cm)),_n(e,"cursorActivity",e))}
 // Verify that the selection does not partially select any atomic
 // marked ranges.
 function fe(e){ce(e,he(e,e.sel,null,!1),nl)}
@@ -301,14 +301,14 @@ n(d,g.top,null,g.bottom),d=u,g.bottom<f.top&&n(d,g.bottom,null,f.top)),null==i&&
 // Cursor-blinking
 function me(e){if(e.state.focused){var t=e.display;clearInterval(t.blinker);var r=!0;t.cursorDiv.style.visibility="",e.options.cursorBlinkRate>0&&(t.blinker=setInterval(function(){t.cursorDiv.style.visibility=(r=!r)?"":"hidden"},e.options.cursorBlinkRate))}}
 // HIGHLIGHT WORKER
-function ye(e,t){e.doc.mode.startState&&e.doc.frontier<e.display.viewTo&&e.state.highlight.set(t,oi(be,e))}function be(e){var t=e.doc;if(t.frontier<t.first&&(t.frontier=t.first),!(t.frontier>=e.display.viewTo)){var r=+new Date+e.options.workTime,n=No(t.mode,we(e,t.frontier));qe(e,function(){t.iter(t.frontier,Math.min(t.first+t.size,e.display.viewTo+500),function(i){if(t.frontier>=e.display.viewFrom){// Visible
-var o=i.styles,l=tn(e,i,n,!0);i.styles=l.styles,l.classes?i.styleClasses=l.classes:i.styleClasses&&(i.styleClasses=null);for(var s=!o||o.length!=i.styles.length,a=0;!s&&a<o.length;++a)s=o[a]!=i.styles[a];s&&nt(e,t.frontier,"text"),i.stateAfter=No(t.mode,n)}else nn(e,i.text,n),i.stateAfter=t.frontier%5==0?No(t.mode,n):null;return++t.frontier,+new Date>r?(ye(e,e.options.workDelay),!0):void 0})})}}
+function ye(e,t){e.doc.mode.startState&&e.doc.frontier<e.display.viewTo&&e.state.highlight.set(t,oi(be,e))}function be(e){var t=e.doc;if(t.frontier<t.first&&(t.frontier=t.first),!(t.frontier>=e.display.viewTo)){var r=+new Date+e.options.workTime,n=Ho(t.mode,we(e,t.frontier));qe(e,function(){t.iter(t.frontier,Math.min(t.first+t.size,e.display.viewTo+500),function(i){if(t.frontier>=e.display.viewFrom){// Visible
+var o=i.styles,l=tn(e,i,n,!0);i.styles=l.styles,l.classes?i.styleClasses=l.classes:i.styleClasses&&(i.styleClasses=null);for(var s=!o||o.length!=i.styles.length,a=0;!s&&a<o.length;++a)s=o[a]!=i.styles[a];s&&nt(e,t.frontier,"text"),i.stateAfter=Ho(t.mode,n)}else nn(e,i.text,n),i.stateAfter=t.frontier%5==0?Ho(t.mode,n):null;return++t.frontier,+new Date>r?(ye(e,e.options.workDelay),!0):void 0})})}}
 // Finds the line to start with when starting a parse. Tries to
 // find a line with a stateAfter, so that it can start with a
 // valid state. If that fails, it returns the line with the
 // smallest indentation, which tends to need the least context to
 // parse correctly.
-function xe(e,t,r){for(var n,i,o=e.doc,l=r?-1:t-(e.doc.mode.innerMode?1e3:100),s=t;s>l;--s){if(s<=o.first)return o.first;var a=bn(o,s-1);if(a.stateAfter&&(!r||s<=o.frontier))return s;var u=ll(a.text,null,e.options.tabSize);(null==i||n>u)&&(i=s-1,n=u)}return i}function we(e,t,r){var n=e.doc,i=e.display;if(!n.mode.startState)return!0;var o=xe(e,t,r),l=o>n.first&&bn(n,o-1).stateAfter;return l=l?No(n.mode,l):Ho(n.mode),n.iter(o,t,function(r){nn(e,r.text,l);var s=o==t-1||o%5==0||o>=i.viewFrom&&o<i.viewTo;r.stateAfter=s?No(n.mode,l):null,++o}),r&&(n.frontier=o),l}
+function xe(e,t,r){for(var n,i,o=e.doc,l=r?-1:t-(e.doc.mode.innerMode?1e3:100),s=t;s>l;--s){if(s<=o.first)return o.first;var a=bn(o,s-1);if(a.stateAfter&&(!r||s<=o.frontier))return s;var u=ll(a.text,null,e.options.tabSize);(null==i||n>u)&&(i=s-1,n=u)}return i}function we(e,t,r){var n=e.doc,i=e.display;if(!n.mode.startState)return!0;var o=xe(e,t,r),l=o>n.first&&bn(n,o-1).stateAfter;return l=l?Ho(n.mode,l):No(n.mode),n.iter(o,t,function(r){nn(e,r.text,l);var s=o==t-1||o%5==0||o>=i.viewFrom&&o<i.viewTo;r.stateAfter=s?Ho(n.mode,l):null,++o}),r&&(n.frontier=o),l}
 // POSITION MEASUREMENT
 function Ce(e){return e.lineSpace.offsetTop}function Le(e){return e.mover.offsetHeight-e.lineSpace.offsetHeight}function Se(e){if(e.cachedPaddingH)return e.cachedPaddingH;var t=fi(e.measure,ui("pre","x")),r=window.getComputedStyle?window.getComputedStyle(t):t.currentStyle,n={left:parseInt(r.paddingLeft),right:parseInt(r.paddingRight)};return isNaN(n.left)||isNaN(n.right)||(e.cachedPaddingH=n),n}
 // Ensure the lineView.wrapping.heights array is populated. This is
@@ -325,15 +325,15 @@ function Me(e,t,r){if(e.line==t)return{map:e.measure.map,cache:e.measure.cache};
 function Te(e,t){t=Br(t);var r=Ln(t),n=e.display.externalMeasured=new et(e.doc,t,r);n.lineN=r;var i=n.built=ln(e,n);return n.text=i.pre,fi(e.display.lineMeasure,i.pre),n}
 // Get a {top, bottom, left, right} box (in line-local coordinates)
 // for a given character.
-function Ne(e,t,r,n){return Oe(e,Ae(e,t),r,n)}
+function He(e,t,r,n){return Oe(e,Ae(e,t),r,n)}
 // Find a line view that corresponds to the given line number.
-function He(e,t){if(t>=e.display.viewFrom&&t<e.display.viewTo)return e.display.view[ot(e,t)];var r=e.display.externalMeasured;return r&&t>=r.lineN&&t<r.lineN+r.size?r:void 0}
+function Ne(e,t){if(t>=e.display.viewFrom&&t<e.display.viewTo)return e.display.view[ot(e,t)];var r=e.display.externalMeasured;return r&&t>=r.lineN&&t<r.lineN+r.size?r:void 0}
 // Measurement can be split in two steps, the set-up work that
 // applies to the whole line, and the measurement of the actual
 // character. Functions like coordsChar, that need to do a lot of
 // measurements in a row, can thus ensure that the set-up work is
 // only done once.
-function Ae(e,t){var r=Ln(t),n=He(e,r);n&&!n.text?n=null:n&&n.changes&&O(e,n,r,H(e)),n||(n=Te(e,t));var i=Me(n,t,r);return{line:t,view:n,rect:null,map:i.map,cache:i.cache,before:i.before,hasHeights:!1}}
+function Ae(e,t){var r=Ln(t),n=Ne(e,r);n&&!n.text?n=null:n&&n.changes&&O(e,n,r,N(e)),n||(n=Te(e,t));var i=Me(n,t,r);return{line:t,view:n,rect:null,map:i.map,cache:i.cache,before:i.before,hasHeights:!1}}
 // Given a prepared measurement object, measures the position of an
 // actual character (or fetches it from the cache).
 function Oe(e,t,r,n){t.before&&(r=-1);var i,o=r+(n||"");return t.cache.hasOwnProperty(o)?i=t.cache[o]:(t.rect||(t.rect=t.view.text.getBoundingClientRect()),t.hasHeights||(ke(e,t.view,t.rect),t.hasHeights=!0),i=We(e,t,r,n),i.bogus||(t.cache[o]=i)),{left:i.left,right:i.right,top:i.top,bottom:i.bottom}}function We(e,t,r,n){
@@ -350,7 +350,7 @@ function Fe(e,t,r,n){if(t.widgets)for(var i=0;i<t.widgets.length;++i)if(t.widget
 // Context may be "window", "page", "div", or "local"/null.
 function Re(e,t,r){if("div"==r)return t;var n=t.left,i=t.top;
 // First move into "page" coordinate system
-if("page"==r)n-=ze(),i-=Pe();else if("local"==r||!r){var o=e.display.sizer.getBoundingClientRect();n+=o.left,i+=o.top}var l=e.display.lineSpace.getBoundingClientRect();return{left:n-l.left,top:i-l.top}}function Be(e,t,r,n,i){return n||(n=bn(e.doc,t.line)),Fe(e,n,Ne(e,n,t.ch,i),r)}
+if("page"==r)n-=ze(),i-=Pe();else if("local"==r||!r){var o=e.display.sizer.getBoundingClientRect();n+=o.left,i+=o.top}var l=e.display.lineSpace.getBoundingClientRect();return{left:n-l.left,top:i-l.top}}function Be(e,t,r,n,i){return n||(n=bn(e.doc,t.line)),Fe(e,n,He(e,n,t.ch,i),r)}
 // Returns a box for a given cursor position, which may have an
 // 'other' property containing the position of the secondary cursor
 // on a bidi boundary.
@@ -367,7 +367,7 @@ function Ve(e,t){var r=0,t=Z(e.doc,t);e.options.lineWrapping||(r=Ye(e.display)*t
 function Ue(e,t,r,n){var i=lo(e,t);return i.xRel=n,r&&(i.outside=!0),i}
 // Compute the character position closest to the given coordinates.
 // Input must be lineSpace-local ("div" coordinate system).
-function Ke(e,t,r){var n=e.doc;if(r+=e.display.viewOffset,0>r)return Ue(n.first,0,!0,-1);var i=Sn(n,r),o=n.first+n.size-1;if(i>o)return Ue(n.first+n.size-1,bn(n,o).text.length,!0,1);0>t&&(t=0);for(var l=bn(n,i);;){var s=_e(e,l,i,t,r),a=Fr(l),u=a&&a.find(0,!0);if(!a||!(s.ch>u.from.ch||s.ch==u.from.ch&&s.xRel>0))return s;i=Ln(l=u.to.line)}}function _e(e,t,r,n,i){function o(n){var i=Ge(e,lo(r,n),"line",t,u);return s=!0,l>i.bottom?i.left-a:l<i.top?i.left+a:(s=!1,i.left)}var l=i-kn(t),s=!1,a=2*e.display.wrapper.clientWidth,u=Ae(e,t),c=Mn(t),f=t.text.length,h=Ti(t),d=Ni(t),p=o(h),g=s,v=o(d),m=s;if(n>v)return Ue(r,d,m,1);
+function Ke(e,t,r){var n=e.doc;if(r+=e.display.viewOffset,0>r)return Ue(n.first,0,!0,-1);var i=Sn(n,r),o=n.first+n.size-1;if(i>o)return Ue(n.first+n.size-1,bn(n,o).text.length,!0,1);0>t&&(t=0);for(var l=bn(n,i);;){var s=_e(e,l,i,t,r),a=Fr(l),u=a&&a.find(0,!0);if(!a||!(s.ch>u.from.ch||s.ch==u.from.ch&&s.xRel>0))return s;i=Ln(l=u.to.line)}}function _e(e,t,r,n,i){function o(n){var i=Ge(e,lo(r,n),"line",t,u);return s=!0,l>i.bottom?i.left-a:l<i.top?i.left+a:(s=!1,i.left)}var l=i-kn(t),s=!1,a=2*e.display.wrapper.clientWidth,u=Ae(e,t),c=Mn(t),f=t.text.length,h=Ti(t),d=Hi(t),p=o(h),g=s,v=o(d),m=s;if(n>v)return Ue(r,d,m,1);
 // Do a binary search between these bounds.
 for(;;){if(c?d==h||d==Ei(t,h,1):1>=d-h){for(var y=p>n||v-n>=n-p?h:d,b=n-(y==h?p:v);ai(t.text.charAt(y));)++y;var x=Ue(r,y,y==h?g:m,-1>b?-1:b>1?1:0);return x}var w=Math.ceil(f/2),C=h+w;if(c){C=h;for(var L=0;w>L;++L)C=Ei(t,C,1)}var S=o(C);S>n?(d=C,v=S,(m=s)&&(v+=1e3),f=w):(h=C,p=S,g=s,f-=w)}}
 // Compute the default text height.
@@ -508,7 +508,7 @@ Zo(i.lineSpace,"selectstart",function(e){yt(i,e)||jo(e)}),
 no||Zo(i.scroller,"contextmenu",function(t){Gt(e,t)}),
 // Sync scrolling between fake scrollbars and real scrollable
 // area, ensure viewport is updated when scrolling.
-Zo(i.scroller,"scroll",function(){i.scroller.clientHeight&&(Nt(e,i.scroller.scrollTop),Ht(e,i.scroller.scrollLeft,!0),Jo(e,"scroll",e))}),Zo(i.scrollbarV,"scroll",function(){i.scroller.clientHeight&&Nt(e,i.scrollbarV.scrollTop)}),Zo(i.scrollbarH,"scroll",function(){i.scroller.clientHeight&&Ht(e,i.scrollbarH.scrollLeft)}),
+Zo(i.scroller,"scroll",function(){i.scroller.clientHeight&&(Ht(e,i.scroller.scrollTop),Nt(e,i.scroller.scrollLeft,!0),Jo(e,"scroll",e))}),Zo(i.scrollbarV,"scroll",function(){i.scroller.clientHeight&&Ht(e,i.scrollbarV.scrollTop)}),Zo(i.scrollbarH,"scroll",function(){i.scroller.clientHeight&&Nt(e,i.scrollbarH.scrollLeft)}),
 // Listen to wheel events in order to try and update the viewport on time.
 Zo(i.scroller,"mousewheel",function(t){At(e,t)}),Zo(i.scroller,"DOMMouseScroll",function(t){At(e,t)}),Zo(i.scrollbarH,"mousedown",t),Zo(i.scrollbarV,"mousedown",t),
 // Prevent wrapper from ever scrolling
@@ -569,10 +569,10 @@ r._top=r.offsetTop),t.dataTransfer.setDragImage(r,0,0),Xi&&r.parentNode.removeCh
 // SCROLL EVENTS
 // Sync the scrollable area and scrollbars, ensure the viewport
 // covers the visible area.
-function Nt(e,t){Math.abs(e.doc.scrollTop-t)<2||(e.doc.scrollTop=t,zi||C(e,{top:t}),e.display.scroller.scrollTop!=t&&(e.display.scroller.scrollTop=t),e.display.scrollbarV.scrollTop!=t&&(e.display.scrollbarV.scrollTop=t),zi&&C(e),ye(e,100))}
+function Ht(e,t){Math.abs(e.doc.scrollTop-t)<2||(e.doc.scrollTop=t,zi||C(e,{top:t}),e.display.scroller.scrollTop!=t&&(e.display.scroller.scrollTop=t),e.display.scrollbarV.scrollTop!=t&&(e.display.scrollbarV.scrollTop=t),zi&&C(e),ye(e,100))}
 // Sync scroller and scrollbar, ensure the gutter elements are
 // aligned.
-function Ht(e,t,r){(r?t==e.doc.scrollLeft:Math.abs(e.doc.scrollLeft-t)<2)||(t=Math.min(t,e.display.scroller.scrollWidth-e.display.scroller.clientWidth),e.doc.scrollLeft=t,y(e),e.display.scroller.scrollLeft!=t&&(e.display.scroller.scrollLeft=t),e.display.scrollbarH.scrollLeft!=t&&(e.display.scrollbarH.scrollLeft=t))}function At(e,t){var r=t.wheelDeltaX,n=t.wheelDeltaY;null==r&&t.detail&&t.axis==t.HORIZONTAL_AXIS&&(r=t.detail),null==n&&t.detail&&t.axis==t.VERTICAL_AXIS?n=t.detail:null==n&&(n=t.wheelDelta);var i=e.display,o=i.scroller;
+function Nt(e,t,r){(r?t==e.doc.scrollLeft:Math.abs(e.doc.scrollLeft-t)<2)||(t=Math.min(t,e.display.scroller.scrollWidth-e.display.scroller.clientWidth),e.doc.scrollLeft=t,y(e),e.display.scroller.scrollLeft!=t&&(e.display.scroller.scrollLeft=t),e.display.scrollbarH.scrollLeft!=t&&(e.display.scrollbarH.scrollLeft=t))}function At(e,t){var r=t.wheelDeltaX,n=t.wheelDeltaY;null==r&&t.detail&&t.axis==t.HORIZONTAL_AXIS&&(r=t.detail),null==n&&t.detail&&t.axis==t.VERTICAL_AXIS?n=t.detail:null==n&&(n=t.wheelDelta);var i=e.display,o=i.scroller;
 // Quit if there's nothing to scroll here
 if(r&&o.scrollWidth>o.clientWidth||n&&o.scrollHeight>o.clientHeight){
 // Webkit browsers on OS X abort momentum scrolls when the target
@@ -587,7 +587,7 @@ if(n&&Ji&&Ui)e:for(var l=t.target,s=i.view;l!=o;l=l.parentNode)for(var a=0;a<s.l
 // scrolling entirely here. It'll be slightly off from native, but
 // better than glitching out.
 if(r&&!zi&&!Xi&&null!=vo)// Abort measurement, if in progress
-return n&&Nt(e,Math.max(0,Math.min(o.scrollTop+n*vo,o.scrollHeight-o.clientHeight))),Ht(e,Math.max(0,Math.min(o.scrollLeft+r*vo,o.scrollWidth-o.clientWidth))),jo(t),void(i.wheelStartX=null);
+return n&&Ht(e,Math.max(0,Math.min(o.scrollTop+n*vo,o.scrollHeight-o.clientHeight))),Nt(e,Math.max(0,Math.min(o.scrollLeft+r*vo,o.scrollWidth-o.clientWidth))),jo(t),void(i.wheelStartX=null);
 // 'Project' the visible viewport to cover the area that is being
 // scrolled into view (if we know enough to estimate it).
 if(n&&null!=vo){var u=n*vo,c=e.doc.scrollTop,f=c+i.wrapper.clientHeight;0>u?c=Math.max(0,c+u-50):f=Math.min(e.doc.height,f+u+50),C(e,{top:c,bottom:f})}20>go&&(null==i.wheelStartX?(i.wheelStartX=o.scrollLeft,i.wheelStartY=o.scrollTop,i.wheelDX=r,i.wheelDY=n,setTimeout(function(){if(null!=i.wheelStartX){var e=o.scrollLeft-i.wheelStartX,t=o.scrollTop-i.wheelStartY,r=t&&i.wheelDY&&t/i.wheelDY||e&&i.wheelDX&&e/i.wheelDX;i.wheelStartX=i.wheelStartY=null,r&&(vo=(vo*go+r)/(go+1),++go)}},200)):(i.wheelDX+=r,i.wheelDY+=n))}}
@@ -653,7 +653,7 @@ function Yt(e,t,r){var n={canceled:!1,from:t.from,to:t.to,text:t.text,origin:t.o
 function jt(e,t,r){if(e.cm){if(!e.cm.curOp)return Ze(e.cm,jt)(e,t,r);if(e.cm.state.suppressEdits)return}if(!($n(e,"beforeChange")||e.cm&&$n(e.cm,"beforeChange"))||(t=Yt(e,t,!0))){
 // Possibly split or suppress the update based on the presence
 // of read-only spans in its range.
-var n=io&&!r&&Ar(e,t.from,t.to);if(n)for(var i=n.length-1;i>=0;--i)$t(e,{from:n[i].from,to:n[i].to,text:i?[""]:t.text});else $t(e,t)}}function $t(e,t){if(1!=t.text.length||""!=t.text[0]||0!=so(t.from,t.to)){var r=Kt(e,t);On(e,t,r,e.cm?e.cm.curOp.id:NaN),Qt(e,t,r,Tr(e,t));var n=[];mn(e,function(e,r){r||-1!=ti(n,e.history)||(Gn(e.history,t),n.push(e.history)),Qt(e,t,null,Tr(e,t))})}}
+var n=io&&!r&&Ar(e,t.from,t.to);if(n)for(var i=n.length-1;i>=0;--i)$t(e,{from:n[i].from,to:n[i].to,text:i?[""]:t.text});else $t(e,t)}}function $t(e,t){if(1!=t.text.length||""!=t.text[0]||0!=so(t.from,t.to)){var r=Kt(e,t);On(e,t,r,e.cm?e.cm.curOp.id:0/0),Qt(e,t,r,Tr(e,t));var n=[];mn(e,function(e,r){r||-1!=ti(n,e.history)||(Gn(e.history,t),n.push(e.history)),Qt(e,t,null,Tr(e,t))})}}
 // Revert a change stored in a document's history.
 function qt(e,t,r){if(!e.cm||!e.cm.state.suppressEdits){
 // Verify that there is a useable event (so that ctrl-z won't
@@ -661,9 +661,9 @@ function qt(e,t,r){if(!e.cm||!e.cm.state.suppressEdits){
 for(var n,i=e.history,o=e.sel,l="undo"==t?i.done:i.undone,s="undo"==t?i.undone:i.done,a=0;a<l.length&&(n=l[a],r?!n.ranges||n.equals(e.sel):n.ranges);a++);if(a!=l.length){for(i.lastOrigin=i.lastSelOrigin=null;n=l.pop(),n.ranges;){if(En(n,s),r&&!n.equals(e.sel))return void ae(e,n,{clearRedo:!1});o=n}
 // Build up a reverse change object to add to the opposite history
 // stack (redo when undoing, and vice versa).
-var u=[];En(o,s),s.push({changes:u,generation:i.generation}),i.generation=n.generation||++i.maxGeneration;for(var c=$n(e,"beforeChange")||e.cm&&$n(e.cm,"beforeChange"),a=n.changes.length-1;a>=0;--a){var f=n.changes[a];if(f.origin=t,c&&!Yt(e,f,!1))return void(l.length=0);u.push(Nn(e,f));var h=a?Kt(e,f,null):ei(l);Qt(e,f,h,Hr(e,f)),!a&&e.cm&&e.cm.scrollIntoView(f);var d=[];
+var u=[];En(o,s),s.push({changes:u,generation:i.generation}),i.generation=n.generation||++i.maxGeneration;for(var c=$n(e,"beforeChange")||e.cm&&$n(e.cm,"beforeChange"),a=n.changes.length-1;a>=0;--a){var f=n.changes[a];if(f.origin=t,c&&!Yt(e,f,!1))return void(l.length=0);u.push(Hn(e,f));var h=a?Kt(e,f,null):ei(l);Qt(e,f,h,Nr(e,f)),!a&&e.cm&&e.cm.scrollIntoView(f);var d=[];
 // Propagate to the linked documents
-mn(e,function(e,t){t||-1!=ti(d,e.history)||(Gn(e.history,f),d.push(e.history)),Qt(e,f,null,Hr(e,f))})}}}}
+mn(e,function(e,t){t||-1!=ti(d,e.history)||(Gn(e.history,f),d.push(e.history)),Qt(e,f,null,Nr(e,f))})}}}}
 // Sub-views need their line numbers shifted when text is added
 // above or below them in the parent document.
 function Zt(e,t){if(0!=t&&(e.first+=t,e.sel=new X(ri(e.sel.ranges,function(e){return new Y(lo(e.anchor.line+t,e.anchor.ch),lo(e.head.line+t,e.head.ch))}),e.sel.primIndex),e.cm)){rt(e.cm,e.first,e.first-t,t);for(var r=e.cm.display,n=r.viewFrom;n<r.viewTo;n++)nt(e.cm,n,"gutter")}}
@@ -686,9 +686,9 @@ function tr(e,t){var r=e.display,n=r.sizer.getBoundingClientRect(),i=null;if(t.t
 // Scroll a given position into view (immediately), verifying that
 // it actually became visible (as line heights are accurately
 // measured, the position of something may 'drift' during drawing).
-function rr(e,t,r,n){for(null==n&&(n=0);;){var i=!1,o=Ge(e,t),l=r&&r!=t?Ge(e,r):o,s=ir(e,Math.min(o.left,l.left),Math.min(o.top,l.top)-n,Math.max(o.left,l.left),Math.max(o.bottom,l.bottom)+n),a=e.doc.scrollTop,u=e.doc.scrollLeft;if(null!=s.scrollTop&&(Nt(e,s.scrollTop),Math.abs(e.doc.scrollTop-a)>1&&(i=!0)),null!=s.scrollLeft&&(Ht(e,s.scrollLeft),Math.abs(e.doc.scrollLeft-u)>1&&(i=!0)),!i)return o}}
+function rr(e,t,r,n){for(null==n&&(n=0);;){var i=!1,o=Ge(e,t),l=r&&r!=t?Ge(e,r):o,s=ir(e,Math.min(o.left,l.left),Math.min(o.top,l.top)-n,Math.max(o.left,l.left),Math.max(o.bottom,l.bottom)+n),a=e.doc.scrollTop,u=e.doc.scrollLeft;if(null!=s.scrollTop&&(Ht(e,s.scrollTop),Math.abs(e.doc.scrollTop-a)>1&&(i=!0)),null!=s.scrollLeft&&(Nt(e,s.scrollLeft),Math.abs(e.doc.scrollLeft-u)>1&&(i=!0)),!i)return o}}
 // Scroll a given set of coordinates into view (immediately).
-function nr(e,t,r,n,i){var o=ir(e,t,r,n,i);null!=o.scrollTop&&Nt(e,o.scrollTop),null!=o.scrollLeft&&Ht(e,o.scrollLeft)}
+function nr(e,t,r,n,i){var o=ir(e,t,r,n,i);null!=o.scrollTop&&Ht(e,o.scrollTop),null!=o.scrollLeft&&Nt(e,o.scrollLeft)}
 // Calculate a new scroll position needed to scroll the given
 // rectangle into view. Returns an object with scrollTop and
 // scrollLeft properties. When these are undefined, the
@@ -739,7 +739,7 @@ qe(e,function(){for(var t=n.length-1;t>=0;t--)er(e.doc,"",n[t].from,n[t].to,"+de
 // string, or towards the character to the right of the current
 // position. The resulting position will have a hitSide=true
 // property if it reached the end of the document.
-function fr(e,t,r,n,i){function o(){var t=s+r;return t<e.first||t>=e.first+e.size?f=!1:(s=t,c=bn(e,t))}function l(e){var t=(i?Ei:Ii)(c,a,r,!0);if(null==t){if(e||!o())return f=!1;a=i?(0>r?Ni:Ti)(c):0>r?c.text.length:0}else a=t;return!0}var s=t.line,a=t.ch,u=r,c=bn(e,s),f=!0;if("char"==n)l();else if("column"==n)l(!0);else if("word"==n||"group"==n)for(var h=null,d="group"==n,p=e.cm&&e.cm.getHelper(t,"wordChars"),g=!0;!(0>r)||l(!g);g=!1){var v=c.text.charAt(a)||"\n",m=li(v,p)?"w":d&&"\n"==v?"n":!d||/\s/.test(v)?null:"p";if(!d||g||m||(m="s"),h&&h!=m){0>r&&(r=1,l());break}if(m&&(h=m),r>0&&!l(!g))break}var y=de(e,lo(s,a),u,!0);return f||(y.hitSide=!0),y}
+function fr(e,t,r,n,i){function o(){var t=s+r;return t<e.first||t>=e.first+e.size?f=!1:(s=t,c=bn(e,t))}function l(e){var t=(i?Ei:Ii)(c,a,r,!0);if(null==t){if(e||!o())return f=!1;a=i?(0>r?Hi:Ti)(c):0>r?c.text.length:0}else a=t;return!0}var s=t.line,a=t.ch,u=r,c=bn(e,s),f=!0;if("char"==n)l();else if("column"==n)l(!0);else if("word"==n||"group"==n)for(var h=null,d="group"==n,p=e.cm&&e.cm.getHelper(t,"wordChars"),g=!0;!(0>r)||l(!g);g=!1){var v=c.text.charAt(a)||"\n",m=li(v,p)?"w":d&&"\n"==v?"n":!d||/\s/.test(v)?null:"p";if(!d||g||m||(m="s"),h&&h!=m){0>r&&(r=1,l());break}if(m&&(h=m),r>0&&!l(!g))break}var y=de(e,lo(s,a),u,!0);return f||(y.hitSide=!0),y}
 // For relative vertical movement. Dir may be -1 or 1. Unit can be
 // "page" or "line". The resulting position will have a hitSide=true
 // property if it reached the end of the document.
@@ -759,7 +759,7 @@ if(e.cm&&!e.cm.curOp)return Ze(e.cm,vr)(e,t,r,n,i);var o=new zo(e,i),l=so(t,r);
 // Don't connect empty markers unless clearWhenEmpty is false
 if(n&&ii(n,o,!1),l>0||0==l&&o.clearWhenEmpty!==!1)return o;if(o.replacedWith&&(
 // Showing up as a widget implies collapsed (widget replaces text)
-o.collapsed=!0,o.widgetNode=ui("span",[o.replacedWith],"CodeMirror-widget"),n.handleMouseEvents||(o.widgetNode.ignoreEvents=!0),n.insertLeft&&(o.widgetNode.insertLeft=!0)),o.collapsed){if(Rr(e,t.line,t,r,o)||t.line!=r.line&&Rr(e,r.line,t,r,o))throw new Error("Inserting collapsed marker partially overlapping an existing one");oo=!0}o.addToHistory&&On(e,{from:t,to:r,origin:"markText"},e.sel,NaN);var s,a=t.line,u=e.cm;if(e.iter(a,r.line+1,function(e){u&&o.collapsed&&!u.options.lineWrapping&&Br(e)==u.display.maxLine&&(s=!0),o.collapsed&&a!=t.line&&Cn(e,0),Sr(e,new wr(o,a==t.line?t.ch:null,a==r.line?r.ch:null)),++a}),
+o.collapsed=!0,o.widgetNode=ui("span",[o.replacedWith],"CodeMirror-widget"),n.handleMouseEvents||(o.widgetNode.ignoreEvents=!0),n.insertLeft&&(o.widgetNode.insertLeft=!0)),o.collapsed){if(Rr(e,t.line,t,r,o)||t.line!=r.line&&Rr(e,r.line,t,r,o))throw new Error("Inserting collapsed marker partially overlapping an existing one");oo=!0}o.addToHistory&&On(e,{from:t,to:r,origin:"markText"},e.sel,0/0);var s,a=t.line,u=e.cm;if(e.iter(a,r.line+1,function(e){u&&o.collapsed&&!u.options.lineWrapping&&Br(e)==u.display.maxLine&&(s=!0),o.collapsed&&a!=t.line&&Cn(e,0),Sr(e,new wr(o,a==t.line?t.ch:null,a==r.line?r.ch:null)),++a}),
 // lineIsHidden depends on the presence of the spans, so needs a second pass
 o.collapsed&&e.iter(t.line,r.line+1,function(t){Kr(e,t)&&Cn(t,0)}),o.clearOnEnter&&Zo(o,"beforeCursorEnter",function(){o.clear()}),o.readOnly&&(io=!0,(e.history.done.length||e.history.undone.length)&&e.clearHistory()),o.collapsed&&(o.id=++Po,o.atomic=!0),u){if(
 // Sync editor state
@@ -790,17 +790,17 @@ for(var f=0;f<s.length;++f){var h=s[f];if(null==h.to){var d=Cr(a,h.marker);d?u&&
 // Fix up .from in last (or move them into first in case of sameLine)
 for(var f=0;f<a.length;++f){var h=a[f];if(null!=h.to&&(h.to+=c),null==h.from){var d=Cr(s,h.marker);d||(h.from=c,u&&(s||(s=[])).push(h))}else h.from+=c,u&&(s||(s=[])).push(h)}
 // Make sure we didn't create any zero-length spans
-s&&(s=Nr(s)),a&&a!=s&&(a=Nr(a));var p=[s];if(!u){
+s&&(s=Hr(s)),a&&a!=s&&(a=Hr(a));var p=[s];if(!u){
 // Fill gap with whole-line-spans
 var g,v=t.text.length-2;if(v>0&&s)for(var f=0;f<s.length;++f)null==s[f].to&&(g||(g=[])).push(new wr(s[f].marker,null,null));for(var f=0;v>f;++f)p.push(g);p.push(a)}return p}
 // Remove spans that are empty and don't have a clearWhenEmpty
 // option of false.
-function Nr(e){for(var t=0;t<e.length;++t){var r=e[t];null!=r.from&&r.from==r.to&&r.marker.clearWhenEmpty!==!1&&e.splice(t--,1)}return e.length?e:null}
+function Hr(e){for(var t=0;t<e.length;++t){var r=e[t];null!=r.from&&r.from==r.to&&r.marker.clearWhenEmpty!==!1&&e.splice(t--,1)}return e.length?e:null}
 // Used for un/re-doing changes from the history. Combines the
 // result of computing the existing spans with the set of spans that
 // existed in the history (so that deleting around a span and then
 // undoing brings back the span).
-function Hr(e,t){var r=Pn(e,t),n=Tr(e,t);if(!r)return n;if(!n)return r;for(var i=0;i<r.length;++i){var o=r[i],l=n[i];if(o&&l)e:for(var s=0;s<l.length;++s){for(var a=l[s],u=0;u<o.length;++u)if(o[u].marker==a.marker)continue e;o.push(a)}else l&&(r[i]=l)}return r}
+function Nr(e,t){var r=Pn(e,t),n=Tr(e,t);if(!r)return n;if(!n)return r;for(var i=0;i<r.length;++i){var o=r[i],l=n[i];if(o&&l)e:for(var s=0;s<l.length;++s){for(var a=l[s],u=0;u<o.length;++u)if(o[u].marker==a.marker)continue e;o.push(a)}else l&&(r[i]=l)}return r}
 // Used to 'clip' out readOnly ranges when making a change.
 function Ar(e,t,r){var n=null;if(e.iter(t.line,r.line+1,function(e){if(e.markedSpans)for(var t=0;t<e.markedSpans.length;++t){var r=e.markedSpans[t].marker;!r.readOnly||n&&-1!=ti(n,r)||(n||(n=[])).push(r)}}),!n)return null;for(var i=[{from:t,to:r}],o=0;o<n.length;++o)for(var l=n[o],s=l.find(0),a=0;a<i.length;++a){var u=i[a];if(!(so(u.to,s.from)<0||so(u.from,s.to)>0)){var c=[a,1],f=so(u.from,s.from),h=so(u.to,s.to);(0>f||!l.inclusiveLeft&&!f)&&c.push({from:u.from,to:s.from}),(h>0||!l.inclusiveRight&&!h)&&c.push({from:s.to,to:u.to}),i.splice.apply(i,c),a+=c.length-1}}return i}
 // Connect or disconnect spans from a line.
@@ -886,7 +886,7 @@ for(var i=0;i<=(t.rest?t.rest.length:0);i++){var o,l=i?t.rest[i-1]:t.line;n.pos=
 0==i?(t.measure.map=n.map,t.measure.cache={}):((t.measure.maps||(t.measure.maps=[])).push(n.map),(t.measure.caches||(t.measure.caches=[])).push({}))}return Jo(e,"renderLine",e,t.line,n.pre),n.pre.className&&(n.textClass=mi(n.pre.className,n.textClass||"")),n}function sn(e){var t=ui("span","•","cm-invalidchar");return t.title="\\u"+e.charCodeAt(0).toString(16),t}
 // Build up the DOM representation for a single token, and add it to
 // the line map. Takes care to render special characters separately.
-function an(e,t,r,n,i,o){if(t){var l=e.cm.options.specialChars,s=!1;if(l.test(t))for(var a=document.createDocumentFragment(),u=0;;){l.lastIndex=u;var c=l.exec(t),f=c?c.index-u:t.length-u;if(f){var h=document.createTextNode(t.slice(u,u+f));Ri?a.appendChild(ui("span",[h])):a.appendChild(h),e.map.push(e.pos,e.pos+f,h),e.col+=f,e.pos+=f}if(!c)break;if(u+=f+1,"	"==c[0]){var d=e.cm.options.tabSize,p=d-e.col%d,h=a.appendChild(ui("span",Jn(p),"cm-tab"));e.col+=p}else{var h=e.cm.options.specialCharPlaceholder(c[0]);Ri?a.appendChild(ui("span",[h])):a.appendChild(h),e.col+=1}e.map.push(e.pos,e.pos+1,h),e.pos++}else{e.col+=t.length;var a=document.createTextNode(t);e.map.push(e.pos,e.pos+t.length,a),Ri&&(s=!0),e.pos+=t.length}if(r||n||i||s){var g=r||"";n&&(g+=n),i&&(g+=i);var v=ui("span",[a],g);return o&&(v.title=o),e.content.appendChild(v)}e.content.appendChild(a)}}function un(e){function t(e){for(var t=" ",r=0;r<e.length-2;++r)t+=r%2?" ":" ";return t+=" "}return function(r,n,i,o,l,s){e(r,n.replace(/ {3,}/g,t),i,o,l,s)}}
+function an(e,t,r,n,i,o){if(t){var l=e.cm.options.specialChars,s=!1;if(l.test(t))for(var a=document.createDocumentFragment(),u=0;;){l.lastIndex=u;var c=l.exec(t),f=c?c.index-u:t.length-u;if(f){var h=document.createTextNode(t.slice(u,u+f));a.appendChild(Ri?ui("span",[h]):h),e.map.push(e.pos,e.pos+f,h),e.col+=f,e.pos+=f}if(!c)break;if(u+=f+1,"	"==c[0]){var d=e.cm.options.tabSize,p=d-e.col%d,h=a.appendChild(ui("span",Jn(p),"cm-tab"));e.col+=p}else{var h=e.cm.options.specialCharPlaceholder(c[0]);a.appendChild(Ri?ui("span",[h]):h),e.col+=1}e.map.push(e.pos,e.pos+1,h),e.pos++}else{e.col+=t.length;var a=document.createTextNode(t);e.map.push(e.pos,e.pos+t.length,a),Ri&&(s=!0),e.pos+=t.length}if(r||n||i||s){var g=r||"";n&&(g+=n),i&&(g+=i);var v=ui("span",[a],g);return o&&(v.title=o),e.content.appendChild(v)}e.content.appendChild(a)}}function un(e){function t(e){for(var t=" ",r=0;r<e.length-2;++r)t+=r%2?" ":" ";return t+=" "}return function(r,n,i,o,l,s){e(r,n.replace(/ {3,}/g,t),i,o,l,s)}}
 // Work around nonsense dimensions being reported for stretches of
 // right-to-left text.
 function cn(e,t){return function(r,n,i,o,l,s){i=i?i+" cm-force-border":"cm-force-border";for(var a=r.pos,u=a+n.length;;){
@@ -961,13 +961,13 @@ this.lastModTime=this.lastSelTime=0,this.lastOp=null,this.lastOrigin=this.lastSe
 this.generation=this.maxGeneration=e||1}
 // Create a history change event from an updateDoc-style change
 // object.
-function Nn(e,t){var r={from:U(t.from),to:bo(t),text:xn(e,t.from,t.to)};return In(e,r,t.from.line,t.to.line+1),mn(e,function(e){In(e,r,t.from.line,t.to.line+1)},!0),r}
+function Hn(e,t){var r={from:U(t.from),to:bo(t),text:xn(e,t.from,t.to)};return In(e,r,t.from.line,t.to.line+1),mn(e,function(e){In(e,r,t.from.line,t.to.line+1)},!0),r}
 // Pop all selection events off the end of a history array. Stop at
 // a change event.
-function Hn(e){for(;e.length;){var t=ei(e);if(!t.ranges)break;e.pop()}}
+function Nn(e){for(;e.length;){var t=ei(e);if(!t.ranges)break;e.pop()}}
 // Find the top change event in the history. Pop off selection
 // events that are in the way.
-function An(e,t){return t?(Hn(e.done),ei(e.done)):e.done.length&&!ei(e.done).ranges?ei(e.done):e.done.length>1&&!e.done[e.done.length-2].ranges?(e.done.pop(),ei(e.done)):void 0}
+function An(e,t){return t?(Nn(e.done),ei(e.done)):e.done.length&&!ei(e.done).ranges?ei(e.done):e.done.length>1&&!e.done[e.done.length-2].ranges?(e.done.pop(),ei(e.done)):void 0}
 // Register a change in the history. Merges changes that are within
 // a single operation, ore are close together with an origin that
 // allows merging (starting with "+") into a single event.
@@ -978,9 +978,9 @@ var s=ei(o.changes);0==so(t.from,t.to)&&0==so(t.from,s.to)?
 // new changesets for every character typed
 s.to=bo(t):
 // Add new sub-event
-o.changes.push(Nn(e,t))}else{
+o.changes.push(Hn(e,t))}else{
 // Can not be merged, start a new event.
-var a=ei(i.done);for(a&&a.ranges||En(e.sel,i.done),o={changes:[Nn(e,t)],generation:i.generation},i.done.push(o);i.done.length>i.undoDepth;)i.done.shift(),i.done[0].ranges||i.done.shift()}i.done.push(r),i.generation=++i.maxGeneration,i.lastModTime=i.lastSelTime=l,i.lastOp=n,i.lastOrigin=i.lastSelOrigin=t.origin,s||Jo(e,"historyAdded")}function Wn(e,t,r,n){var i=t.charAt(0);return"*"==i||"+"==i&&r.ranges.length==n.ranges.length&&r.somethingSelected()==n.somethingSelected()&&new Date-e.history.lastSelTime<=(e.cm?e.cm.options.historyEventDelay:500)}
+var a=ei(i.done);for(a&&a.ranges||En(e.sel,i.done),o={changes:[Hn(e,t)],generation:i.generation},i.done.push(o);i.done.length>i.undoDepth;)i.done.shift(),i.done[0].ranges||i.done.shift()}i.done.push(r),i.generation=++i.maxGeneration,i.lastModTime=i.lastSelTime=l,i.lastOp=n,i.lastOrigin=i.lastSelOrigin=t.origin,s||Jo(e,"historyAdded")}function Wn(e,t,r,n){var i=t.charAt(0);return"*"==i||"+"==i&&r.ranges.length==n.ranges.length&&r.somethingSelected()==n.somethingSelected()&&new Date-e.history.lastSelTime<=(e.cm?e.cm.options.historyEventDelay:500)}
 // Called whenever the selection changes, sets the new selection as
 // the pending selection in the history, and pushes the old pending
 // selection into the 'done' array when it was significantly
@@ -990,7 +990,7 @@ function Dn(e,t,r,n){var i=e.history,o=n&&n.origin;
 // the current, or the origins don't allow matching. Origins
 // starting with * are always merged, those starting with + are
 // merged when similar and close together in time.
-r==i.lastOp||o&&i.lastSelOrigin==o&&(i.lastModTime==i.lastSelTime&&i.lastOrigin==o||Wn(e,o,ei(i.done),t))?i.done[i.done.length-1]=t:En(t,i.done),i.lastSelTime=+new Date,i.lastSelOrigin=o,i.lastOp=r,n&&n.clearRedo!==!1&&Hn(i.undone)}function En(e,t){var r=ei(t);r&&r.ranges&&r.equals(e)||t.push(e)}
+r==i.lastOp||o&&i.lastSelOrigin==o&&(i.lastModTime==i.lastSelTime&&i.lastOrigin==o||Wn(e,o,ei(i.done),t))?i.done[i.done.length-1]=t:En(t,i.done),i.lastSelTime=+new Date,i.lastSelOrigin=o,i.lastOp=r,n&&n.clearRedo!==!1&&Nn(i.undone)}function En(e,t){var r=ei(t);r&&r.ranges&&r.equals(e)||t.push(e)}
 // Used to store marked span information in the history.
 function In(e,t,r,n){var i=t["spans_"+e.id],o=0;e.iter(Math.max(e.first,r),Math.min(e.first+e.size,n),function(r){r.markedSpans&&((i||(i=t["spans_"+e.id]={}))[o]=r.markedSpans),++o})}
 // When un/re-doing restores text containing marked spans, those
@@ -1033,7 +1033,7 @@ var e;Zo(window,"resize",function(){null==e&&(e=setTimeout(function(){e=null,dl=
 // When the window loses focus, we want to show the editor as blurred
 Zo(window,"blur",function(){yi(Bt)})}function wi(e){if(null!=dl)return dl;var t=ui("div",null,null,"width: 50px; height: 50px; overflow-x: scroll");return fi(e,t),t.offsetWidth&&(dl=t.offsetHeight-t.clientHeight),dl||0}function Ci(e){if(null==pl){var t=ui("span","​");fi(e,ui("span",[t,document.createTextNode("x")])),0!=e.firstChild.offsetHeight&&(pl=t.offsetWidth<=1&&t.offsetHeight>2&&!Fi)}return pl?ui("span","​"):ui("span"," ",null,"display: inline-block; width: 1px; margin-right: -1px")}function Li(e){if(null!=gl)return gl;var t=fi(e,document.createTextNode("AخA")),r=ul(t,0,1).getBoundingClientRect();if(r.left==r.right)return!1;var n=ul(t,1,2).getBoundingClientRect();return gl=n.right-r.right<3}
 // BIDI HELPERS
-function Si(e,t,r,n){if(!e)return n(t,r,"ltr");for(var i=!1,o=0;o<e.length;++o){var l=e[o];(l.from<r&&l.to>t||t==r&&l.to==t)&&(n(Math.max(l.from,t),Math.min(l.to,r),1==l.level?"rtl":"ltr"),i=!0)}i||n(t,r,"ltr")}function ki(e){return e.level%2?e.to:e.from}function Mi(e){return e.level%2?e.from:e.to}function Ti(e){var t=Mn(e);return t?ki(t[0]):0}function Ni(e){var t=Mn(e);return t?Mi(ei(t)):e.text.length}function Hi(e,t){var r=bn(e.doc,t),n=Br(r);n!=r&&(t=Ln(n));var i=Mn(n),o=i?i[0].level%2?Ni(n):Ti(n):0;return lo(t,o)}function Ai(e,t){for(var r,n=bn(e.doc,t);r=Fr(n);)n=r.find(1,!0).line,t=null;var i=Mn(n),o=i?i[0].level%2?Ti(n):Ni(n):n.text.length;return lo(null==t?Ln(n):t,o)}function Oi(e,t,r){var n=e[0].level;return t==n?!0:r==n?!1:r>t}function Wi(e,t){Cl=null;for(var r,n=0;n<e.length;++n){var i=e[n];if(i.from<t&&i.to>t)return n;if(i.from==t||i.to==t){if(null!=r)return Oi(e,i.level,e[r].level)?(i.from!=i.to&&(Cl=r),n):(i.from!=i.to&&(Cl=n),r);r=n}}return r}function Di(e,t,r,n){if(!n)return t+r;do t+=r;while(t>0&&ai(e.text.charAt(t)));return t}
+function Si(e,t,r,n){if(!e)return n(t,r,"ltr");for(var i=!1,o=0;o<e.length;++o){var l=e[o];(l.from<r&&l.to>t||t==r&&l.to==t)&&(n(Math.max(l.from,t),Math.min(l.to,r),1==l.level?"rtl":"ltr"),i=!0)}i||n(t,r,"ltr")}function ki(e){return e.level%2?e.to:e.from}function Mi(e){return e.level%2?e.from:e.to}function Ti(e){var t=Mn(e);return t?ki(t[0]):0}function Hi(e){var t=Mn(e);return t?Mi(ei(t)):e.text.length}function Ni(e,t){var r=bn(e.doc,t),n=Br(r);n!=r&&(t=Ln(n));var i=Mn(n),o=i?i[0].level%2?Hi(n):Ti(n):0;return lo(t,o)}function Ai(e,t){for(var r,n=bn(e.doc,t);r=Fr(n);)n=r.find(1,!0).line,t=null;var i=Mn(n),o=i?i[0].level%2?Ti(n):Hi(n):n.text.length;return lo(null==t?Ln(n):t,o)}function Oi(e,t,r){var n=e[0].level;return t==n?!0:r==n?!1:r>t}function Wi(e,t){Cl=null;for(var r,n=0;n<e.length;++n){var i=e[n];if(i.from<t&&i.to>t)return n;if(i.from==t||i.to==t){if(null!=r)return Oi(e,i.level,e[r].level)?(i.from!=i.to&&(Cl=r),n):(i.from!=i.to&&(Cl=n),r);r=n}}return r}function Di(e,t,r,n){if(!n)return t+r;do t+=r;while(t>0&&ai(e.text.charAt(t)));return t}
 // This is needed in order to move 'visually' through bi-directional
 // text -- i.e., pressing left should make the cursor go left, even
 // when in RTL text. The tricky part is the 'jumps', where RTL and
@@ -1093,14 +1093,14 @@ e.defineExtension=function(t,r){e.prototype[t]=r},e.defineDocExtension=function(
 // MODE STATE HANDLING
 // Utility functions for working with state. Exported because nested
 // modes need to do this for their inner modes.
-var No=e.copyState=function(e,t){if(t===!0)return t;if(e.copyState)return e.copyState(t);var r={};for(var n in t){var i=t[n];i instanceof Array&&(i=i.concat([])),r[n]=i}return r},Ho=e.startState=function(e,t,r){return e.startState?e.startState(t,r):!0};
+var Ho=e.copyState=function(e,t){if(t===!0)return t;if(e.copyState)return e.copyState(t);var r={};for(var n in t){var i=t[n];i instanceof Array&&(i=i.concat([])),r[n]=i}return r},No=e.startState=function(e,t,r){return e.startState?e.startState(t,r):!0};
 // Given a mode and a state (for that mode), find the inner mode and
 // state at the position that the state refers to.
 e.innerMode=function(e,t){for(;e.innerMode;){var r=e.innerMode(t);if(!r||r.mode==e)break;t=r.state,e=r.mode}return r||{mode:e,state:t}};
 // STANDARD COMMANDS
 // Commands are parameter-less actions that can be performed on an
 // editor, mostly used for keybindings.
-var Ao=e.commands={selectAll:function(e){e.setSelection(lo(e.firstLine(),0),lo(e.lastLine()),nl)},singleSelection:function(e){e.setSelection(e.getCursor("anchor"),e.getCursor("head"),nl)},killLine:function(e){cr(e,function(t){if(t.empty()){var r=bn(e.doc,t.head.line).text.length;return t.head.ch==r&&t.head.line<e.lastLine()?{from:t.head,to:lo(t.head.line+1,0)}:{from:t.head,to:lo(t.head.line,r)}}return{from:t.from(),to:t.to()}})},deleteLine:function(e){cr(e,function(t){return{from:lo(t.from().line,0),to:Z(e.doc,lo(t.to().line+1,0))}})},delLineLeft:function(e){cr(e,function(e){return{from:lo(e.from().line,0),to:e.from()}})},undo:function(e){e.undo()},redo:function(e){e.redo()},undoSelection:function(e){e.undoSelection()},redoSelection:function(e){e.redoSelection()},goDocStart:function(e){e.extendSelection(lo(e.firstLine(),0))},goDocEnd:function(e){e.extendSelection(lo(e.lastLine()))},goLineStart:function(e){e.extendSelectionsBy(function(t){return Hi(e,t.head.line)},ol)},goLineStartSmart:function(e){e.extendSelectionsBy(function(t){var r=Hi(e,t.head.line),n=e.getLineHandle(r.line),i=Mn(n);if(!i||0==i[0].level){var o=Math.max(0,n.text.search(/\S/)),l=t.head.line==r.line&&t.head.ch<=o&&t.head.ch;return lo(r.line,l?0:o)}return r},ol)},goLineEnd:function(e){e.extendSelectionsBy(function(t){return Ai(e,t.head.line)},ol)},goLineRight:function(e){e.extendSelectionsBy(function(t){var r=e.charCoords(t.head,"div").top+5;return e.coordsChar({left:e.display.lineDiv.offsetWidth+100,top:r},"div")},ol)},goLineLeft:function(e){e.extendSelectionsBy(function(t){var r=e.charCoords(t.head,"div").top+5;return e.coordsChar({left:0,top:r},"div")},ol)},goLineUp:function(e){e.moveV(-1,"line")},goLineDown:function(e){e.moveV(1,"line")},goPageUp:function(e){e.moveV(-1,"page")},goPageDown:function(e){e.moveV(1,"page")},goCharLeft:function(e){e.moveH(-1,"char")},goCharRight:function(e){e.moveH(1,"char")},goColumnLeft:function(e){e.moveH(-1,"column")},goColumnRight:function(e){e.moveH(1,"column")},goWordLeft:function(e){e.moveH(-1,"word")},goGroupRight:function(e){e.moveH(1,"group")},goGroupLeft:function(e){e.moveH(-1,"group")},goWordRight:function(e){e.moveH(1,"word")},delCharBefore:function(e){e.deleteH(-1,"char")},delCharAfter:function(e){e.deleteH(1,"char")},delWordBefore:function(e){e.deleteH(-1,"word")},delWordAfter:function(e){e.deleteH(1,"word")},delGroupBefore:function(e){e.deleteH(-1,"group")},delGroupAfter:function(e){e.deleteH(1,"group")},indentAuto:function(e){e.indentSelection("smart")},indentMore:function(e){e.indentSelection("add")},indentLess:function(e){e.indentSelection("subtract")},insertTab:function(e){e.replaceSelection("	")},insertSoftTab:function(e){for(var t=[],r=e.listSelections(),n=e.options.tabSize,i=0;i<r.length;i++){var o=r[i].from(),l=ll(e.getLine(o.line),o.ch,n);t.push(new Array(n-l%n+1).join(" "))}e.replaceSelections(t)},defaultTab:function(e){e.somethingSelected()?e.indentSelection("add"):e.execCommand("insertTab")},transposeChars:function(e){qe(e,function(){for(var t=e.listSelections(),r=[],n=0;n<t.length;n++){var i=t[n].head,o=bn(e.doc,i.line).text;if(o)if(i.ch==o.length&&(i=new lo(i.line,i.ch-1)),i.ch>0)i=new lo(i.line,i.ch+1),e.replaceRange(o.charAt(i.ch-1)+o.charAt(i.ch-2),lo(i.line,i.ch-2),i,"+transpose");else if(i.line>e.doc.first){var l=bn(e.doc,i.line-1).text;l&&e.replaceRange(o.charAt(0)+"\n"+l.charAt(l.length-1),lo(i.line-1,l.length-1),lo(i.line,1),"+transpose")}r.push(new Y(i,i))}e.setSelections(r)})},newlineAndIndent:function(e){qe(e,function(){for(var t=e.listSelections().length,r=0;t>r;r++){var n=e.listSelections()[r];e.replaceRange("\n",n.anchor,n.head,"+input"),e.indentLine(n.from().line+1,null,!0),lr(e)}})},toggleOverwrite:function(e){e.toggleOverwrite()}},Oo=e.keyMap={};Oo.basic={Left:"goCharLeft",Right:"goCharRight",Up:"goLineUp",Down:"goLineDown",End:"goLineEnd",Home:"goLineStartSmart",PageUp:"goPageUp",PageDown:"goPageDown",Delete:"delCharAfter",Backspace:"delCharBefore","Shift-Backspace":"delCharBefore",Tab:"defaultTab","Shift-Tab":"indentAuto",Enter:"newlineAndIndent",Insert:"toggleOverwrite",Esc:"singleSelection"},
+var Ao=e.commands={selectAll:function(e){e.setSelection(lo(e.firstLine(),0),lo(e.lastLine()),nl)},singleSelection:function(e){e.setSelection(e.getCursor("anchor"),e.getCursor("head"),nl)},killLine:function(e){cr(e,function(t){if(t.empty()){var r=bn(e.doc,t.head.line).text.length;return t.head.ch==r&&t.head.line<e.lastLine()?{from:t.head,to:lo(t.head.line+1,0)}:{from:t.head,to:lo(t.head.line,r)}}return{from:t.from(),to:t.to()}})},deleteLine:function(e){cr(e,function(t){return{from:lo(t.from().line,0),to:Z(e.doc,lo(t.to().line+1,0))}})},delLineLeft:function(e){cr(e,function(e){return{from:lo(e.from().line,0),to:e.from()}})},undo:function(e){e.undo()},redo:function(e){e.redo()},undoSelection:function(e){e.undoSelection()},redoSelection:function(e){e.redoSelection()},goDocStart:function(e){e.extendSelection(lo(e.firstLine(),0))},goDocEnd:function(e){e.extendSelection(lo(e.lastLine()))},goLineStart:function(e){e.extendSelectionsBy(function(t){return Ni(e,t.head.line)},ol)},goLineStartSmart:function(e){e.extendSelectionsBy(function(t){var r=Ni(e,t.head.line),n=e.getLineHandle(r.line),i=Mn(n);if(!i||0==i[0].level){var o=Math.max(0,n.text.search(/\S/)),l=t.head.line==r.line&&t.head.ch<=o&&t.head.ch;return lo(r.line,l?0:o)}return r},ol)},goLineEnd:function(e){e.extendSelectionsBy(function(t){return Ai(e,t.head.line)},ol)},goLineRight:function(e){e.extendSelectionsBy(function(t){var r=e.charCoords(t.head,"div").top+5;return e.coordsChar({left:e.display.lineDiv.offsetWidth+100,top:r},"div")},ol)},goLineLeft:function(e){e.extendSelectionsBy(function(t){var r=e.charCoords(t.head,"div").top+5;return e.coordsChar({left:0,top:r},"div")},ol)},goLineUp:function(e){e.moveV(-1,"line")},goLineDown:function(e){e.moveV(1,"line")},goPageUp:function(e){e.moveV(-1,"page")},goPageDown:function(e){e.moveV(1,"page")},goCharLeft:function(e){e.moveH(-1,"char")},goCharRight:function(e){e.moveH(1,"char")},goColumnLeft:function(e){e.moveH(-1,"column")},goColumnRight:function(e){e.moveH(1,"column")},goWordLeft:function(e){e.moveH(-1,"word")},goGroupRight:function(e){e.moveH(1,"group")},goGroupLeft:function(e){e.moveH(-1,"group")},goWordRight:function(e){e.moveH(1,"word")},delCharBefore:function(e){e.deleteH(-1,"char")},delCharAfter:function(e){e.deleteH(1,"char")},delWordBefore:function(e){e.deleteH(-1,"word")},delWordAfter:function(e){e.deleteH(1,"word")},delGroupBefore:function(e){e.deleteH(-1,"group")},delGroupAfter:function(e){e.deleteH(1,"group")},indentAuto:function(e){e.indentSelection("smart")},indentMore:function(e){e.indentSelection("add")},indentLess:function(e){e.indentSelection("subtract")},insertTab:function(e){e.replaceSelection("	")},insertSoftTab:function(e){for(var t=[],r=e.listSelections(),n=e.options.tabSize,i=0;i<r.length;i++){var o=r[i].from(),l=ll(e.getLine(o.line),o.ch,n);t.push(new Array(n-l%n+1).join(" "))}e.replaceSelections(t)},defaultTab:function(e){e.somethingSelected()?e.indentSelection("add"):e.execCommand("insertTab")},transposeChars:function(e){qe(e,function(){for(var t=e.listSelections(),r=[],n=0;n<t.length;n++){var i=t[n].head,o=bn(e.doc,i.line).text;if(o)if(i.ch==o.length&&(i=new lo(i.line,i.ch-1)),i.ch>0)i=new lo(i.line,i.ch+1),e.replaceRange(o.charAt(i.ch-1)+o.charAt(i.ch-2),lo(i.line,i.ch-2),i,"+transpose");else if(i.line>e.doc.first){var l=bn(e.doc,i.line-1).text;l&&e.replaceRange(o.charAt(0)+"\n"+l.charAt(l.length-1),lo(i.line-1,l.length-1),lo(i.line,1),"+transpose")}r.push(new Y(i,i))}e.setSelections(r)})},newlineAndIndent:function(e){qe(e,function(){for(var t=e.listSelections().length,r=0;t>r;r++){var n=e.listSelections()[r];e.replaceRange("\n",n.anchor,n.head,"+input"),e.indentLine(n.from().line+1,null,!0),lr(e)}})},toggleOverwrite:function(e){e.toggleOverwrite()}},Oo=e.keyMap={};Oo.basic={Left:"goCharLeft",Right:"goCharRight",Up:"goLineUp",Down:"goLineDown",End:"goLineEnd",Home:"goLineStartSmart",PageUp:"goPageUp",PageDown:"goPageDown",Delete:"delCharAfter",Backspace:"delCharBefore","Shift-Backspace":"delCharBefore",Tab:"defaultTab","Shift-Tab":"indentAuto",Enter:"newlineAndIndent",Insert:"toggleOverwrite",Esc:"singleSelection"},
 // Note that the save and find-related commands aren't defined by
 // default. User code or addons can define them. Unknown commands
 // are simply ignored.
@@ -1142,7 +1142,7 @@ zo.prototype.clear=function(){if(!this.explicitlyCleared){var e=this.doc.cm,t=e&
 zo.prototype.find=function(e,t){null==e&&"bookmark"==this.type&&(e=1);for(var r,n,i=0;i<this.lines.length;++i){var o=this.lines[i],l=Cr(o.markedSpans,this);if(null!=l.from&&(r=lo(t?o:Ln(o),l.from),-1==e))return r;if(null!=l.to&&(n=lo(t?o:Ln(o),l.to),1==e))return n}return r&&{from:r,to:n}},
 // Signals that the marker's widget changed, and surrounding layout
 // should be recomputed.
-zo.prototype.changed=function(){var e=this.find(-1,!0),t=this,r=this.doc.cm;e&&r&&qe(r,function(){var n=e.line,i=Ln(e.line),o=He(r,i);if(o&&(De(o),r.curOp.selectionChanged=r.curOp.forceUpdate=!0),r.curOp.updateMaxLine=!0,!Kr(t.doc,n)&&null!=t.height){var l=t.height;t.height=null;var s=Yr(t)-l;s&&Cn(n,n.height+s)}})},zo.prototype.attachLine=function(e){if(!this.lines.length&&this.doc.cm){var t=this.doc.cm.curOp;t.maybeHiddenMarkers&&-1!=ti(t.maybeHiddenMarkers,this)||(t.maybeUnhiddenMarkers||(t.maybeUnhiddenMarkers=[])).push(this)}this.lines.push(e)},zo.prototype.detachLine=function(e){if(this.lines.splice(ti(this.lines,e),1),!this.lines.length&&this.doc.cm){var t=this.doc.cm.curOp;(t.maybeHiddenMarkers||(t.maybeHiddenMarkers=[])).push(this)}};
+zo.prototype.changed=function(){var e=this.find(-1,!0),t=this,r=this.doc.cm;e&&r&&qe(r,function(){var n=e.line,i=Ln(e.line),o=Ne(r,i);if(o&&(De(o),r.curOp.selectionChanged=r.curOp.forceUpdate=!0),r.curOp.updateMaxLine=!0,!Kr(t.doc,n)&&null!=t.height){var l=t.height;t.height=null;var s=Yr(t)-l;s&&Cn(n,n.height+s)}})},zo.prototype.attachLine=function(e){if(!this.lines.length&&this.doc.cm){var t=this.doc.cm.curOp;t.maybeHiddenMarkers&&-1!=ti(t.maybeHiddenMarkers,this)||(t.maybeUnhiddenMarkers||(t.maybeUnhiddenMarkers=[])).push(this)}this.lines.push(e)},zo.prototype.detachLine=function(e){if(this.lines.splice(ti(this.lines,e),1),!this.lines.length&&this.doc.cm){var t=this.doc.cm.curOp;(t.maybeHiddenMarkers||(t.maybeHiddenMarkers=[])).push(this)}};
 // Collapsed markers have unique ids, in order to be able to order
 // them, which is needed for uniquely determining an outer marker
 // when they overlap (they may nest, but not partially overlap).

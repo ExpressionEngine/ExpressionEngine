@@ -67,7 +67,7 @@ class Addons extends CP_Controller {
 		$this->assigned_modules = ee('Model')->get('MemberGroup', ee()->session->userdata('group_id'))
 			->first()
 			->AssignedModules
-			->pluck('module_name');
+			->pluck('module_id');
 	}
 
 	// --------------------------------------------------------------------
@@ -831,10 +831,7 @@ class Addons extends CP_Controller {
 	 */
 	public function settings($addon, $method = NULL)
 	{
-		if (ee()->session->userdata('group_id') != 1 && ! in_array($name, $this->assigned_modules))
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->assertUserHasAccess($addon);
 
 		ee()->view->cp_page_title = lang('addon_manager');
 
@@ -940,10 +937,7 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
-		if (ee()->session->userdata('group_id') != 1 && ! in_array($name, $this->assigned_modules))
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->assertUserHasAccess($addon);
 
 		try
 		{
@@ -1092,13 +1086,6 @@ class Addons extends CP_Controller {
 		ee()->lang->loadfile($name);
 		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
 
-		$group_id = ee()->session->userdata('group_id');
-
-		if ($group_id != 1 && ! in_array($display_name, $this->assigned_modules))
-		{
-			return array();
-		}
-
 		$data = array(
 			'developer'		=> $info->getAuthor(),
 			'version'		=> '--',
@@ -1114,6 +1101,7 @@ class Addons extends CP_Controller {
 
 		if ($module)
 		{
+			$data['module_id'] = $module->module_id;
 			$data['installed'] = TRUE;
 			$data['version'] = $module->module_version;
 
@@ -1905,8 +1893,21 @@ class Addons extends CP_Controller {
 		$parts[0] = '<b>' . $parts[0] . '</b>';
 		return implode('.', $parts);
 	}
-}
-// END CLASS
 
-/* End of file Addons.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Addons/Addons.php */
+	private function assertUserHasAccess($addon)
+	{
+		if (ee()->session->userdata('group_id') == 1)
+		{
+			return;
+		}
+
+		$module = $this->getModule($addon);
+
+ 		if ( ! isset($module['module_id'])
+			|| ! in_array($module['module_id'], $this->assigned_modules))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+}
+// EOF

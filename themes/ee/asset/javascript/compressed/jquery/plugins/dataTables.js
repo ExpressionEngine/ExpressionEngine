@@ -952,11 +952,8 @@ return a.className=e.oClasses.sInfo,"undefined"==typeof e.aanFeatures.i&&(e.aoDr
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
 function _fnUpdateInfo(e){/* Show information about the table */
-if(e.oFeatures.bInfo&&0!==e.aanFeatures.i.length){var a=e.aanFeatures.i[0],t=1;0==e.fnDisplayEnd()&&(t=0),0===e.fnRecordsDisplay()&&e.fnRecordsDisplay()==e.fnRecordsTotal()?/* Empty record set */
-a.innerHTML=e.oLanguage.sInfoEmpty+e.oLanguage.sInfoPostFix:0===e.fnRecordsDisplay()?/* Rmpty record set after filtering */
-a.innerHTML=e.oLanguage.sInfoEmpty+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix:e.fnRecordsDisplay()==e.fnRecordsTotal()?/* Normal record set */
-a.innerHTML=e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+e.oLanguage.sInfoPostFix:/* Record set after filtering */
-a.innerHTML=e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix;/* No point in recalculating for the other info elements, just copy the first one in */
+if(e.oFeatures.bInfo&&0!==e.aanFeatures.i.length){var a=e.aanFeatures.i[0],t=1;0==e.fnDisplayEnd()&&(t=0),/* Empty record set */
+a.innerHTML=0===e.fnRecordsDisplay()&&e.fnRecordsDisplay()==e.fnRecordsTotal()?e.oLanguage.sInfoEmpty+e.oLanguage.sInfoPostFix:0===e.fnRecordsDisplay()?e.oLanguage.sInfoEmpty+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix:e.fnRecordsDisplay()==e.fnRecordsTotal()?e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+e.oLanguage.sInfoPostFix:e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix;/* No point in recalculating for the other info elements, just copy the first one in */
 var n=e.aanFeatures.i;if(n.length>1)for(var o=a.innerHTML,s=1,i=n.length;i>s;s++)n[s].innerHTML=o}}/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 * Section - Feature: Length change
 		 */
@@ -1030,10 +1027,10 @@ function _fnVisbleColumns(e){for(var a=0,t=0;t<e.aoColumns.length;t++)e.aoColumn
 		 * Returns:  -
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
-function _fnCalculateEnd(e){e.oFeatures.bPaginate===!1?e._iDisplayEnd=e.aiDisplay.length:/* Set the end point of the display - based on how many elements there are
+function _fnCalculateEnd(e){e._iDisplayEnd=e.oFeatures.bPaginate===!1?e.aiDisplay.length:/* Set the end point of the display - based on how many elements there are
 				 * still to display
 				 */
-e._iDisplayStart+e._iDisplayLength>e.aiDisplay.length||-1==e._iDisplayLength?e._iDisplayEnd=e.aiDisplay.length:e._iDisplayEnd=e._iDisplayStart+e._iDisplayLength}/*
+e._iDisplayStart+e._iDisplayLength>e.aiDisplay.length||-1==e._iDisplayLength?e.aiDisplay.length:e._iDisplayStart+e._iDisplayLength}/*
 		 * Function: _fnConvertToWidth
 		 * Purpose:  Convert a CSS unit width to pixels (e.g. 2em)
 		 * Returns:  int:iWidth - width in pixels
@@ -1098,13 +1095,13 @@ function _fnSettingsFromNode(e){for(var a=0;a<_aoSettings.length;a++)if(_aoSetti
 		 * Returns:  array array:aData - Master data array
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
-function _fnGetDataMaster(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)null===e.aoData[n]?a.push(null):a.push(e.aoData[n]._aData);return a}/*
+function _fnGetDataMaster(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)a.push(null===e.aoData[n]?null:e.aoData[n]._aData);return a}/*
 		 * Function: _fnGetTrNodes
 		 * Purpose:  Return an array with the TR nodes for the table
 		 * Returns:  array: - TR array
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
-function _fnGetTrNodes(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)null===e.aoData[n]?a.push(null):a.push(e.aoData[n].nTr);return a}/*
+function _fnGetTrNodes(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)a.push(null===e.aoData[n]?null:e.aoData[n].nTr);return a}/*
 		 * Function: _fnGetTdNodes
 		 * Purpose:  Return an array with the TD nodes for the table
 		 * Returns:  array: - TD array

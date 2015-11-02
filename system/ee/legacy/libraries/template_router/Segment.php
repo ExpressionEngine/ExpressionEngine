@@ -86,6 +86,19 @@ class EE_Route_segment {
 		return $compiled;
 	}
 
+	/**
+	 * hasValue returns true if this segment has a value that should be
+	 * used when building the route. This will always be true for static
+	 * segments and variable segments which have had their value set.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function hasValue()
+	{
+		return empty($this->parts) || $this->isset;
+	}
+
 	public function set($variable, $val)
 	{
 		$this->parts[$variable]->set($val);

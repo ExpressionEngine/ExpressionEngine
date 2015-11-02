@@ -255,6 +255,7 @@ class Layouts extends AbstractChannelsController {
 
 		ee()->view->cp_page_title = lang('create_form_layout');
 
+		$this->addJSAlerts();
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
 		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
@@ -348,6 +349,20 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
+
+		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
+
+		$this->addJSAlerts();
+		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
+
+		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
+		ee()->cp->add_js_script('file', 'cp/channel/layout');
+
+		ee()->cp->render('channels/layout/form', $vars);
+	}
+
+	private function addJSAlerts()
+	{
 		$alert_required = ee('CP/Alert')->makeBanner('tab-has-required-fields')
 			->asIssue()
 			->canClose()
@@ -360,16 +375,8 @@ class Layouts extends AbstractChannelsController {
 			->withTitle(lang('error_cannot_remove_tab'))
 			->addToBody(lang('error_tab_has_fields'));
 
-		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
-
-		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
 		ee()->javascript->set_global('alert.required', $alert_required->render());
 		ee()->javascript->set_global('alert.not_empty', $alert_not_empty->render());
-
-		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
-		ee()->cp->add_js_script('file', 'cp/channel/layout');
-
-		ee()->cp->render('channels/layout/form', $vars);
 	}
 
 	private function getForm($layout)
@@ -378,26 +385,23 @@ class Layouts extends AbstractChannelsController {
 		$member_groups = $this->getEligibleMemberGroups($layout->Channel)
 			->getDictionary('group_id', 'group_title');
 
-		$assigned_member_groups = ee('Model')->get('ChannelLayout')
+		$other_layouts = ee('Model')->get('ChannelLayout')
+			->with('MemberGroups')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $layout->Channel->channel_id);
 
 		if ( ! $layout->isNew())
 		{
 			// Exclude this layout
-			$assigned_member_groups->filter('layout_id', '!=', $layout->layout_id);
+			$other_layouts->filter('layout_id', '!=', $layout->layout_id);
 		}
 
-		$assigned_member_groups = $assigned_member_groups->all()
-			->indexBy('group_id');
-
-		foreach ($member_groups as $id => $title)
+		foreach ($other_layouts->all() as $other_layout)
 		{
-			if (in_array($id, $assigned_member_groups))
+			foreach ($other_layout->MemberGroups as $group)
 			{
-				$layout = $assigned_member_groups[$member_group->group_id];
-				$member_groups[$id] = '<s>' . $title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
-				$disabled_choices[] = $id;
+				$member_groups[$group->group_id] = '<s>' . $group->group_title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $other_layout->layout_id) . '">' . $other_layout->layout_name . '</a></i>';
+				$disabled_choices[] = $group->group_id;
 			}
 		}
 
@@ -431,7 +435,6 @@ class Layouts extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/section')
 				->render(array('name' => 'layout_options', 'settings' => $section));
-
 	}
 
 	private function getEligibleMemberGroups(Channel $channel)

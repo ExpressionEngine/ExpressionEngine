@@ -135,7 +135,7 @@ class TemplateGroup extends Model {
 
 		if (isset($path) && ! $fs->isDir($path))
 		{
-			$fs->mkDir($path);
+			$fs->mkDir($path, FALSE);
 		}
 	}
 

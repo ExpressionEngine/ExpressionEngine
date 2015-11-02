@@ -77,7 +77,7 @@ class Application {
 	{
 		$standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
-			'simple_commerce', 'wiki', 'filepicker'
+			'simple_commerce', 'wiki'
 		);
 
 		$folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);

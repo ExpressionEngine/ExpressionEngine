@@ -14,6 +14,7 @@
 	<?php if (isset($filters)) echo $filters; ?>
 
 	<?php if($type == 'thumb'): ?>
+	<div class="tbl-wrap">
 		<table class='img-grid'>
 		<?php foreach (array_chunk($files->asArray(), 5) as $row): ?>
 			<tr>
@@ -31,6 +32,7 @@
 			</tr>
 		<?php endforeach ?>
 		</table>
+	</div>
 	<?php else: ?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 	<?php endif; ?>

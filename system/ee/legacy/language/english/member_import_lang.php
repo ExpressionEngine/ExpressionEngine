@@ -190,8 +190,6 @@ type of your imported data, the passwords will not work, and affected members wi
 
 'xml_imported' => 'XML Member Data Imported',
 
-'yes' => 'Yes',
-
 'your_data' => 'Your Data',
 
 'order' => 'Order',

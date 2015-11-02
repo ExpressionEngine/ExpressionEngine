@@ -288,10 +288,6 @@ $lang = array(
 
 'back' => 'Back',
 
-'no' => 'no',
-
-'yes' => 'yes',
-
 'all' => 'All',
 
 'any' => 'Any',
