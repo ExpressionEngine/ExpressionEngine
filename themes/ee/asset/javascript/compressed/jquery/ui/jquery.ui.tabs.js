@@ -14,17 +14,14 @@ define(["jquery","./core","./widget"],t):
 // Browser globals
 t(jQuery)}(function(t){return t.widget("ui.tabs",{version:"@VERSION",delay:300,options:{active:null,collapsible:!1,event:"click",heightStyle:"content",hide:null,show:null,
 // callbacks
-activate:null,beforeActivate:null,beforeLoad:null,load:null},_isLocal:function(){var t=/#.*$/;return function(e){var i,a;
-// support: IE7
-// IE7 doesn't normalize the href property when set via script (#9317)
-e=e.cloneNode(!1),i=e.href.replace(t,""),a=location.href.replace(t,"");
+activate:null,beforeActivate:null,beforeLoad:null,load:null},_isLocal:function(){var t=/#.*$/;return function(e){var i,a;e=e.cloneNode(!1),i=e.href.replace(t,""),a=location.href.replace(t,"");
 // decoding may throw an error if the URL isn't UTF-8 (#9518)
 try{i=decodeURIComponent(i)}catch(s){}try{a=decodeURIComponent(a)}catch(s){}return e.hash.length>1&&i===a}}(),_create:function(){var e=this,i=this.options;this.running=!1,this.element.addClass("ui-tabs ui-widget ui-widget-content ui-corner-all").toggleClass("ui-tabs-collapsible",i.collapsible),this._processTabs(),i.active=this._initialActive(),
 // Take disabling tabs via class attribute from HTML
 // into account and update option properly.
 t.isArray(i.disabled)&&(i.disabled=t.unique(i.disabled.concat(t.map(this.tabs.filter(".ui-state-disabled"),function(t){return e.tabs.index(t)}))).sort()),
 // check for length avoids error when initializing empty list
-this.active=this.options.active!==!1&&this.anchors.length?this._findActive(i.active):t(),this._refresh(),this.active.length&&this.load(i.active)},_initialActive:function(){var e=this.options.active,i=this.options.collapsible,a=location.hash.substring(1);
+this.options.active!==!1&&this.anchors.length?this.active=this._findActive(i.active):this.active=t(),this._refresh(),this.active.length&&this.load(i.active)},_initialActive:function(){var e=this.options.active,i=this.options.collapsible,a=location.hash.substring(1);
 // check the fragment identifier in the URL
 // check for a tab marked active via a class
 // no active tab, set to false
@@ -58,16 +55,11 @@ e.disabled=t.map(i.filter(".ui-state-disabled"),function(t){return i.index(t)}),
 // was collapsed or no tabs
 e.active!==!1&&this.anchors.length?this.active.length&&!t.contains(this.tablist[0],this.active[0])?
 // all remaining tabs are disabled
-this.tabs.length===e.disabled.length?(e.active=!1,this.active=t()):this._activate(this._findNextTab(Math.max(0,e.active-1),!1)):
-// make sure active index is correct
-e.active=this.tabs.index(this.active):(e.active=!1,this.active=t()),this._refresh()},_refresh:function(){this._setupDisabled(this.options.disabled),this._setupEvents(this.options.event),this._setupHeightStyle(this.options.heightStyle),this.tabs.not(this.active).attr({"aria-selected":"false","aria-expanded":"false",tabIndex:-1}),this.panels.not(this._getPanelForTab(this.active)).hide().attr({"aria-hidden":"true"}),
+this.tabs.length===e.disabled.length?(e.active=!1,this.active=t()):this._activate(this._findNextTab(Math.max(0,e.active-1),!1)):e.active=this.tabs.index(this.active):(e.active=!1,this.active=t()),this._refresh()},_refresh:function(){this._setupDisabled(this.options.disabled),this._setupEvents(this.options.event),this._setupHeightStyle(this.options.heightStyle),this.tabs.not(this.active).attr({"aria-selected":"false","aria-expanded":"false",tabIndex:-1}),this.panels.not(this._getPanelForTab(this.active)).hide().attr({"aria-hidden":"true"}),
 // Make sure one tab is in the tab order
 this.active.length?(this.active.addClass("ui-tabs-active ui-state-active").attr({"aria-selected":"true","aria-expanded":"true",tabIndex:0}),this._getPanelForTab(this.active).show().attr({"aria-hidden":"false"})):this.tabs.eq(0).attr("tabIndex",0)},_processTabs:function(){var e=this,i=this.tabs,a=this.anchors,s=this.panels;this.tablist=this._getList().addClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all").attr("role","tablist").delegate("> li","mousedown"+this.eventNamespace,function(e){t(this).is(".ui-state-disabled")&&e.preventDefault()}).delegate(".ui-tabs-anchor","focus"+this.eventNamespace,function(){t(this).closest("li").is(".ui-state-disabled")&&this.blur()}),this.tabs=this.tablist.find("> li:has(a[href])").addClass("ui-state-default ui-corner-top").attr({role:"tab",tabIndex:-1}),this.anchors=this.tabs.map(function(){return t("a",this)[0]}).addClass("ui-tabs-anchor").attr({role:"presentation",tabIndex:-1}),this.panels=t(),this.anchors.each(function(i,a){var s,n,r,o=t(a).uniqueId().attr("id"),h=t(a).closest("li"),l=h.attr("aria-controls");
 // inline tab
-e._isLocal(a)?(s=a.hash,r=s.substring(1),n=e.element.find(e._sanitizeSelector(s))):(
-// If the tab doesn't already have aria-controls,
-// generate an id by using a throw-away element
-r=h.attr("aria-controls")||t({}).uniqueId()[0].id,s="#"+r,n=e.element.find(s),n.length||(n=e._createPanel(r),n.insertAfter(e.panels[i-1]||e.tablist)),n.attr("aria-live","polite")),n.length&&(e.panels=e.panels.add(n)),l&&h.data("ui-tabs-aria-controls",l),h.attr({"aria-controls":r,"aria-labelledby":o}),n.attr("aria-labelledby",o)}),this.panels.addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").attr("role","tabpanel"),
+e._isLocal(a)?(s=a.hash,r=s.substring(1),n=e.element.find(e._sanitizeSelector(s))):(r=h.attr("aria-controls")||t({}).uniqueId()[0].id,s="#"+r,n=e.element.find(s),n.length||(n=e._createPanel(r),n.insertAfter(e.panels[i-1]||e.tablist)),n.attr("aria-live","polite")),n.length&&(e.panels=e.panels.add(n)),l&&h.data("ui-tabs-aria-controls",l),h.attr({"aria-controls":r,"aria-labelledby":o}),n.attr("aria-labelledby",o)}),this.panels.addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").attr("role","tabpanel"),
 // Avoid memory leaks (#10056)
 i&&(this._off(i.not(this.tabs)),this._off(a.not(this.anchors)),this._off(s.not(this.panels)))},
 // allow overriding how to find the list for rare usage scenarios (#7715)
@@ -75,15 +67,7 @@ _getList:function(){return this.tablist||this.element.find("ol,ul").eq(0)},_crea
 // disable tabs
 for(var i,a=0;i=this.tabs[a];a++)e===!0||-1!==t.inArray(a,e)?t(i).addClass("ui-state-disabled").attr("aria-disabled","true"):t(i).removeClass("ui-state-disabled").removeAttr("aria-disabled");this.options.disabled=e},_setupEvents:function(e){var i={};e&&t.each(e.split(" "),function(t,e){i[e]="_eventHandler"}),this._off(this.anchors.add(this.tabs).add(this.panels)),
 // Always prevent the default action, even when disabled
-this._on(!0,this.anchors,{click:function(t){t.preventDefault()}}),this._on(this.anchors,i),this._on(this.tabs,{keydown:"_tabKeydown"}),this._on(this.panels,{keydown:"_panelKeydown"}),this._focusable(this.tabs),this._hoverable(this.tabs)},_setupHeightStyle:function(e){var i,a=this.element.parent();"fill"===e?(i=a.height(),i-=this.element.outerHeight()-this.element.height(),this.element.siblings(":visible").each(function(){var e=t(this),a=e.css("position");"absolute"!==a&&"fixed"!==a&&(i-=e.outerHeight(!0))}),this.element.children().not(this.panels).each(function(){i-=t(this).outerHeight(!0)}),this.panels.each(function(){t(this).height(Math.max(0,i-t(this).innerHeight()+t(this).height()))}).css("overflow","auto")):"auto"===e&&(i=0,this.panels.each(function(){i=Math.max(i,t(this).height("").height())}).height(i))},_eventHandler:function(e){var i=this.options,a=this.active,s=t(e.currentTarget),n=s.closest("li"),r=n[0]===a[0],o=r&&i.collapsible,h=o?t():this._getPanelForTab(n),l=a.length?this._getPanelForTab(a):t(),c={oldTab:a,oldPanel:l,newTab:o?t():n,newPanel:h};e.preventDefault(),n.hasClass("ui-state-disabled")||
-// tab is already loading
-n.hasClass("ui-tabs-loading")||
-// can't switch durning an animation
-this.running||
-// click on active header, but not collapsible
-r&&!i.collapsible||
-// allow canceling activation
-this._trigger("beforeActivate",e,c)===!1||(i.active=o?!1:this.tabs.index(n),this.active=r?t():n,this.xhr&&this.xhr.abort(),l.length||h.length||t.error("jQuery UI Tabs: Mismatching fragment identifier."),h.length&&this.load(this.tabs.index(n),e),this._toggle(e,c))},
+this._on(!0,this.anchors,{click:function(t){t.preventDefault()}}),this._on(this.anchors,i),this._on(this.tabs,{keydown:"_tabKeydown"}),this._on(this.panels,{keydown:"_panelKeydown"}),this._focusable(this.tabs),this._hoverable(this.tabs)},_setupHeightStyle:function(e){var i,a=this.element.parent();"fill"===e?(i=a.height(),i-=this.element.outerHeight()-this.element.height(),this.element.siblings(":visible").each(function(){var e=t(this),a=e.css("position");"absolute"!==a&&"fixed"!==a&&(i-=e.outerHeight(!0))}),this.element.children().not(this.panels).each(function(){i-=t(this).outerHeight(!0)}),this.panels.each(function(){t(this).height(Math.max(0,i-t(this).innerHeight()+t(this).height()))}).css("overflow","auto")):"auto"===e&&(i=0,this.panels.each(function(){i=Math.max(i,t(this).height("").height())}).height(i))},_eventHandler:function(e){var i=this.options,a=this.active,s=t(e.currentTarget),n=s.closest("li"),r=n[0]===a[0],o=r&&i.collapsible,h=o?t():this._getPanelForTab(n),l=a.length?this._getPanelForTab(a):t(),c={oldTab:a,oldPanel:l,newTab:o?t():n,newPanel:h};e.preventDefault(),n.hasClass("ui-state-disabled")||n.hasClass("ui-tabs-loading")||this.running||r&&!i.collapsible||this._trigger("beforeActivate",e,c)===!1||(i.active=o?!1:this.tabs.index(n),this.active=r?t():n,this.xhr&&this.xhr.abort(),l.length||h.length||t.error("jQuery UI Tabs: Mismatching fragment identifier."),h.length&&this.load(this.tabs.index(n),e),this._toggle(e,c))},
 // handles show/hide for selecting tabs
 _toggle:function(e,i){function a(){n.running=!1,n._trigger("activate",e,i)}function s(){i.newTab.closest("li").addClass("ui-tabs-active ui-state-active"),r.length&&n.options.show?n._show(r,n.options.show,a):(r.show(),a())}var n=this,r=i.newPanel,o=i.oldPanel;this.running=!0,
 // start out by hiding, then showing, then completing

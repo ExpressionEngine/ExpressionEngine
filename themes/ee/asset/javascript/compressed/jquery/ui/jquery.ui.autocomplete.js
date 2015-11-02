@@ -26,19 +26,11 @@ change:null,close:null,focus:null,open:null,response:null,search:null,select:nul
 // so we use the suppressKeyPressRepeat flag to avoid handling keypress
 // events when we know the keydown event was used to modify the
 // search term. #7799
-var t,i,s,n=this.element[0].nodeName.toLowerCase(),o="textarea"===n,u="input"===n;this.isMultiLine=
-// Textareas are always multi-line
-o?!0:
-// Inputs are always single-line, even if inside a contentEditable element
-// IE also treats inputs as contentEditable
-u?!1:
+var t,i,s,n=this.element[0].nodeName.toLowerCase(),o="textarea"===n,u="input"===n;this.isMultiLine=o?!0:u?!1:
 // All other element types are determined by whether or not they're contentEditable
 this.element.prop("isContentEditable"),this.valueMethod=this.element[o||u?"val":"text"],this.isNewMenu=!0,this.element.addClass("ui-autocomplete-input").attr("autocomplete","off"),this._on(this.element,{keydown:function(n){if(this.element.prop("readOnly"))return t=!0,s=!0,void(i=!0);t=!1,s=!1,i=!1;var o=e.ui.keyCode;switch(n.keyCode){case o.PAGE_UP:t=!0,this._move("previousPage",n);break;case o.PAGE_DOWN:t=!0,this._move("nextPage",n);break;case o.UP:t=!0,this._keyEvent("previous",n);break;case o.DOWN:t=!0,this._keyEvent("next",n);break;case o.ENTER:
 // when menu is open and has focus
-this.menu.active&&(
-// #6055 - Opera still allows the keypress to occur
-// which causes forms to submit
-t=!0,n.preventDefault(),this.menu.select(n));break;case o.TAB:this.menu.active&&this.menu.select(n);break;case o.ESCAPE:this.menu.element.is(":visible")&&(this.isMultiLine||this._value(this.term),this.close(n),
+this.menu.active&&(t=!0,n.preventDefault(),this.menu.select(n));break;case o.TAB:this.menu.active&&this.menu.select(n);break;case o.ESCAPE:this.menu.element.is(":visible")&&(this.isMultiLine||this._value(this.term),this.close(n),
 // Different browsers have different default behavior for escape
 // Single press can mean undo or clear
 // Double press in IE means clear the whole form

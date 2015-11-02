@@ -374,6 +374,9 @@ Grid.Settings.prototype = {
 			items: '.grid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper	// Custom sort handler
 		});
+		this.settingsContainer.find('li.reorder a').on('click', function(e){
+			e.preventDefault();
+		});
 	},
 
 	/**

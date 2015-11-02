@@ -153,14 +153,14 @@ class Rss {
 
 		$dates = array(
 			'date'      => $entry_date,
-			'edit_date' => mysql_to_unix($edit_date)
+			'edit_date' => $edit_date
 		);
 		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
 		$dates = array(
 			'gmt_date'       => $entry_date,
 			'gmt_entry_date' => $entry_date,
-			'gmt_edit_date'  => mysql_to_unix($edit_date)
+			'gmt_edit_date'  => $edit_date
 		);
 		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates, FALSE);
 

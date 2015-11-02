@@ -191,13 +191,7 @@ fnUpdate:function(e,a){if(e.aanFeatures.p){var t,n,o,s,i=_oExt.oPagination.iFull
 for(/* Pages calculation */
 i>l?(t=1,n=l):r>=u?(t=1,n=i):u>=l-r?(t=l-i+1,n=l):(t=u-Math.ceil(i/2)+1,n=t+i-1),o=t;n>=o;o++)f+=u!=o?'<span class="'+d.sPageButton+'">'+o+"</span>":'<span class="'+d.sPageButtonActive+'">'+o+"</span>";/* Loop over each instance of the pager */
 var p,g,c,h=e.aanFeatures.p,_=function(){/* Use the information in the element to jump to the required page */
-var t=1*this.innerHTML-1;return e._iDisplayStart=t*e._iDisplayLength,a(e),!1},S=function(){return!1};for(o=0,s=h.length;s>o;o++)0!==h[o].childNodes.length&&(/* Build up the dynamic list forst - html and listeners */
-c=h[o].childNodes[2],c.innerHTML=f,$("span",c).click(_).bind("mousedown",S).bind("selectstart",S),/* Update the 'premanent botton's classes */
-p=h[o].getElementsByTagName("span"),g=[p[0],p[1],p[p.length-2],p[p.length-1]],$(g).removeClass(d.sPageButton+" "+d.sPageButtonActive+" "+d.sPageButtonStaticDisabled),1==u?(g[0].className+=" "+d.sPageButtonStaticDisabled,g[1].className+=" "+d.sPageButtonStaticDisabled):(g[0].className+=" "+d.sPageButton,g[1].className+=" "+d.sPageButton),0===l||u==l||-1==e._iDisplayLength?(g[2].className+=" "+d.sPageButtonStaticDisabled,g[3].className+=" "+d.sPageButtonStaticDisabled):(g[2].className+=" "+d.sPageButton,g[3].className+=" "+d.sPageButton),/* EllisLab edit */
-$(g[0])[4>u?"hide":"show"](),// first 3 pages, no "first" link
-$(g[1])[1==u?"hide":"show"](),// first page, no "previous" link
-$(g[2])[u==l?"hide":"show"](),// last page, no "next" link
-$(g[3])[u>l-3?"hide":"show"]())}}}},/*
+var t=1*this.innerHTML-1;return e._iDisplayStart=t*e._iDisplayLength,a(e),!1},S=function(){return!1};for(o=0,s=h.length;s>o;o++)0!==h[o].childNodes.length&&(c=h[o].childNodes[2],c.innerHTML=f,$("span",c).click(_).bind("mousedown",S).bind("selectstart",S),p=h[o].getElementsByTagName("span"),g=[p[0],p[1],p[p.length-2],p[p.length-1]],$(g).removeClass(d.sPageButton+" "+d.sPageButtonActive+" "+d.sPageButtonStaticDisabled),1==u?(g[0].className+=" "+d.sPageButtonStaticDisabled,g[1].className+=" "+d.sPageButtonStaticDisabled):(g[0].className+=" "+d.sPageButton,g[1].className+=" "+d.sPageButton),0===l||u==l||-1==e._iDisplayLength?(g[2].className+=" "+d.sPageButtonStaticDisabled,g[3].className+=" "+d.sPageButtonStaticDisabled):(g[2].className+=" "+d.sPageButton,g[3].className+=" "+d.sPageButton),$(g[0])[4>u?"hide":"show"](),$(g[1])[1==u?"hide":"show"](),$(g[2])[u==l?"hide":"show"](),$(g[3])[u>l-3?"hide":"show"]())}}}},/*
 	 * Variable: oSort
 	 * Purpose:  Wrapper for the sorting functions that can be used in DataTables
 	 * Scope:    jQuery.fn.dataTableExt
@@ -236,8 +230,7 @@ _oExt.aTypes=[/*
 		 * Inputs:   string:sText - string to check
 		 */
 function(e){/* Sanity check that we are dealing with a string or quick return for a number */
-if("number"==typeof e)return"numeric";if("function"!=typeof e.charAt)return null;var a,t="0123456789-",n="0123456789.",o=!1;if(/* Check for a valid first char (no period and allow negatives) */
-a=e.charAt(0),-1==t.indexOf(a))return null;/* Check all the other characters are valid */
+if("number"==typeof e)return"numeric";if("function"!=typeof e.charAt)return null;var a,t="0123456789-",n="0123456789.",o=!1;if(a=e.charAt(0),-1==t.indexOf(a))return null;/* Check all the other characters are valid */
 for(var s=1;s<e.length;s++){if(a=e.charAt(s),-1==n.indexOf(a))return null;/* Only allowed one decimal place... */
 if("."==a){if(o)return null;o=!0}}return"numeric"},/*
 		 * Function: -
@@ -562,8 +555,7 @@ function _fnAddColumn(e,a,t){e.aoColumns[e.aoColumns.length++]={sType:null,_bAut
 "undefined"!=typeof a&&null!==a&&("undefined"!=typeof a.sType&&(o.sType=a.sType,o._bAutoType=!1),_fnMap(o,a,"bVisible"),_fnMap(o,a,"bSearchable"),_fnMap(o,a,"bSortable"),_fnMap(o,a,"sTitle"),_fnMap(o,a,"sName"),_fnMap(o,a,"sWidth"),_fnMap(o,a,"sClass"),_fnMap(o,a,"fnRender"),_fnMap(o,a,"bUseRendered"),_fnMap(o,a,"iDataSort"),_fnMap(o,a,"asSorting"),_fnMap(o,a,"sSortDataType")),/* Feature sorting overrides column specific when off */
 e.oFeatures.bSort||(o.bSortable=!1),/* Check that the class assignment is correct for sorting */
 !o.bSortable||-1==$.inArray("asc",o.asSorting)&&-1==$.inArray("desc",o.asSorting)?(o.sSortingClass=e.oClasses.sSortableNone,o.sSortingClassJUI=""):-1!=$.inArray("asc",o.asSorting)&&-1==$.inArray("desc",o.asSorting)?(o.sSortingClass=e.oClasses.sSortableAsc,o.sSortingClassJUI=e.oClasses.sSortJUIAscAllowed):-1==$.inArray("asc",o.asSorting)&&-1!=$.inArray("desc",o.asSorting)&&(o.sSortingClass=e.oClasses.sSortableDesc,o.sSortingClassJUI=e.oClasses.sSortJUIDescAllowed),/* Add a column specific filter */
-"undefined"==typeof e.aoPreSearchCols[n]||null===e.aoPreSearchCols[n]?e.aoPreSearchCols[n]={sSearch:"",bEscapeRegex:!0}:"undefined"==typeof e.aoPreSearchCols[n].bEscapeRegex&&(/* Don't require that the user must specify bEscapeRegex */
-e.aoPreSearchCols[n].bEscapeRegex=!0)}/*
+"undefined"==typeof e.aoPreSearchCols[n]||null===e.aoPreSearchCols[n]?e.aoPreSearchCols[n]={sSearch:"",bEscapeRegex:!0}:"undefined"==typeof e.aoPreSearchCols[n].bEscapeRegex&&(e.aoPreSearchCols[n].bEscapeRegex=!0)}/*
 		 * Function: _fnAddData
 		 * Purpose:  Add a data array to the table, creating DOM node etc
 		 * Returns:  int: - >=0 if successful (index of new aoData entry), -1 if failed
@@ -574,9 +566,7 @@ function _fnAddData(e,a){/* Sanity check the length of the new array */
 if(a.length!=e.aoColumns.length)return alert("DataTables warning: Added data does not match known number of columns"),-1;/* Create the object for storing information about this new row */
 var t=e.aoData.length;e.aoData.push({nTr:document.createElement("tr"),_iId:e.iNextId++,_aData:a.slice(),_anHidden:[],_sRowStripe:""});for(var n,o,s=0;s<a.length;s++){if(n=document.createElement("td"),"function"==typeof e.aoColumns[s].fnRender){var i=e.aoColumns[s].fnRender({iDataRow:t,iDataColumn:s,aData:a,oSettings:e});n.innerHTML=i,e.aoColumns[s].bUseRendered&&(/* Use the rendered data for filtering/sorting */
 e.aoData[t]._aData[s]=i)}else n.innerHTML=a[s];null!==e.aoColumns[s].sClass&&(n.className=e.aoColumns[s].sClass),/* See if we should auto-detect the column type */
-e.aoColumns[s]._bAutoType&&"string"!=e.aoColumns[s].sType&&(/* Attempt to auto detect the type - same as _fnGatherData() */
-o=_fnDetectType(e.aoData[t]._aData[s]),null===e.aoColumns[s].sType?e.aoColumns[s].sType=o:e.aoColumns[s].sType!=o&&(/* String is always the 'fallback' option */
-e.aoColumns[s].sType="string")),e.aoColumns[s].bVisible?e.aoData[t].nTr.appendChild(n):e.aoData[t]._anHidden[s]=n}/* Add to the display array */
+e.aoColumns[s]._bAutoType&&"string"!=e.aoColumns[s].sType&&(o=_fnDetectType(e.aoData[t]._aData[s]),null===e.aoColumns[s].sType?e.aoColumns[s].sType=o:e.aoColumns[s].sType!=o&&(e.aoColumns[s].sType="string")),e.aoColumns[s].bVisible?e.aoData[t].nTr.appendChild(n):e.aoData[t]._anHidden[s]=n}/* Add to the display array */
 return e.aiDisplayMaster.push(t),t}/*
 		 * Function: _fnGatherData
 		 * Purpose:  Read in the data from the target table
@@ -588,21 +578,11 @@ function _fnGatherData(e){var a,t,n,o,s,i,r,l,u,f,d,p,g,c;/*
 			 * Add the data object for the whole table - storing the tr node. Note - no point in getting
 			 * DOM based data if we are going to go and replace it with Ajax source data.
 			 */
-if(null===e.sAjaxSource)for(r=e.nTable.getElementsByTagName("tbody")[0].childNodes,a=0,t=r.length;t>a;a++)if("TR"==r[a].nodeName)for(f=e.aoData.length,e.aoData.push({nTr:r[a],_iId:e.iNextId++,_aData:[],_anHidden:[],_sRowStripe:""}),e.aiDisplayMaster.push(f),u=e.aoData[f]._aData,i=r[a].childNodes,s=0,n=0,o=i.length;o>n;n++)"TD"==i[n].nodeName&&(u[s]=i[n].innerHTML,s++);for(/* Gather in the TD elements of the Table - note that this is basically the same as
-			 * fnGetTdNodes, but that function takes account of hidden columns, which we haven't yet
-			 * setup!
-			 */
-r=_fnGetTrNodes(e),i=[],a=0,t=r.length;t>a;a++)for(n=0,o=r[a].childNodes.length;o>n;n++)l=r[a].childNodes[n],"TD"==l.nodeName&&i.push(l);/* Now process by column */
+if(null===e.sAjaxSource)for(r=e.nTable.getElementsByTagName("tbody")[0].childNodes,a=0,t=r.length;t>a;a++)if("TR"==r[a].nodeName)for(f=e.aoData.length,e.aoData.push({nTr:r[a],_iId:e.iNextId++,_aData:[],_anHidden:[],_sRowStripe:""}),e.aiDisplayMaster.push(f),u=e.aoData[f]._aData,i=r[a].childNodes,s=0,n=0,o=i.length;o>n;n++)"TD"==i[n].nodeName&&(u[s]=i[n].innerHTML,s++);for(r=_fnGetTrNodes(e),i=[],a=0,t=r.length;t>a;a++)for(n=0,o=r[a].childNodes.length;o>n;n++)l=r[a].childNodes[n],"TD"==l.nodeName&&i.push(l);/* Now process by column */
 for(/* Sanity check */
 i.length!=r.length*e.aoColumns.length&&alert("DataTables warning: Unexpected number of TD elements. Expected "+r.length*e.aoColumns.length+" and got "+i.length+". DataTables does not support rowspan / colspan in the table body, and there must be one cell for each row/column combination."),g=0,c=e.aoColumns.length;c>g;g++){/* Get the title of the column - unless there is a user set one */
 null===e.aoColumns[g].sTitle&&(e.aoColumns[g].sTitle=e.aoColumns[g].nTh.innerHTML);var h,_,S,D=e.aoColumns[g]._bAutoType,m="function"==typeof e.aoColumns[g].fnRender,C=null!==e.aoColumns[g].sClass,b=e.aoColumns[g].bVisible;/* A single loop to rule them all (and be more efficient) */
-if(D||m||C||!b)for(d=0,p=e.aoData.length;p>d;d++)h=i[d*c+g],/* Type detection */
-D&&"string"!=e.aoColumns[g].sType&&(_=_fnDetectType(e.aoData[d]._aData[g]),null===e.aoColumns[g].sType?e.aoColumns[g].sType=_:e.aoColumns[g].sType!=_&&(/* String is always the 'fallback' option */
-e.aoColumns[g].sType="string")),/* Rendering */
-m&&(S=e.aoColumns[g].fnRender({iDataRow:d,iDataColumn:g,aData:e.aoData[d]._aData,oSettings:e}),h.innerHTML=S,e.aoColumns[g].bUseRendered&&(/* Use the rendered data for filtering/sorting */
-e.aoData[d]._aData[g]=S)),/* Classes */
-C&&(h.className+=" "+e.aoColumns[g].sClass),/* Column visability */
-b||(e.aoData[d]._anHidden[g]=h,h.parentNode.removeChild(h))}}/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+if(D||m||C||!b)for(d=0,p=e.aoData.length;p>d;d++)h=i[d*c+g],D&&"string"!=e.aoColumns[g].sType&&(_=_fnDetectType(e.aoData[d]._aData[g]),null===e.aoColumns[g].sType?e.aoColumns[g].sType=_:e.aoColumns[g].sType!=_&&(e.aoColumns[g].sType="string")),m&&(S=e.aoColumns[g].fnRender({iDataRow:d,iDataColumn:g,aData:e.aoData[d]._aData,oSettings:e}),h.innerHTML=S,e.aoColumns[g].bUseRendered&&(e.aoData[d]._aData[g]=S)),C&&(h.className+=" "+e.aoColumns[g].sClass),b||(e.aoData[d]._anHidden[g]=h,h.parentNode.removeChild(h))}}/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 * Section - Drawing functions
 		 */
 /*
@@ -613,11 +593,7 @@ b||(e.aoData[d]._anHidden[g]=h,h.parentNode.removeChild(h))}}/* * * * * * * * * 
 		 */
 function _fnDrawHead(e){var a,t,n,o=e.nTable.getElementsByTagName("thead")[0].getElementsByTagName("th").length,s=0;/* If there is a header in place - then use it - otherwise it's going to get nuked... */
 if(0!==o)/* We've got a thead from the DOM, so remove hidden columns and apply width to vis cols */
-for(a=0,n=e.aoColumns.length;n>a;a++)
-//oSettings.aoColumns[i].nTh = nThs[i];
-t=e.aoColumns[a].nTh,e.aoColumns[a].bVisible?(/* Set width */
-null!==e.aoColumns[a].sWidth&&(t.style.width=e.aoColumns[a].sWidth),/* Set the title of the column if it is user defined (not what was auto detected) */
-e.aoColumns[a].sTitle!=t.innerHTML&&(t.innerHTML=e.aoColumns[a].sTitle)):(t.parentNode.removeChild(t),s++);else{/* We don't have a header in the DOM - so we are going to have to create one */
+for(a=0,n=e.aoColumns.length;n>a;a++)t=e.aoColumns[a].nTh,e.aoColumns[a].bVisible?(null!==e.aoColumns[a].sWidth&&(t.style.width=e.aoColumns[a].sWidth),e.aoColumns[a].sTitle!=t.innerHTML&&(t.innerHTML=e.aoColumns[a].sTitle)):(t.parentNode.removeChild(t),s++);else{/* We don't have a header in the DOM - so we are going to have to create one */
 var i=document.createElement("tr");for(a=0,n=e.aoColumns.length;n>a;a++)t=e.aoColumns[a].nTh,t.innerHTML=e.aoColumns[a].sTitle,e.aoColumns[a].bVisible&&(null!==e.aoColumns[a].sClass&&(t.className=e.aoColumns[a].sClass),null!==e.aoColumns[a].sWidth&&(t.style.width=e.aoColumns[a].sWidth),i.appendChild(t));$("thead:eq(0)",e.nTable).html("")[0].appendChild(i)}/* Add the extra markup needed by jQuery UI's themes */
 if(e.bJUI)for(a=0,n=e.aoColumns.length;n>a;a++)e.aoColumns[a].nTh.insertBefore(document.createElement("span"),e.aoColumns[a].nTh.firstChild);/* Add sort listener */
 if(e.oFeatures.bSort){for(a=0;a<e.aoColumns.length;a++)e.aoColumns[a].bSortable!==!1?_fnSortAttachListener(e,e.aoColumns[a].nTh,a):$(e.aoColumns[a].nTh).addClass(e.oClasses.sSortableNone);/* Take the brutal approach to cancelling text selection due to the shift key */
@@ -698,20 +674,8 @@ var a=document.createElement("div");e.nTable.parentNode.insertBefore(a,e.nTable)
 			 * compatability. It can be removed if you don't want it.
 			 */
 var t=document.createElement("div");t.className=e.oClasses.sWrapper,""!==e.sTableId&&t.setAttribute("id",e.sTableId+"_wrapper");/* Track where we want to insert the option */
-var n=t,o=e.sDom.replace("H","fg-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix");o=o.replace("F","fg-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix");for(var s,i,r,l,u,f,d,p=o.split(""),g=0;g<p.length;g++){if(i=0,r=p[g],"<"==r){if(/* New container div */
-l=document.createElement("div"),/* Check to see if we should append a class name to the container */
-u=p[g+1],"'"==u||'"'==u){for(f="",d=2;p[g+d]!=u;)f+=p[g+d],d++;l.className=f,g+=d}n.appendChild(l),n=l}else if(">"==r)/* End container div */
-n=n.parentNode;else if("l"==r&&e.oFeatures.bPaginate&&e.oFeatures.bLengthChange)/* Length */
-s=_fnFeatureHtmlLength(e),i=1;else if("f"==r&&e.oFeatures.bFilter)/* Filter */
-s=_fnFeatureHtmlFilter(e),i=1;else if("r"==r&&e.oFeatures.bProcessing)/* pRocessing */
-s=_fnFeatureHtmlProcessing(e),/* EllisLab edit - I hard coded the id rather than writing a new node
-					*/
-i=0;else if("t"==r)/* Table */
-s=e.nTable,i=1;else if("i"==r&&e.oFeatures.bInfo)/* Info */
-s=_fnFeatureHtmlInfo(e),i=1;else if("p"==r&&e.oFeatures.bPaginate)/* Pagination */
-s=_fnFeatureHtmlPaginate(e),/* EllisLab edit - I hard coded it
-					*/
-i=0;else if(0!==_oExt.aoFeatures.length)for(var c=_oExt.aoFeatures,h=0,_=c.length;_>h;h++)if(r==c[h].cFeature){s=c[h].fnInit(e),s&&(i=1);break}/* Add to the 2D features array */
+var n=t,o=e.sDom.replace("H","fg-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix");o=o.replace("F","fg-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix");for(var s,i,r,l,u,f,d,p=o.split(""),g=0;g<p.length;g++){if(i=0,r=p[g],"<"==r){if(l=document.createElement("div"),u=p[g+1],"'"==u||'"'==u){for(f="",d=2;p[g+d]!=u;)f+=p[g+d],d++;l.className=f,g+=d}n.appendChild(l),n=l}else if(">"==r)/* End container div */
+n=n.parentNode;else if("l"==r&&e.oFeatures.bPaginate&&e.oFeatures.bLengthChange)s=_fnFeatureHtmlLength(e),i=1;else if("f"==r&&e.oFeatures.bFilter)s=_fnFeatureHtmlFilter(e),i=1;else if("r"==r&&e.oFeatures.bProcessing)s=_fnFeatureHtmlProcessing(e),i=0;else if("t"==r)s=e.nTable,i=1;else if("i"==r&&e.oFeatures.bInfo)s=_fnFeatureHtmlInfo(e),i=1;else if("p"==r&&e.oFeatures.bPaginate)s=_fnFeatureHtmlPaginate(e),i=0;else if(0!==_oExt.aoFeatures.length)for(var c=_oExt.aoFeatures,h=0,_=c.length;_>h;h++)if(r==c[h].cFeature){s=c[h].fnInit(e),s&&(i=1);break}/* Add to the 2D features array */
 1==i&&("object"!=typeof e.aanFeatures[r]&&(e.aanFeatures[r]=[]),e.aanFeatures[r].push(s),n.appendChild(s))}/* Built our DOM structure - replace the holding div with what we want */
 a.parentNode.replaceChild(t,a)}/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 * Section - Feature: Filtering
@@ -723,9 +687,7 @@ a.parentNode.replaceChild(t,a)}/* * * * * * * * * * * * * * * * * * * * * * * * 
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
 function _fnFeatureHtmlFilter(e){var a=document.createElement("div");""!==e.sTableId&&"undefined"==typeof e.aanFeatures.f&&a.setAttribute("id",e.sTableId+"_filter"),a.className=e.oClasses.sFilter;var t=""===e.oLanguage.sSearch?"":" ";a.innerHTML=e.oLanguage.sSearch+t+'<input type="text" />';var n=$("input",a);return n.val(e.oPreviousSearch.sSearch.replace('"',"&quot;")),n.keyup(function(a){for(var t=e.aanFeatures.f,n=0,o=t.length;o>n;n++)t[n]!=this.parentNode&&$("input",t[n]).val(this.value);/* Now do the filter */
-_fnFilterComplete(e,{sSearch:this.value,bEscapeRegex:e.oPreviousSearch.bEscapeRegex})}),n.keypress(function(e){/* Prevent default */
-/* Prevent default */
-return 13==e.keyCode?!1:void 0}),a}/*
+_fnFilterComplete(e,{sSearch:this.value,bEscapeRegex:e.oPreviousSearch.bEscapeRegex})}),n.keypress(function(e){return 13==e.keyCode?!1:void 0}),a}/*
 		 * Function: _fnFilterComplete
 		 * Purpose:  Filter the table using both the global filter and column based filtering
 		 * Returns:  -
@@ -899,15 +861,7 @@ for(s=null!==e.aaSortingFixed?e.aaSortingFixed.concat(e.aaSorting):e.aaSorting.s
 var u=$("span",e.aoColumns[a].nTh);u.removeClass(l.sSortJUIAsc+" "+l.sSortJUIDesc+" "+l.sSortJUI+" "+l.sSortJUIAscAllowed+" "+l.sSortJUIDescAllowed);var f;f=-1==o?e.aoColumns[a].sSortingClassJUI:"asc"==s[o][1]?l.sSortJUIAsc:l.sSortJUIDesc,u.addClass(f)}}else/* No sorting on this column, so add the base class. This will have been assigned by
 					 * _fnAddColumn
 					 */
-$(e.aoColumns[a].nTh).addClass(e.aoColumns[a].sSortingClass);if(/* 
-			 * Apply the required classes to the table body
-			 * Note that this is given as a feature switch since it can significantly slow down a sort
-			 * on large data sets (adding and removing of classes is always slow at the best of times..)
-			 * Further to this, note that this code is admitadly fairly ugly. It could be made a lot 
-			 * simpiler using jQuery selectors and add/removeClass, but that is significantly slower
-			 * (on the order of 5 times slower) - hence the direct DOM manipulation here.
-			 */
-i=l.sSortColumn,e.oFeatures.bSort&&e.oFeatures.bSortClasses){var d=_fnGetTdNodes(e);/* Remove the old classes */
+$(e.aoColumns[a].nTh).addClass(e.aoColumns[a].sSortingClass);if(i=l.sSortColumn,e.oFeatures.bSort&&e.oFeatures.bSortClasses){var d=_fnGetTdNodes(e);/* Remove the old classes */
 if(d.length>=r)for(a=0;r>a;a++)if(-1!=d[a].className.indexOf(i+"1"))for(t=0,n=d.length/r;n>t;t++)d[r*t+a].className=d[r*t+a].className.replace(" "+i+"1","");else if(-1!=d[a].className.indexOf(i+"2"))for(t=0,n=d.length/r;n>t;t++)d[r*t+a].className=d[r*t+a].className.replace(" "+i+"2","");else if(-1!=d[a].className.indexOf(i+"3"))for(t=0,n=d.length/r;n>t;t++)d[r*t+a].className=d[r*t+a].className.replace(" "+i+"3","");/* Add the new classes to the table */
 var p,g=1;for(a=0;a<s.length;a++){for(p=parseInt(s[a][0],10),t=0,n=d.length/r;n>t;t++)d[r*t+p].className+=" "+i+g;3>g&&g++}}}/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 * Section - Feature: Pagination. Note that most of the paging logic is done in 
@@ -952,8 +906,9 @@ return a.className=e.oClasses.sInfo,"undefined"==typeof e.aanFeatures.i&&(e.aoDr
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
 function _fnUpdateInfo(e){/* Show information about the table */
-if(e.oFeatures.bInfo&&0!==e.aanFeatures.i.length){var a=e.aanFeatures.i[0],t=1;0==e.fnDisplayEnd()&&(t=0),/* Empty record set */
-a.innerHTML=0===e.fnRecordsDisplay()&&e.fnRecordsDisplay()==e.fnRecordsTotal()?e.oLanguage.sInfoEmpty+e.oLanguage.sInfoPostFix:0===e.fnRecordsDisplay()?e.oLanguage.sInfoEmpty+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix:e.fnRecordsDisplay()==e.fnRecordsTotal()?e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+e.oLanguage.sInfoPostFix:e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix;/* No point in recalculating for the other info elements, just copy the first one in */
+if(e.oFeatures.bInfo&&0!==e.aanFeatures.i.length){var a=e.aanFeatures.i[0],t=1;0==e.fnDisplayEnd()&&(t=0),0===e.fnRecordsDisplay()&&e.fnRecordsDisplay()==e.fnRecordsTotal()?/* Empty record set */
+a.innerHTML=e.oLanguage.sInfoEmpty+e.oLanguage.sInfoPostFix:0===e.fnRecordsDisplay()?/* Rmpty record set after filtering */
+a.innerHTML=e.oLanguage.sInfoEmpty+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix:e.fnRecordsDisplay()==e.fnRecordsTotal()?a.innerHTML=e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+e.oLanguage.sInfoPostFix:a.innerHTML=e.oLanguage.sInfo.replace("_START_",e._iDisplayStart+t).replace("_END_",e.fnDisplayEnd()).replace("_TOTAL_",e.fnRecordsDisplay())+" "+e.oLanguage.sInfoFiltered.replace("_MAX_",e.fnRecordsTotal())+e.oLanguage.sInfoPostFix;/* No point in recalculating for the other info elements, just copy the first one in */
 var n=e.aanFeatures.i;if(n.length>1)for(var o=a.innerHTML,s=1,i=n.length;i>s;s++)n[s].innerHTML=o}}/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 * Section - Feature: Length change
 		 */
@@ -1027,10 +982,10 @@ function _fnVisbleColumns(e){for(var a=0,t=0;t<e.aoColumns.length;t++)e.aoColumn
 		 * Returns:  -
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
-function _fnCalculateEnd(e){e._iDisplayEnd=e.oFeatures.bPaginate===!1?e.aiDisplay.length:/* Set the end point of the display - based on how many elements there are
+function _fnCalculateEnd(e){e.oFeatures.bPaginate===!1?e._iDisplayEnd=e.aiDisplay.length:/* Set the end point of the display - based on how many elements there are
 				 * still to display
 				 */
-e._iDisplayStart+e._iDisplayLength>e.aiDisplay.length||-1==e._iDisplayLength?e.aiDisplay.length:e._iDisplayStart+e._iDisplayLength}/*
+e._iDisplayStart+e._iDisplayLength>e.aiDisplay.length||-1==e._iDisplayLength?e._iDisplayEnd=e.aiDisplay.length:e._iDisplayEnd=e._iDisplayStart+e._iDisplayLength}/*
 		 * Function: _fnConvertToWidth
 		 * Purpose:  Convert a CSS unit width to pixels (e.g. 2em)
 		 * Returns:  int:iWidth - width in pixels
@@ -1045,8 +1000,7 @@ function _fnConvertToWidth(e,a){if(!e||null===e||""===e)return 0;"undefined"==ty
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
 function _fnCalculateColumnWidths(e){var a,t,n=e.nTable.offsetWidth,o=0,s=0,i=e.aoColumns.length,r=$("thead:eq(0)>th",e.nTable);/* Convert any user input sizes into pixel sizes */
-for(t=0;i>t;t++)e.aoColumns[t].bVisible&&(s++,null!==e.aoColumns[t].sWidth&&(a=_fnConvertToWidth(e.aoColumns[t].sWidth,e.nTable.parentNode),/* Total up the user defined widths for later calculations */
-o+=a,e.aoColumns[t].sWidth=a+"px"));/* If the number of columns in the DOM equals the number that we
+for(t=0;i>t;t++)e.aoColumns[t].bVisible&&(s++,null!==e.aoColumns[t].sWidth&&(a=_fnConvertToWidth(e.aoColumns[t].sWidth,e.nTable.parentNode),o+=a,e.aoColumns[t].sWidth=a+"px"));/* If the number of columns in the DOM equals the number that we
 			 * have to process in dataTables, then we can use the offsets that are
 			 * created by the web-browser. No custom sizes can be set in order for
 			 * this to happen
@@ -1095,13 +1049,13 @@ function _fnSettingsFromNode(e){for(var a=0;a<_aoSettings.length;a++)if(_aoSetti
 		 * Returns:  array array:aData - Master data array
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
-function _fnGetDataMaster(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)a.push(null===e.aoData[n]?null:e.aoData[n]._aData);return a}/*
+function _fnGetDataMaster(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)null===e.aoData[n]?a.push(null):a.push(e.aoData[n]._aData);return a}/*
 		 * Function: _fnGetTrNodes
 		 * Purpose:  Return an array with the TR nodes for the table
 		 * Returns:  array: - TR array
 		 * Inputs:   object:oSettings - dataTables settings object
 		 */
-function _fnGetTrNodes(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)a.push(null===e.aoData[n]?null:e.aoData[n].nTr);return a}/*
+function _fnGetTrNodes(e){for(var a=[],t=e.aoData.length,n=0;t>n;n++)null===e.aoData[n]?a.push(null):a.push(e.aoData[n].nTr);return a}/*
 		 * Function: _fnGetTdNodes
 		 * Purpose:  Return an array with the TD nodes for the table
 		 * Returns:  array: - TD array
@@ -1147,10 +1101,6 @@ var a,t="{";for(t+='"iStart": '+e._iDisplayStart+",",t+='"iEnd": '+e._iDisplayEn
 		 */
 function _fnLoadState(oSettings,oInit){if(oSettings.oFeatures.bStateSave){var oData,sData=_fnReadCookie("SpryMedia_DataTables_"+oSettings.sInstance);if(null!==sData&&""!==sData){/* Try/catch the JSON eval - if it is bad then we ignore it */
 try{/* Use the JSON library for safety - if it is available */
-/* DT 1.4.0 used single quotes for a string - JSON.parse doesn't allow this and throws
-						 * an error. So for now we can do this. This can be removed in future it is just to
-						 * allow the tranfrer to 1.4.1+ to occur
-						 */
 oData="object"==typeof JSON&&"function"==typeof JSON.parse?JSON.parse(sData.replace(/'/g,'"')):eval("("+sData+")")}catch(e){return}/* Column filtering - added in 1.5.0 beta 6 */
 if(/* Restore key features */
 oSettings._iDisplayStart=oData.iStart,oSettings.iInitDisplayStart=oData.iStart,oSettings._iDisplayEnd=oData.iEnd,oSettings._iDisplayLength=oData.iLength,oSettings.oPreviousSearch.sSearch=oData.sFilter,oSettings.aaSorting=oData.aaSorting.slice(),oSettings.saved_aaSorting=oData.aaSorting.slice(),/* Search filtering - global reference added in 1.4.1 */
@@ -1166,12 +1116,7 @@ oInit.saved_aoColumns=[],i=0;i<oData.abVisCols.length;i++)oInit.saved_aoColumns[
 		 *           string:sValue - the value the cookie should take
 		 *           int:iSecs - duration of the cookie
 		 */
-function _fnCreateCookie(e,a,t){var n=new Date;n.setTime(n.getTime()+1e3*t),/* 
-			 * Shocking but true - it would appear IE has major issues with having the path being
-			 * set to anything but root. We need the cookie to be available based on the path, so we
-			 * have to append the pathname to the cookie name. Appalling.
-			 */
-e+="_"+window.location.pathname.replace(/[\/:]/g,"").toLowerCase(),document.cookie=e+"="+encodeURIComponent(a)+"; expires="+n.toGMTString()+"; path=/"}/*
+function _fnCreateCookie(e,a,t){var n=new Date;n.setTime(n.getTime()+1e3*t),e+="_"+window.location.pathname.replace(/[\/:]/g,"").toLowerCase(),document.cookie=e+"="+encodeURIComponent(a)+"; expires="+n.toGMTString()+"; path=/"}/*
 		 * Function: _fnReadCookie
 		 * Purpose:  Read an old cookie to get a cookie with an old table state
 		 * Returns:  string: - contents of the cookie - or null if no cookie with that name found

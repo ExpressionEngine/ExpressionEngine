@@ -253,7 +253,7 @@ class Fields extends Members\Members {
 			$field = ee('Model')->make('MemberField');
 			$field->field_type = 'text';
 
-			ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('layout'));
+			ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
 			ee()->view->cp_page_title = lang('create_member_field');
 			ee()->view->base_url = ee('CP/URL')->make('members/fields/create');
 		}

@@ -404,7 +404,10 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group'),
+			'file' => array(
+				'cp/form_group',
+				'cp/channel/fields'
+			),
 		));
 
 		return $sections;

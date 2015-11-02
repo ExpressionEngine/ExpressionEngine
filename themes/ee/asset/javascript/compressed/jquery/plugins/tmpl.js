@@ -40,19 +40,11 @@ return new Function("jQuery","$item","var $=jQuery,call,__=[],$data=$item.data;w
 // In that case don't call with template item as 'this' pointer. Just evaluate...
 return u=f._default||[],p&&!/\w$/.test(r)&&(r+=p,p=""),r?(r=i(r),o=o?","+i(o)+")":p?")":"",c=p?r.indexOf(".")>-1?r+i(p):"("+r+").call($item"+o:r,m=p?c:"(typeof("+r+")==='function'?("+r+").call($item):("+r+"))"):m=c=u.$1||"null",a=i(a),"');"+f[n?"close":"open"].split("$notnull_1").join(r?"typeof("+r+")!=='undefined' && ("+r+")!=null":"true").split("$1a").join(m).split("$1").join(c).split("$2").join(a||u.$2||"")+"__.push('"})+"');}return __;")}function p(e,n){
 // Build the wrapped content.
-e._wrap=l(e,!0,
-// Suport imperative scenario in which options.wrapped can be set to a selector or an HTML string.
-t.isArray(n)?n:[y.test(n)?n:t(n).html()]).join("")}function i(t){return t?t.replace(/\\'/g,"'").replace(/\\\\/g,"\\"):null}function o(t){var e=document.createElement("div");return e.appendChild(t.cloneNode(!0)),e.innerHTML}
+e._wrap=l(e,!0,t.isArray(n)?n:[y.test(n)?n:t(n).html()]).join("")}function i(t){return t?t.replace(/\\'/g,"'").replace(/\\\\/g,"\\"):null}function o(t){var e=document.createElement("div");return e.appendChild(t.cloneNode(!0)),e.innerHTML}
 // Store template items in jQuery.data(), ensuring a unique tmplItem data data structure for each rendered template instance.
 function u(e){function l(e){function l(t){t+=u,p=c[t]=c[t]||n(p,g[p.parent.key+u]||p.parent)}var a,r,p,i,o=e;
 // Ensure that each rendered template inserted into the DOM has its own template item,
-if(i=e.getAttribute(h)){for(;o.parentNode&&1===(o=o.parentNode).nodeType&&!(a=o.getAttribute(h)););a!==i&&(
-// The next ancestor with a _tmplitem expando is on a different key than this one.
-// So this is a top-level element within this template item
-// Set pntNode to the key of the parentNode, or to 0 if pntNode.parentNode is null, or pntNode is a fragment.
-o=o.parentNode?11===o.nodeType?0:o.getAttribute(h)||0:0,(p=g[i])||(
-// The item is for wrapped content, and was copied from the temporary parent wrappedItem.
-p=v[i],p=n(p,g[o]||v[o]),p.key=++k,g[k]=p),T&&l(i)),e.removeAttribute(h)}else T&&(p=t.data(e,"tmplItem"))&&(
+if(i=e.getAttribute(h)){for(;o.parentNode&&1===(o=o.parentNode).nodeType&&!(a=o.getAttribute(h)););a!==i&&(o=o.parentNode?11===o.nodeType?0:o.getAttribute(h)||0:0,(p=g[i])||(p=v[i],p=n(p,g[o]||v[o]),p.key=++k,g[k]=p),T&&l(i)),e.removeAttribute(h)}else T&&(p=t.data(e,"tmplItem"))&&(
 // This was a rendered element, cloned during append or appendTo etc.
 // TmplItem stored in jQuery data has already been cloned in cloneCopyEvent. We must replace it with a fresh cloned tmplItem.
 l(p.key),g[p.key]=p,o=t.data(e.parentNode,"tmplItem"),o=o?o.key:0);if(p){
@@ -86,9 +78,7 @@ template:function(e){return t.template(e,this[0])},domManip:function(e,n,l,a){if
 // Handler called by oldManip when rendered template has been inserted into DOM.
 t.tmpl.afterManip(this,e,l)}),_.apply(this,p)}else _.apply(this,arguments);return T=0,$||t.tmpl.complete(g),this}}),t.extend({
 // Return wrapped set of template items, obtained by rendering template against data.
-tmpl:function(e,a,r,i){var o,u=!i;if(u)
-// This is a top-level tmpl call (not from a nested template using {{tmpl}})
-i=w,e=t.template[e]||t.template(null,e),v={};else if(!e)
+tmpl:function(e,a,r,i){var o,u=!i;if(u)i=w,e=t.template[e]||t.template(null,e),v={};else if(!e)
 // Rebuild, without creating a new template item
 // The template item is already associated with DOM - this is a refresh.
 // Re-evaluate rendered template for the parentItem

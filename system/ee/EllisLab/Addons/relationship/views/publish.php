@@ -10,7 +10,7 @@
 		<div class="filters">
 			<ul>
 				<li>
-					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))[0]->channel_title?>)</span><?php endif; ?></a>
+					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))->first()->channel_title?>)</span><?php endif; ?></a>
 					<div class="sub-menu">
 						<ul>
 							<li><a href="" data-channel-id=""><?=lang('all_channels')?></a></li>

@@ -30,15 +30,6 @@ t.fn.addBack||(t.fn.addBack=function(t){return this.add(null==t?this.prevObject:
 // support: jQuery 1.6.1, 1.6.2 (http://bugs.jquery.com/ticket/9413)
 t("<a>").data("a-b","a").removeData("a-b").data("a-b")&&(t.fn.removeData=function(e){return function(n){return arguments.length?e.call(this,t.camelCase(n)):e.call(this)}}(t.fn.removeData)),
 // deprecated
-t.ui.ie=!!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase()),t.fn.extend({focus:function(e){return function(n,i){return"number"==typeof n?this.each(function(){var e=this;setTimeout(function(){t(e).focus(),i&&i.call(e)},n)}):e.apply(this,arguments)}}(t.fn.focus),disableSelection:function(){var t="onselectstart"in document.createElement("div")?"selectstart":"mousedown";return function(){return this.bind(t+".ui-disableSelection",function(t){t.preventDefault()})}}(),enableSelection:function(){return this.unbind(".ui-disableSelection")},zIndex:function(e){if(void 0!==e)return this.css("zIndex",e);if(this.length)for(var n,i,r=t(this[0]);r.length&&r[0]!==document;){if(
-// Ignore z-index if position is set to a value where z-index is ignored by the browser
-// This makes behavior of this function consistent across browsers
-// WebKit always returns auto if the element is positioned
-n=r.css("position"),("absolute"===n||"relative"===n||"fixed"===n)&&(
-// IE returns 0 when zIndex is not specified
-// other browsers return a string
-// we ignore the case of nested elements with an explicit value of 0
-// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
-i=parseInt(r.css("zIndex"),10),!isNaN(i)&&0!==i))return i;r=r.parent()}return 0}}),
+t.ui.ie=!!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase()),t.fn.extend({focus:function(e){return function(n,i){return"number"==typeof n?this.each(function(){var e=this;setTimeout(function(){t(e).focus(),i&&i.call(e)},n)}):e.apply(this,arguments)}}(t.fn.focus),disableSelection:function(){var t="onselectstart"in document.createElement("div")?"selectstart":"mousedown";return function(){return this.bind(t+".ui-disableSelection",function(t){t.preventDefault()})}}(),enableSelection:function(){return this.unbind(".ui-disableSelection")},zIndex:function(e){if(void 0!==e)return this.css("zIndex",e);if(this.length)for(var n,i,r=t(this[0]);r.length&&r[0]!==document;){if(n=r.css("position"),("absolute"===n||"relative"===n||"fixed"===n)&&(i=parseInt(r.css("zIndex"),10),!isNaN(i)&&0!==i))return i;r=r.parent()}return 0}}),
 // $.ui.plugin is deprecated. Use $.widget() extensions instead.
 t.ui.plugin={add:function(e,n,i){var r,o=t.ui[e].prototype;for(r in i)o.plugins[r]=o.plugins[r]||[],o.plugins[r].push([n,i[r]])},call:function(t,e,n,i){var r,o=t.plugins[e];if(o&&(i||t.element[0].parentNode&&11!==t.element[0].parentNode.nodeType))for(r=0;r<o.length;r++)t.options[o[r][0]]&&o[r][1].apply(t.element,n)}}});
