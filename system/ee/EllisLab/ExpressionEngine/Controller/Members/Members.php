@@ -714,10 +714,20 @@ class Members extends CP_Controller {
 		$this->_super_admin_delete_check($member_ids);
 
 		// If we got this far we're clear to delete the members
-		ee()->load->model('member_model');
-		$heir = (ee()->input->post('heir_action') == 'assign') ?
-			ee()->input->post('heir') : NULL;
-		ee()->member_model->delete_member($member_ids, $heir);
+		// First, assign an heir if we are to do so
+		if (ee()->input->post('heir_action') == 'assign')
+		{
+			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
+
+			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
+			$entries->Author = $heir;
+			$entries->save();
+
+			$heir->updateAuthorStats();
+		}
+
+		// If we got this far we're clear to delete the members
+		ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
 
 		// Send member deletion notifications
 		$this->_member_delete_notifications($member_ids);
