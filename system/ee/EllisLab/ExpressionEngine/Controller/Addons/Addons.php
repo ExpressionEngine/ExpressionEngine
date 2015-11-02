@@ -502,14 +502,14 @@ class Addons extends CP_Controller {
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 
+				$name = $module['name'];
+
 				if ($UPD->update($version) !== FALSE)
 				{
 					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
 						->first();
 					$module->module_version = $addon_info->getVersion();
 					$module->save();
-
-					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
 
 					$updated[$party][$addon] = $name;
 				}
@@ -1083,8 +1083,10 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
-		ee()->lang->loadfile($name);
-		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+		// Use lang file if present, otherwise fallback to addon.setup
+		ee()->lang->loadfile($name, '', FALSE);
+		$display_name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
+			? lang(strtolower($name).'_module_name') : $info->getName();
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),
@@ -1409,11 +1411,21 @@ class Addons extends CP_Controller {
 	{
 	 	$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
 
 		if (ee()->addons_installer->install($module, 'module', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			try
+			{
+				$info = ee('Addon')->get($module);
+			}
+			catch (\Exception $e)
+			{
+				show_404();
+			}
+
+			ee()->lang->loadfile($module, '', FALSE);
+			$name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
+				? lang(strtolower($name).'_module_name') : $info->getName();
 		}
 
 		return $name;
@@ -1431,11 +1443,21 @@ class Addons extends CP_Controller {
 	{
 		$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		ee()->lang->loadfile($module, '', FALSE);
 
 		if (ee()->addons_installer->uninstall($module, 'module', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			try
+			{
+				$info = ee('Addon')->get($module);
+			}
+			catch (\Exception $e)
+			{
+				show_404();
+			}
+
+			$name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
+				? lang(strtolower($name).'_module_name') : $info->getName();
 		}
 
 		return $name;
