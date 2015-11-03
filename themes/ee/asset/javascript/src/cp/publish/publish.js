@@ -77,6 +77,29 @@ $(document).ready(function () {
 		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
 
+	// Auto-assign category parents if configured to do so
+	if (EE.publish.auto_assign_cat_parents == 'y') {
+		$('input[name^="categories"]:checkbox').on('click', function(){
+
+			// If we're unchecking, make sure its children are also unchecked
+			if ( ! $(this).is(':checked')) {
+				$(this).parents('li')
+					.first()
+					.find('input:checkbox')
+					.prop('checked', false)
+					.trigger('change');
+			}
+
+			// If we're checking, check its parents too
+			if ($(this).is(':checked')) {
+				$(this).parents('li')
+					.find('> label input:checkbox')
+					.prop('checked', true)
+					.trigger('change');
+			}
+		});
+	}
+
 	// Category modal
 	$('a[rel=modal-add-category]').click(function (e) {console.log($('input[name="categories[]"]').serialize());
 		var modal_link = $(this),

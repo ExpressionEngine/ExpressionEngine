@@ -119,6 +119,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.markitup.foo'				=> FALSE,
 			'publish.smileys'					=> $smileys_enabled,
 			'publish.field.URL'                 => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.auto_assign_cat_parents'	=> ee()->config->item('auto_assign_cat_parents'),
 			// 'publish.url_title_prefix'			=> $this->_channel_data['url_title_prefix'],
 			'publish.which'						=> ($entry_id) ? 'edit' : 'new',
 			'publish.word_separator'			=> ee()->config->item('word_separator') != "dash" ? '_' : '-',
