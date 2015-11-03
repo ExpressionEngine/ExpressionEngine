@@ -2391,7 +2391,8 @@ class Wizard extends CI_Controller {
 	 */
 	public function canRenameAutomatically()
 	{
-		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		if (version_compare($this->version, '3.0.0', '=')
+			&& file_exists(SYSPATH.'user/cache/mailing_list.zip'))
 		{
 			return FALSE;
 		}
