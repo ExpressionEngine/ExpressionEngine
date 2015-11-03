@@ -72,7 +72,7 @@ $lang = array(
 'database_prefix_contains_exp_'      => 'The database prefix cannot contain the string "exp_".',
 'database_prefix_too_long'           => 'The database prefix cannot be longer than 30 characters.',
 'license_agreement_not_accepted'     => 'You must accept the terms and conditions of the license agreement.',
-'unreadable_update'                  => 'Unable to read the contents of your /expressionengine/installer/updates directory. Please check the file permissions and re-run this installation wizard.',
+'unreadable_update'                  => 'Unable to read the contents of your /expressionengine/installer/updates folder. Please check the file permissions and re-run this installation wizard.',
 'unreadable_files'                   => 'One of your update files is unreadable. Please make sure all of the files located in this folder are readable: system/ee/installer/updates/',
 'unreadable_language'                => 'The language files needed for your current language selection (%x) are unavailable. Please put the language pack in this folder: system/user/language/',
 'unreadable_email'                   => 'Unable to locate the file containing your email templates (email_data.php). Make sure you have uploaded all components of this software.',
@@ -108,7 +108,7 @@ $lang = array(
 		<li>MySQL version, server operating system</li>
 		<li>Server software name</li>
 		<li>Whether or not you are using forced query strings on your server</li>
-		<li>A list of the add-ons in your third party directory</li>
+		<li>A list of the add-ons in your third party folder</li>
 		<li>Whether or not you have Discussion Forums installed</li>
 		<li>Whether or not you have Multiple Site Manager installed</li>
 	</ul>
