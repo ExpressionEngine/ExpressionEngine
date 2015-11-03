@@ -246,6 +246,9 @@ class Board extends Model {
 				->pluck('board_forum_trigger');
 
 			$site->site_system_preferences->forum_trigger = implode('|', $triggers);
+
+			// odd hack to make sure $site knows that it's dirty. TAKE A SHOWER ALRDY!
+			$site->site_system_preferences = $site->site_system_preferences;
 			$site->save();
 		}
 	}
