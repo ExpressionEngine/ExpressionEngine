@@ -768,7 +768,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
-				if ($name && ! isset($uninstalled[$addon]))
+				if ($name && ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $name;
 				}
@@ -778,7 +778,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
-				if ($name && ! isset($uninstalled[$addon]))
+				if ($name && ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $name;
 				}
@@ -791,7 +791,7 @@ class Addons extends CP_Controller {
 					->filter('plugin_package', $addon)
 					->delete();
 
-				if ( ! isset($uninstalled[$addon]))
+				if ( ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $plugin['name'];
 				}
@@ -1411,6 +1411,7 @@ class Addons extends CP_Controller {
 	{
 	 	$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
+		ee()->lang->loadfile($module, '', FALSE);
 
 		if (ee()->addons_installer->install($module, 'module', FALSE))
 		{
@@ -1423,9 +1424,8 @@ class Addons extends CP_Controller {
 				show_404();
 			}
 
-			ee()->lang->loadfile($module, '', FALSE);
-			$name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
-				? lang(strtolower($name).'_module_name') : $info->getName();
+			$name = (lang(strtolower($module).'_module_name') != strtolower($module).'_module_name')
+				? lang(strtolower($module).'_module_name') : $info->getName();
 		}
 
 		return $name;
@@ -1456,8 +1456,8 @@ class Addons extends CP_Controller {
 				show_404();
 			}
 
-			$name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
-				? lang(strtolower($name).'_module_name') : $info->getName();
+			$name = (lang(strtolower($module).'_module_name') != strtolower($module).'_module_name')
+				? lang(strtolower($module).'_module_name') : $info->getName();
 		}
 
 		return $name;
