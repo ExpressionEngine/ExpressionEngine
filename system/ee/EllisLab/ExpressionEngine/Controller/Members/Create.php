@@ -296,7 +296,10 @@ class Create extends Members {
 			}
 		}
 
-		$member_id = $this->member_model->create_member($data, $cust_fields);
+		$member = ee('Model')->make('Member', $data);
+		$member->save();
+
+		$member_id = $member->getId();
 
 		// Write log file
 
