@@ -672,7 +672,6 @@ class ChannelEntry extends ContentModel {
 						'field_instructions'	=> lang('categories_desc'),
 						'field_text_direction'	=> 'ltr',
 						'field_type'			=> 'checkboxes',
-						'string_override'		=> '',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
 						'populateCallback'		=> array($this, 'populateCategories')
