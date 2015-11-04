@@ -106,7 +106,7 @@ class Create extends Members {
 		);
 
 		$member = ee('Model')->make('Member');
-		$member->group_id = 1;
+		$member->group_id = 1; // Needed to get member fields at the moment
 		foreach ($member->getDisplay()->getFields() as $field)
 		{
 			if ($field->get('m_field_reg') == 'y')
@@ -125,50 +125,92 @@ class Create extends Members {
 			}
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'group_id',
-				 'label'   => 'lang:member_group',
-				 'rules'   => 'required|integer|callback_valid_group_id'
-			),
-			array(
-				 'field'   => 'username',
-				 'label'   => 'lang:username',
-				 'rules'   => 'required|trim|valid_username'
-			),
-			array(
-				 'field'   => 'email',
-				 'label'   => 'lang:email',
-				 'rules'   => 'required|valid_email'
-			),
-			array(
-				'field'    => 'password',
-				'label'    => 'lang:password',
-				'rules'    => 'required|valid_password[username]'
-			),
-			array(
-				 'field'   => 'confirm_password',
-				 'label'   => 'lang:confirm_password',
-				 'rules'   => 'required|matches[password]'
-			)
+		// Separate validator to validate confirm_password
+		$validator = ee('Validation')->make();
+		$validator->setRules(array(
+			'confirm_password' => 'matches[password]'
 		));
 
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$this->register_member();
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('settings_save_error'))
-				->addToBody(lang('settings_save_error_desc'))
-				->now();
+			$member->set($_POST);
+
+			// Set some other defaults
+			$member->screen_name = $_POST['username'];
+			$member->ip_address = ee()->input->ip_address();
+			$member->join_date = ee()->localize->now;
+			$member->language = ee()->config->item('deft_lang');
+			$member->timezone = ee()->config->item('default_site_timezone');
+			$member->date_format = ee()->config->item('date_format');
+			$member->time_format = ee()->config->item('time_format');
+			$member->include_seconds = ee()->config->item('include_seconds');
+
+			$result = $member->validate();
+			$password_confirm = $validator->validate($_POST);
+
+			// Add password confirmation failure to main result object
+			if ($password_confirm->failed())
+			{
+				$rules = $password_confirm->getFailed('confirm_password');
+				$result->addFailed('confirm_password', $rules[0]);
+			}
+
+			if ($response = $this->ajaxValidation($result))
+			{
+				return $response;
+			}
+
+			if ($result->isValid())
+			{
+				// Now that we know the password is valid, hash it
+				ee()->load->library('auth');
+				$hashed_password = ee()->auth->hash_password($member->password);
+				$member->password = $hashed_password['password'];
+				$member->salt = $hashed_password['salt'];
+
+				// -------------------------------------------
+				// 'cp_members_member_create_start' hook.
+				//  - Take over member creation when done through the CP
+				//  - Added 1.4.2
+				//
+					$this->extensions->call('cp_members_member_create_start');
+					if ($this->extensions->end_script === TRUE) return;
+				//
+				// -------------------------------------------
+
+				$member->save();
+
+				// -------------------------------------------
+				// 'cp_members_member_create' hook.
+				//  - Additional processing when a member is created through the CP
+				//
+					$this->extensions->call('cp_members_member_create', $member->getId(), $member->getValues());
+					if ($this->extensions->end_script === TRUE) return;
+				//
+				// -------------------------------------------
+
+				ee()->logger->log_action(lang('new_member_added').NBS.NBS.stripslashes($member->username));
+				ee()->stats->update_member_stats();
+
+				ee()->session->set_flashdata('highlight_id', $member->getId());
+
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_created'))
+					->addToBody(sprintf(lang('member_created_desc'), $member->username))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL')->make('members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('member_not_created'))
+					->addToBody(lang('member_not_created_desc'))
+					->now();
+			}
 		}
 
 		$this->generateSidebar('all_members');
@@ -179,175 +221,6 @@ class Create extends Members {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * Verify that the group ID is a valid choice
-	 * @param  String $group_id Group ID from the form
-	 * @return Boolean          TRUE if valid group, FALSE otherwise
-	 */
-	public function valid_group_id($group_id)
-	{
-		$group_ids = array();
-		$is_locked = (ee()->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
-		$member_groups = ee()->member_model->get_member_groups('', $is_locked);
-
-		foreach ($member_groups->result() as $group)
-		{
-			$group_ids[] = $group->group_id;
-		}
-
-		if ( ! in_array($group_id, $group_ids))
-		{
-			ee()->form_validation->set_message('valid_group_id', lang('invalid_group_id'));
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Register Member
-	 *
-	 * Create a member profile
-	 *
-	 * @return	mixed
-	 */
-	private function register_member()
-	{
-		$this->load->helper('security');
-
-		$data = array();
-
-		if ($this->input->post('group_id'))
-		{
-			if ( ! $this->cp->allowed_group('can_admin_mbr_groups'))
-			{
-				show_error(lang('unauthorized_access'));
-			}
-
-			$data['group_id'] = $this->input->post('group_id');
-		}
-
-		// -------------------------------------------
-		// 'cp_members_member_create_start' hook.
-		//  - Take over member creation when done through the CP
-		//  - Added 1.4.2
-		//
-			$this->extensions->call('cp_members_member_create_start');
-			if ($this->extensions->end_script === TRUE) return;
-		//
-		// -------------------------------------------
-
-		// If the screen name field is empty, we'll assign is
-		// from the username field.
-
-		$data['screen_name'] = ($this->input->post('screen_name')) ? $this->input->post('screen_name') : $this->input->post('username');
-
-		// Get the password information from Auth
-		$this->load->library('auth');
-		$hashed_password = $this->auth->hash_password($this->input->post('password'));
-
-		// Assign the query data
-		$data['username'] 	= $this->input->post('username');
-		$data['password']	= $hashed_password['password'];
-		$data['salt']		= $hashed_password['salt'];
-		$data['unique_id']	= random_string('encrypt');
-		$data['crypt_key']	= $this->functions->random('encrypt', 16);
-		$data['email']		= $this->input->post('email');
-		$data['ip_address']	= $this->input->ip_address();
-		$data['join_date']	= $this->localize->now;
-		$data['language'] 	= $this->config->item('deft_lang');
-		$data['timezone'] 	= $this->config->item('default_site_timezone');
-		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%Y';
-		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : '12';
-		$data['include_seconds'] = $this->config->item('include_seconds') ? $this->config->item('include_seconds') : 'n';
-
-		// Was a member group ID submitted?
-
-		$data['group_id'] = ( ! $this->input->post('group_id')) ? 2 : $_POST['group_id'];
-
-		$base_fields = array('bday_y', 'bday_m', 'bday_d', 'url', 'location',
-			'occupation', 'interests', 'aol_im', 'icq', 'yahoo_im', 'msn_im', 'bio');
-
-		foreach ($base_fields as $val)
-		{
-			$data[$val] = ($this->input->post($val) === FALSE) ? '' : $this->input->post($val, TRUE);
-		}
-
-		if (is_numeric($data['bday_d']) && is_numeric($data['bday_m']))
-		{
-			$this->load->helper('date');
-			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = days_in_month($data['bday_m'], $year);
-
-			if ($data['bday_d'] > $mdays)
-			{
-				$data['bday_d'] = $mdays;
-			}
-		}
-
-		// Clear out invalid values for strict mode
-		foreach (array('bday_y', 'bday_m', 'bday_d') as $val)
-		{
-			if ($data[$val] == '')
-			{
-				unset($data[$val]);
-			}
-		}
-
-		if ($data['url'] == 'http://')
-		{
-			$data['url'] = '';
-		}
-
-		// Extended profile fields
-		$cust_fields = FALSE;
-		$query = $this->member_model->get_all_member_fields(array(array('m_field_cp_reg' => 'y')), FALSE);
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				if ($this->input->post('m_field_id_'.$row['m_field_id']) !== FALSE)
-				{
-					$cust_fields['m_field_id_'.$row['m_field_id']] = $this->input->post('m_field_id_'.$row['m_field_id'], TRUE);
-				}
-			}
-		}
-
-		$member = ee('Model')->make('Member', $data);
-		$member->save();
-
-		$member_id = $member->getId();
-
-		// Write log file
-
-		$message = lang('new_member_added');
-		$this->logger->log_action($message.NBS.NBS.stripslashes($data['username']));
-
-		// -------------------------------------------
-		// 'cp_members_member_create' hook.
-		//  - Additional processing when a member is created through the CP
-		//
-			$this->extensions->call('cp_members_member_create', $member_id, $data);
-			if ($this->extensions->end_script === TRUE) return;
-		//
-		// -------------------------------------------
-
-		// Update Stats
-		$this->stats->update_member_stats();
-		$this->session->set_flashdata(array(
-			'highlight_id' => $member_id
-		));
-
-		ee('CP/Alert')->makeInline('view-members')
-			->asSuccess()
-			->withTitle(lang('member_updated'))
-			->addToBody(lang('member_updated_desc'))
-			->defer();
-
-		$this->functions->redirect(ee('CP/URL')->make('members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
 	}
 }
 // END CLASS
