@@ -110,6 +110,13 @@ class Select extends Query {
 		$main_table = key($tables);
 		$primary_key = $meta->getPrimaryKey();
 
+		// Make sure the primary key is present in the query
+		$primary_key_alias = "{$alias}.{$primary_key}";
+		if ( ! empty($fields) && ! in_array($primary_key_alias, $fields))
+		{
+			$fields[] = $primary_key_alias;
+ 		}
+
 		foreach ($tables as $table => $table_fields)
 		{
 			$table_alias = "{$alias}_{$table}";
