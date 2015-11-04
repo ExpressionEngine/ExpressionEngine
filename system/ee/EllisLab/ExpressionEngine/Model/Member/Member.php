@@ -98,6 +98,17 @@ class Member extends ContentModel {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'group_id'			=> 'required|isNatural|validateGroupId',
+		'username'			=> 'required|unique|maxLength[50]|validateUsername',
+		'email'				=> 'required|email|unique',
+		'password'			=> 'required|validatePassword'
+	);
+
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	// Properties
 	protected $member_id;
 	protected $group_id;
@@ -178,6 +189,15 @@ class Member extends ContentModel {
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
+
+	/**
+	 * Generate unique ID and crypt key for new members
+	 */
+	public function onBeforeInsert()
+	{
+		$this->setProperty('unique_id', random_string('encrypt'));
+		$this->setProperty('crypt_key', ee()->functions->random('encrypt', 16));
+	}
 
 	/**
 	 * Gets the member's name
@@ -301,5 +321,128 @@ class Member extends ContentModel {
 		$layout = $layout ?: new MemberFieldLayout();
 
 		return parent::getDisplay($layout);
+	}
+
+	/**
+	 * Ensures the group ID exists and the member has permission to add to the group
+	 */
+	public function validateGroupId($key, $group_id)
+	{
+		$member_groups = $this->getFrontend()->get('MemberGroup');
+
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$member_groups->filter('is_locked', 'n');
+		}
+
+		if ( ! in_array($group_id, $member_groups->all()->pluck('group_id')))
+		{
+			return 'invalid_group_id';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Ensures the username doesn't have invalid characters, is the correct length, and isn't banned
+	 */
+	public function validateUsername($key, $username)
+	{
+		if (preg_match("/[\|'\"!<>\{\}]/", $username))
+		{
+			return 'invalid_characters_in_username';
+		}
+
+		// Is username min length correct?
+		$un_length = ee()->config->item('un_min_len');
+		if (strlen($username) < ee()->config->item('un_min_len'))
+		{
+			return sprintf(lang('username_too_short'), $un_length);
+		}
+
+		if ($this->isNew())
+		{
+			// Is username banned?
+			if (ee()->session->ban_check('username', $username))
+			{
+				return 'username_taken';
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Ensures the group ID exists and the member has permission to add to the group
+	 */
+	public function validatePassword($key, $password)
+	{
+		$pw_length = ee()->config->item('pw_min_len');
+		if (strlen($password) < $pw_length)
+		{
+			return sprintf(lang('password_too_short'), $pw_length);
+		}
+
+		// Is password max length correct?
+		if (strlen($password) > PASSWORD_MAX_LENGTH)
+		{echo $password;
+			return 'password_too_long';
+		}
+
+		//  Make UN/PW lowercase for testing
+		$lc_user = strtolower($this->username);
+		$lc_pass = strtolower($password);
+		$nm_pass = strtr($lc_pass, 'elos', '3105');
+
+		if ($lc_user == $lc_pass OR $lc_user == strrev($lc_pass) OR $lc_user == $nm_pass OR $lc_user == strrev($nm_pass))
+		{
+			return 'password_based_on_username';
+		}
+
+		// Are secure passwords required?
+		if (bool_config_item('require_secure_passwords'))
+		{
+			$count = array('uc' => 0, 'lc' => 0, 'num' => 0);
+
+			$pass = preg_quote($password, "/");
+
+			$len = strlen($pass);
+
+			for ($i = 0; $i < $len; $i++)
+			{
+				$n = substr($pass, $i, 1);
+
+				if (preg_match("/^[[:upper:]]$/", $n))
+				{
+					$count['uc']++;
+				}
+				elseif (preg_match("/^[[:lower:]]$/", $n))
+				{
+					$count['lc']++;
+				}
+				elseif (preg_match("/^[[:digit:]]$/", $n))
+				{
+					$count['num']++;
+				}
+			}
+
+			foreach ($count as $val)
+			{
+				if ($val == 0)
+				{
+					return 'not_secure_password';
+				}
+			}
+		}
+
+		// Does password exist in dictionary?
+		// TODO: move out of form validation library
+		ee()->load->library('form_validation');
+		if (ee()->form_validation->_lookup_dictionary_word($lc_pass) == TRUE)
+		{
+			return 'password_in_dictionary';
+		}
+
+		return TRUE;
 	}
 }
