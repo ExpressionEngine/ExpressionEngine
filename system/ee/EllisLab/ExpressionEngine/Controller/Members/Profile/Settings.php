@@ -249,6 +249,21 @@ class Settings extends Profile {
 			)
 		);
 
+		foreach ($this->member->getDisplay()->getFields() as $field)
+		{
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
+					)
+				)
+			);
+		}
+
 		if ($this->member->avatar_filename == "")
 		{
 			$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
