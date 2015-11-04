@@ -217,6 +217,8 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
+'smtp_port' => 'Server Port',
+
 'sending_options' => 'Sending Options',
 
 'mail_format' => 'Mail format',
