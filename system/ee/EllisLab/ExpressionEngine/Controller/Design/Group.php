@@ -291,9 +291,11 @@ class Group extends AbstractDesignController {
 
 			if ($group->is_site_default)
 			{
-				ee('Model')->get('TemplateGroup')
-					->set('is_site_default', 'n')
-					->update();
+				$template_groups = ee('Model')->get('TemplateGroup')
+					->filter('site_id', ee()->config->item('site_id'))
+					->all();
+				$template_groups->is_site_default = FALSE;
+				$template_groups->save();
 			}
 
 			$group->save();
