@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
 
 /**
  * Member
@@ -11,10 +12,11 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * provided by the Member module.  This is a single user of
  * the website.
  */
-class Member extends Model {
+class Member extends ContentModel {
 
 	protected static $_primary_key = 'member_id';
 	protected static $_table_name = 'members';
+	protected static $_gateway_names = array('MemberGateway', 'MemberFieldDataGateway');
 
 	protected static $_hook_id = 'member';
 
@@ -280,4 +282,24 @@ class Member extends Model {
 		return $url;
 	}
 
+	/**
+	 * A link back to the owning member group object.
+	 *
+	 * @return	Structure	A link back to the Structure object that defines
+	 *						this Content's structure.
+	 */
+	public function getStructure()
+	{
+		return $this->MemberGroup;
+	}
+
+	/**
+	 * Modify the default layout for member fields
+	 */
+	public function getDisplay(LayoutInterface $layout = NULL)
+	{
+		$layout = $layout ?: new MemberFieldLayout();
+
+		return parent::getDisplay($layout);
+	}
 }

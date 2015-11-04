@@ -2,9 +2,9 @@
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
-class MemberGroup extends Model {
+class MemberGroup extends StructureModel {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'member_groups';
@@ -377,5 +377,21 @@ class MemberGroup extends Model {
 			),
 			array('group_id' => $this->group_id)
 		);
+	}
+
+	/**
+	 * Returns array of field models; implements StructureModel interface
+	 */
+	public function getCustomFields()
+	{
+		return ee('Model')->get('MemberField')->all()->asArray();
+	}
+
+	/**
+	 * Returns name of content type for these fields; implements StructureModel interface
+	 */
+	public function getContentType()
+	{
+		return 'member';
 	}
 }
