@@ -105,6 +105,23 @@ class Create extends Members {
 			)
 		);
 
+		$member = ee('Model')->make('Member');
+		$member->group_id = 1;
+		foreach ($member->getDisplay()->getFields() as $field)
+		{
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
+					)
+				)
+			);
+		}
+
 		ee()->form_validation->set_rules(array(
 			array(
 				 'field'   => 'group_id',
