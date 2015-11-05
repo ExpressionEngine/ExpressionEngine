@@ -34,6 +34,8 @@ class Comment extends Model {
 	protected static $_primary_key = 'comment_id';
 	protected static $_table_name = 'comments';
 
+	protected static $_hook_id = 'comment';
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'
