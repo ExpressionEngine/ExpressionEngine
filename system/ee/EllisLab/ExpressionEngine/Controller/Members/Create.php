@@ -109,7 +109,7 @@ class Create extends Members {
 		$member->group_id = 1; // Needed to get member fields at the moment
 		foreach ($member->getDisplay()->getFields() as $field)
 		{
-			if ($field->get('m_field_reg') == 'y')
+			if ($field->get('m_field_reg') == 'y' OR $field->isRequired())
 			{
 				$vars['sections']['custom_fields'][] = array(
 					'title' => $field->getLabel(),
