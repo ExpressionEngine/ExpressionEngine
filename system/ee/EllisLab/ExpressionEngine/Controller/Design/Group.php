@@ -289,15 +289,6 @@ class Group extends AbstractDesignController {
 			$group->group_name = ee()->input->post('group_name');
 			$group->is_site_default = ee()->input->post('make_default_group');
 
-			if ($group->is_site_default)
-			{
-				$template_groups = ee('Model')->get('TemplateGroup')
-					->filter('site_id', ee()->config->item('site_id'))
-					->all();
-				$template_groups->is_site_default = FALSE;
-				$template_groups->save();
-			}
-
 			$group->save();
 
 			ee('CP/Alert')->makeInline('shared-form')
