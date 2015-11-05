@@ -362,7 +362,7 @@ abstract class ContentModel extends VariableColumnModel {
 		if ($this->hasProperty('field_ft_'.$id))
 		{
 			$format = $this->getProperty('field_ft_'.$id) ?: $format;
- 			$this->setProperty('field_ft_'.$id, $format);
+			$this->setProperty('field_ft_'.$id, $format);
 		}
 
 		$facade = new FieldFacade($id, $info);
