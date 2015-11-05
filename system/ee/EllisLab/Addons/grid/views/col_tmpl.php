@@ -10,7 +10,7 @@
 					'grid[cols]['.$field_name.'][col_type]',
 					$fieldtypes,
 					isset($column['col_type']) ? $column['col_type'] : 'text',
-					'class="grid_col_select"')?>
+					'class="grid_col_select"' . ( ! $new_column) ? ' disabled="disabled"' : '')?>
 			</div>
 		</fieldset>
 		<fieldset class="col-group<?php if (in_array('grid[cols]['.$field_name.'][col_label]', $error_fields)): ?> invalid<?php endif ?>">
