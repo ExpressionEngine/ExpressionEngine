@@ -82,15 +82,6 @@ class AlertCollection {
 				$alert->title = $value['title'];
 				$alert->body = $value['body'];
 
-				if ($value['can_close'])
-				{
-					$alert->canClose();
-				}
-				else
-				{
-					$alert->cannotClose();
-				}
-
 				switch ($value['severity'])
 				{
 					case 'issue':
@@ -104,6 +95,15 @@ class AlertCollection {
 					case 'warn':
 						$alert->asWarning();
 						break;
+				}
+
+				if ($value['can_close'])
+				{
+					$alert->canClose();
+				}
+				else
+				{
+					$alert->cannotClose();
 				}
 
 				if (isset($value['sub_alert']))
