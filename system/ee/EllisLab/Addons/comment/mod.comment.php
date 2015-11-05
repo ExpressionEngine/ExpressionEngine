@@ -2485,9 +2485,7 @@ class Comment {
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		//  Insert data
-		$sql = ee()->db->insert_string('exp_comments', $data);
-		ee()->db->query($sql);
-		$comment_id = ee()->db->insert_id();
+		$comment_id = ee('Model')->make('Comment', $data)->save()->getId();
 
 		if ($is_spam == TRUE)
 		{
