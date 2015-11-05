@@ -258,6 +258,11 @@ class Profile extends CP_Controller {
 
 		$validated = $this->member->validate();
 
+		if ($response = $this->ajaxValidation($validated))
+		{
+			return $response;
+		}
+
 		if ($validated->isNotValid())
 		{
 			ee()->load->helper('html_helper');

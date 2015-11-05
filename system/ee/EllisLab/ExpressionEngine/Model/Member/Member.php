@@ -102,7 +102,13 @@ class Member extends ContentModel {
 		'group_id'			=> 'required|isNatural|validateGroupId',
 		'username'			=> 'required|unique|maxLength[50]|validateUsername',
 		'email'				=> 'required|email|unique',
-		'password'			=> 'required|validatePassword'
+		'password'			=> 'required|validatePassword',
+		'url'				=> 'url',
+		'location'			=> 'xss',
+		'bio'				=> 'xss',
+		'bday_d'			=> 'xss',
+		'bday_m'			=> 'xss',
+		'bday_y'			=> 'xss'
 	);
 
 	protected static $_events = array(
