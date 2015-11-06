@@ -27,7 +27,7 @@
 class Forum {
 
 
-	public $version				= '3.1.19';
+	public $version				= '3.1.20';
 	public $build				= '20150501';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
@@ -95,6 +95,8 @@ class Forum {
 	public $include_exceptions	= array(
 			'head_extra', 'spellcheck_js', 'body_extra');
 
+	protected $forum_core; // the "core" class object. Refactor, ho!
+
 	/**
 	 * Constructor
 	 */
@@ -127,26 +129,26 @@ class Forum {
 		{
 			require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
-			ee()->FRM_CORE = new Forum_Core();
+			$this->forum_core = new Forum_Core();
 
 			$vars = get_object_vars($this);
 
 			foreach($vars as $key => $value)
 			{
-				ee()->FRM_CORE->{$key} = $value;
+				$this->forum_core->{$key} = $value;
 			}
 
 			// Verify Permissions
 			// Before serving the page we'll see if the user is authorized
 
-			if ( ! ee()->FRM_CORE->_is_authorized())
+			if ( ! $this->forum_core->_is_authorized())
 			{
-				ee()->FRM_CORE->set_page_title(lang('error'));
-				$error = ee()->FRM_CORE->display_forum('error_page');
+				$this->forum_core->set_page_title(lang('error'));
+				$error = $this->forum_core->display_forum('error_page');
 
 				if ($this->use_trigger() === FALSE)
 				{
-					$this->return_data = ee()->FRM_CORE->return_data;
+					$this->return_data = $this->forum_core->return_data;
 				}
 				else
 				{
@@ -161,11 +163,11 @@ class Forum {
 
 			if ( ! ee()->input->get_post('ACT'))
 			{
-				ee()->FRM_CORE->display_forum();
+				$this->forum_core->display_forum();
 			}
 
 			// If Template Parser Request
-			$this->return_data = ee()->FRM_CORE->return_data;
+			$this->return_data = $this->forum_core->return_data;
 		}
 	}
 
@@ -324,29 +326,29 @@ class Forum {
 
 	// --------------------------------------------------------------------
 
-	public function submit_post() { return ee()->FRM_CORE->submit_post(); }
-	public function delete_post() { return ee()->FRM_CORE->delete_post(); }
-	public function change_status() { return ee()->FRM_CORE->change_status(); }
-	public function move_topic() { return ee()->FRM_CORE->move_topic(); }
-	public function move_reply() { return ee()->FRM_CORE->move_reply(); }
-	public function do_merge() { return ee()->FRM_CORE->do_merge(); }
-	public function do_split() { return ee()->FRM_CORE->do_split(); }
-	public function do_report() { return ee()->FRM_CORE->do_report(); }
+	public function submit_post() { return $this->forum_core->submit_post(); }
+	public function delete_post() { return $this->forum_core->delete_post(); }
+	public function change_status() { return $this->forum_core->change_status(); }
+	public function move_topic() { return $this->forum_core->move_topic(); }
+	public function move_reply() { return $this->forum_core->move_reply(); }
+	public function do_merge() { return $this->forum_core->do_merge(); }
+	public function do_split() { return $this->forum_core->do_split(); }
+	public function do_report() { return $this->forum_core->do_report(); }
 
 	public function delete_subscription()
 	{
-		return ee()->FRM_CORE->delete_subscription();
+		return $this->forum_core->delete_subscription();
 	}
 
 	public function display_attachment()
 	{
-		return ee()->FRM_CORE->display_attachment();
+		return $this->forum_core->display_attachment();
 	}
 
 	public function topic_titles()
 	{
-		if ( ! is_object(ee()->FRM_CORE)) return;
-		return ee()->FRM_CORE->topic_titles();
+		if ( ! is_object($this->forum_core)) return;
+		return $this->forum_core->topic_titles();
 	}
 
 	// --------------------------------------------------------------------
@@ -771,7 +773,7 @@ class Forum {
 		}
 
 		$this->preferences['board_theme_path'] = PATH_THIRD_THEMES.'forum/';
-		$this->preferences['board_theme_url']  = URL_THEMES.'forum/';
+		$this->preferences['board_theme_url']  = URL_THIRD_THEMES.'forum/';
 	}
 
 	// --------------------------------------------------------------------
