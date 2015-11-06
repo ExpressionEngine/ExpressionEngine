@@ -451,4 +451,12 @@ class Member extends ContentModel {
 
 		return TRUE;
 	}
+
+	/**
+	 * Override ContentModel method to set our field prefix
+	 */
+	public function getCustomFieldPrefix()
+	{
+		return 'm_field_id_';
+	}
 }

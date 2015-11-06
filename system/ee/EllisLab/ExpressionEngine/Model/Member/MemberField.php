@@ -66,7 +66,7 @@ class MemberField extends FieldModel {
 		$values = parent::getSettingsValues();
 		$values['field_settings']['field_show_file_selector'] = 'n';
 
-		foreach (array('field_list_items', 'field_ta_rows', 'field_maxl', 'field_fmt', 'field_show_fmt', 'field_text_direction') as $setting)
+		foreach (array('field_list_items', 'field_ta_rows', 'field_maxl', 'field_show_fmt', 'field_text_direction') as $setting)
 		{
 			$values['field_settings'][$setting] = $this->getProperty('m_'.$setting);
 		}
@@ -125,6 +125,14 @@ class MemberField extends FieldModel {
 	protected function getFieldType()
 	{
 		return $this->m_field_type;
+	}
+
+	/**
+	 * Override FieldModel method to set our custom table column prefix
+	 */
+	public function getColumnPrefix()
+	{
+		return 'm_';
 	}
 
 	/**
