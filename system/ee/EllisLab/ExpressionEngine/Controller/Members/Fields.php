@@ -359,19 +359,40 @@ class Fields extends Members\Members {
 
 		$vars['sections'] += $visibility;
 		$vars['sections'] += $settingsForm;
-		$settingsFields = array_pop($settingsForm);
-		$settingsFields = $settingsFields['settings'];
+
+		// These are currently the only fieldtypes we allow; get their settings forms
+		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		{
+			if ($field->field_type != $fieldtype)
+			{
+				$dummy_field = ee('Model')->make('MemberField');
+				$dummy_field->field_type = $fieldtype;
+				$vars['sections'] += $dummy_field->getSettingsForm();
+			}
+		}
 
 		if ( ! empty($_POST))
 		{
-			foreach (array_merge($vars['sections'][0], $vars['sections']['visibility'], $settingsFields) as $section)
+			// We have to do this dance of explicitly setting each property
+			// so that the MemberField model's magic set method will prefix
+			// the properties for us
+			foreach ($vars['sections'] as $section)
 			{
-				// We have to do this dance of explicitly setting each property
-				// so that the MemberField model's magic set method will prefix
-				// the properties for us
-				foreach ($section['fields'] as $key => $val)
+				if ( ! isset($section[0]['fields']))
 				{
-					$field->$key = ee()->input->post($key);
+					$section = array_pop($section);
+				}
+				foreach ($section as $setting)
+				{
+					if (is_string($setting))
+					{
+						continue;
+					}
+
+					foreach ($setting['fields'] as $field_name => $field_settings)
+					{
+						$field->$field_name = ee()->input->post($field_name);
+					}
 				}
 			}
 
@@ -414,17 +435,6 @@ class Fields extends Members\Members {
 					->withTitle(lang('member_field_not_saved'))
 					->addToBody(lang('member_field_not_saved_desc'))
 					->now();
-			}
-		}
-
-		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
-		{
-			if ($field->field_type != $fieldtype)
-			{
-				$dummy_field = ee('Model')->make('MemberField');
-				$dummy_field->field_type = $fieldtype;
-				$vars['sections'] += $dummy_field->getSettingsForm();
 			}
 		}
 
