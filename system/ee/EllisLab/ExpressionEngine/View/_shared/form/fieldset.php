@@ -11,6 +11,14 @@ $grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
 // Gather classes needed to set on the fieldset
 $fieldset_classes = '';
+
+// First, see if there are any specified in the attributes array
+if (isset($setting['attrs']['class']))
+{
+	$fieldset_classes = ' ' . $setting['attrs']['class'];
+	unset($setting['attrs']['class']);
+}
+
 // Any fields required?
 foreach ($setting['fields'] as $field_name => $field)
 {

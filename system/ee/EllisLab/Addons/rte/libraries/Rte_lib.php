@@ -304,7 +304,7 @@ class Rte_lib {
 		}
 
 		// get the tools
-		if ( ! $tools = ee()->rte_tool_model->get_tools($toolset['tools']))
+		if ( ! $tools = ee()->rte_tool_model->get_tools($toolset['tools'], $cp_only))
 		{
 			return;
 		}
