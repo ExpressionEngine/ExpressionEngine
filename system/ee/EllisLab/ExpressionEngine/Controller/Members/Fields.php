@@ -440,7 +440,7 @@ class Fields extends Members\Members {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields/edit'), lang('custom_profile_fields'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/form_group', 'cp/members/fields')
