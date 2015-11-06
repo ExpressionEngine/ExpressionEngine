@@ -391,7 +391,7 @@ class Member extends ContentModel {
 
 		// Is password max length correct?
 		if (strlen($password) > PASSWORD_MAX_LENGTH)
-		{echo $password;
+		{
 			return 'password_too_long';
 		}
 
