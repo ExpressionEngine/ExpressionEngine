@@ -10,7 +10,7 @@
 				$select_attrs = 'class="grid_col_select"';
 				if ($new_column)
 				{
-					$select_attrs . ' disabled="disabled"';
+					$select_attrs .= ' disabled="disabled"';
 				}
 				echo form_dropdown(
 					'grid[cols]['.$field_name.'][col_type]',
