@@ -433,7 +433,7 @@ class Fields extends Members\Members {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields/edit'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group'),
+			'file' => array('cp/form_group', 'cp/members/fields')
 		));
 
 		ee()->cp->render('settings/form', $vars);
