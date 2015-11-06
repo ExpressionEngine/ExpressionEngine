@@ -281,7 +281,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		foreach ($data as $name => $value)
 		{
-			if (strpos($name, 'field_ft_') === 0)
+			if (strpos($name, 'field_ft_') !== FALSE)
 			{
 				$name = str_replace('field_ft_', 'field_id_', $name);
 
