@@ -791,9 +791,9 @@ class Forum {
 		$this->mbr_class_loaded = TRUE;
 		include_once PATH_ADDONS.'member/mod.member.php';
 
-		ee()->MBR = new Member();
+		$this->MBR = new Member();
 
-		ee()->MBR->_set_properties(
+		$this->MBR->_set_properties(
 				array(
 						'trigger'			=> ee()->config->item('profile_trigger'),
 						'theme_class'		=> 'theme_member',
@@ -809,11 +809,11 @@ class Forum {
 					)
 			);
 
-		$template = str_replace('{include:member_manager}', ee()->MBR->manager(), $template);
+		$template = str_replace('{include:member_manager}', $this->MBR->manager(), $template);
 
-		$this->head_extra = ee()->MBR->head_extra;
+		$this->head_extra = $this->MBR->head_extra;
 
-		if (ee()->MBR->show_headings == TRUE)
+		if ($this->MBR->show_headings == TRUE)
 		{
 			$template = $this->allow_if('show_headings', $template);
 		}
@@ -1184,7 +1184,7 @@ class Forum {
 		// If the member class is loaded we'll set the page title based on its page title
 		if ($this->mbr_class_loaded == TRUE AND $this->current_page_name == '')
 		{
-			$this->current_page_name = ee()->MBR->page_title;
+			$this->current_page_name = $this->MBR->page_title;
 		}
 
 		if (is_null($this->feeds_enabled) OR $this->feeds_enabled === FALSE)
@@ -1741,7 +1741,7 @@ class Forum {
 												);
 			}
 
-			if (FALSE !== ($mbr_crumb = ee()->MBR->_fetch_member_crumb(ee()->uri->segment(3+$this->seg_addition))))
+			if (FALSE !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(3+$this->seg_addition))))
 			{
 				return $this->_build_crumbs(lang($mbr_crumb), $crumbs, lang($mbr_crumb));
 			}
@@ -1749,7 +1749,7 @@ class Forum {
 
 			if (ee()->uri->segment(3+$this->seg_addition) == 'messages')
 			{
-				if (FALSE !== ($mbr_crumb = ee()->MBR->_fetch_member_crumb(ee()->uri->segment(4+$this->seg_addition))))
+				if (FALSE !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(4+$this->seg_addition))))
 				{
 					return $this->_build_crumbs(lang($mbr_crumb), $crumbs, lang($mbr_crumb));
 				}
