@@ -342,7 +342,6 @@ class Settings extends Profile {
 		}
 
 		ee()->load->library('filemanager');
-		$current = ee()->config->item('avatar_path');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('server_path', ee()->config->item('avatar_path'))
 			->first();
@@ -395,10 +394,14 @@ class Settings extends Profile {
 	private function uploadRemoteAvatar()
 	{
 		$url = ee()->input->post('link_avatar');
-		$current = ee()->config->item('avatar_path');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('server_path', ee()->config->item('avatar_path'))
 			->first();
+
+		if ( ! $directory)
+		{
+			return FALSE;
+		}
 
     	$ch = curl_init($url);
     	curl_setopt($ch, CURLOPT_HEADER, 0);

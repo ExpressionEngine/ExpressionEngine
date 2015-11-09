@@ -108,6 +108,13 @@ class Template extends AbstractDesignController {
 
 			if ($result->isValid())
 			{
+				// Unless we are duplicating a template the default is to
+				// allow access to everyone
+				if ( ! ee()->input->post('template_id'))
+				{
+					$template->NoAccess = NULL;
+				}
+
 				$template->save();
 
 				$alert = ee('CP/Alert')->makeInline('shared-form')
@@ -650,7 +657,7 @@ class Template extends AbstractDesignController {
 	 */
 	private function validateTemplateRoute(TemplateModel $template)
 	{
-		if ( ! ee()->input->post('route'))
+		if (IS_CORE || ! ee()->input->post('route'))
 		{
 			$template->TemplateRoute = NULL;
 			return FALSE;
@@ -979,13 +986,6 @@ class Template extends AbstractDesignController {
 			$template->getNoAccess()->pluck('group_id')
 		);
 
-		$route = $template->getTemplateRoute();
-
-		if ( ! $route)
-		{
-			$route = ee('Model')->make('TemplateRoute');
-		}
-
 		$sections = array(
 			array(
 				array(
@@ -1025,29 +1025,40 @@ class Template extends AbstractDesignController {
 							'value' => $template->enable_http_auth
 						)
 					)
-				),
-				array(
-					'title' => 'template_route_override',
-					'desc' => 'template_route_override_desc',
-					'fields' => array(
-						'route' => array(
-							'type' => 'text',
-							'value' => $route->route
-						)
-					)
-				),
-				array(
-					'title' => 'require_all_segments',
-					'desc' => 'require_all_segments_desc',
-					'fields' => array(
-						'route_required' => array(
-							'type' => 'yes_no',
-							'value' => $route->route_required
-						)
-					)
 				)
 			)
 		);
+
+		if ( ! IS_CORE)
+		{
+			$route = $template->getTemplateRoute();
+
+			if ( ! $route)
+			{
+				$route = ee('Model')->make('TemplateRoute');
+			}
+
+			$sections[0][] = array(
+				'title' => 'template_route_override',
+				'desc' => 'template_route_override_desc',
+				'fields' => array(
+					'route' => array(
+						'type' => 'text',
+						'value' => $route->route
+					)
+				)
+			);
+			$sections[0][] = array(
+				'title' => 'require_all_segments',
+				'desc' => 'require_all_segments_desc',
+				'fields' => array(
+					'route_required' => array(
+						'type' => 'yes_no',
+						'value' => $route->route_required
+					)
+				)
+			);
+		}
 
 		$html = '';
 

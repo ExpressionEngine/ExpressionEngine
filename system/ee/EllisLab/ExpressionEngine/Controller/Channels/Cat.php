@@ -672,6 +672,12 @@ class Cat extends AbstractChannelsController {
 		$parent_id_options[0] = $this->lang->line('none');
 		foreach(ee()->api_channel_categories->categories as $cat)
 		{
+			// Don't give option to set self as parent
+			if ( ! is_null($category_id) && $category_id == $cat[0])
+			{
+				continue;
+			}
+
 			$indent = ($cat[5] != 1) ? str_repeat(NBS.NBS.NBS.NBS, $cat[5]) : '';
 			$parent_id_options[$cat[0]] = $indent.$cat[1];
 		}

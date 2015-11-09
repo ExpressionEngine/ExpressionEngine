@@ -4934,7 +4934,7 @@ class Forum_Core extends Forum {
 	// ----------------------------------------------------------------------
 
 	/**
-	 * Moderation method used by the spam module. Takes a query generated from 
+	 * Moderation method used by the spam module. Takes a query generated from
 	 * the submit_post method.
 	 */
 	public function moderate_post($query)
@@ -5779,6 +5779,7 @@ class Forum_Core extends Forum {
 		ee()->stats->update_stats();
 
 		// Check for spam
+		$spam = FALSE;
 		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
 		{
 			$body = ee()->input->get_post('body');
@@ -6234,7 +6235,7 @@ class Forum_Core extends Forum {
 		if (is_array($notify_addresses) AND count($notify_addresses) > 0)
 		{
 			$swap = array(
-							'name_of_poster'	=> $this->_convert_special_chars(ee()->session->userdata('screen_name')),
+							'name_of_poster'	=> ee()->session->userdata('screen_name'),
 							'forum_name'		=> $this->fetch_pref('board_label'),
 							'title'				=> $title,
 							'body'				=> $body,
@@ -6305,7 +6306,7 @@ class Forum_Core extends Forum {
 		$action_id  = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
 
 		$swap = array(
-			'name_of_poster'	=> $this->_convert_special_chars(ee()->session->userdata('screen_name')),
+			'name_of_poster'	=> ee()->session->userdata('screen_name'),
 			'forum_name'		=> $this->fetch_pref('board_label'),
 			'title'				=> $title,
 			'body'				=> $body,
