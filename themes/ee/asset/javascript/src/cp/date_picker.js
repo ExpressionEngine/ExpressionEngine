@@ -175,7 +175,15 @@ $(document).ready(function(){
 					d.setMinutes(now.getMinutes());
 					d.setSeconds(now.getSeconds());
 
-					$(Calendar.element).val(get_formatted_date(d, EE.date.date_format));
+					var date_format = EE.date.date_format;
+
+					// Allow custom date format via data-date-format parameter
+					if ($(Calendar.element).data('dateFormat'))
+					{
+						date_format = $(Calendar.element).data('dateFormat');
+					}
+
+					$(Calendar.element).val(get_formatted_date(d, date_format));
 					$(Calendar.element).attr('data-timestamp', get_formatted_date(d, '%U'));
 
 					$(Calendar.element).focus();
