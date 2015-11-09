@@ -93,6 +93,12 @@ class Email extends Settings {
 					)
 				),
 				array(
+					'title' => 'smtp_port',
+					'fields' => array(
+						'smtp_port' => array('type' => 'text')
+					)
+				),
+				array(
 					'title' => 'username',
 					'fields' => array(
 						'smtp_username' => array('type' => 'text')
@@ -150,6 +156,11 @@ class Email extends Settings {
 				'field' => 'smtp_server',
 				'label' => 'lang:smtp_server',
 				'rules' => 'callback__smtp_required_field'
+			),
+			array(
+				'field' => 'smtp_port',
+				'label' => 'lang:smtp_port',
+				'rules' => 'is_natural_no_zero'
 			)
 		));
 

@@ -146,7 +146,6 @@ end
 
 # Sets up a CP session for CP tests; could also be used for front-end
 def cp_session
-  Login::visit
   Login::login
 end
 
