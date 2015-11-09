@@ -67,7 +67,8 @@ class TemplateGroup extends Model {
 		'beforeInsert',
 		'afterDelete',
 		'afterInsert',
-		'afterUpdate'
+		'afterUpdate',
+		'afterSave',
 	);
 
 	protected $group_id;
@@ -122,6 +123,30 @@ class TemplateGroup extends Model {
 		}
 
 		$this->ensureFolderExists();
+	}
+
+	/**
+	 * After saving, if this template group is makred as the site default,
+	 * then we need to ensure that all other template groups for this
+	 * site are not set as the default
+	 */
+	public function onAfterSave()
+	{
+		if ($this->is_site_default)
+		{
+			$template_groups = $this->getFrontend()->get('TemplateGroup')
+				->filter('site_id', $this->site_id)
+				->filter('is_site_default', 'y')
+				->filter('group_id', '!=', $this->group_id)
+				->all();
+
+			if ($template_groups)
+			{
+				$template_groups->is_site_default = FALSE;
+				$template_groups->save();
+			}
+		}
+
 	}
 
 	/**
