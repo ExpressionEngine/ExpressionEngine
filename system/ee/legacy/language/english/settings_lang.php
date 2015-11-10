@@ -473,8 +473,6 @@ $lang = array(
 
 'default_member_group' => 'Default member group',
 
-'default_member_group_desc' => 'When a member meets the lock out requirement.',
-
 'member_theme' => 'Member profile theme',
 
 'member_theme_desc' => 'Default theme used for member profiles.',
