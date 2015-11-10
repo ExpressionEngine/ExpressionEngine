@@ -224,7 +224,7 @@ class Member extends ContentModel {
 	 */
 	public function getHTMLButtonsForSite($site_id)
 	{
-		$buttons = $this->getFrontend()->get('HTMLButton')
+		$buttons = $this->getModelFacade()->get('HTMLButton')
 			->filter('site_id', $site_id)
 			->filter('member_id', $this->member_id)
 			->order('tag_order')
@@ -232,7 +232,7 @@ class Member extends ContentModel {
 
 		if ( ! $buttons->count())
 		{
-			$buttons = $this->getFrontend()->get('HTMLButton')
+			$buttons = $this->getModelFacade()->get('HTMLButton')
 				->filter('site_id', $site_id)
 				->filter('member_id', 0)
 				->order('tag_order')
@@ -250,11 +250,11 @@ class Member extends ContentModel {
 	 */
 	public function updateAuthorStats()
 	{
-		$total_entries = $this->getFrontend()->get('ChannelEntry')
+		$total_entries = $this->getModelFacade()->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
 			->count();
 
-		$total_comments = $this->getFrontend()->get('Comment')
+		$total_comments = $this->getModelFacade()->get('Comment')
 			->filter('author_id', $this->member_id)
 			->count();
 
@@ -334,7 +334,7 @@ class Member extends ContentModel {
 	 */
 	public function validateGroupId($key, $group_id)
 	{
-		$member_groups = $this->getFrontend()->get('MemberGroup');
+		$member_groups = $this->getModelFacade()->get('MemberGroup');
 
 		if (ee()->session->userdata('group_id') != 1)
 		{
