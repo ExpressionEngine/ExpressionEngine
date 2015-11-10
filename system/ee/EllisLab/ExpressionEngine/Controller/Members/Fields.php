@@ -328,37 +328,32 @@ class Fields extends Members\Members {
 						)
 					)
 				)
-			)
-		);
-
-		$visibility['visibility'] = array(
-			array(
-				'title' => 'is_field_reg',
-				'desc' => 'is_field_reg_cont',
-				'fields' => array(
-					'm_field_reg' => array(
-						'type' => 'yes_no',
-						'value' => $field->field_reg
-					)
-				)
 			),
-			array(
-				'title' => 'is_field_public',
-				'desc' => 'is_field_public_cont',
-				'fields' => array(
-					'm_field_public' => array(
-						'type' => 'yes_no',
-						'value' => $field->field_public
+			'visibility' => array(
+				array(
+					'title' => 'is_field_reg',
+					'desc' => 'is_field_reg_cont',
+					'fields' => array(
+						'm_field_reg' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_reg
+						)
+					)
+				),
+				array(
+					'title' => 'is_field_public',
+					'desc' => 'is_field_public_cont',
+					'fields' => array(
+						'm_field_public' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_public
+						)
 					)
 				)
 			)
 		);
 
-
-		$settingsForm = $field->getSettingsForm();
-
-		$vars['sections'] += $visibility;
-		$vars['sections'] += $settingsForm;
+		$vars['sections'] = array_merge($vars['sections'], $field->getSettingsForm());
 
 		// These are currently the only fieldtypes we allow; get their settings forms
 		foreach (array('text', 'textarea', 'select') as $fieldtype)
@@ -367,7 +362,7 @@ class Fields extends Members\Members {
 			{
 				$dummy_field = ee('Model')->make('MemberField');
 				$dummy_field->field_type = $fieldtype;
-				$vars['sections'] += $dummy_field->getSettingsForm();
+				$vars['sections'] = array_merge($vars['sections'], $dummy_field->getSettingsForm());
 			}
 		}
 
