@@ -87,8 +87,9 @@ class Forums extends AbstractDesignController {
 			{
 				if (strpos($file, '.') !== FALSE)
 				{
-					$human = ucwords(str_replace('_', ' ', substr($file, 0, -strlen(strrchr($file, '.')))));
+					$human = str_replace('_', ' ', substr($file, 0, -strlen(strrchr($file, '.'))));
 					$edit_url = ee('CP/URL')->make('design/forums/edit/' . $theme . '/' . $dir . '/' . $human);
+					$human = ucfirst($human);
 					$data[$dir][] = array(
 						array(
 							'content' => (lang($human) == FALSE) ? $human : lang($human),
