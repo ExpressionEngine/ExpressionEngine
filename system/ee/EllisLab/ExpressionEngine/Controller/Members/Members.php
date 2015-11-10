@@ -504,7 +504,7 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'alt pending';
 					$toolbar['toolbar_items']['approve'] = array(
-						'href' => ee('CP/URL')->make('members/approve/', array('id' => $member['member_id'])),
+						'href' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
 						'title' => strtolower(lang('approve'))
 					);
 					break;
@@ -573,7 +573,108 @@ class Members extends CP_Controller {
 		);
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * Approve pending members
+	 *
+	 * @param int|array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	public function approve($ids)
+	{
+		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->all();
+
+		if (ee()->config->item('approved_member_notification'))
+		{
+			$template = ee('Model')->get('SpecialtyTemplate')
+				->filter('template_name', 'validated_member_notify')
+				->first();
+
+			foreach ($members as $member)
+			{
+				$this->pendingMemberNotification($template, $member);
+			}
+		}
+
+		$members->group_id = ee()->config->item('default_member_group');
+		$members->save();
+
+		/* -------------------------------------------
+		/* 'cp_members_validate_members' hook.
+		/*  - Additional processing when member(s) are validated in the CP
+		/*  - Added 1.5.2, 2006-12-28
+		*/
+			ee()->extensions->call('cp_members_validate_members');
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		// Update
+		ee()->stats->update_member_stats();
+
+		if ($members->count() == 1)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_approved_success'))
+				->addToBody(sprintf(lang('member_approved_success_desc'), $member->username))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('members_approved_success'))
+				->addToBody(lang('members_approved_success_desc'))
+				->addToBody($members->pluck('username'))
+				->defer();
+		}
+
+		ee()->functions->redirect(ee('CP/URL')->make('members', array('group', 4)));
+	}
+
+	/**
+	 * Sends an email to a member based on a provided template.
+	 *
+	 * @param EllisLab\ExpressionEngine\Model\Template\SpecialtyTemplate $template The email template
+	 * @param EllisLab\ExpressionEngine\Model\Member\Member $member The member to be emailed
+	 * @return bool TRUE of the email sent, FALSE if it did not
+	 */
+	private function pendingMemberNotification($template, $member)
+	{
+		ee()->load->library('email');
+		ee()->load->helper('text');
+
+		$swap = array(
+			'name'		=> $member->getMemberName(),
+			'site_name'	=> stripslashes(ee()->config->item('site_name')),
+			'site_url'	=> ee()->config->item('site_url')
+		);
+
+		$email_title = ee()->functions->var_swap($template->data_title, $swap);
+		$email_message = ee()->functions->var_swap($template->template_data, $swap);
+
+		ee()->email->wordwrap = TRUE;
+		ee()->email->from(
+			ee()->config->item('webmaster_email'),
+			ee()->config->item('webmaster_name')
+		);
+		ee()->email->to($member->email);
+		ee()->email->subject($email_title);
+		ee()->email->message(entities_to_ascii($email_message));
+		return ee()->email->send();
+	}
 
 	/**
 	 * Sets up the display filters

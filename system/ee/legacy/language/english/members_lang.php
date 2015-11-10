@@ -35,7 +35,13 @@ $lang = array(
 	"all_member_groups" => "All Member Groups",
 	"member_groups" => "Member Groups",
 	"save_member_group" => "Edit Member Group",
-	"member_delete_success" => "Member has been deleted",
+	"member_delete_success" => "Member Deleted",
+
+	"member_approved_success" => "Member Approved",
+	"member_approved_success_desc" => "The member <b>%s</b> has been approved.",
+	"members_approved_success" => "Members Approved",
+	"members_approved_success_desc" => "The following members have been approved:",
+
 	"member_approve" => "Approve Member",
 	"keywords" => "Keywords",
 	"filter_by" => "Filter by",
