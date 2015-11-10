@@ -12,11 +12,11 @@
 
 $(document).ready(function () {
 
-	$('fieldset input:hidden, fieldset select:hidden').attr('disabled', true);
+	$('fieldset :input:hidden').attr('disabled', true);
 
 	$('select[name="field_type"]').on('change', function() {
-		$('fieldset input:hidden, fieldset select:hidden').attr('disabled', true);
-		$('fieldset input[type=hidden], fieldset input:visible, fieldset select:visible').attr('disabled', false);
+		$('fieldset :input:hidden').attr('disabled', true);
+		$('fieldset input[type=hidden], fieldset :input:visible').attr('disabled', false);
 	});
 
 });
