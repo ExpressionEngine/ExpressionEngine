@@ -456,8 +456,6 @@ class ChannelEntry extends ContentModel {
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
-		$this->Categories = NULL;
-
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
@@ -465,6 +463,8 @@ class ChannelEntry extends ContentModel {
 				$this->setRawProperty('cat_group_id_'.$cat_group, '');
 				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
+
+			$this->Categories = NULL;
 
 			return;
 		}
