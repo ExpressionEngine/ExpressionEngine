@@ -189,7 +189,7 @@ class Create extends Members {
 				//
 				// -------------------------------------------
 
-				ee()->logger->log_action(lang('new_member_added').NBS.NBS.stripslashes($member->username));
+				ee()->logger->log_action(lang('new_member_added').NBS.$member->username);
 				ee()->stats->update_member_stats();
 
 				ee()->session->set_flashdata('highlight_id', $member->getId());
