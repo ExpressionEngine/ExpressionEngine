@@ -325,6 +325,19 @@ class Checkboxes_ft extends EE_Fieldtype {
 	{
 		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
+		$defaults = array(
+			'field_fmt' => '',
+			'field_pre_populate' => FALSE,
+			'field_list_items' => '',
+			'field_pre_channel_id' => 0,
+			'field_pre_field_id' => 0
+		);
+
+		foreach ($defaults as $setting => $value)
+		{
+			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
+		}
+
 		$settings = array(
 			array(
 				'title' => 'field_fmt',
@@ -332,7 +345,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 					'field_fmt' => array(
 						'type' => 'select',
 						'choices' => $format_options,
-						'value' => $data['field_fmt'],
+						'value' => $data['field_fmt']
 					)
 				)
 			),
@@ -346,7 +359,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 						'choices' => array(
 							'n' => lang('field_populate_manually'),
 						),
-						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+						'value' => $data['field_pre_populate'] ? 'y' : 'n'
 					),
 					'field_list_items' => array(
 						'type' => 'textarea',
@@ -358,7 +371,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 						'choices' => array(
 							'y' => lang('field_populate_from_channel'),
 						),
-						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+						'value' => $data['field_pre_populate'] ? 'y' : 'n'
 					),
 					'field_pre_populate_id' => array(
 						'type' => 'select',
