@@ -105,6 +105,7 @@ class Delete extends Query {
 				}
 
 				$delete_models = $fetch_query->all();
+
 				$delete_ids = $this->deleteCollection($delete_models, $to_meta);
 
 				$offset += $batch_size;
@@ -255,14 +256,13 @@ class Delete extends Query {
 
 			if ($relation->isWeak())
 			{
-				$to_model = $relation->getSourceModel();
+				$to_model = $relation->getTargetModel();
+				$to_name = $inverse->getName();
 
-				if ( ! count($path))
-				{
-					$to_model .= ' AS CurrentlyDeleting';
-				}
+				$subpath = $path;
+				$subpath[] = $to_name;
 
-				$this->delete_list[] = array($to_model, $this->weak($relation, $path));
+				$this->delete_list[] = array($to_model, $this->weak($inverse, $subpath));
 				continue;
 			}
 
