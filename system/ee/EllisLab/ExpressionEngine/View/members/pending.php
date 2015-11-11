@@ -13,7 +13,7 @@
 
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
-		<?php if ( ! empty($table['data']) && $can_delete_members): ?>
+		<?php if ( ! empty($table['data']) && ($can_edit || $can_delete)): ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
