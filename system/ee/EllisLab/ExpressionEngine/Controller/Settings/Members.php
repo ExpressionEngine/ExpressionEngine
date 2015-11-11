@@ -116,7 +116,6 @@ class Members extends Settings {
 				),
 				array(
 					'title' => 'default_member_group',
-					'desc' => 'default_member_group_desc',
 					'fields' => array(
 						'default_member_group' => array(
 							'type' => 'select',
