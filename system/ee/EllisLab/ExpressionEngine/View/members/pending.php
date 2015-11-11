@@ -17,9 +17,13 @@
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
+				<?php if ($can_edit): ?>
 				<option value="approve"><?=lang('approve')?></option>
 				<option value="resend"><?=lang('resend')?></option>
+				<?php endif; ?>
+				<?php if ($can_delete): ?>
 				<option value="decline" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('decline')?></option>
+				<?php endif; ?>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>

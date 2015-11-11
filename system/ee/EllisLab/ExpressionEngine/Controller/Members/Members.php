@@ -215,6 +215,11 @@ class Members extends CP_Controller {
 	{
 		$this->generateSidebar('pending');
 
+		$vars = array(
+			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
+			'can_edit' => ee()->cp->allowed_group('can_edit_members')
+		);
+
 		$base_url = ee('CP/URL')->make('members/pending');
 
 		$members = ee('Model')->get('Member')
