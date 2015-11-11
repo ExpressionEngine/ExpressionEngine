@@ -7,7 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -81,7 +81,7 @@ class Members extends CP_Controller {
 			$header->isActive();
 		}
 
-		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL')->make('members', array('group' => 4))->compile());
+		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
 
 		if ($active == 'pending')
 		{
@@ -138,26 +138,7 @@ class Members extends CP_Controller {
 			$member_name = '';
 		}
 
-		// Get order by and sort preferences for our initial state
-		$order_by = ($this->config->item('memberlist_order_by')) ?
-			$this->config->item('memberlist_order_by') : 'member_id';
-		$sort = ($this->config->item('memberlist_sort_order')) ?
-			$this->config->item('memberlist_sort_order') : 'asc';
-
-		// Fix for an issue where users may have 'total_posts' saved
-		// in their site settings for sorting members; but the actual
-		// column should be total_forum_posts, so we need to correct
-		// it until member preferences can be saved again with the
-		// right value
-		if ($order_by == 'total_posts')
-		{
-			$order_by = 'total_forum_posts';
-		}
-
-		$perpage = $this->config->item('memberlist_row_limit');
-		$sort_col = ee()->input->get('sort_col') ?: $order_by;
-		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
-		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
+		$table = $this->initializeTable();
 
 		// Add the group filter
 		if ($this->filter === TRUE)
@@ -165,66 +146,25 @@ class Members extends CP_Controller {
 			$this->filter();
 		}
 
-		$table = ee('CP/Table', array(
-			'sort_col' => $sort_col,
-			'sort_dir' => $sort_dir,
-			'limit' => $perpage
-		));
+		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
 
 		$state = array(
-			'sort'	=> array($sort_col => $sort_dir),
-			'offset' => ! empty($page) ? ($page - 1) * $perpage : 0
+			'sort'	=> array($table->config['sort_col'] => $table->config['sort_dir']),
+			'offset' => ! empty($page) ? ($page - 1) * $table->config['limit'] : 0
 		);
 
 		$params = array(
 			'member_name' => $member_name,
-			'perpage'	=> $perpage
+			'perpage'	=> $table->config['limit']
 		);
 
 		$data = $this->_member_search($state, $params);
-
- 		$columns = array(
-			'member_id' => array(
-				'type'	=> Table::COL_ID
-			),
-			'username' => array(
-				'encode' => FALSE
-			),
-			'dates' => array(
-				'encode' => FALSE
-			),
-			'member_group' => array(
-				'encode' => FALSE
-			)
-		);
-
-		// add the toolbar if they can edit members
-		if (ee()->cp->allowed_group('can_edit_members'))
-		{
-			$columns['manage'] = array(
-				'type'	=> Table::COL_TOOLBAR
-			);
-		}
-
-		// add the checkbox if they can delete members
-		if (ee()->cp->allowed_group('can_delete_members'))
-		{
-			$columns[] = array(
-				'type'	=> Table::COL_CHECKBOX
-			);
-		}
-
-		$table->setColumns($columns);
 
 		switch ($this->group)
 		{
 			case 2:
 				$table->setNoResultsText('no_banned_members_found');
 				$active = 'ban';
-				break;
-			case 4:
-				$table->setNoResultsText('no_pending_members_found');
-				$active = 'pending';
 				break;
 			default:
 				$table->setNoResultsText('no_members_found');
@@ -269,6 +209,53 @@ class Members extends CP_Controller {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('all_members');
 		ee()->cp->render('members/view_members', $data);
+	}
+
+	public function pending()
+	{
+		$this->generateSidebar('pending');
+
+		$base_url = ee('CP/URL')->make('members/pending');
+
+		$members = ee('Model')->get('Member')
+			->with('MemberGroup')
+			->filter('group_id', 4)
+			->all();
+
+		$table = $this->buildTableFromTemplateCollection($members);
+		$table->setNoResultsText('no_pending_members_found');
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
+		}
+
+		// Set search results heading
+		if ( ! empty($data['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				$vars['table']['search']
+			);
+		}
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove'),
+		));
+
+		$vars['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
+
+		ee()->view->base_url = $base_url;
+		ee()->view->cp_page_title = lang('pending_members');
+		ee()->cp->render('members/pending', $vars);
 	}
 
 	public function bans()
@@ -443,7 +430,167 @@ class Members extends CP_Controller {
 		$this->index();
 	}
 
-	// ----------------------------------------------------------------
+	private function initializeTable()
+	{
+		// Get order by and sort preferences for our initial state
+		$order_by = (ee()->config->item('memberlist_order_by')) ?: 'member_id';
+		$sort = (ee()->config->item('memberlist_sort_order')) ?: 'asc';
+
+		// Fix for an issue where users may have 'total_posts' saved
+		// in their site settings for sorting members; but the actual
+		// column should be total_forum_posts, so we need to correct
+		// it until member preferences can be saved again with the
+		// right value
+		if ($order_by == 'total_posts')
+		{
+			$order_by = 'total_forum_posts';
+		}
+
+		$perpage = ee()->config->item('memberlist_row_limit');
+		$sort_col = ee()->input->get('sort_col') ?: $order_by;
+		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
+
+		// Add the group filter
+		if ($this->filter === TRUE)
+		{
+			$this->filter();
+		}
+
+		$table = ee('CP/Table', array(
+			'sort_col' => $sort_col,
+			'sort_dir' => $sort_dir,
+			'limit' => $perpage,
+			'autosort' => TRUE,
+		));
+
+		$table->setNoResultsText('no_members_found');
+
+ 		$columns = array(
+			'member_id' => array(
+				'type'	=> Table::COL_ID
+			),
+			'username' => array(
+				'encode' => FALSE
+			),
+			'dates' => array(
+				'encode' => FALSE
+			),
+			'member_group' => array(
+				'encode' => FALSE
+			)
+		);
+
+		// add the toolbar if they can edit members
+		if (ee()->cp->allowed_group('can_edit_members'))
+		{
+			$columns['manage'] = array(
+				'type'	=> Table::COL_TOOLBAR
+			);
+		}
+
+		// add the checkbox if they can delete members
+		if (ee()->cp->allowed_group('can_delete_members'))
+		{
+			$columns[] = array(
+				'type'	=> Table::COL_CHECKBOX
+			);
+		}
+
+		$table->setColumns($columns);
+
+		return $table;
+	}
+
+	private function buildTableFromTemplateCollection(Collection $members)
+	{
+		$table = $this->initializeTable();
+
+		$data = array();
+
+		$member_id = ee()->session->flashdata('highlight_id');
+
+		foreach ($members as $member)
+		{
+			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
+			$toolbar = array(
+				'edit' => array(
+					'href' => $edit_link,
+					'title' => strtolower(lang('profile'))
+				)
+			);
+
+			$attrs = array();
+
+			switch ($member->MemberGroup->group_title)
+			{
+				case 'Banned':
+					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
+					$attrs['class'] = 'alt banned';
+					break;
+				case 'Pending':
+					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
+					$attrs['class'] = 'alt pending';
+					if (ee()->cp->allowed_group('can_edit_members'))
+					{
+						$toolbar['approve'] = array(
+							'href' => ee('CP/URL')->make('members/approve/' . $member->member_id),
+							'title' => strtolower(lang('approve'))
+						);
+					}
+					break;
+				default:
+					$group = $member->MemberGroup->group_title;
+			}
+
+			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
+
+			if (ee()->cp->allowed_group('can_edit_members'))
+			{
+				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
+			}
+			else
+			{
+				$username_display = $member['username'];
+				unset($toolbar['edit']);
+			}
+
+			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
+			$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
+
+			$column = array(
+				$member->member_id,
+				$username_display,
+				'<span class="meta-info">
+					<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member->join_date).'<br>
+					<b>'.lang('last_visit').'</b>: '.$last_visit.'
+				</span>',
+				$group,
+				array('toolbar_items' => $toolbar),
+				array(
+					'name' => 'selection[]',
+					'value' => $member->member_id,
+					'data' => array(
+						'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
+					)
+				)
+			);
+
+			if ($member_id && $member->member_id == $member_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
+			);
+		}
+
+		$table->setData($data);
+
+		return $table;
+	}
+
 
 	/**
 	 * member search
@@ -684,13 +831,12 @@ class Members extends CP_Controller {
 	 */
 	private function filter()
 	{
-		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
-		$group_ids = array();
-
-		foreach ($groups as $group)
-		{
-			$group_ids[$group->group_id] = $group->group_title;
-		}
+		$group_ids = ee('Model')->get('MemberGroup')
+			->filter('group_id', '!=', 4)
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
 
 		$options = $group_ids;
 		$options['all'] = lang('all');

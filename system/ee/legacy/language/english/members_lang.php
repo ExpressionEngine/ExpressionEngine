@@ -4,6 +4,7 @@ $lang = array(
 	"register_member" => "Register a New Member",
 	"view_members" => "View Members",
 	"all_members" => "All Members",
+	"pending_members" => "All Members (Pending Activation)",
 	"member_updated" => "Member saved",
 	"maximum_members_reached" => "You have reached the maximum number of Members allowed.",
 	"member_updated_desc" => "Member has been saved successfully.",
