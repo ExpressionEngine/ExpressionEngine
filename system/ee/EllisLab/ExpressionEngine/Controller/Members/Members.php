@@ -793,7 +793,7 @@ class Members extends CP_Controller {
 				->defer();
 		}
 
-		ee()->functions->redirect(ee('CP/URL')->make('members', array('group', 4)));
+		ee()->functions->redirect(ee('CP/URL', 'members/pending'));
 	}
 
 	/**
