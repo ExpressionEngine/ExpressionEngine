@@ -38,6 +38,10 @@ $lang = array(
 	"save_member_group" => "Edit Member Group",
 	"member_delete_success" => "Member Deleted",
 
+	"pending" => "pending",
+	"resend" => "resend",
+	"decline" => "decline",
+
 	"member_approved_success" => "Member Approved",
 	"member_approved_success_desc" => "The member <b>%s</b> has been approved.",
 	"members_approved_success" => "Members Approved",
