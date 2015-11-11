@@ -248,7 +248,8 @@ class Members extends CP_Controller {
 
 		$vars = array(
 			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
-			'can_edit' => ee()->cp->allowed_group('can_edit_members')
+			'can_edit' => ee()->cp->allowed_group('can_edit_members'),
+			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
 		);
 
 		$base_url = ee('CP/URL')->make('members/pending');
