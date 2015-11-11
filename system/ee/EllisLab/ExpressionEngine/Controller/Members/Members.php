@@ -81,11 +81,14 @@ class Members extends CP_Controller {
 			$header->isActive();
 		}
 
-		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
-
-		if ($active == 'pending')
+		if (ee()->cp->allowed_group('can_edit_members'))
 		{
-			$pending->isActive();
+			$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
+
+			if ($active == 'pending')
+			{
+				$pending->isActive();
+			}
 		}
 
 		if (ee()->cp->allowed_group('can_ban_users'))
@@ -213,6 +216,11 @@ class Members extends CP_Controller {
 
 	public function pending()
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar('pending');
 
 		$vars = array(
