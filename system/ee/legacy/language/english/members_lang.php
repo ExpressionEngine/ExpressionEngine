@@ -47,6 +47,11 @@ $lang = array(
 	"members_approved_success" => "Members Approved",
 	"members_approved_success_desc" => "The following members have been approved:",
 
+	"member_declined_success" => "Member Declined",
+	"member_declined_success_desc" => "The member <b>%s</b> has been declined.",
+	"members_declined_success" => "Members Declined",
+	"members_declined_success_desc" => "The following members have been declined:",
+
 	"member_approve" => "Approve Member",
 	"keywords" => "Keywords",
 	"filter_by" => "Filter by",

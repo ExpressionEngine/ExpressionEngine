@@ -221,6 +221,29 @@ class Members extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$action = ee()->input->post('bulk_action');
+
+		if ($action)
+		{
+			$ids = ee()->input->post('selection');
+			switch ($action)
+			{
+				case 'approve':
+					$this->approve($ids);
+					break;
+
+				case 'decline':
+					$this->decline($ids);
+					break;
+
+				case 'resend':
+					$this->resend($ids);
+					break;
+			}
+
+			ee()->functions->redirect(ee('CP/URL', 'members/pending'));
+		}
+
 		$this->generateSidebar('pending');
 
 		$vars = array(
@@ -788,7 +811,7 @@ class Members extends CP_Controller {
 			ee('CP/Alert')->makeInline('view-members')
 				->asSuccess()
 				->withTitle(lang('member_approved_success'))
-				->addToBody(sprintf(lang('member_approved_success_desc'), $member->username))
+				->addToBody(sprintf(lang('member_approved_success_desc'), $member->first()->username))
 				->defer();
 		}
 		else
@@ -802,6 +825,135 @@ class Members extends CP_Controller {
 		}
 
 		ee()->functions->redirect(ee('CP/URL', 'members/pending'));
+	}
+
+	/**
+	 * Decline pending members
+	 *
+	 * @param array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	private function decline(array $ids)
+	{
+		if ( ! ee()->cp->allowed_group('can_delete_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->all();
+
+		if (ee()->config->item('declined_member_notification'))
+		{
+			$template = ee('Model')->get('SpecialtyTemplate')
+				->filter('template_name', 'decline_member_validation')
+				->first();
+
+			foreach ($members as $member)
+			{
+				$this->pendingMemberNotification($template, $member);
+			}
+		}
+
+		$usernames = $members->pluck('username');
+		$single = ($members->count() == 1);
+		$members->delete();
+
+		/* -------------------------------------------
+		/* 'cp_members_validate_members' hook.
+		/*  - Additional processing when member(s) are validated in the CP
+		/*  - Added 1.5.2, 2006-12-28
+		*/
+			ee()->extensions->call('cp_members_validate_members');
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		// Update
+		ee()->stats->update_member_stats();
+
+		if ($single)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_declined_success'))
+				->addToBody(sprintf(lang('member_declined_success_desc'), $usernames[0]))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('members_declined_success'))
+				->addToBody(lang('members_declined_success_desc'))
+				->addToBody($usernames)
+				->defer();
+		}
+	}
+
+	/**
+	 * Resend activation emails for pending members
+	 *
+	 * @param int|array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	private function resend($ids)
+	{
+		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->all();
+
+		// if (ee()->config->item('approved_member_notification'))
+		// {
+		// 	$template = ee('Model')->get('SpecialtyTemplate')
+		// 		->filter('template_name', 'validated_member_notify')
+		// 		->first();
+		//
+		// 	foreach ($members as $member)
+		// 	{
+		// 		$this->pendingMemberNotification($template, $member);
+		// 	}
+		// }
+		//
+		// $members->group_id = ee()->config->item('default_member_group');
+		// $members->save();
+		//
+		// /* -------------------------------------------
+		// /* 'cp_members_validate_members' hook.
+		// /*  - Additional processing when member(s) are validated in the CP
+		// /*  - Added 1.5.2, 2006-12-28
+		// */
+		// 	ee()->extensions->call('cp_members_validate_members');
+		// 	if (ee()->extensions->end_script === TRUE) return;
+		// /*
+		// /* -------------------------------------------*/
+		//
+		// // Update
+		// ee()->stats->update_member_stats();
+		//
+		// if ($members->count() == 1)
+		// {
+		// 	ee('CP/Alert')->makeInline('view-members')
+		// 		->asSuccess()
+		// 		->withTitle(lang('member_approved_success'))
+		// 		->addToBody(sprintf(lang('member_approved_success_desc'), $member->username))
+		// 		->defer();
+		// }
+		// else
+		// {
+		// 	ee('CP/Alert')->makeInline('view-members')
+		// 		->asSuccess()
+		// 		->withTitle(lang('members_approved_success'))
+		// 		->addToBody(lang('members_approved_success_desc'))
+		// 		->addToBody($members->pluck('username'))
+		// 		->defer();
+		// }
 	}
 
 	/**
