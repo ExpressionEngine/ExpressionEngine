@@ -11,7 +11,7 @@
 		<?=ee()->view->head_link('css/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
-		<link rel="stylesheet" href="<?=ee('CP/URL')->make('css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
+		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
 		<!-- <link href="touch-icon-iphone.png" rel="apple-touch-icon-precomposed" sizes="114x114">
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
