@@ -19,7 +19,9 @@
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if ($can_edit): ?>
 				<option value="approve"><?=lang('approve')?></option>
+				<?php if ($resend_available): ?>
 				<option value="resend"><?=lang('resend')?></option>
+				<?php endif; ?>
 				<?php endif; ?>
 				<?php if ($can_delete): ?>
 				<option value="decline" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('decline')?></option>
@@ -32,16 +34,36 @@
 	</div>
 </div>
 
-<?php
-
-$modal_vars = array(
-	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> $form_url,
-	'hidden'	=> array(
-		'bulk_action'	=> 'decline'
-	)
-);
-
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove', $modal);
-?>
+<?php ee('CP/Modal')->startModal('modal-confirm-remove'); ?>
+<div class="modal-wrap modal-confirm-remove hidden">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+					<h1><?=lang('confirm_decline')?></h1>
+					<?=form_open($form_url, 'class="settings"', array('bulk_action' => 'decline'))?>
+						<div class="alert inline issue">
+							<p><?=lang('confirm_decline_desc')?></p>
+						</div>
+						<div class="txt-wrap">
+							<ul class="checklist">
+								<?php if (isset($checklist)):
+									$end = end($checklist); ?>
+									<?php foreach ($checklist as $item): ?>
+									<li<?php if ($item == $end) echo ' class="last"'; ?>><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
+									<?php endforeach;
+								endif ?>
+							</ul>
+							<div class="ajax"></div>
+						</div>
+						<fieldset class="form-ctrls">
+							<?=cp_form_submit('btn_confirm_and_decline', 'btn_confirm_and_decline_working')?>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php ee('CP/Modal')->endModal(); ?>

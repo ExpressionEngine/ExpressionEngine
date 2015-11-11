@@ -1,5 +1,6 @@
 <?php
 $lang = array(
+	"member" => "Member",
 	"member_manager" => "Member Manager",
 	"register_member" => "Register a New Member",
 	"view_members" => "View Members",
@@ -47,6 +48,10 @@ $lang = array(
 	"members_approved_success" => "Members Approved",
 	"members_approved_success_desc" => "The following members have been approved:",
 
+	'confirm_decline' => 'Confirm Decline',
+	'confirm_decline_desc' => 'You are attempting to decline the following members. This will remove them, please confirm this action.',
+	'btn_confirm_and_decline' => 'Confirm, and Decline',
+	'btn_confirm_and_decline_working' => 'Declineing...',
 	"member_declined_success" => "Member Declined",
 	"member_declined_success_desc" => "The member <b>%s</b> has been declined.",
 	"members_declined_success" => "Members Declined",
