@@ -20,8 +20,15 @@ EE.cp.formValidation = {
 
 	paused: false,
 
-	pause: function() {
+	pause: function(noTimer = false) {
 		this.paused = true;
+		if (noTimer == false)
+		{
+			var that = this;
+			setTimeout(function(){
+				that.resume();
+			}, 3000);
+		}
 	},
 
 	resume: function() {
