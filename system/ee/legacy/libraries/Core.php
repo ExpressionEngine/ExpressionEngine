@@ -220,6 +220,7 @@ class EE_Core {
 		define('URL_THEMES', $theme_url.'ee/');
 		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
@@ -416,8 +417,6 @@ class EE_Core {
 		$this->cp_loaded = TRUE;
 
 		$this->_somebody_set_us_up_the_base();
-
-		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL

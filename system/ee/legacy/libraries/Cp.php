@@ -884,7 +884,15 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+
+		if (REQ == 'CP')
+		{
+			$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		}
+		else
+		{
+			$url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').AMP.'type=css'.AMP.'package='.$package.AMP.'file='.$file;
+		}
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
