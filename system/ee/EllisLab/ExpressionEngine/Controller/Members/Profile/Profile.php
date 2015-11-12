@@ -251,12 +251,25 @@ class Profile extends CP_Controller {
 								$this->member->$field_name = $post;
 							}
 						}
+
+						$name = str_replace('m_field_id_', 'field_ft_', $field_name);
+
+						// Set custom field format override if available, too
+						if (strpos($name, 'field_ft_') !== FALSE && ee()->input->post($name))
+						{
+							$this->member->{"m_$name"} = ee()->input->post($name);
+						}
 					}
 				}
 			}
 		}
 
 		$validated = $this->member->validate();
+
+		if ($response = $this->ajaxValidation($validated))
+		{
+			return $response;
+		}
 
 		if ($validated->isNotValid())
 		{
