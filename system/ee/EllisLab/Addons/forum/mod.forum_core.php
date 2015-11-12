@@ -5779,6 +5779,7 @@ class Forum_Core extends Forum {
 		ee()->stats->update_stats();
 
 		// Check for spam
+		$spam = FALSE;
 		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
 		{
 			$body = ee()->input->get_post('body');

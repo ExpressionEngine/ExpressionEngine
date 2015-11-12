@@ -177,6 +177,19 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
+		$defaults = array(
+			'field_fmt' => '',
+			'field_pre_populate' => FALSE,
+			'field_list_items' => '',
+			'field_pre_channel_id' => 0,
+			'field_pre_field_id' => 0
+		);
+
+		foreach ($defaults as $setting => $value)
+		{
+			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
+		}
+
 		$settings = array(
 			array(
 				'title' => 'field_fmt',

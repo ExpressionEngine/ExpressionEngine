@@ -726,8 +726,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		foreach ($this->_property_types as $name => $type)
 		{
 			$set = $this->getRawProperty($name);
+			$type = $this->getTypeFor($name);
 
-			if ($this->isDirty($name))
+			if ($this->isDirty($name) || $type instanceOf Entity)
 			{
 				$value = $this->getBackup($name, $set);
 				$new_value = $this->typedStore($set, $name);
