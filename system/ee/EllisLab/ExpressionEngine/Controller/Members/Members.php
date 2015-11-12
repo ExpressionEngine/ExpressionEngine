@@ -826,7 +826,7 @@ class Members extends CP_Controller {
 			ee('CP/Alert')->makeInline('view-members')
 				->asSuccess()
 				->withTitle(lang('member_approved_success'))
-				->addToBody(sprintf(lang('member_approved_success_desc'), $member->first()->username))
+				->addToBody(sprintf(lang('member_approved_success_desc'), $members->first()->username))
 				->defer();
 		}
 		else
