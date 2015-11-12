@@ -901,60 +901,50 @@ class Members extends CP_Controller {
 	 */
 	private function resend($ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		if ( ! ee()->cp->allowed_group('can_edit_members') OR
+			ee()->config->item('req_mbr_activation') !== 'email')
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$members = ee('Model')->get('Member', $ids)
-			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->fields('member_id', 'username', 'screen_name', 'email', 'group_id', 'authcode')
 			->all();
 
-		// if (ee()->config->item('approved_member_notification'))
-		// {
-		// 	$template = ee('Model')->get('SpecialtyTemplate')
-		// 		->filter('template_name', 'validated_member_notify')
-		// 		->first();
-		//
-		// 	foreach ($members as $member)
-		// 	{
-		// 		$this->pendingMemberNotification($template, $member);
-		// 	}
-		// }
-		//
-		// $members->group_id = ee()->config->item('default_member_group');
-		// $members->save();
-		//
-		// /* -------------------------------------------
-		// /* 'cp_members_validate_members' hook.
-		// /*  - Additional processing when member(s) are validated in the CP
-		// /*  - Added 1.5.2, 2006-12-28
-		// */
-		// 	ee()->extensions->call('cp_members_validate_members');
-		// 	if (ee()->extensions->end_script === TRUE) return;
-		// /*
-		// /* -------------------------------------------*/
-		//
-		// // Update
-		// ee()->stats->update_member_stats();
-		//
-		// if ($members->count() == 1)
-		// {
-		// 	ee('CP/Alert')->makeInline('view-members')
-		// 		->asSuccess()
-		// 		->withTitle(lang('member_approved_success'))
-		// 		->addToBody(sprintf(lang('member_approved_success_desc'), $member->username))
-		// 		->defer();
-		// }
-		// else
-		// {
-		// 	ee('CP/Alert')->makeInline('view-members')
-		// 		->asSuccess()
-		// 		->withTitle(lang('members_approved_success'))
-		// 		->addToBody(lang('members_approved_success_desc'))
-		// 		->addToBody($members->pluck('username'))
-		// 		->defer();
-		// }
+		$template = ee('Model')->get('SpecialtyTemplate')
+			->filter('template_name', 'mbr_activation_instructions')
+			->first();
+
+		$action_id = ee()->functions->fetch_action_id('Member', 'activate_member');
+
+		foreach ($members as $member)
+		{
+			$swap = array(
+				'username'  => $member->username,
+				'email'     => $member->email,
+				'activation_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$member->authcode
+			);
+
+			$this->pendingMemberNotification($template, $member, $swap);
+		}
+
+		if ($members->count() == 1)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_activation_resent_success'))
+				->addToBody(sprintf(lang('member_activation_resent_success_desc'), $member->username))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_activation_resent_success'))
+				->addToBody(lang('members_activation_resent_success_desc'))
+				->addToBody($members->pluck('username'))
+				->defer();
+		}
 	}
 
 	/**
@@ -964,7 +954,7 @@ class Members extends CP_Controller {
 	 * @param EllisLab\ExpressionEngine\Model\Member\Member $member The member to be emailed
 	 * @return bool TRUE of the email sent, FALSE if it did not
 	 */
-	private function pendingMemberNotification($template, $member)
+	private function pendingMemberNotification($template, $member, array $extra_swap = array())
 	{
 		ee()->load->library('email');
 		ee()->load->helper('text');
@@ -972,8 +962,8 @@ class Members extends CP_Controller {
 		$swap = array(
 			'name'		=> $member->getMemberName(),
 			'site_name'	=> stripslashes(ee()->config->item('site_name')),
-			'site_url'	=> ee()->config->item('site_url')
-		);
+			'site_url'	=> ee()->config->item('site_url'),
+			) + $extra_swap;
 
 		$email_title = ee()->functions->var_swap($template->data_title, $swap);
 		$email_message = ee()->functions->var_swap($template->template_data, $swap);

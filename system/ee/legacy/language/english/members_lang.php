@@ -57,6 +57,10 @@ $lang = array(
 	"members_declined_success" => "Members Declined",
 	"members_declined_success_desc" => "The following members have been declined:",
 
+	"member_activation_resent_success" => "Activation Email Resent",
+	"member_activation_resent_success_desc" => "An activation email was sent to <b>%s</b>.",
+	"members_activation_resent_success_desc" => "Activation emails were sent to the following members:",
+
 	"member_approve" => "Approve Member",
 	"keywords" => "Keywords",
 	"filter_by" => "Filter by",
