@@ -247,6 +247,7 @@ class Members extends CP_Controller {
 		$this->generateSidebar('pending');
 
 		$vars = array(
+			'cp_page_title' => lang('pending_members'),
 			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
 			'can_edit' => ee()->cp->allowed_group('can_edit_members'),
 			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
@@ -273,25 +274,11 @@ class Members extends CP_Controller {
 				->render($base_url);
 		}
 
-		// Set search results heading
-		if ( ! empty($data['table']['search']))
-		{
-			ee()->view->cp_heading = sprintf(
-				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				$vars['table']['search']
-			);
-		}
-
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
 		));
 
-		$vars['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
-
-		ee()->view->base_url = $base_url;
-		ee()->view->cp_page_title = lang('pending_members');
 		ee()->cp->render('members/pending', $vars);
 	}
 
@@ -302,100 +289,147 @@ class Members extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->base_url = ee('CP/URL')->make('members/bans');
-		$this->group = 2;
-		$this->filter = FALSE;
-
-		$banned_ips	= $this->config->item('banned_ips');
-		$banned_emails  = $this->config->item('banned_emails');
-		$banned_usernames = $this->config->item('banned_usernames');
-		$banned_screen_names = $this->config->item('banned_screen_names');
-		$ban_action = $this->config->item('ban_action');
-		$ban_message = $this->config->item('ban_message');
-		$ban_destination = $this->config->item('ban_destination');
-
-		$ips		= '';
-		$emails  	= '';
-		$users  	= '';
-		$screens	= '';
-
-		if ($banned_ips != '')
+		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			foreach (explode('|', $banned_ips) as $val)
+			// @TODO: refactor the delete method so it doesn't need this property
+			$this->base_url = ee('CP/URL', 'members/bans');
+			$this->delete();
+		}
+
+		$this->generateSidebar('ban');
+
+		$vars = array(
+			'cp_page_title' => lang('banned_members'),
+			'can_delete' => ee()->cp->allowed_group('can_delete_members')
+		);
+
+		$base_url = ee('CP/URL', 'members/bans');
+
+		$members = ee('Model')->get('Member')
+			->with('MemberGroup')
+			->filter('group_id', 2)
+			->all();
+
+		$table = $this->buildTableFromTemplateCollection($members);
+		$table->setNoResultsText('no_banned_members_found');
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
+		}
+
+		$values = array(
+			'banned_ips' => '',
+			'banned_emails' => '',
+			'banned_usernames' => '',
+			'banned_screen_names' => '',
+		);
+
+		foreach (array_keys($values) as $item)
+		{
+			$value = ee()->config->item($item);
+
+			if ($item != '')
 			{
-				$ips .= $val.NL;
+				foreach (explode('|', $value) as $line)
+				{
+					$values[$item] .= $line.NL;
+				}
 			}
 		}
 
-		if ($banned_emails != '')
-		{
-			foreach (explode('|', $banned_emails) as $val)
-			{
-				$emails .= $val.NL;
-			}
-		}
+		$ban_action = ee()->config->item('ban_action');
 
-		if ($banned_usernames != '')
-		{
-			foreach (explode('|', $banned_usernames) as $val)
-			{
-				$users .= $val.NL;
-			}
-		}
-
-		if ($banned_screen_names != '')
-		{
-			foreach (explode('|', $banned_screen_names) as $val)
-			{
-				$screens .= $val.NL;
-			}
-		}
-
-		$vars['sections'] = array(
-			array(
+		$vars['form'] = array(
+			'ajax_validate' => TRUE,
+			'base_url'      => $base_url,
+			'cp_page_title' => lang('user_banning'),
+			'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
 				array(
-					'title' => 'ip_address_banning',
-					'desc' => 'ip_banning_instructions',
-					'fields' => array(
-						'banned_ips' => array(
-							'type' => 'textarea',
-							'value' => $ips
+					array(
+						'title' => 'ip_address_banning',
+						'desc' => 'ip_banning_instructions',
+						'fields' => array(
+							'banned_ips' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_ips']
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'email_address_banning',
-					'desc' => 'email_banning_instructions',
-					'fields' => array(
-						'banned_emails' => array(
-							'type' => 'textarea',
-							'value' => $emails
+					),
+					array(
+						'title' => 'email_address_banning',
+						'desc' => 'email_banning_instructions',
+						'fields' => array(
+							'banned_emails' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_emails']
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'username_banning',
-					'desc' => 'username_banning_instructions',
-					'fields' => array(
-						'banned_usernames' => array(
-							'type' => 'textarea',
-							'value' => $users
+					),
+					array(
+						'title' => 'username_banning',
+						'desc' => 'username_banning_instructions',
+						'fields' => array(
+							'banned_usernames' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_usernames']
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'screen_name_banning',
-					'desc' => 'screen_name_banning_instructions',
-					'fields' => array(
-						'banned_screen_names' => array(
-							'type' => 'textarea',
-							'value' => $screens
+					),
+					array(
+						'title' => 'screen_name_banning',
+						'desc' => 'screen_name_banning_instructions',
+						'fields' => array(
+							'banned_screen_names' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_screen_names']
+							)
+						)
+					),
+					array(
+						'title' => 'ban_options',
+						'desc'  => 'ban_options_desc',
+						'fields' => array(
+							'ban_action_pt1' => array(
+								'type' => 'radio',
+								'name' => 'ban_action',
+								'choices' => array(
+									'restrict' => lang('restrict_to_viewing'),
+									'message' => lang('show_this_message'),
+								),
+								'value' => $ban_action
+							),
+							'ban_message' => array(
+								'type' => 'textarea',
+								'value' => ee()->config->item('ban_message')
+							),
+							'ban_action_pt2' => array(
+								'type' => 'radio',
+								'name' => 'ban_action',
+								'choices' => array(
+									'bounce' => lang('send_to_site'),
+								),
+								'value' => $ban_action
+							),
+							'ban_destination' => array(
+								'type' => 'text',
+								'value' => ee()->config->item('ban_destination')
+							),
 						)
 					)
 				)
 			)
 		);
 
+		// @TODO: Stop using form_validation
 		ee()->form_validation->set_rules(array(
 			array(
 				 'field'   => 'banned_username',
@@ -426,27 +460,27 @@ class Members extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$sections = $vars['sections'][0];
-			$data = array();
+			$site = ee('Model')->get('Site', ee()->config->item('site_id'))->first();
 
-			foreach ($sections as $section)
+			foreach (array_keys($values) as $item)
 			{
-				foreach ($section['fields'] as $field => $options)
-				{
-					$val = ee()->input->post($field);
-					$val = implode('|', explode(NL, $val));
-					$data[$field] = $val;
-				}
+				$value = ee()->input->post($item);
+				$value = implode('|', explode(NL, $value));
+				$site->site_system_preferences->$item = $value;
 			}
 
-			ee()->config->update_site_prefs($data);
+			$site->site_system_preferences->ban_action = ee()->input->post('ban_action');
+			$site->site_system_preferences->ban_message = ee()->input->post('ban_message');
+			$site->site_system_preferences->ban_destination = ee()->input->post('ban_destination');
+
+			$site->save();
 
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('ban_settings_updated'))
 				->defer();
 
-			ee()->functions->redirect($this->base_url);
+			ee()->functions->redirect($base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -457,14 +491,12 @@ class Members extends CP_Controller {
 				->now();
 		}
 
-		ee()->view->cp_page_title = lang('banned_members');
-		$this->form = $vars;
-		$this->form['cp_page_title'] = lang('user_banning');
-		$this->form['ajax_validate'] = TRUE;
-		$this->form['save_btn_text'] = sprintf(lang('btn_save'), lang('settings'));
-		$this->form['save_btn_text_working'] = 'btn_saving';
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove'),
+		));
 
-		$this->index();
+		ee()->cp->render('members/banned', $vars);
 	}
 
 	private function initializeTable()
