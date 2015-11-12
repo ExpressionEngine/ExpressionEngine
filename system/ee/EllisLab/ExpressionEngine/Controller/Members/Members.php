@@ -577,11 +577,11 @@ class Members extends CP_Controller {
 			{
 				case 'Banned':
 					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
-					$attrs['class'] = 'alt banned';
+					$attrs['class'] = 'banned';
 					break;
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
-					$attrs['class'] = 'alt pending';
+					$attrs['class'] = 'pending';
 					if (ee()->cp->allowed_group('can_edit_members'))
 					{
 						$toolbar['approve'] = array(
@@ -696,11 +696,11 @@ class Members extends CP_Controller {
 			{
 				case 'Banned':
 					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
-					$attributes['class'] = 'alt banned';
+					$attributes['class'] = 'banned';
 					break;
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
-					$attributes['class'] = 'alt pending';
+					$attributes['class'] = 'pending';
 					$toolbar['toolbar_items']['approve'] = array(
 						'href' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
 						'title' => strtolower(lang('approve'))
