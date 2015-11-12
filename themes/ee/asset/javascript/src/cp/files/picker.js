@@ -166,8 +166,9 @@
 	};
 
 	$(document).ready(function () {
-		modal = $("." + $(this).attr('rel'));
 		$('.filepicker').click(function (e) {
+			modal = $("." + $(this).attr('rel'));
+
 			var options = {};
 			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
 			options['input_name'] = $('#' + $(this).data('input-name'));
