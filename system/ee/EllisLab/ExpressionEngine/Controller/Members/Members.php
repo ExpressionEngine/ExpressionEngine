@@ -38,7 +38,6 @@ class Members extends CP_Controller {
 
 	private $base_url;
 	private $group;
-	private $form;
 	private $filter = TRUE;
 
 	/**
@@ -143,11 +142,7 @@ class Members extends CP_Controller {
 
 		$table = $this->initializeTable();
 
-		// Add the group filter
-		if ($this->filter === TRUE)
-		{
-			$this->filter();
-		}
+		$this->filter();
 
 		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
 
@@ -163,23 +158,11 @@ class Members extends CP_Controller {
 
 		$data = $this->_member_search($state, $params);
 
-		switch ($this->group)
-		{
-			case 2:
-				$table->setNoResultsText('no_banned_members_found');
-				$active = 'ban';
-				break;
-			default:
-				$table->setNoResultsText('no_members_found');
-				$active = 'all_members';
-				break;
-		}
-		$this->generateSidebar($active);
+		$this->generateSidebar('all_members');
 
 		$table->setData($data['rows']);
 		$data['table'] = $table->viewData($this->base_url);
 		$data['form_url'] = ee('CP/URL')->make('members/delete');
-		$data['form'] = $this->form;
 
 		$base_url = $data['table']['base_url'];
 

@@ -28,14 +28,7 @@
 	</div>
 </div>
 
-<?php if ( ! empty($form)): ?>
-<div class="box snap">
-	<?php $this->embed('_shared/form', $form); ?>
-</div>
-<?php endif; ?>
-
 <?php
-
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
 	'form_url'	=> $form_url,
