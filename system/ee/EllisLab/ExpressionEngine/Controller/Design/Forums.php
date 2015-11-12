@@ -74,6 +74,7 @@ class Forums extends AbstractDesignController {
 		$base_url = ee('CP/URL')->make('design/forums/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
+		$table->setNoResultsText('no_templates_found');
 		$table->setColumns(
 			array(
 				'template',
