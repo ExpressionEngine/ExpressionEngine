@@ -151,6 +151,21 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
+	 * Batch update properties
+	 *
+	 * Safely updates any properties that might exist,
+	 * passing them through the getters along the way.
+	 *
+	 * @param array $data Data to update
+	 * @return $this
+	 */
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
+	}
+
+	/**
 	 * Make sure that calls to fill() also apply to custom fields
 	 */
 	public function fill(array $data = array())
