@@ -173,8 +173,8 @@ class Create extends Members {
 				//  - Take over member creation when done through the CP
 				//  - Added 1.4.2
 				//
-					$this->extensions->call('cp_members_member_create_start');
-					if ($this->extensions->end_script === TRUE) return;
+					ee()->extensions->call('cp_members_member_create_start');
+					if (ee()->extensions->end_script === TRUE) return;
 				//
 				// -------------------------------------------
 
@@ -184,8 +184,8 @@ class Create extends Members {
 				// 'cp_members_member_create' hook.
 				//  - Additional processing when a member is created through the CP
 				//
-					$this->extensions->call('cp_members_member_create', $member->getId(), $member->getValues());
-					if ($this->extensions->end_script === TRUE) return;
+					ee()->extensions->call('cp_members_member_create', $member->getId(), $member->getValues());
+					if (ee()->extensions->end_script === TRUE) return;
 				//
 				// -------------------------------------------
 
