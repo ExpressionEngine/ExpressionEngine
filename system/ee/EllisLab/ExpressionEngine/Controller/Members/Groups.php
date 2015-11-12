@@ -7,7 +7,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-
 use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
@@ -139,7 +138,7 @@ class Groups extends Members\Members {
 
 
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
-			$count = $group->getMembers()->count();
+			$count = ee('Model')->get('Member')->filter('group_id', $group->group_id)->count();
 			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
 			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
 
