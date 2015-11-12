@@ -318,7 +318,7 @@ class Members extends CP_Controller {
 		{
 			$value = ee()->config->item($item);
 
-			if ($item != '')
+			if ($value != '')
 			{
 				foreach (explode('|', $value) as $line)
 				{
