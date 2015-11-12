@@ -242,7 +242,9 @@ class Members extends CP_Controller {
 			->with('MemberGroup')
 			->filter('group_id', 4);
 
-		$table = $this->buildTableFromMemberQuery($members);
+		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
+
+		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
 		$table->setNoResultsText('no_pending_members_found');
 
 		$vars['table'] = $table->viewData($base_url);
@@ -480,8 +482,13 @@ class Members extends CP_Controller {
 		ee()->cp->render('members/banned', $vars);
 	}
 
-	private function initializeTable()
+	private function initializeTable($checkboxes = NULL)
 	{
+		if (is_null($checkboxes))
+		{
+			$checkboxes = ee()->cp->allowed_group('can_delete_members');
+		}
+
 		// Get order by and sort preferences for our initial state
 		$order_by = (ee()->config->item('memberlist_order_by')) ?: 'member_id';
 		$sort = (ee()->config->item('memberlist_sort_order')) ?: 'asc';
@@ -530,9 +537,8 @@ class Members extends CP_Controller {
 			);
 		}
 
-		// @TODO: In Pending that checkbox does more than delete!
 		// add the checkbox if they can delete members
-		if (ee()->cp->allowed_group('can_delete_members'))
+		if ($checkboxes)
 		{
 			$columns[] = array(
 				'type'	=> Table::COL_CHECKBOX
@@ -544,7 +550,7 @@ class Members extends CP_Controller {
 		return $table;
 	}
 
-	private function buildTableFromMemberQuery(Builder $members)
+	private function buildTableFromMemberQuery(Builder $members, $checkboxes = NULL)
 	{
 		$table = $this->initializeTable();
 
