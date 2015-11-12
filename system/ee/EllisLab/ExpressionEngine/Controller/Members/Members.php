@@ -7,7 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -240,8 +240,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
-			->filter('group_id', 4)
-			->all();
+			->filter('group_id', 4);
 
 		$table = $this->buildTableFromTemplateCollection($members);
 		$table->setNoResultsText('no_pending_members_found');
@@ -290,8 +289,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
-			->filter('group_id', 2)
-			->all();
+			->filter('group_id', 2);
 
 		$table = $this->buildTableFromTemplateCollection($members);
 		$table->setNoResultsText('no_banned_members_found');
@@ -498,21 +496,13 @@ class Members extends CP_Controller {
 			$order_by = 'total_forum_posts';
 		}
 
-		$perpage = ee()->config->item('memberlist_row_limit');
 		$sort_col = ee()->input->get('sort_col') ?: $order_by;
 		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
-
-		// Add the group filter
-		if ($this->filter === TRUE)
-		{
-			$this->filter();
-		}
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
-			'limit' => $perpage,
-			'autosort' => TRUE,
+			'limit' => ee()->config->item('memberlist_row_limit'),
 		));
 
 		$table->setNoResultsText('no_members_found');
@@ -540,6 +530,7 @@ class Members extends CP_Controller {
 			);
 		}
 
+		// @TODO: In Pending that checkbox does more than delete!
 		// add the checkbox if they can delete members
 		if (ee()->cp->allowed_group('can_delete_members'))
 		{
@@ -553,9 +544,12 @@ class Members extends CP_Controller {
 		return $table;
 	}
 
-	private function buildTableFromTemplateCollection(Collection $members)
+	private function buildTableFromTemplateCollection(Builder $members)
 	{
 		$table = $this->initializeTable();
+
+		$members = $members->order($table->config['sort_col'], $table->config['sort_dir'])
+			->all();
 
 		$data = array();
 
@@ -642,7 +636,6 @@ class Members extends CP_Controller {
 
 		return $table;
 	}
-
 
 	/**
 	 * member search
