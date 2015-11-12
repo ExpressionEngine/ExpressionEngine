@@ -896,10 +896,10 @@ class Members extends CP_Controller {
 	/**
 	 * Resend activation emails for pending members
 	 *
-	 * @param int|array $ids The ID(s) of the member(s) being approved
+	 * @param array $ids The ID(s) of the member(s) being approved
 	 * @return void
 	 */
-	private function resend($ids)
+	private function resend(array $ids)
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_members') OR
 			ee()->config->item('req_mbr_activation') !== 'email')
