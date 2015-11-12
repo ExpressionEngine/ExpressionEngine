@@ -16,6 +16,10 @@ class Factory {
 		$this->url = $url;
 	}
 
+	/**
+	 * Inject the Filepicker modal into the CP. Called from the DI, do not
+	 * call manually.
+	 */
 	public function injectModal(ModalCollection $modals, View $modal_view, Cp $cp)
 	{
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
@@ -25,6 +29,12 @@ class Factory {
 		$cp->add_js_script('file', 'cp/files/picker');
 	}
 
+	/**
+	 * Construct a filepicker instance
+	 *
+	 * @param String $dirs Allowed directories
+	 * @return FilePicker
+	 */
 	public function make($dirs = 'all')
 	{
 		$fp = new FilePicker($this->url);

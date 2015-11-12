@@ -19,11 +19,23 @@ class FilePicker {
 		$this->url = $url;
 	}
 
+	/**
+	 * Set the allowed directories
+	 *
+	 * @param String $dirs Allowed directories
+	 * @return FilePicker
+	 */
 	public function setDirectories($dirs)
 	{
 		$this->directories = $dirs;
+		return $this;
 	}
 
+	/**
+	 * Get a CP\URL instance that points to the filepicker endpoint
+	 *
+	 * @return CP\URL
+	 */
 	public function getUrl()
 	{
 		$qs = array('directory' => $this->directories);
@@ -31,6 +43,12 @@ class FilePicker {
 		return $this->url->make(static::CONTROLLER, $qs);
 	}
 
+	/**
+	 * Get a new Link instance
+	 *
+	 * @param String $text The link text [optional]
+	 * @return Link
+	 */
 	public function getLink($text = NULL)
 	{
 		$link = new Link($this);
