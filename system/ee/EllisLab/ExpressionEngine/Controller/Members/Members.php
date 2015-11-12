@@ -988,7 +988,8 @@ class Members extends CP_Controller {
 	private function filter()
 	{
 		$group_ids = ee('Model')->get('MemberGroup')
-			->filter('group_id', '!=', 4)
+			// Banned & Pending have their own views
+			->filter('group_id', 'NOT IN', array(2, 4))
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title', 'asc')
 			->all()
