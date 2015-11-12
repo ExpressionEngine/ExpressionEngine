@@ -242,7 +242,7 @@ class Members extends CP_Controller {
 			->with('MemberGroup')
 			->filter('group_id', 4);
 
-		$table = $this->buildTableFromTemplateCollection($members);
+		$table = $this->buildTableFromMemberQuery($members);
 		$table->setNoResultsText('no_pending_members_found');
 
 		$vars['table'] = $table->viewData($base_url);
@@ -291,7 +291,7 @@ class Members extends CP_Controller {
 			->with('MemberGroup')
 			->filter('group_id', 2);
 
-		$table = $this->buildTableFromTemplateCollection($members);
+		$table = $this->buildTableFromMemberQuery($members);
 		$table->setNoResultsText('no_banned_members_found');
 
 		$vars['table'] = $table->viewData($base_url);
@@ -544,7 +544,7 @@ class Members extends CP_Controller {
 		return $table;
 	}
 
-	private function buildTableFromTemplateCollection(Builder $members)
+	private function buildTableFromMemberQuery(Builder $members)
 	{
 		$table = $this->initializeTable();
 
