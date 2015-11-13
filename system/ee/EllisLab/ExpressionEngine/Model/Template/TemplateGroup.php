@@ -132,7 +132,7 @@ class TemplateGroup extends Model {
 	 */
 	public function onAfterSave()
 	{
-		if ($this->is_site_default)
+		if ($this->getProperty('is_site_default'))
 		{
 			$template_groups = $this->getFrontend()->get('TemplateGroup')
 				->filter('site_id', $this->site_id)
