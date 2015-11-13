@@ -212,7 +212,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function indexBy($collector)
 	{
-		$keys = $this->collect($key);
+		$keys = $this->collect($collector);
 		$values = $this->elements;
 
 		// 5.3 requires array_combine arguments to have at least one element
