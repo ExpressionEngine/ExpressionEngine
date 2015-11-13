@@ -182,7 +182,7 @@ class TemplateGroup extends Model {
 		}
 
 		$site = ee()->config->item('site_short_name');
-		return $basepath.'/'.$site.'/'.$this->group_name . '.group';
+		return $basepath.$site.'/'.$this->group_name . '.group';
 	}
 
 	/**
