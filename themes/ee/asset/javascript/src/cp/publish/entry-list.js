@@ -15,6 +15,11 @@ $(document).ready(function () {
 	var replaceData = function(data) {
 		$('.wrap .col-group:nth-child(2) .box').html(data.html);
 		$('input[name="search"]').closest('form').attr('action', data.url);
+
+		if (jQuery().toggle_all) {
+			$('table').toggle_all();
+		}
+
 		window.history.pushState(null, '', data.url);
 	}
 

@@ -288,19 +288,19 @@ $(document).ready(function(){
 		});
 
 		// Highlight table rows when checked
-		$('table').on('click', 'tr', function(event) {
+		$('body').on('click', 'table tr', function(event) {
 			if (event.target.nodeName != 'A') {
        			$(this).children('td:last-child').children('input[type=checkbox]').click();
 			}
 		});
 
 		// Prevent clicks on checkboxes from bubbling to the table row
-		$('table tr td:last-child input[type=checkbox]').on('click', function(e) {
+		$('body').on('click', 'table tr td:last-child input[type=checkbox]', function(e) {
 			e.stopPropagation();
 		});
 
 		// Toggle the bulk actions
-		$('table tr td:last-child input[type=checkbox]').on('change',function() {
+		$('body').on('change', 'table tr td:last-child input[type=checkbox]', function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 			if ($(this).parents('table').find('input:checked').length == 0) {
 				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
@@ -310,7 +310,7 @@ $(document).ready(function(){
 		});
 
 		// "Table" lists
-		$('.tbl-list .check-ctrl input').on('click change',function() {
+		$('body').on('click change', '.tbl-list .check-ctrl input', function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
 			var tableList = $(this).parents('.tbl-list');
@@ -330,7 +330,7 @@ $(document).ready(function(){
 		});
 
 		// Select all for "table" lists
-		$('.tbl-list-ctrl input').on('click', function(){
+		$('body').on('click', '.tbl-list-ctrl input', function(){
 			$(this).parents('.tbl-list-wrap')
 				.find('.tbl-list .check-ctrl input')
 				.prop('checked', $(this).is(':checked'))
