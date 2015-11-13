@@ -1653,10 +1653,10 @@ class EE_Schema {
 			{
 				$sql .= 'ENGINE=' . $this->default_engine . ' ';
 
-				if (UTF8_ENABLED === TRUE)
-				{
+				//if (UTF8_ENABLED === TRUE)
+				//{
 					$sql .= 'DEFAULT CHARACTER SET '.ee()->db->escape_str(ee()->db->char_set).' COLLATE '.ee()->db->escape_str(ee()->db->dbcollat);
-				}
+				//}
 			}
 
 			if (ee()->db->query($sql) === FALSE)
