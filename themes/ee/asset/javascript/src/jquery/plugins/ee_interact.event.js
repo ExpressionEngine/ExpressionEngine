@@ -141,7 +141,7 @@ $.event.special.interact = {
 			// and a change event for all other elements as well
 			// as browsers that don't recognize cut and paste events
 			$.event.add(this, 'change.specialInteract', function() {
-				$.event.trigger('interact', data, this);
+				$.event.trigger('interact', handleObj.data, this);
 			});
 		} else {
 			handleObjs[this] = handleObj;
