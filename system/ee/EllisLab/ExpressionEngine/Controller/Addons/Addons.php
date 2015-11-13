@@ -1506,12 +1506,12 @@ class Addons extends CP_Controller {
 		if (ee()->session->userdata['group_id'] != 1)
 		{
 			// Do they have access to this module?
-			if ( ! isset($module) OR
-				 ! isset(ee()->session->userdata['assigned_modules'][$module->module_id]) OR
-				ee()->session->userdata['assigned_modules'][$module->module_id] !== TRUE)
+			if ( ! isset($module))
 			{
 				show_error(lang('unauthorized_access'));
 			}
+
+			$this->assertUserHasAccess($addon);
 		}
 		else
 		{
@@ -1902,6 +1902,11 @@ class Addons extends CP_Controller {
 		}
 
 		$module = $this->getModule($addon);
+
+		if ($addon == 'filepicker' && ee()->cp->allowed_group('can_access_files') && isset($module['module_id']))
+		{
+			$this->assigned_modules[] = $module['module_id'];
+		}
 
  		if ( ! isset($module['module_id'])
 			|| ! in_array($module['module_id'], $this->assigned_modules))
