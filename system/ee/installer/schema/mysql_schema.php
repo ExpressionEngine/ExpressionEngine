@@ -1652,11 +1652,7 @@ class EE_Schema {
 			if (strncmp($sql, 'CREATE TABLE', 12) == 0)
 			{
 				$sql .= 'ENGINE=' . $this->default_engine . ' ';
-
-				//if (UTF8_ENABLED === TRUE)
-				//{
-					$sql .= 'DEFAULT CHARACTER SET '.ee()->db->escape_str(ee()->db->char_set).' COLLATE '.ee()->db->escape_str(ee()->db->dbcollat);
-				//}
+				$sql .= 'DEFAULT CHARACTER SET '.ee()->db->escape_str(ee()->db->char_set).' COLLATE '.ee()->db->escape_str(ee()->db->dbcollat);
 			}
 
 			if (ee()->db->query($sql) === FALSE)
