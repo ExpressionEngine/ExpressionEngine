@@ -20,9 +20,9 @@ EE.cp.formValidation = {
 
 	paused: false,
 
-	pause: function(noTimer = false) {
+	pause: function(noTimer) {
 		this.paused = true;
-		if (noTimer == false)
+		if (noTimer === undefined)
 		{
 			var that = this;
 			setTimeout(function(){
