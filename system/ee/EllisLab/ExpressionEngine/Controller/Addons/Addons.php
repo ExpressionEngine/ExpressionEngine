@@ -49,7 +49,7 @@ class Addons extends CP_Controller {
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			// possible exception for FilePicker
-			if (ee()->uri->uri_string == 'cp/addons/settings/filepicker/modal')
+			if (strncmp(ee()->uri->uri_string, 'cp/addons/settings/filepicker', 29) == 0)
 			{
 				if (! ee()->cp->allowed_group('can_access_files'))
 				{
