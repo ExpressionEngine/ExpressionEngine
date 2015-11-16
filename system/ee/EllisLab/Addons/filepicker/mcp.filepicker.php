@@ -37,7 +37,8 @@ class Filepicker_mcp {
 
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0);
 
 		$input_directory = ee()->input->get('directory');
 
@@ -57,7 +58,9 @@ class Filepicker_mcp {
 		{
 			$id = 'all';
 			$files = ee('Model')->get('File')
-				->filter('site_id', ee()->config->item('site_id'))->all();
+				->filter('upload_location_id', 'IN', $dirs->getIds())
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 
 			$type = ee()->input->get('type') ?: 'list';
 		}
