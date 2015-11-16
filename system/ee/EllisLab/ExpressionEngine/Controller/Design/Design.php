@@ -229,8 +229,7 @@ class Design extends AbstractDesignController {
 			);
 		}
 
-		$basepath = PATH_TMPL;
-		$basepath .= '/'.ee()->config->item('site_short_name');
+		$basepath = PATH_TMPL . ee()->config->item('site_short_name');
 		ee()->load->helper('directory');
 		$files = directory_map($basepath, 0, 1);
 

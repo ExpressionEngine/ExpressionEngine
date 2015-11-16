@@ -1124,7 +1124,7 @@ class Simple_commerce {
 		ee()->load->helper('typography');
 
 		$str = str_replace('&amp;', '&', $str);
-		$str = urlencode(entity_decode($str, 'utf-8'));
+		$str = urlencode(ee('Security/XSS')->entity_decode($str, 'utf-8'));
 
 		return $str;
 	}

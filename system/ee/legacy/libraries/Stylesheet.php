@@ -91,7 +91,7 @@ class EE_Stylesheet {
 			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
 				ee()->load->helper('file');
-				$basepath = PATH_TMPL.'/'.ee()->config->item('site_short_name').'/';
+				$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/';
 				$basepath .= $ex['0'].'.group/'.$row['template_name'].'.css';
 
 				$str = read_file($basepath);

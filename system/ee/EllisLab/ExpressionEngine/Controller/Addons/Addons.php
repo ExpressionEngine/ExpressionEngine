@@ -520,6 +520,7 @@ class Addons extends CP_Controller {
 				&& $fieldtype['installed'] === TRUE
 				&& array_key_exists('update', $fieldtype))
 			{
+				ee()->api_channel_fields->include_handler($addon);
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
 				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
 				{
@@ -551,6 +552,13 @@ class Addons extends CP_Controller {
 				$Extension = new $class();
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $addon_info->getVersion();
+
+				$model = ee('Model')->get('Extension')
+					->filter('name', $class_name)
+					->first();
+
+				$model->version = $addon_info->getVersion();
+				$model->save();
 
 				if ( ! isset($updated[$party][$addon]))
 				{
