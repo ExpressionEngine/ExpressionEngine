@@ -51,7 +51,10 @@ class Filepicker_mcp {
 			}
 		}
 
-		$dirs = $dirs->all();
+		$member_group = ee()->session->userdata['group_id'];
+		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
+			return $dir->memberGroupHasAccess($member_group);
+		});
 		$directories = $dirs->indexBy('id');
 
 		if (empty($id) || $id == 'all')
