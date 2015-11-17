@@ -335,6 +335,7 @@ class Delete extends Query {
 				$model->$name->delete();
 			}
 
+			// continue deleting
 			return $models;
 		};
 	}
@@ -369,7 +370,8 @@ class Delete extends Query {
 				$relation->drop($model, $model->$name);
 			}
 
-			return $models;
+			// do not continue deleting
+			return array();
 		};
 	}
 
