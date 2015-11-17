@@ -193,15 +193,26 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateAuthorId($key, $value, $params, $rule)
 	{
-		if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if (ee()->session->userdata('member_id'))
 		{
-			return 'not_authorized';
-		}
+			if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+			{
+				return 'not_authorized';
+			}
 
-		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+				(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+			{
+				return 'not_authorized';
+			}
+		}
+		else
 		{
-			return 'not_authorized';
+			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+				($this->Author->MemberGroup->can_edit_other_entries != 'y' OR $this->Author->MemberGroup->can_assign_post_authors != 'y'))
+			{
+				return 'not_authorized';
+			}
 		}
 
 		return TRUE;
@@ -723,7 +734,8 @@ class ChannelEntry extends ContentModel {
 	public function populateChannels($field)
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0 OR ee()->session->userdata('group_id') == 1)
+			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
