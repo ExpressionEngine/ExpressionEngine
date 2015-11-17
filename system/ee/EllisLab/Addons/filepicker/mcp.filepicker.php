@@ -55,9 +55,11 @@ class Filepicker_mcp {
 		}
 
 		// Restrict things if we're in a file field that enforces a directory
-		if ((int) ($id) && ee()->input->get('restrict') == TRUE)
+		if (isset($id)
+			&& (ctype_digit($id) || is_int($id))
+			&& ee()->input->get('restrict') == TRUE)
 		{
-			$dirs = $dirs->filter('id', $id);
+			$dirs = $dirs->filter('id', (int) $id);
 		}
 
 		$directories = $dirs->indexBy('id');
