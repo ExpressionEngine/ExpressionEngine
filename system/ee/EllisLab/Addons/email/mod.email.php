@@ -562,28 +562,6 @@ class Email {
 			return ee()->output->show_user_error('general', array(lang('em_unauthorized_request')));
 		}
 
-		// Return Variables
-		$x = explode('|', $_POST['RET']);
-		unset($_POST['RET']);
-
-		if (is_numeric($x['0']))
-		{
-			$return_link = ee()->functions->form_backtrack($x['0']);
-		}
-		else
-		{
-			$return_link = $x[0];
-
-			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
-			{
-				$return_link = ee()->functions->form_backtrack(1);
-			}
-		}
-
-		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
-
-		$return_name = ( ! isset($x['1']) OR $x['1'] == '') ? $site_name : $x['1'];
-
 		// ERROR Checking
 		// If the message is empty, bounce them back
 		if ($_POST['message'] == '')
@@ -759,16 +737,6 @@ class Email {
 			$message = $required."\n".$message;
 		}
 
-		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' &&
-			strlen(strip_tags($message)) != strlen($message))
-		{
-			$mail_type = 'html';
-		}
-		else
-		{
-			$mail_type = 'plain';
-		}
-
 		$message = entities_to_ascii($message);
 		$message = ee()->typography->filter_censored_words($message);
 
@@ -790,58 +758,57 @@ class Email {
 			$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
 		}
 
-		/* -------------------------------------
-		/*  'email_module_send_email_end' hook.
-		/*  - After emails are sent, do some additional processing
-		/*  - Added EE 1.5.1
-		*/
-			if (ee()->extensions->active_hook('email_module_send_email_end') === TRUE)
-			{
-				ee()->extensions->call('email_module_send_email_end', $subject, $message, $approved_tos, $approved_recipients);
-				if (ee()->extensions->end_script === TRUE) return;
-			}
-		/*
-		/* -------------------------------------*/
-
-		// Thank you message
-		$data = array(
-			'title' 	=> lang('email_module_name'),
-			'heading'	=> lang('thank_you'),
-			'content'	=> lang('em_email_sent'),
-			'redirect'	=> $return_link,
-			'link'		=> array($return_link, $return_name)
-		);
-
-		if (ee()->input->get_post('redirect') !== FALSE)
-		{
-			if(is_numeric(ee()->input->get_post('redirect')))
-			{
-				$data['rate'] = ee()->input->get_post('redirect');
-			}
-			elseif(ee()->nput->get_post('redirect') == 'none')
-			{
-				$data['redirect'] = '';
-			}
-		}
-
-		ee()->output->show_message($data);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
 	 * mail_recipients
-	 * 
+	 *
 	 * @param mixed $subject
-	 * @param mixed $message 
+	 * @param mixed $message
 	 * @param mixed $approved_recipients Array of all recipients
 	 * @param mixed $approved_tos Array of non-BCC recipients
 	 * @param mixed $data The POST data from the email form
+	 * @param array $settings
 	 * @access public
 	 * @return void
 	 */
 	function mail_recipients($subject, $message, $approved_recipients, $approved_tos, $data)
 	{
+		// Define a few settings
+		if (isset($data['allow_html']) && $data['allow_html'] == 'y' &&
+			strlen(strip_tags($message)) != strlen($message))
+		{
+			$mail_type = 'html';
+		}
+		else
+		{
+			$mail_type = 'plain';
+		}
+
+		// Return Variables
+		$x = explode('|', $_POST['RET']);
+		unset($_POST['RET']);
+
+		if (is_numeric($x['0']))
+		{
+			$return_link = ee()->functions->form_backtrack($x['0']);
+		}
+		else
+		{
+			$return_link = $x[0];
+
+			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			{
+				$return_link = ee()->functions->form_backtrack(1);
+			}
+		}
+
+		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
+
+		$return_name = ( ! isset($x['1']) OR $x['1'] == '') ? $site_name : $x['1'];
+
 		ee()->load->library('email');
 		ee()->email->wordwrap = true;
 		ee()->email->mailtype = $mail_type;
