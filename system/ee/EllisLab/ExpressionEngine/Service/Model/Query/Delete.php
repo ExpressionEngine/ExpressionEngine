@@ -152,7 +152,7 @@ class Delete extends Query {
 	 */
 	protected function deleteAsLeaf($reader, $delete_ids, $extra_where = array())
 	{
-		$tables = array_keys($reader->getTables());
+		$tables = array_keys($reader->getTables(FALSE));
 		$key = $reader->getPrimaryKey();
 
 		$query = $this->store->rawQuery();

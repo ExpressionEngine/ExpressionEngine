@@ -56,9 +56,9 @@ class Gateway {
 	/**
 	 *
 	 */
-	public function getFieldList()
+	public function getFieldList($cached = TRUE)
 	{
-		if (isset($this->_field_list_cache))
+		if ($cached && isset($this->_field_list_cache))
 		{
 			return $this->_field_list_cache;
 		}
