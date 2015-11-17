@@ -58,6 +58,7 @@ RSpec.configure do |config|
   config.before(:each) do
     # Whitelist URLs
     page.driver.allow_url $test_config[:app_host]
+    page.driver.allow_url 'ee'
     page.driver.allow_url 'ellislab.com'
     page.driver.allow_url 'google-analytics.com'
 
