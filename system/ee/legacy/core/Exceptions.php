@@ -212,6 +212,20 @@ class EE_Exceptions {
 			$line = preg_replace('/^(#\d+\s+)'.$path.'/', '$1', $line);
 		}
 
+		$debug = DEBUG;
+
+		// We'll only want to show certain information, like file paths, if we're allowed
+		if (isset(ee()->config) && isset(ee()->session))
+		{
+			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee()->session->userdata('group_id') == 1);
+		}
+
+		// Only show the file name if debug isn't on
+		if ( ! $debug)
+		{
+			$location = array_pop(explode(DIRECTORY_SEPARATOR, $location));
+		}
+
 		if (ob_get_level() > $this->ob_level + 1)
 		{
 			ob_end_flush();
