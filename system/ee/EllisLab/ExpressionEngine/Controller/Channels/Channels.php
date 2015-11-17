@@ -1190,7 +1190,7 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$this->saveChannelSettings($channel_id, $vars['sections']);
+			$this->saveChannelSettings($channel, $vars['sections']);
 
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -1240,7 +1240,7 @@ class Channels extends AbstractChannelsController {
 	 *
 	 * @param	int	$channel_id	ID of channel to save settings for
 	 */
-	private function saveChannelSettings($channel_id, $sections)
+	private function saveChannelSettings($channel, $sections)
 	{
 		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
 		{
@@ -1253,12 +1253,12 @@ class Channels extends AbstractChannelsController {
 		{
 			if (ee()->input->post('comment_expiration') == 0)
 			{
-				ee()->channel_model->update_comment_expiration($channel_id, 0, TRUE);
+				ee()->channel_model->update_comment_expiration($channel->getId(), 0, TRUE);
 			}
 			else
 			{
 				ee()->channel_model->update_comment_expiration(
-					$channel_id,
+					$channel->getId(),
 					ee()->input->post('comment_expiration') * 86400
 				);
 			}
@@ -1266,13 +1266,13 @@ class Channels extends AbstractChannelsController {
 
 		if (ee()->input->post('clear_versioning_data'))
 		{
-			ee()->channel_model->clear_versioning_data($channel_id);
+			ee()->channel_model->clear_versioning_data($channel->getId());
 		}
 
 		// Only one possible is revisions- enabled or disabled.
 		// We treat as installed/not and delete the whole tab.
 		ee()->load->library('layout');
-		ee()->layout->sync_layout($_POST, $channel_id);
+		ee()->layout->sync_layout($_POST, $channel->getId());
 
 		// Make sure we only got the fields we asked for
 		foreach ($sections as $settings)
@@ -1286,26 +1286,17 @@ class Channels extends AbstractChannelsController {
 			}
 		}
 
-		$channel = ee('Model')->get('Channel', $channel_id)->first();
+		$channel->set($fields);
 
-		foreach ($fields as $key => $value)
+		if ($channel->ChannelFormSettings === NULL)
 		{
-			if ($channel->hasProperty($key))
-			{
-				$channel->$key = $value;
-			}
+			$channel->ChannelFormSettings = ee('Model')->make('ChannelFormSettings');
+			$channel->ChannelFormSettings->site_id = $channel->site_id;
 		}
 
-		if ( ! $channel_form = $channel->getChannelFormSettings())
-		{
-			$channel_form = ee('Model')->make('ChannelFormSettings');
-			$channel_form->site_id = $channel->site_id;
-		}
-
-		$channel_form->default_status = $fields['default_status'];
-		$channel_form->allow_guest_posts = $fields['allow_guest_posts'];
-		$channel_form->default_author = $fields['default_author'];
-		$channel->setChannelFormSettings($channel_form);
+		$channel->ChannelFormSettings->default_status = $fields['default_status'];
+		$channel->ChannelFormSettings->allow_guest_posts = $fields['allow_guest_posts'];
+		$channel->ChannelFormSettings->default_author = $fields['default_author'];
 		$channel->save();
 	}
 }
