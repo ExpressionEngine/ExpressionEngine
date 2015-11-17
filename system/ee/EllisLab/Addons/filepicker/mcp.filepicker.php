@@ -40,7 +40,14 @@ class Filepicker_mcp {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0);
 
-		$input_directory = ee()->input->get('directory');
+		$member_group = ee()->session->userdata['group_id'];
+		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
+			return $dir->memberGroupHasAccess($member_group);
+		});
+
+		$input_directory = ($dirs->count() == 1)
+			? $dirs->first()->id
+			: ee()->input->get('directory');
 
 		if ( ! empty($input_directory))
 		{
@@ -51,10 +58,6 @@ class Filepicker_mcp {
 			}
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
-		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
-			return $dir->memberGroupHasAccess($member_group);
-		});
 		$directories = $dirs->indexBy('id');
 
 		if (empty($id) || $id == 'all')
