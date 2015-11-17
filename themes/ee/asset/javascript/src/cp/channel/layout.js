@@ -44,6 +44,11 @@ $(document).ready(function () {
 		}
 	});
 
+	// Prevent clicking the move icon from refreshing
+	$('.move a').on('click', function() {
+		return(false);
+	});
+
 	var spring;
 	var spring_delay = 500;
 

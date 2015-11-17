@@ -382,7 +382,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		{
 			if (isset($assoc))
 			{
-				$this->$name = NULL;
+				$assoc->set(NULL);
 			}
 		}
 

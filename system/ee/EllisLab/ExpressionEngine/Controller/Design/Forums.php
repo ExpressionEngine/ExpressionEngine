@@ -53,22 +53,28 @@ class Forums extends AbstractDesignController {
 		ee()->lang->loadfile('specialty_tmp');
 	}
 
-	public function index($theme = 'default')
+	public function index($theme = '')
 	{
-		$base_path = PATH_THIRD_THEMES . '/forum/' . ee()->security->sanitize_filename($theme);
+		if (empty($theme))
+		{
+			$theme = $this->getDefaultTheme();
+		}
+
+		$base_path = PATH_THIRD_THEMES . 'forum/' . ee()->security->sanitize_filename($theme);
 
 		if ( ! is_dir($base_path))
 		{
 			show_error(lang('unable_to_find_templates'));
 		}
 
-		$this->load->helper('directory');
+		ee()->load->helper('directory');
 
 		$vars = array();
 
 		$base_url = ee('CP/URL')->make('design/forums/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
+		$table->setNoResultsText('no_templates_found');
 		$table->setColumns(
 			array(
 				'template',
@@ -136,6 +142,39 @@ class Forums extends AbstractDesignController {
 		);
 
 		ee()->cp->render('design/forums/index', $vars);
+	}
+
+	private function getDefaultTheme()
+	{
+		$theme_path = PATH_THIRD_THEMES . 'forum/';
+
+		ee()->load->helper('directory');
+		$files = directory_map($theme_path, 1);
+
+		if ($files === FALSE)
+		{
+			show_error(lang('unable_to_find_templates'));
+		}
+
+		if (in_array('default', $files))
+		{
+			return 'default';
+		}
+		else
+		{
+			sort($files);
+			foreach ($files as $file)
+			{
+				$dir = array_shift($files);
+
+				if (is_dir($theme_path . $dir))
+				{
+					return $dir;
+				}
+			}
+		}
+
+		show_error(lang('unable_to_find_templates'));
 	}
 
 	public function edit($theme, $dir, $file)

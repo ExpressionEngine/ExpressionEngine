@@ -331,7 +331,7 @@ class Delete extends Query {
 			// PHP just won't let us have nice things.
 			foreach ($models as $model)
 			{
-				$model->$name->delete();
+				$model->getAssociation($name)->get()->delete();
 			}
 
 			return $models;
@@ -365,7 +365,7 @@ class Delete extends Query {
 
 			foreach ($models as $model)
 			{
-				$relation->drop($model, $model->$name);
+				$relation->drop($model, $model->getAssociation($name)->get());
 			}
 
 			return $models;

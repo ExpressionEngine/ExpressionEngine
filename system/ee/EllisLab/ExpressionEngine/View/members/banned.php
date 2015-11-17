@@ -9,13 +9,11 @@
 
 		<?=ee('CP/Alert')->get('view-members')?>
 
-		<?php if (isset($filters)) echo $filters; ?>
-
 		<?php $this->embed('_shared/table', $table); ?>
 
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
-		<?php if ( ! empty($table['data']) && $can_delete_members): ?>
+		<?php if ( ! empty($table['data']) && $can_delete): ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
@@ -28,7 +26,12 @@
 	</div>
 </div>
 
+<div class="box snap">
+	<?php $this->embed('_shared/form', $form); ?>
+</div>
+
 <?php
+
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
 	'form_url'	=> $form_url,
