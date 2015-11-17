@@ -77,7 +77,7 @@ class Channel_form_lib
 	protected $_form_attributes = array();
 	protected $_installed_mods  = array('smileys' => FALSE, 'spellcheck' => FALSE);
 
-	protected $_member;
+	protected $member;
 
 
 	private $all_params = array(
