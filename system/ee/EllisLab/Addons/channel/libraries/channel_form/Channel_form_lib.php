@@ -1364,7 +1364,7 @@ GRID_FALLBACK;
 
 		if ( ! $this->member)
 		{
-			throw new Channel_form_exception(lang('oh_noes'));
+			throw new Channel_form_exception(lang('channel_form_invalid_author'));
 		}
 
 		//captcha check
