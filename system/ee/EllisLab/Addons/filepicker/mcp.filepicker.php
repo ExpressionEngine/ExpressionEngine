@@ -52,10 +52,12 @@ class Filepicker_mcp {
 		if ( ! empty($input_directory))
 		{
 			$id = $input_directory;
-			if ((int) ($id))
-			{
-				$dirs = $dirs->filter('id', $id);
-			}
+		}
+
+		// Restrict things if we're in a file field that enforces a directory
+		if ((int) ($id) && ee()->input->get('restrict') == TRUE)
+		{
+			$dirs = $dirs->filter('id', $id);
 		}
 
 		$directories = $dirs->indexBy('id');
