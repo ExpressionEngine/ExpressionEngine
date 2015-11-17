@@ -762,6 +762,7 @@ class ChannelEntry extends ContentModel {
 
 		// Then authors who are individually selected to appear in author list
 		$authors = ee('Model')->get('Member')
+			->fields('username', 'screen_name')
 			->filter('in_authorlist', 'y');
 
 		// Then grab any members that are part of the member groups we found
