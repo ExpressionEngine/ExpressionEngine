@@ -193,15 +193,26 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateAuthorId($key, $value, $params, $rule)
 	{
-		if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if (ee()->session->userdata('member_id'))
 		{
-			return 'not_authorized';
-		}
+			if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+			{
+				return 'not_authorized';
+			}
 
-		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+				(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+			{
+				return 'not_authorized';
+			}
+		}
+		else
 		{
-			return 'not_authorized';
+			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+				($this->Author->MemberGroup->can_edit_other_entries != 'y' OR $this->Author->MemberGroup->can_assign_post_authors != 'y'))
+			{
+				return 'not_authorized';
+			}
 		}
 
 		return TRUE;
@@ -456,8 +467,6 @@ class ChannelEntry extends ContentModel {
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
-		$this->Categories = NULL;
-
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
@@ -465,6 +474,8 @@ class ChannelEntry extends ContentModel {
 				$this->setRawProperty('cat_group_id_'.$cat_group, '');
 				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
+
+			$this->Categories = NULL;
 
 			return;
 		}
@@ -723,11 +734,13 @@ class ChannelEntry extends ContentModel {
 	public function populateChannels($field)
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0 OR ee()->session->userdata('group_id') == 1)
+			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('field_group', $this->Channel->field_group)
+			->fields('channel_id', 'channel_title')
 			->all()
 			->getDictionary('channel_id', 'channel_title');
 
@@ -745,11 +758,13 @@ class ChannelEntry extends ContentModel {
 			->orFilter('include_in_authorlist', 'y')
 			->orFilter('AssignedChannels.channel_id', $this->channel_id)
 			->endFilterGroup()
+			->fields('group_id')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		// Then authors who are individually selected to appear in author list
 		$authors = ee('Model')->get('Member')
+			->fields('username', 'screen_name')
 			->filter('in_authorlist', 'y');
 
 		// Then grab any members that are part of the member groups we found

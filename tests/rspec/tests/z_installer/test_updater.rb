@@ -141,8 +141,6 @@ feature 'Updater' do
   end
 
   def test_update(mailinglist = false)
-    page.driver.allow_url($test_config[:app_host])
-
     # Delete any stored mailing lists
     mailing_list_zip = File.expand_path(
       '../../system/user/cache/mailing_list.zip'

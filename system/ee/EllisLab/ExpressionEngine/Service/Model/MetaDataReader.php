@@ -150,9 +150,9 @@ class MetaDataReader {
 	/**
 	 *
 	 */
-	public function getTables()
+	public function getTables($cached = TRUE)
 	{
-		if (isset($this->tables))
+		if (isset($this->tables) && $cached)
 		{
 			return $this->tables;
 		}
@@ -164,30 +164,13 @@ class MetaDataReader {
 		foreach ($gateways as $name => $object)
 		{
 			$table = $object->getTableName();
-			$fields = $object->getFieldList();
+			$fields = $object->getFieldList($cached);
 
 			$tables[$table] = $fields;
 		}
 
 		$this->tables = $tables;
 		return $tables;
-	}
-
-	/**
-	 *
-	 */
-	public function getTableNamesByGateway()
-	{
-		$gateways = $this->getGateways();
-
-		$table_names = array();
-
-		foreach ($gateways as $name => $object)
-		{
-			$table_names[$name] = $object->getTableName();
-		}
-
-		return $table_names;
 	}
 
 	/**

@@ -15,6 +15,11 @@ class FieldFacade {
 	private $content_type;
 	private $value;
 
+	/**
+	 * @var Flag to ensure defaults are only loaded once
+	 */
+	private $populated = FALSE;
+
 	public function __construct($field_id, array $metadata)
 	{
 		$this->id = $field_id;
@@ -73,20 +78,26 @@ class FieldFacade {
 
 	protected function ensurePopulatedDefaults()
 	{
+		if ($this->populated)
+		{
+			return;
+		}
+
+		$this->populated = TRUE;
+
 		if ($callback = $this->getItem('populateCallback'))
 		{
-			$this->setItem('populateCallback', NULL);
 			call_user_func($callback, $this);
 		}
 		elseif ($data = $this->getItem('field_data'))
 		{
-			$this->setItem('field_data', NULL);
 			$this->setData($data);
 		}
 	}
 
 	public function setData($data)
 	{
+		$this->ensurePopulatedDefaults();
 		$this->data = $data;
 	}
 

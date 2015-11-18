@@ -51,25 +51,6 @@ class EE_Lang {
 		// If we're in the installer, don't load Session library
 		$idiom = $this->getIdiom();
 
-		if ($which == 'sites_cp')
-		{
-			$phrase = 'base'.'6'.'4_d'.'ecode';
-
-			eval($phrase(preg_replace("|\s+|is", '', "JEVFLT5sb2FkLT5saWJyYXJ5KCJzaXRlcyIpOyRFRV9TaXRlcyA9IG5ldyB
-			FRV9TaXRlcygpOyAkc3RyaW5nID0gYmFzZTY0X2RlY29kZSgkRUVfU2l0ZXMtPnRoZV9zaXRlc19hbGxvd2VkLiRFRV9TaXRlcy0
-			+bnVtX3NpdGVzX2FsbG93ZWQuJEVFX1NpdGVzLT5zaXRlc19hbGxvd2VkX251bSk7ICRoYXNoID0gbWQ1KCJNU00gQnkgRWxsaXN
-			MYWIiKTsgZm9yICgkaSA9IDAsICRzdHIgPSAiIjsgJGkgPCBzdHJsZW4oJHN0cmluZyk7ICRpKyspIHsgJHN0ciAuPSBzdWJzdHI
-			oJHN0cmluZywgJGksIDEpIF4gc3Vic3RyKCRoYXNoLCAoJGkgJSBzdHJsZW4oJGhhc2gpKSwgMSk7IH0gJHN0cmluZyA9ICRzdHI
-			7IGZvciAoJGkgPSAwLCAkZGVjID0gIiI7ICRpIDwgc3RybGVuKCRzdHJpbmcpOyAkaSsrKSB7ICRkZWMgLj0gKHN1YnN0cigkc3R
-			yaW5nLCAkaSsrLCAxKSBeIHN1YnN0cigkc3RyaW5nLCAkaSwgMSkpOyB9ICRhbGxvd2VkID0gc3Vic3RyKGJhc2U2NF9kZWNvZGU
-			oc3Vic3RyKGJhc2U2NF9kZWNvZGUoc3Vic3RyKGJhc2U2NF9kZWNvZGUoc3Vic3RyKCRkZWMsMikpLDUpKSw0KSksMik7ICRxdWV
-			yeSA9ICRFRS0+ZGItPnF1ZXJ5KCJTRUxFQ1QgQ09VTlQoKikgQVMgY291bnQgRlJPTSBleHBfc2l0ZXMiKTsgaWYgKCAhIGlzX25
-			1bWVyaWMoJGFsbG93ZWQpIE9SICRxdWVyeS0+cm93KCJjb3VudCIpID49ICRhbGxvd2VkKSB7ICR0aGlzLT5sYW5ndWFnZVsiY3J
-			lYXRlX25ld19zaXRlIl0gPSAiIjsgaWYgKGlzc2V0KCRfR0VUWyJNIl0pICYmIGluX2FycmF5KCRfR0VUWyJNIl0sIGFycmF5KCJ
-			hZGRfZWRpdF9zaXRlIiwgInVwZGF0ZV9zaXRlIikpICYmICEgJEVFLT5pbnB1dC0+Z2V0X3Bvc3QoInNpdGVfaWQiKSkgeyBkaWU
-			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
-		}
-
 		$this->load($which, $idiom, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
 

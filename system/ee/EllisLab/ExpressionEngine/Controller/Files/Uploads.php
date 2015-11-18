@@ -912,8 +912,8 @@ class Uploads extends AbstractFilesController {
 				}
 
 				// Rename the file
-				if ( ! @copy(ee()->_upload_dirs[$id]['server_path'].$file['name'],
-							ee()->_upload_dirs[$id]['server_path'].$clean_filename))
+				if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
+							$this->_upload_dirs[$id]['server_path'].$clean_filename))
 				{
 					$errors[$file['name']] = lang('invalid_filename');
 					continue;
@@ -969,7 +969,7 @@ class Uploads extends AbstractFilesController {
 					TRUE 	// Don't overwrite existing thumbs
 				);
 
-				$file_path_name = ee()->_upload_dirs[$id]['server_path'].$file['name'];
+				$file_path_name = $this->_upload_dirs[$id]['server_path'].$file['name'];
 
 				// Update dimensions
 				$image_dimensions = ee()->filemanager->get_image_dimensions($file_path_name);

@@ -377,7 +377,7 @@ class Edit extends AbstractPublishController {
 			// and we need to clear them out
 			if ( ! isset($_POST['categories']))
 			{
-				$entry->Categories = NULL;
+				$entry->categories = array();
 			}
 
 			$result = $entry->validate();
