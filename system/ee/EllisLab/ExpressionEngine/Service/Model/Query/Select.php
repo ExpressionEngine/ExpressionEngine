@@ -73,7 +73,16 @@ class Select extends Query {
 		}
 
 		// filters add more where conditions
-		$this->applyFilters($query, $builder->getFilters());
+		// We group them here since additional tables are sometimes added with
+		// a where condition instead of a join
+		$filters = $builder->getFilters();
+
+		if ( ! empty($filters))
+		{
+			$query->start_group();
+			$this->applyFilters($query, $filters);
+			$query->end_group();
+		}
 
 		// orders
 		$this->applyOrders($query, $builder->getOrders());

@@ -490,6 +490,11 @@ class CI_DB_active_record extends CI_DB_driver {
 		// If we're starting with a group, then we don't need the boolean operator.  Any other time, we do.
 		$boolean_operator = (count($this->ar_where) == 0 AND count($this->ar_cache_where) == 0) ? '' : $boolean_operator;
 
+		if ($this->ar_empty_group)
+		{
+			$boolean_operator = '';
+		}
+
 		// The str_repeat() is just for pretty spacing and readable queries.
 		$this->ar_where[] = $boolean_operator . str_repeat(' ', ++$this->ar_group_count) . ' ( ';
 
