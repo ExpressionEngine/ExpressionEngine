@@ -108,6 +108,13 @@ class Template extends AbstractDesignController {
 
 			if ($result->isValid())
 			{
+				// Unless we are duplicating a template the default is to
+				// allow access to everyone
+				if ( ! ee()->input->post('template_id'))
+				{
+					$template->NoAccess = NULL;
+				}
+
 				$template->save();
 
 				$alert = ee('CP/Alert')->makeInline('shared-form')

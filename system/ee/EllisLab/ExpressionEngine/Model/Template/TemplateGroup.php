@@ -67,7 +67,8 @@ class TemplateGroup extends Model {
 		'beforeInsert',
 		'afterDelete',
 		'afterInsert',
-		'afterUpdate'
+		'afterUpdate',
+		'afterSave',
 	);
 
 	protected $group_id;
@@ -125,6 +126,30 @@ class TemplateGroup extends Model {
 	}
 
 	/**
+	 * After saving, if this template group is makred as the site default,
+	 * then we need to ensure that all other template groups for this
+	 * site are not set as the default
+	 */
+	public function onAfterSave()
+	{
+		if ($this->getProperty('is_site_default'))
+		{
+			$template_groups = $this->getFrontend()->get('TemplateGroup')
+				->filter('site_id', $this->site_id)
+				->filter('is_site_default', 'y')
+				->filter('group_id', '!=', $this->group_id)
+				->all();
+
+			if ($template_groups)
+			{
+				$template_groups->is_site_default = FALSE;
+				$template_groups->save();
+			}
+		}
+
+	}
+
+	/**
 	 * Make sure the group folder exists. Needs to be public
 	 * so that the template post-save can have access to it.
 	 */
@@ -157,7 +182,7 @@ class TemplateGroup extends Model {
 		}
 
 		$site = ee()->config->item('site_short_name');
-		return $basepath.'/'.$site.'/'.$this->group_name . '.group';
+		return $basepath.$site.'/'.$this->group_name . '.group';
 	}
 
 	/**

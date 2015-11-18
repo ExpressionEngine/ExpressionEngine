@@ -228,10 +228,6 @@ class Msm extends CP_Controller {
 		$site = ee('Model')->make('Site');
 		$site->site_bootstrap_checksums = array();
 		$site->site_pages = array();
-		$site->site_system_preferences = array();
-		$site->site_member_preferences = array();
-		$site->site_template_preferences = array();
-		$site->site_channel_preferences = array();
 
 		$result = $this->validateSite($site);
 

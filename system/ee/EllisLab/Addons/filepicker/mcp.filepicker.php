@@ -37,27 +37,40 @@ class Filepicker_mcp {
 
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0);
 
-		$input_directory = ee()->input->get('directory');
+		$member_group = ee()->session->userdata['group_id'];
+		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
+			return $dir->memberGroupHasAccess($member_group);
+		});
+
+		$input_directory = ($dirs->count() == 1)
+			? $dirs->first()->id
+			: ee()->input->get('directory');
 
 		if ( ! empty($input_directory))
 		{
 			$id = $input_directory;
-			if ((int) ($id))
-			{
-				$dirs = $dirs->filter('id', $id);
-			}
 		}
 
-		$dirs = $dirs->all();
+		// Restrict things if we're in a file field that enforces a directory
+		if (isset($id)
+			&& (ctype_digit($id) || is_int($id))
+			&& ee()->input->get('restrict') == TRUE)
+		{
+			$dirs = $dirs->filter('id', (int) $id);
+		}
+
 		$directories = $dirs->indexBy('id');
 
 		if (empty($id) || $id == 'all')
 		{
 			$id = 'all';
 			$files = ee('Model')->get('File')
-				->filter('site_id', ee()->config->item('site_id'))->all();
+				->filter('upload_location_id', 'IN', $dirs->getIds())
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 
 			$type = ee()->input->get('type') ?: 'list';
 		}
@@ -127,7 +140,8 @@ class Filepicker_mcp {
 				->setDefaultValue($type);
 			$filters = $filters->add($imgFilter);
 
-			$perpage = $filters->values()['perpage'];
+			$perpage = $filters->values();
+			$perpage = $perpage['perpage'];
 			$vars['filters'] = $filters->render($base_url);
 		}
 

@@ -151,6 +151,21 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
+	 * Batch update properties
+	 *
+	 * Safely updates any properties that might exist,
+	 * passing them through the getters along the way.
+	 *
+	 * @param array $data Data to update
+	 * @return $this
+	 */
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
+	}
+
+	/**
 	 * Make sure that calls to fill() also apply to custom fields
 	 */
 	public function fill(array $data = array())
@@ -352,14 +367,26 @@ abstract class ContentModel extends VariableColumnModel {
 	protected function addFacade($id, $info, $name_prefix = '')
 	{
 		$name = $name_prefix.$id;
+		$format = NULL;
+
+		if (array_key_exists('field_fmt', $info))
+		{
+			$format = $info['field_fmt'];
+		}
+
+		if ($this->hasProperty('field_ft_'.$id))
+		{
+			$format = $this->getProperty('field_ft_'.$id) ?: $format;
+			$this->setProperty('field_ft_'.$id, $format);
+		}
 
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
 		$facade->setContentId($this->getId());
 
-		if ($this->hasProperty('field_ft_'.$id))
+		if (isset($format))
 		{
-			$facade->setFormat($this->getProperty('field_ft_'.$id));
+			$facade->setFormat($format);
 		}
 
 		$this->_field_facades[$name] = $facade;

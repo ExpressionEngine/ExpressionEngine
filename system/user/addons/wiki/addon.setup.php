@@ -20,6 +20,7 @@ return array(
 		'Upload' => 'Model\Upload'		
 		
 	),
+
 	'models.dependencies' => array(
 		'Revision'   => array(
 			'ee:Member'
@@ -29,5 +30,4 @@ return array(
 			'ee:File'
 		)
 	)
-
 );

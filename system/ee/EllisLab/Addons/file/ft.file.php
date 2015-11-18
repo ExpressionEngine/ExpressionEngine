@@ -156,7 +156,9 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
+		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all')
+			? $this->settings['allowed_directories']
+			: '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
@@ -180,6 +182,13 @@ class File_ft extends EE_Fieldtype {
 				$allowed_file_dirs = 'all';
 			}
 
+			$url_query_string = array('directory' => $allowed_file_dirs);
+
+			if ($allowed_file_dirs != 'all')
+			{
+				$url_query_string['restrict'] = TRUE;
+			}
+
 			$file = $this->_parse_field($data);
 
 			return ee('View')->make('file:publish')->render(array(
@@ -187,7 +196,7 @@ class File_ft extends EE_Fieldtype {
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => ee('CP/URL')->make($fp->controller, array('directory' => $allowed_file_dirs))
+				'fp_url' => ee('CP/URL')->make($fp->controller, $url_query_string)
 			));
 		}
 

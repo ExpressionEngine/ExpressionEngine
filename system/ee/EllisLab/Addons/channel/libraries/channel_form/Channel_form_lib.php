@@ -1666,6 +1666,15 @@ GRID_FALLBACK;
 
 					$result = $this->entry->validate();
 
+					if (is_array($_POST['category']))
+					{
+						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
+					}
+					else
+					{
+						$this->entry->Categories = NULL;
+					}
+
 					if ($result->isValid())
 					{
 						$this->entry->save();
@@ -2005,7 +2014,7 @@ GRID_FALLBACK;
 		ee()->legacy_api->instantiate('channel_categories');
 		$category_list = ee()->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
-			$this->entry('categories')
+			$this->entry->Categories->pluck('cat_id')
 		);
 
 		$categories = array();

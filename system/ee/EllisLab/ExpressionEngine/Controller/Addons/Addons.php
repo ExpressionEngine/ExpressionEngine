@@ -48,7 +48,18 @@ class Addons extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			// possible exception for FilePicker
+			if (strncmp(ee()->uri->uri_string, 'cp/addons/settings/filepicker', 29) == 0)
+			{
+				if (! ee()->cp->allowed_group('can_access_files'))
+				{
+					show_error(lang('unauthorized_access'));
+				}
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'));
+			}
 		}
 
 		ee()->lang->loadfile('addons');
@@ -520,6 +531,7 @@ class Addons extends CP_Controller {
 				&& $fieldtype['installed'] === TRUE
 				&& array_key_exists('update', $fieldtype))
 			{
+				ee()->api_channel_fields->include_handler($addon);
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
 				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
 				{
@@ -551,6 +563,13 @@ class Addons extends CP_Controller {
 				$Extension = new $class();
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $addon_info->getVersion();
+
+				$model = ee('Model')->get('Extension')
+					->filter('name', $class_name)
+					->first();
+
+				$model->version = $addon_info->getVersion();
+				$model->save();
 
 				if ( ! isset($updated[$party][$addon]))
 				{
@@ -1506,12 +1525,12 @@ class Addons extends CP_Controller {
 		if (ee()->session->userdata['group_id'] != 1)
 		{
 			// Do they have access to this module?
-			if ( ! isset($module) OR
-				 ! isset(ee()->session->userdata['assigned_modules'][$module->module_id]) OR
-				ee()->session->userdata['assigned_modules'][$module->module_id] !== TRUE)
+			if ( ! isset($module))
 			{
 				show_error(lang('unauthorized_access'));
 			}
+
+			$this->assertUserHasAccess($addon);
 		}
 		else
 		{
@@ -1902,6 +1921,11 @@ class Addons extends CP_Controller {
 		}
 
 		$module = $this->getModule($addon);
+
+		if ($addon == 'filepicker' && ee()->cp->allowed_group('can_access_files') && isset($module['module_id']))
+		{
+			$this->assigned_modules[] = $module['module_id'];
+		}
 
  		if ( ! isset($module['module_id'])
 			|| ! in_array($module['module_id'], $this->assigned_modules))

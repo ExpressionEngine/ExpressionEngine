@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.0.2';	// The version being installed
+	public $version           = '3.0.4';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -1425,6 +1425,11 @@ class Wizard extends CI_Controller {
 				: ' <span class="faded">|</span> '.$suffix;
 		}
 
+		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
+		$javascript_dir = (is_dir($javascript_basepath.'src/'))
+			? 'src/'
+			: 'compressed/';
+
 		$version = explode('.', $this->version, 2);
 		$data = array(
 			'title'             => $this->title,
@@ -1434,8 +1439,7 @@ class Wizard extends CI_Controller {
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
 			'image_path'        => $this->image_path,
-
-			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/compressed/'),
+			'javascript_path'   => $javascript_basepath.$javascript_dir,
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
@@ -1458,7 +1462,7 @@ class Wizard extends CI_Controller {
 			$msm_config->default_ini['charset'] = 'UTF-8';
 			$msm_config->site_prefs('');
 			$data['theme_url'] = $msm_config->item('theme_folder_url');
-			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/compressed/';
+			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/'.$javascript_dir;
 		}
 
 		$data = array_merge($data, $template_variables);
