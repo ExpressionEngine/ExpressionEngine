@@ -758,6 +758,7 @@ class ChannelEntry extends ContentModel {
 			->orFilter('include_in_authorlist', 'y')
 			->orFilter('AssignedChannels.channel_id', $this->channel_id)
 			->endFilterGroup()
+			->fields('group_id')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
