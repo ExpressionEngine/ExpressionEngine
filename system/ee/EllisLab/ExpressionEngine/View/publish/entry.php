@@ -156,7 +156,7 @@
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
 				<?php if ($entry->Channel->enable_versioning): ?>
-				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
+				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>" data-submit-text="<?=lang('btn_save_revision')?>">
 				<?php endif; ?>
 				<?=cp_form_submit($button_text, lang('btn_saving'))?>
 			</fieldset>

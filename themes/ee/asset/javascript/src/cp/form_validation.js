@@ -327,11 +327,14 @@ EE.cp.formValidation = {
 			{
 				button.removeClass('disable').removeAttr('disabled');
 
-				if (button.is('input')) {
-					button.attr('value', button.data('submit-text'));
-				} else if (button.is('button')) {
-					button.text(button.data('submit-text'));
-				}
+				button.each(function(index, thisButton) {
+					thisButton = $(thisButton);
+					if (thisButton.is('input')) {
+						thisButton.attr('value', thisButton.data('submit-text'));
+					} else if (thisButton.is('button')) {
+						thisButton.text(thisButton.data('submit-text'));
+					}
+				});
 			}
 
 		// Validation error

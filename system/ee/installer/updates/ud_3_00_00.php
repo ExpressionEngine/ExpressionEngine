@@ -631,7 +631,8 @@ class Updater {
 	private function _centralize_captcha_settings()
 	{
 		// Prevent this from running again
-		if ( ! ee()->db->field_exists('comment_use_captcha', 'channels'))
+		if ( ! ee()->db->field_exists('comment_use_captcha', 'channels')
+			|| ! ee()->db->field_exists('require_captcha', 'channel_form_settings'))
 		{
 			return;
 		}
