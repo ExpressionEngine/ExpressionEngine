@@ -694,7 +694,7 @@ abstract class AbstractChannels extends CP_Controller {
 				))
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_statueses'))
+			if ( ! ee()->cp->allowed_group('can_edit_statuses'))
 			{
 				unset($columns[2]['toolbar_items']['edit']);
 			}
