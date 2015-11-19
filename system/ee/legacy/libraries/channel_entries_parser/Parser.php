@@ -505,7 +505,7 @@ class EE_Channel_data_parser {
 
 		foreach($default_dates as $value)
 		{
-			$cond[$value] = (empty($row[$value])) ? '' : $value;
+			$cond[$value] = (empty($row[$value])) ? '' : $row[$value];
 		}
 
 		foreach($channel->mfields as $key => $value)
