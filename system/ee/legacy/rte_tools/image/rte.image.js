@@ -19,7 +19,7 @@ function Overlay($editor) {
 
 	this.$current = null;
 	this.$editor = $editor;
-	this.$overlay = this._create_overlay();
+	this.$toolbar = null;
 
 	this._add_buttons();
 	this._bind_hover();
@@ -30,52 +30,33 @@ function Overlay($editor) {
 Overlay.prototype = {
 
 	/**
-	 * Create a blank overlay div and connect it to the editor. We'll fill
-	 * in buttons later.
-	 */
-	_create_overlay: function() {
-		var $overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>');
-
-		$overlay.hide()
-		$overlay.appendTo(
-			this.$editor.closest('.WysiHat-container')
-		);
-
-		return $overlay;
-	},
-
-	/**
 	 * Add buttons to the overlay.
 	 */
 	_add_buttons: function() {
-		this.$overlay.find('p')
-			.append(this._create_button('align-left'))
-			.append(this._create_button('align-center'))
-			.append(this._create_button('align-right'))
-			.append('<br/>')
-			.append(this._create_button('wrap-left'))
-			.append(this._create_button('wrap-none'))
-			.append(this._create_button('wrap-right'))
-			.append('<br/>')
-			.append(this._create_button('remove'));
+		this.$toolbar = $('<ul/>', { class: 'toolbar' })
+			.append(this._create_button('wrap_left', 'align-txt-left', 'in_text'))
+			.append(this._create_button('align_left', 'align-left'))
+			.append(this._create_button('align_center', 'txt-only', 'center'))
+			.append(this._create_button('align_right', 'align-right'))
+			.append(this._create_button('wrap_right', 'align-txt-right', 'in_text'));
 	},
 
 	/**
 	 * Create a button given its name and hook up its actions.
 	 */
-	_create_button: function(className) {
+	_create_button: function(action, className, extraText) {
 		var that = this,
-			action = className.replace('-', '_');
-			button = $('<button class="button '+className+'" type="button"><b>'+this.lang[action]+'</b></button>');
+			listItem = $('<li/>', { class: className }),
+			extraText = extraText || '';
+			button = $('<a/>', { href: '', title: this.lang[action] }).html(this.lang[extraText]);
 
-		button.attr('title', this.lang[action]);
 		button.click(function(e) {
 			e.preventDefault();
 			that._button_actions()[action]();
 			that._hide_overlay();
 		});
 
-		return button;
+		return listItem.append(button);
 	},
 
 	/**
@@ -95,18 +76,16 @@ Overlay.prototype = {
 			that.$current = $this.closest('figure');
 			that.$current.data('floating', (that.$current.css('float') != 'none'));
 
-			that.$overlay.css({
-				display:	'table',
-				left:		offsets.left,
-				top:		offsets.top,
-				height:		$this.outerHeight(),
-				width:		$this.outerWidth()
-			});
+			that.$current.append(that.$toolbar);
 
-			that.$overlay.data('image', $this);
+			that.$toolbar.data('image', $this);
 		});
 
-		this.$overlay.mouseleave($.proxy(this, '_hide_overlay'));
+		this.$editor.on('mouseleave', 'figure img', function(event) {
+			if ($(event.toElement).parents('figure').size() == 0) {
+				that._hide_overlay();
+			}
+		});
 	},
 
 
@@ -124,7 +103,7 @@ Overlay.prototype = {
 	 * hands.
 	 */
 	_select_on_double_click: function() {
-		var $field = this.$overlay.data('image'),
+		var $field = this.$toolbar.data('image'),
 			that = this;
 
 		if ( ! $field) {
@@ -155,8 +134,8 @@ Overlay.prototype = {
 	 * Hide the overlay
 	 */
 	_hide_overlay: function() {
-		this.$overlay.hide();
-		this.$current = null;
+		//this.$toolbar.remove();
+		//this.$current = null;
 	},
 
 	/**
@@ -303,7 +282,7 @@ ImageChooser.prototype = {
 		var $figure = $('<figure />'),
 			caption_text = prompt(this.settings.caption_text, '');
 
-		$figure.css('text-align', 'center');
+		$figure.css('text-align', 'center').attr('class', 'rte-img-chosen');
 		$figure.append(
 			$('<img />', {
 				alt: "",
