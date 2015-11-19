@@ -230,6 +230,12 @@ class ChannelEntry extends ContentModel {
 				$OBJ->save($this, $values);
 			}
 		}
+
+		// clear caches
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
+		{
+			ee()->functions->clear_caching('all');
+		}
 	}
 
 	public function onAfterInsert()

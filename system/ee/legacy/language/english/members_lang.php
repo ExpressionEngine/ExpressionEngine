@@ -264,6 +264,7 @@ $lang = array(
 	'publish_form' => 'Publish form',
 	'choose_channels_per_site' => 'choose channels, per site below',
 	'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
+	'must_have_channels' => 'All sites must have channels.',
 	"footer_helper_links" => "Access footer helper links",
 	"footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",
 	"can_access_design" => "Access template manager",

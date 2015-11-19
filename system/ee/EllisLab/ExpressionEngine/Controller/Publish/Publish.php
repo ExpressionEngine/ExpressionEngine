@@ -134,8 +134,13 @@ class Publish extends AbstractPublishController {
 	 *   the form
 	 * @return string Rendered HTML
 	 */
-	public function create($channel_id, $autosave_id = NULL)
+	public function create($channel_id = NULL, $autosave_id = NULL)
 	{
+		if ( ! isset($channel_id))
+		{
+			show_404();
+		}
+
 		if ( ! ee()->cp->allowed_group('can_create_entries'))
 		{
 			show_error(lang('unauthorized_access'));
