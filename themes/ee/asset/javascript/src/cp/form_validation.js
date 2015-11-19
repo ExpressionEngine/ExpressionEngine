@@ -190,7 +190,7 @@ EE.cp.formValidation = {
 	_dismissSuccessAlert: function(form) {
 
 		$('input, select, textarea', form).change(function(event) {
-			var success = $('div.alert.success');
+			var success = form.find('div.alert.success');
 
 			if (success.size() > 0)
 			{
