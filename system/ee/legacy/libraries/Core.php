@@ -363,17 +363,42 @@ class EE_Core {
 		if (REQ == 'ACTION' OR REQ == 'PAGE')
 		{
 			// load up any Snippets
-			ee()->db->select('snippet_name, snippet_contents');
-			ee()->db->where('(site_id = '.ee()->db->escape_str(ee()->config->item('site_id')).' OR site_id = 0)');
-			$fresh = ee()->db->get('snippets');
+			$fresh = ee('Model')->get('Snippet')
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+				->all();
 
-			if ($fresh->num_rows() > 0)
+			if ($fresh->count() > 0)
 			{
-				$snippets = array();
+				$snippets = $fresh->getDictionary('snippet_name', 'snippet_contents');
 
-				foreach ($fresh->result() as $var)
+				$path_site_ids = array(
+					PATH_TMPL.'_global_snippets' => 0,
+					PATH_TMPL.ee()->config->item('site_short_name').'/snippets' => ee()->config->item('site_id')
+				);
+
+				foreach ($path_site_ids as $path => $site_id)
 				{
-					$snippets[$var->snippet_name] = $var->snippet_contents;
+					$files = new FilesystemIterator($path);
+
+					foreach ($files as $item)
+					{
+						if ($item->isFile() && $item->getExtension() == 'html')
+						{
+							$name = $item->getBasename('.html');
+
+							if ( ! array_key_exists($name, $snippets))
+							{
+								$snippets[$name] = file_get_contents($item->getRealPath());
+
+								ee('Model')->make('Snippet', array(
+									'site_id' => $site_id,
+									'snippet_name' => $name,
+									'snippet_contents' => $snippets[$name],
+								))->save();
+							}
+						}
+					}
 				}
 
 				// Thanks to @litzinger for the code suggestion to parse
