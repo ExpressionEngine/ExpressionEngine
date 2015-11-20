@@ -37,8 +37,10 @@ class Filepicker_mcp {
 
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('module_id', 0);
+			->filter('site_id', ee()->config->item('site_id'));
+
+		$system_dirs = $dirs->filter('module_id', '!=', '0')->all();
+		$dirs = $dirs->filter('module_id', 0);
 
 		$member_group = ee()->session->userdata['group_id'];
 		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
@@ -78,8 +80,15 @@ class Filepicker_mcp {
 		{
 			if (empty($directories[$id]))
 			{
-				$id = 1;
-				//show_error(lang('invalid_upload_destination'));
+				$system_directories = $system_dirs->indexBy('id');
+				if ( ! empty($system_directories[$id]))
+				{
+					$directories = $system_directories;
+				}
+				else
+				{
+					$id = 1;
+				}
 			}
 
 			$dir = $directories[$id];
