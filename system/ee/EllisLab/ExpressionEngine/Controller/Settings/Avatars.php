@@ -175,12 +175,16 @@ class Avatars extends Settings {
 	 */
 	private function updateUploadDirectory($data)
 	{
-		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
 		if ( ! $directory)
 		{
 			$directory = ee('Model')->make('UploadDestination');
 			$directory->name = 'Avatars';
+			$directory->site_id = ee()->config->item('site_id');
 			$directory->Module = ee('Model')->get('Module')->filter('module_name', 'Member')->first();
 		}
 		$directory->server_path = $data['avatar_path'];
