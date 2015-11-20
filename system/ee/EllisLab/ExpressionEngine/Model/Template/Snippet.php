@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
+use FilesystemIterator;
 use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
@@ -172,4 +173,56 @@ class Snippet extends FileSyncedModel {
 		}
 	}
 
+	/**
+	 * Load all snippets available on this site, including global snippets and
+	 * any that are currently only available as files.
+	 *
+	 * @return Collection of snippets
+	 */
+	public function loadAll()
+	{
+		// load up any Snippets
+		$snippets = $this->getModelFacade()->get('Snippet')
+			->filter('site_id', ee()->config->item('site_id'))
+			->orFilter('site_id', 0)
+			->all();
+
+		$path_site_ids = array(
+			PATH_TMPL.'_global_snippets' => 0,
+			PATH_TMPL.ee()->config->item('site_short_name').'/snippets' => ee()->config->item('site_id')
+		);
+
+		$names = $snippets->pluck('snippet_name');
+
+		foreach ($path_site_ids as $path => $site_id)
+		{
+			$files = new FilesystemIterator($path);
+
+			foreach ($files as $item)
+			{
+				if ($item->isFile() && $item->getExtension() == 'html')
+				{
+					$name = $item->getBasename('.html');
+
+					if ( ! in_array($name, $names))
+					{
+						$contents = file_get_contents($item->getRealPath());
+
+						$new_snip = ee('Model')->make('Snippet', array(
+							'site_id' => $site_id,
+							'snippet_name' => $name,
+							'snippet_contents' => $contents
+						));
+
+						$new_snip->setModificationTime($item->getMTime());
+
+						$new_snip->save();
+						$snippets[] = $new_snip;
+					}
+				}
+			}
+		}
+
+		return $snippets;
+	}
 }
