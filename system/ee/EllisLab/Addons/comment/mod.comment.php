@@ -505,6 +505,19 @@ class Comment {
 			}
 		}
 
+		// -------------------------------------------
+		// 'comment_entries_comment_ids_query' hook.
+		//  - Manipulate the database object performing the query to gather IDs of comments to display
+		//  - Added 3.1.0
+		//
+			if (ee()->extensions->active_hook('comment_entries_comment_ids_query') === TRUE)
+			{
+				ee()->extensions->call('comment_entries_comment_ids_query', ee()->db);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+			}
+		//
+		// -------------------------------------------
+
 		if ($enabled['pagination'])
 		{
 			if ($pagination->paginate === TRUE)
@@ -595,6 +608,19 @@ class Comment {
 
 			// Potentially a lot of information
 			$query->free_result();
+
+			// -------------------------------------------
+			// 'comment_entries_query_result' hook.
+			//  - Take the whole query result array, do what you wish
+			//  - Added 3.1.0
+			//
+				if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
+				{
+					$results = ee()->extensions->call('comment_entries_query_result', $results);
+					if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+				}
+			//
+			// -------------------------------------------
 		}
 
 		/** ----------------------------------------
