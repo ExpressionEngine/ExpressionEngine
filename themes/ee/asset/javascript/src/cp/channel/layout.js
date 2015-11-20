@@ -127,8 +127,6 @@ $(document).ready(function () {
 		placeholder: "drag-placeholder",
 		start: function (event, ui) {
 			var fieldIndex = sheets.filter('.tab-open').find('fieldset').index(ui.item[0]);
-			console.log(EE.publish_layout);
-			console.log(getTabIndex());
 			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			ui.placeholder.append('<div class="none"></div>');
 		},
