@@ -43,6 +43,7 @@ class DataStore {
 	protected $default_prefix;
 	protected $enabled_prefixes;
 	protected $metadata = array();
+	protected $relations = array();
 
 	/**
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
@@ -282,14 +283,25 @@ class DataStore {
 		}
 
 		unset($options['name']);
-		return $this->newRelation($to_model, $name, $options);
+
+		if (array_key_exists($to_model.'_'.$name, $this->relations))
+		{
+			return $this->relations[$to_model.'_'.$name];
+		}
+
+		return $this->relations[$to_model.'_'.$name] = $this->newRelation($to_model, $name, $options);
 	}
 
 	public function getRelation($model, $name)
 	{
+		if (array_key_exists($model.'_'.$name, $this->relations))
+		{
+			return $this->relations[$model.'_'.$name];
+		}
+
 		$options = $this->prepareRelationshipData($model, $name);
 
-		return $this->newRelation($model, $name, $options);
+		return $this->relations[$model.'_'.$name] = $this->newRelation($model, $name, $options);
 	}
 
 	protected function newRelation($model, $name, $options)
