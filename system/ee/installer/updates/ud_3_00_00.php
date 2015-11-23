@@ -121,7 +121,7 @@ class Updater {
 		ee()->load->library('addons');
 
 		$installed_modules = ee()->db->select('module_name')->get('modules');
-		$required_modules = array('filepicker', 'comment', 'search');
+		$required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');
 
 		foreach ($installed_modules->result() as $installed_module)
 		{
