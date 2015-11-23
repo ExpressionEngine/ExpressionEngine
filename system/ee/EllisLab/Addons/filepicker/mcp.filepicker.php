@@ -111,6 +111,14 @@ class Filepicker_mcp {
 		$files = $files->filter(function($file) { return $file->exists(); });
 
 		$base_url = ee('CP/URL', $this->base_url);
+		$base_url->setQueryStringVariable('directory', $id);
+		$base_url->setQueryStringVariable('type', $type);
+
+		// Continue restricting by directory
+		if (ee()->input->get('restrict', FALSE))
+		{
+			$base_url->setQueryStringVariable('restrict', TRUE);
+		}
 
 		if (ee()->input->get('hasFilters') !== '0')
 		{
@@ -144,9 +152,6 @@ class Filepicker_mcp {
 			$perpage = $perpage['perpage'];
 			$vars['filters'] = $filters->render($base_url);
 		}
-
-		$base_url->setQueryStringVariable('directory', $id);
-		$base_url->setQueryStringVariable('type', $type);
 
 		if ($this->images || $type == 'thumb')
 		{
