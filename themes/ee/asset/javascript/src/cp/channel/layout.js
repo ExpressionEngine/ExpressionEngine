@@ -214,6 +214,9 @@ $(document).ready(function () {
 
 				makeTabsDroppable();
 
+				// Update tabs
+				sheets = $('.wrap div.tab');
+
 				$('.modal-add-new-tab .m-close').trigger('click');
 			}
 		}
