@@ -14,7 +14,7 @@ feature 'Publish Page' do
         group_id: 1,
         type: 'File',
         label: 'Second File',
-        fields: { allowed_directories: 'About (Agile Records)' }
+        fields: { allowed_directories: 'About' }
       )
 
       @page.load
