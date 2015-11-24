@@ -93,7 +93,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|alphaDash',
+		'url_title'          => 'required|validateUrlTitle',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -200,6 +200,19 @@ class ChannelEntry extends ContentModel {
 			(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
 		{
 			return 'not_authorized';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validate the URL title for any disallowed characters; it's basically an alhpa-dash rule plus periods
+	 */
+	public function validateUrlTitle($key, $value)
+	{
+		if ( ! (bool) preg_match("/^([-a-z0-9_.-])+$/i", $value))
+		{
+			return 'alpha_dash_period';
 		}
 
 		return TRUE;

@@ -3,6 +3,7 @@
 $lang['alpha']				= "This field may only contain alphabetical characters.";
 $lang['alpha_dash']			= "This field may only contain alpha-numeric characters, underscores, and dashes.";
 $lang['alpha_dash_space']	= "This field may only contain alpha-numeric characters, underscores, dashes, and spaces.";
+$lang['alpha_dash_period']	= "This field may only contain alpha-numeric characters, underscores, dashes, and periods.";
 $lang['alpha_numeric']		= "This field may only contain alpha-numeric characters.";
 $lang['boolean']			= "This field must be a boolean value.";
 $lang['enum']				= "This field must be one of: %s.";
