@@ -1217,7 +1217,8 @@ class Wizard extends CI_Controller {
 
 			if ( ! empty($UD->errors))
 			{
-				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+				ee()->load->helper('html');
+				$error_msg .= "</p>".ul($UD->errors)."<p>";
 			}
 
 			$this->set_output('error', array('error' => $error_msg));

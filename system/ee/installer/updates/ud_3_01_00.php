@@ -25,12 +25,13 @@
  */
 class Updater {
 
-	var $version_suffix = '';
+	public $version_suffix = '';
+	public $errors = array();
 
 	/**
 	 * Do Update
 	 *
-	 * @return TRUE
+	 * @return bool Success?
 	 */
 	public function do_update()
 	{
@@ -38,23 +39,31 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_update_member_data_column_names',
+				'move_avatars',
+				'update_member_data_column_names',
 			)
 		);
 
 		foreach ($steps as $k => $v)
 		{
-			$this->$v();
+			try
+			{
+				$this->$v();
+			}
+			catch (Exception $e)
+			{
+				$this->errors[] = $e->getMessage();
+			}
 		}
 
-		return TRUE;
+		return empty($this->errors);
 	}
 
 	/**
 	 * Fields created in 3.0 were missing the 'm_' prefix on their data columns,
 	 * so we need to add the prefix back
 	 */
-	private function _update_member_data_column_names()
+	private function update_member_data_column_names()
 	{
 		$member_data_columns = ee()->db->list_fields('member_data');
 
@@ -76,5 +85,85 @@ class Updater {
 
 		ee()->smartforge->modify_column('member_data', $columns_to_modify);
 	}
+
+	/**
+ 	* Move the default avatars into a subdirectory
+ 	* @return void
+ 	*/
+	private function move_avatars()
+	{
+		$avatar_path = realpath(ee()->config->item('avatar_path'));
+		$avatar_path_clean = htmlentities($avatar_path);
+
+		// Does the path exist?
+		if (empty($avatar_path))
+		{
+			throw new UpdaterException_3_1_0('<kbd>avatar_path</kbd> is not defined.');
+		}
+
+		// Check that we haven't already done this
+		if (file_exists($avatar_path.'/default/'))
+		{
+			return TRUE;
+		}
+
+		if ( ! file_exists($avatar_path))
+		{
+			throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not a valid path.");
+		}
+
+		// Check to see if the directory is writable
+		if ( ! is_writable($avatar_path))
+		{
+			if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
+			{
+				throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not writeable.");
+			}
+		}
+
+		// Create the default directory
+		if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
+		{
+			throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path_clean}/default/</kbd>.");
+		}
+
+		// Copy over the index.html
+		if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
+		{
+			throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path_clean}/default/</kbd>.");
+		}
+
+		$default_avatars = array(
+			'avatar_tree_hugger_color.png',
+			'bad_fur_day.jpg',
+			'big_horns.jpg',
+			'eat_it_up.jpg',
+			'ee_paint.jpg',
+			'expression_radar.jpg',
+			'flying_high.jpg',
+			'hair.png',
+			'hanging_out.jpg',
+			'hello_prey.jpg',
+			'light_blur.jpg',
+			'ninjagirl.png',
+			'procotopus.png',
+			'sneak_squirrel.jpg',
+			'zombie_bunny.png'
+		);
+		foreach ($default_avatars as $filename)
+		{
+			if ( ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
+			{
+				throw new UpdaterException_3_1_0("Could not copy default avatars to <kbd>{$avatar_path_clean}/default/</kbd>");
+			}
+		}
+	}
 }
-// EOF
+
+class UpdaterException_3_1_0 extends Exception
+{
+	function __construct($message)
+	{
+		parent::__construct($message.' <a href="https://ellislab.com/expressionengine/user-guide/installation/version_notes_3.1.0.html">Please see 3.1.0 version notes.</a>');
+	}
+}
