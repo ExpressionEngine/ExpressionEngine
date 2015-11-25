@@ -103,6 +103,7 @@ images/captchas/*
 !images/captchas/.htaccess
 
 images/avatars/*
+!images/avatars/default/*
 !images/avatars/index.html
 !images/avatars/.htaccess
 
