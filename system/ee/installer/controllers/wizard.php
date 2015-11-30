@@ -66,6 +66,7 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
+		'file',
 		'filepicker',
 		'search'
 	);
