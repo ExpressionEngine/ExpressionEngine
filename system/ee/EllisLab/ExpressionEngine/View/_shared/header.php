@@ -36,7 +36,7 @@
 					<?php endif; ?>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 1 || ee()->cp->allowed_group('can_admin_sites'))): ?>
 						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a>
-						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
+						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>" rel="external"><?=lang('view')?></a>
 						<ul class="sites-list sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
