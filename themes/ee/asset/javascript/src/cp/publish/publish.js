@@ -101,16 +101,25 @@ $(document).ready(function () {
 	}
 
 	// Category modal
-	$('a[rel=modal-add-category]').click(function (e) {console.log($('input[name="categories[]"]').serialize());
+	$('body').on('click', 'a[rel=modal-category-form]', function (e) {
 		var modal_link = $(this),
-			modal_name = modal_link.attr('rel');
+			modal_name = modal_link.attr('rel'),
+			modal = $('.' + modal_name),
+			category_form_url = EE.publish.add_category.URL.replace('###', $(this).data('catGroup'));
+
+		// Clear out modal from last request
+		$('div.box', modal).html('');
+
+		// Are we editing a category? Create a different form URL
+		if ($(this).data('catId')) {
+			category_form_url = EE.publish.edit_category.URL.replace('###', $(this).data('catGroup') + '/' + $(this).data('catId'));
+		}
+
 		$.ajax({
 			type: "GET",
-			url: EE.publish.add_category.URL.replace('###', $(this).data('catGroup')),
+			url: category_form_url,
 			dataType: 'html',
 			success: function (data) {
-				var modal = $('.' + modal_name);
-
 				load_category_modal_data(modal, data, modal_link);
 			}
 		})

@@ -685,6 +685,7 @@ class ChannelEntry extends ContentModel {
 						'field_type'			=> 'checkboxes',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
+						'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
 						'populateCallback'		=> array($this, 'populateCategories')
 					);
 				};
