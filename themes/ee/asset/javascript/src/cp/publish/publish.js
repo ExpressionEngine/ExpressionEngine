@@ -125,6 +125,39 @@ $(document).ready(function () {
 		})
 	});
 
+	// Category deletion
+	$('body').on('click', 'a[rel=modal-confirm-cat-remove]', function (e) {
+		var modal = $('.' + $(this).attr('rel')),
+			modal_link = $(this);
+
+		// Add the name of the category we're deleting to the modal
+		$('.checklist', modal)
+			.html('')
+			.append('<li>' + $(this).data('confirm') + '</li>');
+		// Set the category ID to send to the categories deletion handler
+		$('input[name="categories[]"]', modal).val($(this).data('catId'));
+
+		$('form', modal).off('submit').on('submit', function() {
+
+			$.ajax({
+				type: 'POST',
+				url: this.action,
+				data: $(this).serialize(),
+				dataType: 'json',
+				success: function(result) {
+					if (result.messageType == 'success') {
+						modal.trigger('modal:close');
+						modal_link.parents('fieldset').find('.setting-field').html(result.body);
+					}
+				}
+			});
+
+			return false;
+		});
+
+		e.preventDefault();
+	});
+
 	function load_category_modal_data(modal, data, modal_link) {
 		$('div.box', modal).html(data);
 
@@ -134,7 +167,7 @@ $(document).ready(function () {
 			$(this).ee_url_title('input[name=cat_url_title]');
 		});
 
-		$('form', modal).on('submit', function() {
+		$('form', modal).off('submit').on('submit', function() {
 
 			$.ajax({
 				type: 'POST',

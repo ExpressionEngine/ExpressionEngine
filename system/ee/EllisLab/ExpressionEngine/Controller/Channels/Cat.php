@@ -88,7 +88,7 @@ class Cat extends AbstractChannelsController {
 	}
 
 	/**
-	 * Remove channels handler
+	 * Remove category groups handler
 	 */
 	public function remove()
 	{
@@ -547,9 +547,13 @@ class Cat extends AbstractChannelsController {
 
 			if ( ! empty($cat_ids))
 			{
-				ee('Model')->get('Category')
-					->filter('cat_id', 'IN', $cat_ids)
-					->delete();
+				$cats = ee('Model')->get('Category')
+					->filter('cat_id', 'IN', $cat_ids);
+
+				// Grab the group ID for the possible AJAX return below
+				$group_id = $cats->first()->CategoryGroup->getId();
+
+				$cats->delete();
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -561,6 +565,15 @@ class Cat extends AbstractChannelsController {
 		else
 		{
 			show_error(lang('unauthorized_access'));
+		}
+
+		// Response for publish form category management
+		if (AJAX_REQUEST)
+		{
+			return array(
+				'messageType' => 'success',
+				'body' => $this->categoryGroupPublishField($group_id)
+			);
 		}
 
 		ee()->functions->redirect(

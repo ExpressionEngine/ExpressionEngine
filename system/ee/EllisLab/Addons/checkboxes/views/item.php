@@ -29,7 +29,7 @@
 			<?php if ($editable): ?>
 				<ul class="toolbar">
 					<li class="edit"><a class="m-link" rel="modal-category-form" data-cat-group="<?=$cat_group_id?>" data-cat-id="<?=$key?>" href=""></a></li>
-					<li class="remove"><a href=""></a></li>
+					<li class="remove"><a class="m-link" rel="modal-confirm-cat-remove" data-confirm="<?='<b>'.lang('category').'</b>: '.$value?>" data-cat-id="<?=$key?>" href=""></a></li>
 				</ul>
 			<?php endif ?>
 		</label>
