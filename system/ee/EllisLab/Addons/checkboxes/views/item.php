@@ -26,10 +26,14 @@
 				<span class="list-reorder"></span>
 			<?php endif ?>
 			<?=form_checkbox($field_name.'[]', $key, $checked)?> <?=$value?>
-			<?php if ($editable): ?>
+			<?php if ($editable OR $deletable): ?>
 				<ul class="toolbar">
-					<li class="edit"><a class="m-link" rel="modal-category-form" data-cat-group="<?=$cat_group_id?>" data-cat-id="<?=$key?>" href=""></a></li>
-					<li class="remove"><a class="m-link" rel="modal-confirm-cat-remove" data-confirm="<?='<b>'.lang('category').'</b>: '.$value?>" data-cat-id="<?=$key?>" href=""></a></li>
+					<?php if ($editable): ?>
+						<li class="edit"><a class="m-link" rel="modal-category-form" data-cat-group="<?=$cat_group_id?>" data-cat-id="<?=$key?>" href=""></a></li>
+					<?php endif ?>
+					<?php if ($deletable): ?>
+						<li class="remove"><a class="m-link" rel="modal-confirm-cat-remove" data-confirm="<?='<b>'.lang('category').'</b>: '.$value?>" data-cat-id="<?=$key?>" href=""></a></li>
+					<?php endif ?>
 				</ul>
 			<?php endif ?>
 		</label>

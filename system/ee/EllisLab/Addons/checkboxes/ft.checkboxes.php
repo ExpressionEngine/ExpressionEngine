@@ -145,6 +145,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 				'values' => $values,
 				'options' => $field_options,
 				'editable' => isset($this->settings['editable']) ? $this->settings['editable'] : FALSE,
+				'deletable' => isset($this->settings['deletable']) ? $this->settings['deletable'] : FALSE,
 				'cat_group_id' => isset($this->settings['cat_group_id']) ? $this->settings['cat_group_id'] : 0
 			));
 		}

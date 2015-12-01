@@ -686,6 +686,7 @@ class ChannelEntry extends ContentModel {
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
 						'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
+						'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
 						'populateCallback'		=> array($this, 'populateCategories')
 					);
 				};
