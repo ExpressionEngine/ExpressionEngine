@@ -21,7 +21,18 @@
 		}
 ?>
 	<li>
-		<label class="<?=$class?>"><?=form_checkbox($field_name.'[]', $key, $checked)?> <?=$value?></label>
+		<label class="<?=$class?>">
+			<?php if ($editable): ?>
+				<span class="list-reorder"></span>
+			<?php endif ?>
+			<?=form_checkbox($field_name.'[]', $key, $checked)?> <?=$value?>
+			<?php if ($editable): ?>
+				<ul class="toolbar">
+					<li class="edit"><a class="m-link" rel="modal-category-form" data-cat-group="<?=$cat_group_id?>" data-cat-id="<?=$key?>" href=""></a></li>
+					<li class="remove"><a href=""></a></li>
+				</ul>
+			<?php endif ?>
+		</label>
 <?php
 	if (isset($children)):
 ?>

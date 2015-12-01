@@ -143,7 +143,9 @@ class Checkboxes_ft extends EE_Fieldtype {
 			return ee('View')->make('checkboxes:publish')->render(array(
 				'field_name' => $this->field_name,
 				'values' => $values,
-				'options' => $field_options
+				'options' => $field_options,
+				'editable' => isset($this->settings['editable']) ? $this->settings['editable'] : FALSE,
+				'cat_group_id' => isset($this->settings['cat_group_id']) ? $this->settings['cat_group_id'] : 0
 			));
 		}
 
