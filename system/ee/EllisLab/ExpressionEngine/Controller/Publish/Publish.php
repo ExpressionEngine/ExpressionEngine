@@ -306,6 +306,8 @@ class Publish extends AbstractPublishController {
 			'file' => array('cp/publish/publish', 'cp/channel/category_edit')
 		));
 
+		$this->addCategoryModals();
+
 		ee()->cp->render('publish/entry', $vars);
 	}
 

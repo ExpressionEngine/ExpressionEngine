@@ -148,6 +148,3 @@
 		</form>
 	</div>
 </div>
-<?php ee('CP/Modal')->startModal('category-form'); ?>
-<?php $this->embed('ee:_shared/modal', array('name' => 'modal-category-form', 'contents' => '')); ?>
-<?php ee('CP/Modal')->endModal(); ?>

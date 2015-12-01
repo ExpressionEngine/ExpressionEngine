@@ -217,5 +217,27 @@ abstract class AbstractPublish extends CP_Controller {
 		return ee('View')->make('_shared/table')->render($table->viewData(''));
 	}
 
+	/**
+	 * Adds modals for the category add/edit form and category removal confirmation
+	 */
+	protected function addCategoryModals()
+	{
+		$cat_form_modal = ee('View')->make('ee:_shared/modal')->render(array(
+			'name'		=> 'modal-category-form',
+			'contents'	=> '')
+		);
+		ee('CP/Modal')->addModal('category-form', $cat_form_modal);
+
+		$cat_remove_modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render(array(
+			'name'		=> 'modal-confirm-cat-remove',
+			'form_url'	=> ee('CP/URL')->make('channels/cat/removeCat'),
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove',
+				'categories[]'	=> ''
+			)
+		));
+		ee('CP/Modal')->addModal('modal-confirm-cat-remove', $cat_remove_modal);
+	}
+
 }
 // EOF
