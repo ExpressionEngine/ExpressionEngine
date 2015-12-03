@@ -61,7 +61,11 @@
 
             list.reset();
 
-            list.el.data('nestable-group', this.options.group);
+            if (this.options.group !== 0) {
+            	list.el.data('nestable-group', this.options.group);
+            } else if (list.el.data('nestable-group') !== undefined) {
+            	this.options.group = list.el.data('nestable-group');
+            }
 
             if (this.options.placeElement !== undefined) {
                 list.placeEl = this.options.placeElement;
@@ -425,7 +429,7 @@
              */
             if (!mouse.dirAx || isNewRoot || isEmpty) {
                 // check if groups match if dragging over new root
-                if (isNewRoot && opt.group !== pointElRoot.data('nestable-group')) {
+                if (isNewRoot && opt.group !== 0 && opt.group !== pointElRoot.data('nestable-group')) {
                     return;
                 }
                 // check depth limit
