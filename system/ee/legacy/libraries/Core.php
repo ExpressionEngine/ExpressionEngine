@@ -231,21 +231,6 @@ class EE_Core {
 		// Load the very, very base classes
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
-
-		if (extension_loaded('newrelic'))
-		{
-			ee()->load->library('newrelic');
-
-			if (ee()->config->item('use_newrelic') == 'n')
-			{
-				ee()->newrelic->disable_autorum();
-			}
-			else
-			{
-				ee()->newrelic->set_appname();
-				ee()->newrelic->name_transaction();
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------

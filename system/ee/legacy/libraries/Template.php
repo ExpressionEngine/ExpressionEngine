@@ -2211,6 +2211,21 @@ class EE_Template {
 	 */
 	public function fetch_template($template_group, $template, $show_default = TRUE, $site_id = '')
 	{
+		if ($this->depth === 0 && extension_loaded('newrelic'))
+		{
+			ee()->load->library('newrelic');
+
+			if (ee()->config->item('use_newrelic') == 'n')
+			{
+				ee()->newrelic->disable_autorum();
+			}
+			else
+			{
+				ee()->newrelic->set_appname();
+				ee()->newrelic->name_transaction($template_group, $template);
+			}
+		}
+
 		if ($site_id == '' OR ! is_numeric($site_id))
 		{
 			$site_id = ee()->config->item('site_id');

@@ -62,13 +62,17 @@ class Newrelic {
 	 * @access	public
 	 * @return	void
 	 */
-	public function name_transaction()
+	public function name_transaction($template_group, $template_name)
 	{
-		$transaction_name = (string) ee()->uri->segment(1);
+		$transaction_name = $template_group.'/'.$template_name;
 
-		if (ee()->uri->segment(2) !== FALSE)
-		{
-			$transaction_name .= '/'.ee()->uri->segment(2);
+		try {
+			if (ee()->template_router->match(ee()->uri))
+			{
+				newrelic_add_custom_parameter('route', ee()->uri->uri_string);
+			}
+		} catch (Exception $e) {
+			// No template route
 		}
 
 		// Append site label if MSM is enabled to easily differentiate
