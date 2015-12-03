@@ -300,7 +300,10 @@ class Snippets extends AbstractDesignController {
 
 		$snippet = ee('Model')->get('Snippet')
 			->filter('snippet_id', $snippet_id)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->first();
 
 		if ( ! $snippet)

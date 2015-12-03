@@ -11,7 +11,7 @@
 		<?=ee()->view->head_link('css/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
-		<link rel="stylesheet" href="<?=ee('CP/URL')->make('css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
+		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
 		<!-- <link href="touch-icon-iphone.png" rel="apple-touch-icon-precomposed" sizes="114x114">
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
@@ -36,7 +36,7 @@
 					<?php endif; ?>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 1 || ee()->cp->allowed_group('can_admin_sites'))): ?>
 						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a>
-						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
+						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>" rel="external"><?=lang('view')?></a>
 						<ul class="sites-list sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
