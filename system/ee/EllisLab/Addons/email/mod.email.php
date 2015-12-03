@@ -752,7 +752,7 @@ class Email {
 				$approved_tos,
 				$_POST
 			);
-			ee()->spam->moderate(__FILE__, 'Email', 'mail_recipients', NULL, $args, $text);
+			ee('Spam')->moderate(__FILE__, 'Email', 'mail_recipients', NULL, $args, $text);
 		} else {
 			// Send mail
 			$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
