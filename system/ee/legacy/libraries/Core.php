@@ -561,6 +561,7 @@ class EE_Core {
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
+			$this->set_newrelic_transaction($forum_trigger.'/'.$FRM->current_request);
 			return;
 		}
 
