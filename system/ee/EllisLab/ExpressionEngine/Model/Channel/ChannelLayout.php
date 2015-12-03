@@ -95,10 +95,15 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 		// "New" (unknown) fields
 		$publish_tab = $display->getTab('publish');
+		$categories_tab = $display->getTab('categories');
 
 		foreach ($fields as $field_id => $field)
 		{
-			if (strpos($field_id, '__') === FALSE)
+			if (strpos($field_id, 'categories[') == 0)
+			{
+				$tab = $categories_tab;
+			}
+			elseif (strpos($field_id, '__') === FALSE)
 			{
 				$tab = $publish_tab;
 			}
