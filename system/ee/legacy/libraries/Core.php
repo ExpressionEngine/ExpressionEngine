@@ -655,6 +655,15 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
+
+		// Record the New Relic transaction
+		$templates = explode('|', ee()->TMPL->templates_sofar);
+		$templates = array_filter($templates, function($item) {
+			return ! empty($item);
+		});
+		$template = array_shift($templates);
+		$template = substr($template, strpos($template, ':') + 1);
+		$this->set_newrelic_transaction($template);
 	}
 
 	// ------------------------------------------------------------------------
@@ -705,6 +714,30 @@ class EE_Core {
 			}
 
 			ee()->functions->clear_caching('all');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the New Relic transasction name
+	 * @param string $transaction New Relic transaction name
+	 */
+	private function set_newrelic_transaction($transaction)
+	{
+		if (extension_loaded('newrelic'))
+		{
+			ee()->load->library('newrelic');
+
+			if (ee()->config->item('use_newrelic') == 'n')
+			{
+				ee()->newrelic->disable_autorum();
+			}
+			else
+			{
+				ee()->newrelic->set_appname();
+				ee()->newrelic->name_transaction($transaction);
+			}
 		}
 	}
 

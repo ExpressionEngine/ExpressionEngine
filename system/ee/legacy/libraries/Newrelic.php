@@ -62,10 +62,8 @@ class Newrelic {
 	 * @access	public
 	 * @return	void
 	 */
-	public function name_transaction($template_group, $template_name)
+	public function name_transaction($transaction_name)
 	{
-		$transaction_name = $template_group.'/'.$template_name;
-
 		// Add a custom parameter of the URI string
 		newrelic_add_custom_parameter('uri', ee()->uri->uri_string);
 
@@ -75,7 +73,7 @@ class Newrelic {
 		{
 			$transaction_name .= ' - ' . ee()->config->item('site_label');
 		}
-
+var_dump($transaction_name);
 		newrelic_name_transaction($transaction_name);
 	}
 

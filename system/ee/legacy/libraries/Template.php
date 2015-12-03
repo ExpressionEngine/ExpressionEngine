@@ -190,8 +190,8 @@ class EE_Template {
 	 */
 	public function fetch_and_parse($template_group = '', $template = '', $is_embed = FALSE, $site_id = '', $is_layout = FALSE)
 	{
-		// add this template to our subtemplate tracker
-		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
+		// Set a default site_ID
+		$site_id = ($site_id) ?: ee()->config->item('site_id');
 
 		// Fetch the requested template
 		// The template can either come from the DB or a cache file
@@ -202,6 +202,9 @@ class EE_Template {
 		$this->template = ($template_group != '' AND $template != '') ?
 			$this->fetch_template($template_group, $template, FALSE, $site_id) :
 			$this->parse_template_uri();
+
+		// add this template to our subtemplate tracker
+		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$this->group_name.'/'.$this->template_name.'|';
 
 		$this->log_item("Template Type: ".$this->template_type);
 
@@ -902,7 +905,7 @@ class EE_Template {
 
 		if ($this->depth == 0)
 		{
-			$this->templates_sofar = '';
+			// $this->templates_sofar = '';
 		}
 
 		return $parent_template;
