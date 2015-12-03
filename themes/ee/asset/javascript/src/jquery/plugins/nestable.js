@@ -42,7 +42,8 @@
             collapseBtnHTML : '<button data-action="collapse" type="button">Collapse</button>',
             group           : 0,
             maxDepth        : 5,
-            threshold       : 20
+            threshold       : 20,
+            constrainToRoot	: false
         };
 
     function Plugin(element, options)
@@ -270,18 +271,31 @@
 
             this.dragRootEl = this.el;
 
-            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass + ' ' + this.options.dragClass);
+            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass + ' ' + this.options.dragClass.replace('.', ' '));
             this.dragEl.css('width', dragItem.width());
 
             dragItem.after(this.placeEl);
             dragItem[0].parentNode.removeChild(dragItem[0]);
             dragItem.appendTo(this.dragEl);
 
-            $(document.body).append(this.dragEl);
-            this.dragEl.css({
-                'left' : e.pageX - mouse.offsetX,
-                'top'  : e.pageY - mouse.offsetY
-            });
+            // Either append the dragging element to the body or the root element
+            var appendEl = (this.options.constrainToRoot) ? this.el : document.body;
+
+            $(appendEl).append(this.dragEl);
+
+            if (this.options.constrainToRoot) {
+            	// Account for root element offset if appending to root element
+            	this.dragEl.css({
+	                'left' : e.pageX - this.el.offset().left - mouse.offsetX,
+	                'top'  : e.pageY - this.el.offset().top - mouse.offsetY
+	            });
+            } else {
+            	this.dragEl.css({
+	                'left' : e.pageX - mouse.offsetX,
+	                'top'  : e.pageY - mouse.offsetY
+	            });
+            }
+
             // total depth of dragging item
             var i, depth,
                 items = this.dragEl.find(this.options.itemNodeName+'.'+this.options.itemClass);
@@ -313,10 +327,18 @@
                 opt   = this.options,
                 mouse = this.mouse;
 
-            this.dragEl.css({
-                'left' : e.pageX - mouse.offsetX,
-                'top'  : e.pageY - mouse.offsetY
-            });
+            if (this.options.constrainToRoot) {
+            	// Account for root element offset if appending to root element
+            	this.dragEl.css({
+	                'left' : e.pageX - this.el.offset().left - mouse.offsetX,
+	                'top'  : e.pageY - this.el.offset().top - mouse.offsetY
+	            });
+            } else {
+            	this.dragEl.css({
+	                'left' : e.pageX - mouse.offsetX,
+	                'top'  : e.pageY - mouse.offsetY
+	            });
+            }
 
             // mouse position last events
             mouse.lastX = mouse.nowX;
