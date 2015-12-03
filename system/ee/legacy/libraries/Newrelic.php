@@ -66,14 +66,8 @@ class Newrelic {
 	{
 		$transaction_name = $template_group.'/'.$template_name;
 
-		try {
-			if (ee()->template_router->match(ee()->uri))
-			{
-				newrelic_add_custom_parameter('route', ee()->uri->uri_string);
-			}
-		} catch (Exception $e) {
-			// No template route
-		}
+		// Add a custom parameter of the URI string
+		newrelic_add_custom_parameter('uri', ee()->uri->uri_string);
 
 		// Append site label if MSM is enabled to easily differentiate
 		// between similar requests
