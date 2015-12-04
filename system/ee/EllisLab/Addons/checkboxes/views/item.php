@@ -20,7 +20,7 @@
 			$class .= ' chosen';
 		}
 ?>
-	<li>
+	<li<?php if ($editable): ?> class="nestable-item" data-id="<?=$key?>"<?php endif ?>>
 		<label class="<?=$class?>">
 			<?php if ($editable): ?>
 				<span class="list-reorder"></span>
@@ -40,7 +40,7 @@
 <?php
 	if (isset($children)):
 ?>
-		<ul>
+		<ul<?php if ($editable): ?> class="nestable-list"<?php endif ?>>
 			<?php $this->embed('item', array('options' => $children, 'values' => $values)); ?>
 		</ul>
 <?php
