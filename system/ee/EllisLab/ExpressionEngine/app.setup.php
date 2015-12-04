@@ -9,6 +9,7 @@ use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
+use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\License;
@@ -210,6 +211,25 @@ return array(
 			return $db;
 		},
 
+		'File' => function($ee)
+		{
+			$directories = array();
+
+			$providers = $ee->make('App')->getProviders();
+
+			foreach ($providers as $provider)
+			{
+				$prefix = $provider->getPrefix();
+
+				foreach ($provider->get('files.directories', array()) as $name => $path)
+				{
+					$directories[$prefix.':'.$name] = $path;
+				}
+			}
+
+			return new File\Factory($directories);
+		},
+
 		'License' => function($ee)
 		{
 			$default_key_path = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
@@ -258,6 +278,19 @@ return array(
 		{
 			return new Validation\Factory();
 		},
+	),
+
+	'files.directories' => array(
+
+		'Avatars' => function()
+		{
+			return ee()->config->item('avatar_path');
+		},
+
+		'Default Avatars' => function()
+		{
+			return ee()->config->item('avatar_path').'default/';
+		}
 	),
 
 	// models exposed on the model service
