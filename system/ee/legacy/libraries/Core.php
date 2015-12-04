@@ -554,14 +554,12 @@ class EE_Core {
 			$template_group = (string) ee()->config->item('template_group');
 		}
 
-
 		// If the forum module is installed and the URI contains the "triggering" word
 		// we will override the template parsing class and call the forum class directly.
 		// This permits the forum to be more light-weight as the template engine is
 		// not needed under normal circumstances.
 		$forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
 		$profile_trigger = ee()->config->item('profile_trigger');
-
 
 		if ( ! IS_CORE && $forum_trigger &&
 			in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
