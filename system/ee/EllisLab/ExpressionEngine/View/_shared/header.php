@@ -74,6 +74,7 @@
 									<form class="filter">
 										<input type="text" class="autofocus" value="" placeholder="filter channels">
 									</form>
+									<div class="scroll-wrap">
 								<?php endif ?>
 								<ul class="channels-create">
 									<?php $last = ee()->cp->allowed_group('can_create_channels') ? NULL : end($cp_main_menu['channels']['create']); ?>
@@ -84,6 +85,9 @@
 									<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('new_channel')?></a></li>
 									<?php endif; ?>
 								</ul>
+								<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
+								</div>
+								<?php endif ?>
 							</div>
 						</li>
 						<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')): ?>
@@ -94,6 +98,7 @@
 									<form class="filter">
 										<input type="text" class="autofocus" value="" placeholder="filter channels">
 									</form>
+									<div class="scroll-wrap">
 								<?php endif ?>
 								<ul class="channels-edit">
 									<li class="search-channel<?php if (empty($cp_main_menu['channels']['edit'])): ?> last<?php endif ?>" data-search="<?= strtolower(lang('view_all')) ?>">
@@ -112,6 +117,9 @@
 										<li class="<?=$class?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 									<?php endforeach ?>
 								</ul>
+								<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
+									</div>
+								<?php endif ?>
 							</div>
 						</li>
 						<?php endif; ?>
@@ -128,22 +136,24 @@
 					<li class="develop">
 						<a class="has-sub" href="" title="<?=lang('nav_developer_tools')?>"></a>
 						<div class="sub-menu">
-							<ul>
-								<?php
-								// Grab the first and last items from the menu to determine
-								// which items we need to put 'last' classes on
-								$last = array_values(array_slice($cp_main_menu['develop'], -1, 1));
+							<div class="scroll-wrap">
+								<ul>
+									<?php
+									// Grab the first and last items from the menu to determine
+									// which items we need to put 'last' classes on
+									$last = array_values(array_slice($cp_main_menu['develop'], -1, 1));
 
-								foreach ($cp_main_menu['develop'] as $key => $link):
-									$class = '';
-									if ($link == $last[0])
-									{
-										$class = 'last';
-									}
-								?>
-									<li<?php if ( ! empty($class)): ?> class="<?=$class?>"<?php endif; ?>><a href="<?=$link?>"><?=lang($key)?></a></li>
-								<?php endforeach ?>
-							</ul>
+									foreach ($cp_main_menu['develop'] as $key => $link):
+										$class = '';
+										if ($link == $last[0])
+										{
+											$class = 'last';
+										}
+									?>
+										<li<?php if ( ! empty($class)): ?> class="<?=$class?>"<?php endif; ?>><a href="<?=$link?>"><?=lang($key)?></a></li>
+									<?php endforeach ?>
+								</ul>
+							</div>
 						</div>
 					</li>
 					<?php endif; ?>
