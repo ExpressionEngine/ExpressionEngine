@@ -9,6 +9,14 @@ return array(
 	'namespace'      => 'EllisLab\Addons\Forum',
 	'settings_exist' => TRUE,
 
+	'files.directories' => array(
+
+		'Signatures' => function()
+		{
+			return ee()->config->item('sig_img_path');
+		}
+	),
+
 	'models' => array(
 		'Administrator'   => 'Model\Administrator',
 		'Attachment'      => 'Model\Attachment',
