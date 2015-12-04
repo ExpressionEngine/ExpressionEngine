@@ -147,7 +147,10 @@ $(document).ready(function () {
 				success: function(result) {
 					if (result.messageType == 'success') {
 						modal.trigger('modal:close');
-						modal_link.parents('fieldset').find('.setting-field').html(result.body);
+
+						var field = modal_link.parents('fieldset').find('.setting-field');
+						field.html(result.body);
+						bind_nestable($('.nestable', field));
 					}
 				}
 			});
@@ -178,7 +181,10 @@ $(document).ready(function () {
 				success: function(result) {
 					if (result.messageType == 'success') {
 						modal.trigger('modal:close');
-						modal_link.parents('fieldset').find('.setting-field').html(result.body);
+
+						var field = modal_link.parents('fieldset').find('.setting-field');
+						field.html(result.body);
+						bind_nestable($('.nestable', field));
 					} else {
 						load_category_modal_data(modal, result.body, modal_link);
 					}
@@ -186,6 +192,36 @@ $(document).ready(function () {
 			});
 
 			return false;
+		});
+	}
+
+	// Initial binding on page load
+	bind_nestable();
+
+	// Binds our Nestable plugin to a given element, or .nestable if none specified
+	function bind_nestable(root) {
+		var root = root || '.nestable';
+
+		$(root).nestable({
+			listNodeName: 'ul',
+			listClass: 'nestable-list',
+			itemClass: 'nestable-item',
+			rootClass: 'nestable',
+			dragClass: 'drag-tbl-row.nested-list',
+			handleClass: 'list-reorder',
+			placeElement: $('<li><div class="tbl-row drag-placeholder"><div class="none"></div></div></li>'),
+			expandBtnHTML: '',
+			collapseBtnHTML: '',
+			maxDepth: 10,
+			constrainToRoot: true
+		}).on('change', function() {
+
+			$.ajax({
+				url: EE.publish.reorder_categories.URL.replace('###', $(this).data('nestable-group')),
+				data: {'order': $(this).nestable('serialize') },
+				type: 'POST',
+				dataType: 'json'
+			});
 		});
 	}
 

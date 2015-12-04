@@ -100,6 +100,8 @@ abstract class AbstractPublish extends CP_Controller {
 			ee()->cp->add_to_foot(smiley_js());
 		}
 
+		ee()->cp->add_js_script('plugin', 'nestable');
+
 		ee()->javascript->set_global(array(
 			'lang.add_new_html_button'			=> lang('add_new_html_button'),
 			'lang.close' 						=> lang('close'),
@@ -109,6 +111,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.autosave.URL'				=> ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
 			'publish.add_category.URL'			=> ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
 			'publish.edit_category.URL'			=> ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
+			'publish.reorder_categories.URL'	=> ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
