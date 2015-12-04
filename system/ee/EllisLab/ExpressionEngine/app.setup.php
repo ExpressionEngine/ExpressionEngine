@@ -284,12 +284,18 @@ return array(
 
 		'Avatars' => function()
 		{
-			return ee()->config->item('avatar_path');
+			return array(
+				'path' => ee()->config->item('avatar_path'),
+				'url' => ee()->config->item('avatar_url')
+			);
 		},
 
 		'Default Avatars' => function()
 		{
-			return ee()->config->item('avatar_path').'default/';
+			return array(
+				'path' => ee()->config->item('avatar_path').'default/',
+				'url' => ee()->config->item('avatar_url').'default/'
+			);
 		}
 	),
 

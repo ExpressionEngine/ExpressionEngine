@@ -6,6 +6,7 @@ use FilesystemIterator;
 
 class Iterator extends FilesystemIterator {
 
+	protected $root_url;
 	protected $root_path;
 
 	public function __construct($path)
@@ -18,10 +19,16 @@ class Iterator extends FilesystemIterator {
 		$this->setInfoClass(__NAMESPACE__.'\\File');
 	}
 
+	public function setUrl($url)
+	{
+		$this->root_url = $url;
+	}
+
 	public function current()
 	{
 		$object = parent::current();
 		$object->setDirectory($this->root_path);
+		$object->setUrl($this->root_url);
 		return $object;
 	}
 

@@ -20,14 +20,17 @@ class Factory {
 			throw new \Exception('Cannot find named directory: "'.$dir.'."');
 		}
 
-		$path = $this->directories[$dir];
+		$info = $this->directories[$dir];
 
-		if ($path instanceOf Closure)
+		if ($info instanceOf Closure)
 		{
-			$path = $path();
+			$info = $info();
 		}
 
-		return $this->getPath($path);
+		$dir = $this->getPath($info['path']);
+		$dir->setUrl($info['url']);
+
+		return $dir;
 	}
 
 	public function getPath($path)

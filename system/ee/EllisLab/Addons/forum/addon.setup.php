@@ -13,7 +13,10 @@ return array(
 
 		'Signatures' => function()
 		{
-			return ee()->config->item('sig_img_path');
+			return array(
+				'path' => ee()->config->item('sig_img_path'),
+				'url' => ee()->config->item('sig_img_url')
+			);
 		}
 	),
 

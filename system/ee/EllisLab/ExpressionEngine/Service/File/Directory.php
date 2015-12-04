@@ -7,6 +7,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 // a directory behaves just like the filesystem rooted at a certain path
 class Directory extends Filesystem {
 
+	protected $url;
 	protected $root;
 
 	public function __construct($path)
@@ -29,8 +30,41 @@ class Directory extends Filesystem {
 		return $path;
 	}
 
+	public function setUrl($url)
+	{
+		$this->url = $url;
+	}
+
+	public function getUrl($filename = NULL)
+	{
+		if ( ! isset($this->url))
+		{
+			throw new \Exception('No directory URL given.');
+		}
+
+		if ( ! isset($filename))
+		{
+			return $this->url;
+		}
+
+		if ( ! $this->exists($filename))
+		{
+			throw new \Exception('File does not exist.');
+		}
+
+		return rtrim($this->url, '/').'/'.$filename;
+	}
+
+	public function getPath($path)
+	{
+		return $this->normalize($path);
+	}
+
 	public function all()
 	{
-		return new Iterator($this->root);
+		$it = new Iterator($this->root);
+		$it->setUrl($this->url);
+
+		return $it;
 	}
 }
