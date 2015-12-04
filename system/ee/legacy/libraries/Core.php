@@ -576,9 +576,13 @@ class EE_Core {
 
 			require PATH_MOD.'member/mod.member.php';
 
+			// Clean up the URLs to remove unnecessary detail
+			$request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+			$request = preg_replace('/search\/.*$/', 'search', $request);
+			$this->set_newrelic_transaction($request);
+
 			$member = new Member();
 			$member->_set_properties(array('trigger' => $profile_trigger));
-
 			ee()->output->set_output($member->manager());
 			return;
 		}
