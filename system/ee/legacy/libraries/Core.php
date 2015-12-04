@@ -484,10 +484,12 @@ class EE_Core {
 			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
 		}
 
-		$request = $get;
-		array_shift($request);
-		$request = implode('/', $request);
-		$this->set_newrelic_transaction('CP: '.$request);
+		$this->set_newrelic_transaction(function () use ($get) {
+			$request = $get;
+			array_shift($request);
+			$request = implode('/', $request);
+			return 'CP: '.$request;
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -582,9 +584,10 @@ class EE_Core {
 			require PATH_MOD.'member/mod.member.php';
 
 			// Clean up the URLs to remove unnecessary detail
-			$request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
-			$request = preg_replace('/search\/.*$/', 'search', $request);
-			$this->set_newrelic_transaction($request);
+			$this->set_newrelic_transaction(function() {
+				$request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+				return preg_replace('/search\/.*$/', 'search', $request);
+			});
 
 			$member = new Member();
 			$member->_set_properties(array('trigger' => $profile_trigger));
@@ -667,13 +670,14 @@ class EE_Core {
 		ee()->TMPL->run_template_engine($template_group, $template);
 
 		// Record the New Relic transaction
-		$templates = explode('|', ee()->TMPL->templates_sofar);
-		$templates = array_filter($templates, function($item) {
-			return ! empty($item);
+		$this->set_newrelic_transaction(function() {
+			$templates = explode('|', ee()->TMPL->templates_sofar);
+			$templates = array_filter($templates, function($item) {
+				return ! empty($item);
+			});
+			$template = array_shift($templates);
+			return substr($template, strpos($template, ':') + 1);
 		});
-		$template = array_shift($templates);
-		$template = substr($template, strpos($template, ':') + 1);
-		$this->set_newrelic_transaction($template);
 	}
 
 	// ------------------------------------------------------------------------
@@ -731,9 +735,12 @@ class EE_Core {
 
 	/**
 	 * Set the New Relic transasction name
-	 * @param string $transaction New Relic transaction name
+	 * @param String/callable $transaction_name Either a string containing the
+	 *                                          transaction name or a callable
+	 *                                          that returns the transaction
+	 *                                          name
 	 */
-	private function set_newrelic_transaction($transaction)
+	private function set_newrelic_transaction($transaction_name)
 	{
 		if (extension_loaded('newrelic'))
 		{
@@ -745,8 +752,13 @@ class EE_Core {
 			}
 			else
 			{
+				if (is_callable($transaction_name))
+				{
+					$transaction_name = call_user_func($transaction_name);
+				}
+
 				ee()->newrelic->set_appname();
-				ee()->newrelic->name_transaction($transaction);
+				ee()->newrelic->name_transaction($transaction_name);
 			}
 		}
 	}
