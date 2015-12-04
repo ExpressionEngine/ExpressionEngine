@@ -483,6 +483,11 @@ class EE_Core {
 		{
 			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
 		}
+
+		$request = $get;
+		array_shift($request);
+		$request = implode('/', $request);
+		$this->set_newrelic_transaction('CP: '.$request);
 	}
 
 	// ------------------------------------------------------------------------
