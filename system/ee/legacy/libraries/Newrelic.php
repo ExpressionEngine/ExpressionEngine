@@ -51,6 +51,7 @@ class Newrelic {
 		//    number with the application name
 		// -------------------------------------------*/
 		$version = (ee()->config->item('newrelic_include_version_number') == 'y') ? ' v'.APP_VER : '';
+
 		newrelic_set_appname($appname.APP_NAME.$version);
 	}
 
@@ -73,7 +74,7 @@ class Newrelic {
 		{
 			$transaction_name .= ' - ' . ee()->config->item('site_label');
 		}
-var_dump($transaction_name);
+
 		newrelic_name_transaction($transaction_name);
 	}
 
