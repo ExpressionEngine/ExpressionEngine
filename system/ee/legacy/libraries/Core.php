@@ -530,7 +530,7 @@ class EE_Core {
 	{
 		require APPPATH.'libraries/Actions.php';
 		$ACT = new EE_Actions($can_view_system, function($class, $method) {
-			$this->set_newrelic_transaction('ACT: '.$class.'::'.$method);
+			$this->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
 		});
 	}
 
