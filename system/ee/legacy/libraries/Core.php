@@ -671,12 +671,8 @@ class EE_Core {
 
 		// Record the New Relic transaction
 		$this->set_newrelic_transaction(function() {
-			$templates = explode('|', ee()->TMPL->templates_sofar);
-			$templates = array_filter($templates, function($item) {
-				return ! empty($item);
-			});
-			$template = array_shift($templates);
-			return substr($template, strpos($template, ':') + 1);
+			$template = ee()->TMPL->templates_loaded[0];
+			return "{$template['group_name']}/{$template['template_name']}";
 		});
 	}
 

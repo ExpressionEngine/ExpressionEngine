@@ -40,6 +40,7 @@ class EE_Template {
 	public $php_parse_location   = 'output';	// Where in the chain the PHP gets parsed
 	public $template_edit_date   = '';			// Template edit date
 	public $templates_sofar      =  '';			// Templates processed so far, subtemplate tracker
+	public $templates_loaded     = array();		// Templates loaded so far (yes, redundant)
 	public $attempted_fetch      = array();		// Templates attempted to fetch but may have bailed due to recursive embeds
 	public $encode_email         = TRUE;		// Whether to use the email encoder.  This is set automatically
 	public $hit_lock_override    = FALSE;		// Set to TRUE if you want hits tracked on sub-templates
@@ -205,6 +206,13 @@ class EE_Template {
 
 		// add this template to our subtemplate tracker
 		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$this->group_name.'/'.$this->template_name.'|';
+
+		// Add the template to our list of templates loaded
+		$this->templates_loaded[] = array(
+			'group_name'    => $this->group_name,
+			'template_name' => $this->template_name,
+			'site_id'       => $site_id
+		);
 
 		$this->log_item("Template Type: ".$this->template_type);
 
@@ -905,7 +913,7 @@ class EE_Template {
 
 		if ($this->depth == 0)
 		{
-			// $this->templates_sofar = '';
+			$this->templates_sofar = '';
 		}
 
 		return $parent_template;
