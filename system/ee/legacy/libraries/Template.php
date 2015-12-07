@@ -194,6 +194,9 @@ class EE_Template {
 		// Set a default site_ID
 		$site_id = ($site_id) ?: ee()->config->item('site_id');
 
+		// add this template to our subtemplate tracker
+		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
+
 		// Fetch the requested template
 		// The template can either come from the DB or a cache file
 		// Do not use a reference!
@@ -203,9 +206,6 @@ class EE_Template {
 		$this->template = ($template_group != '' AND $template != '') ?
 			$this->fetch_template($template_group, $template, FALSE, $site_id) :
 			$this->parse_template_uri();
-
-		// add this template to our subtemplate tracker
-		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$this->group_name.'/'.$this->template_name.'|';
 
 		// Add the template to our list of templates loaded
 		$this->templates_loaded[] = array(
