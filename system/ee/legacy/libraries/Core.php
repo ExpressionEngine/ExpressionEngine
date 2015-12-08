@@ -231,21 +231,6 @@ class EE_Core {
 		// Load the very, very base classes
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
-
-		if (extension_loaded('newrelic'))
-		{
-			ee()->load->library('newrelic');
-
-			if (ee()->config->item('use_newrelic') == 'n')
-			{
-				ee()->newrelic->disable_autorum();
-			}
-			else
-			{
-				ee()->newrelic->set_appname();
-				ee()->newrelic->name_transaction();
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -498,6 +483,13 @@ class EE_Core {
 		{
 			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
 		}
+
+		$this->set_newrelic_transaction(function () use ($get) {
+			$request = $get;
+			array_shift($request);
+			$request = implode('/', $request);
+			return 'CP: '.$request;
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -537,7 +529,9 @@ class EE_Core {
 	final public function generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions.php';
-		$ACT = new EE_Actions($can_view_system);
+		$ACT = new EE_Actions($can_view_system, function($class, $method) {
+			$this->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -562,7 +556,6 @@ class EE_Core {
 			$template_group = (string) ee()->config->item('template_group');
 		}
 
-
 		// If the forum module is installed and the URI contains the "triggering" word
 		// we will override the template parsing class and call the forum class directly.
 		// This permits the forum to be more light-weight as the template engine is
@@ -570,12 +563,12 @@ class EE_Core {
 		$forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
 		$profile_trigger = ee()->config->item('profile_trigger');
 
-
 		if ( ! IS_CORE && $forum_trigger &&
 			in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
+			$this->set_newrelic_transaction($forum_trigger.'/'.$FRM->current_request);
 			return;
 		}
 
@@ -590,9 +583,14 @@ class EE_Core {
 
 			require PATH_MOD.'member/mod.member.php';
 
+			// Clean up the URLs to remove unnecessary detail
+			$this->set_newrelic_transaction(function() {
+				$request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+				return preg_replace('/search\/.*$/', 'search', $request);
+			});
+
 			$member = new Member();
 			$member->_set_properties(array('trigger' => $profile_trigger));
-
 			ee()->output->set_output($member->manager());
 			return;
 		}
@@ -670,6 +668,12 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
+
+		// Record the New Relic transaction
+		$this->set_newrelic_transaction(function() {
+			$template = ee()->TMPL->templates_loaded[0];
+			return "{$template['group_name']}/{$template['template_name']}";
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -720,6 +724,38 @@ class EE_Core {
 			}
 
 			ee()->functions->clear_caching('all');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the New Relic transasction name
+	 * @param String/callable $transaction_name Either a string containing the
+	 *                                          transaction name or a callable
+	 *                                          that returns the transaction
+	 *                                          name
+	 */
+	private function set_newrelic_transaction($transaction_name)
+	{
+		if (extension_loaded('newrelic'))
+		{
+			ee()->load->library('newrelic');
+
+			if (ee()->config->item('use_newrelic') == 'n')
+			{
+				ee()->newrelic->disable_autorum();
+			}
+			else
+			{
+				if (is_callable($transaction_name))
+				{
+					$transaction_name = call_user_func($transaction_name);
+				}
+
+				ee()->newrelic->set_appname();
+				ee()->newrelic->name_transaction($transaction_name);
+			}
 		}
 	}
 
