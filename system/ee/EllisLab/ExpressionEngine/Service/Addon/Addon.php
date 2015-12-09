@@ -291,8 +291,37 @@ class Addon {
 	 */
 	public function hasFieldtype()
 	{
-		return $this->hasFile('ft');
+		$files = $this->getFilesMatching('ft.*.php');
+		$this->requireFieldtypes($files);
+		return ! empty($files);
 	}
+
+    public function getFieldtypeClasses()
+    {
+		$files = $this->getFilesMatching('ft.*.php');
+		return $this->requireFieldtypes($files);
+    }
+
+    protected function getFilesMatching($glob)
+    {
+		return glob($this->getPath()."/{$glob}");
+    }
+
+    protected function requireFieldtypes($files)
+    {
+		$classes = array();
+
+		require_once SYSPATH.'ee/legacy/fieldtypes/EE_Fieldtype.php';
+
+		foreach ($files as $path)
+		{
+			require_once $path;
+			$class = preg_replace('/ft.(.*?).php/', '$1', basename($path));
+			$classes[] = ucfirst($class).'_ft';
+		}
+
+		return $classes;
+    }
 
 	/**
 	 * Get the addon Provider
