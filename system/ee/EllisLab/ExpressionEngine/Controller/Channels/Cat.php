@@ -555,11 +555,14 @@ class Cat extends AbstractChannelsController {
 
 				$cats->delete();
 
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('categories_removed'))
-					->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
-					->defer();
+				if ( ! AJAX_REQUEST)
+				{
+					ee('CP/Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('categories_removed'))
+						->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
+						->defer();
+				}
 			}
 		}
 		else
