@@ -572,7 +572,7 @@ class Cat extends AbstractChannelsController {
 		{
 			return array(
 				'messageType' => 'success',
-				'body' => $this->categoryGroupPublishField($group_id)
+				'body' => $this->categoryGroupPublishField($group_id, NULL, TRUE)
 			);
 		}
 
@@ -586,14 +586,14 @@ class Cat extends AbstractChannelsController {
 	 *
 	 * @param	int	$group_id		ID of category group category is to be in
 	 */
-	public function createCat($group_id)
+	public function createCat($group_id, $editing = FALSE)
 	{
 		if ( ! ee()->cp->allowed_group('can_create_categories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		return $this->categoryForm($group_id);
+		return $this->categoryForm($group_id, NULL, (bool) $editing);
 	}
 
 	/**
@@ -609,7 +609,7 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		return $this->categoryForm($group_id, $category_id);
+		return $this->categoryForm($group_id, $category_id, TRUE);
 	}
 
 	/**
@@ -618,7 +618,7 @@ class Cat extends AbstractChannelsController {
 	 * @param	int	$group_id		ID of category group category is (to be) in
 	 * @param	int	$category_id	ID of category to edit
 	 */
-	private function categoryForm($group_id, $category_id = NULL)
+	private function categoryForm($group_id, $category_id = NULL, $editing = FALSE)
 	{
 		if (empty($group_id) OR ! is_numeric($group_id))
 		{
@@ -649,7 +649,12 @@ class Cat extends AbstractChannelsController {
 		{
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category');
-			ee()->view->base_url = ee('CP/URL')->make('channels/cat/create-cat/'.$group_id);
+			$create_url = 'channels/cat/create-cat/'.$group_id;
+			if ($editing)
+			{
+				$create_url .= '/editing';
+			}
+			ee()->view->base_url = ee('CP/URL')->make($create_url);
 
 			$category = ee('Model')->make('Category');
 			$category->setCategoryGroup($cat_group);
@@ -805,7 +810,7 @@ class Cat extends AbstractChannelsController {
 					$category->save();
 					return array(
 						'messageType' => 'success',
-						'body' => $this->categoryGroupPublishField($group_id)
+						'body' => $this->categoryGroupPublishField($group_id, NULL, $editing)
 					);
 				}
 				else
@@ -880,12 +885,12 @@ class Cat extends AbstractChannelsController {
 	 * AJAX return body for adding a new category via the publish form; when a
 	 * new category is added, we have to refresh the category list
 	 */
-	private function categoryGroupPublishField($group_id, $entry_id = NULL)
+	private function categoryGroupPublishField($group_id, $entry_id = NULL, $editing = FALSE)
 	{
 		// Initialize a new category group field so we can return its publish form
 		$category_group_field = array(
 			'field_id'				=> 'categories',
-			'cat_group_id'			=> $group_id,
+			'group_id'				=> $group_id,
 			'field_label'			=> lang('categories'),
 			'field_required'		=> 'n',
 			'field_show_fmt'		=> 'n',
@@ -896,10 +901,13 @@ class Cat extends AbstractChannelsController {
 			'field_list_items'      => '',
 			'field_maxl'			=> 100,
 			'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
-			'deletable'				=> ee()->cp->allowed_group('can_delete_categories')
+			'editing'				=> $editing,
+			'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
+			'manage_toggle_label'	=> lang('manage_categories'),
+			'content_item_label'	=> lang('category')
 		);
 
-		$field_id = 'cat_group_id_'.$group_id;
+		$field_id = 'categories[cat_group_id_'.$group_id.']';
 		$field = new FieldFacade($field_id, $category_group_field);
 		$field->setName($field_id);
 
