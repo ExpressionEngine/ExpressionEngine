@@ -145,8 +145,11 @@ class Checkboxes_ft extends EE_Fieldtype {
 				'values' => $values,
 				'options' => $field_options,
 				'editable' => isset($this->settings['editable']) ? $this->settings['editable'] : FALSE,
+				'editing' => isset($this->settings['editing']) ? $this->settings['editing'] : FALSE,
 				'deletable' => isset($this->settings['deletable']) ? $this->settings['deletable'] : FALSE,
-				'cat_group_id' => isset($this->settings['cat_group_id']) ? $this->settings['cat_group_id'] : 0
+				'group_id' => isset($this->settings['group_id']) ? $this->settings['group_id'] : 0,
+				'manage_toggle_label' => isset($this->settings['manage_toggle_label']) ? $this->settings['manage_toggle_label'] : lang('manage'),
+				'content_item_label' => isset($this->settings['content_item_label']) ? $this->settings['content_item_label'] : ''
 			));
 		}
 

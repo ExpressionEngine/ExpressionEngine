@@ -120,7 +120,7 @@
 						<?php if ($field->get('field_id') == 'categories' &&
 								$entry->Channel->cat_group &&
 								ee()->cp->allowed_group('can_edit_categories')): ?>
-							<p><a class="btn action submit m-link" rel="modal-category-form" data-cat-group="<?=$field->get('cat_group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
+							<p><a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="<?=$field->get('group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php endif; ?>
 					</div>
 					<div class="setting-field col <?=$width?> last"<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>>

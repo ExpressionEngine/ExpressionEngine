@@ -694,7 +694,7 @@ class ChannelEntry extends ContentModel {
 				{
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
 						'field_id'				=> 'categories',
-						'cat_group_id'			=> $cat_group->getId(),
+						'group_id'				=> $cat_group->getId(),
 						'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
 						'field_required'		=> 'n',
 						'field_show_fmt'		=> 'n',
@@ -704,8 +704,11 @@ class ChannelEntry extends ContentModel {
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
 						'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
+						'editing'				=> FALSE, // Not currently in editing state
 						'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
-						'populateCallback'		=> array($this, 'populateCategories')
+						'populateCallback'		=> array($this, 'populateCategories'),
+						'manage_toggle_label'	=> lang('manage_categories'),
+						'content_item_label'	=> lang('category')
 					);
 				};
 
@@ -845,7 +848,7 @@ class ChannelEntry extends ContentModel {
 		$categories = ee('Model')->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', $field->getItem('cat_group_id'))
+			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
 			->filter('Category.parent_id', 0)
 			->order('Category.cat_order')
 			->all();
@@ -853,7 +856,7 @@ class ChannelEntry extends ContentModel {
 		$category_list = $this->buildCategoryList($categories);
 		$field->setItem('field_list_items', $category_list);
 
-		$set_categories = $this->Categories->filter('group_id', $field->getItem('cat_group_id'))->pluck('cat_name');
+		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_name');
 		$field->setData(implode('|', $set_categories));
 	}
 

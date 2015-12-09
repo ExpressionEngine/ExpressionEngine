@@ -105,14 +105,19 @@ $(document).ready(function () {
 		var modal_link = $(this),
 			modal_name = modal_link.attr('rel'),
 			modal = $('.' + modal_name),
-			category_form_url = EE.publish.add_category.URL.replace('###', $(this).data('catGroup'));
+			isEditing = modal_link.parents('fieldset').find('a.toggle').hasClass('on'),
+			category_form_url = EE.publish.add_category.URL.replace('###', $(this).data('groupId'));
+
+		if (isEditing) {
+			category_form_url = category_form_url + '/editing';
+		}
 
 		// Clear out modal from last request
 		$('div.box', modal).html('');
 
 		// Are we editing a category? Create a different form URL
-		if ($(this).data('catId')) {
-			category_form_url = EE.publish.edit_category.URL.replace('###', $(this).data('catGroup') + '/' + $(this).data('catId'));
+		if ($(this).data('contentId')) {
+			category_form_url = EE.publish.edit_category.URL.replace('###', $(this).data('groupId') + '/' + $(this).data('contentId'));
 		}
 
 		$.ajax({
@@ -126,7 +131,7 @@ $(document).ready(function () {
 	});
 
 	// Category deletion
-	$('body').on('click', 'a[rel=modal-confirm-cat-remove]', function (e) {
+	$('body').on('click', 'a[rel=modal-checkboxes-confirm-remove]', function (e) {
 		var modal = $('.' + $(this).attr('rel')),
 			modal_link = $(this);
 
@@ -135,7 +140,7 @@ $(document).ready(function () {
 			.html('')
 			.append('<li>' + $(this).data('confirm') + '</li>');
 		// Set the category ID to send to the categories deletion handler
-		$('input[name="categories[]"]', modal).val($(this).data('catId'));
+		$('input[name="categories[]"]', modal).val($(this).data('contentId'));
 
 		$('form', modal).off('submit').on('submit', function() {
 

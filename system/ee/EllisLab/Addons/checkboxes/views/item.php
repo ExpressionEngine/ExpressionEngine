@@ -20,19 +20,19 @@
 			$class .= ' chosen';
 		}
 ?>
-	<li<?php if ($editable): ?> class="nestable-item" data-id="<?=$key?>"<?php endif ?>>
+	<li<?php if ($editable): ?> class="nestable-item" data-id="<?=$key?>"<?php endif ?> style="overflow:hidden">
 		<label class="<?=$class?>">
 			<?php if ($editable): ?>
-				<span class="list-reorder"></span>
+				<span class="list-reorder" <?php if ( ! $editing): ?>style="margin-left:-50px"<?php endif ?>></span>
 			<?php endif ?>
-			<?=form_checkbox($field_name.'[]', $key, $checked)?> <?=$value?>
+			<?=form_checkbox($field_name.'[]', $key, $checked, $editing ? 'disabled="disabled"' : '')?> <?=$value?>
 			<?php if ($editable OR $deletable): ?>
-				<ul class="toolbar">
+				<ul class="toolbar<?php if ( ! $editing): ?> hidden<?php endif ?>">
 					<?php if ($editable): ?>
-						<li class="edit"><a class="m-link" rel="modal-category-form" data-cat-group="<?=$cat_group_id?>" data-cat-id="<?=$key?>" href=""></a></li>
+						<li class="edit"><a class="m-link" rel="modal-checkboxes-edit" data-group-id="<?=$group_id?>" data-content-id="<?=$key?>" href=""></a></li>
 					<?php endif ?>
 					<?php if ($deletable): ?>
-						<li class="remove"><a class="m-link" rel="modal-confirm-cat-remove" data-confirm="<?='<b>'.lang('category').'</b>: '.$value?>" data-cat-id="<?=$key?>" href=""></a></li>
+						<li class="remove"><a class="m-link" rel="modal-checkboxes-confirm-remove" data-confirm="<?='<b>'.$content_item_label.'</b>: '.$value?>" data-content-id="<?=$key?>" href=""></a></li>
 					<?php endif ?>
 				</ul>
 			<?php endif ?>
