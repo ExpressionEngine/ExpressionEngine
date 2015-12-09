@@ -77,6 +77,87 @@ class Addon {
 	}
 
 	/**
+	 * Does this addon have an update available?
+	 *
+	 * @return bool Does it have an update available?
+	 */
+	public function hasUpdate()
+	{
+		if ($this->isInstalled())
+		{
+			$version = $this->getInstalledVersion();
+
+			if ( ! is_null($version))
+			{
+				return version_compare($this->getVersion(), $version, '>');
+			}
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * Get the installed version
+	 *
+	 * return string|NULL NULL if not installed or a version string
+	 */
+	public function getInstalledVersion()
+	{
+		if ( ! $this->isInstalled())
+		{
+			return NULL;
+		}
+
+		// Module
+		if ($this->hasModule())
+		{
+			$addon = ee('Model')->get('Module')
+				->fields('module_version')
+				->filter('module_name', $this->shortname)
+				->first();
+
+			return $addon->module_version;
+		}
+
+		// Fieldtype
+		if ($this->hasFieldtype())
+		{
+			$addon = ee('Model')->get('Fieldtype')
+				->fields('version')
+				->filter('name', $this->shortname)
+				->first();
+
+			return $addon->version;
+		}
+
+		// Extension
+		if ($this->hasExtension())
+		{
+			$class = ucfirst($this->shortname).'_ext';
+
+			$addon = ee('Model')->get('Extension')
+				->fields('version')
+				->filter('class', $class)
+				->first();
+
+			return $addon->version;
+		}
+
+		// Plugin
+		if ($this->hasPlugin())
+		{
+			$addon = ee('Model')->get('Plugin')
+				->fields('plugin_version')
+				->filter('plugin_package', $this->shortname)
+				->first();
+
+			return $addon->plugin_version;
+		}
+
+		return NULL;
+	}
+
+	/**
 	 * Get the plugin or module class
 	 */
 	public function getFrontendClass()
