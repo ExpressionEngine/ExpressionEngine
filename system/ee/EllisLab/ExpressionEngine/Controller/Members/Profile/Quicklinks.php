@@ -285,7 +285,7 @@ class Quicklinks extends Settings {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('quick_link'));
-		ee()->view->save_btn_text_working = 'btn_save_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 

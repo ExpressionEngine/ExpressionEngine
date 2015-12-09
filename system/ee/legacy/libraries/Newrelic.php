@@ -51,6 +51,7 @@ class Newrelic {
 		//    number with the application name
 		// -------------------------------------------*/
 		$version = (ee()->config->item('newrelic_include_version_number') == 'y') ? ' v'.APP_VER : '';
+
 		newrelic_set_appname($appname.APP_NAME.$version);
 	}
 
@@ -62,14 +63,10 @@ class Newrelic {
 	 * @access	public
 	 * @return	void
 	 */
-	public function name_transaction()
+	public function name_transaction($transaction_name)
 	{
-		$transaction_name = (string) ee()->uri->segment(1);
-
-		if (ee()->uri->segment(2) !== FALSE)
-		{
-			$transaction_name .= '/'.ee()->uri->segment(2);
-		}
+		// Add a custom parameter of the URI string
+		newrelic_add_custom_parameter('uri', ee()->uri->uri_string);
 
 		// Append site label if MSM is enabled to easily differentiate
 		// between similar requests
