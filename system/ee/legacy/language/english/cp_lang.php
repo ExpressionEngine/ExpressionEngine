@@ -268,6 +268,8 @@ $lang = array(
 
 'build' => 'build date:',
 
+'version_identifier' => 'identifier:',
+
 'license_number' => 'License Number',
 
 'invalid_license' => 'INVALID LICENSE',

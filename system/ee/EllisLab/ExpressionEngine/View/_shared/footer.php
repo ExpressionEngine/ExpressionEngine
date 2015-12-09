@@ -1,5 +1,5 @@
 		</section>
-		<section class="product-bar">
+		<section class="product-bar <?php if ( ! empty(APP_VER_ID)): ?>pre-release<?php endif ?>">
 			<div class="snap">
 				<div class="left">
 					<?php
@@ -19,10 +19,19 @@
 							<p class="alert inline warn"><?=lang('recommended_upgrade')?></p>
 						<?php endif ?>
 						<h3><?=lang('installed')?></h3>
-						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
+						<p>
+							ExpressionEngine <?=$formatted_version?><br>
+							<em><?=lang('build') . ' ' . $ee_build_date?></em>
+							<?php if ( ! empty(APP_VER_ID)): ?>
+								<br><em><?=lang('version_identifier') . ' ' . APP_VER_ID?></em>
+							<?php endif ?>
+						</p>
 						<?php if (isset($new_version)): ?>
 							<h3><?=lang('latest_version')?> (<a href="<?=ee()->cp->masked_url('https://store.ellislab.com/manage')?>" rel="external"><?=lang('download')?></a>)</h3>
-							<p>ExpressionEngine <?=$new_version['version']?><br><em><?=lang('build') . ' ' . $new_version['build']?></em></p>
+							<p>
+							ExpressionEngine <?=$new_version['version']?><br>
+							<em><?=lang('build') . ' ' . $new_version['build']?></em>
+						</p>
 							<a href="" class="close">&#10006;</a>
 							<div class="status out"><?=lang('out_of_date')?></div>
 						<?php else: ?>
