@@ -3053,6 +3053,9 @@ class EE_Template {
 		$str = str_replace(LD.'app_build'.RD, APP_BUILD, $str);
 		$str = str_replace(LD.'build'.RD, APP_BUILD, $str);
 
+		// App version: {version_identifier}
+		$str = str_replace(LD.'version_identifier'.RD, APP_VER_ID, $str);
+
 		// {charset} and {lang}
 		$str = str_replace(LD.'charset'.RD, ee()->config->item('output_charset'), $str);
 		$str = str_replace(LD.'lang'.RD, ee()->config->item('xml_lang'), $str);
