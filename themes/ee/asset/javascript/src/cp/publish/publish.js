@@ -79,7 +79,7 @@ $(document).ready(function () {
 
 	// Auto-assign category parents if configured to do so
 	if (EE.publish.auto_assign_cat_parents == 'y') {
-		$('input[name^="categories"]:checkbox').on('click', function(){
+		$('body').on('click', 'input[name^="categories"]:checkbox', function(){
 
 			// If we're unchecking, make sure its children are also unchecked
 			if ( ! $(this).is(':checked')) {
