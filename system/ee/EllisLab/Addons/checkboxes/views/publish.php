@@ -4,4 +4,14 @@
 			<?php $this->embed('item'); ?>
 		</ul>
 	</div>
-<?php if ($editable): ?></div><?php endif ?>
+<?php if ($editable): ?>
+
+	<div class="toggle-tools">
+		<b><?=lang('manage_categories')?></b>
+		<a href="#" class="toggle <?=($editing) ? 'on' : 'off' ?>">
+			<span class="slider"></span>
+			<span class="option"><b><?=lang('on')?></b></span>
+			<span class="option"><?=lang('off')?></span>
+		</a>
+	</div>
+</div><?php endif ?>

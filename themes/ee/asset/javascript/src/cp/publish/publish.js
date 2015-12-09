@@ -100,8 +100,34 @@ $(document).ready(function () {
 		});
 	}
 
+	// Category management tools toggle
+	$('body').on('click', '.toggle-tools a.toggle', function (e) {
+		var cat_container = $(this).parents('.nestable');
+
+		// On
+		if ($(this).hasClass('off')) {
+			$(this).removeClass('off');
+			$(this).addClass('on');
+
+			$('.list-reorder', cat_container).clearQueue().animate({
+				'margin-left': '-10px'
+			}, 400);
+			$('.toolbar', cat_container).stop().fadeIn();
+			$('input[type=checkbox]', cat_container).prop('disabled', true);
+		} else { // Off
+			$(this).removeClass('on');
+			$(this).addClass('off');
+
+			$('.list-reorder', cat_container).clearQueue().animate({
+				'margin-left': '-50px'
+			}, 400);
+			$('.toolbar', cat_container).stop().fadeOut();
+			$('input[type=checkbox]', cat_container).prop('disabled', false);
+		}
+	});
+
 	// Category modal
-	$('body').on('click', 'a[rel=modal-category-form]', function (e) {
+	$('body').on('click', 'a[rel=modal-checkboxes-edit]', function (e) {
 		var modal_link = $(this),
 			modal_name = modal_link.attr('rel'),
 			modal = $('.' + modal_name),
