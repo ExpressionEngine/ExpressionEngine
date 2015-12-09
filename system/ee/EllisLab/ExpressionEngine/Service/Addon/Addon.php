@@ -231,15 +231,11 @@ class Addon {
 	}
 
 	/**
-	 * Get the fieldtype class
-	 */
-	public function getFieldtypeClass()
+	* Has a README.md file?
+	*/
+	public function hasManual()
 	{
-		$this->requireFile('ft');
-
-		$class = ucfirst($this->shortname).'_ft';
-
-		return $this->getFullyQualified($class);
+		return file_exists($this->getPath().'README.md');
 	}
 
 	/**
