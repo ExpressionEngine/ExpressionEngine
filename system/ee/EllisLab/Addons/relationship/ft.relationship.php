@@ -265,7 +265,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$selected[$data] = $data;
 		}
 
-		if ($entry_id && ! AJAX_REQUEST)
+		if ($entry_id)
 		{
 			$wheres = array(
 				'parent_id' => $entry_id,
@@ -313,7 +313,11 @@ class Relationship_ft extends EE_Fieldtype {
 
 			foreach ($related as $row)
 			{
-				$selected[$row['child_id']] = $row['child_id'];
+				if ( ! AJAX_REQUEST)
+				{
+					$selected[$row['child_id']] = $row['child_id'];
+				}
+
 				$order[$row['child_id']] = $row['order'];
 			}
 		}

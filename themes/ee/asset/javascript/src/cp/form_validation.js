@@ -174,7 +174,7 @@ EE.cp.formValidation = {
 					// Replace button text with working text and disable the button to prevent further clicks
 					if ($button.is('input')) {
 						$button.attr('value', $button.data('work-text'));
-					} else if ($button.is('button') && event.target == el) {
+					} else if ($button.is('button')) {
 						$button.text($button.data('work-text'));
 					}
 				}
@@ -211,7 +211,7 @@ EE.cp.formValidation = {
 	_dismissSuccessAlert: function(form) {
 
 		$('input, select, textarea', form).change(function(event) {
-			var success = $('div.alert.success');
+			var success = form.find('div.alert.success');
 
 			if (success.size() > 0)
 			{

@@ -60,6 +60,7 @@ $(document).ready(function () {
 
 			$('.overlay').fadeIn('slow').css('height',heightIs);
 			$('.modal-wrap' + modalIs).fadeIn('slow');
+			$('.modal-wrap' + modalIs).trigger('modal:open');
 			e.preventDefault();
 			$('#top').animate({ scrollTop: 0 }, 100);
 		}

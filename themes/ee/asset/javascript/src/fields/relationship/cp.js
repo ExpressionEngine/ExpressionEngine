@@ -156,6 +156,8 @@
 							tmpStr = searchField.val();
 						searchField.val('');
 						searchField.val(tmpStr);
+
+						$('.w-8.relate-wrap .scroll-wrap', field).sortable(sortable_options);
 					}
 				});
 			}, delay);
@@ -185,12 +187,14 @@
 		});
 
 		// Sortable!
-		$('.w-8.relate-wrap .scroll-wrap').sortable({
+		var sortable_options = {
 			axis: 'y',
 			cursor: 'move',
 			handle: '.relate-reorder',
 			items: 'label',
-		});
+		};
+
+		$('.w-8.relate-wrap .scroll-wrap').sortable(sortable_options);
 
 		$('.publish form').on('submit', function (e) {
 			$('.w-8.relate-wrap .scroll-wrap').each(function() {

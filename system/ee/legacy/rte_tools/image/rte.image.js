@@ -217,8 +217,11 @@ Overlay.prototype = {
 	}
 };
 
+function ImageChooser($editor, $image_button) {
+	this.init($editor, $image_button);
+}
 
-var ImageChooser = {
+ImageChooser.prototype = {
 
 	init: function($editor, $image_button) {
 
@@ -366,7 +369,7 @@ WysiHat.addButton('image', {
 		var filedirs	= EE.rte.image.filedirs,
 			html		= $editor.html(),
 			that		= this,
-			path_re, path;
+			path_re, path, imageChooser;
 
 		// Firefox will return the left and right braces as entities,
 		// we need to switch those back for replacement below
@@ -382,7 +385,7 @@ WysiHat.addButton('image', {
 
 		// blargh
 		setTimeout(function() {
-			ImageChooser.init($editor, that.$element);
+			imageChooser = new ImageChooser($editor, that.$element);
 			new Overlay($editor);
 		}, 50);
 
@@ -390,7 +393,7 @@ WysiHat.addButton('image', {
 	},
 
 	handler: function(state, finalize) {
-		ImageChooser.set_finalizer(finalize);
+		imageChooser.set_finalizer(finalize);
 		return false;
 	}
 });

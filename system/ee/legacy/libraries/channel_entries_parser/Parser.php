@@ -235,14 +235,10 @@ class EE_Channel_data_parser {
 			$row['absolute_count']		= $absolute_offset + $row['count'];
 			$row['absolute_results']	= ($absolute_results === NULL) ? $total_results : $absolute_results;
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
-			$row['cp_edit_entry_url']	= ee('CP/URL',
-				'content_publish/entry_form',
-				array(
-					'site_id'		=> $row['site_id'],
-					'channel_id'	=> $row['channel_id'],
-					'entry_id'		=> $row['entry_id'],
-				),
-				TRUE
+			$row['cp_edit_entry_url']	= ee('CP/URL')
+				->make('publish/edit/entry/'.$row['entry_id'],
+					array(),
+					ee()->config->item('cp_url')
 			);
 
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
@@ -505,7 +501,7 @@ class EE_Channel_data_parser {
 
 		foreach($default_dates as $value)
 		{
-			$cond[$value] = (empty($row[$value])) ? '' : $value;
+			$cond[$value] = (empty($row[$value])) ? '' : $row[$value];
 		}
 
 		foreach($channel->mfields as $key => $value)

@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 
 /**

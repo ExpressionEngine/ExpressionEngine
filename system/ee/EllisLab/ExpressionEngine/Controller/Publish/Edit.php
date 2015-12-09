@@ -144,6 +144,15 @@ class Edit extends AbstractPublishController {
 				$can_edit = FALSE;
 			}
 
+			// wW had a delete cascade issue that could leave entries orphaned and
+			// resulted in errors, so we'll sneakily use this controller to clean up
+			// for now.
+			if (is_null($entry->Channel))
+			{
+				$entry->delete();
+				continue;
+			}
+
 			$autosaves = $entry->Autosaves->count();
 
 			if ($can_edit)

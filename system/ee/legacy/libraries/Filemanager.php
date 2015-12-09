@@ -1251,6 +1251,12 @@ class Filemanager {
 
 		foreach ($dimensions as $size_id => $size)
 		{
+			// May be FileDimension object
+			if ( ! is_array($size))
+			{
+				$size = $size->toArray();
+			}
+
 			ee()->image_lib->clear();
 			$force_master_dim = FALSE;
 

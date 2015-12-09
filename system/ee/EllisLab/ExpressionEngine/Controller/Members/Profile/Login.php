@@ -168,6 +168,8 @@ class Login extends Profile {
 			}
 		}
 
+		$redirect = ee()->input->post('redirect');
+
 		// Set cookie expiration to one year if the "remember me" button is clicked
 
 		$expire = 0;
@@ -188,7 +190,6 @@ class Login extends Profile {
 		// Redirect the user to the return page
 
 		$return_path = ee()->functions->fetch_site_index();
-		$redirect = ee()->input->post('redirect');
 		$url = ee()->input->post('other');
 
 		if ( ! empty($redirect))

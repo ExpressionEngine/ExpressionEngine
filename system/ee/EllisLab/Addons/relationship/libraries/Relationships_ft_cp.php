@@ -24,6 +24,11 @@
  */
 class Relationships_ft_cp {
 
+	private $all_authors;
+	private $all_channels;
+	private $all_categories;
+	private $all_statuses;
+
 	/**
 	 * Create a settings form object
 	 *
@@ -47,9 +52,15 @@ class Relationships_ft_cp {
 	 */
 	public function all_channels()
 	{
+		if (isset($this->all_channels))
+		{
+			return $this->all_channels;
+		}
+
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
 		$channels = ee('Model')->get('Channel')
+			->with('Site')
 			->order('channel_title', 'asc');
 
 		if ( ! $from_all_sites)
@@ -71,7 +82,9 @@ class Relationships_ft_cp {
 			$channel_choices = $channels->all()->getDictionary('channel_id', 'channel_title');
 		}
 
-		return array('--' => lang('any_channel')) + $channel_choices;
+		$this->all_channels = array('--' => lang('any_channel')) + $channel_choices;
+
+		return $this->all_channels;
 	}
 
 	// --------------------------------------------------------------------
@@ -83,6 +96,11 @@ class Relationships_ft_cp {
 	 */
 	public function all_categories()
 	{
+		if (isset($this->all_categories))
+		{
+			return $this->all_categories;
+		}
+
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
 		$categories = ee('Model')->get('Category as C0')
@@ -101,7 +119,7 @@ class Relationships_ft_cp {
 			$categories->filter('site_id', 1);
 		}
 
-		return array('--' => lang('any_category')) + $this->buildNestedCategoryArray($categories->all());
+		return $this->all_categories = array('--' => lang('any_category')) + $this->buildNestedCategoryArray($categories->all());
 	}
 
 	private function buildNestedCategoryArray($categories)
@@ -136,6 +154,11 @@ class Relationships_ft_cp {
 	 */
 	public function all_authors()
 	{
+		if (isset($this->all_authors))
+		{
+			return $this->all_authors;
+		}
+
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
 		$prefix = ee()->db->dbprefix;
@@ -189,7 +212,7 @@ class Relationships_ft_cp {
 			}
 		}
 
-		return $authors;
+		return $this->all_authors = $authors;
 	}
 
 	// --------------------------------------------------------------------
@@ -202,6 +225,11 @@ class Relationships_ft_cp {
 	 */
 	public function all_statuses()
 	{
+		if (isset($this->all_statuses))
+		{
+			return $this->all_statuses;
+		}
+
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
 		$statuses = ee('Model')->get('Status')
@@ -220,7 +248,7 @@ class Relationships_ft_cp {
 			$status_options[$status->status] = $status_name;
 		}
 
-		return $status_options;
+		return $this->all_statuses = $status_options;
 	}
 
 	// --------------------------------------------------------------------

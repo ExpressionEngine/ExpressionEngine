@@ -17,6 +17,7 @@
 		>
 	</fieldset>
 	<?php endif; ?>
+	<?php if (count($options) > 10): ?><div class="scroll-wrap"><?php endif;?>
 	<ul>
 	<?php foreach ($options as $url => $label): ?>
 		<?php if ($url == $show_all_url && $confirm_show_all): ?>
@@ -26,6 +27,7 @@
 		<?php endif; ?>
 	<?php endforeach; ?>
 	</ul>
+	<?php if (count($options) > 10): ?></div><?php endif;?>
 </div>
 
 <?php if ($confirm_show_all): ?>

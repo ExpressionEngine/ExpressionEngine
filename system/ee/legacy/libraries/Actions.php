@@ -57,7 +57,7 @@ class EE_Actions {
 	 *
 	 */
 
-	public function __construct($can_view_system = FALSE)
+	public function __construct($can_view_system = FALSE, $callback = NULL)
 	{
 		// Define special actions
 		// These are actions that are triggered manually
@@ -208,6 +208,11 @@ class EE_Actions {
 				{
 					return FALSE;
 				}
+			}
+
+			if (is_callable($callback))
+			{
+				call_user_func($callback, $class, $method);
 			}
 
 			$ACT->$method();
