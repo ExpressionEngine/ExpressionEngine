@@ -229,6 +229,7 @@ class Cp {
 		$this->add_js_script('file', 'cp/global_end');
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+		ee()->view->version_identifier = APP_VER_ID;
 
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
