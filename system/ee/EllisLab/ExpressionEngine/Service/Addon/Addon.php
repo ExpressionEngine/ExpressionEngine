@@ -243,7 +243,7 @@ class Addon {
 	*/
 	public function hasManual()
 	{
-		return file_exists($this->getPath().'README.md');
+		return file_exists($this->getPath().'/README.md');
 	}
 
 	/**
