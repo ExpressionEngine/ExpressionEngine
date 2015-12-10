@@ -152,6 +152,13 @@ $(document).ready(function () {
 			dataType: 'html',
 			success: function (data) {
 				load_category_modal_data(modal, data, modal_link);
+
+				// Bind ee_url_title for new categories only
+				if (modal_link.data('contentId') === undefined) {
+					$('input[name=cat_name]', modal).bind('keyup keydown', function() {
+						$(this).ee_url_title('input[name=cat_url_title]');
+					});
+				}
 			}
 		})
 	});
@@ -197,10 +204,6 @@ $(document).ready(function () {
 		$('div.box', modal).html(data);
 
 		EE.cp.formValidation.init(modal);
-
-		$('input[name=cat_name]', modal).bind('keyup keydown', function() {
-			$(this).ee_url_title('input[name=cat_url_title]');
-		});
 
 		$('form', modal).off('submit').on('submit', function() {
 
