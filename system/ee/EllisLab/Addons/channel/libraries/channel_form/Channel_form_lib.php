@@ -3404,7 +3404,7 @@ SCRIPT;
 
 		$ret = $url_title_js;
 
-		if (ee()->config->item('use_compressed_js') != 'n')
+		if (PATH_JS !== 'src')
 		{
 			return str_replace(array("\n", "\t"), '', $ret);
 		}

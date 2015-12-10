@@ -157,9 +157,8 @@ class View {
 	 */
 	public function script_tag($file)
 	{
-		$src_dir = (ee()->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
-
-		$path = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$src_dir.$file;
+		$src_dir = PATH_JS.'/';
+		$path    = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$src_dir.$file;
 
 		if ( ! file_exists($path))
 		{
@@ -167,8 +166,7 @@ class View {
 		}
 
 		$filemtime = filemtime($path);
-
-		$url = URL_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
+		$url       = URL_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
 
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}

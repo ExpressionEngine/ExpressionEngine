@@ -76,14 +76,12 @@ class Cp {
 	 */
 	public function set_default_view_variables()
 	{
-		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 
 		// Javascript Path Constants
-
-		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/');
-		define('JS_FOLDER', $js_folder);
+		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/');
+		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
+		define('JS_FOLDER', PATH_JS);
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
@@ -651,15 +649,13 @@ class Cp {
 			return max($mtimes);
 		}
 
-		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
-			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
 				break;
 			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
 				break;
