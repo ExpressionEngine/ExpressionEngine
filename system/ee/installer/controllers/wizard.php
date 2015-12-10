@@ -2247,10 +2247,6 @@ class Wizard extends CI_Controller {
 			$config['index_page'] = $config['site_index'];
 		}
 
-		// BUILD_REMOVE_CJS_START
-		$config['use_compressed_js'] = 'n';
-		// BUILD_REMOVE_CJS_END
-
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
 

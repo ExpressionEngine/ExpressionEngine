@@ -29,8 +29,7 @@ class Javascript_loader {
 	 */
 	public function __construct()
 	{
-		$dir = ($this->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
-		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$dir.'/');
+		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
 	}
 
 	// --------------------------------------------------------------------

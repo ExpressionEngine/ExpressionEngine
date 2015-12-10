@@ -75,6 +75,7 @@ class EE_Core {
 		define('PATH_THIRD',  SYSPATH . 'user/addons/');
 		define('PATH_CACHE',  SYSPATH . 'user/cache/');
 		define('PATH_TMPL',   SYSPATH . 'user/templates/');
+		define('PATH_JS',     'src');
 
 		// application constants
 		define('IS_CORE',		FALSE);

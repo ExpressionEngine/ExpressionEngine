@@ -49,12 +49,6 @@ Set the development configuration items below.
 
 ## Development Configuration
 
-Use uncompressed JavaScript:
-
-```
-$config['use_compressed_js'] = 'n';
-```
-
 Force MySQL strict mode:
 
 ```
