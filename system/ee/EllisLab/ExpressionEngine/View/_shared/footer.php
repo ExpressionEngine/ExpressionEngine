@@ -1,5 +1,5 @@
 		</section>
-		<section class="product-bar <?php if ( ! empty(APP_VER_ID)): ?>pre-release<?php endif ?>">
+		<section class="product-bar <?php if ( ! empty($version_identifier)): ?>pre-release<?php endif ?>">
 			<div class="snap">
 				<div class="left">
 					<?php
@@ -22,8 +22,8 @@
 						<p>
 							ExpressionEngine <?=$formatted_version?><br>
 							<em><?=lang('build') . ' ' . $ee_build_date?></em>
-							<?php if ( ! empty(APP_VER_ID)): ?>
-								<br><em><?=lang('version_identifier') . ' ' . APP_VER_ID?></em>
+							<?php if ( ! empty($version_identifier)): ?>
+								<br><em><?=lang('version_identifier') . ' ' . $version_identifier?></em>
 							<?php endif ?>
 						</p>
 						<?php if (isset($new_version)): ?>
