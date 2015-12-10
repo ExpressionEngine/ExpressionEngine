@@ -71,11 +71,34 @@ class Addon {
 		if ($this->hasPlugin())
 		{
 			// Check for an installed plugin
+			// @TODO restore the model approach once we have solved the
+			// circular dependency between the Addon service and the
+			// Model/Datastore service.
+			/*
 			$plugin = ee('Model')->get('Plugin')
 				->filter('plugin_package', $this->shortname)
 				->first();
 
 			if ($plugin)
+			{
+				return TRUE;
+			}
+			*/
+
+			$installed_plugins = ee()->cache->get('installed-plugins', \Cache::GLOBAL_SCOPE);
+
+			if (empty($installed_plugins))
+			{
+				$installed_plugins = array_map('array_pop', ee()->db
+				    ->select('plugin_package')
+				    ->where('plugin_package', $this->shortname)
+				    ->get('plugins')
+				    ->result_array());
+
+				ee()->cache->save('installed-plugins', $installed_plugins, 60, \Cache::GLOBAL_SCOPE);
+			}
+
+			if (in_array($this->shortname, $installed_plugins))
 			{
 				return TRUE;
 			}
