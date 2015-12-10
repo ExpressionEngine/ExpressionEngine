@@ -575,7 +575,7 @@ class Cat extends AbstractChannelsController {
 		{
 			return array(
 				'messageType' => 'success',
-				'body' => $this->categoryGroupPublishField($group_id, NULL, TRUE)
+				'body' => $this->categoryGroupPublishField($group_id, TRUE)
 			);
 		}
 
@@ -587,7 +587,9 @@ class Cat extends AbstractChannelsController {
 	/**
 	 * Category create
 	 *
-	 * @param	int	$group_id		ID of category group category is to be in
+	 * @param	int		$group_id	ID of category group category is to be in
+	 * @param	bool	$editing	If coming from the publish form, indicates whether or
+	 *	or not the category list is in an editing state
 	 */
 	public function createCat($group_id, $editing = FALSE)
 	{
@@ -618,8 +620,10 @@ class Cat extends AbstractChannelsController {
 	/**
 	 * Category creation/edit form
 	 *
-	 * @param	int	$group_id		ID of category group category is (to be) in
-	 * @param	int	$category_id	ID of category to edit
+	 * @param	int		$group_id	ID of category group category is (to be) in
+	 * @param	int	$	category_id	ID of category to edit
+	 * @param	bool	$editing	If coming from the publish form, indicates whether or
+	 *	or not the category list is in an editing state
 	 */
 	private function categoryForm($group_id, $category_id = NULL, $editing = FALSE)
 	{
@@ -813,7 +817,7 @@ class Cat extends AbstractChannelsController {
 					$category->save();
 					return array(
 						'messageType' => 'success',
-						'body' => $this->categoryGroupPublishField($group_id, NULL, $editing)
+						'body' => $this->categoryGroupPublishField($group_id, $editing)
 					);
 				}
 				else
@@ -887,8 +891,12 @@ class Cat extends AbstractChannelsController {
 	/**
 	 * AJAX return body for adding a new category via the publish form; when a
 	 * new category is added, we have to refresh the category list
+	 *
+	 * @param	int		$group_id	Category group ID
+	 * @param	bool	$editing	If coming from the publish form, indicates whether or
+	 *	or not the category list is in an editing state
 	 */
-	private function categoryGroupPublishField($group_id, $entry_id = NULL, $editing = FALSE)
+	private function categoryGroupPublishField($group_id, $editing = FALSE)
 	{
 		// Initialize a new category group field so we can return its publish form
 		$category_group_field = array(
@@ -914,16 +922,8 @@ class Cat extends AbstractChannelsController {
 		$field = new FieldFacade($field_id, $category_group_field);
 		$field->setName($field_id);
 
-		if (is_numeric($entry_id))
-		{
-			$entry = ee('Model')->get('ChannelEntry', $entry)->first();
-		}
-		else
-		{
-			$entry = ee('Model')->make('ChannelEntry');
-			$entry->Categories = NULL;
-		}
-
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->Categories = NULL;
 		$entry->populateCategories($field);
 
 		// Reset the categories they already have selected

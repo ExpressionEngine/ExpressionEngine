@@ -7,7 +7,7 @@
 <?php if ($editable): ?>
 
 	<div class="toggle-tools">
-		<b><?=lang('manage_categories')?></b>
+		<b><?=$manage_toggle_label?></b>
 		<a href="#" class="toggle <?=($editing) ? 'on' : 'off' ?>">
 			<span class="slider"></span>
 			<span class="option"><b><?=lang('on')?></b></span>
