@@ -182,6 +182,7 @@ $(document).ready(function () {
 						var field = modal_link.parents('fieldset').find('.setting-field');
 						field.html(result.body);
 						bind_nestable($('.nestable', field));
+						EE.cp.addLastToChecklists();
 					}
 				}
 			});
@@ -216,6 +217,7 @@ $(document).ready(function () {
 						var field = modal_link.parents('fieldset').find('.setting-field');
 						field.html(result.body);
 						bind_nestable($('.nestable', field));
+						EE.cp.addLastToChecklists();
 					} else {
 						load_category_modal_data(modal, result.body, modal_link);
 					}
@@ -246,6 +248,8 @@ $(document).ready(function () {
 			maxDepth: 10,
 			constrainToRoot: true
 		}).on('change', function() {
+
+			EE.cp.addLastToChecklists();
 
 			$.ajax({
 				url: EE.publish.reorder_categories.URL.replace('###', $(this).data('nestable-group')),
