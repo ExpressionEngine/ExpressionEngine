@@ -328,6 +328,21 @@ class Addon {
 		return $this->requireFieldtypes($files);
     }
 
+	public function getFieldtypeNames()
+	{
+		$names = array();
+
+		$fieldtypes = $this->get('fieldtypes');
+
+		foreach ($this->getFilesMatching('ft.*.php') as $path)
+		{
+			$ft_name = preg_replace('/ft.(.*?).php/', '$1', basename($path));
+			$names[$ft_name] = (isset($fieldtypes[$ft_name]['name'])) ? $fieldtypes[$ft_name]['name'] : $this->getName();
+		}
+
+		return $names;
+	}
+
     protected function getFilesMatching($glob)
     {
 		return glob($this->getPath()."/{$glob}");
