@@ -134,6 +134,7 @@ $(document).ready(function () {
 			isEditing = modal_link.parents('fieldset').find('a.toggle').hasClass('on'),
 			category_form_url = EE.publish.add_category.URL.replace('###', $(this).data('groupId'));
 
+		// If we're in an editing state, be sure to return to an editing state
 		if (isEditing) {
 			category_form_url = category_form_url + '/editing';
 		}
@@ -186,10 +187,7 @@ $(document).ready(function () {
 					if (result.messageType == 'success') {
 						modal.trigger('modal:close');
 
-						var field = modal_link.parents('fieldset').find('.setting-field');
-						field.html(result.body);
-						bind_nestable($('.nestable', field));
-						EE.cp.addLastToChecklists();
+						load_new_category_field(modal_link, result.body);
 					}
 				}
 			});
@@ -200,6 +198,7 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
+	// Load the category edit/delete modal and bind the submit handler
 	function load_category_modal_data(modal, data, modal_link) {
 		$('div.box', modal).html(data);
 
@@ -217,10 +216,7 @@ $(document).ready(function () {
 					if (result.messageType == 'success') {
 						modal.trigger('modal:close');
 
-						var field = modal_link.parents('fieldset').find('.setting-field');
-						field.html(result.body);
-						bind_nestable($('.nestable', field));
-						EE.cp.addLastToChecklists();
+						load_new_category_field(modal_link, result.body);
 					} else {
 						load_category_modal_data(modal, result.body, modal_link);
 					}
@@ -228,6 +224,39 @@ $(document).ready(function () {
 			});
 
 			return false;
+		});
+	}
+
+	// Load a new category field and bind necessary things
+	function load_new_category_field(modal_link, field_body)
+	{
+		var field = modal_link.parents('fieldset').find('.setting-field'),
+			checked_cats = get_checked_categories(modal_link.data('groupId'));
+
+		field.html(field_body);
+		bind_nestable($('.nestable', field));
+
+		// Restore checked categories
+		check_categories(modal_link.data('groupId'), checked_cats);
+
+		EE.cp.addLastToChecklists();
+	}
+
+	// Returns an array of selected category IDs in a given category group
+	function get_checked_categories(group_id) {
+		var categories = $('div[data-nestable-group="'+group_id+'"] ul.nested-list li input[type="checkbox"]:checked');
+
+		return $.map(categories, function(cat) {
+			return $(cat).val();
+		});
+	}
+
+	// Given an array of category IDs, checks those categories
+	function check_categories(group_id, cat_ids) {
+		$.each(cat_ids, function(i, cat_id) {
+			$('div[data-nestable-group="'+group_id+'"] input[value="'+cat_id+'"]')
+				.prop('checked', true)
+				.trigger('change');
 		});
 	}
 
