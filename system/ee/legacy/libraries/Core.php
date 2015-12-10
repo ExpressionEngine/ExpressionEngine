@@ -422,6 +422,10 @@ class EE_Core {
 
 			$_GET = array_merge($get, $_GET);
 		}
+		else
+		{
+			$get = array();
+		}
 
 
 		// Load our view library
