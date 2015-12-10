@@ -165,6 +165,24 @@ class Addon {
 		return NULL;
 	}
 
+	public function getName()
+	{
+		if ($this->hasModule())
+		{
+			ee()->lang->loadfile($this->shortname, '', FALSE);
+
+			$lang_key = strtolower($this->shortname).'_module_name';
+			$name = lang($lang_key);
+
+			if ($name != strtolower($lang_key))
+			{
+				return $name;
+			}
+		}
+
+		return $this->provider->getName();
+	}
+
 	/**
 	 * Get the plugin or module class
 	 */
