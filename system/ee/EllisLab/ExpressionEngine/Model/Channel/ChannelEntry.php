@@ -850,10 +850,12 @@ class ChannelEntry extends ContentModel {
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
 			->filter('Category.parent_id', 0)
-			->order('Category.cat_order')
 			->all();
 
-		$category_list = $this->buildCategoryList($categories);
+		// Sorting alphabetically or custom?
+		$sort_column = ($categories->first()->CategoryGroup->sort_order == 'a') ? 'cat_name' : 'cat_order';
+
+		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
 		$field->setItem('field_list_items', $category_list);
 
 		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_name');
@@ -863,19 +865,19 @@ class ChannelEntry extends ContentModel {
 	/**
 	 * Turn the categories collection into a nested array of ids => names
 	 */
-	protected function buildCategoryList($categories)
+	protected function buildCategoryList($categories, $sort_column)
 	{
 		$list = array();
 
 		foreach ($categories as $category)
 		{
-			$children = $category->Children;
+			$children = $category->Children->sortBy($sort_column);
 
 			if (count($children))
 			{
 				$list[$category->cat_id] = array(
 					'name' => $category->cat_name,
-					'children' => $this->buildCategoryList($children)
+					'children' => $this->buildCategoryList($children, $sort_column)
 				);
 
 				continue;
