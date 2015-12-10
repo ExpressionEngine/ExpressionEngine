@@ -68,12 +68,20 @@ class Addon {
 			}
 		}
 
-		// Check for an installed plugin
-		$plugin = ee('Model')->get('Plugin')
-			->filter('plugin_package', $this->shortname)
-			->first();
+		if ($this->hasPlugin())
+		{
+			// Check for an installed plugin
+			$plugin = ee('Model')->get('Plugin')
+				->filter('plugin_package', $this->shortname)
+				->first();
 
-		return ! is_null($plugin);
+			if ($plugin)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	/**
