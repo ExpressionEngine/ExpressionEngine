@@ -588,7 +588,7 @@ class Cat extends AbstractChannelsController {
 	 * Category create
 	 *
 	 * @param	int		$group_id	ID of category group category is to be in
-	 * @param	bool	$editing	If coming from the publish form, indicates whether or
+	 * @param	bool	$editing	If coming from the publish form, indicates whether
 	 *	or not the category list is in an editing state
 	 */
 	public function createCat($group_id, $editing = FALSE)

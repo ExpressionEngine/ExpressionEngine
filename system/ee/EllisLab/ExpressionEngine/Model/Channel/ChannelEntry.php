@@ -864,6 +864,10 @@ class ChannelEntry extends ContentModel {
 
 	/**
 	 * Turn the categories collection into a nested array of ids => names
+	 *
+	 * @param	Collection	$categories		Top level categories to construct tree out of
+	 * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
+	 *	categories by the given column
 	 */
 	protected function buildCategoryList($categories, $sort_column)
 	{
