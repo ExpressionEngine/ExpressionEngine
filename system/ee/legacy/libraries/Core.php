@@ -518,7 +518,7 @@ class EE_Core {
 	 */
 	private function missing_module_check()
 	{
-		if ( ! IS_CORE && ! ee('Addon')->get('Member')->isInstalled())
+		if ( ! IS_CORE && ee('Addon')->get('Member') === NULL)
 		{
 			ee()->addons->install_modules(array('member'));
 		}
