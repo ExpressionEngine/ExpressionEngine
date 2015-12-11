@@ -145,6 +145,7 @@ $(document).ready(function () {
 	EE.cp.cleanUrls();
 	EE.cp.bindCpMessageClose();
 	EE.cp.channelMenuFilter();
+	EE.cp.bindSortableFolderLists();
 });
 
 // Binds the channel filter text boxes in Create and Edit menus
@@ -186,6 +187,23 @@ EE.cp.bindCpMessageClose = function() {
 	$('body').on('click', 'div.alert a.close', function(event) {
 		event.preventDefault();
 		$(this).parent().hide();
+	});
+}
+
+// Binds jQuery UI sortable to reorderable folder lists
+EE.cp.bindSortableFolderLists = function() {
+	$('.sidebar .folder-list.reorderable').sortable({
+		axis: 'y',						// Only allow vertical dragging
+		containment: 'parent',			// Contain to parent
+		handle: 'a',					// Set drag handle
+		cancel: 'ul.toolbar',			// Do not allow sort on this handle
+		items: '> li',					// Only allow these to be sortable
+		sort: EE.sortable_sort_helper,	// Custom sort handler
+		// After sort finishes
+		stop: function(event, ui)
+		{
+
+		}
 	});
 }
 
