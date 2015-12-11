@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_synchronize_layouts',
+				'_comment_formatting'
 			)
 		);
 
@@ -93,6 +94,25 @@ class Updater {
 
 			$layout->field_layout = $field_layout;
 		}
+	}
+
+	/**
+	 * Increase the column for storing comment formatting
+	 */
+	private function _comment_formatting()
+	{
+		ee()->smartforge->modify_column(
+			'channels',
+			array(
+				'comment_text_formatting' => array(
+					'type'			=> 'char',
+					'constraint'	=> 40,
+					'null'			=> FALSE,
+					'default'		=> 'xhtml',
+				),
+			)
+		);
+
 	}
 }
 /* END CLASS */
