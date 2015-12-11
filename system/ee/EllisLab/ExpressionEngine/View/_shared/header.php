@@ -136,24 +136,22 @@
 					<li class="develop">
 						<a class="has-sub" href="" title="<?=lang('nav_developer_tools')?>"></a>
 						<div class="sub-menu">
-							<div class="scroll-wrap">
-								<ul>
-									<?php
-									// Grab the first and last items from the menu to determine
-									// which items we need to put 'last' classes on
-									$last = array_values(array_slice($cp_main_menu['develop'], -1, 1));
+							<ul>
+								<?php
+								// Grab the first and last items from the menu to determine
+								// which items we need to put 'last' classes on
+								$last = array_values(array_slice($cp_main_menu['develop'], -1, 1));
 
-									foreach ($cp_main_menu['develop'] as $key => $link):
-										$class = '';
-										if ($link == $last[0])
-										{
-											$class = 'last';
-										}
-									?>
-										<li<?php if ( ! empty($class)): ?> class="<?=$class?>"<?php endif; ?>><a href="<?=$link?>"><?=lang($key)?></a></li>
-									<?php endforeach ?>
-								</ul>
-							</div>
+								foreach ($cp_main_menu['develop'] as $key => $link):
+									$class = '';
+									if ($link == $last[0])
+									{
+										$class = 'last';
+									}
+								?>
+									<li<?php if ( ! empty($class)): ?> class="<?=$class?>"<?php endif; ?>><a href="<?=$link?>"><?=lang($key)?></a></li>
+								<?php endforeach ?>
+							</ul>
 						</div>
 					</li>
 					<?php endif; ?>
