@@ -1014,7 +1014,6 @@ class Cat extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
-		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 		ee()->cp->add_js_script('file', 'cp/channel/cat_field_reorder');
 

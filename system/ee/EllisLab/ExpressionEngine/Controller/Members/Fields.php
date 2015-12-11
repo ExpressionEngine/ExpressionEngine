@@ -150,7 +150,6 @@ class Fields extends Members\Members {
 		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/members/member_field_reorder');
-		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 
 		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')

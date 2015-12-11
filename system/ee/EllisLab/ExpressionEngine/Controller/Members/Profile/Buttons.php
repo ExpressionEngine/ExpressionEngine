@@ -140,8 +140,7 @@ class Buttons extends Settings {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/members/html_button_reorder',
-				'cp/sort_helper'
+				'cp/members/html_button_reorder'
 			),
 			'plugin' => array(
 				'ee_table_reorder'

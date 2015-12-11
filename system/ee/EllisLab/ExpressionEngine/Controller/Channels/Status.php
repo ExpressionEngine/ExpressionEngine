@@ -393,7 +393,6 @@ class Status extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
-		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 		ee()->cp->add_js_script('file', 'cp/channel/status_reorder');
 

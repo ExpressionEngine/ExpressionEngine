@@ -239,7 +239,6 @@ class Forum_mcp extends CP_Controller {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/sort_helper',
 				'cp/addons/forums/reorder',
 			),
 			'plugin' => array(
