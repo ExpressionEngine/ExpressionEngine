@@ -53,6 +53,11 @@ class FolderList {
 	protected $no_results = '';
 
 	/**
+	 * @var boolean $can_reorder Whether or not the folder list can be reordered
+	 */
+	protected $can_reorder = FALSE;
+
+	/**
 	 * Constructor: sets the name of the list
 	 *
 	 * @param string $text The text of the header
@@ -101,6 +106,19 @@ class FolderList {
 	}
 
 	/**
+	 * Allows the folder list to be reordered
+	 *
+	 * @param string $identifier Optional unique identifier for the folder list in
+	 *	case multiple folder lists on the page are reorderable
+	 * @return self This returns a reference to itself
+	 */
+	public function canReorder()
+	{
+		$this->can_reorder = TRUE;
+		return $this;
+	}
+
+	/**
 	 * Adds an item to this list
 	 *
 	 * @param string $text The text of the item
@@ -143,7 +161,8 @@ class FolderList {
 					 'items' => $items,
 					 'name'  => $this->name,
 					 'remove_url' => $this->remove_url,
-					 'removal_key' => $this->removal_key
+					 'removal_key' => $this->removal_key,
+					 'can_reorder' => $this->can_reorder
 				 ));
 	}
 
