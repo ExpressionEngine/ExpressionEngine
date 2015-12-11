@@ -113,6 +113,17 @@ class Application {
 	}
 
 	/**
+	 * Check for a component provider
+	 *
+	 * @param String $prefix Component name/prefix
+	 * @return bool Exists?
+	 */
+	public function has($prefix)
+	{
+		return $this->registry->has($prefix);
+	}
+
+	/**
 	 * Get a component provider
 	 *
 	 * @param String $prefix Component name/prefix
