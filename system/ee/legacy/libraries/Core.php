@@ -403,7 +403,6 @@ class EE_Core {
 		$this->cp_loaded = TRUE;
 
 		$this->somebody_set_us_up_the_base();
-		$this->missing_module_check();
 
 		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
@@ -508,20 +507,6 @@ class EE_Core {
 	private function somebody_set_us_up_the_base()
 	{
 		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Ensure missing modules are installed, specifically check that modules
-	 * not included in Core are installed if installation is not Core
-	 */
-	private function missing_module_check()
-	{
-		if ( ! IS_CORE && ee('Addon')->get('Member') === NULL)
-		{
-			ee()->addons->install_modules(array('member'));
-		}
 	}
 
 	// ------------------------------------------------------------------------
