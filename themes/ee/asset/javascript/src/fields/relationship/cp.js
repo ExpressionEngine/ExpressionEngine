@@ -205,7 +205,10 @@
 				var i = 1;
 				$(this).find('label.relate-manage').each(function () {
 					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']').closest('label');
-					label.find('input:hidden[name$="[sort][]"]').first().val(i);
+					label.find('input:hidden[name$="[sort][]"]')
+						.first()
+						.val(i)
+						.removeProp('disable');
 					i++;
 				});
 			});
