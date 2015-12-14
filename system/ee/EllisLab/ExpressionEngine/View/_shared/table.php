@@ -188,6 +188,6 @@ if ($wrap): ?>
 
 <?php if ($grid_input && ! empty($data)): ?>
 	<ul class="toolbar">
-		<li class="add"><a href="#" title="add new row"></a></li>
+		<li class="add"><a href="#" title="<?=lang('add_new_row')?>"></a></li>
 	</ul>
 <?php endif ?>
