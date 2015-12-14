@@ -100,6 +100,8 @@ abstract class AbstractPublish extends CP_Controller {
 			ee()->cp->add_to_foot(smiley_js());
 		}
 
+		ee()->cp->add_js_script('plugin', 'nestable');
+
 		ee()->javascript->set_global(array(
 			'lang.add_new_html_button'			=> lang('add_new_html_button'),
 			'lang.close' 						=> lang('close'),
@@ -108,6 +110,8 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
 			'publish.autosave.URL'				=> ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
 			'publish.add_category.URL'			=> ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
+			'publish.edit_category.URL'			=> ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
+			'publish.reorder_categories.URL'	=> ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
@@ -214,6 +218,38 @@ abstract class AbstractPublish extends CP_Controller {
 		$table->setData($data);
 
 		return ee('View')->make('_shared/table')->render($table->viewData(''));
+	}
+
+	/**
+	 * Adds modals for the category add/edit form and category removal confirmation
+	 */
+	protected function addCategoryModals()
+	{
+		// Don't bother adding modals to DOM if they don't have permission
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
+		{
+			return;
+		}
+
+		$cat_form_modal = ee('View')->make('ee:_shared/modal')->render(array(
+			'name'		=> 'modal-checkboxes-edit',
+			'contents'	=> '')
+		);
+		ee('CP/Modal')->addModal('modal-checkboxes-edit', $cat_form_modal);
+
+		$cat_remove_modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render(array(
+			'name'		=> 'modal-checkboxes-confirm-remove',
+			'form_url'	=> ee('CP/URL')->make('channels/cat/removeCat'),
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove',
+				'categories[]'	=> ''
+			)
+		));
+		ee('CP/Modal')->addModal('modal-checkboxes-confirm-remove', $cat_remove_modal);
 	}
 
 }

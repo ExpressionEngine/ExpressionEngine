@@ -88,7 +88,7 @@ class Cat extends AbstractChannelsController {
 	}
 
 	/**
-	 * Remove channels handler
+	 * Remove category groups handler
 	 */
 	public function remove()
 	{
@@ -547,20 +547,36 @@ class Cat extends AbstractChannelsController {
 
 			if ( ! empty($cat_ids))
 			{
-				ee('Model')->get('Category')
-					->filter('cat_id', 'IN', $cat_ids)
-					->delete();
+				$cats = ee('Model')->get('Category')
+					->filter('cat_id', 'IN', $cat_ids);
 
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('categories_removed'))
-					->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
-					->defer();
+				// Grab the group ID for the possible AJAX return below
+				$group_id = $cats->first()->CategoryGroup->getId();
+
+				$cats->delete();
+
+				if ( ! AJAX_REQUEST)
+				{
+					ee('CP/Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('categories_removed'))
+						->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
+						->defer();
+				}
 			}
 		}
 		else
 		{
 			show_error(lang('unauthorized_access'));
+		}
+
+		// Response for publish form category management
+		if (AJAX_REQUEST)
+		{
+			return array(
+				'messageType' => 'success',
+				'body' => $this->categoryGroupPublishField($group_id, TRUE)
+			);
 		}
 
 		ee()->functions->redirect(
@@ -571,16 +587,18 @@ class Cat extends AbstractChannelsController {
 	/**
 	 * Category create
 	 *
-	 * @param	int	$group_id		ID of category group category is to be in
+	 * @param	int		$group_id	ID of category group category is to be in
+	 * @param	bool	$editing	If coming from the publish form, indicates whether
+	 *	or not the category list is in an editing state
 	 */
-	public function createCat($group_id)
+	public function createCat($group_id, $editing = FALSE)
 	{
 		if ( ! ee()->cp->allowed_group('can_create_categories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		return $this->categoryForm($group_id);
+		return $this->categoryForm($group_id, NULL, (bool) $editing);
 	}
 
 	/**
@@ -596,16 +614,18 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		return $this->categoryForm($group_id, $category_id);
+		return $this->categoryForm($group_id, $category_id, TRUE);
 	}
 
 	/**
 	 * Category creation/edit form
 	 *
-	 * @param	int	$group_id		ID of category group category is (to be) in
-	 * @param	int	$category_id	ID of category to edit
+	 * @param	int		$group_id	ID of category group category is (to be) in
+	 * @param	int	$	category_id	ID of category to edit
+	 * @param	bool	$editing	If coming from the publish form, indicates whether or
+	 *	or not the category list is in an editing state
 	 */
-	private function categoryForm($group_id, $category_id = NULL)
+	private function categoryForm($group_id, $category_id = NULL, $editing = FALSE)
 	{
 		if (empty($group_id) OR ! is_numeric($group_id))
 		{
@@ -636,7 +656,12 @@ class Cat extends AbstractChannelsController {
 		{
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category');
-			ee()->view->base_url = ee('CP/URL')->make('channels/cat/create-cat/'.$group_id);
+			$create_url = 'channels/cat/create-cat/'.$group_id;
+			if ($editing)
+			{
+				$create_url .= '/editing';
+			}
+			ee()->view->base_url = ee('CP/URL')->make($create_url);
 
 			$category = ee('Model')->make('Category');
 			$category->setCategoryGroup($cat_group);
@@ -792,7 +817,7 @@ class Cat extends AbstractChannelsController {
 					$category->save();
 					return array(
 						'messageType' => 'success',
-						'body' => $this->categoryGroupPublishField($group_id)
+						'body' => $this->categoryGroupPublishField($group_id, $editing)
 					);
 				}
 				else
@@ -866,13 +891,17 @@ class Cat extends AbstractChannelsController {
 	/**
 	 * AJAX return body for adding a new category via the publish form; when a
 	 * new category is added, we have to refresh the category list
+	 *
+	 * @param	int		$group_id	Category group ID
+	 * @param	bool	$editing	If coming from the publish form, indicates whether or
+	 *	or not the category list is in an editing state
 	 */
-	private function categoryGroupPublishField($group_id, $entry_id = NULL)
+	private function categoryGroupPublishField($group_id, $editing = FALSE)
 	{
 		// Initialize a new category group field so we can return its publish form
 		$category_group_field = array(
 			'field_id'				=> 'categories',
-			'cat_group_id'			=> $group_id,
+			'group_id'				=> $group_id,
 			'field_label'			=> lang('categories'),
 			'field_required'		=> 'n',
 			'field_show_fmt'		=> 'n',
@@ -881,23 +910,20 @@ class Cat extends AbstractChannelsController {
 			'field_type'			=> 'checkboxes',
 			'string_override'		=> '',
 			'field_list_items'      => '',
-			'field_maxl'			=> 100
+			'field_maxl'			=> 100,
+			'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
+			'editing'				=> $editing,
+			'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
+			'manage_toggle_label'	=> lang('manage_categories'),
+			'content_item_label'	=> lang('category')
 		);
 
-		$field_id = 'cat_group_id_'.$group_id;
+		$field_id = 'categories[cat_group_id_'.$group_id.']';
 		$field = new FieldFacade($field_id, $category_group_field);
 		$field->setName($field_id);
 
-		if (is_numeric($entry_id))
-		{
-			$entry = ee('Model')->get('ChannelEntry', $entry)->first();
-		}
-		else
-		{
-			$entry = ee('Model')->make('ChannelEntry');
-			$entry->Categories = NULL;
-		}
-
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->Categories = NULL;
 		$entry->populateCategories($field);
 
 		// Reset the categories they already have selected

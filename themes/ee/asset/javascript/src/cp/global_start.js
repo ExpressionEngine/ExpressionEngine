@@ -146,7 +146,20 @@ $(document).ready(function () {
 	EE.cp.bindCpMessageClose();
 	EE.cp.channelMenuFilter();
 	EE.cp.bindSortableFolderLists();
+	EE.cp.addLastToChecklists();
 });
+
+/**
+ * For nested checklists, the very last item that APPEARS in the list
+ * needs a class of "last".
+ */
+EE.cp.addLastToChecklists = function() {
+	$('ul.nested-list li').removeClass('last');
+
+	$('ul.nested-list').each(function(){
+		$('li:last-child', this).not('ul.toolbar li').last().addClass('last');
+	});
+}
 
 // Binds the channel filter text boxes in Create and Edit menus
 EE.cp.channelMenuFilter = function() {

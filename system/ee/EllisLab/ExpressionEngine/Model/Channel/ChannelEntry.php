@@ -694,7 +694,7 @@ class ChannelEntry extends ContentModel {
 				{
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
 						'field_id'				=> 'categories',
-						'cat_group_id'			=> $cat_group->getId(),
+						'group_id'				=> $cat_group->getId(),
 						'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
 						'field_required'		=> 'n',
 						'field_show_fmt'		=> 'n',
@@ -703,7 +703,12 @@ class ChannelEntry extends ContentModel {
 						'field_type'			=> 'checkboxes',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
-						'populateCallback'		=> array($this, 'populateCategories')
+						'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
+						'editing'				=> FALSE, // Not currently in editing state
+						'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
+						'populateCallback'		=> array($this, 'populateCategories'),
+						'manage_toggle_label'	=> lang('manage_categories'),
+						'content_item_label'	=> lang('category')
 					);
 				};
 
@@ -843,34 +848,40 @@ class ChannelEntry extends ContentModel {
 		$categories = ee('Model')->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', $field->getItem('cat_group_id'))
+			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
 			->filter('Category.parent_id', 0)
-			->order('Category.cat_order')
 			->all();
 
-		$category_list = $this->buildCategoryList($categories);
+		// Sorting alphabetically or custom?
+		$sort_column = ($categories->first()->CategoryGroup->sort_order == 'a') ? 'cat_name' : 'cat_order';
+
+		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
 		$field->setItem('field_list_items', $category_list);
 
-		$set_categories = $this->Categories->filter('group_id', $field->getItem('cat_group_id'))->pluck('cat_name');
+		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_name');
 		$field->setData(implode('|', $set_categories));
 	}
 
 	/**
 	 * Turn the categories collection into a nested array of ids => names
+	 *
+	 * @param	Collection	$categories		Top level categories to construct tree out of
+	 * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
+	 *	categories by the given column
 	 */
-	protected function buildCategoryList($categories)
+	protected function buildCategoryList($categories, $sort_column)
 	{
 		$list = array();
 
 		foreach ($categories as $category)
 		{
-			$children = $category->Children;
+			$children = $category->Children->sortBy($sort_column);
 
 			if (count($children))
 			{
 				$list[$category->cat_id] = array(
 					'name' => $category->cat_name,
-					'children' => $this->buildCategoryList($children)
+					'children' => $this->buildCategoryList($children, $sort_column)
 				);
 
 				continue;
