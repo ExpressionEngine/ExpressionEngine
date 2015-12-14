@@ -1,4 +1,4 @@
-<li<?=$class?>>
+<li<?=$class?> data-<?=$key?>="<?=$value?>">
 	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a>
 	<?php if ($edit || $remove): ?>
 	<ul class="toolbar">
