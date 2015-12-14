@@ -215,11 +215,38 @@ EE.cp.bindSortableFolderLists = function() {
 		// After sort finishes
 		stop: function(event, ui)
 		{
+			var name = $(this).data('name'), i;
 
+			if (EE.cp.folderList.eventHandlers[name] === undefined) {
+				return;
+			}
+
+			// A list may have multiple callbacks, call them all
+			for (i = 0; i < EE.cp.folderList.eventHandlers[name].length; i++) {
+				EE.cp.folderList.eventHandlers[name][i]($(this));
+			}
 		}
 	});
 }
 
+EE.cp.folderList = {
+
+	eventHandlers: [],
+
+	/**
+	 * Binds a callback to the sort event of a folder list
+	 *
+	 * @param	{string}	listName	Unique name of folder list
+	 * @param	{func}		func		Callback function for event
+	 */
+	bind: function(listName, func) {
+		if (this.eventHandlers[listName] == undefined) {
+			this.eventHandlers[listName] = [];
+		}
+
+		this.eventHandlers[listName].push(func);
+	}
+};
 
 // Simple function to deal with csrf tokens
 EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
@@ -237,7 +264,6 @@ EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
 $(window).bind('broadcast.setCsrfToken', function(event, data) {
 	EE.cp.setCsrfToken(data, true);
 });
-
 
 // Simple function to deal with base paths tokens
 var sessionIdRegex = /[&?](S=[A-Za-z0-9]+)/;
