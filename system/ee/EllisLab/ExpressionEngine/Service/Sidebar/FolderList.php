@@ -108,8 +108,6 @@ class FolderList {
 	/**
 	 * Allows the folder list to be reordered
 	 *
-	 * @param string $identifier Optional unique identifier for the folder list in
-	 *	case multiple folder lists on the page are reorderable
 	 * @return self This returns a reference to itself
 	 */
 	public function canReorder()
