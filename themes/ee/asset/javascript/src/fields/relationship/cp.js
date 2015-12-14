@@ -202,6 +202,9 @@
 				var relationship = $(this).closest('.relate-wrap')
 					.siblings('.relate-wrap').first();
 
+				// Adding a new grid row will enable all the disabled sort fields
+				$(this).find('input:hidden[name$="[sort][]"]').attr('disabled', 'disabled');
+
 				var i = 1;
 				$(this).find('label.relate-manage').each(function () {
 					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']').closest('label');
