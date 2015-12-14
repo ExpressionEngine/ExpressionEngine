@@ -62,5 +62,20 @@
 				return false;
 			});
 		};
+
+		// Reorder template groups
+		EE.cp.folderList.bind('template-group', function(list) {
+			// Create an array of template group names
+			var template_groups = $.map($('> li', list), function(list_item) {
+				return $(list_item).data('group_name');
+			});
+
+			$.ajax({
+				url: EE.templage_groups_reorder_url,
+				data: {'groups': template_groups },
+				type: 'POST',
+				dataType: 'json'
+			});
+		});
 	});
 })(jQuery);
