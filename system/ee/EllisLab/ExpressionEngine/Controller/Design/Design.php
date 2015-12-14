@@ -155,6 +155,7 @@ class Design extends AbstractDesignController {
 		}
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
+		ee()->javascript->set_global('templage_groups_reorder_url', ee('CP/URL')->make('design/reorder-groups')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -201,6 +202,35 @@ class Design extends AbstractDesignController {
 			->addToBody(lang('templates_removed_desc'))
 			->addToBody($template_names)
 			->defer();
+	}
+
+	/**
+	 * AJAX end-point for template group reordering
+	 */
+	public function reorderGroups()
+	{
+		if ( ! ($group_names = ee()->input->post('groups')) OR ! AJAX_REQUEST)
+		{
+			return;
+		}
+
+		$groups = ee('Model')->get('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name', 'asc')
+			->all();
+
+		$groups_indexed = $groups->indexBy('group_name');
+
+		$i = 1;
+		foreach ($group_names as $name)
+		{
+			$groups_indexed[$name]->group_order = $i;
+			$i++;
+		}
+
+		$groups->save();
+
+		return array('success');
 	}
 
 	protected function _sync_from_files()
