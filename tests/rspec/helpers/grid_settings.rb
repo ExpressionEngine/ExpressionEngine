@@ -80,7 +80,7 @@ module GridSettings
 				:show_formatting_buttons => true,
 			},
 			:rich_textarea_col => {
-				:type => ['Textarea (Rich Text)', 'rte'],
+				:type => ['Rich Text Editor', 'rte'],
 				:label => 'Rich Textarea',
 				:name => 'rich_textarea',
 				:instructions => '',
