@@ -152,11 +152,11 @@ class Snippet extends FileSyncedModel {
 
 		if ($this->site_id == 0)
 		{
-			return $basepath.'_global_snippets';
+			return $basepath.'_global_partials';
 		}
 
 		$site = ee()->config->item('site_short_name');
-		return $basepath.$site.'/snippets';
+		return $basepath.$site.'/_partials';
 	}
 
 	/**
@@ -190,8 +190,8 @@ class Snippet extends FileSyncedModel {
 			->all();
 
 		$path_site_ids = array(
-			PATH_TMPL.'_global_snippets' => 0,
-			PATH_TMPL.ee()->config->item('site_short_name').'/snippets' => ee()->config->item('site_id')
+			PATH_TMPL.'_global_partials' => 0,
+			PATH_TMPL.ee()->config->item('site_short_name').'/_partials' => ee()->config->item('site_id')
 		);
 
 		$names = $snippets->pluck('snippet_name');

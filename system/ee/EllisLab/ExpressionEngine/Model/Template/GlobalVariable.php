@@ -157,7 +157,7 @@ class GlobalVariable extends FileSyncedModel {
 		}
 
 		$site = ee()->config->item('site_short_name');
-		return $basepath.$site.'/global_variables';
+		return $basepath.$site.'/_variables';
 	}
 
 	/**
@@ -192,7 +192,7 @@ class GlobalVariable extends FileSyncedModel {
 
 		$path_site_ids = array(
 			PATH_TMPL.'_global_variables' => 0,
-			PATH_TMPL.ee()->config->item('site_short_name').'/global_variables' => ee()->config->item('site_id')
+			PATH_TMPL.ee()->config->item('site_short_name').'/_variables' => ee()->config->item('site_id')
 		);
 
 		$names = $variables->pluck('variable_name');

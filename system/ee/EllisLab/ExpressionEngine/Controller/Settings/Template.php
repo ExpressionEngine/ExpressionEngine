@@ -164,6 +164,10 @@ class Template extends Settings {
 			$snippets = ee('Model')->get('Snippet')->all();
 			$snippets->save();
 			$snippets = NULL;
+
+			$variables = ee('Model')->get('GlobalVariable')->all();
+			$variables->save();
+			$variables = NULL;
 		}
 	}
 }
