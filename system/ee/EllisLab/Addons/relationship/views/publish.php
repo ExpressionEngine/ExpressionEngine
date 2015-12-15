@@ -72,7 +72,7 @@
 				if ($multiple)
 				{
 					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked);
-					echo form_hidden($field_name.'[sort][]', 0);
+					echo '<input type="hidden" name="'.$field_name.'[sort][]'.'" value="0" disabled="disabled">';
 				}
 				else
 				{
@@ -88,7 +88,7 @@
 				echo form_hidden($field_name.'[data][]', $entry_id);
 				if ($multiple)
 				{
-					echo form_hidden($field_name.'[sort][]', 0);
+					echo '<input type="hidden" name="'.$field_name.'[sort][]'.'" value="0" disabled="disabled">';
 				}
 			}
 		?>

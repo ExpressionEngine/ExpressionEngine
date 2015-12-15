@@ -142,10 +142,8 @@
 				}
 
 				if (options.input_img) {
-					console.log('here?');
 					options.input_img = $(options.input_img);
 				} else {
-					console.log($(this).data('input-image'));
 					options.input_img = $('#' + $(this).data('input-image'));
 				}
 
@@ -213,7 +211,6 @@ function loadSettingsModal(modal, data) {
 			dataType: 'json',
 
 			success: function(result) {
-				console.log(result);
 				if (result.messageType == 'success') {
 					modal.trigger('modal:close');
 				} else {
