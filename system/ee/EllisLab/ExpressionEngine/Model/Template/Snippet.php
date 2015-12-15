@@ -181,6 +181,8 @@ class Snippet extends FileSyncedModel {
 	 */
 	public function loadAll()
 	{
+		$fs = new Filesystem();
+
 		// load up any Snippets
 		$snippets = $this->getModelFacade()->get('Snippet')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -196,6 +198,11 @@ class Snippet extends FileSyncedModel {
 
 		foreach ($path_site_ids as $path => $site_id)
 		{
+			if ( ! $fs->isDir($path))
+			{
+				continue;
+			}
+
 			$files = new FilesystemIterator($path);
 
 			foreach ($files as $item)
