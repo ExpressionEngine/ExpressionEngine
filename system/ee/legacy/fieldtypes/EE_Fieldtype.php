@@ -1068,13 +1068,21 @@ abstract class EE_Fieldtype {
 	 */
 	public function get_channel_field_list()
 	{
-		$channels_options = array();
+		$channels_options = ee()->cache->get('fieldtype/channel-field-list');
+
+		if ( ! empty($channels_options))
+		{
+			return $channels_options;
+		}
+
 		$channels = ee('Model')->get('Channel as C')
 			->with('CustomFields as CF')
-			->fields('C.channel_title', 'CF.field_id', 'CF.field_label')
+			->fields('C.channel_title', 'C.channel_id', 'CF.field_id', 'CF.field_label')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title', 'asc')
 			->all();
+
+		$channels_options = array();
 
 		foreach ($channels as $channel)
 		{
@@ -1090,8 +1098,10 @@ abstract class EE_Fieldtype {
 			$channels_options[''] = lang('no_fields');
 		}
 
+		ee()->cache->save('fieldtype/channel-field-list', $channels_options);
+
 		return $channels_options;
-	}
+ 	}
 }
 // END EE_Fieldtype class
 
