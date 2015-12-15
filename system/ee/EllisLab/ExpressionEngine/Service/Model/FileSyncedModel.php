@@ -99,17 +99,25 @@ abstract class FileSyncedModel extends Model {
 		$fs = new Filesystem();
 		$path = $this->getFilePath();
 
-		if (isset($path) && $fs->exists($path))
+		if ( ! isset($path))
 		{
-		    $mtime = $fs->mtime($path);
-
-		    if ($mtime > $this->getModificationTime())
-		    {
-				$this->unserializeFileData($fs->read($path));
-				$this->setModificationTime($mtime);
-		        $this->save();
-		    }
+			return;
 		}
+
+		if ( ! $fs->exists($path))
+		{
+			$this->writeToFile();
+			return;
+		}
+
+		$mtime = $fs->mtime($path);
+
+	    if ($mtime > $this->getModificationTime())
+	    {
+			$this->unserializeFileData($fs->read($path));
+			$this->setModificationTime($mtime);
+	        $this->save();
+	    }
 	}
 
 	/**
@@ -121,13 +129,7 @@ abstract class FileSyncedModel extends Model {
 	 */
 	public function onAfterSave()
 	{
-		$fs = new Filesystem();
-		$path = $this->getFilePath();
-
-		if (isset($path) && $fs->exists($fs->dirname($path)))
-		{
-			$fs->write($path, $this->serializeFileData(), TRUE);
-		}
+		$this->writeToFile();
 	}
 
 	/**
@@ -161,6 +163,20 @@ abstract class FileSyncedModel extends Model {
 		if (isset($path) && $fs->exists($path))
 		{
 			$fs->delete($path);
+		}
+	}
+
+	/**
+	 * Helper to write the template to the file
+	 */
+	protected function writeToFile()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+
+		if (isset($path) && $fs->exists($fs->dirname($path)))
+		{
+			$fs->write($path, $this->serializeFileData(), TRUE);
 		}
 	}
 
