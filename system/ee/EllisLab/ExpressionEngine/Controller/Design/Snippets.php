@@ -438,7 +438,10 @@ class Snippets extends AbstractDesignController {
 		}
 
 		$snippets = ee('Model')->get('Snippet', $snippet_ids)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->all();
 
 		$names = $snippets->pluck('snippet_name');
