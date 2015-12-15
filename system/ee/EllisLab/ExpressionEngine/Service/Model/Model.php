@@ -6,12 +6,11 @@ use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
-use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
-use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -36,7 +35,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements EventPublisher, EventSubscriber, ValidationAware {
+class Model extends Entity implements Subscriber, ValidationAware {
 
 
 	/**
@@ -750,30 +749,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	{
 		return $this->getMetaData('events') ?: array();
 	}
-
-	/**
-	 * Interface method to implement Event\Publisher so that others can
-	 * subscribe to events on this object.
-	 *
-	 * Technically this works automatically since the method exists on the
-	 * mixin, but doing this lets us enforce an interface, which will be
-	 * useful when hopefully replacing mixins with traits in future.
-	 */
-	public function subscribe(EventSubscriber $subscriber)
-	{
-		return $this->getMixin('Event')->subscribe($subscriber);
-	}
-
-	/**
-	 * Interface method to implement Event\Publisher
-	 *
-	 * @see Model::subscribe()
-	 */
-	public function unsubscribe(EventSubscriber $subscriber)
-	{
-		return $this->getMixin('Event')->unsubscribe($subscriber);
-	}
-
 
 	/**
 	* Get all associations
