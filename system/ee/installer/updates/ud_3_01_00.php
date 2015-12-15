@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_member_data_column_names',
-				'_add_snippet_edit_date'
+				'_add_snippet_edit_date',
+				'_add_global_variable_edit_date'
 			)
 		);
 
@@ -99,6 +100,30 @@ class Updater {
 		{
 			$snippets = ee('Model')->get('Snippet')->all();
 			$snippets->save();
+		}
+	}
+
+	/**
+	 * Add global variable edit dates so that we know when files are stale
+	 */
+	private function _add_global_variable_edit_date()
+	{
+		ee()->smartforge->add_column(
+			'global_variables',
+			array(
+				'edit_date'        => array(
+					'type'         => 'int',
+					'constraint'   => 10,
+					'null'         => FALSE,
+					'default'      => 0
+				),
+			)
+		);
+
+		if (ee()->config->item('save_tmpl_files') == 'y')
+		{
+			$variables = ee('Model')->get('GlobalVariable')->all();
+			$variables->save();
 		}
 	}
 }
