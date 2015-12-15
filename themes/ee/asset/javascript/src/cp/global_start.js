@@ -239,7 +239,7 @@ EE.cp.folderList = {
 	 * @param	{string}	listName	Unique name of folder list
 	 * @param	{func}		func		Callback function for event
 	 */
-	bind: function(listName, func) {
+	onSort: function(listName, func) {
 		if (this.eventHandlers[listName] == undefined) {
 			this.eventHandlers[listName] = [];
 		}

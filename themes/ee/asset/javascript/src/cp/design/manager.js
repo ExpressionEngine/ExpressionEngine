@@ -64,7 +64,7 @@
 		};
 
 		// Reorder template groups
-		EE.cp.folderList.bind('template-group', function(list) {
+		EE.cp.folderList.onSort('template-group', function(list) {
 			// Create an array of template group names
 			var template_groups = $.map($('> li', list), function(list_item) {
 				return $(list_item).data('group_name');
