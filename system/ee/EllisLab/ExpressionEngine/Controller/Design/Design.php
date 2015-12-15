@@ -209,7 +209,9 @@ class Design extends AbstractDesignController {
 	 */
 	public function reorderGroups()
 	{
-		if ( ! ($group_names = ee()->input->post('groups')) OR ! AJAX_REQUEST)
+		if ( ! ($group_names = ee()->input->post('groups'))
+			OR ! AJAX_REQUEST
+			OR ! ee()->cp->allowed_group('can_edit_template_groups'))
 		{
 			return;
 		}
