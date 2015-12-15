@@ -118,7 +118,6 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
-		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
