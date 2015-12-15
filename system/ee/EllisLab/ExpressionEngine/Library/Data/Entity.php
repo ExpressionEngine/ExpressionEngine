@@ -33,6 +33,12 @@ abstract class Entity extends MixableImpl implements Publisher {
 	{
 		$this->_event = new Emitter();
 
+		// Subscribe to events on self if the class is also a subscriber
+		if ($this instanceOf Subscriber)
+		{
+			$this->_event->subscribe($this);
+		}
+
 		$this->initialize();
 
 		foreach ($data as $k => $v)
