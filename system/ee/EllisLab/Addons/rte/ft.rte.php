@@ -25,7 +25,7 @@
 class Rte_ft extends EE_Fieldtype {
 
 	var $info = array(
-		'name'		=> 'Textarea (Rich Text)',
+		'name'		=> 'Rich Text Editor',
 		'version'	=> '1.0.1'
 	);
 

@@ -39,6 +39,7 @@ class CpSettings extends Profile {
 	public function index()
 	{
 		$field['allowed_channels'] = array();
+		$all_sites_have_channels = TRUE;
 
 		// If MSM is enabled, let them choose a channel for each site, should they
 		// want to redirect to the publish form on each site
@@ -59,6 +60,7 @@ class CpSettings extends Profile {
 				// No channels? Let them know
 				if (empty($field['allowed_channels'][$site->getId()]))
 				{
+					$all_sites_have_channels = FALSE;
 					$field['allowed_channels'][$site->getId()][0] = lang('no_channels');
 				}
 			}
@@ -77,6 +79,7 @@ class CpSettings extends Profile {
 
 			if (empty($field['allowed_channels']))
 			{
+				$all_sites_have_channels = FALSE;
 				$field['allowed_channels'][0] = lang('no_channels');
 			}
 
@@ -85,6 +88,7 @@ class CpSettings extends Profile {
 		}
 
 		$field['member'] = $this->member;
+		$field['all_sites_have_channels'] = $all_sites_have_channels;
 
 		$vars['sections'] = array(
 			array(
@@ -107,14 +111,29 @@ class CpSettings extends Profile {
 		{
 			$validator = ee('Validation')->make();
 
-			// Only validate cp_homepage_custom if "Custom URL" is selected
-			$validator->defineRule('validateCpHomepageCustom', function($key, $value, $parameters, $rule)
+			$validator->defineRule('whenTypeIs', function($key, $value, $parameters, $rule)
 			{
-				return ($_POST['cp_homepage'] == 'custom') ? TRUE : $rule->skip();
+				if ($_POST['cp_homepage'] != $parameters[0])
+				{
+					$rule->skip();
+				}
+
+				return TRUE;
+			});
+
+			$validator->defineRule('validateHomepageChannel', function () use ($all_sites_have_channels)
+			{
+				if ( ! $all_sites_have_channels)
+				{
+					return 'must_have_channels';
+				}
+
+				return TRUE;
 			});
 
 			$validator->setRules(array(
-				'cp_homepage_custom' => 'validateCpHomepageCustom|required'
+				'cp_homepage' => 'whenTypeIs[publish_form]|validateHomepageChannel',
+				'cp_homepage_custom' => 'whenTypeIs[custom]|required'
 			));
 
 			$result = $validator->validate($_POST);

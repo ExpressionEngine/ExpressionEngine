@@ -183,12 +183,6 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		$date_js_globals = array(
-			'date_format'     => ee()->localize->datepicker_format(),
-			'time_format'     => ee()->session->userdata('time_format', ee()->config->item('time_format')),
-			'include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
-		);
-
 		ee()->lang->loadfile('calendar');
 
 		ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());

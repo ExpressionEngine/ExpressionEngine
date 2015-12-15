@@ -1193,6 +1193,7 @@ class Addons extends CP_Controller {
 		$model = ee('Model')->get('Plugin')
 			->filter('plugin_package', $name)
 			->first();
+
 		if ( ! is_null($model))
 		{
 			$data['installed'] = TRUE;
@@ -1312,7 +1313,7 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
-		$class_name =ucfirst($name) . '_ext';
+		$class_name = ucfirst($name) . '_ext';
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),

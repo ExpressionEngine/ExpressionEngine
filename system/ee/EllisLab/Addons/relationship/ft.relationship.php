@@ -265,7 +265,25 @@ class Relationship_ft extends EE_Fieldtype {
 			$selected[$data] = $data;
 		}
 
-		if ($entry_id && ! AJAX_REQUEST)
+		// Fetch existing related entries?
+		$get_related = FALSE;
+		if ($entry_id)
+		{
+			// If we have an entry_id then we are editing and likely need to
+			// get related entries
+			$get_related = TRUE;
+
+			// If this relationship belongs to a grid and doesn't have a
+			// row id, then we are not editing and should not look for
+			// related entries.
+			if (isset($this->settings['grid_field_id'])
+				&& ! isset($this->settings['grid_row_id']))
+			{
+				$get_related = FALSE;
+			}
+		}
+
+		if ($get_related)
 		{
 			$wheres = array(
 				'parent_id' => $entry_id,
@@ -313,7 +331,11 @@ class Relationship_ft extends EE_Fieldtype {
 
 			foreach ($related as $row)
 			{
-				$selected[$row['child_id']] = $row['child_id'];
+				if ( ! AJAX_REQUEST)
+				{
+					$selected[$row['child_id']] = $row['child_id'];
+				}
+
 				$order[$row['child_id']] = $row['order'];
 			}
 		}

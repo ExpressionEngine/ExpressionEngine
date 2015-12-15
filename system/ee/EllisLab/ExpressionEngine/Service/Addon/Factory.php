@@ -48,6 +48,11 @@ class Factory {
 	 */
 	public function get($name)
 	{
+		if ( ! $this->app->has($name))
+		{
+			return NULL;
+		}
+
 		$provider = $this->app->get($name);
 
 		if ($this->isAddon($provider))
@@ -60,6 +65,8 @@ class Factory {
 
 	/**
 	 * Get all addons
+	 *
+	 * @return array An array of Addon objects.
 	 */
 	public function all()
 	{
@@ -80,6 +87,8 @@ class Factory {
 
 	/**
 	 * Fetch all installed addons
+	 *
+	 * @return array An array of Addon objects.
 	 */
 	public function installed()
 	{
