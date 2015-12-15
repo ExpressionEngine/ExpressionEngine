@@ -71,9 +71,14 @@ abstract class AbstractDesign extends CP_Controller {
 				->withRemovalKey('group_name')
 			->withNoResultsText(lang('zero_template_groups_found'));
 
+		if (ee()->cp->allowed_group('can_edit_template_groups'))
+		{
+			$template_group_list->canReorder();
+		}
+
 		$template_groups = ee('Model')->get('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_name', 'asc');
+			->order('group_order', 'asc');
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
