@@ -271,25 +271,57 @@ class Fields extends AbstractChannelsController {
 		return $field;
 	}
 
-	private function form(ChannelField $field = NULL)
+	private function getFieldtypes(ChannelField $field = NULL)
 	{
-		$fieldtypes = ee('Model')->get('Fieldtype');
+		$fieldtypes = array();
+		$compatibility = array();
+
+		foreach (ee('Addon')->installed() as $addon)
+		{
+			if ($addon->hasFieldtype())
+			{
+				if ($field)
+				{
+					foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
+					{
+						if (isset($metadata['compatibility']))
+						{
+							$compatibility[$fieldtype] = $metadata['compatibility'];
+						}
+					}
+				}
+
+				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
+			}
+		}
 
 		if ($field)
 		{
-			$fieldtypes = $fieldtypes->filter('name', $field->field_type);
+			$my_type = $compatibility[$field->field_type];
+
+			$compatible = array_filter($compatibility, function($v) use($my_type)
+			{
+				return $v == $my_type;
+			});
+
+			$fieldtypes = array_intersect_key($fieldtypes, $compatible);
 		}
 
-		$fieldtypes = $fieldtypes->order('name')
+		asort($fieldtypes);
+
+		return $fieldtypes;
+	}
+
+	private function form(ChannelField $field = NULL)
+	{
+		$fieldtype_choices = $this->getFieldtypes($field);
+
+		$fieldtypes = ee('Model')->get('Fieldtype')
+			->fields('name')
+			->filter('name', 'IN', array_keys($fieldtype_choices))
+			->order('name')
 			->all();
 
-		$fieldtype_choices = array();
-
-		foreach ($fieldtypes as $fieldtype)
-		{
-			$info = ee('App')->get($fieldtype->name);
-			$fieldtype_choices[$fieldtype->name] = $info->getName();
-		}
 
 		if ( ! $field)
 		{
@@ -297,8 +329,6 @@ class Fields extends AbstractChannelsController {
 		}
 
 		$field->field_type = ($field->field_type) ?: 'text';
-
-		$fieldtype_disabled = ! $field->isNew();
 
 		$sections = array(
 			array(
@@ -310,8 +340,7 @@ class Fields extends AbstractChannelsController {
 							'type' => 'select',
 							'choices' => $fieldtype_choices,
 							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
-							'value' => $field->field_type,
-							'disabled' => $fieldtype_disabled
+							'value' => $field->field_type
 						)
 					)
 				),

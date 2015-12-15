@@ -1,3 +1,7 @@
+if (EE.cp === undefined) {
+	EE.cp = {};
+}
+
 EE.cp.datePicker = {
 
 	zeropad: function (val) {

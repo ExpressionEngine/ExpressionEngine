@@ -281,7 +281,7 @@ $(document).ready(function(){
 	// ==================================
 
 		// listen for clicks on inputs within a choice classed label
-		$('body').on('click', '.choice input', function() {
+		$('body').on('click change', '.choice input', function() {
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});

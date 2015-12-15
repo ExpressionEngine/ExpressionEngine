@@ -1069,8 +1069,9 @@ abstract class EE_Fieldtype {
 	public function get_channel_field_list()
 	{
 		$channels_options = array();
-		$channels = ee('Model')->get('Channel')
-			->with('CustomFields')
+		$channels = ee('Model')->get('Channel as C')
+			->with('CustomFields as CF')
+			->fields('C.channel_title', 'CF.field_id', 'CF.field_label')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title', 'asc')
 			->all();
