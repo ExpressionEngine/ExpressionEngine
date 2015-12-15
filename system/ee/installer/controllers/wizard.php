@@ -420,7 +420,9 @@ class Wizard extends CI_Controller {
 
 		// Make sure the Member module is installed in the case the user is
 		// upgrading from Core to Standard
-		if ( ! IS_CORE && ee('Addon')->get('Member') === NULL)
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		if ( ! IS_CORE
+			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
 		{
 			ee()->load->library('addons');
 			ee()->addons->install_modules(array('member'));
