@@ -90,14 +90,16 @@ class Template extends AbstractDesignController {
 		if (ee()->input->post('template_id'))
 		{
 			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
-				->first()
-				->getValues();
+				->first();
 
-			unset($master_template['template_id']);
-			unset($master_template['group_id']);
-			unset($master_template['hits']);
+			$properties = $master_template->getValues();
 
-			$template->set($master_template);
+			unset($properties['template_id']);
+			unset($properties['site_id']);
+			unset($properties['group_id']);
+			unset($properties['hits']);
+
+			$template->set($properties);
 		}
 
 		$result = $this->validateTemplate($template);
@@ -113,6 +115,10 @@ class Template extends AbstractDesignController {
 				if ( ! ee()->input->post('template_id'))
 				{
 					$template->NoAccess = NULL;
+				}
+				else
+				{
+					$template->NoAccess = $master_template->NoAccess;
 				}
 
 				$template->save();

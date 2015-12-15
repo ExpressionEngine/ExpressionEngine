@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 3.1.0
+ * @since		Version 3.0.5
  * @filesource
  */
 
@@ -38,7 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_update_member_data_column_names',
+				'install_required_modules',
 			)
 		);
 
@@ -50,30 +50,36 @@ class Updater {
 		return TRUE;
 	}
 
+	// -------------------------------------------------------------------------
+
 	/**
-	 * Fields created in 3.0 were missing the 'm_' prefix on their data columns,
-	 * so we need to add the prefix back
+	 * Ensure required modules are installed
+	 * @return void
 	 */
-	private function _update_member_data_column_names()
+	public function install_required_modules()
 	{
-		$member_data_columns = ee()->db->list_fields('member_data');
+		ee()->load->library('addons');
 
-		$columns_to_modify = array();
-		foreach ($member_data_columns as $column)
+		$installed_modules = ee()->db->select('module_name')->get('modules');
+		$required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');
+
+		foreach ($installed_modules->result() as $installed_module)
 		{
-			if ($column == 'member_id' OR 						// Don't rename the primary key
-				substr($column, 0, 2) == 'm_' OR 				// or if it already has the prefix
-				in_array('m_'.$column, $member_data_columns)) 	// or if the prefixed column already exists (?!)
-			{
-				continue;
-			}
-
-			$columns_to_modify[$column] = array(
-				'name' => 'm_'.$column,
-				'type' => (strpos($column, 'field_ft_') !== FALSE) ? 'tinytext' : 'text'
+			$key = array_search(
+				strtolower($installed_module->module_name),
+				$required_modules
 			);
+
+			if ($key !== FALSE)
+			{
+				unset($required_modules[$key]);
+			}
 		}
 
-		ee()->smartforge->modify_column('member_data', $columns_to_modify);
+		ee()->addons->install_modules($required_modules);
 	}
 }
+/* END CLASS */
+
+/* End of file ud_3_00_05.php */
+/* Location: ./system/expressionengine/installer/updates/ud_3_00_05.php */

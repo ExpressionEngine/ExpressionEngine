@@ -63,6 +63,37 @@ feature 'Installer' do
       @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
       @page.install_success.all_there?.should == true
     end
+
+    it 'has all require modules installed after installation' do
+      @page.install_form.db_hostname.set '127.0.0.1'
+      @page.install_form.db_name.set $test_config[:db_name]
+      @page.install_form.db_username.set $test_config[:db_username]
+      @page.install_form.db_password.set $test_config[:db_password]
+      @page.install_form.username.set 'admin'
+      @page.install_form.email_address.set 'hello@ellislab.com'
+      @page.install_form.password.set 'password'
+      @page.install_form.license_agreement.click
+      @page.install_form.install_submit.click
+
+      no_php_js_errors
+      @page.req_title.text.should eq 'Completed'
+      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.install_success.all_there?.should == true
+
+      installed_modules = []
+      $db.query('SELECT module_name FROM exp_modules').each do |row|
+        installed_modules << row['module_name'].downcase
+      end
+
+      installed_modules.should include('channel')
+      installed_modules.should include('comment')
+      installed_modules.should include('member')
+      installed_modules.should include('stats')
+      installed_modules.should include('rte')
+      installed_modules.should include('file')
+      installed_modules.should include('filepicker')
+      installed_modules.should include('search')
+    end
   end
 
   context 'when using invalid database credentials' do

@@ -31,23 +31,11 @@ class Channel_form_javascript
 	 */
 	public function __construct($params = array())
 	{
-		if (ee()->config->item('use_compressed_js') == 'n')
-		{
-			$this->js_path = PATH_THEMES.'asset/javascript/src/';
+		$this->js_path = PATH_THEMES.'asset/javascript/'.PATH_JS.'/';
 
-			if ( ! defined('PATH_JQUERY'))
-			{
-				define('PATH_JQUERY', $this->js_path.'jquery/');
-			}
-		}
-		else
+		if ( ! defined('PATH_JQUERY'))
 		{
-			$this->js_path = PATH_THEMES.'asset/javascript/compressed/';
-
-			if ( ! defined('PATH_JQUERY'))
-			{
-				define('PATH_JQUERY', $this->js_path.'jquery/');
-			}
+			define('PATH_JQUERY', $this->js_path.'jquery/');
 		}
 
 		ee()->lang->loadfile('jquery');
@@ -75,7 +63,7 @@ class Channel_form_javascript
 
 		ee()->load->helper('smiley');
 
-		ee()->output->append_output(((ee()->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE))."\n\n");
+		ee()->output->append_output(((PATH_JS !== 'src') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE))."\n\n");
 
 		ee()->output->append_output(file_get_contents($this->js_path.'channel_form.js'));
 

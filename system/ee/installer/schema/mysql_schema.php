@@ -593,7 +593,7 @@ class EE_Schema {
 			comment_max_chars int(5) unsigned NULL DEFAULT '5000',
 			comment_timelock int(5) unsigned NOT NULL default '0',
 			comment_require_email char(1) NOT NULL default 'y',
-			comment_text_formatting char(5) NOT NULL default 'xhtml',
+			comment_text_formatting char(40) NOT NULL default 'xhtml',
 			comment_html_formatting char(4) NOT NULL default 'safe',
 			comment_allow_img_urls char(1) NOT NULL default 'n',
 			comment_auto_link_urls char(1) NOT NULL default 'y',

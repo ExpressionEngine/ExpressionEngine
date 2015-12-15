@@ -113,6 +113,25 @@ feature 'Updater' do
       test_update
       test_templates
     end
+
+    it 'has all required modules installed after the update' do
+      test_update
+      test_templates
+
+      installed_modules = []
+      $db.query('SELECT module_name FROM exp_modules').each do |row|
+        installed_modules << row['module_name'].downcase
+      end
+
+      installed_modules.should include('channel')
+      installed_modules.should include('comment')
+      installed_modules.should include('member')
+      installed_modules.should include('stats')
+      installed_modules.should include('rte')
+      installed_modules.should include('file')
+      installed_modules.should include('filepicker')
+      installed_modules.should include('search')
+    end
   end
 
   it 'updates and creates a mailing list export when updating from 2.x to 3.x with the mailing list module' do

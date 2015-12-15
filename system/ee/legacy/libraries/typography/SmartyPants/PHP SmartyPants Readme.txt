@@ -3,22 +3,22 @@ PHP SmartyPants
 
 Version 1.5.1f - Sun 23 Jan 2013
 
-by Michel Fortin  
+by Michel Fortin
 <http://michelf.ca/>
 
-based on work by John Gruber  
+based on work by John Gruber
 <http://daringfireball.net/>
 
 
 Introduction
 ------------
 
-PHP SmartyPants is a port to PHP of the original SmartyPants written 
+PHP SmartyPants is a port to PHP of the original SmartyPants written
 in Perl by John Gruber.
 
-PHP SmartyPants is a free web publishing plug-in for WordPress and 
-Smarty template engine that easily translates plain ASCII punctuation 
-characters into "smart" typographic punctuation HTML entities. 
+PHP SmartyPants is a free web publishing plug-in for WordPress and
+Smarty template engine that easily translates plain ASCII punctuation
+characters into "smart" typographic punctuation HTML entities.
 SmartyPants can also be invoked as a standalone PHP function.
 
 SmartyPants can perform the following transformations:
@@ -29,9 +29,9 @@ SmartyPants can perform the following transformations:
 *   Dashes (`--` and `---`) into en- and em-dash entities
 *   Three consecutive dots (`...`) into an ellipsis entity
 
-This means you can write, edit, and save using plain old ASCII straight 
-quotes, plain dashes, and plain dots, but your published posts (and 
-final HTML output) will appear with smart quotes, em-dashes, and proper 
+This means you can write, edit, and save using plain old ASCII straight
+quotes, plain dashes, and plain dots, but your published posts (and
+final HTML output) will appear with smart quotes, em-dashes, and proper
 ellipses.
 
 SmartyPants does not modify characters within `<pre>`, `<code>`,
@@ -81,28 +81,28 @@ PHP SmartyPants require PHP version 4.0.5 or later.
 
 ### WordPress ###
 
-WordPress already include a filter called "Texturize" with the same 
-goal as SmartyPants. You could still find some usefulness to 
+WordPress already include a filter called "Texturize" with the same
+goal as SmartyPants. You could still find some usefulness to
 PHP SmartyPants if you are not happy enough with the standard algorithm.
 
 PHP SmartyPants works with [WordPress][wp], version 1.2 or later.
 
 [wp]: http://wordpress.org/
 
-1.  To use PHP SmartyPants with WordPress, place the "smartypants.php" 
-    file in the "plugins" folder. This folder is hidden inside 
+1.  To use PHP SmartyPants with WordPress, place the "smartypants.php"
+    file in the "plugins" folder. This folder is hidden inside
     "wp-content" at the root of your site:
 
         (site home)/wp-content/plugins/smartypants.php
 
-2.  Activate the plugin with the administrative interface of WordPress. 
-    In the "Plugins" section you will now find SmartyPants. To activate 
-    the plugin, click on the "Activate" button on the same line than 
+2.  Activate the plugin with the administrative interface of WordPress.
+    In the "Plugins" section you will now find SmartyPants. To activate
+    the plugin, click on the "Activate" button on the same line than
     SmartyPants. Your entries will now be filtered by PHP SmartyPants.
 
-Note: It is not possible at this time to apply a different set of 
-filters to different entries. All your entries will be filtered by 
-PHP SmartyPants if the plugin is active. This is currently a limitation 
+Note: It is not possible at this time to apply a different set of
+filters to different entries. All your entries will be filtered by
+PHP SmartyPants if the plugin is active. This is currently a limitation
 of WordPress.
 
 
@@ -130,8 +130,8 @@ SmartyPants works with Blosxom version 2.0 or later.
 
 ### In your programs ###
 
-You can use PHP SmartyPants easily in your current PHP program. Simply 
-include the file and then call the `SmartyPants` function on the text 
+You can use PHP SmartyPants easily in your current PHP program. Simply
+include the file and then call the `SmartyPants` function on the text
 you want to convert:
 
 	include_once "smartypants.php";
@@ -140,9 +140,9 @@ you want to convert:
 
 ### With Smarty ###
 
-If your program use the [Smarty][sm] template engine, PHP SmartyPants 
-can now be used as a modifier for your templates. Rename 
-"smartypants.php" to "modifier.smartypants.php" and put it in your 
+If your program use the [Smarty][sm] template engine, PHP SmartyPants
+can now be used as a modifier for your templates. Rename
+"smartypants.php" to "modifier.smartypants.php" and put it in your
 smarty plugins folder.
 
 [sm]: http://smarty.php.net/
@@ -152,9 +152,9 @@ Options and Configuration
 -------------------------
 
 Settings are specified by editing the value of the `$smartypants_attr`
-variable in the "smartypants.php" file. For users of the Smarty template 
-engine, the "smartypants" modifier also takes an optional attribute where 
-you can specify configuration options, like this: 
+variable in the "smartypants.php" file. For users of the Smarty template
+engine, the "smartypants" modifier also takes an optional attribute where
+you can specify configuration options, like this:
 `{$var|smartypants:1}` (where "1" is the configuration option).
 
 Numeric values are the easiest way to configure SmartyPants's behavior:
@@ -315,7 +315,7 @@ Version History
 *	Fixed handling of HTML comments to match latest HTML specs instead of
 	doing it the old SGML way.
 
-*	Lowered WordPress filtering priority to avoid clashing with the 
+*	Lowered WordPress filtering priority to avoid clashing with the
 	[caption] tag filter. Thanks to Mehdi Kabab for the fix.
 
 
@@ -326,7 +326,7 @@ Version History
 
 1.5.1e (9 Dec 2005)
 
-*	Corrected a bug that prevented special characters from being 
+*	Corrected a bug that prevented special characters from being
     escaped.
 
 
@@ -346,8 +346,8 @@ Version History
 
 *	Corrected a problem with quotes immediately following a dash
 	with no space between: `Text--"quoted text"--text.`
-	
-*	PHP SmartyPants can now be used as a modifier by the Smarty 
+
+*	PHP SmartyPants can now be used as a modifier by the Smarty
 	template engine. Rename the file to "modifier.smartypants.php"
 	and put it in your smarty plugins folder.
 
@@ -356,7 +356,7 @@ Version History
 
 1.5.1a (30 Jun 2004)
 
-*	PHP Markdown and PHP Smartypants now share the same `_TokenizeHTML` 
+*	PHP Markdown and PHP Smartypants now share the same `_TokenizeHTML`
 	function when loaded simultanously.
 
 *	Changed the internals of `_TokenizeHTML` to lower the PHP version
@@ -365,19 +365,19 @@ Version History
 
 1.5.1 (6 Jun 2004)
 
-*	Initial release of PHP SmartyPants, based on version 1.5.1 of the 
+*	Initial release of PHP SmartyPants, based on version 1.5.1 of the
 	original SmartyPants written in Perl.
 
 
 Copyright and License
 ---------------------
 
-Copyright (c) 2005-2013 Michel Fortin  
+Copyright (c) 2005-2013 Michel Fortin
 <http://michelf.ca/>
 All rights reserved.
 
-Copyright (c) 2003-2004 John Gruber   
-<http://daringfireball.net/>   
+Copyright (c) 2003-2004 John Gruber
+<http://daringfireball.net/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

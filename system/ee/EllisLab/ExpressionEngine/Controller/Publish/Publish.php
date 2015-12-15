@@ -134,8 +134,13 @@ class Publish extends AbstractPublishController {
 	 *   the form
 	 * @return string Rendered HTML
 	 */
-	public function create($channel_id, $autosave_id = NULL)
+	public function create($channel_id = NULL, $autosave_id = NULL)
 	{
+		if ( ! $channel_id)
+		{
+			show_404();
+		}
+
 		if ( ! ee()->cp->allowed_group('can_create_entries'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -145,7 +150,7 @@ class Publish extends AbstractPublishController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
-		if (!$channel)
+		if ( ! $channel)
 		{
 			show_error(lang('no_channel_exists'));
 		}

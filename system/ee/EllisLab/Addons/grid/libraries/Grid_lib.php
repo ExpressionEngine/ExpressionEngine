@@ -83,10 +83,22 @@ class Grid_lib {
 			{
 				if ($row_id)
 				{
-					return $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+					if ( ! array_key_exists($row_id, $rows))
+					{
+						$row_id = 'row_id_'.$row_id;
+					}
+
+					if (array_key_exists($row_id, $rows))
+					{
+						$html = $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+					}
+				}
+				else
+				{
+					$html = $this->_publish_field_cell($columns[$column_id]);
 				}
 
-				return $this->_publish_field_cell($columns[$column_id]);
+				return $grid->namespaceForGrid($html, $row_id);
 			}
 		}
 
