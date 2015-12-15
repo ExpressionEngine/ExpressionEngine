@@ -333,6 +333,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for finfo_open
+		if (function_exists('finfo_open'))
+		{
+			$this->set_output('error', array('error' => lang('fileinfo_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
