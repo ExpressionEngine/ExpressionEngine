@@ -41,6 +41,19 @@ module Installer
 
       return if options.empty?
 
+      # Check for database options
+      if options[:database]
+        options[:database].each do |key, value|
+          swap(
+            @config,
+            /'#{key}' => .*?,/,
+            "'#{key}' => '#{value}',"
+          )
+        end
+
+        options.delete(:database)
+      end
+
       options.each do |key, value|
         swap(
           @config,
