@@ -55,7 +55,7 @@ class ControlPanelPage < SitePrism::Page
 	# Waits until the error message is gone before proceeding;
 	# if we just check for invisible but it's already gone,
 	# Capybara will complain, so we must do this
-	def wait_for_error_message_count(count)
+	def wait_for_error_message_count(count, seconds = 5)
 
 		# Wait for any AJAX requests or other scripts that have backed up
 		ajax = false
@@ -69,7 +69,7 @@ class ControlPanelPage < SitePrism::Page
 		# except we're not going to throw an exception if the element
 		# is already gone thus breaking our test; if the element is already
 		# gone, AJAX and the DOM have already done their job
-		while element_count != count && i < 500
+		while element_count != count && i < (seconds * 100)
 			begin
 				element_count = self.error_messages.size
 			rescue
