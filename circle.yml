@@ -6,7 +6,6 @@ machine:
     ee2.test: 127.0.0.1
   environment:
     php_versions: 5.3.10 5.3.25 5.4.37 5.5.21 5.6.14
-    QMAKE: /opt/qt54/bin/qmake
 
 dependencies:
   pre:
@@ -16,6 +15,7 @@ dependencies:
     - sudo apt-get install -y qt54webkit libwebkit-dev libgstreamer0.10-dev
     - echo "/opt/qt54/bin/qt54-env.sh" >> ~/.circlerc
   override:
+    - "QMAKE=/opt/qt54/bin/qmake"
     - "cd tests/rspec && bundle install --without development --deployment"
     - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
   post:
