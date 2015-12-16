@@ -334,7 +334,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Check for finfo_open
-		if (function_exists('finfo_open'))
+		if ( ! function_exists('finfo_open'))
 		{
 			$this->set_output('error', array('error' => lang('fileinfo_missing')));
 			return FALSE;
