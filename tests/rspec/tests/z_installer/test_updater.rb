@@ -179,7 +179,6 @@ feature 'Updater' do
     test_update
 
     $db.query('SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').each do |row|
-      p row
       row['count'].should == 1
     end
   end
