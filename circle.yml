@@ -10,7 +10,7 @@ machine:
 
 dependencies:
   pre:
-  	- sudo apt-get install apt -y
+    - sudo apt-get install apt -y
     - sudo add-apt-repository ppa:beineri/opt-qt542 -y
     - sudo apt-get update -y; true
     - sudo apt-get install -y qt54webkit libwebkit-dev libgstreamer0.10-dev
