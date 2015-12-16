@@ -978,8 +978,10 @@ class Wizard extends CI_Controller {
 	{
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
-		// Try to rename automatically
-		if ($this->rename_installer())
+		// Try to rename automatically if there are no errors
+		if ($this->rename_installer()
+			&& empty($template_variables['errors'])
+			&& empty($template_variables['error_messages']))
 		{
 			ee()->load->helper('url');
 			redirect($cp_login_url);
