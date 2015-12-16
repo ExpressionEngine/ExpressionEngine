@@ -3,7 +3,7 @@ class ControlPanelPage < SitePrism::Page
 	section :main_menu, MenuSection, 'section.menu-wrap'
 	elements :submit_buttons, '.form-ctrls input.btn'
 	element :fieldset_errors, '.invalid'
-	element :settings_btn, 'b.ico.settings'
+	element :settings_btn, '.dev-menu .settings > a'
 	elements :error_messages, 'em.ee-form-error-message'
 
 	# Tables
