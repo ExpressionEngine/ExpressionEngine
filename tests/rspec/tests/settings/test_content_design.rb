@@ -52,7 +52,7 @@ feature 'Content & Design Settings' do
     @page.image_resize_protocol.select 'NetPBM'
     @page.image_library_path.set ''
     @page.image_library_path.trigger 'blur'
-    @page.wait_for_error_message_count(1)
+    @page.wait_for_error_message_count(1, 10)
     should_have_form_errors(@page)
     should_have_error_text(@page.image_library_path, image_library_path_error)
 

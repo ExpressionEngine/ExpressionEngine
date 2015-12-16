@@ -425,6 +425,16 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Make sure the Member module is installed in the case the user is
+		// upgrading from Core to Standard
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		if ( ! IS_CORE
+			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(array('member'));
+		}
+
 		// If this is FALSE it means the user is running the most current
 		// version. We will show the "you are running the most current version"
 		// template
