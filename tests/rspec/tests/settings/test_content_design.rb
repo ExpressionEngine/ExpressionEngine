@@ -33,47 +33,46 @@ feature 'Content & Design Settings' do
     @page.emoticon_url.value.should == ee_config(item: 'emoticon_url')
   end
 
-  it 'should validate the form' do
-    image_library_path_error = 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.'
+  context 'when validating the form' do
+    let(:image_library_path_error) { 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.' }
+    let (:invalid_path) { 'The path you submitted is not valid.' }
 
-    # AJAX validation
-    # Should only show an error for image library path if ImageMagick or NetPBM are selected
-    @page.image_resize_protocol.select 'ImageMagick'
-    @page.image_library_path.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_form_errors(@page)
-    should_have_error_text(@page.image_library_path, image_library_path_error)
+    it 'validates image resize protocol when using ImageMagick' do
+      # Should only show an error for image library path if ImageMagick or NetPBM are selected
+      @page.image_resize_protocol.select 'ImageMagick'
+      @page.image_library_path.set ''
+      @page.image_library_path.trigger 'blur'
+      @page.wait_for_error_message_count(1)
+      should_have_form_errors(@page)
+      should_have_error_text(@page.image_library_path, image_library_path_error)
+    end
 
-    @page.image_library_path.set '/'
-    @page.wait_for_error_message_count(0)
-    should_have_no_form_errors(@page)
-    should_have_no_error_text(@page.image_library_path)
+    it 'validates image resize protocol when using NetPBM' do
+      @page.image_resize_protocol.select 'NetPBM'
+      @page.image_library_path.set ''
+      @page.image_library_path.trigger 'blur'
+      @page.wait_for_error_message_count(1, 10)
+      should_have_form_errors(@page)
+      should_have_error_text(@page.image_library_path, image_library_path_error)
+    end
 
-    @page.image_resize_protocol.select 'NetPBM'
-    @page.image_library_path.set ''
-    @page.image_library_path.trigger 'blur'
-    @page.wait_for_error_message_count(1, 10)
-    should_have_form_errors(@page)
-    should_have_error_text(@page.image_library_path, image_library_path_error)
+    it 'validates a nonsense image library path' do
+      @page.image_resize_protocol.select 'NetPBM'
+      @page.image_library_path.set 'dfsdf'
+      @page.image_library_path.trigger 'blur'
+      @page.wait_for_error_message_count(1)
+      should_have_form_errors(@page)
+      should_have_error_text(@page.image_library_path, invalid_path)
+    end
 
-    @page.image_library_path.set '/'
-    @page.image_library_path.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-
-    invalid_path = 'The path you submitted is not valid.'
-
-    @page.image_library_path.set 'dfsdf'
-    @page.image_library_path.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_form_errors(@page)
-    should_have_error_text(@page.image_library_path, invalid_path)
-
-    @page.image_resize_protocol.select 'GD'
-    @page.image_library_path.set ''
-    @page.image_library_path.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-    should_have_no_form_errors(@page)
-    should_have_no_error_text(@page.image_library_path)
+    it 'validates a valid set of library and path' do
+      @page.image_resize_protocol.select 'GD'
+      @page.image_library_path.set ''
+      @page.image_library_path.trigger 'blur'
+      @page.wait_for_error_message_count(0)
+      should_have_no_form_errors(@page)
+      should_have_no_error_text(@page.image_library_path)
+    end
   end
 
   it 'should reject XSS' do
