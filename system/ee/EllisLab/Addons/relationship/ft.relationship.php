@@ -547,17 +547,17 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			if (empty($this->children))
+			if ( ! isset($this->children[$entry_id]))
 			{
 				// Cache children for this entry
-				$this->children = $children = ee('Model')->get('ChannelEntry', $entry_id)
+				$this->children[$entry_id] = $children = ee('Model')->get('ChannelEntry', $entry_id)
 					->with('Children')
 					->first()
 					->Children;
 			}
 			else
 			{
-				$children = $this->children;
+				$children = $this->children[$entry_id];
 			}
 
 			if (AJAX_REQUEST)
