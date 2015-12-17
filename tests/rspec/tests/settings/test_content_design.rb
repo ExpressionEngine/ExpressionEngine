@@ -37,6 +37,14 @@ feature 'Content & Design Settings' do
     let(:image_library_path_error) { 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.' }
     let (:invalid_path) { 'The path you submitted is not valid.' }
 
+    after :each do
+      @page.image_library_path.set '/'
+      @page.image_library_path.trigger 'blur'
+      @page.wait_for_error_message_count(0)
+      should_have_no_form_errors(@page)
+      should_have_no_error_text(@page.image_library_path)
+    end
+
     it 'validates image resize protocol when using ImageMagick' do
       # Should only show an error for image library path if ImageMagick or NetPBM are selected
       @page.image_resize_protocol.select 'ImageMagick'
