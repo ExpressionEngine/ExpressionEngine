@@ -33,6 +33,11 @@ class Relationship_ft extends EE_Fieldtype {
 
 	private $_table = 'relationships';
 
+	// Cache variables
+	protected $channels = array();
+	protected $entries = array();
+	protected $children = array();
+
 	/**
 	 * Validate Field
 	 *
@@ -351,8 +356,14 @@ class Relationship_ft extends EE_Fieldtype {
 		$show_future = (bool) $this->settings['future'];
 
 		$order_field = $this->settings['order_field'];
+		$order_dir = $this->settings['order_dir'];
 
 		$separate_query_for_selected = (count($selected) && $limit);
+
+		// Create a cache ID based on the query criteria for this field so fields
+		// with similar entry listings can share data that's already been queried
+		$cache_id = md5(serialize(compact('limit_channels', 'limit_categories', 'limit_statuses',
+			'limit_authors', 'limit', 'show_expired', 'show_future', 'order_field', 'order_dir')));
 
 		// Bug 19321, old fields use date
 		if ($order_field == 'date')
@@ -364,7 +375,7 @@ class Relationship_ft extends EE_Fieldtype {
 			->with('Channel')
 			->fields('Channel.*', 'entry_id', 'title', 'channel_id')
 			->filter('site_id', ee()->config->item('site_id'))
-			->order($order_field, $this->settings['order_dir']);
+			->order($order_field, $order_dir);
 
 		if (AJAX_REQUEST)
 		{
@@ -379,18 +390,25 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
+		// Create a cache of channel names
+		if (empty($this->channels))
+		{
+			$this->channels = ee('Model')->get('Channel')
+				->fields('channel_title')
+				->all();
+		}
+
 		if (count($limit_channels))
 		{
 			$entries->filter('channel_id', 'IN', $limit_channels);
-			$channels = ee('Model')->get('Channel', $limit_channels)
-				->fields('channel_id', 'channel_title')
-				->all();
+			$channels = $this->channels->filter(function($channel) use ($limit_channels)
+			{
+				return in_array($channel->getId(), $limit_channels);
+			});
 		}
 		else
 		{
-			$channels = ee('Model')->get('Channel')
-				->fields('channel_id', 'channel_title')
-				->all();
+			$channels = $this->channels;
 		}
 
 		if (count($limit_categories))
@@ -432,7 +450,7 @@ class Relationship_ft extends EE_Fieldtype {
 			{
 				$entries->filterGroup()
 					->filter('author_id', 'IN', implode(', ', $members))
-					->orFilter('group_id', 'IN', implode(', ', $groups))
+					->orFilter('Author.group_id', 'IN', implode(', ', $groups))
 					->endFilterGroup();
 			}
 			else
@@ -444,7 +462,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 				if (count($groups))
 				{
-					$entries->filter('group_id', 'IN', implode(', ', $groups));
+					$entries->filter('Author.group_id', 'IN', implode(', ', $groups));
 				}
 			}
 		}
@@ -491,14 +509,22 @@ class Relationship_ft extends EE_Fieldtype {
 				->map(function($entry) use(&$entries) { $entries[] = $entry; });
 
 			$entries = $entries->sortBy($order_field);
-			if (strtolower($this->settings['order_dir']) == 'desc')
+			if (strtolower($order_dir) == 'desc')
 			{
 				$entries = $entries->reverse();
 			}
 		}
 		else
 		{
-			$entries = $entries->all();
+			// Don't query if we have this same query in the cache
+			if (isset($this->entries[$cache_id]))
+			{
+				$entries = $this->entries[$cache_id];
+			}
+			else
+			{
+				$this->entries[$cache_id] = $entries = $entries->all();
+			}
 		}
 
 		if (REQ != 'CP' && $this->settings['allow_multiple'] == 0)
@@ -521,9 +547,18 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			$children = ee('Model')->get('ChannelEntry', $entry_id)
-				->first()
-				->Children;
+			if ( ! isset($this->children[$entry_id]))
+			{
+				// Cache children for this entry
+				$this->children[$entry_id] = $children = ee('Model')->get('ChannelEntry', $entry_id)
+					->with('Children')
+					->first()
+					->Children;
+			}
+			else
+			{
+				$children = $this->children[$entry_id];
+			}
 
 			if (AJAX_REQUEST)
 			{
@@ -565,7 +600,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ( ! empty($new_children_ids))
 		{
-			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids);
+			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids)->with('Channel');
 
 			if (AJAX_REQUEST)
 			{
