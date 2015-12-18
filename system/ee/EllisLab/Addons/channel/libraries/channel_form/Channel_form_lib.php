@@ -1701,7 +1701,7 @@ GRID_FALLBACK;
 						$spam_data = array($_POST, $this->channel('channel_id'));
 					}
 
-					ee()->spam->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
+					ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
 				}
 			}
 			else
@@ -3347,7 +3347,7 @@ SCRIPT;
 
 		$ret = $url_title_js;
 
-		if (ee()->config->item('use_compressed_js') != 'n')
+		if (PATH_JS !== 'src')
 		{
 			return str_replace(array("\n", "\t"), '', $ret);
 		}

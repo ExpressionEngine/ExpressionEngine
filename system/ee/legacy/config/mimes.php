@@ -36,6 +36,7 @@ $whitelist = array(
 	'application/mac-compactpro', // .cpt
 	'application/msword', // .doc, .word
 	'application/oda', // .oda
+	'application/ogg', // .ogv
 	'application/pdf', // .pdf
 	'application/postscript', // .ai, .eps, .ps
 	'application/powerpoint', // .ppt

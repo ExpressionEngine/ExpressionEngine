@@ -5007,7 +5007,7 @@ class Forum_Core extends Forum {
 			// so we need to store the submission errors that will be needed for display
 			ee()->session->cache['forum']['submission_error'] = $this->submission_error;
 
-			ee()->TMPL->run_template_engine($x['0'], (( ! isset($x['1'])) ? 'index' : $x['1']));
+			ee()->TMPL->run_template_engine();
 
 			return;
 		}

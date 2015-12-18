@@ -1,5 +1,29 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// --------------------------------------------------------------------
+
+/**
+ * ExpressionEngine File Picker Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+
 class Filepicker_upd {
 
 	public $version	= '1.0';
@@ -12,12 +36,14 @@ class Filepicker_upd {
 	 */
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('FilePicker', '$this->version', 'y', 'n')";
+		$mod_data = array(
+			'module_name'        => 'Filepicker',
+			'module_version'     => $this->version,
+			'has_cp_backend'     => 'y',
+			'has_publish_fields' => 'n'
+		);
 
-		foreach ($sql as $query)
-		{
-			ee()->db->query($query);
-		}
+		ee()->db->insert('modules', $mod_data);
 
 		return TRUE;
 	}
@@ -30,14 +56,16 @@ class Filepicker_upd {
 	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'FilePicker'");
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
-		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Filepicker'";
+		$mod_id = ee()->db->select('module_id')
+			->get_where('modules', array(
+				'module_name' => 'Filepicker'
+			))->row('module_id');
 
-		foreach ($sql as $query)
-		{
-			ee()->db->query($query);
-		}
+		ee()->db->where('module_id', $mod_id)
+			->delete('module_member_groups');
+
+		ee()->db->where('module_name', 'Filepicker')
+			->delete('modules');
 
 		return TRUE;
 	}

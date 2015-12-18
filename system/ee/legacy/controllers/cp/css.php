@@ -41,7 +41,7 @@ class Css extends CI_Controller {
 	 */
 	function _remap()
 	{
-		if ($this->input->get('M') == 'cp_global_ext')
+		if (ee()->router->fetch_method() == 'cp_global_ext')
 		{
 			return $this->_cp_global_ext();
 		}

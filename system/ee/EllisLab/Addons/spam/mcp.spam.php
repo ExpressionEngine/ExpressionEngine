@@ -79,6 +79,7 @@ class Spam_mcp {
 
 		$content_type = array(
 			'Comment' => 'comment',
+			'Email' => 'email',
 			'Forum_core' => 'forum_post',
 			'Wiki' => 'wiki_post',
 		);
@@ -86,6 +87,7 @@ class Spam_mcp {
 		$options = array(
 			'all' => lang('all'),
 			'Comment' => lang('comment'),
+			'Email' => lang('email'),
 			'Forum_core' => lang('forum_post'),
 			'Wiki' => lang('wiki_post')
 		);

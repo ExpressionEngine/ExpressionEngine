@@ -76,14 +76,12 @@ class Cp {
 	 */
 	public function set_default_view_variables()
 	{
-		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 
 		// Javascript Path Constants
-
-		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/');
-		define('JS_FOLDER', $js_folder);
+		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/');
+		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
+		define('JS_FOLDER', PATH_JS);
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
@@ -182,7 +180,7 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation')
+			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper')
 		);
 
 		$js_scripts['plugin'][] = 'ee_navigation';
@@ -231,6 +229,7 @@ class Cp {
 		$this->add_js_script('file', 'cp/global_end');
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+		ee()->view->version_identifier = APP_VER_ID;
 
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
@@ -651,15 +650,13 @@ class Cp {
 			return max($mtimes);
 		}
 
-		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
-			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
 				break;
 			case 'package':
 				if (strpos($name, ':') !== FALSE)
