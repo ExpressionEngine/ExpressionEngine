@@ -8,8 +8,14 @@ machine:
     php_versions: 5.3.10 5.3.25 5.4.37 5.5.21 5.6.14
 
 dependencies:
+  pre:
+    - sudo apt-get install apt -y
+    - sudo add-apt-repository ppa:beineri/opt-qt542 -y
+    - sudo apt-get update -y; true
+    - sudo apt-get install -y qt54webkit libwebkit-dev libgstreamer0.10-dev
+    - echo "/opt/qt54/bin/qt54-env.sh" >> ~/.circlerc
   override:
-    - "cd tests/rspec && bundle install --without development --deployment"
+    - "cd tests/rspec && QMAKE=/opt/qt54/bin/qmake bundle install --without development --deployment"
     - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
   post:
     - cp tests/circleci/circleci-apache /etc/apache2/sites-available
