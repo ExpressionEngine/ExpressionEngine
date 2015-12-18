@@ -9,11 +9,13 @@
 							<fieldset class="filter-search">
 								<input type="text" value="" placeholder="<?=lang('filter_channels')?>">
 							</fieldset>
-							<ul class="channels-pages-create">
-								<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
-									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
-								<?php endforeach ?>
-							</ul>
+							<div class="scroll-wrap">
+								<ul class="channels-pages-create">
+									<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
+										<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<?php endforeach ?>
+								</ul>
+							</div>
 						</div>
 					</li>
 				</ul>

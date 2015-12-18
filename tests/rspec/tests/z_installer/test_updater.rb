@@ -159,6 +159,30 @@ feature 'Updater' do
     test_update
   end
 
+  it 'updates a core installation successfully and installs the member module' do
+    @installer.revert_config
+    @installer.replace_config(
+      File.expand_path('../circleci/config-3.0.5-core.php'),
+      database: {
+        hostname: $test_config[:db_host],
+        database: $test_config[:db_name],
+        username: $test_config[:db_username],
+        password: $test_config[:db_password]
+      }
+    )
+
+    clean_db do
+      $db.query(IO.read('sql/database_3.0.5-core.sql'))
+      clear_db_result
+    end
+
+    test_update
+
+    $db.query('SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').each do |row|
+      row['count'].should == 1
+    end
+  end
+
   def test_update(mailinglist = false)
     # Delete any stored mailing lists
     mailing_list_zip = File.expand_path(
@@ -190,6 +214,20 @@ feature 'Updater' do
     else
       @page.has_download?.should == true
       File.exist?(mailing_list_zip).should == true
+    end
+
+    test_version
+  end
+
+  def test_version
+    File.open(File.expand_path('../../system/user/config/config.php'), 'r') do |file|
+      config_version = file.read.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
+
+      File.open(File.expand_path('../../system/ee/installer/controllers/wizard.php'), 'r') do |file|
+        wizard_version = file.read.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
+
+        config_version.should == wizard_version
+      end
     end
   end
 

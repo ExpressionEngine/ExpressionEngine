@@ -41,6 +41,7 @@ $lang = array(
 	'forum_post' => 'forum post',
 	'wiki_post' => 'wiki post',
 	'comment' => 'comment',
+	'email' => 'email',
 	'spam' => 'SPAM',
 	'all_spam' => 'All SPAM',
 	'search_spam' => 'Search Spam',

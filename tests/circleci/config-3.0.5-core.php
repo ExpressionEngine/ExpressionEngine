@@ -11,33 +11,28 @@
 |
 */
 
-// Reset opcache, otherwise this file gets cached with old values on
-// Circle's PHP 5.5 machine
-if (function_exists('opcache_reset'))
-{
-    opcache_reset();
-}
-
-$config['site_url'] = 'http://ee2.test:8080/';
-$config['app_version'] = '3.0.6';
-$config['license_contact'] = 'ellislab.devleopers@gmail.com';
-$config['license_number'] = '1234-5678-9123-4567';
+$config['app_version'] = '3.0.5';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://ee2.test:8080/system/index.php';
-$config['theme_folder_url'] = 'http://ee2.test:8080/themes/';
-$config['theme_folder_path'] = '/home/ubuntu/ExpressionEngine/themes/';
+$config['cp_url'] = 'http://ee.core/system/index.php';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
-$config['cookie_prefix'] = '';
 $config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
+		'hostname' => 'localhost',
 		'database' => 'circle_test',
-		'username' => 'ubuntu'
+		'username' => 'ubuntu',
+		'password' => '',
 	),
 );
+$config['db_port'] = '';
+$config['site_label'] = '';
+$config['cookie_prefix'] = '';
+$config['cookie_httponly'] = 'y';
 
+
+// END EE config items
 
 /*
 |--------------------------------------------------------------------------
@@ -114,17 +109,6 @@ $config['log_threshold'] = 0;
 */
 $config['log_date_format'] = 'Y-m-d H:i:s';
 
-/*
-|--------------------------------------------------------------------------
-| Cache Directory Path
-|--------------------------------------------------------------------------
-|
-| Leave this BLANK unless you would like to set something other than the
-| default system/expressionengine/cache/ directory. Use a full server path
-| with trailing slash.
-|
-*/
-$config['cache_path'] = '';
 
 /*
 |--------------------------------------------------------------------------

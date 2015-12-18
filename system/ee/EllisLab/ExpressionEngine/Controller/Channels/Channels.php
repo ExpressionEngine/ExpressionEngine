@@ -651,11 +651,7 @@ class Channels extends AbstractChannelsController {
 		);
 
 		// Default comment text formatting
-		$comment_text_formatting_options = array(
-			'none'	=> lang('none'),
-			'xhtml'	=> lang('xhtml'),
-			'br'	=> lang('auto_br')
-		);
+		$comment_text_formatting_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		// Comment HTML formatting
 		$comment_html_formatting_options = array(

@@ -153,7 +153,7 @@ EE.cp.formValidation = {
 					// Replace button text with working text and disable the button to prevent further clicks
 					if ($button.is('input')) {
 						$button.attr('value', $button.data('work-text'));
-					} else if ($button.is('button') && event.target == el) {
+					} else if ($button.is('button')) {
 						$button.text($button.data('work-text'));
 					}
 				}

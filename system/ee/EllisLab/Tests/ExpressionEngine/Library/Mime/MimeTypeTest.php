@@ -156,7 +156,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Bad Path',  'foo.bar', '', TRUE),
-			array('Good Path', __FILE__,  'text/x-php', FALSE),
+			array('Good Path', realpath(__DIR__.'/../../../support/test.php'),  'text/x-php', FALSE),
 		);
 	}
 
@@ -188,7 +188,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Bad Path',  'foo.bar', '', TRUE),
-			array('Good Path', __FILE__,  FALSE, FALSE),
+			array('Good Path', realpath(__DIR__.'/../../../support/test.php'),  FALSE, FALSE),
 		);
 	}
 

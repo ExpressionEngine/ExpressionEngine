@@ -344,7 +344,7 @@ JSC;
 		{
 			ee()->session->cache['file_field']['css'] = TRUE;
 
-			$styles = <<<CSS
+			$styles = <<<STYLIO
 			<style type="text/css">
 			.file_set {
 				color: #5F6C74;
@@ -386,7 +386,8 @@ JSC;
 				clear: both;
 			}
 			</style>
-CSS;
+STYLIO;
+
 			$styles = preg_replace('/\s+/is', ' ', $styles);
 			ee()->cp->add_to_head($styles);
 		}
