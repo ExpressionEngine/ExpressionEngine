@@ -24,6 +24,16 @@ class Iterator extends FilesystemIterator {
 		$this->root_url = $url;
 	}
 
+	public function next()
+	{
+		parent::next();
+
+		while ($this->valid() && $this->isDir())
+		{
+			parent::next();
+		}
+	}
+
 	public function current()
 	{
 		$object = parent::current();
