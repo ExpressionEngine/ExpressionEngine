@@ -32,6 +32,8 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  */
 abstract class FileSyncedModel extends Model {
 
+	protected $_skip_next_write = FALSE;
+
 	protected static $_events = array(
 		'afterLoad',
 		'afterDelete',
@@ -116,19 +118,27 @@ abstract class FileSyncedModel extends Model {
 	    {
 			$this->unserializeFileData($fs->read($path));
 			$this->setModificationTime($mtime);
+
+			$this->_skip_next_write = TRUE;
 	        $this->save();
 	    }
 	}
 
 	/**
-	 * For all saves, write the template file with the new contents.
+	 * For all saves, write the template file. Unless specifically told not to.
 	 *
 	 * Technically we could make this afterInsert and do more checks
 	 * in afterUpdate to make sure things actually changed, but this
-	 * is much simpler.
+	 * lets us be fieldname agnostic and gives devs a little more control.
 	 */
 	public function onAfterSave()
 	{
+		if ($this->_skip_next_write === TRUE)
+		{
+			$this->_skip_next_write = FALSE;
+			return;
+		}
+
 		$this->writeToFile();
 	}
 
