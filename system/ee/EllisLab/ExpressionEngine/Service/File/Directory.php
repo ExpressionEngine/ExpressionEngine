@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\File;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use EllisLab\ExpressionEngine\Library\Filesystem\FilesystemException;
 
 // a directory behaves just like the filesystem rooted at a certain path
 class Directory extends Filesystem {
@@ -21,6 +22,11 @@ class Directory extends Filesystem {
 	protected function normalize($path)
 	{
 		$path = realpath($this->root.'/'.$path);
+
+		if ($path === FALSE)
+		{
+			return NULL;
+		}
 
 		if (strpos($path, $this->root) !== 0)
 		{
@@ -65,6 +71,6 @@ class Directory extends Filesystem {
 		$it = new Iterator($this->root);
 		$it->setUrl($this->url);
 
-		return $it;
+		return new FilterIterator($it);
 	}
 }
