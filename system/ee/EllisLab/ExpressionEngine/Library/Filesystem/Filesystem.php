@@ -300,7 +300,12 @@ class Filesystem {
 	 */
 	public function exists($path)
 	{
-		return file_exists($this->normalize($path));
+		if ($path = $this->normalize($path))
+		{
+			return file_exists($path);
+		}
+
+		return FALSE;
 	}
 
 	/**
