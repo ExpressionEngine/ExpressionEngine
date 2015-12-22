@@ -224,7 +224,7 @@ class EE_Loader {
 	 */
 	public function set_base_classes()
 	{
-		$this->_base_classes =& is_loaded();
+		$this->_base_classes = is_loaded();
 
 		return $this;
 	}
@@ -358,10 +358,8 @@ class EE_Loader {
 	 */
 	public function database($params = '', $return = FALSE, $active_record = NULL)
 	{
-		$CI =& get_instance();
-
 		// Do we even need to load the database class?
-		if (class_exists('CI_DB') AND $return == FALSE AND $active_record == NULL AND isset($CI->db) AND is_object($CI->db))
+		if (class_exists('CI_DB') AND $return == FALSE AND $active_record == NULL AND isset(ee()->db) AND is_object(ee()->db))
 		{
 			return FALSE;
 		}
@@ -392,8 +390,6 @@ class EE_Loader {
 	 */
 	public function dbutil()
 	{
-		$CI =& get_instance();
-
 		if ($this->facade->has('dbutil'))
 		{
 			return;
@@ -409,8 +405,8 @@ class EE_Loader {
 		$this->dbforge();
 
 		require_once(BASEPATH.'database/DB_utility.php');
-		require_once(BASEPATH.'database/drivers/'.$CI->db->dbdriver.'/'.$CI->db->dbdriver.'_utility.php');
-		$class = 'CI_DB_'.$CI->db->dbdriver.'_utility';
+		require_once(BASEPATH.'database/drivers/'.ee()->db->dbdriver.'/'.ee()->db->dbdriver.'_utility.php');
+		$class = 'CI_DB_'.ee()->db->dbdriver.'_utility';
 
 		$this->facade->set('dbutil', new $class());
 	}
@@ -424,8 +420,6 @@ class EE_Loader {
 	 */
 	public function dbforge()
 	{
-		$CI =& get_instance();
-
 		if ($this->facade->has('dbforge'))
 		{
 			return;
@@ -437,8 +431,8 @@ class EE_Loader {
 		}
 
 		require_once(BASEPATH.'database/DB_forge.php');
-		require_once(BASEPATH.'database/drivers/'.$CI->db->dbdriver.'/'.$CI->db->dbdriver.'_forge.php');
-		$class = 'CI_DB_'.$CI->db->dbdriver.'_forge';
+		require_once(BASEPATH.'database/drivers/'.ee()->db->dbdriver.'/'.ee()->db->dbdriver.'_forge.php');
+		$class = 'CI_DB_'.ee()->db->dbdriver.'_forge';
 
 		$this->facade->set('dbforge', new $class());
 	}
@@ -598,8 +592,6 @@ class EE_Loader {
 	 */
 	public function language($file = array(), $lang = '')
 	{
-		$CI =& get_instance();
-
 		if ( ! is_array($file))
 		{
 			$file = array($file);
@@ -607,7 +599,7 @@ class EE_Loader {
 
 		foreach ($file as $langfile)
 		{
-			$CI->lang->load($langfile, $lang);
+			ee()->lang->load($langfile, $lang);
 		}
 	}
 
@@ -621,8 +613,7 @@ class EE_Loader {
 	 */
 	public function config($file = '', $use_sections = FALSE, $fail_gracefully = FALSE)
 	{
-		$CI =& get_instance();
-		$CI->config->load($file, $use_sections, $fail_gracefully);
+		ee()->config->load($file, $use_sections, $fail_gracefully);
 	}
 
 	// --------------------------------------------------------------------
@@ -693,7 +684,7 @@ class EE_Loader {
 		$this->_ci_view_paths = array($path.'views/' => $view_cascade) + $this->_ci_view_paths;
 
 		// Add config file path
-		$config =& $this->_ci_get_component('config');
+		$config = $this->_ci_get_component('config');
 		array_unshift($config->_config_paths, $path);
 	}
 
@@ -725,7 +716,7 @@ class EE_Loader {
 	 */
 	public function remove_package_path($path = '', $remove_config_path = TRUE)
 	{
-		$config =& $this->_ci_get_component('config');
+		$config = $this->_ci_get_component('config');
 
 		if ($path == '')
 		{
@@ -829,12 +820,11 @@ class EE_Loader {
 		// This allows anything loaded using $this->load (views, files, etc.)
 		// to become accessible from within the Controller and Model functions.
 
-		$_ci_CI =& get_instance();
-		foreach (get_object_vars($_ci_CI) as $_ci_key => $_ci_var)
+		foreach (get_object_vars(ee()) as $_ci_key => $_ci_var)
 		{
 			if ( ! isset($this->$_ci_key))
 			{
-				$this->$_ci_key =& $_ci_CI->$_ci_key;
+				$this->$_ci_key =& ee()->$_ci_key;
 			}
 		}
 
@@ -895,7 +885,7 @@ class EE_Loader {
 		}
 		else
 		{
-			$_ci_CI->output->append_output(ob_get_contents());
+			ee()->output->append_output(ob_get_contents());
 			@ob_end_clean();
 		}
 	}
@@ -955,8 +945,7 @@ class EE_Loader {
 					// return a new instance of the object
 					if ( ! is_null($object_name))
 					{
-						$CI =& get_instance();
-						if ( ! isset($CI->$object_name))
+						if ( ! isset(ee()->$object_name))
 						{
 							return $this->_ci_init_class($class, config_item('subclass_prefix'), $params, $object_name);
 						}
@@ -994,8 +983,7 @@ class EE_Loader {
 					// return a new instance of the object
 					if ( ! is_null($object_name))
 					{
-						$CI =& get_instance();
-						if ( ! isset($CI->$object_name))
+						if ( ! isset(ee()->$object_name))
 						{
 							return $this->_ci_init_class($class, '', $params, $object_name);
 						}
@@ -1134,8 +1122,7 @@ class EE_Loader {
 	 */
 	protected function _ci_get_component($component)
 	{
-		$CI =& get_instance();
-		return $CI->$component;
+		return ee()->$component;
 	}
 
 	// --------------------------------------------------------------------

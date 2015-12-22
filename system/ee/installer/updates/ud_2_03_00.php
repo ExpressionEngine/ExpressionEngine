@@ -25,18 +25,7 @@
  */
 class Updater {
 
-	private $EE;
 	var $version_suffix = '';
-
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do Update

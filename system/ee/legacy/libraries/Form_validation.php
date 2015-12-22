@@ -43,26 +43,24 @@ class EE_Form_validation {
 	 */
 	function __construct($rules = array())
 	{
-		$this->CI =& ee()->get('__legacy_controller');
-
 		// Validation rules can be stored in a config file.
 		$this->_config_rules = $rules;
 
 		// Automatically load the form helper
-		$this->CI->load->helper('form');
+		ee()->load->helper('form');
 
 		// Set the character encoding in MB.
 		if (function_exists('mb_internal_encoding'))
 		{
-			mb_internal_encoding($this->CI->config->item('charset'));
+			mb_internal_encoding(ee()->config->item('charset'));
 		}
 
-		if ($this->CI->input->get('C') == 'addons_modules' &&
-			$this->CI->input->get('M') == 'show_module_cp' &&
-			isset($this->CI->_mcp_reference)
+		if (ee()->input->get('C') == 'addons_modules' &&
+			ee()->input->get('M') == 'show_module_cp' &&
+			isset(ee()->_mcp_reference)
 		)
 		{
-			$this->setCallbackObject($this->CI->_mcp_reference);
+			$this->setCallbackObject(ee()->_mcp_reference);
 		}
 	}
 
@@ -77,9 +75,9 @@ class EE_Form_validation {
 	 */
 	public function setCallbackObject($obj)
 	{
-		$obj->lang =& $this->CI->lang;
-		$obj->input =& $this->CI->input;
-		$obj->security =& $this->CI->security;
+		$obj->lang =& ee()->lang;
+		$obj->input =& ee()->input;
+		$obj->security =& ee()->security;
 		$this->CI =& $obj;
 	}
 
@@ -307,14 +305,14 @@ class EE_Form_validation {
 		$error = '';
 		$value = TRUE;
 
-		$exists = $this->CI->api_channel_fields->setup_handler($field_id);
+		$exists = ee()->api_channel_fields->setup_handler($field_id);
 
 		if ( ! $exists)
 		{
 			return TRUE;
 		}
 
-		$res = $this->CI->api_channel_fields->apply('validate', array($data));
+		$res = ee()->api_channel_fields->apply('validate', array($data));
 
 		if (is_array($res))
 		{
@@ -362,23 +360,23 @@ class EE_Form_validation {
 		// Reserved characters:  |  "  '  ! < > { }
 		if (preg_match("/[\|'\"!<>\{\}]/", $str))
 		{
-			$this->set_message('valid_username', $this->CI->lang->line('invalid_characters_in_username'));
+			$this->set_message('valid_username', ee()->lang->line('invalid_characters_in_username'));
 			return FALSE;
 		}
 
 		// Is username min length correct?
-		$len = $this->CI->config->item('un_min_len');
+		$len = ee()->config->item('un_min_len');
 
 		if (strlen($str) < $len)
 		{
-			$this->set_message('valid_username', str_replace('%x', $len, $this->CI->lang->line('username_too_short')));
+			$this->set_message('valid_username', str_replace('%x', $len, ee()->lang->line('username_too_short')));
 			return FALSE;
 		}
 
 		// Is username max length correct?
 		if (strlen($str) > 50)
 		{
-			$this->set_message('valid_username', $this->CI->lang->line('username_too_long'));
+			$this->set_message('valid_username', ee()->lang->line('username_too_long'));
 			return FALSE;
 		}
 
@@ -394,21 +392,21 @@ class EE_Form_validation {
 		{
 			// Is username banned?
 
-			if ($this->CI->session->ban_check('username', $str))
+			if (ee()->session->ban_check('username', $str))
 			{
-				$this->set_message('valid_username', $this->CI->lang->line('username_taken'));
+				$this->set_message('valid_username', ee()->lang->line('username_taken'));
 				return FALSE;
 			}
 
 
 			// Is username taken?
 
-			$this->CI->db->where('username', $str);
-			$count = $this->CI->db->count_all_results('members');
+			ee()->db->where('username', $str);
+			$count = ee()->db->count_all_results('members');
 
 			if ($count > 0)
 			{
-				$this->set_message('valid_username', $this->CI->lang->line('username_taken'));
+				$this->set_message('valid_username', ee()->lang->line('username_taken'));
 				return FALSE;
 			}
 		}
@@ -436,15 +434,15 @@ class EE_Form_validation {
 
 		if (preg_match('/[\{\}<>]/', $str))
 		{
-			$this->set_message('valid_screen_name', $this->CI->lang->line('disallowed_screen_chars'));
+			$this->set_message('valid_screen_name', ee()->lang->line('disallowed_screen_chars'));
 			return FALSE;
 		}
 
 		// Is screen name banned?
 
-		if ($this->CI->session->ban_check('screen_name', $str) OR trim(preg_replace("/&nbsp;*/", '', $str)) == '')
+		if (ee()->session->ban_check('screen_name', $str) OR trim(preg_replace("/&nbsp;*/", '', $str)) == '')
 		{
-			$this->set_message('valid_screen_name', $this->CI->lang->line('screen_name_taken'));
+			$this->set_message('valid_screen_name', ee()->lang->line('screen_name_taken'));
 			return FALSE;
 		}
 
@@ -472,11 +470,11 @@ class EE_Form_validation {
 
 		// Is password min length correct?
 
-		$len = $this->CI->config->item('pw_min_len');
+		$len = ee()->config->item('pw_min_len');
 
 		if (strlen($str) < $len)
 		{
-			$this->set_message('valid_password', str_replace('%x', $len, $this->CI->lang->line('password_too_short')));
+			$this->set_message('valid_password', str_replace('%x', $len, ee()->lang->line('password_too_short')));
 			return FALSE;
 		}
 
@@ -485,7 +483,7 @@ class EE_Form_validation {
 
 		if (strlen($str) > PASSWORD_MAX_LENGTH)
 		{
-			$this->set_message('valid_password', $this->CI->lang->line('password_too_long'));
+			$this->set_message('valid_password', ee()->lang->line('password_too_long'));
 			return FALSE;
 		}
 
@@ -504,14 +502,14 @@ class EE_Form_validation {
 
 		if ($lc_user == $lc_pass OR $lc_user == strrev($lc_pass) OR $lc_user == $nm_pass OR $lc_user == strrev($nm_pass))
 		{
-			$this->set_message('valid_password', $this->CI->lang->line('password_based_on_username'));
+			$this->set_message('valid_password', ee()->lang->line('password_based_on_username'));
 			return FALSE;
 		}
 
 
 		// Are secure passwords required?
 
-		if ($this->CI->config->item('require_secure_passwords') == 'y')
+		if (ee()->config->item('require_secure_passwords') == 'y')
 		{
 			$count = array('uc' => 0, 'lc' => 0, 'num' => 0);
 
@@ -541,7 +539,7 @@ class EE_Form_validation {
 			{
 				if ($val == 0)
 				{
-					$this->set_message('valid_password', $this->CI->lang->line('not_secure_password'));
+					$this->set_message('valid_password', ee()->lang->line('not_secure_password'));
 					return FALSE;
 				}
 			}
@@ -552,7 +550,7 @@ class EE_Form_validation {
 
 		if ($this->_lookup_dictionary_word($lc_pass) == TRUE)
 		{
-			$this->set_message('valid_password', $this->CI->lang->line('password_in_dictionary'));
+			$this->set_message('valid_password', ee()->lang->line('password_in_dictionary'));
 			return FALSE;
 		}
 
@@ -605,7 +603,7 @@ class EE_Form_validation {
 
 		if ( ! $this->valid_email($str))
 		{
-			$this->set_message('valid_user_email', $this->CI->lang->line('invalid_email_address'));
+			$this->set_message('valid_user_email', ee()->lang->line('invalid_email_address'));
 			return FALSE;
 		}
 
@@ -622,21 +620,21 @@ class EE_Form_validation {
 		{
 			// Is email banned?
 
-			if ($this->CI->session->ban_check('email', $str))
+			if (ee()->session->ban_check('email', $str))
 			{
-				$this->set_message('valid_user_email', $this->CI->lang->line('email_taken'));
+				$this->set_message('valid_user_email', ee()->lang->line('email_taken'));
 				return FALSE;
 			}
 
 
 			// Duplicate emails?
 
-			$this->CI->db->where('email', $str);
-			$count = $this->CI->db->count_all_results('members');
+			ee()->db->where('email', $str);
+			$count = ee()->db->count_all_results('members');
 
 			if ($count > 0)
 			{
-				$this->set_message('valid_user_email', $this->CI->lang->line('email_taken'));
+				$this->set_message('valid_user_email', ee()->lang->line('email_taken'));
 				return FALSE;
 			}
 		}
@@ -918,7 +916,7 @@ class EE_Form_validation {
 
 				if ( ! isset($this->_error_messages[$type]))
 				{
-					if (FALSE === ($line = $this->CI->lang->line($type)))
+					if (FALSE === ($line = ee()->lang->line($type)))
 					{
 						$line = 'The field was not set';
 					}
@@ -1065,7 +1063,7 @@ class EE_Form_validation {
 			{
 				if ( ! isset($this->_error_messages[$rule]))
 				{
-					if (FALSE === ($line = $this->CI->lang->line($rule)))
+					if (FALSE === ($line = ee()->lang->line($rule)))
 					{
 						$line = 'Unable to access an error message corresponding to your field name.';
 					}
@@ -1113,12 +1111,12 @@ class EE_Form_validation {
 	 */
 	function _lookup_dictionary_word($target)
 	{
-		if ($this->CI->config->item('allow_dictionary_pw') == 'y' OR $this->CI->config->item('name_of_dictionary_file') == '')
+		if (ee()->config->item('allow_dictionary_pw') == 'y' OR ee()->config->item('name_of_dictionary_file') == '')
 		{
 			return FALSE;
 		}
 
-		$path = reduce_double_slashes(PATH_DICT.$this->CI->config->item('name_of_dictionary_file'));
+		$path = reduce_double_slashes(PATH_DICT.ee()->config->item('name_of_dictionary_file'));
 
 		if ( ! file_exists($path))
 		{
@@ -1286,7 +1284,7 @@ class EE_Form_validation {
 			}
 
 			// Is there a validation rule for the particular URI being accessed?
-			$uri = ($group == '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
+			$uri = ($group == '') ? trim(ee()->uri->ruri_string(), '/') : $group;
 
 			if ($uri != '' AND isset($this->_config_rules[$uri]))
 			{
@@ -1306,7 +1304,7 @@ class EE_Form_validation {
 		}
 
 		// Load the language file containing error messages
-		$this->CI->lang->load('form_validation');
+		ee()->lang->load('form_validation');
 
 		// Cycle through the rules for each field, match the
 		// corresponding $_POST item and test for errors
@@ -1463,7 +1461,7 @@ class EE_Form_validation {
 			$line = substr($fieldname, 5);
 
 			// Were we able to translate the field name?  If not we use $line
-			if (FALSE === ($fieldname = $this->CI->lang->line($line)))
+			if (FALSE === ($fieldname = ee()->lang->line($line)))
 			{
 				return $line;
 			}
@@ -1774,7 +1772,7 @@ class EE_Form_validation {
 	 */
 	function valid_ip($ip)
 	{
-		return $this->CI->input->valid_ip($ip);
+		return ee()->input->valid_ip($ip);
 	}
 
 	// --------------------------------------------------------------------
@@ -2054,7 +2052,7 @@ class EE_Form_validation {
 	 */
 	function strip_image_tags($str)
 	{
-		return $this->CI->input->strip_image_tags($str);
+		return ee()->input->strip_image_tags($str);
 	}
 
 	// --------------------------------------------------------------------

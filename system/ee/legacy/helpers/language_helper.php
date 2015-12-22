@@ -41,8 +41,7 @@ if ( ! function_exists('lang'))
 {
 	function lang($line, $id = '')
 	{
-		$CI =& get_instance();
-		return $CI->lang->line($line, $id);
+		return ee()->lang->line($line, $id);
 	}
 }
 

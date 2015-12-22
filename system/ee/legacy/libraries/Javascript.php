@@ -41,12 +41,10 @@ class EE_Javascript {
 
 		extract($defaults);
 
-		$this->CI =& get_instance();
-
 		// load the requested js library
-		$this->CI->load->library('javascript/'.$js_library_driver, array('autoload' => $autoload));
+		ee()->load->library('javascript/'.$js_library_driver, array('autoload' => $autoload));
 		// make js to refer to current library
-		$this->js =& $this->CI->$js_library_driver;
+		$this->js =& ee()->$js_library_driver;
 
 		log_message('debug', "Javascript Class Initialized and loaded.  Driver used: $js_library_driver");
 	}
@@ -591,9 +589,9 @@ class EE_Javascript {
 		}
 		else
 		{
-			if ($this->CI->config->item('javascript_location') != '')
+			if (ee()->config->item('javascript_location') != '')
 			{
-				$this->_javascript_location = $this->CI->config->item('javascript_location');
+				$this->_javascript_location = ee()->config->item('javascript_location');
 			}
 		}
 
@@ -607,7 +605,7 @@ class EE_Javascript {
 		}
 		else
 		{
-			$str = $this->_open_script($this->CI->config->slash_item('base_url').$this->_javascript_location.$external_file);
+			$str = $this->_open_script(ee()->config->slash_item('base_url').$this->_javascript_location.$external_file);
 		}
 
 		$str .= $this->_close_script();
@@ -646,7 +644,7 @@ class EE_Javascript {
 	 */
 	private function _open_script($src = '')
 	{
-		$str = '<script type="text/javascript" charset="'.strtolower($this->CI->config->item('charset')).'"';
+		$str = '<script type="text/javascript" charset="'.strtolower(ee()->config->item('charset')).'"';
 		$str .= ($src == '') ? '>' : ' src="'.$src.'">';
 		return $str;
 	}
@@ -814,7 +812,7 @@ class EE_Javascript {
 			}
 		');
 
-		$this->CI->view->cp_global_js = $global_js;
+		ee()->view->cp_global_js = $global_js;
 	}
 
 	/**

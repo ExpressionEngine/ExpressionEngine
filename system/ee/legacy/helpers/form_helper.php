@@ -43,8 +43,6 @@ if (REQ == 'CP')
 {
 	function form_open($action = '', $attributes = array(), $hidden = array())
 	{
-		$CI =& get_instance();
-
 		if (strpos($action, '://') === FALSE && strpos($action, BASE) !== 0)
 		{
 			//$action = BASE.AMP.$action;
@@ -95,14 +93,12 @@ else
 {
 	function form_open($action = '', $attributes = '', $hidden = array())
 	{
-		$CI =& get_instance();
-
 		if ($attributes == '')
 		{
 			$attributes = 'method="post"';
 		}
 
-		$action = ( strpos($action, '://') === FALSE) ? $CI->config->site_url($action) : $action;
+		$action = ( strpos($action, '://') === FALSE) ? ee()->config->site_url($action) : $action;
 
 		$form = '<form action="'.$action.'"';
 
@@ -860,7 +856,7 @@ if ( ! function_exists('set_value'))
 {
 	function set_value($field = '', $default = '')
 	{
-		if (FALSE === ($OBJ =& _get_validation_object()))
+		if (FALSE === ($OBJ = _get_validation_object()))
 		{
 			if ( ! isset($_POST[$field]))
 			{
@@ -892,7 +888,7 @@ if ( ! function_exists('set_select'))
 {
 	function set_select($field = '', $value = '', $default = FALSE)
 	{
-		$OBJ =& _get_validation_object();
+		$OBJ = _get_validation_object();
 
 		if ($OBJ === FALSE)
 		{
@@ -947,7 +943,7 @@ if ( ! function_exists('set_checkbox'))
 {
 	function set_checkbox($field = '', $value = '', $default = FALSE)
 	{
-		$OBJ =& _get_validation_object();
+		$OBJ = _get_validation_object();
 
 		if ($OBJ === FALSE)
 		{
@@ -1024,7 +1020,7 @@ if ( ! function_exists('form_error'))
 {
 	function form_error($field = '', $prefix = '', $suffix = '')
 	{
-		if (FALSE === ($OBJ =& _get_validation_object()))
+		if (FALSE === ($OBJ = _get_validation_object()))
 		{
 			return '';
 		}
@@ -1093,7 +1089,7 @@ if ( ! function_exists('validation_errors'))
 {
 	function validation_errors($prefix = '', $suffix = '')
 	{
-		if (FALSE === ($OBJ =& _get_validation_object()))
+		if (FALSE === ($OBJ = _get_validation_object()))
 		{
 			return '';
 		}
@@ -1225,19 +1221,17 @@ if ( ! function_exists('_get_validation_object'))
 {
 	function _get_validation_object()
 	{
-		$CI =& get_instance();
-
 		// We set this as a variable since we're returning by reference.
 		$return = FALSE;
 
-		if (FALSE !== ($object = $CI->load->is_loaded('form_validation')))
+		if (FALSE !== ($object = ee()->load->is_loaded('form_validation')))
 		{
-			if ( ! isset($CI->$object) OR ! is_object($CI->$object))
+			if ( ! isset(ee()->$object) OR ! is_object(ee()->$object))
 			{
 				return $return;
 			}
 
-			return $CI->$object;
+			return ee()->$object;
 		}
 
 		return $return;

@@ -39,9 +39,7 @@ if ( ! function_exists('now'))
 {
 	function now()
 	{
-		$CI =& get_instance();
-
-		if (strtolower($CI->config->item('time_reference')) == 'gmt')
+		if (strtolower(ee()->config->item('time_reference')) == 'gmt')
 		{
 			$now = time();
 			$system_time = mktime(gmdate("H", $now), gmdate("i", $now), gmdate("s", $now), gmdate("m", $now), gmdate("d", $now), gmdate("Y", $now));
@@ -149,8 +147,7 @@ if ( ! function_exists('timespan'))
 {
 	function timespan($seconds = 1, $time = '')
 	{
-		$CI =& get_instance();
-		$CI->lang->load('date');
+		ee()->lang->load('date');
 
 		// things can get really screwy if a negative number is passed, which can happen
 		// in very rare load-balanced environments when the web servers' are not in
@@ -510,8 +507,7 @@ if ( ! function_exists('timezone_menu'))
 {
 	function timezone_menu($default = 'UTC', $class = "", $name = 'timezones')
 	{
-		$CI =& get_instance();
-		$CI->lang->load('date');
+		ee()->lang->load('date');
 
 		if ($default == 'GMT')
 			$default = 'UTC';
