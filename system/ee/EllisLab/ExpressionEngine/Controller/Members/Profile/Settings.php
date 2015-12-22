@@ -105,27 +105,29 @@ class Settings extends Profile {
 		$this->load->helper('directory');
 
 		$path = ee()->config->item('avatar_path');
+
 		$directory = ee('Model')->get('UploadDestination')
-			->filter('server_path', $path)
+			->filter('name', 'Default Avatars')
 			->first();
 
-		$fp = new FilePicker();
-		$fp->inject(ee()->view);
+		$fp = ee('CP/FilePicker')->make($directory->id);
+
 		$dirs = array();
 		$avatar_choices = array();
 
 		if ($directory)
 		{
-			$fp = new FilePicker();
-			$fp->inject(ee()->view);
-			$dirs[] = $fp->link('Avatars', $directory->id, array(
-				'image' => 'avatar',
-				'input' => 'avatar_filename',
-				'hasFilters' => FALSE,
-				'hasUpload' => FALSE,
-				'selected' => $this->member->avatar_filename,
-				'class' => 'avatarPicker'
-			));
+			$link = $fp->getLink('Default Avatars')
+				->withImage('avatar')
+				->withValueTarget('avatar_filename')
+				->disableFilters()
+				->disableUploads()
+				->asThumbs()
+				->setSelected($this->member->avatar_filename)
+				->setAttribute('class', 'avatarPicker');
+
+			$dirs[] = $link->render();
+
 			$avatar_choices = array(
 				'upload' => array(
 					'label' => 'upload_avatar',
