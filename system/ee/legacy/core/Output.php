@@ -329,7 +329,13 @@ class EE_Output {
 		if ($this->enable_profiler == TRUE && ! ee()->input->is_ajax_request())
 		{
 			$profiler = ee('Profiler')->addSection('performance', ee()->benchmark->getBenchmarkTimings())
-				->addSection('variables', $_SERVER, $_COOKIE, $_GET, $_POST, ee()->session->all_userdata())
+				->addSection('variables', array(
+					'server' => $_SERVER,
+					'cookie' => $_COOKIE,
+					'get' => $_GET,
+					'post' => $_POST,
+					'userdata' => ee()->session->all_userdata()
+				))
 				->addSection('database', array(ee('Database')));
 
 			// Add the template debugger to the output
