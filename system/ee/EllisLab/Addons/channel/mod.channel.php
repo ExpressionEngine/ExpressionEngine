@@ -78,7 +78,7 @@ class Channel {
 	/**
 	  * Constructor
 	  */
-	public function Channel()
+	public function __construct()
 	{
 		ee()->load->library('pagination');
 		$this->pagination = ee()->pagination->create();

@@ -50,7 +50,7 @@ class Comment {
 	 *
 	 * @access	public
 	 */
-	function Comment()
+	function __construct()
 	{
 		$fields = array('name', 'email', 'url', 'location', 'comment');
 
@@ -2877,7 +2877,7 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
-     * remove_comment is used by the spam module to delete comments that are 
+     * remove_comment is used by the spam module to delete comments that are
 	 * flagged as spam from the spam trap
 	 *
 	 * @param integer $comment_id  The ID of the comment

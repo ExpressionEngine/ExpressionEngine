@@ -62,7 +62,7 @@ class Metaweblog_api {
 	 *
 	 * @access	public
 	 */
-	function Metaweblog_api()
+	function __construct()
 	{
 		ee()->lang->loadfile('metaweblog_api');
 
