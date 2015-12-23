@@ -36,6 +36,11 @@ class Iterator extends FilesystemIterator {
 
 	public function current()
 	{
+		if ($this->isDir())
+		{
+			return NULL;
+		}
+
 		$object = parent::current();
 		$object->setDirectory($this->root_path);
 		$object->setUrl($this->root_url);

@@ -8,6 +8,11 @@ class FilterIterator extends \FilterIterator {
 	{
 		$inner = $this->getInnerIterator();
 
+		if (is_null($inner))
+		{
+			return FALSE;
+		}
+
 		if ($inner->isDir())
 		{
 			return FALSE;
