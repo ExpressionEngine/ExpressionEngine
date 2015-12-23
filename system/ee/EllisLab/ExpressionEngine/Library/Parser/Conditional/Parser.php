@@ -401,7 +401,7 @@ class Parser extends AbstractParser {
 	{
 		if ($this->safety === TRUE)
 		{
-			$expression->add(new Bool(FALSE));
+			$expression->add(new Boolean(FALSE));
 		}
 		else
 		{
@@ -416,7 +416,7 @@ class Parser extends AbstractParser {
 	 */
 	protected function addFalse($expression)
 	{
-		$expression->add(new Bool(FALSE));
+		$expression->add(new Boolean(FALSE));
 	}
 
 	/**
