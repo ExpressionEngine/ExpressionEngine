@@ -174,21 +174,35 @@ class File_ft extends EE_Fieldtype {
 				),
 			));
 
-			$fp = ee('CP/FilePicker')->make();
-
 			if ($allowed_file_dirs == '')
 			{
 				$allowed_file_dirs = 'all';
 			}
 
-			$url_query_string = array('directory' => $allowed_file_dirs);
+			$fp = ee('CP/FilePicker')->make($allowed_file_dirs);
 
-			if ($allowed_file_dirs != 'all')
-			{
-				$url_query_string['restrict'] = TRUE;
-			}
+			$fp_link = $fp->getLink()
+				->withValueTarget($this->field_name)
+				->withNameTarget($this->field_name)
+				->withImage($this->field_name);
+
+			$fp_upload = clone $fp_link;
+			$fp_upload
+				->setText(lang('upload_file'))
+				->setAttribute('class', 'btn action file-field-filepicker');
+
+			$fp_edit = clone $fp_link;
+			$fp_edit
+				->setText('')
+				->setAttribute('title', lang('edit'))
+				->setAttribute('class', 'file-field-filepicker');
 
 			$file = $this->_parse_field($data);
+
+			if ($file)
+			{
+				$fp_edit->setSelected($file->file_id);
+			}
 
 			return ee('View')->make('file:publish')->render(array(
 				'field_name' => $this->field_name,
@@ -196,6 +210,8 @@ class File_ft extends EE_Fieldtype {
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => $fp->getUrl(),
+				'fp_upload' => $fp_upload,
+				'fp_edit' => $fp_edit
 			));
 		}
 
