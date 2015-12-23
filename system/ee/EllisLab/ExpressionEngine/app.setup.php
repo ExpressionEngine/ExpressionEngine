@@ -213,21 +213,7 @@ return array(
 
 		'File' => function($ee)
 		{
-			$directories = array();
-
-			$providers = $ee->make('App')->getProviders();
-
-			foreach ($providers as $provider)
-			{
-				$prefix = $provider->getPrefix();
-
-				foreach ($provider->get('files.directories', array()) as $name => $path)
-				{
-					$directories[$prefix.':'.$name] = $path;
-				}
-			}
-
-			return new File\Factory($directories);
+			return new File\Factory();
 		},
 
 		'License' => function($ee)
