@@ -43,6 +43,8 @@ class EE_Form_validation {
 	 */
 	function __construct($rules = array())
 	{
+		$this->CI = ee()->get('__legacy_controller');
+
 		// Validation rules can be stored in a config file.
 		$this->_config_rules = $rules;
 
