@@ -442,7 +442,11 @@ class Addons extends CP_Controller {
 				continue;
 			}
 
-			$addon = $this->getExtension($name);
+			if ( ! ($addon = $this->getExtension($name)))
+			{
+				continue;
+			}
+
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
@@ -1354,7 +1358,7 @@ class Addons extends CP_Controller {
 				if ( ! class_exists($class_name))
 				{
 					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
-					continue;
+					return;
 				}
 			}
 
