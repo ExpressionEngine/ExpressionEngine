@@ -195,7 +195,7 @@ if ( ! function_exists('current_url'))
 {
 	function current_url()
 	{
-		return ee()->config->site_url($CI->uri->uri_string());
+		return ee()->config->site_url(ee()->uri->uri_string());
 	}
 }
 

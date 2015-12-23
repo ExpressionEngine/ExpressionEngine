@@ -178,7 +178,7 @@ if ( ! function_exists('timespan'))
 
 		if ($years > 0)
 		{
-			$str .= $years.' '.$CI->lang->line((($years	> 1) ? 'years' : 'year')).', ';
+			$str .= $years.' '.ee()->lang->line((($years	> 1) ? 'years' : 'year')).', ';
 		}
 
 		$seconds -= $years * 31536000;
@@ -188,7 +188,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($months > 0)
 			{
-				$str .= $months.' '.$CI->lang->line((($months	> 1) ? 'months' : 'month')).', ';
+				$str .= $months.' '.ee()->lang->line((($months	> 1) ? 'months' : 'month')).', ';
 			}
 
 			$seconds -= $months * 2628000;
@@ -200,7 +200,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($weeks > 0)
 			{
-				$str .= $weeks.' '.$CI->lang->line((($weeks	> 1) ? 'weeks' : 'week')).', ';
+				$str .= $weeks.' '.ee()->lang->line((($weeks	> 1) ? 'weeks' : 'week')).', ';
 			}
 
 			$seconds -= $weeks * 604800;
@@ -212,7 +212,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($days > 0)
 			{
-				$str .= $days.' '.$CI->lang->line((($days	> 1) ? 'days' : 'day')).', ';
+				$str .= $days.' '.ee()->lang->line((($days	> 1) ? 'days' : 'day')).', ';
 			}
 
 			$seconds -= $days * 86400;
@@ -224,7 +224,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($hours > 0)
 			{
-				$str .= $hours.' '.$CI->lang->line((($hours	> 1) ? 'hours' : 'hour')).', ';
+				$str .= $hours.' '.ee()->lang->line((($hours	> 1) ? 'hours' : 'hour')).', ';
 			}
 
 			$seconds -= $hours * 3600;
@@ -236,7 +236,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($minutes > 0)
 			{
-				$str .= $minutes.' '.$CI->lang->line((($minutes	> 1) ? 'minutes' : 'minute')).', ';
+				$str .= $minutes.' '.ee()->lang->line((($minutes	> 1) ? 'minutes' : 'minute')).', ';
 			}
 
 			$seconds -= $minutes * 60;
@@ -244,7 +244,7 @@ if ( ! function_exists('timespan'))
 
 		if ($str == '')
 		{
-			$str .= $seconds.' '.$CI->lang->line((($seconds	> 1) ? 'seconds' : 'second')).', ';
+			$str .= $seconds.' '.ee()->lang->line((($seconds	> 1) ? 'seconds' : 'second')).', ';
 		}
 
 		return substr(trim($str), 0, -1);
@@ -524,7 +524,7 @@ if ( ! function_exists('timezone_menu'))
 		foreach (timezones() as $key => $val)
 		{
 			$selected = ($default == $key) ? " selected='selected'" : '';
-			$menu .= "<option value='{$key}'{$selected}>".$CI->lang->line($key)."</option>\n";
+			$menu .= "<option value='{$key}'{$selected}>".ee()->lang->line($key)."</option>\n";
 		}
 
 		$menu .= "</select>";

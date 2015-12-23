@@ -50,7 +50,7 @@ if ( ! function_exists('convert_accented_characters'))
 		/*  - Added 1.6.0
 		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
 		*/
-			if (isset($CI->extensions->extensions['foreign_character_conversion_array']))
+			if (isset(ee()->extensions->extensions['foreign_character_conversion_array']))
 			{
 				$foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
 			}
