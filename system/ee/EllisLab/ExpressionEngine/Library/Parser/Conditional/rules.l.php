@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Token;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Comment;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Number;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Operator;

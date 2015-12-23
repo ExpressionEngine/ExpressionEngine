@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionException;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 
 /**
  * ExpressionEngine - by EllisLab
