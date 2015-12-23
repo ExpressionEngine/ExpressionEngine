@@ -30,6 +30,9 @@ def no_php_js_errors
   end
   page.should have_no_content('Line Number:')
 
+  # Our custom PHP error handler
+  page.should have_no_content(', line')
+
   page.should have_no_content('Exception Caught')
 
 	# Capybara makes JS error messages available in this array,
