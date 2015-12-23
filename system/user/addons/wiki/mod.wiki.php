@@ -82,7 +82,7 @@ class Wiki {
 	/**  Constructor
 	/** ----------------------------------------*/
 
-	function Wiki($return = FALSE)
+	function __construct($return = FALSE)
 	{
 		if ($return === TRUE)
 		{
@@ -927,8 +927,8 @@ class Wiki {
 				ee('Model')->get('wiki:Upload')
 				->filter('file_name', $topic)
 				->delete();
-			
-				
+
+
 /*
 
 				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_wiki_uploads
@@ -941,13 +941,13 @@ class Wiki {
 					ee()->file_model->delete_files_by_name($this->upload_dir, $topic);
 
 					// The hook clears out wiki_uploads and the db cache
-				
+
 
 					$this->redirect($this->special_ns, 'Files');
 				}
-*/	
+*/
 			$this->redirect($this->special_ns, 'Files');
-	
+
 			}
 		}
 
