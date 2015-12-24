@@ -1227,7 +1227,7 @@ class Channel {
 
 		$sql_a = "SELECT ";
 
-		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT(t.entry_id) " : "t.entry_id ";
+		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT t.entry_id " : "t.entry_id ";
 
 		if ($this->pagination->field_pagination == TRUE)
 		{
@@ -1941,6 +1941,10 @@ class Channel {
 
 		$end = 'ORDER BY ';
 
+		// If selecting distinctly, gather the columns we'll be ordering by to make
+		// sure they're included in the SELECT to prevent errors in MySQL 5.7
+		$distinct_select = '';
+
 		if ($fixed_order !== FALSE && ! empty($fixed_order))
 		{
 			$end .= 'FIELD(t.entry_id, '.implode(',', $fixed_order).') ';
@@ -1955,10 +1959,12 @@ class Channel {
 				if ($sticky == 'no')
 				{
 					$end .= "t.entry_date";
+					$distinct_select .= ', t.entry_date ';
 				}
 				else
 				{
 					$end .= "t.sticky desc, t.entry_date";
+					$distinct_select .= ', t.entry_date, t.sticky ';
 				}
 
 				if ($sort_array[0] == 'asc' OR $sort_array[0] == 'desc')
@@ -1971,6 +1977,7 @@ class Channel {
 				if ($sticky != 'no')
 				{
 					$end .= "t.sticky desc, ";
+					$distinct_select .= ', t.sticky ';
 				}
 
 				foreach($order_array as $key => $order)
@@ -1991,26 +1998,32 @@ class Channel {
 
 						case 'date' :
 							$end .= "t.entry_date";
+							$distinct_select .= ', t.entry_date ';
 						break;
 
 						case 'edit_date' :
 							$end .= "t.edit_date";
+							$distinct_select .= ', t.edit_date ';
 						break;
 
 						case 'expiration_date' :
 							$end .= "t.expiration_date";
+							$distinct_select .= ', t.expiration_date ';
 						break;
 
 						case 'status' :
 							$end .= "t.status";
+							$distinct_select .= ', t.status ';
 						break;
 
 						case 'title' :
 							$end .= "t.title";
+							$distinct_select .= ', t.title ';
 						break;
 
 						case 'url_title' :
 							$end .= "t.url_title";
+							$distinct_select .= ', t.url_title ';
 						break;
 
 						case 'view_count' :
@@ -2028,10 +2041,12 @@ class Channel {
 
 						case 'comment_total' :
 							$end .= "t.comment_total ".$sort_array[$key];
+							$distinct_select .= ', t.comment_total ';
 
 							if (count($order_array)-1 == $key)
 							{
 								$end .= ", t.entry_date ".$sort_array[$key];
+								$distinct_select .= ', t.entry_date ';
 							}
 
 							$sort_array[$key] = FALSE;
@@ -2039,10 +2054,12 @@ class Channel {
 
 						case 'most_recent_comment' :
 							$end .= "t.recent_comment_date ".$sort_array[$key];
+							$distinct_select .= ', t.recent_comment_date ';
 
 							if (count($order_array)-1 == $key)
 							{
 								$end .= ", t.entry_date ".$sort_array[$key];
+								$distinct_select .= ', t.entry_date ';
 							}
 
 							$sort_array[$key] = FALSE;
@@ -2050,20 +2067,25 @@ class Channel {
 
 						case 'username' :
 							$end .= "m.username";
+							$distinct_select .= ', m.username ';
 						break;
 
 						case 'screen_name' :
 							$end .= "m.screen_name";
+							$distinct_select .= ', m.screen_name ';
 						break;
 
 						case 'custom_field' :
 							if (strpos($corder[$key], '|') !== FALSE)
 							{
-								$end .= "CONCAT(wd.field_id_".implode(", wd.field_id_", explode('|', $corder[$key])).")";
+								$field_list = 'wd.field_id_'.implode(", wd.field_id_", explode('|', $corder[$key]));
+								$end .= "CONCAT(".$field_list.")";
+								$distinct_select .= ', '.$field_list.' ';
 							}
 							else
 							{
 								$end .= "wd.field_id_".$corder[$key];
+								$distinct_select .= ', wd.field_id_'.$corder[$key].' ';
 							}
 						break;
 
@@ -2075,6 +2097,7 @@ class Channel {
 
 						default		:
 							$end .= "t.entry_date";
+							$distinct_select .= ', t.entry_date ';
 						break;
 					}
 
@@ -2093,6 +2116,13 @@ class Channel {
 			if ( ! in_array('entry_id', $order_array))
 			{
 				$end .= ", t.entry_id ".$entry_id_sort;
+			}
+
+			// If we're selecting distinctly, add all ORDER BY fields to the SELECT statement
+			// to prevent errors in MySQL 5.7
+			if (strpos($sql_b, 'DISTINCT') !== FALSE)
+			{
+				$sql_b .= $distinct_select;
 			}
 		}
 
