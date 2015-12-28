@@ -1306,7 +1306,7 @@ GRID_FALLBACK;
 		$this->fetch_channel($this->_meta['channel_id']);
 
 		ee()->load->helper(array('url', 'form'));
-		ee()->load->library('api');
+		ee()->load->library(array('api', 'file_field'));
 		//ee()->legacy_api->instantiate('channel_fields');
 		ee()->load->library('filemanager');
 		ee()->load->library('form_validation');
@@ -1370,7 +1370,7 @@ GRID_FALLBACK;
 		//captcha check
 		$captcha_required = FALSE;
 
-		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			$captcha_required = TRUE;
 
@@ -1476,7 +1476,9 @@ GRID_FALLBACK;
 				// trick validation into calling the file fieldtype
 				if (isset($_FILES[$field->field_name]['name']))
 				{
-					$_POST[$field->field_name] = $_FILES[$field->field_name]['name'];
+					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
+			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';					
+					
 				}
 			}
 
@@ -1589,9 +1591,9 @@ GRID_FALLBACK;
 		}
 
 		//don't override status on edit, only on publish
-		if ( ! $this->edit && ! empty($this->settings['override_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
+		if ( ! $this->edit && ! empty($this->settings['default_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
-			$_POST['status'] = $this->settings['override_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
+			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 
 		$_POST['revision_post'] = $_POST;
@@ -1669,7 +1671,7 @@ GRID_FALLBACK;
 
 					$result = $this->entry->validate();
 
-					if (is_array($_POST['category']))
+					if (isset($_POST['category']) && is_array($_POST['category']))
 					{
 						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
 					}
@@ -1712,10 +1714,11 @@ GRID_FALLBACK;
 
 			ee()->config->set_item('site_id', $current_site_id);
 
+			$new_id = $this->entry('entry_id');
 			$this->clear_entry();
 
 			//load the just created entry into memory
-			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
+			$this->fetch_entry($new_id);
 		}
 		elseif ($captcha_required && $this->error_handling == 'inline')
 		{
@@ -2251,7 +2254,7 @@ GRID_FALLBACK;
 						$this->settings[$column][$site_id] = array();
 					}
 
-					if ($column == 'require_captcha' || $column == 'allow_guest_posts')
+					if ($column == 'allow_guest_posts')
 					{
 						$value = $this->bool_string($value);
 					}
