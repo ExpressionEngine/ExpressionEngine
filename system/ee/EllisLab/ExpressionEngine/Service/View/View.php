@@ -125,6 +125,8 @@ class View {
 	{
 		$rewrite = (version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == FALSE);
 
+		// patch
+		unset($vars['path']);
 		extract($vars);
 
 		ob_start();
