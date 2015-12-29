@@ -266,25 +266,6 @@ return array(
 		},
 	),
 
-	'files.directories' => array(
-
-		'Avatars' => function()
-		{
-			return array(
-				'path' => ee()->config->item('avatar_path'),
-				'url' => ee()->config->item('avatar_url')
-			);
-		},
-
-		'Default Avatars' => function()
-		{
-			return array(
-				'path' => ee()->config->item('avatar_path').'default/',
-				'url' => ee()->config->item('avatar_url').'default/'
-			);
-		}
-	),
-
 	// models exposed on the model service
 	'models' => array(
 

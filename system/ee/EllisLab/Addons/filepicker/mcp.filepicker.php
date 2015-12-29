@@ -148,12 +148,14 @@ class Filepicker_mcp {
 			$type = ee()->input->get('type') ?: $dir->default_modal_view;
 		}
 
+		$has_filters = ee()->input->get('hasFilters');
+
 		$base_url = ee('CP/URL', $this->base_url);
 		$base_url->setQueryStringVariable('directories', $show);
 		$base_url->setQueryStringVariable('directory', $requested);
 		$base_url->setQueryStringVariable('type', $type);
 
-		if (ee()->input->get('hasFilters') !== '0')
+		if ($has_filters !== '0')
 		{
 			$vars['type'] = $type;
 			$filters = ee('CP/Filter');
@@ -190,6 +192,14 @@ class Filepicker_mcp {
 			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
 
 			$vars['filters'] = $filters->render($base_url);
+		}
+		else
+		{
+			$base_url->setQueryStringVariable('hasFilters', $has_filters);
+
+			$perpage = 5;
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
 		}
 
 

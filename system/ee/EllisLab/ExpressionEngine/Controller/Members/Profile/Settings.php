@@ -106,11 +106,31 @@ class Settings extends Profile {
 
 		$path = ee()->config->item('avatar_path');
 
-		$directory = ee('Model')->get('UploadDestination')
-			->filter('name', 'Default Avatars')
-			->first();
+		$directories = ee('Model')->get('UploadDestination')
+			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
+			->all()
+			->indexBy('name');
 
-		$fp = ee('CP/FilePicker')->make($directory->id);
+		$default = $directories['Default Avatars'];
+
+		if ($this->member->avatar_filename)
+		{
+			foreach ($directories as $dir)
+			{
+				if ($dir->getFilesystem()->exists($this->member->avatar_filename))
+				{
+					$directory = $dir;
+					break;
+				}
+			}
+		}
+
+		if ( ! isset($directory))
+		{
+			$directory = $default;
+		}
+
+		$fp = ee('CP/FilePicker')->make($default->id);
 
 		$dirs = array();
 		$avatar_choices = array();
@@ -325,7 +345,7 @@ class Settings extends Profile {
 		return parent::saveSettings($settings);
 	}
 
-	private function uploadAvatar()
+	public function uploadAvatar()
 	{
 		$existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
 
@@ -336,7 +356,7 @@ class Settings extends Profile {
 
 		ee()->load->library('filemanager');
 		$directory = ee('Model')->get('UploadDestination')
-			->filter('server_path', ee()->config->item('avatar_path'))
+			->filter('name', 'Avatars')
 			->first();
 
 		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
@@ -388,7 +408,7 @@ class Settings extends Profile {
 	{
 		$url = ee()->input->post('link_avatar');
 		$directory = ee('Model')->get('UploadDestination')
-			->filter('server_path', ee()->config->item('avatar_path'))
+			->filter('name', 'Avatars')
 			->first();
 
 		if ( ! $directory)
