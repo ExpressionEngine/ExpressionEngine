@@ -524,9 +524,6 @@ Grid.Settings.prototype = {
 		// Bind automatic column name
 		this._bindAutoColName(column);
 
-		// Bind column manipulation buttons
-		this._bindActionButtons(column);
-
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
 	},
