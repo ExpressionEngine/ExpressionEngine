@@ -79,6 +79,8 @@ class ChannelField extends FieldModel {
 
 	protected static $_events = array(
 		'beforeInsert',
+		'afterInsert',
+		'beforeDelete',
 	);
 
 	protected $field_id;
@@ -149,6 +151,54 @@ class ChannelField extends FieldModel {
 			->filter('group_id', $this->group_id)
 			->filter('site_id', $this->site_id)
 			->count() + 1;
+	}
+
+	public function onAfterInsert()
+	{
+		parent::onAfterInsert();
+
+		foreach ($this->ChannelFieldGroup->Channels as $channel)
+		{
+			foreach ($channel->ChannelLayouts as $channel_layout)
+			{
+				$field_layout = $channel_layout->field_layout;
+				$field_info = array(
+					'field'     => 'field_id_' . $this->field_id,
+					'visible'   => TRUE,
+					'collapsed' => FALSE
+				);
+				$field_layout[0]['fields'][] = $field_info;
+
+				$channel_layout->field_layout = $field_layout;
+				$channel_layout->save();
+			}
+		}
+	}
+
+	public function onBeforeDelete()
+	{
+		foreach ($this->ChannelFieldGroup->Channels as $channel)
+		{
+			foreach ($channel->ChannelLayouts as $channel_layout)
+			{
+				$field_layout = $channel_layout->field_layout;
+
+				foreach ($field_layout as $i => $section)
+				{
+					foreach ($section['fields'] as $j => $field_info)
+					{
+						if ($field_info['field'] == 'field_id_' . $this->field_id)
+						{
+							unset($field_layout[$i][$j]);
+							break 2;
+						}
+					}
+				}
+
+				$channel_layout->field_layout = $field_layout;
+				$channel_layout->save();
+			}
+		}
 	}
 
 }

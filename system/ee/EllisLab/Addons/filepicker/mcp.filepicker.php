@@ -1,4 +1,28 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// --------------------------------------------------------------------
+
+/**
+ * ExpressionEngine File Picker Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
@@ -38,20 +62,39 @@ class Filepicker_mcp {
 		$dirs = ee()->api->get('UploadDestination')
 			->with('Files')
 			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('module_id', 0);
+
+		$member_group = ee()->session->userdata['group_id'];
+		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
+			return $dir->memberGroupHasAccess($member_group);
+		});
+
+		$input_directory = ($dirs->count() == 1)
+			? $dirs->first()->id
+			: ee()->input->get('directory');
+
+		if ( ! empty($input_directory))
+		{
+			$id = $input_directory;
+		}
+
+		// Restrict things if we're in a file field that enforces a directory
+		if (isset($id)
+			&& (ctype_digit($id) || is_int($id))
+			&& ee()->input->get('restrict') == TRUE)
+		{
+			$dirs = $dirs->filter('id', (int) $id);
+		}
 
 		$directories = $dirs->indexBy('id');
-
-		if ( ! empty(ee()->input->get('directory')))
-		{
-			$id = ee()->input->get('directory');
-		}
 
 		if (empty($id) || $id == 'all')
 		{
 			$id = 'all';
 			$files = ee('Model')->get('File')
-				->filter('site_id', ee()->config->item('site_id'))->all();
+				->filter('upload_location_id', 'IN', $dirs->getIds())
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 
 			$type = ee()->input->get('type') ?: 'list';
 		}
@@ -92,18 +135,31 @@ class Filepicker_mcp {
 		$files = $files->filter(function($file) { return $file->exists(); });
 
 		$base_url = ee('CP/URL', $this->base_url);
+		$base_url->setQueryStringVariable('directory', $id);
+		$base_url->setQueryStringVariable('type', $type);
+
+		// Continue restricting by directory
+		if (ee()->input->get('restrict', FALSE))
+		{
+			$base_url->setQueryStringVariable('restrict', TRUE);
+		}
 
 		if (ee()->input->get('hasFilters') !== '0')
 		{
-			$directories = array_filter($directories, function($dir) {return $dir->module_id == 0;});
-			$directories = array_map(function($dir) {return $dir->name;}, $directories);
-			$directories = array('all' => lang('all')) + $directories;
 			$vars['type'] = $type;
+			$filters = ee('CP/Filter');
 
-			$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
-				->disableCustomValue();
+			$directories = array_filter($directories, function($dir) {return $dir->module_id == 0;});
+			if (count($directories) > 1)
+			{
+				$directories = array_map(function($dir) {return $dir->name;}, $directories);
+				$directories = array('all' => lang('all')) + $directories;
 
-			$filters = ee('CP/Filter')->add($dirFilter);
+				$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
+					->disableCustomValue();
+
+				$filters = ee('CP/Filter')->add($dirFilter);
+			}
 
 			$filters = $filters->add('Perpage', $files->count(), 'show_all_files');
 
@@ -116,18 +172,17 @@ class Filepicker_mcp {
 				->setDefaultValue($type);
 			$filters = $filters->add($imgFilter);
 
-			$perpage = $filters->values()['perpage'];
+			$perpage = $filters->values();
+			$perpage = $perpage['perpage'];
 			$vars['filters'] = $filters->render($base_url);
 		}
 
-		$base_url->setQueryStringVariable('directory', $id);
-		$base_url->setQueryStringVariable('type', $type);
-		
 		if ($this->images || $type == 'thumb')
 		{
 			$vars['type'] = 'thumb';
 			$vars['files'] = $files;
 			$vars['form_url'] = $base_url;
+			$vars['data_url_base'] = $this->base_url;
 		}
 		else
 		{

@@ -80,8 +80,8 @@ class Thumbnail {
 	 */
 	public function setDefault()
 	{
-		$this->url = PATH_CP_GBL_IMG . 'default.png';
-		$this->path = PATH_THEMES . 'cp_global_images/default.png';
+		$this->url = PATH_CP_GBL_IMG . 'missing.jpg';
+		$this->path = PATH_THEMES . 'asset/img/missing.jpg';
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Thumbnail {
 	public function setMissing()
 	{
 		$this->url = PATH_CP_GBL_IMG . 'missing.jpg';
-		$this->path = PATH_THEMES . 'cp_global_images/missing.jpg';
+		$this->path = PATH_THEMES . 'asset/img/missing.jpg';
 	}
 
 	/**

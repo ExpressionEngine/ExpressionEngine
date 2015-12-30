@@ -487,6 +487,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'login_as' => 'Login as %s',
 
+'cp_index' => 'CP Index',
+
 'delete_username' => 'Delete %s',
 
 'choose_avatar' => 'Choose from library',

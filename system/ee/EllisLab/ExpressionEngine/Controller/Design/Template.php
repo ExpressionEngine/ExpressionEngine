@@ -90,14 +90,16 @@ class Template extends AbstractDesignController {
 		if (ee()->input->post('template_id'))
 		{
 			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
-				->first()
-				->getValues();
+				->first();
 
-			unset($master_template['template_id']);
-			unset($master_template['group_id']);
-			unset($master_template['hits']);
+			$properties = $master_template->getValues();
 
-			$template->set($master_template);
+			unset($properties['template_id']);
+			unset($properties['site_id']);
+			unset($properties['group_id']);
+			unset($properties['hits']);
+
+			$template->set($properties);
 		}
 
 		$result = $this->validateTemplate($template);
@@ -108,6 +110,17 @@ class Template extends AbstractDesignController {
 
 			if ($result->isValid())
 			{
+				// Unless we are duplicating a template the default is to
+				// allow access to everyone
+				if ( ! ee()->input->post('template_id'))
+				{
+					$template->NoAccess = NULL;
+				}
+				else
+				{
+					$template->NoAccess = $master_template->NoAccess;
+				}
+
 				$template->save();
 
 				$alert = ee('CP/Alert')->makeInline('shared-form')
@@ -650,7 +663,7 @@ class Template extends AbstractDesignController {
 	 */
 	private function validateTemplateRoute(TemplateModel $template)
 	{
-		if ( ! ee()->input->post('route'))
+		if (IS_CORE || ! ee()->input->post('route'))
 		{
 			$template->TemplateRoute = NULL;
 			return FALSE;
@@ -979,13 +992,6 @@ class Template extends AbstractDesignController {
 			$template->getNoAccess()->pluck('group_id')
 		);
 
-		$route = $template->getTemplateRoute();
-
-		if ( ! $route)
-		{
-			$route = ee('Model')->make('TemplateRoute');
-		}
-
 		$sections = array(
 			array(
 				array(
@@ -1025,29 +1031,40 @@ class Template extends AbstractDesignController {
 							'value' => $template->enable_http_auth
 						)
 					)
-				),
-				array(
-					'title' => 'template_route_override',
-					'desc' => 'template_route_override_desc',
-					'fields' => array(
-						'route' => array(
-							'type' => 'text',
-							'value' => $route->route
-						)
-					)
-				),
-				array(
-					'title' => 'require_all_segments',
-					'desc' => 'require_all_segments_desc',
-					'fields' => array(
-						'route_required' => array(
-							'type' => 'yes_no',
-							'value' => $route->route_required
-						)
-					)
 				)
 			)
 		);
+
+		if ( ! IS_CORE)
+		{
+			$route = $template->getTemplateRoute();
+
+			if ( ! $route)
+			{
+				$route = ee('Model')->make('TemplateRoute');
+			}
+
+			$sections[0][] = array(
+				'title' => 'template_route_override',
+				'desc' => 'template_route_override_desc',
+				'fields' => array(
+					'route' => array(
+						'type' => 'text',
+						'value' => $route->route
+					)
+				)
+			);
+			$sections[0][] = array(
+				'title' => 'require_all_segments',
+				'desc' => 'require_all_segments_desc',
+				'fields' => array(
+					'route_required' => array(
+						'type' => 'yes_no',
+						'value' => $route->route_required
+					)
+				)
+			);
+		}
 
 		$html = '';
 

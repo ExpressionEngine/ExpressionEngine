@@ -133,8 +133,17 @@ class EntryListing {
 	 */
 	private function setupFilters()
 	{
+		$channel = NULL;
+
 		$this->channel_filter = $this->createChannelFilter();
-		$this->category_filter = $this->createCategoryFilter();
+
+		if ($this->channel_filter->value())
+		{
+			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
+				->first();
+		}
+
+		$this->category_filter = $this->createCategoryFilter($channel);
 		$this->status_filter = $this->createStatusFilter();
 
 		$this->filters = ee('CP/Filter')

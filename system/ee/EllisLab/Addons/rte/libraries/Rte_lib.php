@@ -381,9 +381,7 @@ class Rte_lib {
 		}
 
 		// potentially required assets
-		$jquery = URL_THEMES . 'javascript/' .
-				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
-				  '/jquery/jquery.js';
+		$jquery = URL_THEMES.'javascript/'.PATH_JS.'/jquery/jquery.js';
 
 		ee()->load->library('javascript');
 
@@ -651,17 +649,15 @@ class Rte_lib {
 	 */
 	private function _load_js_files($load = array())
 	{
-		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-
 		if ( ! defined('PATH_JQUERY'))
 		{
-			define('PATH_JQUERY', PATH_THEMES.'asset/javascript/'.$folder.'/jquery/');
+			define('PATH_JQUERY', PATH_THEMES.'asset/javascript/'.PATH_JS.'/jquery/');
 		}
 
 		$types	= array(
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
-			'file'		=> PATH_THEMES.'asset/javascript/'.$folder.'/',
+			'file'		=> PATH_THEMES.'asset/javascript/'.PATH_JS.'/',
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_ADDONS
 		);

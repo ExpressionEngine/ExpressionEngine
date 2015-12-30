@@ -62,7 +62,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 			));
 
 		$this->assertEquals(
-			"\"name\", \"email\"\n\"EllisLab Team\", \"team@ellislab.com\"\n\"EllisLab Support\", \"support@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"EllisLab Team\",\"team@ellislab.com\"\n\"EllisLab Support\",\"support@ellislab.com\"\n",
 			(string) $this->csv
 		);
 	}
@@ -82,7 +82,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 		$this->csv->save('/var/tmp/test.csv');
 		$this->assertFileExists('/var/tmp/test.csv');
 		$this->assertEquals(
-			"\"name\", \"email\"\n\"EllisLab Team\", \"team@ellislab.com\"\n\"EllisLab Support\", \"support@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"EllisLab Team\",\"team@ellislab.com\"\n\"EllisLab Support\",\"support@ellislab.com\"\n",
 			file_get_contents('/var/tmp/test.csv')
 		);
 	}
@@ -101,7 +101,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 			));
 
 		$this->assertEquals(
-			"\"name\", \"email\", \"first_name\", \"last_name\"\n\"EllisLab Team\", \"team@ellislab.com\", \"\", \"\"\n\"\", \"developers@ellislab.com\", \"EllisLab\", \"Developers\"\n",
+			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"EllisLab Team\",\"team@ellislab.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"EllisLab\",\"Developers\"\n",
 			(string) $this->csv
 		);
 	}
@@ -119,7 +119,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 		$this->csv->addRow($row1)->addRow($row2);
 
 		$this->assertEquals(
-			"\"name\", \"email\", \"first_name\", \"last_name\"\n\"EllisLab Team\", \"team@ellislab.com\", \"\", \"\"\n\"\", \"developers@ellislab.com\", \"EllisLab\", \"Developers\"\n",
+			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"EllisLab Team\",\"team@ellislab.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"EllisLab\",\"Developers\"\n",
 			(string) $this->csv
 		);
 	}
@@ -138,7 +138,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 			));
 
 		$this->assertEquals(
-			"\"name\", \"email\", \"first_name\", \"last_name\"\n\"EllisLab Team\", \"team@ellislab.com\", \"\", \"\"\n\"\", \"developers@ellislab.com\", \"EllisLab\", \"Developers\"\n",
+			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"EllisLab Team\",\"team@ellislab.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"EllisLab\",\"Developers\"\n",
 			(string) $this->csv
 		);
 	}
@@ -151,7 +151,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 		));
 
 		$this->assertEquals(
-			"\"name\", \"email\"\n\"Team, EllisLab\", \"team@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"Team, EllisLab\",\"team@ellislab.com\"\n",
 			(string) $this->csv
 		);
 	}
@@ -164,7 +164,7 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 		));
 
 		$this->assertEquals(
-			"\"name\", \"email\"\n\"\"\"Dev Robots\"\" Team\", \"developers@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"\"\"Dev Robots\"\" Team\",\"developers@ellislab.com\"\n",
 			(string) $this->csv
 		);
 	}

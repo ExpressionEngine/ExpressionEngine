@@ -640,7 +640,9 @@ class EE_Config {
 			'prv_msg_max_chars',
 			'memberlist_order_by',
 			'memberlist_sort_order',
-			'memberlist_row_limit'
+			'memberlist_row_limit',
+			'approved_member_notification',
+			'declined_member_notification'
 		);
 
 		$template_default = array(
@@ -1255,7 +1257,7 @@ class EE_Config {
 
 		if (function_exists('apc_delete_file'))
 		{
-			apc_delete_file($path);
+			@apc_delete_file($path) || apc_clear_cache();
 		}
 	}
 

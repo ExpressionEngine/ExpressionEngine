@@ -77,7 +77,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		// so we spend less time doing silly comparisons
 		if (strpos($tag, '_path') !== FALSE OR strpos($tag, 'permalink') !== FALSE)
 		{
-			return $this->_paths($data, $tagdata, $tag, $tag_options, $prefix);
+			return $this->_paths($data, $tagdata, $tag, $tag_options, $prefix, $search_link);
 		}
 
 		if (strpos($tag, 'url') !== FALSE)
@@ -167,10 +167,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 * @param String	The var_single key (tag name)
 	 * @param String	The var_single value
 	 * @param String	The current parsing prefix
+	 * @param String	The search link for search paths
 	 *
 	 * @return String	The processed tagdata
 	 */
-	protected function _paths($data, $tagdata, $key, $val, $prefix)
+	protected function _paths($data, $tagdata, $key, $val, $prefix, $search_link)
 	{
 		$unprefixed = substr($key, 0, strcspn($key, ' ='));
 		$unprefixed = preg_replace('/^'.$prefix.'/', '', $unprefixed);

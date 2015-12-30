@@ -719,7 +719,6 @@ class Forum_mcp extends CP_Controller {
 						'board_upload_path' => array(
 							'type' => 'text',
 							'value' => $board->board_upload_path,
-							'attrs' => 'placeholder="http://"'
 						)
 					)
 				),

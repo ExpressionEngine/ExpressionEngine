@@ -110,6 +110,7 @@ class Groups extends AbstractChannelsController {
 		if ( ! empty($_POST))
 		{
 			$field_group = $this->setWithPost(ee('Model')->make('ChannelFieldGroup'));
+			$field_group->site_id = ee()->config->item('site_id');
 			$result = $field_group->validate();
 
 			if ($response = $this->ajaxValidation($result))

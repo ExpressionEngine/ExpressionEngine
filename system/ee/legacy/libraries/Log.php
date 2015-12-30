@@ -39,7 +39,7 @@ class EE_Log {
 	{
 		$config =& get_config();
 
-		$this->_log_path = SYSTEM.'user/logs/';
+		$this->_log_path = SYSPATH . 'user/logs/';
 
 		if ( ! is_dir($this->_log_path) || ! is_really_writable($this->_log_path))
 		{

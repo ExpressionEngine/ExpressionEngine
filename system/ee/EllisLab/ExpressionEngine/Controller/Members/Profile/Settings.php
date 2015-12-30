@@ -230,7 +230,7 @@ class Settings extends Profile {
 							'type' => 'image',
 							'id' => 'avatar',
 							'edit' => FALSE,
-							'image' => $directory->url . $this->member->avatar_filename,
+							'image' => ($directory) ? $directory->url . $this->member->avatar_filename : '',
 							'value' => $this->member->avatar_filename
 						)
 					)
@@ -342,7 +342,6 @@ class Settings extends Profile {
 		}
 
 		ee()->load->library('filemanager');
-		$current = ee()->config->item('avatar_path');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('server_path', ee()->config->item('avatar_path'))
 			->first();
@@ -367,12 +366,12 @@ class Settings extends Profile {
 		        array('ignore_dupes' => FALSE)
 		);
 		$filename = basename($file_path);
-		
+
 		// Upload the file
 		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
 		ee()->upload->do_upload('file');
 		$original = ee()->upload->upload_path . ee()->upload->file_name;
-		
+
 		if ( ! @copy($original, $file_path))
 		{
 		        if ( ! @move_uploaded_file($original, $file_path))
@@ -381,11 +380,11 @@ class Settings extends Profile {
 		                        ->asIssue()
 		                        ->withTitle(lang('upload_filedata_error'))
 		                        ->now();
-		
+
 		                return FALSE;
 		        }
 		}
-		
+
 		unlink($original);
 		$result = (array) ee()->upload;
 
@@ -395,10 +394,14 @@ class Settings extends Profile {
 	private function uploadRemoteAvatar()
 	{
 		$url = ee()->input->post('link_avatar');
-		$current = ee()->config->item('avatar_path');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('server_path', ee()->config->item('avatar_path'))
 			->first();
+
+		if ( ! $directory)
+		{
+			return FALSE;
+		}
 
     	$ch = curl_init($url);
     	curl_setopt($ch, CURLOPT_HEADER, 0);

@@ -91,7 +91,7 @@ class EE_Route {
 
 		foreach($this->segments as $segment)
 		{
-			if ($segment->isset)
+			if ($segment->hasValue())
 			{
 				$url[] =  urlencode($segment->value());
 			}

@@ -98,10 +98,6 @@ $lang = array(
 
 'export_variables' => 'Export Variables',
 
-'yes' => 'yes',
-
-'no' => 'no',
-
 'create_partial' => 'Create Partial',
 
 'edit_partial' => 'Edit Partial',

@@ -267,18 +267,20 @@ class Fields extends AbstractChannelsController {
 		$field->field_order = ($field->field_order) ?: 0;
 
 		$field->set($_POST);
+
 		return $field;
 	}
 
 	private function form(ChannelField $field = NULL)
 	{
-		if ( ! $field)
+		$fieldtypes = ee('Model')->get('Fieldtype');
+
+		if ($field)
 		{
-			$field = ee('Model')->make('ChannelField');
+			$fieldtypes = $fieldtypes->filter('name', $field->field_type);
 		}
 
-		$fieldtypes = ee('Model')->get('Fieldtype')
-			->order('name')
+		$fieldtypes = $fieldtypes->order('name')
 			->all();
 
 		$fieldtype_choices = array();
@@ -287,6 +289,11 @@ class Fields extends AbstractChannelsController {
 		{
 			$info = ee('App')->get($fieldtype->name);
 			$fieldtype_choices[$fieldtype->name] = $info->getName();
+		}
+
+		if ( ! $field)
+		{
+			$field = ee('Model')->make('ChannelField');
 		}
 
 		$field->field_type = ($field->field_type) ?: 'text';
@@ -397,7 +404,10 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group'),
+			'file' => array(
+				'cp/form_group',
+				'cp/channel/fields'
+			),
 		));
 
 		return $sections;

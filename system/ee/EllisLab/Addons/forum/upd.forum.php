@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.19';
+	var $version			= '3.1.20';
 
 	function tabs()
 	{
@@ -953,6 +953,18 @@ class Forum_upd {
 					);
 
 			ee()->smartforge->modify_column('forum_moderators', $fields);
+		}
+
+		if (version_compare($current, '3.1.20', '<'))
+		{
+
+			// There was bug in 3.0 where any new forum triggers were not being
+			// saved into the site_system_preferences column. This will update
+			// those.
+
+			ee('Model')->get('forum:Board')
+				->all()
+				->save();
 		}
 
 		return TRUE;

@@ -12,15 +12,17 @@
 						<fieldset class="filter-search">
 							<input type="text" value="" placeholder="<?=lang('filter_autosaves')?>">
 						</fieldset>
-						<ul>
-							<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>
-								<?php if ($entry->entry_id): ?>
-								<li><a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
-								<?php else: ?>
-								<li><a href="<?=ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
-								<?php endif;?>
-							<?php endforeach; ?>
-						</ul>
+						<div class="scroll-wrap">
+							<ul>
+								<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>
+									<?php if ($entry->entry_id): ?>
+									<li><a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+									<?php else: ?>
+									<li><a href="<?=ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+									<?php endif;?>
+								<?php endforeach; ?>
+							</ul>
+						</div>
 					</div>
 				</li>
 			</ul>
@@ -68,7 +70,7 @@
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 			<?php foreach ($tab->getFields() as $field): ?>
-			<?php if ( ! $field->isVisible()) continue; ?>
+			<?php if ( ! $field->isRequired() && ! $field->isVisible()) continue; ?>
 				<?php
 					switch ($field->getType())
 					{
@@ -154,7 +156,7 @@
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
 				<?php if ($entry->Channel->enable_versioning): ?>
-				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
+				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>" data-submit-text="<?=lang('btn_save_revision')?>">
 				<?php endif; ?>
 				<?=cp_form_submit($button_text, lang('btn_saving'))?>
 			</fieldset>

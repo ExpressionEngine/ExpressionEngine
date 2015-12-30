@@ -33,14 +33,7 @@ class Jquery {
 	{
 		if ( ! defined('PATH_JQUERY'))
 		{
-			if (ee()->config->item('use_compressed_js') == 'n')
-			{
-				define('PATH_JQUERY', PATH_THEMES.'javascript/src/jquery/');
-			}
-			else
-			{
-				define('PATH_JQUERY', PATH_THEMES.'javascript/compressed/jquery/');
-			}
+			define('PATH_JQUERY', PATH_THEMES.'javascript/'.PATH_JS.'/jquery/');
 		}
 
 		ee()->lang->loadfile('jquery');

@@ -14,12 +14,13 @@
 	<?php if (isset($filters)) echo $filters; ?>
 
 	<?php if($type == 'thumb'): ?>
+	<div class="tbl-wrap">
 		<table class='img-grid'>
 		<?php foreach (array_chunk($files->asArray(), 5) as $row): ?>
 			<tr>
 				<?php foreach ($row as $file): ?>
 				<td>
-					<a data-id="<?=$file->file_id ?: $file->file_name ?>" class="filepicker-item" href="#">
+					<a data-id="<?=$file->file_id ?: $file->file_name ?>" data-url="<?=ee('CP/URL')->make($data_url_base, array('file' => $file->file_id))?>" class="filepicker-item" href="#">
 						<?php if ($file->isImage()): ?>
 						<img src="<?=$file->getAbsoluteThumbnailURL()?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
@@ -31,6 +32,7 @@
 			</tr>
 		<?php endforeach ?>
 		</table>
+	</div>
 	<?php else: ?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 	<?php endif; ?>

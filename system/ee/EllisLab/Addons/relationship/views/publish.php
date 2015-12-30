@@ -10,14 +10,16 @@
 		<div class="filters">
 			<ul>
 				<li>
-					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))[0]->channel_title?>)</span><?php endif; ?></a>
+					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))->first()->channel_title?>)</span><?php endif; ?></a>
 					<div class="sub-menu">
+						<?php if (count($channels) > 9): ?><div class="scroll-wrap"><?php endif;?>
 						<ul>
 							<li><a href="" data-channel-id=""><?=lang('all_channels')?></a></li>
 							<?php foreach($channels as $channel): ?>
 								<li><a href="" data-channel-id="<?=$channel->channel_id?>"><?=$channel->channel_title?></a></li>
 							<?php endforeach; ?>
 						</ul>
+					<?php if (count($channels) > 9): ?></div><?php endif;?>
 					</div>
 				</li>
 			</ul>
@@ -40,11 +42,13 @@
 						<li>
 							<a class="has-sub" href=""><?=lang('btn_create_new')?></a>
 							<div class="sub-menu">
+							<?php if (count($channels) > 9): ?><div class="scroll-wrap"><?php endif;?>
 								<ul>
 									<?php foreach($channels as $channel): ?>
 										<li><a href="<?=ee('CP/URL')->make('publish/create/' . $channel->channel_id)?>"><?=$channel->channel_title?></a></li>
 									<?php endforeach; ?>
 								</ul>
+							<?php if (count($channels) > 9): ?></div><?php endif;?>
 							</div>
 						</li>
 					</ul>
@@ -68,7 +72,7 @@
 				if ($multiple)
 				{
 					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked);
-					echo form_hidden($field_name.'[sort][]', 0);
+					echo '<input type="hidden" name="'.$field_name.'[sort][]'.'" value="0" disabled="disabled">';
 				}
 				else
 				{
@@ -84,7 +88,7 @@
 				echo form_hidden($field_name.'[data][]', $entry_id);
 				if ($multiple)
 				{
-					echo form_hidden($field_name.'[sort][]', 0);
+					echo '<input type="hidden" name="'.$field_name.'[sort][]'.'" value="0" disabled="disabled">';
 				}
 			}
 		?>

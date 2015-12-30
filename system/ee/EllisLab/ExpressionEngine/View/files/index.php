@@ -14,14 +14,16 @@
 									<input type="text" value="" placeholder="<?=lang('filter_upload_directories')?>">
 								</fieldset>
 							<?php endif ?>
+							<?php if (count($directories) > 9): ?><div class="scroll-wrap"><?php endif;?>
 							<ul>
 								<?php foreach ($directories as $dir): ?>
 									<li><a href="<?=ee('CP/URL')->make('files/upload/' . $dir->id)?>"><?=$dir->name?></a></li>
 								<?php endforeach ?>
 								<?php if (ee()->cp->allowed_group('can_create_upload_directories')): ?>
-									<li class="last"><a class="add" href="<?=ee('CP/URL', 'uploads/create')?>"><?=lang('new_upload_directory')?></a></li>
+									<li class="last"><a class="add" href="<?=ee('CP/URL', 'files/uploads/create')?>"><?=lang('new_upload_directory')?></a></li>
 								<?php endif ?>
 							</ul>
+							<?php if (count($directories) > 9): ?></div><?php endif;?>
 						</div>
 					</li>
 				</ul>

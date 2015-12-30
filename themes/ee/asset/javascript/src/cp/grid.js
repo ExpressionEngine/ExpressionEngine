@@ -43,7 +43,7 @@ Grid.Publish = function(field, settings) {
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
-	this.rowContainer = this.root.not($('tr', this.root).has('th'));
+	this.rowContainer = this.root.children('tbody');
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
@@ -164,7 +164,7 @@ Grid.Publish.prototype = {
 	 * @return	{int}	Number of rows
 	 */
 	_getRows: function() {
-		return $('tr', this.rowContainer).not(this.blankRow.add(this.emptyField).add($('tr', this.root).has('th')));
+		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField));
 	},
 
 	/**
@@ -374,6 +374,9 @@ Grid.Settings.prototype = {
 			items: '.grid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper	// Custom sort handler
 		});
+		this.settingsContainer.find('li.reorder a').on('click', function(e){
+			e.preventDefault();
+		});
 	},
 
 	/**
@@ -520,9 +523,6 @@ Grid.Settings.prototype = {
 
 		// Bind automatic column name
 		this._bindAutoColName(column);
-
-		// Bind column manipulation buttons
-		this._bindActionButtons(column);
 
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));

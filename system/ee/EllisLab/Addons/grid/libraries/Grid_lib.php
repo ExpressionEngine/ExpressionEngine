@@ -83,10 +83,22 @@ class Grid_lib {
 			{
 				if ($row_id)
 				{
-					return $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+					if ( ! array_key_exists($row_id, $rows))
+					{
+						$row_id = 'row_id_'.$row_id;
+					}
+
+					if (array_key_exists($row_id, $rows))
+					{
+						$html = $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+					}
+				}
+				else
+				{
+					$html = $this->_publish_field_cell($columns[$column_id]);
 				}
 
-				return $this->_publish_field_cell($columns[$column_id]);
+				return $grid->namespaceForGrid($html, $row_id);
 			}
 		}
 
@@ -96,20 +108,25 @@ class Grid_lib {
 		{
 			$column_headings[$column['col_label']] = array('desc' => $column['col_instructions']);
 
-			if ($column['col_type'] == 'rte')
-			{
-				$column_headings[$column['col_label']]['class'] = 'grid-rte';
-			}
-
-			if ($column['col_type'] == 'relationship'
-				&& $column['col_settings']['allow_multiple'])
-			{
-				$column_headings[$column['col_label']]['class'] = 'grid-mr';
+			switch ($column['col_type']) {
+				case 'rte':
+					$class = 'grid-rte';
+					break;
+				case 'textarea':
+					$class = 'grid-textarea';
+					break;
+				case 'relationship':
+					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+					break;
+				default:
+					$class = '';
+					break;
 			}
 
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
 				'attrs' => array(
+					'class' => $class,
 					'data-fieldtype' => $column['col_type'],
 					'data-column-id' => $column['col_id'],
 					'width' => $column['col_width'].'%',

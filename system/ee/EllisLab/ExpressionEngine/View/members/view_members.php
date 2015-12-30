@@ -13,7 +13,7 @@
 
 		<?php $this->embed('_shared/table', $table); ?>
 
-		<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
+		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data']) && $can_delete_members): ?>
 		<fieldset class="tbl-bulk-act hidden">
@@ -28,14 +28,7 @@
 	</div>
 </div>
 
-<?php if ( ! empty($form)): ?>
-<div class="box snap">
-	<?php $this->embed('_shared/form', $form); ?>
-</div>
-<?php endif; ?>
-
 <?php
-
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
 	'form_url'	=> $form_url,

@@ -268,6 +268,8 @@ $lang = array(
 
 'build' => 'build date:',
 
+'version_identifier' => 'identifier:',
+
 'license_number' => 'License Number',
 
 'invalid_license' => 'INVALID LICENSE',
@@ -287,10 +289,6 @@ $lang = array(
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit.  Please consult the user guide for more info.',
 
 'back' => 'Back',
-
-'no' => 'no',
-
-'yes' => 'yes',
 
 'all' => 'All',
 

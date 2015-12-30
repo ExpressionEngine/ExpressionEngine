@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.0.0';	// The version being installed
+	public $version           = '3.0.6';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -66,6 +66,7 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
+		'file',
 		'filepicker',
 		'search'
 	);
@@ -332,6 +333,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for finfo_open
+		if ( ! function_exists('finfo_open'))
+		{
+			$this->set_output('error', array('error' => lang('fileinfo_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -415,6 +423,16 @@ class Wizard extends CI_Controller {
 		{
 			$this->set_output('error', array('error' => lang('unreadable_update')));
 			return FALSE;
+		}
+
+		// Make sure the Member module is installed in the case the user is
+		// upgrading from Core to Standard
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		if ( ! IS_CORE
+			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(array('member'));
 		}
 
 		// If this is FALSE it means the user is running the most current
@@ -960,8 +978,10 @@ class Wizard extends CI_Controller {
 	{
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
-		// Try to rename automatically
-		if ($this->rename_installer())
+		// Try to rename automatically if there are no errors
+		if ($this->rename_installer()
+			&& empty($template_variables['errors'])
+			&& empty($template_variables['error_messages']))
 		{
 			ee()->load->helper('url');
 			redirect($cp_login_url);
@@ -1425,6 +1445,11 @@ class Wizard extends CI_Controller {
 				: ' <span class="faded">|</span> '.$suffix;
 		}
 
+		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
+		$javascript_dir = (is_dir($javascript_basepath.'src/'))
+			? 'src/'
+			: 'compressed/';
+
 		$version = explode('.', $this->version, 2);
 		$data = array(
 			'title'             => $this->title,
@@ -1434,8 +1459,7 @@ class Wizard extends CI_Controller {
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
 			'image_path'        => $this->image_path,
-
-			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/compressed/'),
+			'javascript_path'   => $javascript_basepath.$javascript_dir,
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
@@ -1458,7 +1482,7 @@ class Wizard extends CI_Controller {
 			$msm_config->default_ini['charset'] = 'UTF-8';
 			$msm_config->site_prefs('');
 			$data['theme_url'] = $msm_config->item('theme_folder_url');
-			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/compressed/';
+			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/'.$javascript_dir;
 		}
 
 		$data = array_merge($data, $template_variables);
@@ -2241,10 +2265,6 @@ class Wizard extends CI_Controller {
 		{
 			$config['index_page'] = $config['site_index'];
 		}
-
-		// BUILD_REMOVE_CJS_START
-		$config['use_compressed_js'] = 'n';
-		// BUILD_REMOVE_CJS_END
 
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');

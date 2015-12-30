@@ -83,7 +83,7 @@ $lang = array(
 'attachments_per_post_desc' => 'Maximum attachments allowed per post.',
 
 'upload_directory' => 'Upload directory',
-'upload_directory_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+'upload_directory_desc' => 'Full path location of this <mark>upload</mark> directory.',
 
 'allowed_file_types' => 'Allowed file types?',
 'allowed_file_types_desc' => '',

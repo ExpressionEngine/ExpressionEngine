@@ -87,6 +87,20 @@ class Members extends Settings {
 					)
 				),
 				array(
+					'title' => 'approved_member_notification',
+					'desc' => 'approved_member_notification_desc',
+					'fields' => array(
+						'approved_member_notification' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'declined_member_notification',
+					'desc' => 'declined_member_notification_desc',
+					'fields' => array(
+						'declined_member_notification' => array('type' => 'yes_no')
+					)
+				),
+				array(
 					'title' => 'require_terms_of_service',
 					'desc' => 'require_terms_of_service_desc',
 					'fields' => array(
@@ -102,7 +116,6 @@ class Members extends Settings {
 				),
 				array(
 					'title' => 'default_member_group',
-					'desc' => 'default_member_group_desc',
 					'fields' => array(
 						'default_member_group' => array(
 							'type' => 'select',

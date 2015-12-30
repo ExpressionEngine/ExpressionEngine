@@ -183,8 +183,7 @@ EE.cp.channelMenuFilter = function() {
 
 // Close alert modal when close button is clicked
 EE.cp.bindCpMessageClose = function() {
-	$('div.alert a.close').click(function(event)
-	{
+	$('body').on('click', 'div.alert a.close', function(event) {
 		event.preventDefault();
 		$(this).parent().hide();
 	});

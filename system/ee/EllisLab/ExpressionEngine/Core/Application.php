@@ -77,7 +77,7 @@ class Application {
 	{
 		$standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
-			'simple_commerce', 'wiki', 'filepicker'
+			'simple_commerce', 'wiki'
 		);
 
 		$folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);
@@ -110,6 +110,17 @@ class Application {
 	public function getDependencies()
 	{
 		return $this->dependencies;
+	}
+
+	/**
+	 * Check for a component provider
+	 *
+	 * @param String $prefix Component name/prefix
+	 * @return bool Exists?
+	 */
+	public function has($prefix)
+	{
+		return $this->registry->has($prefix);
 	}
 
 	/**

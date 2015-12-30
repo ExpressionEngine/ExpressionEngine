@@ -240,8 +240,10 @@ class Ip_to_nation_mcp {
 	{
 		$countries = $this->_country_names();
 
+		$input_countries = (isset($_POST['countries'])) ? $_POST['countries'] : array();
+
 		// remove unknowns and 'n's
-		$ban = array_intersect($_POST['countries'], array_keys($countries));
+		$ban = array_intersect($input_countries, array_keys($countries));
 
 		// ban them
 		$this->ip_data->ban($ban);

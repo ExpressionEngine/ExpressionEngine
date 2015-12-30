@@ -641,8 +641,6 @@ class Channel_form_lib
 			}
 		}
 
-		var_dump($this->parse_variables);
-
 		$this->form_hidden('checkbox_fields', implode('|', array_unique($checkbox_fields)));
 
 		$conditional_errors = $this->_add_errors();
@@ -1668,6 +1666,15 @@ GRID_FALLBACK;
 
 					$result = $this->entry->validate();
 
+					if (is_array($_POST['category']))
+					{
+						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
+					}
+					else
+					{
+						$this->entry->Categories = NULL;
+					}
+
 					if ($result->isValid())
 					{
 						$this->entry->save();
@@ -1691,7 +1698,7 @@ GRID_FALLBACK;
 						$spam_data = array($_POST, $this->channel('channel_id'));
 					}
 
-					ee()->spam->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
+					ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
 				}
 			}
 			else
@@ -2007,7 +2014,7 @@ GRID_FALLBACK;
 		ee()->legacy_api->instantiate('channel_categories');
 		$category_list = ee()->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
-			$this->entry('categories')
+			$this->entry->Categories->pluck('cat_id')
 		);
 
 		$categories = array();
@@ -3397,7 +3404,7 @@ SCRIPT;
 
 		$ret = $url_title_js;
 
-		if (ee()->config->item('use_compressed_js') != 'n')
+		if (PATH_JS !== 'src')
 		{
 			return str_replace(array("\n", "\t"), '', $ret);
 		}

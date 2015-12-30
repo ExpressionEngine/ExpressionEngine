@@ -99,7 +99,7 @@ class File_ft extends EE_Fieldtype {
 						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->settings['grid_content_type']);
 
 						// If this filed was we need to check permissions.
-						if ($rows[$this->settings['grid_row_id']] != $data)
+						if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data)
 						{
 							$check_permissions = TRUE;
 						}
@@ -156,7 +156,9 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
+		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all')
+			? $this->settings['allowed_directories']
+			: '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
@@ -180,6 +182,13 @@ class File_ft extends EE_Fieldtype {
 				$allowed_file_dirs = 'all';
 			}
 
+			$url_query_string = array('directory' => $allowed_file_dirs);
+
+			if ($allowed_file_dirs != 'all')
+			{
+				$url_query_string['restrict'] = TRUE;
+			}
+
 			$file = $this->_parse_field($data);
 
 			return ee('View')->make('file:publish')->render(array(
@@ -187,7 +196,7 @@ class File_ft extends EE_Fieldtype {
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => ee('CP/URL')->make($fp->controller, array('directory' => $allowed_file_dirs))
+				'fp_url' => ee('CP/URL')->make($fp->controller, $url_query_string)
 			));
 		}
 
@@ -335,7 +344,7 @@ JSC;
 		{
 			ee()->session->cache['file_field']['css'] = TRUE;
 
-			$styles = <<<CSS
+			$styles = <<<STYLIO
 			<style type="text/css">
 			.file_set {
 				color: #5F6C74;
@@ -377,7 +386,8 @@ JSC;
 				clear: both;
 			}
 			</style>
-CSS;
+STYLIO;
+
 			$styles = preg_replace('/\s+/is', ' ', $styles);
 			ee()->cp->add_to_head($styles);
 		}

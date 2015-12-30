@@ -51,7 +51,6 @@ class LocalPath extends SerializedType {
 	 * readPath will instatiate a collection of file models for every file in
 	 * this column's path.
 	 *
-	 * @access protected
 	 * @return Collection  A Collection of File objects
 	 */
 	protected function readPath()
@@ -94,7 +93,6 @@ class LocalPath extends SerializedType {
 	 * read instead of when the column is instantiated.
 	 *
 	 * @param mixed $property
-	 * @access public
 	 * @return mixed
 	 */
 	public function __get($property)
@@ -104,14 +102,18 @@ class LocalPath extends SerializedType {
 			return $this->readPath();
 		}
 
-		return parent::__get($property);
+		if (isset($this->$property))
+		{
+			return $this->$property;
+		}
+
+		user_error("Invalid property: " . __CLASS__ . "->$property");
 	}
 
 	/**
 	 * Override the string representation so we can still treat the sever_path
 	 * as a string when we want to.
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function __toString()

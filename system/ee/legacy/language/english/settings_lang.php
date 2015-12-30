@@ -217,6 +217,8 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
+'smtp_port' => 'Server Port',
+
 'sending_options' => 'Sending Options',
 
 'mail_format' => 'Mail format',
@@ -461,6 +463,14 @@ $lang = array(
 
 'req_mbr_activation_opt_manual' => 'Manually moderated by administrator',
 
+'approved_member_notification' => 'Notify members when approved?',
+
+'approved_member_notification_desc' => 'When set to <b>yes</b>, members will receive an email notification when their member registration is approved.',
+
+'declined_member_notification' => 'Notify members when declined?',
+
+'declined_member_notification_desc' => 'When set to <b>yes</b>, members will receive an email notification when their member registration is declined.',
+
 'require_terms_of_service' => 'Require terms of service?',
 
 'require_terms_of_service_desc' => 'When set to <b>yes</b>, users must agree to terms of service during registration.',
@@ -470,8 +480,6 @@ $lang = array(
 'allow_member_localization_desc' => 'When set to <b>yes</b>, members will be able to set a specific time and date localization for their account.',
 
 'default_member_group' => 'Default member group',
-
-'default_member_group_desc' => 'When a member meets the lock out requirement.',
 
 'member_theme' => 'Member profile theme',
 

@@ -19,7 +19,10 @@ class ProviderRegistry {
 	}
 
 	/**
+	 * Register a new provider
 	 *
+	 * @param String $prefix Prefix to use
+	 * @param Provider $provider Provider object
 	 */
 	public function register($prefix, Provider $provider)
 	{
@@ -32,11 +35,25 @@ class ProviderRegistry {
 	}
 
 	/**
+	 * Has a given prefix?
 	 *
+	 * @param String $prefix Prefix to look for
+	 * @return bool
+	 */
+	public function has($prefix)
+	{
+		return array_key_exists($prefix, $this->providers);
+	}
+
+	/**
+	 * Get a given prefix
+	 *
+	 * @param String $prefix Prefix to look for
+	 * @return Provider
 	 */
 	public function get($prefix)
 	{
-		if ( ! array_key_exists($prefix, $this->providers))
+		if ( ! $this->has($prefix))
 		{
 			throw new \Exception("Unknown prefix: '{$prefix}'");
 		}
@@ -45,7 +62,9 @@ class ProviderRegistry {
 	}
 
 	/**
+	 * Get all providers
 	 *
+	 * @return Array [prefix => Provider]
 	 */
 	public function all()
 	{

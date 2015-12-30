@@ -112,7 +112,7 @@ class Member_images extends Member {
 		}
 
 		// Do we have what we need in $_POST?
-		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
+		$body = ee()->input->post('body', TRUE);
 		if (empty($body)
 			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{

@@ -134,8 +134,13 @@ class Publish extends AbstractPublishController {
 	 *   the form
 	 * @return string Rendered HTML
 	 */
-	public function create($channel_id, $autosave_id = NULL)
+	public function create($channel_id = NULL, $autosave_id = NULL)
 	{
+		if ( ! $channel_id)
+		{
+			show_404();
+		}
+
 		if ( ! ee()->cp->allowed_group('can_create_entries'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -145,19 +150,38 @@ class Publish extends AbstractPublishController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
-		if (!$channel)
+		if ( ! $channel)
 		{
 			show_error(lang('no_channel_exists'));
 		}
 
 		$entry = ee('Model')->make('ChannelEntry');
-		$entry->setChannel($channel);
+		$entry->Channel = $channel;
 		$entry->site_id =  ee()->config->item('site_id');
 		$entry->author_id = ee()->session->userdata('member_id');
 		$entry->ip_address = ee()->session->userdata['ip_address'];
 		$entry->versioning_enabled = $channel->enable_versioning;
 		$entry->sticky = FALSE;
-		$entry->allow_comments = TRUE;
+
+		// Set some defaults based on Channel Settings
+		$entry->allow_comments = (isset($channel->deft_comments)) ? $channel->deft_comments : TRUE;
+
+		if (isset($channel->deft_status))
+		{
+			$entry->status = $channel->deft_status;
+		}
+
+		if (isset($channel->deft_category))
+		{
+			$cat = ee('Model')->get('Category', $channel->deft_category)->first();
+			if ($cat)
+			{
+				$entry->Categories[] = $cat;
+			}
+		}
+
+		$entry->title = $channel->default_entry_title;
+		$entry->url_title = $channel->url_title_prefix;
 
 		if (isset($_GET['BK']))
 		{
@@ -200,6 +224,7 @@ class Publish extends AbstractPublishController {
 			}
 
 			$entry->set($_POST);
+			$entry->edit_date = ee()->localize->now;
 			$result = $entry->validate();
 
 			if (AJAX_REQUEST)

@@ -15,7 +15,6 @@
 
 	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
-	<?php if ( ! empty($table['data'])): ?>
 	<fieldset class="tbl-bulk-act hidden">
 		<select name="bulk_action">
 			<option value="">-- <?=lang('with_selected')?> --</option>
@@ -23,7 +22,6 @@
 		</select>
 		<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 	</fieldset>
-<?php endif; ?>
 <?=form_close()?>
 </div>
 

@@ -213,7 +213,10 @@ class Design extends AbstractDesignController {
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('template_structure');
 
-		$groups = ee('Model')->get('TemplateGroup')->with('Templates')->all();
+		$groups = ee('Model')->get('TemplateGroup')
+			->with('Templates')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 		$group_ids_by_name = $groups->getDictionary('group_name', 'group_id');
 
 		$existing = array();
@@ -226,8 +229,7 @@ class Design extends AbstractDesignController {
 			);
 		}
 
-		$basepath = PATH_TMPL;
-		$basepath .= '/'.ee()->config->item('site_short_name');
+		$basepath = PATH_TMPL . ee()->config->item('site_short_name');
 		ee()->load->helper('directory');
 		$files = directory_map($basepath, 0, 1);
 

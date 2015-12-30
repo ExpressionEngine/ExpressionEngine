@@ -12,6 +12,7 @@
 			</div>
 		</div>
 	</div>
+	<?php if (ee()->config->item('enable_comments') == 'y'): ?>
 	<div class="col-group snap mb">
 		<div class="col w-16 last">
 			<div class="box">
@@ -37,6 +38,7 @@
 			</div>
 		</div>
 	</div>
+	<?php endif; ?>
 
 	<div class="col-group snap mb">
 		<div class="col w-8">
@@ -109,11 +111,13 @@
 							<li>
 								<a class="has-sub" href=""><?=lang('create_new')?></a>
 								<div class="sub-menu">
-									<ul>
-										<?php foreach ($menu['channels']['create'] as $channel_name => $link): ?>
-											<li><a href="<?=$link?>"><?=$channel_name?></a></li>
-										<?php endforeach ?>
-									</ul>
+									<div class="scroll-wrap">
+										<ul>
+											<?php foreach ($menu['channels']['create'] as $channel_name => $link): ?>
+												<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+											<?php endforeach ?>
+										</ul>
+									</div>
 								</div>
 							</li>
 						</ul>

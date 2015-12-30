@@ -90,7 +90,7 @@ feature 'Member Import' do
             'Date & time format', 'Show seconds?', 'Create custom fields?']
     @page.values.map {|value| value.text}.should ==
         [@members_xml, 'Members', 'English',
-            'America/New_York', 'yyyy-mm-dd, 24-hour', 'yes', 'no']
+            'America/New_York', 'yyyy-mm-dd, 24-hour', 'Yes', 'No']
   end
 
   it 'should import basic member import file' do
