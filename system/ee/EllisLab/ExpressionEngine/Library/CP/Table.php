@@ -493,29 +493,7 @@ class Table {
 
 			uksort($this->data, function ($a, $b) use ($sort_dir)
 			{
-				// Sort numbers as numbers
-				if (is_numeric($a) && is_numeric($b))
-				{
-					$cmp = $a - $b;
-				}
-				// String sorting
-				else
-				{
-					// Check for dates
-					$date_format = ee()->localize->get_date_format();
-					$date_a = ee()->localize->string_to_timestamp($a, TRUE, $date_format);
-					$date_b = ee()->localize->string_to_timestamp($b, TRUE, $date_format);
-
-					if ($date_a !== FALSE && $date_b !== FALSE)
-					{
-						$cmb = $date_a - $date_b;
-					}
-					else
-					{
-						$cmp = strcmp(strtolower(strip_tags($a)), strtolower(strip_tags($b)));
-					}
-				}
-
+				$cmp = $this->compareData($a, $b);
 				return ($sort_dir == 'asc') ? $cmp : -$cmp;
 			});
 
@@ -546,23 +524,47 @@ class Table {
 		usort($rows, function ($a, $b) use ($columns, $sort_col, $sort_dir)
 		{
 			$search = array_keys($columns);
-			$index = array_search($sort_col, $search);
-			$a = $a['columns'][$index]['content'];
-			$b = $b['columns'][$index]['content'];
+			$index  = array_search($sort_col, $search);
+			$cmp    = $this->compareData(
+				$a['columns'][$index]['content'],
+				$b['columns'][$index]['content']
+			);
+			return ($sort_dir == 'asc') ? $cmp : -$cmp;
+		});
+	}
 
-			// Sort numbers as numbers
-			if (is_numeric($a) && is_numeric($b))
+	/**
+	 * Compare two values automatically
+	 * @param  Mixed $a Left value
+	 * @param  Mixed $b Right value
+	 * @return Integer  Comparison result (-1, 0, 1) based on the two values passed in
+	 */
+	public function compareData($a, $b)
+	{
+		// Sort numbers as numbers
+		if (is_numeric($a) && is_numeric($b))
+		{
+			$cmp = $a - $b;
+		}
+		// String sorting
+		else
+		{
+			// Check for dates
+			$date_format = ee()->localize->get_date_format();
+			$date_a = ee()->localize->string_to_timestamp($a, TRUE, $date_format);
+			$date_b = ee()->localize->string_to_timestamp($b, TRUE, $date_format);
+
+			if ($date_a !== FALSE && $date_b !== FALSE)
 			{
-				$cmp = $a - $b;
+				$cmp = $date_a - $date_b;
 			}
-			// String sorting
 			else
 			{
 				$cmp = strcmp(strtolower(strip_tags($a)), strtolower(strip_tags($b)));
 			}
+		}
 
-			return ($sort_dir == 'asc') ? $cmp : -$cmp;
-		});
+		return $cmp;
 	}
 
 	/**
