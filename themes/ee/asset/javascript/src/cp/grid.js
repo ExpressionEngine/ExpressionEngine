@@ -418,7 +418,7 @@ Grid.Settings.prototype = {
 	_bindCopyButton: function(context) {
 		var that = this;
 
-		context.on('click', '.grid-tools li.copy a', function(event) {
+		context.find('.grid-tools li.copy a').off('click').on('click', function(event) {
 			event.preventDefault();
 
 			var parentCol = $(this).parents('.grid-item');
@@ -523,6 +523,9 @@ Grid.Settings.prototype = {
 
 		// Bind automatic column name
 		this._bindAutoColName(column);
+
+		// Bind column manipulation buttons
+		this._bindActionButtons(column);
 
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
