@@ -142,11 +142,10 @@ class Members extends Settings {
 						'memberlist_order_by' => array(
 							'type' => 'select',
 							'choices' => array(
-								'total_posts' => lang('memberlist_order_by_opt_posts'),
-								'screen_name' => lang('memberlist_order_by_opt_screenname'),
-								'total_entries' => lang('memberlist_order_by_opt_entries'),
+								'id' => lang('id'),
+								'username' => lang('username'),
 								'join_date' => lang('memberlist_order_by_reg_date'),
-								'total_comments' => lang('memberlist_order_by_opt_comments')
+								'member_group' => lang('member_group')
 							)
 						)
 					)

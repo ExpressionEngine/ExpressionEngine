@@ -491,15 +491,7 @@ $lang = array(
 
 'memberlist_order_by_desc' => 'Sorting type for the member listing.',
 
-'memberlist_order_by_opt_posts' => 'Total posts',
-
-'memberlist_order_by_opt_screenname' => 'Screen name',
-
 'memberlist_order_by_opt_entries' => 'Total entries',
-
-'memberlist_order_by_reg_date' => 'Registration date',
-
-'memberlist_order_by_opt_comments' => 'Total comments',
 
 'memberlist_sort_order' => 'Order by',
 
