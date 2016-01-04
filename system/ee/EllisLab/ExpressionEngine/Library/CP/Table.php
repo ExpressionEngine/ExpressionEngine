@@ -491,7 +491,7 @@ class Table {
 		{
 			$sort_dir = $this->getSortDir();
 
-			uksort($this->data, function ($a, $b) use ($sort_dir)
+			@uksort($this->data, function ($a, $b) use ($sort_dir)
 			{
 				$cmp = $this->compareData($a, $b);
 				return ($sort_dir == 'asc') ? $cmp : -$cmp;
@@ -521,7 +521,9 @@ class Table {
 		$sort_col = $this->getSortCol();
 		$sort_dir = $this->getSortDir();
 
-		usort($rows, function ($a, $b) use ($columns, $sort_col, $sort_dir)
+		// Errors are suppressed due to a PHP bug where PHP incorrectly assumes
+		// an array has been changed in a usort function
+		@usort($rows, function ($a, $b) use ($columns, $sort_col, $sort_dir)
 		{
 			$search = array_keys($columns);
 			$index  = array_search($sort_col, $search);
