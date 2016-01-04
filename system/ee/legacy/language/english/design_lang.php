@@ -198,8 +198,6 @@ $lang = array(
 
 'btn_create_template' => 'Create Template',
 
-'btn_create_template_working' => 'Creating...',
-
 'btn_create_and_edit_template' => 'Save &amp; Edit Template',
 
 'create_template_success' => 'Template Created',
