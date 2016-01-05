@@ -212,60 +212,58 @@ class Forum_tab {
 	 */
 	public function save($entry, $values)
 	{
-		$edit = ($values['data']['entry_id'] != 0) ? TRUE : FALSE;
-
-		// Are they deleting an association?
-		if ($edit && empty($values['mod_data']['forum_topic_id']))
+		// Deleting an association
+		if ($entry->forum_topic_id != $values['forum_topic_id'])
 		{
 			$query = ee()->db->select('forum_topic_id')
 				->get_where(
 					'channel_titles',
-					array('entry_id' => (int) $values['entry_id'])
+					array('entry_id' => $entry->entry_id)
 				);
 
 			$old_topic_id = $query->row('forum_topic_id');
-
 			if ( ! empty($old_topic_id))
 			{
-				ee()->db->where('entry_id', (int) $values['entry_id'])
-					->update('channel_titles', array('forum_topic_id' => NULL));
-
-				// Bail out, nothing else changes
+				ee()->db->where('entry_id', (int) $entry->entry_id)
+					->update(
+						'channel_titles',
+						array('forum_topic_id' => NULL)
+					);
 				return;
 			}
 		}
 
-		if ((isset($values['mod_data']['forum_title'], $values['mod_data']['forum_body'],
-					  $values['mod_data']['forum_id'])
-			&& $values['mod_data']['forum_title'] !== '' && $values['mod_data']['forum_body'] !== ''))
+		//
+		if ( ! empty($values['forum_title'])
+			&& ! empty($values['forum_body'])
+			&& ! empty($values['forum_id']))
 		{
 			$query = ee()->db->select('board_id')
 				->get_where(
 					'forums',
-					array('forum_id' => (int) $values['mod_data']['forum_id'])
+					array('forum_id' => (int) $values['forum_id'])
 				);
 
 			if ($query->num_rows() > 0)
 			{
-				$title 	= $this->_convert_forum_tags($values['mod_data']['forum_title']);
+				$title 	= $this->_convert_forum_tags($values['forum_title']);
 				$body 	= str_replace(
 					'{permalink}',
-					 $entry->Channel->comment_url.'/'.$values['meta']['url_title'].'/',
-					 $values['mod_data']['forum_body']
+					 $entry->Channel->comment_url.'/'.$entry->url_title.'/',
+					 $values['forum_body']
 				);
 
 				$body 	= $this->_convert_forum_tags(reduce_double_slashes($body));
 
 				$data = array(
-					'title'					=> ee('Security/XSS')->clean($title),
-					'body'					=> ee('Security/XSS')->clean($body),
+					'title' => ee('Security/XSS')->clean($title),
+					'body'  => ee('Security/XSS')->clean($body),
 				);
 
-				// This allows them to overwrite existing forum data- 1.x did not allow this
-
-				if ( ! empty($values['mod_data']['forum_topic_id']))
+				// Allow overwriting existing forum data
+				if ( ! empty($values['forum_topic_id']))
 				{
-					$topic_id = $values['mod_data']['forum_topic_id'];
+					$topic_id = $values['forum_topic_id'];
 					ee()->db->where('topic_id', (int) $topic_id)
 						 ->update('forum_topics', $data);
 				}
@@ -273,19 +271,19 @@ class Forum_tab {
 				{
 					// If we're not overwriting, add in new forum topic parameters
 					$new_forum_topic_data = array(
-						'forum_id'				=> $values['mod_data']['forum_id'],
-						'board_id'				=> $query->row('board_id'),
-						'topic_date'			=> ee()->localize->now,
-						'author_id'         	=> $values['meta']['author_id'],
-						'ip_address'			=> ee()->input->ip_address(),
-						'last_post_date'		=> ee()->localize->now,
-						'last_post_author_id'	=> $values['meta']['author_id'],
-						'sticky'				=> 'n',
-						'status'				=> 'o',
-						'announcement'			=> 'n',
-						'poll'					=> 'n',
-						'parse_smileys'			=> 'y',
-						'thread_total'			=> 1
+						'forum_id'            => $values['forum_id'],
+						'board_id'            => $query->row('board_id'),
+						'topic_date'          => ee()->localize->now,
+						'author_id'           => $entry->author_id,
+						'ip_address'          => ee()->input->ip_address(),
+						'last_post_date'      => ee()->localize->now,
+						'last_post_author_id' => $entry->author_id,
+						'sticky'              => 'n',
+						'status'              => 'o',
+						'announcement'        => 'n',
+						'poll'                => 'n',
+						'parse_smileys'       => 'y',
+						'thread_total'        => 1
 					);
 
 					$data = array_merge($data, $new_forum_topic_data);
@@ -294,21 +292,21 @@ class Forum_tab {
 					$topic_id = ee()->db->insert_id();
 
 					ee()->db->insert('forum_subscriptions', array(
-						'topic_id'			=> $topic_id,
-						'member_id'			=> $values['meta']['author_id'],
-						'subscription_date'	=> ee()->localize->now,
-						'hash'				=> $values['meta']['author_id'].ee()->functions->random('alpha', 8)
+						'topic_id'          => $topic_id,
+						'member_id'         => $entry->author_id,
+						'subscription_date' => ee()->localize->now,
+						'hash'              => $entry->author_id.ee()->functions->random('alpha', 8)
 					));
 
 					// Update member post total
-					ee()->db->where('member_id', $values['meta']['author_id'])
+					ee()->db->where('member_id', $entry->author_id)
 						->update(
 							'members',
 							array('last_forum_post_date' => ee()->localize->now)
 						);
 				}
 
-				ee()->db->where('entry_id', (int) $values['entry_id'])
+				ee()->db->where('entry_id', (int) $entry->entry_id)
 					 ->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
 
 				// Update the forum stats
@@ -318,17 +316,21 @@ class Forum_tab {
 					require PATH_ADDONS.'forum/mod.forum_core.php';
 				}
 
-				Forum_Core::_update_post_stats($values['mod_data']['forum_id']);
+				$forum_core = new Forum_Core();
+				$forum_core->_update_post_stats($values['forum_id']);
 			}
 		}
-		elseif ( ! empty($values['mod_data']['forum_topic_id']))
+		elseif ( ! empty($values['forum_topic_id']))
 		{
-			$topic_id = $values['mod_data']['forum_topic_id'];
-
-			ee()->db->where('entry_id', (int) $values['entry_id'])
-				->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
+			ee()->db->where('entry_id', (int) $entry->entry_id)
+				->update(
+					'channel_titles',
+					array('forum_topic_id' => (int) $values['forum_topic_id'])
+				);
 		}
 	}
+
+	// -------------------------------------------------------------------------
 
 	function _allowed_forums()
 	{
