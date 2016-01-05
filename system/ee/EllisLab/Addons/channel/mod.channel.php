@@ -5328,6 +5328,32 @@ class Channel {
 	 */
 	public function combo_loader()
 	{
+		if (ee()->input->get('type') == 'css')
+		{
+			$package = strtolower(ee()->input->get('package'));
+			$file = ee()->input->get_post('file');
+			$path = PATH_THIRD.$package.'/';
+
+			if (file_exists($path.'css/'.$file.'.css'))
+			{
+				ee()->output->out_type = 'cp_asset';
+				ee()->output->enable_profiler(FALSE);
+
+				ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
+
+				@header('Content-type: text/css');
+
+				ee()->output->set_output(file_get_contents($path.'css/'.$file.'.css'));
+
+				if (ee()->config->item('send_headers') == 'y')
+				{
+					@header('Content-Length: '.strlen(ee()->output->final_output));
+				}
+			}
+
+			return;
+		}
+
 		ee()->load->library('channel_form/channel_form_lib');
 		ee()->load->library('channel_form/channel_form_javascript');
 		return ee()->channel_form_javascript->combo_load();

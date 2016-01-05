@@ -174,8 +174,7 @@ class File_ft extends EE_Fieldtype {
 				),
 			));
 
-			$fp = new FilePicker();
-			$fp->inject(ee()->view);
+			$fp = ee('CP/FilePicker')->make();
 
 			if ($allowed_file_dirs == '')
 			{
@@ -196,7 +195,7 @@ class File_ft extends EE_Fieldtype {
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => ee('CP/URL')->make($fp->controller, $url_query_string)
+				'fp_url' => $fp->getUrl(),
 			));
 		}
 

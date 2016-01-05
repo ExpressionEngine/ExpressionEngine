@@ -73,7 +73,16 @@ class Select extends Query {
 		}
 
 		// filters add more where conditions
-		$this->applyFilters($query, $builder->getFilters());
+		// We group them here since additional tables are sometimes added with
+		// a where condition instead of a join
+		$filters = $builder->getFilters();
+
+		if ( ! empty($filters))
+		{
+			$query->start_group();
+			$this->applyFilters($query, $filters);
+			$query->end_group();
+		}
 
 		// orders
 		$this->applyOrders($query, $builder->getOrders());
@@ -109,6 +118,13 @@ class Select extends Query {
 		reset($tables);
 		$main_table = key($tables);
 		$primary_key = $meta->getPrimaryKey();
+
+		// Make sure the primary key is present in the query
+		$primary_key_alias = "{$alias}.{$primary_key}";
+		if ( ! empty($fields) && ! in_array($primary_key_alias, $fields))
+		{
+			$fields[] = $primary_key_alias;
+ 		}
 
 		foreach ($tables as $table => $table_fields)
 		{

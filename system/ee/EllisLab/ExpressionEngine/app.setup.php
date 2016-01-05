@@ -21,6 +21,7 @@ use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
+use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -159,6 +160,22 @@ return array(
 			$view = $ee->make('View')->make('_shared/alert');
 			return new Alert\AlertCollection(ee()->session, $view);
 		},
+
+		'CP/FilePicker' => function($ee)
+		{
+			$fp = new FilePicker\Factory(
+				$ee->make('CP/URL')
+			);
+
+			$fp->injectModal(
+				$ee->make('CP/Modal'),
+				$ee->make('View')->make('ee:_shared/modal'),
+				ee()->cp
+			);
+
+			return $fp;
+		},
+
 
 		'CP/Modal' => function($ee)
 		{

@@ -79,7 +79,7 @@ class EE_Addons {
 			{
 				if (($map = directory_map($path, 2)) !== FALSE)
 				{
-					$this->package_list($map);
+					$this->package_list($map, '', FALSE, $path);
 
 				}
 			}
@@ -158,7 +158,7 @@ class EE_Addons {
 	 * @param	bool
 	 * @return	void
 	 */
-	function package_list($map, $type = '', $native = FALSE)
+	function package_list($map, $type = '', $native = FALSE, $path_prefix = '')
 	{
 		$type_ident = array(
 			'modules'		=> 'mcp',
@@ -212,7 +212,7 @@ class EE_Addons {
 
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
-						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
+						$path = $path_prefix.$pkg_name.'/';
 						$author = ($native) ? 'native' : 'third_party';
 
 						$this->_map[$addon_type][$name] = array(

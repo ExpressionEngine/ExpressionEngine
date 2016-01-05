@@ -177,6 +177,8 @@ class Group extends AbstractDesignController {
 					$new_template->group_id = $group->group_id;
 					$new_template->edit_date = ee()->localize->now;
 					$new_template->site_id = ee()->config->item('site_id');
+					$new_template->hits = 0; // Reset hits
+					$new_template->NoAccess = $master_template->NoAccess;
 					if (ee()->session->userdata['group_id'] != 1)
 					{
 						$new_template->allow_php = FALSE;

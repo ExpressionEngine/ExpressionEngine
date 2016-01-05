@@ -6,12 +6,11 @@ use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
-use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
-use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -36,7 +35,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements EventPublisher, EventSubscriber, ValidationAware {
+class Model extends Entity implements Subscriber, ValidationAware {
 
 
 	/**
@@ -58,6 +57,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 * @var Validator object
 	 */
 	protected $_validator = NULL;
+
+	/**
+	 * @var Hook recursion prevention
+	 */
+	protected $_in_hook = array();
 
 	/**
 	 * @var Associated models
@@ -114,7 +118,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
-		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
@@ -128,6 +131,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		$this->addFilter('set', array($this, 'typedSet'));
 		$this->addFilter('fill', array($this, 'typedLoad'));
 		$this->addFilter('store', array($this, 'typedStore'));
+
+		if ($publish_as = $this->getMetaData('hook_id'))
+		{
+			$this->forwardEventsToHooks($publish_as);
+		}
 	}
 
 	/**
@@ -543,6 +551,72 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
+	 * Forwards lifecycle events to consistently named hooks
+	 *
+	 * This is fired automatically from initialize() if `hook_id` is
+	 * given in the model metadata.
+	 *
+	 * @param String $hook_basename The name that identifies the subject of the hook
+	 */
+	protected function forwardEventsToHooks($hook_basename)
+	{
+		$trigger = $this->getHookTrigger();
+
+		$forwarded = array(
+			'beforeInsert' => 'before_'.$hook_basename.'_insert',
+			'afterInsert' => 'after_'.$hook_basename.'_insert',
+			'beforeUpdate' => 'before_'.$hook_basename.'_update',
+			'afterUpdate' => 'after_'.$hook_basename.'_update',
+			'beforeSave' => 'before_'.$hook_basename.'_save',
+			'afterSave' => 'after_'.$hook_basename.'_save',
+			'beforeDelete' => 'before_'.$hook_basename.'_delete',
+			'afterDelete' => 'after_'.$hook_basename.'_delete'
+		);
+
+		$that = $this;
+
+		foreach ($forwarded as $event => $hook)
+		{
+			$this->on($event, function() use ($trigger, $hook, $that)
+			{
+				$addtl_args = func_get_args();
+				$args = array($hook, $that, $that->getValues());
+
+				call_user_func_array($trigger, array_merge($args, $addtl_args));
+			});
+		}
+	}
+
+	/**
+	 * Returns a function that can be used to trigger a hook outside the current
+	 * object scope. Thank you PHP 5.3, you hunk of garbage.
+	 *
+	 * @return Closure Function that takes hookname and parameters and calls the hook
+	 */
+	protected function getHookTrigger()
+	{
+		$in_hook =& $this->_in_hook;
+
+		return function($name) use ($in_hook)
+		{
+			if (in_array($name, $in_hook))
+			{
+				return;
+			}
+
+			$in_hook[] = $name;
+
+			if (isset(ee()->extensions) && ee()->extensions->active_hook($name) === TRUE)
+			{
+				$args = func_get_args();
+				call_user_func_array(array(ee()->extensions, 'call'), $args);
+			}
+
+			array_pop($in_hook);
+		};
+	}
+
+	/**
 	 * Default callback to validate unique columns across siblings
 	 *
 	 * @param String $key    Property name
@@ -674,30 +748,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	{
 		return $this->getMetaData('events') ?: array();
 	}
-
-	/**
-	 * Interface method to implement Event\Publisher so that others can
-	 * subscribe to events on this object.
-	 *
-	 * Technically this works automatically since the method exists on the
-	 * mixin, but doing this lets us enforce an interface, which will be
-	 * useful when hopefully replacing mixins with traits in future.
-	 */
-	public function subscribe(EventSubscriber $subscriber)
-	{
-		return $this->getMixin('Event')->subscribe($subscriber);
-	}
-
-	/**
-	 * Interface method to implement Event\Publisher
-	 *
-	 * @see Model::subscribe()
-	 */
-	public function unsubscribe(EventSubscriber $subscriber)
-	{
-		return $this->getMixin('Event')->unsubscribe($subscriber);
-	}
-
 
 	/**
 	* Get all associations

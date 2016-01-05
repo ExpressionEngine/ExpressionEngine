@@ -80,8 +80,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20151217');
-		define('APP_VER',		'3.0.6');
+		define('APP_BUILD',		'20151118');
+		define('APP_VER',		'3.1.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -222,6 +222,7 @@ class EE_Core {
 		define('URL_THEMES', $theme_url.'ee/');
 		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
@@ -403,8 +404,6 @@ class EE_Core {
 		$this->cp_loaded = TRUE;
 
 		$this->somebody_set_us_up_the_base();
-
-		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL

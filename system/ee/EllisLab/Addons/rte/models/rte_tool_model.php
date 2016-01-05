@@ -104,9 +104,10 @@ class Rte_tool_model extends CI_Model {
 	 *
 	 * @access	public
 	 * @param	array	The IDs of the tools to get
+	 * @param	bool	If TRUE, includes tools that are for the control panel only
 	 * @return	array 	An array of tools, each indexed to globals, libraries, styles, and definition
 	 */
-	public function get_tools($tool_ids = array())
+	public function get_tools($tool_ids = array(), $cp_only = FALSE)
 	{
 		if ( ! $tool_ids)
 		{
@@ -154,6 +155,12 @@ class Rte_tool_model extends CI_Model {
 				// load it in, instantiate the tool & add the definition
 				include_once($file);
 				$TOOL = new $t->class();
+
+				// skip tools that are not available to the front-end
+				if ($TOOL->info['cp_only'] == 'y' && ! $cp_only)
+				{
+					continue;
+				}
 
 				// loop through the pieces and pull them from the object
 				foreach ($tool as $component => $default)

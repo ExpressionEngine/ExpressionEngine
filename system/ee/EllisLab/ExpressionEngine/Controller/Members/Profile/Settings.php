@@ -249,37 +249,36 @@ class Settings extends Profile {
 			)
 		);
 
+		foreach ($this->member->getDisplay()->getFields() as $field)
+		{
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
+					)
+				)
+			);
+		}
+
 		if ($this->member->avatar_filename == "")
 		{
 			$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'url',
-				 'label'   => 'lang:timezone',
-				 'rules'   => 'valid_xss_check'
-			),
-			array(
-				 'field'   => 'location',
-				 'label'   => 'lang:location',
-				 'rules'   => 'valid_xss_check'
-			),
-			array(
-				 'field'   => 'bio',
-				 'label'   => 'lang:biography',
-				 'rules'   => 'valid_xss_check'
-			)
-		));
+		if ( ! empty($_POST))
+		{
+			$result = $this->saveSettings($vars['sections']);
 
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->saveSettings($vars['sections']))
+			if ( ! is_bool($result))
+			{
+				return $result;
+			}
+
+			if ($result)
 			{
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -288,14 +287,6 @@ class Settings extends Profile {
 					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
-				->addToBody(lang('settings_save_error_desc'))
-				->now();
 		}
 
 		ee()->cp->add_js_script(array(
