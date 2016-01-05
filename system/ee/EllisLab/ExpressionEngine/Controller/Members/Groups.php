@@ -227,7 +227,8 @@ class Groups extends Members\Members {
 		}
 
 		$vars = array(
-			'cp_page_title' => lang('create_member_group')
+			'cp_page_title' => lang('create_member_group'),
+			'website_access' => 'can_view_online_system',
 		);
 		$this->base_url = ee('CP/URL')->make('members/groups/create/', $this->query_string);
 
