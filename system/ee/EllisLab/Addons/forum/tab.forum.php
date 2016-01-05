@@ -155,7 +155,6 @@ class Forum_tab {
 			}
 		}
 
-
 		foreach ($settings as $k => $v)
 		{
 			ee()->api_channel_fields->set_settings($k, $v);
@@ -174,58 +173,36 @@ class Forum_tab {
 	 */
 	public function validate($entry, $values)
 	{
-        ee()->lang->loadfile('forum_cp');
-
-		$errors = FALSE;
-		$edit = FALSE;
-
-		// Get allowed forum boards
 		$allowed = $this->_allowed_forums();
-var_dump($values);
 
-		$forum_title = (isset($values['forum_title'])) ? $values['forum_title'] : '';
-		$forum_body = (isset($values['forum_body'])) ? $values['forum_body'] : '';
+		$validator = ee('Validation')->make();
 
-		if ($forum_body == '' && $forum_title != '')
-		{
-			$errors = array(lang('empty_body_field') => 'forum_body');
-		}
-		elseif ($forum_body != '' && $forum_title == '')
-		{
-			$errors = array(lang('empty_title_field') => 'forum_body');
-		}
+		$validator->defineRule('valid_forum_id', function($key, $value, $parameters) use ($allowed) {
+			return in_array($value, $allowed);
+		});
 
-		// Check for permission to post to the specified forum
-		if ((isset($values['forum_title'], $values['forum_body'],
-					  $values['forum_id'])
-			&& $values['forum_title'] !== '' && $values['forum_body'] !== ''))
-		{
-			if ( ! in_array($values['forum_id'], $allowed))
-			{
-				$errors = array(lang('invalid_forum_id') => 'forum_id');
-			}
-		}
-		elseif( ! empty($values['forum_topic_id']))
-		{
+		$validator->defineRule('valid_forum_topic_id', function($key, $value, $parameters) use ($allowed) {
 			$frm_q = ee()->db->select('forum_id')
-				->where('topic_id', (int) $values['forum_topic_id'])
+				->where('topic_id', (int) $value)
 				->get('forum_topics');
 
-			if ($frm_q->num_rows() > 0)
+			if ($frm_q->num_rows() > 0
+				&& in_array($frm_q->row('forum_id'), $allowed))
 			{
-				if ( ! in_array($frm_q->row('forum_id'), $allowed))
-				{
-					$errors = array(lang('invalid_topic_id') => 'forum_topic_id');
-				}
+				return TRUE;
 			}
-			else
-			{
-				$errors = array(lang('invalid_topic_id') => 'forum_topic_id');
-			}
-		}
 
+			return FALSE;
+		});
 
-		return $errors;
+		$validator->setRules(array(
+			'forum_title'    => 'whenPresent[forum_body]|required|maxLength[150]',
+			'forum_body'     => 'whenPresent[forum_title]|required',
+			'forum_id'       => 'required|isNatural|valid_forum_id',
+			'forum_topic_id' => 'whenPresent|valid_forum_topic_id'
+		));
+
+		return $validator->validate($values);
 	}
 
 	// --------------------------------------------------------------------
