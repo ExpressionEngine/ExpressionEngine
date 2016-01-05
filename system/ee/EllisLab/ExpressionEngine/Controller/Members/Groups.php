@@ -656,8 +656,13 @@ class Groups extends Members\Members {
 				->getDictionary('group_id', 'group_name');
 
 			$addons = ee('Model')->get('Module')
+				->fields('module_id', 'module_name')
 				->filter('module_name', 'NOT IN', array('channel', 'comment', 'filepicker')) // @TODO This REALLY needs abstracting.
 				->all()
+				->each(function($addon) {
+					$addon->module_name = ee('Addon')->get(strtolower($addon->module_name))->getName();
+					return $addon;
+				})
 				->getDictionary('module_id', 'module_name');
 
 			$allowed_channels = ee('Model')->get('Channel')
