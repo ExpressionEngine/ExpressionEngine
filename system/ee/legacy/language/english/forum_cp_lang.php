@@ -424,6 +424,11 @@ $lang = array(
 'moderator_removed' => 'Moderator Removed',
 'moderator_removed_desc' => 'The moderator <b>%s</b> was removed.',
 
+// Forum Publish Tab
+'only_forum_topic_id' => 'Do not specify a forum Title or Body when setting a Forum Topic ID.',
+'no_forum_topic_id' => 'There is no forum topic with that ID.',
+'no_forum_permissions' => 'You do not have permissions to post to this forum.',
+
 ''=>''
 );
 

@@ -179,23 +179,35 @@ class Forum_tab {
 			return in_array($value, $allowed);
 		});
 
-		$validator->defineRule('valid_forum_topic_id', function($key, $value, $parameters) use ($allowed) {
+		$validator->defineRule('valid_forum_topic_id', function($key, $value, $parameters) use ($allowed, $values) {
 			$frm_q = ee()->db->select('forum_id')
 				->where('topic_id', (int) $value)
 				->get('forum_topics');
 
-			if ($frm_q->num_rows() > 0
-				&& in_array($frm_q->row('forum_id'), $allowed))
+			ee()->lang->loadfile('forum_cp');
+
+			if (isset($values['forum_title'], $values['forum_body'])
+				&& ( ! empty($values['forum_title']) || ! empty($values['forum_body'])))
 			{
-				return TRUE;
+				return lang('only_forum_topic_id');
 			}
 
-			return FALSE;
+			if ($frm_q->num_rows() <= 0)
+			{
+				return lang('no_forum_topic_id');
+			}
+
+			if ( ! in_array($frm_q->row('forum_id'), $allowed))
+			{
+				return lang('no_forum_permissions');
+			}
+
+			return TRUE;
 		});
 
 		$validator->setRules(array(
-			'forum_title'    => 'whenPresent[forum_body]|required|maxLength[150]',
-			'forum_body'     => 'whenPresent|whenPresent[forum_title]|required',
+			'forum_title'    => 'whenPresent[forum_body]|maxLength[150]',
+			'forum_body'     => 'whenPresent|whenPresent[forum_title]',
 			'forum_id'       => 'whenPresent|required|isNatural|valid_forum_id',
 			'forum_topic_id' => 'whenPresent|valid_forum_topic_id'
 		));
