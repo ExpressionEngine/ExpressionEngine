@@ -44,12 +44,14 @@ class Forum_tab {
 			->order_by('b.board_label asc, forum_order asc')
 			->get();
 
-		$forum_title 			= '';
-		$forum_body 			= '';
-		$forum_id				= array();
-		$forum_topic_id			= '';
-		$forum_topic_id_desc	= '';
-		$forum_id_override		= ($forumsq->num_rows() === 0) ? lang('forums_unavailable') : NULL;
+		$forum_title         = '';
+		$forum_body          = '';
+		$forum_id            = array();
+		$forum_topic_id      = '';
+		$forum_topic_id_desc = '';
+		$forum_id_override   = ($forumsq->num_rows() === 0)
+			? lang('forums_unavailable')
+			: NULL;
 
 		// Get allowed forum boards
 		$allowed = $this->_allowed_forums();
@@ -71,64 +73,63 @@ class Forum_tab {
 		{
 			$forum_topic_id = $query->row('forum_topic_id');
 
-
 			$frm_q = ee()->db->select('forum_id, title, body')
-				  ->where('topic_id', (int) $forum_topic_id)
-				  ->get('forum_topics');
+				->where('topic_id', (int) $forum_topic_id)
+				->get('forum_topics');
 
 			if ($frm_q->num_rows() > 0)
 			{
-				$forum_title 			= $frm_q->row('title');
-				$forum_body  			= $frm_q->row('body');
-				$forum_id['selected'] 	= $frm_q->row('forum_id');
+				$forum_title          = $frm_q->row('title');
+				$forum_body           = $frm_q->row('body');
+				$forum_id['selected'] = $frm_q->row('forum_id');
 			}
 		}
 
 		$settings = array(
-			'forum_title'		=> array(
-				'field_id'				=> 'forum_title',
-				'field_label'			=> lang('forum_title'),
-				'field_required'		=> 'n',
-				'field_data'			=> $forum_title,
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> '',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'text',
-				'field_maxl'			=> 150
+			'forum_title' => array(
+				'field_id'             => 'forum_title',
+				'field_label'          => lang('forum_title'),
+				'field_required'       => 'n',
+				'field_data'           => $forum_title,
+				'field_show_fmt'       => 'n',
+				'field_instructions'   => '',
+				'field_text_direction' => 'ltr',
+				'field_type'           => 'text',
+				'field_maxl'           => 150
 			),
-			'forum_body'		=> array(
-				'field_id'				=> 'forum_body',
-				'field_label'			=> lang('forum_body'),
-				'field_required'		=> 'n',
-				'field_data'			=> $forum_body,
-				'field_show_fmt'		=> 'y',
-				'field_fmt_options'		=> array(),
-				'field_instructions'	=> '',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'textarea',
-				'field_ta_rows'			=> 8
+			'forum_body' => array(
+				'field_id'             => 'forum_body',
+				'field_label'          => lang('forum_body'),
+				'field_required'       => 'n',
+				'field_data'           => $forum_body,
+				'field_show_fmt'       => 'y',
+				'field_fmt_options'    => array(),
+				'field_instructions'   => '',
+				'field_text_direction' => 'ltr',
+				'field_type'           => 'textarea',
+				'field_ta_rows'        => 8
 			),
-			'forum_id'			=> array(
-				'field_id'				=> 'forum_id',
-				'field_label'			=> lang('forum'),
-				'field_required'		=> 'n',
-				'field_pre_populate'	=> 'n',
-				'field_list_items'		=> (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
-				'field_data'			=> (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
-	 			'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_instructions'	=> '',
-				'string_override'		=> $forum_id_override,
+			'forum_id' => array(
+				'field_id'             => 'forum_id',
+				'field_label'          => lang('forum'),
+				'field_required'       => 'n',
+				'field_pre_populate'   => 'n',
+				'field_list_items'     => (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
+				'field_data'           => (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
+				'field_text_direction' => 'ltr',
+				'field_type'           => 'select',
+				'field_instructions'   => '',
+				'string_override'      => $forum_id_override,
 			),
-			'forum_topic_id'	=> array(
-				'field_id'				=> 'forum_topic_id',
-				'field_label'			=> lang('forum_topic_id'),
-				'field_type'			=> 'text',
-				'field_required'		=> 'n',
-				'field_data'			=> $forum_topic_id,
-				'field_text_direction'	=> 'ltr',
-				'field_maxl'			=> '',
-				'field_instructions'	=> lang('forum_topic_id_exitsts')
+			'forum_topic_id' => array(
+				'field_id'             => 'forum_topic_id',
+				'field_label'          => lang('forum_topic_id'),
+				'field_type'           => 'text',
+				'field_required'       => 'n',
+				'field_data'           => $forum_topic_id,
+				'field_text_direction' => 'ltr',
+				'field_maxl'           => '',
+				'field_instructions'   => lang('forum_topic_id_exitsts')
 			)
 		);
 
