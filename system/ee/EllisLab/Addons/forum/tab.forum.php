@@ -135,23 +135,20 @@ class Forum_tab {
 		// No forums, nothing to show
 		if ($forum_id_override)
 		{
-			$settings['forum_body']['field_type'] = 'hidden';
-			$settings['forum_title']['field_type'] = 'hidden';
-			$settings['forum_topic_id']['field_type'] = 'hidden';
-
-	//		$settings = array('forum_id' => $settings['forum_id']);
+			unset($settings['forum_topic_id']);
+			unset($settings['forum_body']);
+			unset($settings['forum_title']);
 		}
-
 
 		// Edit - can't change text
 		if ($entry_id)
 		{
-			$settings['forum_id']['field_type'] = 'hidden';
-			$settings['forum_body']['field_type'] = 'hidden';
+			unset($settings['forum_id']);
+			unset($settings['forum_body']);
 
-			if ( $forum_title == '')
+			if ($forum_title == '')
 			{
-				$settings['forum_title']['field_type'] = 'hidden';
+				unset($settings['forum_title']);
 			}
 		}
 
