@@ -1227,7 +1227,7 @@ class Channel {
 
 		$sql_a = "SELECT ";
 
-		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT(t.entry_id) " : "t.entry_id ";
+		$sql_b = "t.entry_id ";
 
 		if ($this->pagination->field_pagination == TRUE)
 		{
@@ -2120,17 +2120,23 @@ class Channel {
 
 		// Do we need pagination?
 		// We'll run the query to find out
-		if ($this->pagination->paginate == TRUE)
+		if ($this->pagination->paginate !== TRUE)
 		{
-			$this->pager_sql = '';
+			$this->pager_sql = $sql_a.$sql_b.$sql;
+			$query = ee()->db->query($this->pager_sql);
+
+			// Get entry IDs and remove duplicates
+			$entry_ids = array_map(function($row) {
+				return $row['entry_id'];
+			}, $query->result_array());
+
+			$entry_ids = array_unique($entry_ids);
+
+			$total = count($entry_ids);
+			$this->absolute_results = $total;
 
 			if ($this->pagination->field_pagination == FALSE)
 			{
-				$this->pager_sql = $sql_a.$sql_b.$sql;
-				$query = ee()->db->query($this->pager_sql);
-				$total = $query->num_rows();
-				$this->absolute_results = $total;
-
 				// Adjust for offset
 				if ($total >= $offset)
 				{
@@ -2149,13 +2155,6 @@ class Channel {
 			}
 			else
 			{
-				$this->pager_sql = $sql_a.$sql_b.$sql;
-
-				$query = ee()->db->query($this->pager_sql);
-
-				$total = $query->num_rows;
-				$this->absolute_results = $total;
-
 				$this->pagination->cfields = $this->cfields;
 				$this->pagination->field_pagination_query = $query;
 				$this->pagination->build($total, 1);
@@ -2254,33 +2253,20 @@ class Channel {
 				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
 				LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
 
-		$this->sql .= "WHERE t.entry_id IN (";
+		// Get entry IDs and remove duplicates
+		$entry_ids = array_map(function($row) {
+			return $row['entry_id'];
+		}, $query->result_array());
 
-		$entries = array();
+		$entry_ids = array_unique($entry_ids);
 
-		// Build ID numbers (checking for duplicates)
+		$this->sql .= 'WHERE t.entry_id IN ('.implode(',', $entry_ids).') ';
 
-		foreach ($query->result_array() as $row)
-		{
-			if ( ! isset($entries[$row['entry_id']]))
-			{
-				$entries[$row['entry_id']] = 'y';
-			}
-			else
-			{
-				continue;
-			}
-
-			$this->sql .= $row['entry_id'].',';
-		}
-
-		//cache the entry_id
-		ee()->session->cache['channel']['entry_ids']	= array_keys($entries);
+		//cache the entry_ids
+		ee()->session->cache['channel']['entry_ids'] = $entry_ids;
 
 		unset($query);
-		unset($entries);
-
-		$this->sql = substr($this->sql, 0, -1).') ';
+		unset($entry_ids);
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
