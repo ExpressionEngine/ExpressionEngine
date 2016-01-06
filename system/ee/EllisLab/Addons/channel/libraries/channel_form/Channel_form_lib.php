@@ -1477,8 +1477,8 @@ GRID_FALLBACK;
 				if (isset($_FILES[$field->field_name]['name']))
 				{
 					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
-			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';					
-					
+			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';
+
 				}
 			}
 
@@ -1597,6 +1597,8 @@ GRID_FALLBACK;
 		}
 
 		$_POST['revision_post'] = $_POST;
+
+		$this->member_group_override();
 
 		//added for EE2.1.2
 		ee()->legacy_api->instantiate('channel_categories');
@@ -1724,6 +1726,8 @@ GRID_FALLBACK;
 		{
 			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
+
+		$this->member_group_override(0);
 
 		// -------------------------------------------
 		// 'channel_form_submit_entry_end' hook.
@@ -3358,6 +3362,27 @@ SCRIPT;
 		return $ret;
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Assigns proper group id to logged out users
+	 *
+	 * @param	bool $reset Whether to reset to 0 or default member
+	 *
+	 * @return	void
+	 */
+	public function member_group_override($reset = FALSE)
+	{
+		if (ee()->session->userdata('member_id'))
+		{
+			return;
+		}
+
+		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
+
+		ee()->session->userdata['group_id'] = $id;
+	}
 }
 
 /* End of file Channel_form_lib.php */
