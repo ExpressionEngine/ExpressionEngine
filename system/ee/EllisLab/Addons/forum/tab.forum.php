@@ -206,9 +206,8 @@ class Forum_tab {
 		});
 
 		$validator->setRules(array(
-			'forum_title'    => 'whenPresent[forum_body]|maxLength[150]',
-			'forum_body'     => 'whenPresent|whenPresent[forum_title]',
-			'forum_id'       => 'whenPresent|required|isNatural|valid_forum_id',
+			'forum_title'    => 'maxLength[150]',
+			'forum_id'       => 'isNatural|valid_forum_id',
 			'forum_topic_id' => 'whenPresent|valid_forum_topic_id'
 		));
 
