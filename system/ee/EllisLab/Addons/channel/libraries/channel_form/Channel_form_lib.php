@@ -1727,7 +1727,8 @@ GRID_FALLBACK;
 			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
 
-		$this->member_group_override(0);
+		// Reset their group_id back to 0
+		$this->member_group_override(TRUE);
 
 		// -------------------------------------------
 		// 'channel_form_submit_entry_end' hook.
