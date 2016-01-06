@@ -38,17 +38,17 @@ class Upload extends Model {
 		'Wiki' => array(
 			'type' => 'belongsTo'
 		),
-      'Author' => array(
-			'type'     => 'belongsTo',
-			'from_key' => 'upload_author',
-			'to_key'   => 'member_id',
-			'model'    => 'ee:Member',
-			'weak'     => TRUE,
-			'inverse' => array(
-				'name' => 'Uploads',
-				'type' => 'hasMany'
-            )
-        ),
+//      'Author' => array(
+//			'type'     => 'belongsTo',
+//			'from_key' => 'upload_author',
+//			'to_key'   => 'member_id',
+//			'model'    => 'ee:Member',
+//			'weak'     => TRUE,
+//			'inverse' => array(
+//				'name' => 'Uploads',
+//				'type' => 'hasMany'
+ //           )
+ //       ),
       'File' => array(
 			'type'     => 'belongsTo',
 			'from_key' => 'file_name',

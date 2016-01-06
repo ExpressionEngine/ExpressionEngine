@@ -26,7 +26,7 @@ return array(
 			'ee:Member'
 		),
 		'Upload'   => array(
-			'ee:Member',
+//			'ee:Member',
 			'ee:File'
 		)
 	)
