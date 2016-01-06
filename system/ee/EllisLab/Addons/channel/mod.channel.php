@@ -1234,8 +1234,6 @@ class Channel {
 			$sql_b .= ",wd.* ";
 		}
 
-		$sql_c = "COUNT(t.entry_id) AS count ";
-
 		$sql = "FROM exp_channel_titles AS t
 				LEFT JOIN exp_channels ON t.channel_id = exp_channels.channel_id ";
 
