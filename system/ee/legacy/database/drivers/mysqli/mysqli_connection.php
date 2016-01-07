@@ -68,6 +68,7 @@ class CI_DB_mysqli_connection {
 		$char_set = $this->config['char_set'];
 		$pconnect = $this->config['pconnect'];
 		$port     = $this->config['port'];
+		$collation = $this->config['dbcollat'];
 
 		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
@@ -82,6 +83,8 @@ class CI_DB_mysqli_connection {
 			$password,
 			$options
 		);
+
+		$this->query("SET NAMES '$char_set' COLLATE '$collation'");
 	}
 
 	/**
