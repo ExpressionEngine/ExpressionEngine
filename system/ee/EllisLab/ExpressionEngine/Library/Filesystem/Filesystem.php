@@ -436,11 +436,11 @@ class Filesystem {
 	{
 		if ($this->isDir($path))
 		{
-			@chmod($dest, DIR_WRITE_MODE);
+			@chmod($path, DIR_WRITE_MODE);
 		}
 		else
 		{
-			@chmod($dest, FILE_WRITE_MODE);
+			@chmod($path, FILE_WRITE_MODE);
 		}
 	}
 }
