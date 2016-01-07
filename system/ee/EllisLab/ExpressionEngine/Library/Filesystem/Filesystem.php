@@ -461,11 +461,11 @@ class Filesystem {
 	{
 		if ($this->isDir($path))
 		{
-			$this->chmod($dest, DIR_WRITE_MODE);
+			$this->chmod($path, DIR_WRITE_MODE);
 		}
 		else
 		{
-			$this->chmod($dest, FILE_WRITE_MODE);
+			$this->chmod($path, FILE_WRITE_MODE);
 		}
 	}
 

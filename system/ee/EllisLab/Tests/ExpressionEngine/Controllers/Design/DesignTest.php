@@ -23,7 +23,7 @@ class DesignTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('export', 'index', 'manager'), $controller_methods);
+		$this->assertEquals(array('export', 'index', 'manager', 'reordergroups'), $controller_methods);
 	}
 
 }

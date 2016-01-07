@@ -159,6 +159,30 @@ feature 'Updater' do
     test_update
   end
 
+  it 'updates a core installation successfully and installs the member module' do
+    @installer.revert_config
+    @installer.replace_config(
+      File.expand_path('../circleci/config-3.0.5-core.php'),
+      database: {
+        hostname: $test_config[:db_host],
+        database: $test_config[:db_name],
+        username: $test_config[:db_username],
+        password: $test_config[:db_password]
+      }
+    )
+
+    clean_db do
+      $db.query(IO.read('sql/database_3.0.5-core.sql'))
+      clear_db_result
+    end
+
+    test_update
+
+    $db.query('SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').each do |row|
+      row['count'].should == 1
+    end
+  end
+
   def test_update(mailinglist = false)
     # Delete any stored mailing lists
     mailing_list_zip = File.expand_path(

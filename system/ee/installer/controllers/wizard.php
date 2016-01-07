@@ -333,6 +333,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for finfo_open
+		if ( ! function_exists('finfo_open'))
+		{
+			$this->set_output('error', array('error' => lang('fileinfo_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -416,6 +423,16 @@ class Wizard extends CI_Controller {
 		{
 			$this->set_output('error', array('error' => lang('unreadable_update')));
 			return FALSE;
+		}
+
+		// Make sure the Member module is installed in the case the user is
+		// upgrading from Core to Standard
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		if ( ! IS_CORE
+			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(array('member'));
 		}
 
 		// If this is FALSE it means the user is running the most current
@@ -961,8 +978,10 @@ class Wizard extends CI_Controller {
 	{
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
-		// Try to rename automatically
-		if ($this->rename_installer())
+		// Try to rename automatically if there are no errors
+		if ($this->rename_installer()
+			&& empty($template_variables['errors'])
+			&& empty($template_variables['error_messages']))
 		{
 			ee()->load->helper('url');
 			redirect($cp_login_url);
