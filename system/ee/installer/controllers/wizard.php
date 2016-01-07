@@ -763,7 +763,7 @@ class Wizard extends CI_Controller {
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
 			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_general_ci'
+			'dbcollat' => 'utf8_unicode_ci'
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
@@ -1237,7 +1237,8 @@ class Wizard extends CI_Controller {
 
 			if ( ! empty($UD->errors))
 			{
-				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+				ee()->load->helper('html');
+				$error_msg .= "</p>".ul($UD->errors)."<p>";
 			}
 
 			$this->set_output('error', array('error' => $error_msg));

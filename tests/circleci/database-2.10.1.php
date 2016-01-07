@@ -15,7 +15,7 @@ $db['expressionengine']['db_debug'] = TRUE;
 $db['expressionengine']['cache_on'] = FALSE;
 $db['expressionengine']['autoinit'] = FALSE;
 $db['expressionengine']['char_set'] = 'utf8';
-$db['expressionengine']['dbcollat'] = 'utf8_general_ci';
+$db['expressionengine']['dbcollat'] = 'utf8_unicode_ci';
 $db['expressionengine']['cachedir'] = '';
 
 /* End of file database.php */

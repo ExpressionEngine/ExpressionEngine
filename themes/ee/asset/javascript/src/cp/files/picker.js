@@ -9,11 +9,6 @@
  * @since		Version 3.0
  * @filesource
  */
-/* This file exposes three callback functions:
- *
- * EE.manager.showPrefsRow and EE.manager.hidePrefsRow and
- * EE.manager.refreshPrefs
- */
 
 /*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
 
@@ -36,6 +31,7 @@
 
 		$.get(url, function(data) {
 			modal.find('div.box').html(data);
+
 			if (typeof options.selected != 'undefined') {
 				var selected = modal.find('tbody *[data-id="' + options.selected + '"]');
 				selected.addClass('selected');
@@ -58,6 +54,8 @@
 			current.data('selected', id);
 			modal.find('tbody .selected').toggleClass('selected');
 			options.selected = id;
+			options.source.data('selected', id);
+
 			var selected = $(this);
 
 			if (selected.prop("tagName") == 'A') {
@@ -128,6 +126,7 @@
 
 				options.url = $(this).attr('href');
 				options.rel = $(this).attr('rel');
+				options.source = $(this);
 
 				if (options.input_value) {
 					options.input_value = $(options.input_value);
@@ -160,11 +159,13 @@
 		$('.filepicker').click(function (e) {
 			var modal = $("." + $(this).attr('rel')),
 				options = {
+					"source":      $(this),
 					"input_value": $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]'),
 					"input_name":  $('#' + $(this).data('input-name')),
 					"input_img":   $('#' + $(this).data('input-image')),
 					"selected":    $(this).data('selected'),
-					"url":         $(this).attr('href')
+					"url":         $(this).attr('href'),
+					"rel":         $(this).attr('rel')
 				},
 				callback_name = $(this).data('callback'),
 				current = $(this);

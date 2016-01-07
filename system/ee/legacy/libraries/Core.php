@@ -349,19 +349,11 @@ class EE_Core {
 		// Load up any Snippets
 		if (REQ == 'ACTION' OR REQ == 'PAGE')
 		{
-			// load up any Snippets
-			ee()->db->select('snippet_name, snippet_contents');
-			ee()->db->where('(site_id = '.ee()->db->escape_str(ee()->config->item('site_id')).' OR site_id = 0)');
-			$fresh = ee()->db->get('snippets');
+			$fresh = ee('Model')->make('Snippet')->loadAll();
 
-			if ($fresh->num_rows() > 0)
+			if ($fresh->count() > 0)
 			{
-				$snippets = array();
-
-				foreach ($fresh->result() as $var)
-				{
-					$snippets[$var->snippet_name] = $var->snippet_contents;
-				}
+				$snippets = $fresh->getDictionary('snippet_name', 'snippet_contents');
 
 				// Thanks to @litzinger for the code suggestion to parse
 				// global vars in snippets...here we go.

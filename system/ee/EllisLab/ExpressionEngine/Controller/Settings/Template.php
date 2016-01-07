@@ -159,6 +159,15 @@ class Template extends Settings {
 		{
 			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')->all();
 			$tgs->Templates->save();
+			$tgs = NULL;
+
+			$snippets = ee('Model')->get('Snippet')->all();
+			$snippets->save();
+			$snippets = NULL;
+
+			$variables = ee('Model')->get('GlobalVariable')->all();
+			$variables->save();
+			$variables = NULL;
 		}
 	}
 }

@@ -143,6 +143,7 @@ abstract class AbstractFiles extends CP_Controller {
 			'limit'      => $limit,
 			'autosearch' => TRUE
 		));
+
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
