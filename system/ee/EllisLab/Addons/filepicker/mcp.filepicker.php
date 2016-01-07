@@ -197,7 +197,7 @@ class Filepicker_mcp {
 		{
 			$base_url->setQueryStringVariable('hasFilters', $has_filters);
 
-			$perpage = 5;
+			$perpage = 25;
 			$page = ((int) ee()->input->get('page')) ?: 1;
 			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
 		}
