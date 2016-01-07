@@ -43,8 +43,8 @@ class Updater {
 				'update_member_data_column_names',
 				'add_snippet_edit_date',
 				'add_global_variable_edit_date',
-				'fix_table_collations',
 				'update_collation_config',
+				'fix_table_collations',
 			)
 		);
 
