@@ -3335,7 +3335,7 @@ class Channel {
 				$field_sqlb = '';
 			}
 
-			$sql = "SELECT DISTINCT (c.cat_id), c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id {$field_sqla}
+			$sql = "SELECT DISTINCT (c.cat_id), c.group_id, c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id, c.cat_order {$field_sqla}
 					FROM (exp_categories AS c";
 
 			if (ee()->TMPL->fetch_param('show_empty') != 'no' AND count($channel_ids))
