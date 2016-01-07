@@ -84,6 +84,7 @@ class Addon {
 				return TRUE;
 			}
 			*/
+			ee()->load->driver('cache');
 
 			$installed_plugins = ee()->cache->get('installed-plugins', \Cache::GLOBAL_SCOPE);
 
