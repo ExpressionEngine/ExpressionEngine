@@ -45,6 +45,7 @@ class Updater {
 				'add_global_variable_edit_date',
 				'update_collation_config',
 				'fix_table_collations',
+				'ensure_upload_directories_are_correct',
 			)
 		);
 
@@ -239,6 +240,82 @@ class Updater {
 			ee()->db->query("ALTER TABLE $table CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci" );
 		}
 
+	}
+
+	private function ensure_upload_directories_are_correct()
+	{
+		$site_prefs = ee('Model')->get('Site')->all()->indexBy('site_id');
+
+		foreach ($site_prefs as $site_id => $prefs)
+		{
+			$member_prefs = $prefs->site_member_preferences;
+			$member_directories = array();
+
+			$member_directories['Avatars'] = array(
+				'server_path' => $member_prefs->avatar_path,
+				'url' => $member_prefs->avatar_url,
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->avatar_max_width,
+				'max_height' => $member_prefs->avatar_max_height,
+				'max_size' => $member_prefs->avatar_max_kb,
+			);
+
+			$member_directories['Default Avatars'] = array(
+				'server_path' => rtrim($member_prefs->avatar_path, '/').'/default/',
+				'url' => rtrim($member_prefs->avatar_url, '/').'/default/',
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->avatar_max_width,
+				'max_height' => $member_prefs->avatar_max_height,
+				'max_size' => $member_prefs->avatar_max_kb,
+			);
+
+			$member_directories['Member Photos'] = array(
+				'server_path' => $member_prefs->photo_path,
+				'url' => $member_prefs->photo_url,
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->photo_max_width,
+				'max_height' => $member_prefs->photo_max_height,
+				'max_size' => $member_prefs->photo_max_kb,
+			);
+
+			$member_directories['Signature Attachments'] = array(
+				'server_path' => $member_prefs->sig_img_path,
+				'url' => $member_prefs->sig_img_url,
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->sig_img_max_width,
+				'max_height' => $member_prefs->sig_img_max_height,
+				'max_size' => $member_prefs->sig_img_max_kb,
+			);
+
+			$member_directories['PM Attachments'] = array(
+				'server_path' => $member_prefs->prv_msg_upload_path,
+				'url' => str_replace('avatars', 'pm_attachments', $member_prefs->avatar_url),
+				'allowed_types' => 'img',
+				'max_size' => $member_prefs->prv_msg_attach_maxsize
+			);
+
+			$existing = ee('Model')->get('UploadDestination')
+				->fields('name')
+				->filter('name', 'IN', array_keys($member_directories))
+				->filter('site_id', $site_id)
+				->all()
+				->pluck('name');
+
+			foreach ($existing as $name)
+			{
+				unset($member_directories[$name]);
+			}
+
+			foreach ($member_directories as $name => $data)
+			{
+				$dir = ee('Model')->make('UploadDestination', $data);
+				$dir->site_id = $site_id;
+				$dir->name = $name;
+				$dir->removeNoAccess();
+				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
+				$dir->save();
+			}
+		}
 	}
 }
 
