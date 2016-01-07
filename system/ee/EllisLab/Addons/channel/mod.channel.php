@@ -2769,7 +2769,7 @@ class Channel {
 
 				// Next we'l grab only the assigned categories
 
-				$sql = "SELECT DISTINCT(exp_categories.cat_id), parent_id FROM exp_categories
+				$sql = "SELECT DISTINCT(exp_categories.cat_id), exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order FROM exp_categories
 						LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
 						LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id
 						WHERE group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."') ";
