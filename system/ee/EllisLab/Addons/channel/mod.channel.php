@@ -4746,17 +4746,17 @@ class Channel {
 			$sql .= "AND status = 'open' ";
 		}
 
-		$sql .= " ORDER BY entry_date";
-
 		switch (ee()->TMPL->fetch_param('sort'))
 		{
-			case 'asc'	: $sql .= " asc";
+			case 'asc'	: $sort = "asc";
 				break;
-			case 'desc'	: $sql .= " desc";
+			case 'desc'	: $sort = "desc";
 				break;
-			default		: $sql .= " desc";
+			default		: $sort = "desc";
 				break;
 		}
+
+		$sql .= " ORDER BY year $sort, month $sort";
 
 		if (is_numeric(ee()->TMPL->fetch_param('limit')))
 		{
