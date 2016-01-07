@@ -37,7 +37,7 @@ class CI_DB_driver {
 	var $dbdriver		= 'mysqli';
 	var $dbprefix		= '';
 	var $char_set		= 'utf8';
-	var $dbcollat		= 'utf8_general_ci';
+	var $dbcollat		= 'utf8_unicode_ci';
 	var $autoinit		= TRUE; // Whether to automatically initialize the DB
 	var $swap_pre		= '';
 	var $port			= '';

@@ -763,7 +763,7 @@ class Wizard extends CI_Controller {
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
 			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_general_ci'
+			'dbcollat' => 'utf8_unicode_ci'
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
