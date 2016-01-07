@@ -83,8 +83,7 @@ class GridInput extends Table {
 	{
 		if (count($row) != count($this->columns))
 		{
-			throw new \InvalidArgumentException('Grid must have the same number of columns as the set columns.');
-		}
+throw new \InvalidArgumentException('Grid must have the same number of columns as the set columns. Got ' . count($row) . ' but need ' . count($this->columns) . '.');		}
 
 		$this->config['grid_blank_row'] = $row;
 
