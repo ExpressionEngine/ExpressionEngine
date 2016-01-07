@@ -315,6 +315,7 @@ class Addons extends CP_Controller {
 				);
 
 				$attrs = array('class' => 'not-installed');
+				$addon_name = $info['name'];
 
 				if ($info['installed'])
 				{
@@ -325,6 +326,11 @@ class Addons extends CP_Controller {
 						$toolbar['settings'] = array(
 							'href' => $info['settings_url'],
 							'title' => lang('settings'),
+						);
+
+						$addon_name = array(
+							'content' => $addon_name,
+							'href' => $info['settings_url']
 						);
 					}
 
@@ -362,7 +368,7 @@ class Addons extends CP_Controller {
 				$row = array(
 					'attrs' => $attrs,
 					'columns' => array(
-						'addon' => $info['name'],
+						'addon' => $addon_name,
 						'version' => $this->formatVersionNumber($info['version']),
 						array('toolbar_items' => $toolbar)
 					)

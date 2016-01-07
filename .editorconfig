@@ -6,7 +6,7 @@ end_of_line = lf
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{php,js,css,json,yml,xml,json}]
+[*.{php,js,css,json,xml,json}]
 indent_style = tab
 indent_size = 4
 
@@ -15,6 +15,6 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = false
 
-[*.{rst,rb},package.json]
+[*.{rst,rb},package.json,yml]
 indent_style = space
 indent_size = 2

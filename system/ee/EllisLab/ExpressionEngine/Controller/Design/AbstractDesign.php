@@ -301,6 +301,7 @@ abstract class AbstractDesign extends CP_Controller {
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
 		ee()->cp->add_js_script(array(
 				'plugin'	=> 'ee_codemirror',
+				'ui'		=> 'resizable',
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',

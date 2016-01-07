@@ -403,7 +403,7 @@ class EE_Core {
 
 		$this->cp_loaded = TRUE;
 
-		$this->_somebody_set_us_up_the_base();
+		$this->somebody_set_us_up_the_base();
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -503,7 +503,7 @@ class EE_Core {
 	 * Define the BASE constant
 	 * @return void
 	 */
-	private function _somebody_set_us_up_the_base()
+	private function somebody_set_us_up_the_base()
 	{
 		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}

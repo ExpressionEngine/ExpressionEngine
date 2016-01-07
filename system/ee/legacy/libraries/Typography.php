@@ -1202,6 +1202,20 @@ class EE_Typography {
 			$str = str_replace($match, $hash, $str);
 		}
 
+		// and since XSS protection changed any %20's to actual spaces,
+		// let's restore the ones that are in Markdown formatted links
+		$nested_url_paren_regex =
+			str_repeat('(?>[^()]+|\(', 4).
+			str_repeat('(?>\)))*', 4);
+
+		if (preg_match_all('/\[.*?\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
+		{
+			foreach ($matches as $match)
+			{
+				$str = str_replace($match[1], str_replace(' ', '%20', $match[1]), $str);
+			}
+		}
+
 		$parser = new MarkdownExtra;
 
 		// Disable other markup if this is set
