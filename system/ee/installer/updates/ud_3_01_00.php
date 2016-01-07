@@ -41,8 +41,10 @@ class Updater {
 			array(
 				'move_avatars',
 				'update_member_data_column_names',
-				'_add_snippet_edit_date',
-				'_add_global_variable_edit_date'
+				'add_snippet_edit_date',
+				'add_global_variable_edit_date',
+				'fix_table_collations',
+				'update_collation_config',
 			)
 		);
 
@@ -91,7 +93,7 @@ class Updater {
 	/**
 	 * Add snippet edit dates so that we know when files are stale
 	 */
-	private function _add_snippet_edit_date()
+	private function add_snippet_edit_date()
 	{
 		ee()->smartforge->add_column(
 			'snippets',
@@ -115,7 +117,7 @@ class Updater {
 	/**
 	 * Add global variable edit dates so that we know when files are stale
 	 */
-	private function _add_global_variable_edit_date()
+	private function add_global_variable_edit_date()
 	{
 		ee()->smartforge->add_column(
 			'global_variables',
@@ -207,6 +209,36 @@ class Updater {
 				throw new UpdaterException_3_1_0("Could not copy default avatars to <kbd>{$avatar_path_clean}/default/</kbd>");
 			}
 		}
+	}
+
+	private function update_collation_config()
+	{
+		$db_config = ee()->config->item('database');
+		$config = $db_config['expressionengine'];
+
+		if (isset($config['dbcollat']) && $config['dbcollat'] == 'utf8_general_ci')
+		{
+			$config['dbcollat'] = 'utf8_unicode_ci';
+			ee()->config->_update_dbconfig($config);
+		}
+	}
+
+	private function fix_table_collations()
+	{
+		$tables = ee()->db->list_tables();
+
+		foreach ($tables as $table)
+		{
+			$status = ee()->db->query("SHOW TABLE STATUS LIKE '$table'");
+
+			if ($status->num_rows() != 1 || $status->row('Collation') == 'utf8_unicode_ci')
+			{
+				continue;
+			}
+
+			ee()->db->query("ALTER TABLE $table CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci" );
+		}
+
 	}
 }
 

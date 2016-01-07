@@ -1198,6 +1198,7 @@ class EE_Config {
 			'database' => 'string',
 			'pconnect' => 'bool',
 			'dbprefix' => 'string',
+			'dbcollat' => 'string',
 			'db_debug' => 'bool'
 		);
 		$dbconfig = array_intersect_key($dbconfig, $allowed_properties);
