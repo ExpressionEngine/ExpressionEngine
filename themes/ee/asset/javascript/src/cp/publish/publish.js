@@ -140,7 +140,7 @@ $(document).ready(function () {
 		}
 
 		// Clear out modal from last request
-		$('div.box', modal).html('');
+		$('div.box', modal).html('<p align="center"><a class="btn work" href="">Loading</a></p>');
 
 		// Are we editing a category? Create a different form URL
 		if ($(this).data('contentId')) {

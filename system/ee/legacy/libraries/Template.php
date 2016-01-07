@@ -2437,7 +2437,7 @@ class EE_Template {
 
 		// Increment hit counter
 		if (($this->hit_lock == FALSE OR $this->hit_lock_override == TRUE) &&
-			ee()->config->item('enable_hit_tracking') != 'n')
+			bool_config_item('enable_hit_tracking'))
 		{
 			$this->template_hits = $row['hits'] + 1;
 			$this->hit_lock = TRUE;

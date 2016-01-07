@@ -83,7 +83,10 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table', array('sort_dir' => 'desc'));
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_entry_date',
+		));
 
 		$table->setColumns(
 			array(
@@ -308,6 +311,7 @@ class Edit extends AbstractPublishController {
 	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
+			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -472,7 +476,7 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
+			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
 
 		if ($entry->Channel->CategoryGroups)
