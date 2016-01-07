@@ -130,7 +130,7 @@ class View {
 	 */
 	protected function parse($path, $vars)
 	{
-		$this->$path_for_parse = $path;
+		$this->path_for_parse = $path;
 
 		extract($vars);
 
@@ -138,11 +138,11 @@ class View {
 
 		if ((version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == FALSE))
 		{
-			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($this->$path_for_parse))));
+			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($this->path_for_parse))));
 		}
 		else
 		{
-			include($this->$path_for_parse);
+			include($this->path_for_parse);
 		}
 
 		$buffer = ob_get_contents();
