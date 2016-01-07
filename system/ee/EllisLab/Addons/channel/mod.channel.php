@@ -3664,7 +3664,7 @@ class Channel {
 
 			// Next we'l grab only the assigned categories
 
-			$sql = "SELECT DISTINCT(exp_categories.cat_id), parent_id
+			$sql = "SELECT DISTINCT(exp_categories.cat_id), exp_categories.parent_id, exp_categories.group_id, exp_categories.cat_order
 					FROM exp_categories
 					LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
 					LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id ";
@@ -3713,7 +3713,7 @@ class Channel {
 				$sql .= " AND parent_id = 0";
 			}
 
-			$sql .= " ORDER BY group_id, parent_id, cat_order";
+			$sql .= " ORDER BY exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order";
 
 			$query = ee()->db->query($sql);
 
@@ -3759,7 +3759,7 @@ class Channel {
 		}
 		else
 		{
-			$sql = "SELECT DISTINCT(c.cat_id), c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description {$field_sqla}
+			$sql = "SELECT DISTINCT(c.cat_id), c.group_id, c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.cat_order {$field_sqla}
 					FROM exp_categories AS c
 					{$field_sqlb}
 					WHERE c.group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."') ";
