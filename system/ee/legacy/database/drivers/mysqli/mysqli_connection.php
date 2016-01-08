@@ -217,7 +217,7 @@ class CI_DB_mysqli_connection {
 			return $query;
 		}
 
-		$find = '/(DEFAULT\s+)?CHARACTER\s+SET\s+\w+(\s+COLLATE\s+\w+)?/';
+		$find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
 		$want = "DEFAULT CHARACTER SET {$charset} COLLATE {$collation}";
 
 		if (preg_match($find, $query))
