@@ -91,6 +91,11 @@ feature 'Forum Tab' do
     should_have_no_error_text(@page.forum_tab.forum_topic_id)
   end
 
+  # Waiting on one of two fixes:
+  # - Tab::display() not being called on validate/save
+  # - disabled being a valid tab field parameter
+  it 'requires both the forum title and body when creating new forum topics'
+
   def create_entry
     @page.title.set title
     @page.tab_links[4].click
