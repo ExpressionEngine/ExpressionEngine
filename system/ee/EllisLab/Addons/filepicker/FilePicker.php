@@ -28,7 +28,7 @@ class FilePicker {
 
 	public function link($text, $dir = 'all', $data = array())
 	{
-		$qs = array('directory' => $dir);
+		$qs = array('directories' => $dir);
 
 		if ( ! empty($data['image']))
 		{
@@ -86,13 +86,13 @@ class FilePicker {
 		return "<a class='m-link filepicker $class' rel='modal-file' href='$href' $extra>". $text ."</a>";
 	}
 
-	public function buildTableFromFileCollection(Collection $files, $limit = 20, $selected = NULL)
+	public function buildTableFromFileCollection($files, $limit = 20, $selected = NULL)
 	{
 		$table = Table::fromGlobals(array(
-			'autosort' => TRUE,
 			'limit' => $limit,
 			'class' => 'file-list'
 		));
+
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
@@ -111,14 +111,21 @@ class FilePicker {
 		}
 
 		$data = array();
+		$i = 0;
 
 		foreach ($files as $file)
 		{
-			if ( ! $file->getUploadDestination()
-				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE
-				|| ! $file->exists())
+			$i++;
+
+			if ($file instanceOf \SplFileObject)
 			{
-				continue;
+				$new_file = new \StdClass;
+				$new_file->title = $file->getFilename();
+				$new_file->file_name = $file->getFilename();
+				$new_file->mime_type = $file->getMimeType();
+				$new_file->file_id = $i++;
+				$new_file->upload_date = $file->getMTime();
+				$file = $new_file;
 			}
 
 			$column = array(
@@ -173,7 +180,7 @@ class FilePicker {
 			return FALSE;
 		}
 
-		if (in_array($member_group_id, $dir->getNoAccess()->pluck('group_id')))
+		if (in_array($member_group_id, $dir->NoAccess->pluck('group_id')))
 		{
 			return FALSE;
 		}

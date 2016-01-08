@@ -297,6 +297,11 @@ class Fields extends AbstractChannelsController {
 
 		if ($field)
 		{
+			if ( ! isset($compatibility[$field->field_type]))
+			{
+				return array($field->field_type => $fieldtypes[$field->field_type]);
+			}
+
 			$my_type = $compatibility[$field->field_type];
 
 			$compatible = array_filter($compatibility, function($v) use($my_type)

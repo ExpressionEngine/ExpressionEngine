@@ -83,7 +83,10 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table', array('sort_dir' => 'desc'));
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_entry_date',
+		));
 
 		$table->setColumns(
 			array(

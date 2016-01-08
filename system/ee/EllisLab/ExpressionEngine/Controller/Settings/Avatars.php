@@ -138,14 +138,15 @@ class Avatars extends Settings {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$directory_settings = array(
-				'avatar_path' => ee()->input->post('avatar_path'),
-				'avatar_url' => ee()->input->post('avatar_url'),
-				'avatar_max_kb' => ee()->input->post('avatar_max_kb'),
-				'avatar_max_width' => ee()->input->post('avatar_max_width'),
+				'avatar_path'       => ee()->input->post('avatar_path'),
+				'avatar_url'        => ee()->input->post('avatar_url'),
+				'avatar_max_kb'     => ee()->input->post('avatar_max_kb'),
+				'avatar_max_width'  => ee()->input->post('avatar_max_width'),
 				'avatar_max_height' => ee()->input->post('avatar_max_height')
 			);
 
-			if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings))
+			if ($this->saveSettings($vars['sections'])
+				&& $this->updateUploadDirectory($directory_settings))
 			{
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
@@ -175,12 +176,16 @@ class Avatars extends Settings {
 	 */
 	private function updateUploadDirectory($data)
 	{
-		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
 		if ( ! $directory)
 		{
 			$directory = ee('Model')->make('UploadDestination');
 			$directory->name = 'Avatars';
+			$directory->site_id = ee()->config->item('site_id');
 			$directory->Module = ee('Model')->get('Module')->filter('module_name', 'Member')->first();
 		}
 		$directory->server_path = $data['avatar_path'];

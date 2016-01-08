@@ -64,7 +64,7 @@ class Simple_commerce_upd {
 
   PRIMARY KEY `item_id` (`item_id`),
   KEY `entry_id` (`entry_id`)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_purchases` (
   `purchase_id` int(8) unsigned NOT NULL auto_increment,
@@ -80,7 +80,7 @@ class Simple_commerce_upd {
   KEY `item_id` (`item_id`),
   KEY `member_id` (`member_id`),
   KEY `txn_id` (`txn_id`)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_emails` (
   `email_id` int(8) unsigned NOT NULL auto_increment,
@@ -88,7 +88,7 @@ class Simple_commerce_upd {
   `email_subject` varchar(125) NOT NULL default '',
   `email_body` text NOT NULL,
   PRIMARY KEY `email_id` (`email_id`)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 
 		foreach ($sql as $query)

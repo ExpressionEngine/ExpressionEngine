@@ -115,7 +115,7 @@ class Utf8_db_convert {
 
 			// finally, set the table's charset and collation in MySQL to utf8
 			ee()->db->query("ALTER TABLE {$table} CONVERT TO CHARACTER
-								  SET utf8 COLLATE utf8_general_ci");
+								  SET utf8 COLLATE utf8_unicode_ci");
 		}
 
 		return TRUE;

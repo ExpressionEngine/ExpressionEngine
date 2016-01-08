@@ -38,7 +38,12 @@ class FilePicker {
 	 */
 	public function getUrl()
 	{
-		$qs = array('directory' => $this->directories);
+		$qs = array('directories' => $this->directories);
+
+		if (is_numeric($this->directories))
+		{
+			$qs['directory'] = $this->directories;
+		}
 
 		return $this->url->make(static::CONTROLLER, $qs);
 	}

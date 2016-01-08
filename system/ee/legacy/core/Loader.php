@@ -649,7 +649,7 @@ class EE_Loader {
 		if ( ! class_exists('EE_Driver_Library', FALSE))
 		{
 			// We aren't instantiating an object here, just making the base class available
-			require APPPATH.'libraries/Driver.php';
+			require BASEPATH.'libraries/Driver.php';
 		}
 
 		// We can save the loader some time since Drivers will *always* be in a subfolder,

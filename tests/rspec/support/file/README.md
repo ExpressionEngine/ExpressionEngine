@@ -2,8 +2,18 @@
 
 You need to install QT:
 
-    brew install qt
+    brew install qt5
+    brew link --force qt5
 
+## Upgrading to QT 5.0
+
+If you previously used QT 4.0 (`brew install qt`) and want to upgrade to 5.0 to remove the deprecation notices, you'll have to uninstall or unlink QT 4.0:
+
+    brew unlink qt
+    
+    OR
+
+    brew uninstall qt
 
 # Testing with your main installation
 
@@ -17,7 +27,7 @@ You need to install QT:
 ```php
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'capybara') !== FALSE  || defined('FIXTURE'))
 {
-	$active_group = 'rspec';
+    $active_group = 'rspec';
 }
 ```
 
