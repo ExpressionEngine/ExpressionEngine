@@ -8,7 +8,7 @@ return array(
 	'version'     => '3.0',
 	'namespace'   => 'User\Addons\Wiki',
 	'settings_exist' => TRUE,
-	'docs_url'    => 'http://github/wiki/index.html',
+	'docs_url'    => 'https://github.com/EllisLab/Wiki/wiki',
 	'models' => array(
 		'WikiNamespace' => 'Model\WikiNamespace',
 		'Wiki' => 'Model\Wiki',
