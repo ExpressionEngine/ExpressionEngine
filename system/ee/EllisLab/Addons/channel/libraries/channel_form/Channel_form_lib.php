@@ -1598,7 +1598,7 @@ GRID_FALLBACK;
 
 		$_POST['revision_post'] = $_POST;
 
-		$this->member_group_override();
+		$this->_member_group_override();
 
 		//added for EE2.1.2
 		ee()->legacy_api->instantiate('channel_categories');
@@ -1728,7 +1728,7 @@ GRID_FALLBACK;
 		}
 
 		// Reset their group_id back to 0
-		$this->member_group_override(TRUE);
+		$this->_member_group_override(TRUE);
 
 		// -------------------------------------------
 		// 'channel_form_submit_entry_end' hook.
@@ -3373,7 +3373,7 @@ SCRIPT;
 	 *
 	 * @return	void
 	 */
-	public function member_group_override($reset = FALSE)
+	private function _member_group_override($reset = FALSE)
 	{
 		if (ee()->session->userdata('member_id'))
 		{
