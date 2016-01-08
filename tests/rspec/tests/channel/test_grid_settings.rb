@@ -7,159 +7,167 @@ require './bootstrap.rb'
 #
 feature 'Grid Field Settings' do
 
-	# Before each test, take us to the Field Group settings page
-	# and start creating a new Grid field
-	before(:each) do
-		cp_session
-    	@page = ChannelFieldForm.new
-    	@page.load
-    	no_php_js_errors
+  # Before each test, take us to the Field Group settings page
+  # and start creating a new Grid field
+  before(:each) do
+    cp_session
+    @page = ChannelFieldForm.new
+    @page.load
+    no_php_js_errors
 
-    	@page.field_label.set 'Test Grid'
+    @page.field_label.set 'Test Grid'
 
-		@page.field_type.select 'Grid'
-	end
+    @page.field_type.select 'Grid'
+  end
 
-	def populate_grid_settings
-		GridSettings::test_data.each_with_index do |column_data, index|
-			# First column is already there, so call add_column for
-			# subsequent columns after index 0
-			column = index == 0 ? GridSettings::column(1) : GridSettings::add_column
-			column.fill_data(column_data[1])
-		end
+  def populate_grid_settings
+    GridSettings::test_data.each_with_index do |column_data, index|
+      # First column is already there, so call add_column for
+      # subsequent columns after index 0
+      column = index == 0 ? GridSettings::column(1) : GridSettings::add_column
+      column.fill_data(column_data[1])
+    end
 
-		no_php_js_errors
-	end
+    no_php_js_errors
+  end
 
-	it 'shows the Grid field settings' do
-		@page.field_name.value.should eq 'test_grid'
-		@page.should have_text('Grid Fields')
-	end
+  it 'shows the Grid field settings' do
+    @page.field_name.value.should eq 'test_grid'
+    @page.should have_text('Grid Fields')
+  end
 
-	it 'should autopopulate the column name' do
-		column = GridSettings::column(1)
-		column.label.set 'Test Column'
-		column.name.value.should eq 'test_column'
+  it 'should autopopulate the column name' do
+    column = GridSettings::column(1)
+    column.label.set 'Test Column'
+    column.name.value.should eq 'test_column'
 
-		@page.submit
-		no_php_js_errors
-		@page.load_edit_for_custom_field('Test Grid')
+    @page.submit
+    no_php_js_errors
+    @page.load_edit_for_custom_field('Test Grid')
 
-		# Column label shouldn't update automatically on existing columns
-		column = GridSettings::column(1)
-		column.label.set 'News column label'
-		column.name.value.should eq 'test_column'
+    # Column label shouldn't update automatically on existing columns
+    column = GridSettings::column(1)
+    column.label.set 'News column label'
+    column.name.value.should eq 'test_column'
 
-		# Ensure column name generation works in new and cloned columns
-		GridSettings::add_column
-		column2 = GridSettings::column(2)
-		column2.label.set 'New column'
-		column2.name.value.should eq 'new_column'
+    # Ensure column name generation works in new and cloned columns
+    GridSettings::add_column
+    column2 = GridSettings::column(2)
+    column2.label.set 'New column'
+    column2.name.value.should eq 'new_column'
 
-		column2 = GridSettings::clone_column(1)
-		column2.label.set 'New column 2'
-		column2.name.value.should eq 'new_column_2'
-	end
+    column2 = GridSettings::clone_column(1)
+    column2.label.set 'New column 2'
+    column2.name.value.should eq 'new_column_2'
+  end
 
-	it 'should validate column names and labels' do
-		# No column label
-		column = GridSettings::column(1)
-		column.name.set 'test_column'
-		no_php_js_errors
-		@page.submit
-		@page.should have_text('There are one or more columns without a column label.')
-		no_php_js_errors
+  it 'should validate column names and labels' do
+    # No column label
+    column = GridSettings::column(1)
+    column.name.set 'test_column'
+    no_php_js_errors
+    @page.submit
+    @page.should have_text('There are one or more columns without a column label.')
+    no_php_js_errors
 
-		# No column label and duplicate column label
-		GridSettings::column(1).label.trigger 'blur' # Get rid of errors so we can submit again
-		column = GridSettings::add_column
-		column.label.set 'Test column'
-		column.name.value.should eq 'test_column'
-		@page.submit
-		@page.should have_text('There are one or more columns without a column label.')
-		@page.should have_text('Column field names must be unique.')
+    # No column label and duplicate column label
+    GridSettings::column(1).label.trigger 'blur' # Get rid of errors so we can submit again
+    column = GridSettings::add_column
+    column.label.set 'Test column'
+    column.name.value.should eq 'test_column'
+    @page.submit
+    @page.should have_text('There are one or more columns without a column label.')
+    @page.should have_text('Column field names must be unique.')
 
-		# No column name, duplicate column label, and no column name
-		GridSettings::column(1).label.trigger 'blur'
-		GridSettings::column(1).name.trigger 'blur'
-		GridSettings::column(2).name.trigger 'blur'
-		column = GridSettings::add_column
-		column.label.set 'Test column no name'
-		column.name.set ''
-		@page.submit
-		@page.should have_text('There are one or more columns without a column label.')
-		@page.should have_text('Column field names must be unique.')
-		@page.should have_text('There are one or more columns without a column name.')
-	end
+    # No column name, duplicate column label, and no column name
+    GridSettings::column(1).label.trigger 'blur'
+    GridSettings::column(1).name.trigger 'blur'
+    GridSettings::column(2).name.trigger 'blur'
+    column = GridSettings::add_column
+    column.label.set 'Test column no name'
+    column.name.set ''
+    @page.submit
+    @page.should have_text('There are one or more columns without a column label.')
+    @page.should have_text('Column field names must be unique.')
+    @page.should have_text('There are one or more columns without a column name.')
+  end
 
-	it 'should save column settings' do
-		populate_grid_settings
-		no_php_js_errors
+  it 'should only duplicate columns once' do
+    column1 = GridSettings::column(1)
+    column1.name.set 'test_column'
+    column2 = GridSettings::clone_column(1)
+    column3 = GridSettings::clone_column(2)
+    lambda { GridSettings::column(4) }.should raise_error(Capybara::ElementNotFound)
+  end
 
-		# Save!
-		@page.submit
-		no_php_js_errors
-		@page.load_edit_for_custom_field('Test Grid')
-		no_php_js_errors
+  it 'should save column settings' do
+    populate_grid_settings
+    no_php_js_errors
 
-		grid_test_data = GridSettings::test_data
+    # Save!
+    @page.submit
+    no_php_js_errors
+    @page.load_edit_for_custom_field('Test Grid')
+    no_php_js_errors
 
-		# Validate each column to make sure they retained data
-		grid_test_data.each_with_index do |column_data, index|
-			column = GridSettings::column(index + 1)
-			column.validate(column_data[1])
-		end
-	end
+    grid_test_data = GridSettings::test_data
 
-	it 'should fail validation and retain data' do
-		populate_grid_settings
+    # Validate each column to make sure they retained data
+    grid_test_data.each_with_index do |column_data, index|
+      column = GridSettings::column(index + 1)
+      column.validate(column_data[1])
+    end
+  end
 
-		# Sabbotage a column to make sure data is retained on validation error
-		column = GridSettings::column(1)
-		column.name.set ''
-		@page.submit
-		no_php_js_errors
-		@page.should have_text('There are one or more columns without a column name.')
+  it 'should fail validation and retain data' do
+    populate_grid_settings
 
-		# Put back the column name for validation
-		column = GridSettings::column(1)
-		column.name.set 'date'
+    # Sabbotage a column to make sure data is retained on validation error
+    column = GridSettings::column(1)
+    column.name.set ''
+    @page.submit
+    no_php_js_errors
+    @page.should have_text('There are one or more columns without a column name.')
 
-		grid_test_data = GridSettings::test_data
+    # Put back the column name for validation
+    column = GridSettings::column(1)
+    column.name.set 'date'
 
-		# Validate each column to make sure they retained data
-		grid_test_data.each_with_index do |column_data, index|
-			column = GridSettings::column(index + 1)
-			column.validate(column_data[1])
-		end
-	end
+    grid_test_data = GridSettings::test_data
 
-	it 'should delete a column' do
-		populate_grid_settings
+    # Validate each column to make sure they retained data
+    grid_test_data.each_with_index do |column_data, index|
+      column = GridSettings::column(index + 1)
+      column.validate(column_data[1])
+    end
+  end
 
-		@page.submit
-		no_php_js_errors
-		@page.load_edit_for_custom_field('Test Grid')
-		no_php_js_errors
+  it 'should delete a column' do
+    populate_grid_settings
 
-		# Delete a column, make sure it's gone
-		column = GridSettings::column(1)
-		column.delete
-		no_php_js_errors
-		@page.submit
-		no_php_js_errors
-		@page.load_edit_for_custom_field('Test Grid')
-		no_php_js_errors
+    @page.submit
+    no_php_js_errors
+    @page.load_edit_for_custom_field('Test Grid')
+    no_php_js_errors
 
-		grid_test_data = GridSettings::test_data
+    # Delete a column, make sure it's gone
+    column = GridSettings::column(1)
+    column.delete
+    no_php_js_errors
+    @page.submit
+    no_php_js_errors
+    @page.load_edit_for_custom_field('Test Grid')
+    no_php_js_errors
 
-		# Validate each column to make sure they retained data
-		grid_test_data.each_with_index do |column_data, index|
-			if index == 0 then
-				next
-			end
-			column = GridSettings::column(index)
-			column.validate(column_data[1])
-		end
-	end
+    grid_test_data = GridSettings::test_data
+
+    # Validate each column to make sure they retained data
+    grid_test_data.each_with_index do |column_data, index|
+      if index == 0 then
+        next
+      end
+      column = GridSettings::column(index)
+      column.validate(column_data[1])
+    end
+  end
 end

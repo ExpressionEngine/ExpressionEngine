@@ -9,6 +9,7 @@ use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
+use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\License;
@@ -66,7 +67,9 @@ return array(
 
 		'CP/Table' => function($ee, $config = array())
 		{
-			return Library\CP\Table::fromGlobals($config);
+			$table = Library\CP\Table::fromGlobals($config);
+			$table->setLocalize(ee()->localize);
+			return $table;
 		},
 
 		'CP/URL' => function($ee, $path = NULL)
@@ -208,6 +211,11 @@ return array(
 			$db->getLog()->saveQueries($save_queries);
 
 			return $db;
+		},
+
+		'File' => function($ee)
+		{
+			return new File\Factory();
 		},
 
 		'License' => function($ee)

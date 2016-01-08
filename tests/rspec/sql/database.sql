@@ -668,6 +668,7 @@ CREATE TABLE `exp_global_variables` (
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `variable_name` varchar(50) NOT NULL,
   `variable_data` text NOT NULL,
+  `edit_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`variable_id`),
   KEY `variable_name` (`variable_name`),
   KEY `site_id` (`site_id`)
@@ -1289,6 +1290,7 @@ CREATE TABLE `exp_snippets` (
   `site_id` int(4) NOT NULL,
   `snippet_name` varchar(75) NOT NULL,
   `snippet_contents` text,
+  `edit_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`snippet_id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;

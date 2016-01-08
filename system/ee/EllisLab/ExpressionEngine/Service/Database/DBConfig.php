@@ -46,7 +46,7 @@ class DBConfig implements Config {
 		'cache_on' => FALSE,
 		'autoinit' => FALSE,
 		'char_set' => 'utf8',
-		'dbcollat' => 'utf8_general_ci',
+		'dbcollat' => 'utf8_unicode_ci',
 		'cachedir' => '', // Set in constructor
 	);
 

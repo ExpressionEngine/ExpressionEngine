@@ -466,7 +466,10 @@ class Comments extends AbstractPublishController {
 	private function buildTableFromCommentQuery(Builder $comments)
 	{
 		ee()->load->helper('text');
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_comment_date',
+		));
 
 		$table->setColumns(
 			array(

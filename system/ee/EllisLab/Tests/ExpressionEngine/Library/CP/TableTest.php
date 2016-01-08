@@ -20,6 +20,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 	public function testsTableCreation($config, $data, $expected, $columns, $description)
 	{
 		$this->table = new Table($config);
+		$this->table->setLocalize(new Localize());
 		$this->table->setColumns($columns);
 		$this->table->setData($data);
 		$this->assertEquals($expected, $this->table->viewData(), $description);
@@ -1475,5 +1476,18 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$return[] = array($config, $data, $columns, 'Test invalid data for checkboxes');
 
 		return $return;
+	}
+}
+
+class Localize
+{
+	public function get_date_format($seconds = FALSE)
+	{
+		return '%n/%j/%Y';
+	}
+
+	public function string_to_timestamp($human_string, $localized = TRUE, $date_format = NULL)
+	{
+		return strtotime($human_string);
 	}
 }

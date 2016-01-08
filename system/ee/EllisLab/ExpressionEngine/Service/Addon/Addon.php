@@ -70,6 +70,11 @@ class Addon {
 
 		if ($this->hasPlugin())
 		{
+			if ( ! defined('APP_VER') || version_compare(APP_VER, '3.0.0', '<'))
+			{
+				return TRUE;
+			}
+
 			// Check for an installed plugin
 			// @TODO restore the model approach once we have solved the
 			// circular dependency between the Addon service and the
@@ -84,6 +89,7 @@ class Addon {
 				return TRUE;
 			}
 			*/
+			ee()->load->driver('cache');
 
 			$installed_plugins = ee()->cache->get('installed-plugins', \Cache::GLOBAL_SCOPE);
 
