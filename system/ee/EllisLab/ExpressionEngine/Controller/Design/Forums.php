@@ -85,11 +85,16 @@ class Forums extends AbstractDesignController {
 		);
 
 		$data = array();
-		foreach (directory_map($base_path, TRUE) as $dir)
+		foreach (directory_map($base_path) as $dir => $files)
 		{
 			$path = $base_path . '/' . $dir;
 
-			foreach (directory_map($path, TRUE) as $file)
+			if ( ! is_array($files))
+			{
+				continue;
+			}
+
+			foreach ($files as $file)
 			{
 				if (strpos($file, '.') !== FALSE)
 				{

@@ -885,7 +885,11 @@ class ChannelEntry extends ContentModel {
 			->all();
 
 		// Sorting alphabetically or custom?
-		$sort_column = ($categories->first()->CategoryGroup->sort_order == 'a') ? 'cat_name' : 'cat_order';
+		$sort_column = 'cat_order';
+		if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a')
+		{
+			$sort_column = 'cat_name';
+		}
 
 		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
 		$field->setItem('field_list_items', $category_list);

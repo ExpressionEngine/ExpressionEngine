@@ -118,12 +118,12 @@ class Comment extends Model {
 
 		$total_comments = $comments->count();
 
-		$comments->filter('status', 'o')
+		$last_comment = $comments->filter('status', 'o')
 			->fields('comment_date')
 			->order('comment_date', 'desc')
 			->first();
 
-		$last_comment_date = ($comments) ? $comments->comment_date : 0;
+		$last_comment_date = ($last_comment) ? $last_comment->comment_date : 0;
 
 		$stats = $this->getFrontend()->get('Stats')
 			->filter('site_id', $site_id)

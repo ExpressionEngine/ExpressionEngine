@@ -6,6 +6,7 @@ class Link {
 
 	protected $html;
 	protected $filepicker;
+	protected $selected;
 	protected $attributes = array('class' => '');
 
 	protected $type = 'list';
@@ -46,6 +47,7 @@ class Link {
 		$this->addDataAttributeIfSet('input-image', $this->image_selector);
 		$this->addDataAttributeIfSet('input-value', $this->value_selector);
 		$this->addDataAttributeIfSet('input-name', $this->name_selector);
+		$this->addDataAttributeIfSet('selected', $this->selected);
 
 		$attr = '';
 
@@ -60,6 +62,18 @@ class Link {
 		}
 
 		return "<a{$attr}>{$this->html}</a>";
+	}
+
+	/**
+	 * Set filename of the current selection
+	 *
+	 * @param String $filename Name of the selected file
+	 * @return Link
+	 */
+	public function setSelected($filename)
+	{
+		$this->selected = $filename;
+		return $this;
 	}
 
 	/**

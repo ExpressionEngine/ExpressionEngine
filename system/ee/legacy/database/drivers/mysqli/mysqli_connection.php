@@ -67,6 +67,7 @@ class CI_DB_mysqli_connection {
 		$database = $this->config['database'];
 		$char_set = $this->config['char_set'];
 		$pconnect = $this->config['pconnect'];
+		$dbcollat = $this->config['dbcollat'];
 		$port     = $this->config['port'];
 
 		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
@@ -82,6 +83,8 @@ class CI_DB_mysqli_connection {
 			$password,
 			$options
 		);
+
+		$this->query("SET NAMES '$char_set' COLLATE '$dbcollat'");
 	}
 
 	/**
@@ -102,6 +105,8 @@ class CI_DB_mysqli_connection {
 	{
 		$time_start = microtime(TRUE);
 		$memory_start = memory_get_usage();
+
+		$query = $this->enforceCharsetAndCollation($query);
 
 		try
 		{
@@ -192,5 +197,39 @@ class CI_DB_mysqli_connection {
 	public function isOpen()
 	{
 		return isset($this->connection);
+	}
+
+	/**
+	 * Enforce charset and collation on CREATE TABLE queries
+	 *
+	 * @param String $query Query to check
+	 * @return Rewritten query, if necessary
+	 */
+	private function enforceCharsetAndCollation($query)
+	{
+		$charset = $this->config['char_set'];
+		$collation = $this->config['dbcollat'];
+
+		$query = trim($query);
+
+		if (strncasecmp($query, 'CREATE TABLE', 12) != 0)
+		{
+			return $query;
+		}
+
+		$find = '/(DEFAULT\s+)?CHARACTER\s+SET\s+\w+(\s+COLLATE\s+\w+)?/';
+		$want = "DEFAULT CHARACTER SET {$charset} COLLATE {$collation}";
+
+		if (preg_match($find, $query))
+		{
+			$query = preg_replace($find, $want, $query);
+		}
+		else
+		{
+			$query = rtrim($query, ';');
+			$query .= $want.';';
+		}
+
+		return $query;
 	}
 }

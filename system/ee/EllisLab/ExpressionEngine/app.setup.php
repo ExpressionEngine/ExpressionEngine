@@ -9,6 +9,7 @@ use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
+use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\License;
@@ -208,6 +209,11 @@ return array(
 			$db->getLog()->saveQueries($save_queries);
 
 			return $db;
+		},
+
+		'File' => function($ee)
+		{
+			return new File\Factory();
 		},
 
 		'License' => function($ee)

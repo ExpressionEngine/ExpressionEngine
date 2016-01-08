@@ -172,6 +172,18 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			'If evaluated to false, if is pruned, elseif is promoted'
 		);
 
+		// HS ticket 87661
+		$string = '{if nonexistent}nope';
+		$string .= "{if:elseif test == 'true'}yep";
+		$string .= '{if:elseif another_nonexistent}never';
+		$string .= '{if:else}nope{/if}';
+
+		$this->assertEquals(
+			'{if nonexistent}nope{if:else}yep{/if}',
+			$this->runConditionWithoutAnnotations($string, array('test' => 'true'), $runner),
+			'Double elseif promotion, true rewriting, and branch pruning'
+		);
+
 		// now the big one
 		$string = '{if 5 == 7}nope';
 		$string .= '{if:elseif \'bob\' == \'mary\'}never';

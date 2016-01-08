@@ -32,6 +32,8 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  */
 abstract class FileSyncedModel extends Model {
 
+	protected $_skip_next_write = FALSE;
+
 	protected static $_events = array(
 		'afterLoad',
 		'afterDelete',
@@ -99,35 +101,45 @@ abstract class FileSyncedModel extends Model {
 		$fs = new Filesystem();
 		$path = $this->getFilePath();
 
-		if (isset($path) && $fs->exists($path))
+		if ( ! isset($path))
 		{
-		    $mtime = $fs->mtime($path);
-
-		    if ($mtime > $this->getModificationTime())
-		    {
-				$this->unserializeFileData($fs->read($path));
-				$this->setModificationTime($mtime);
-		        $this->save();
-		    }
+			return;
 		}
+
+		if ( ! $fs->exists($path))
+		{
+			$this->writeToFile();
+			return;
+		}
+
+		$mtime = $fs->mtime($path);
+
+	    if ($mtime > $this->getModificationTime())
+	    {
+			$this->unserializeFileData($fs->read($path));
+			$this->setModificationTime($mtime);
+
+			$this->_skip_next_write = TRUE;
+	        $this->save();
+	    }
 	}
 
 	/**
-	 * For all saves, write the template file with the new contents.
+	 * For all saves, write the template file. Unless specifically told not to.
 	 *
 	 * Technically we could make this afterInsert and do more checks
 	 * in afterUpdate to make sure things actually changed, but this
-	 * is much simpler.
+	 * lets us be fieldname agnostic and gives devs a little more control.
 	 */
 	public function onAfterSave()
 	{
-		$fs = new Filesystem();
-		$path = $this->getFilePath();
-
-		if (isset($path) && $fs->exists($fs->dirname($path)))
+		if ($this->_skip_next_write === TRUE)
 		{
-			$fs->write($path, $this->serializeFileData(), TRUE);
+			$this->_skip_next_write = FALSE;
+			return;
 		}
+
+		$this->writeToFile();
 	}
 
 	/**
@@ -161,6 +173,20 @@ abstract class FileSyncedModel extends Model {
 		if (isset($path) && $fs->exists($path))
 		{
 			$fs->delete($path);
+		}
+	}
+
+	/**
+	 * Helper to write the template to the file
+	 */
+	protected function writeToFile()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+
+		if (isset($path) && $fs->exists($fs->dirname($path)))
+		{
+			$fs->write($path, $this->serializeFileData(), TRUE);
 		}
 	}
 
