@@ -526,8 +526,11 @@ class EE_Core {
 	final public function generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions.php';
-		$ACT = new EE_Actions($can_view_system, function($class, $method) {
-			$this->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
+
+		// @todo remove ridiculous dance when PHP 5.3 is no longer supported
+		$that = $this;
+		$ACT = new EE_Actions($can_view_system, function($class, $method) use ($that) {
+			$that->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
 		});
 	}
 
@@ -733,7 +736,7 @@ class EE_Core {
 	 *                                          that returns the transaction
 	 *                                          name
 	 */
-	private function set_newrelic_transaction($transaction_name)
+	public function set_newrelic_transaction($transaction_name)
 	{
 		if (extension_loaded('newrelic'))
 		{
