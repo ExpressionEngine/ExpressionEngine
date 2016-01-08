@@ -41,6 +41,7 @@ class Table {
 	protected $data = array();
 	protected $action_buttons = array();
 	protected $action_content;
+	protected $localize;
 
 	/**
 	 * Config can have these keys:
@@ -490,10 +491,10 @@ class Table {
 		if ($subheadings)
 		{
 			$sort_dir = $this->getSortDir();
-
-			@uksort($this->data, function ($a, $b) use ($sort_dir)
+			$that = $this;
+			uksort($this->data, function ($a, $b) use ($that, $sort_dir)
 			{
-				$cmp = $this->compareData($a, $b);
+				$cmp = $that->compareData($a, $b);
 				return ($sort_dir == 'asc') ? $cmp : -$cmp;
 			});
 
@@ -523,11 +524,12 @@ class Table {
 
 		// Errors are suppressed due to a PHP bug where PHP incorrectly assumes
 		// an array has been changed in a usort function
-		@usort($rows, function ($a, $b) use ($columns, $sort_col, $sort_dir)
+		$that = $this;
+		usort($rows, function ($a, $b) use ($that, $columns, $sort_col, $sort_dir)
 		{
 			$search = array_keys($columns);
 			$index  = array_search($sort_col, $search);
-			$cmp    = $this->compareData(
+			$cmp    = $that->compareData(
 				$a['columns'][$index]['content'],
 				$b['columns'][$index]['content']
 			);
@@ -552,9 +554,9 @@ class Table {
 		else
 		{
 			// Check for dates
-			$date_format = ee()->localize->get_date_format();
-			$date_a = ee()->localize->string_to_timestamp($a, TRUE, $date_format);
-			$date_b = ee()->localize->string_to_timestamp($b, TRUE, $date_format);
+			$date_format = $this->localize->get_date_format();
+			$date_a = $this->localize->string_to_timestamp($a, TRUE, $date_format);
+			$date_b = $this->localize->string_to_timestamp($b, TRUE, $date_format);
 
 			if ($date_a !== FALSE && $date_b !== FALSE)
 			{
@@ -713,6 +715,15 @@ class Table {
 			'action_text'	=> $action_text,
 			'action_link'	=> $action_link
 		);
+	}
+
+	/**
+	 * Inject the Localize object
+	 * @param Localize $localize An instance of the Localize class
+	 */
+	public function setLocalize($localize)
+	{
+		$this->localize = $localize;
 	}
 }
 

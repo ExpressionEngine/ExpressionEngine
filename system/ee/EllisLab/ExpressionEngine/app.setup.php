@@ -65,7 +65,9 @@ return array(
 
 		'CP/Table' => function($ee, $config = array())
 		{
-			return Library\CP\Table::fromGlobals($config);
+			$table = Library\CP\Table::fromGlobals($config);
+			$table->setLocalize(ee()->localize);
+			return $table;
 		},
 
 		'CP/URL' => function($ee, $path = NULL)
