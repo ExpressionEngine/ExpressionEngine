@@ -80,9 +80,9 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20151118');
+		define('APP_BUILD',		'20160107');
 		define('APP_VER',		'3.1.0');
-		define('APP_VER_ID',	'');
+		define('APP_VER_ID',	'dp.6');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -526,8 +526,11 @@ class EE_Core {
 	final public function generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions.php';
-		$ACT = new EE_Actions($can_view_system, function($class, $method) {
-			$this->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
+
+		// @todo remove ridiculous dance when PHP 5.3 is no longer supported
+		$that = $this;
+		$ACT = new EE_Actions($can_view_system, function($class, $method) use ($that) {
+			$that->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
 		});
 	}
 
@@ -733,7 +736,7 @@ class EE_Core {
 	 *                                          that returns the transaction
 	 *                                          name
 	 */
-	private function set_newrelic_transaction($transaction_name)
+	public function set_newrelic_transaction($transaction_name)
 	{
 		if (extension_loaded('newrelic'))
 		{
