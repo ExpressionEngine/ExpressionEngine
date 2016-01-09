@@ -86,7 +86,7 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		'int' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
 		'integer' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
 
-		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\String',
+		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\StringLiteral',
 
 		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
