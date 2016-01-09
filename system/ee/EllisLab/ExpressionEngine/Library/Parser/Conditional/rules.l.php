@@ -8,7 +8,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Comment;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Number;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Operator;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Other;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\String;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\StringLiteral;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Tag;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
