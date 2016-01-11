@@ -88,7 +88,7 @@ class FilePicker {
 
 	public function buildTableFromFileCollection(Collection $files, $limit = 20, $selected = NULL)
 	{
-		$table = Table::fromGlobals(array(
+		$table = ee('CP/Table', array(
 			'autosort' => TRUE,
 			'limit' => $limit,
 			'class' => 'file-list'
