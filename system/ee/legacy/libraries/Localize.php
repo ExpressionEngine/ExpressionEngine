@@ -311,7 +311,6 @@ class Localize {
 		try
 		{
 			$timezone = new DateTimeZone($timezone);
-
 			// If $date_string appears to be a Unix timestamp, prepend the
 			// string with '@' so DateTime knows it's a timestamp; the
 			// timezone parameter is ignored when a timestamp is passed,
@@ -354,7 +353,20 @@ class Localize {
 
 				// If there's no date format, or if the date format failed, toss
 				// it back to PHP.
-				$dt = ( ! empty($dt)) ? $dt : new DateTime($date_string, $timezone);
+				// Using `date_create` instead of `new DateTime` to work around
+				// a bug in php's usort (https://bugs.php.net/bug.php?id=50688).
+				// Used by the table library to sort by date
+				if (empty($dt))
+				{
+					$dt = date_create($date_string, $timezone);
+
+					if ($dt === FALSE)
+					{
+						return FALSE;
+					}
+				}
+
+				$dt = ( ! empty($dt)) ? $dt : date_create($date_string, $timezone);
 			}
 		}
 		catch (Exception $e)
