@@ -52,9 +52,7 @@ function required($blurb = '')
  */
 function layout_preview_links($data, $channel_id)
 {
-	$EE =& get_instance();
-
-	$layout_preview_links = "<p>".$EE->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$EE->lang->line('layout_save_warning')."</span></p>";
+	$layout_preview_links = "<p>".ee()->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".ee()->lang->line('layout_save_warning')."</span></p>";
 	$layout_preview_links .= "<ul class='bullets'>";
 	foreach($data->result() as $group)
 	{

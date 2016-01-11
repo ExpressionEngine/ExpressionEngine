@@ -571,7 +571,7 @@ class Addons extends CP_Controller {
 				ee()->extensions->version_numbers[$class_name] = $addon_info->getVersion();
 
 				$model = ee('Model')->get('Extension')
-					->filter('name', $class_name)
+					->filter('class', $class_name)
 					->first();
 
 				$model->version = $addon_info->getVersion();
@@ -1360,7 +1360,7 @@ class Addons extends CP_Controller {
 				if ( ! class_exists($class_name))
 				{
 					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
-					continue;
+					return array();
 				}
 			}
 

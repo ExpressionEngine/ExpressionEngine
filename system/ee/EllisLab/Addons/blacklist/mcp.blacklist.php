@@ -34,7 +34,7 @@ class Blacklist_mcp {
 	 *
 	 * @access	public
 	 */
-	public function Blacklist_mcp( $switch = TRUE )
+	public function __construct( $switch = TRUE )
 	{
 		ee()->load->dbforge();
 

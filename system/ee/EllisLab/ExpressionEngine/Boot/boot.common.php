@@ -223,7 +223,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 */
 	function config_item($item)
 	{
-		$config =& get_config();
+		$config = get_config();
 
 		if ( ! isset($config[$item]))
 		{
@@ -378,7 +378,7 @@ if ( ! function_exists('log_message'))
 			return;
 		}
 
-		$_log =& load_class('Log');
+		$_log = load_class('Log');
 		$_log->write_log($level, $message, $php_error);
 	}
 }

@@ -67,7 +67,7 @@ function config_item($item)
 
 	if ( ! isset($_config_item[$item]))
 	{
-		$config =& get_config();
+		$config = get_config();
 
 		if ( ! isset($config[$item]))
 		{

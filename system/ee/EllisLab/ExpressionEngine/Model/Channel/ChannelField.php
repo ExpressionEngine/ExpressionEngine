@@ -189,7 +189,7 @@ class ChannelField extends FieldModel {
 					{
 						if ($field_info['field'] == 'field_id_' . $this->field_id)
 						{
-							unset($field_layout[$i][$j]);
+							unset($field_layout[$i]['fields'][$j]);
 							break 2;
 						}
 					}
