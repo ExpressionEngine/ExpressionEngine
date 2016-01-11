@@ -26,7 +26,7 @@ class Metaweblog_api_upd {
 
 	var $version = '2.2';
 
-	function Metaweblog_api_upd()
+	function __construct()
 	{
 		ee()->load->dbforge();
 	}

@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
-class String extends Token {
+class StringLiteral extends Token {
 
 	public function __construct($lexeme)
 	{

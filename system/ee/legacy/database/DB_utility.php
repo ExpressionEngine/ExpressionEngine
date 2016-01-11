@@ -33,11 +33,10 @@ class CI_DB_utility extends CI_DB_forge {
 	 * Grabs the CI super object instance so we can access it.
 	 *
 	 */
-	function CI_DB_utility()
+	function __construct()
 	{
 		// Assign the main database object to $this->db
-		$CI =& get_instance();
-		$this->db =& $CI->db;
+		$this->db =& ee()->db;
 
 		log_message('debug', "Database Utility Class Initialized");
 	}
@@ -260,8 +259,7 @@ class CI_DB_utility extends CI_DB_forge {
 		extract($params);
 
 		// Load the xml helper
-		$CI =& get_instance();
-		$CI->load->helper('xml');
+		ee()->load->helper('xml');
 
 		// Generate the result
 		$xml = "<{$root}>".$newline;
@@ -399,10 +397,9 @@ class CI_DB_utility extends CI_DB_forge {
 
 			// Load the Zip class and output it
 
-			$CI =& get_instance();
-			$CI->load->library('zip');
-			$CI->zip->add_data($prefs['filename'], $this->_backup($prefs));
-			return $CI->zip->get_zip();
+			ee()->load->library('zip');
+			ee()->zip->add_data($prefs['filename'], $this->_backup($prefs));
+			return ee()->zip->get_zip();
 		}
 
 	}

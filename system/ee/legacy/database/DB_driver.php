@@ -77,7 +77,7 @@ class CI_DB_driver {
 	 *
 	 * @param array
 	 */
-	function CI_DB_driver($params)
+	function __construct($params)
 	{
 		if (is_array($params))
 		{
@@ -969,7 +969,7 @@ class CI_DB_driver {
 		// game if session doesn't exist yet.
 		if (function_exists('ee') && isset(ee()->session))
 		{
-			$LANG =& load_class('Lang', 'core');
+			$LANG = load_class('Lang', 'core');
 			$LANG->load('db');
 
 			$heading = $LANG->line('db_error_heading');
@@ -1016,7 +1016,7 @@ class CI_DB_driver {
 			throw new Exception(implode('<br>', $message));
 		}
 
-		$error =& load_class('Exceptions', 'core');
+		$error = load_class('Exceptions', 'core');
 		echo $error->show_error($heading, $message, 'error_db');
 		exit;
 	}

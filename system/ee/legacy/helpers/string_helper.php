@@ -230,8 +230,7 @@ if ( ! function_exists('random_string'))
 			case 'encrypt'	:
 			case 'sha1'	:
 
-						$CI =& get_instance();
-						$CI->load->helper('security');
+						ee()->load->helper('security');
 
 						return sha1(uniqid(mt_rand(), TRUE));
 				break;

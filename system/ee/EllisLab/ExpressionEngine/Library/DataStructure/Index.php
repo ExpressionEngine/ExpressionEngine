@@ -1,7 +1,5 @@
 <?php
 
-use Closure;
-
 class Index {
 
 	protected $index;

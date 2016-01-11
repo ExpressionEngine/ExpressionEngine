@@ -213,15 +213,13 @@ if ( ! function_exists('img'))
 
 			if ($k == 'src' AND strpos($v, '://') === FALSE)
 			{
-				$CI =& get_instance();
-
 				if ($index_page === TRUE)
 				{
-					$img .= ' src="'.$CI->config->site_url($v).'"';
+					$img .= ' src="'.ee()->config->site_url($v).'"';
 				}
 				else
 				{
-					$img .= ' src="'.$CI->config->slash_item('base_url').$v.'"';
+					$img .= ' src="'.ee()->config->slash_item('base_url').$v.'"';
 				}
 			}
 			else
@@ -296,8 +294,6 @@ if ( ! function_exists('link_tag'))
 {
 	function link_tag($href = '', $rel = 'stylesheet', $type = 'text/css', $title = '', $media = '', $index_page = FALSE)
 	{
-		$CI =& get_instance();
-
 		$link = '<link ';
 
 		if (is_array($href))
@@ -308,11 +304,11 @@ if ( ! function_exists('link_tag'))
 				{
 					if ($index_page === TRUE)
 					{
-						$link .= 'href="'.$CI->config->site_url($v).'" ';
+						$link .= 'href="'.ee()->config->site_url($v).'" ';
 					}
 					else
 					{
-						$link .= 'href="'.$CI->config->slash_item('base_url').$v.'" ';
+						$link .= 'href="'.ee()->config->slash_item('base_url').$v.'" ';
 					}
 				}
 				else
@@ -331,11 +327,11 @@ if ( ! function_exists('link_tag'))
 			}
 			elseif ($index_page === TRUE)
 			{
-				$link .= 'href="'.$CI->config->site_url($href).'" ';
+				$link .= 'href="'.ee()->config->site_url($href).'" ';
 			}
 			else
 			{
-				$link .= 'href="'.$CI->config->slash_item('base_url').$href.'" ';
+				$link .= 'href="'.ee()->config->slash_item('base_url').$href.'" ';
 			}
 
 			$link .= 'rel="'.$rel.'" type="'.$type.'" ';

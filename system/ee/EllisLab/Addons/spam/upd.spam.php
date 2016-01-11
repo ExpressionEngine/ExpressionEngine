@@ -28,7 +28,7 @@ class Spam_upd {
 	public $version = '1.0.0';
 	private $name = 'Spam';
 
-	function Spam_upd()
+	function __construct()
 	{
 		ee()->load->dbforge();
 	}

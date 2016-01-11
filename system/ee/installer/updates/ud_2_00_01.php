@@ -27,11 +27,6 @@ class Updater {
 
 	var $version_suffix = 'pb01';
 
-    function Updater()
-    {
-        $this->EE =& get_instance();
-    }
-
     function do_update()
     {
         // Modules now have a tab setting

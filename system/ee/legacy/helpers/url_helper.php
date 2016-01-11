@@ -70,8 +70,7 @@ if ( ! function_exists('url_title'))
 	{
 		if (UTF8_ENABLED)
 		{
-			$CI =& get_instance();
-			$CI->load->helper('text');
+			ee()->load->helper('text');
 
 			$str = utf8_decode($str);
 			$str = preg_replace_callback('/(.)/', 'convert_accented_characters', $str);
@@ -159,8 +158,7 @@ if ( ! function_exists('site_url'))
 {
 	function site_url($uri = '')
 	{
-		$CI =& get_instance();
-		return $CI->config->site_url($uri);
+		return ee()->config->site_url($uri);
 	}
 }
 
@@ -178,8 +176,7 @@ if ( ! function_exists('base_url'))
 {
 	function base_url()
 	{
-		$CI =& get_instance();
-		return $CI->config->slash_item('base_url');
+		return ee()->config->slash_item('base_url');
 	}
 }
 
@@ -198,8 +195,7 @@ if ( ! function_exists('current_url'))
 {
 	function current_url()
 	{
-		$CI =& get_instance();
-		return $CI->config->site_url($CI->uri->uri_string());
+		return ee()->config->site_url(ee()->uri->uri_string());
 	}
 }
 
@@ -216,8 +212,7 @@ if ( ! function_exists('uri_string'))
 {
 	function uri_string()
 	{
-		$CI =& get_instance();
-		return $CI->uri->uri_string();
+		return ee()->uri->uri_string();
 	}
 }
 
@@ -235,8 +230,7 @@ if ( ! function_exists('index_page'))
 {
 	function index_page()
 	{
-		$CI =& get_instance();
-		return $CI->config->item('index_page');
+		return ee()->config->item('index_page');
 	}
 }
 

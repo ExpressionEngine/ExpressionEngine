@@ -1360,7 +1360,7 @@ class Addons extends CP_Controller {
 				if ( ! class_exists($class_name))
 				{
 					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
-					continue;
+					return array();
 				}
 			}
 
