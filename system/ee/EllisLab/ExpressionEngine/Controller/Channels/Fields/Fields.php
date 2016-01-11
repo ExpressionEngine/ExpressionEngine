@@ -268,6 +268,14 @@ class Fields extends AbstractChannelsController {
 
 		$field->set($_POST);
 
+		if ($field->field_pre_populate)
+		{
+			list($channel_id, $field_id) = explode('_', $_POST['field_pre_populate_id']);
+
+			$field->field_pre_channel_id = $channel_id;
+			$field->field_pre_field_id = $field_id;
+		}
+
 		return $field;
 	}
 
