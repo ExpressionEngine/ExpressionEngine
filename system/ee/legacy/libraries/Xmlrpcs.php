@@ -337,8 +337,7 @@ class EE_Xmlrpcs extends CI_Xmlrpc
 			{
 				if ($this->object === FALSE)
 				{
-					$CI =& get_instance();
-					return $CI->$method_parts['1']($m);
+					return ee()->$method_parts['1']($m);
 				}
 				else
 				{

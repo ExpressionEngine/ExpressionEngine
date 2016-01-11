@@ -45,7 +45,7 @@ class Javascript_loader {
 	 */
 	public function combo_load()
 	{
-		$this->output->enable_profiler(FALSE);
+		ee()->output->enable_profiler(FALSE);
 
 		$contents	= '';
 		$types		= array(
@@ -60,8 +60,8 @@ class Javascript_loader {
 
 		foreach($types as $type => $path)
 		{
-			$mock_name .= $this->input->get_post($type);
-			$files = explode(',', $this->input->get_post($type));
+			$mock_name .= ee()->input->get_post($type);
+			$files = explode(',', ee()->input->get_post($type));
 
 			foreach($files as $file)
 			{
@@ -87,7 +87,7 @@ class Javascript_loader {
 					{
 						if ($part != '..')
 						{
-							$file[] = $this->security->sanitize_filename($part);
+							$file[] = ee()->security->sanitize_filename($part);
 						}
 					}
 
@@ -95,7 +95,7 @@ class Javascript_loader {
 				}
 				else
 				{
-					$file = $this->security->sanitize_filename($file);
+					$file = ee()->security->sanitize_filename($file);
 				}
 
 				$file = $path.$file.'.js';
@@ -107,11 +107,11 @@ class Javascript_loader {
 			}
 		}
 
-		$modified = $this->input->get_post('v');
+		$modified = ee()->input->get_post('v');
 		$this->set_headers($mock_name, $modified);
 
-		$this->output->set_header('Content-Length: '.strlen($contents));
-		$this->output->set_output($contents);
+		ee()->output->set_header('Content-Length: '.strlen($contents));
+		ee()->output->set_output($contents);
 	}
 
 	// --------------------------------------------------------------------
@@ -125,10 +125,10 @@ class Javascript_loader {
 	 */
     function set_headers($file, $mtime = FALSE)
     {
-		$this->output->out_type = 'cp_asset';
-		$this->output->set_header("Content-Type: text/javascript");
+		ee()->output->out_type = 'cp_asset';
+		ee()->output->set_header("Content-Type: text/javascript");
 
-		if ($this->config->item('send_headers') != 'y')
+		if (ee()->config->item('send_headers') != 'y')
 		{
 			// All we need is content type - we're done
 			return;
@@ -136,7 +136,7 @@ class Javascript_loader {
 
 		$max_age		= 5184000;
 		$modified		= ($mtime !== FALSE) ? $mtime : @filemtime($file);
-		$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
+		$modified_since	= ee()->input->server('HTTP_IF_MODIFIED_SINCE');
 
 		// Remove anything after the semicolon
 
@@ -150,35 +150,24 @@ class Javascript_loader {
 
 		if ($modified_since && (strtotime($modified_since) == $modified))
 		{
-			$this->output->set_status_header(304);
+			ee()->output->set_status_header(304);
 			exit;
 		}
 
 		// Send a custom ETag to maintain a useful cache in
 		// load-balanced environments
 
-        $this->output->set_header("ETag: ".md5($modified.$file));
+        ee()->output->set_header("ETag: ".md5($modified.$file));
 
 		// All times GMT
 		$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
 		$expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
 
-		$this->output->set_status_header(200);
-		$this->output->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
-		$this->output->set_header('Vary: Accept-Encoding');
-		$this->output->set_header('Last-Modified: '.$modified);
-		$this->output->set_header('Expires: '.$expires);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Avoid get_instance()
-	 */
-	public function __get($key)
-	{
-		$EE =& get_instance();
-		return $EE->$key;
+		ee()->output->set_status_header(200);
+		ee()->output->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
+		ee()->output->set_header('Vary: Accept-Encoding');
+		ee()->output->set_header('Last-Modified: '.$modified);
+		ee()->output->set_header('Expires: '.$expires);
 	}
 }
 

@@ -27,11 +27,6 @@ class Updater {
 
 	var $version_suffix = '';
 
-	function Updater()
-	{
-		$this->EE =& get_instance();
-	}
-
 	function do_update()
 	{
 
