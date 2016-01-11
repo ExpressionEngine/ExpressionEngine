@@ -2729,7 +2729,7 @@ GRID_FALLBACK;
 			$show_future = (bool) $settings['future'];
 
 			ee()->db
-				->select('channel_titles.entry_id, channel_titles.title')
+				->select('channel_titles.entry_id, channel_titles.title, '.$settings['order_field'])
 				->order_by($settings['order_field'], $settings['order_dir']);
 
 			if ($limit)
