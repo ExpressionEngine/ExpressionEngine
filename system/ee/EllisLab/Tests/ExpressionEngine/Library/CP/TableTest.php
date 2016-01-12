@@ -54,32 +54,38 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		// We should get this on output
 		$expected_cols = array(
-			'Name' => array(
+			array(
+				'label'		=> 'Name',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
-			'Records' => array(
+			array(
+				'label'		=> 'Records',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
-			'Size' => array(
+			array(
+				'label'		=> 'Size',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
-			'Manage' => array(
+			array(
+				'label'		=> 'Manage',
 				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_TOOLBAR
 			),
-			'Status' => array(
+			array(
+				'label'		=> 'Status',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_STATUS
 			),
 			array(
+				'label'		=> NULL,
 				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_CHECKBOX
@@ -249,7 +255,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$config = array(
 			'wrap'			=> FALSE,
-			'sort_col'		=> 'Some column',
+			'sort_col'		=> 'Records',
 			'sort_dir'		=> 'desc',
 			'search'		=> 'My search',
 			'no_results'	=> $no_results

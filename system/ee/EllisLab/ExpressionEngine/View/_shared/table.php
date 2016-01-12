@@ -27,7 +27,8 @@ if ($wrap): ?>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
-				<?php foreach ($columns as $label => $settings): ?>
+				<?php foreach ($columns as $label => $settings):
+					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
 							<?php if ( ! empty($data)): // Hide checkbox if no data ?>

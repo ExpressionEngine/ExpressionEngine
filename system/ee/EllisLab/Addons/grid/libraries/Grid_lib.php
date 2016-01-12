@@ -106,7 +106,10 @@ class Grid_lib {
 		$blank_column = array();
 		foreach ($columns as $column)
 		{
-			$column_headings[$column['col_label']] = array('desc' => $column['col_instructions']);
+			$column_headings[] = array(
+				'label' => $column['col_label'],
+				'desc' => $column['col_instructions']
+			);
 
 			switch ($column['col_type']) {
 				case 'rte':

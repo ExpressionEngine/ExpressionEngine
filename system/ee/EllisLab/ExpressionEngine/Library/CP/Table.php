@@ -204,6 +204,7 @@ class Table {
 
 		// Default settings for columns
 		$defaults = array(
+			'label'		=> NULL,
 			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
@@ -211,11 +212,13 @@ class Table {
 
 		foreach ($columns as $label => $settings)
 		{
-			// If column has no label, like for a select-all checkbox column
-			$empty_label = (is_int($label) && is_array($settings));
-
-			// No column settings, just label
-			if (is_int($label) && is_string($settings))
+			// 'label' key override
+			if (isset($settings['label']))
+			{
+				$label = $settings['label'];
+			}
+			// Column has no settings, value is label
+			else if (is_int($label) && is_string($settings))
 			{
 				$label = $settings;
 			}
@@ -238,14 +241,13 @@ class Table {
 				$settings = $defaults;
 			}
 
-			if ($empty_label)
+			// If this passes, label was likely set as column's key, set it
+			if ( ! isset($settings['label']) && ! is_int($label))
 			{
-				$this->columns[] = $settings;
+				$settings['label'] = $label;
 			}
-			else
-			{
-				$this->columns[$label] = $settings;
-			}
+
+			$this->columns[] = $settings;
 		}
 	}
 
@@ -527,7 +529,9 @@ class Table {
 		$that = $this;
 		usort($rows, function ($a, $b) use ($that, $columns, $sort_col, $sort_dir)
 		{
-			$search = array_keys($columns);
+			$search = array_map(function($column) {
+				return $column['label'];
+			}, $columns);
 			$index  = array_search($sort_col, $search);
 			$cmp    = $that->compareData(
 				$a['columns'][$index]['content'],
@@ -676,10 +680,14 @@ class Table {
 	 */
 	private function getSortCol()
 	{
+		$search = array_map(function($column) {
+			return $column['label'];
+		}, $this->columns);
+
 		if ((empty($this->config['sort_col']) && count($this->columns) > 0) OR
-			! in_array($this->config['sort_col'], array_keys($this->columns)))
+			! in_array($this->config['sort_col'], $search))
 		{
-			return key($this->columns);
+			return isset($this->columns[0]) ? $this->columns[0]['label'] : NULL;
 		}
 
 		return $this->config['sort_col'];
