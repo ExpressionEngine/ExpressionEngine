@@ -47,7 +47,7 @@ $(document).ready(function(){
 
 		// listen for clicks on anchor tags
 		// that include rel="external" attributes
-		$('a[rel="external"]').on('click',function(e){
+		$('body').on('click', 'a[rel="external"]', function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
 			window.open(this.href);
