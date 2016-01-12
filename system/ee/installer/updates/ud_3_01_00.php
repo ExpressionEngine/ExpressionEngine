@@ -155,7 +155,7 @@ class Updater {
 
 			foreach ($site_prefs as $site_id => $site)
 			{
-				$avatar_path = $prefs->site_member_preferences->avatar_path;
+				$avatar_path = $site->site_member_preferences->avatar_path;
 				$avatar_path = realpath($avatar_path);
 
 				if ( ! empty($avatar_path))
@@ -187,7 +187,7 @@ class Updater {
 
 			if ( ! file_exists($avatar_path))
 			{
-				throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not a valid path.");
+				throw new UpdaterException_3_1_0("<kbd>{$avatar_path}</kbd> is not a valid path.");
 			}
 
 			// Check to see if the directory is writable
@@ -195,20 +195,20 @@ class Updater {
 			{
 				if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
 				{
-					throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not writeable.");
+					throw new UpdaterException_3_1_0("<kbd>{$avatar_path}</kbd> is not writeable.");
 				}
 			}
 
 			// Create the default directory
 			if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
 			{
-				throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path_clean}/default/</kbd>.");
+				throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path}/default/</kbd>.");
 			}
 
 			// Copy over the index.html
 			if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
 			{
-				throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path_clean}/default/</kbd>.");
+				throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path}/default/</kbd>.");
 			}
 
 			$default_avatars = array(
