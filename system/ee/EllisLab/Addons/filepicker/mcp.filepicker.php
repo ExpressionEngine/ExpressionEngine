@@ -172,7 +172,7 @@ class Filepicker_mcp {
 				$filters = ee('CP/Filter')->add($dirFilter);
 			}
 
-			$filters = $filters->add('Perpage', $total_files, 'show_all_files');
+			$filters = $filters->add('Perpage', $total_files, 'show_all_files', TRUE);
 
 			$imgOptions = array(
 				'thumb' => 'thumbnails',
