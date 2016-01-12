@@ -145,71 +145,98 @@ class Updater {
  	 */
 	private function move_avatars()
 	{
-		$avatar_path = realpath(ee()->config->item('avatar_path'));
-		$avatar_path_clean = htmlentities($avatar_path);
+		$avatar_paths = array();
+		$avatar_path = ee()->config->item('avatar_path');
 
-		// Does the path exist?
-		if (empty($avatar_path))
+		// config file has precedence, otherwise do the per-site ones
+		if ( ! $avatar_path)
 		{
-			throw new UpdaterException_3_1_0('<kbd>avatar_path</kbd> is not defined.');
-		}
+			$site_prefs = ee('Model')->get('Site')->all()->indexBy('site_id');
 
-		// Check that we haven't already done this
-		if (file_exists($avatar_path.'/default/'))
-		{
-			return TRUE;
-		}
-
-		if ( ! file_exists($avatar_path))
-		{
-			throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not a valid path.");
-		}
-
-		// Check to see if the directory is writable
-		if ( ! is_writable($avatar_path))
-		{
-			if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
+			foreach ($site_prefs as $site_id => $site)
 			{
-				throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not writeable.");
+				$avatar_path = $prefs->site_member_preferences->avatar_path;
+				$avatar_path = realpath($avatar_path);
+
+				if ( ! empty($avatar_path))
+				{
+					$avatar_paths[] = $avatar_path;
+				}
+			}
+		}
+		else
+		{
+			$avatar_path = realpath($avatar_path);
+
+			// Does the path exist?
+			if (empty($avatar_path))
+			{
+				throw new UpdaterException_3_1_0('<kbd>avatar_path</kbd> is not a valid path.');
+			}
+
+			$avatar_paths[] = $avatar_path;
+		}
+
+		foreach ($avatar_paths as $avatar_path)
+		{
+			// Check that we haven't already done this
+			if (file_exists($avatar_path.'/default/'))
+			{
+				return TRUE;
+			}
+
+			if ( ! file_exists($avatar_path))
+			{
+				throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not a valid path.");
+			}
+
+			// Check to see if the directory is writable
+			if ( ! is_writable($avatar_path))
+			{
+				if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
+				{
+					throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not writeable.");
+				}
+			}
+
+			// Create the default directory
+			if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
+			{
+				throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path_clean}/default/</kbd>.");
+			}
+
+			// Copy over the index.html
+			if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
+			{
+				throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path_clean}/default/</kbd>.");
+			}
+
+			$default_avatars = array(
+				'avatar_tree_hugger_color.png',
+				'bad_fur_day.jpg',
+				'big_horns.jpg',
+				'eat_it_up.jpg',
+				'ee_paint.jpg',
+				'expression_radar.jpg',
+				'flying_high.jpg',
+				'hair.png',
+				'hanging_out.jpg',
+				'hello_prey.jpg',
+				'light_blur.jpg',
+				'ninjagirl.png',
+				'procotopus.png',
+				'sneak_squirrel.jpg',
+				'zombie_bunny.png'
+			);
+			foreach ($default_avatars as $filename)
+			{
+				if ( ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
+				{
+					throw new UpdaterException_3_1_0("Could not copy default avatars to <kbd>{$avatar_path_clean}/default/</kbd>");
+				}
 			}
 		}
 
-		// Create the default directory
-		if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
-		{
-			throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path_clean}/default/</kbd>.");
-		}
-
-		// Copy over the index.html
-		if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
-		{
-			throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path_clean}/default/</kbd>.");
-		}
-
-		$default_avatars = array(
-			'avatar_tree_hugger_color.png',
-			'bad_fur_day.jpg',
-			'big_horns.jpg',
-			'eat_it_up.jpg',
-			'ee_paint.jpg',
-			'expression_radar.jpg',
-			'flying_high.jpg',
-			'hair.png',
-			'hanging_out.jpg',
-			'hello_prey.jpg',
-			'light_blur.jpg',
-			'ninjagirl.png',
-			'procotopus.png',
-			'sneak_squirrel.jpg',
-			'zombie_bunny.png'
-		);
-		foreach ($default_avatars as $filename)
-		{
-			if ( ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
-			{
-				throw new UpdaterException_3_1_0("Could not copy default avatars to <kbd>{$avatar_path_clean}/default/</kbd>");
-			}
-		}
 	}
 
 	private function update_collation_config()
