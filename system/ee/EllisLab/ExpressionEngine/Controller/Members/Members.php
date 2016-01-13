@@ -660,9 +660,16 @@ class Members extends CP_Controller {
 		$perpage = $this->input->get_post('perpage');
 		$perpage = $perpage ? $perpage : $params['perpage'];
 
-		if (key($state['sort']) == 'member_group')
+		$convert = array(
+			'member_group' => 'group_id',
+			'dates' => 'join_date'
+		);
+
+		$sort_key = key($state['sort']);
+
+		if (isset($convert[$sort_key]))
 		{
-			$sort = array('group_id' => array_pop($state['sort']));
+			$sort = array($convert[$sort_key] => array_pop($state['sort']));
 		}
 		else
 		{

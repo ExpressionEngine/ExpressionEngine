@@ -83,6 +83,7 @@ class Routes extends Design {
 
 		$table->setColumns($columns);
 		$data = array();
+
 		if (is_null($templates))
 		{
 			$templates = ee()->api->get('Template')
@@ -99,17 +100,8 @@ class Routes extends Design {
 		{
 			$route = $template->TemplateRoute;
 
-			// create a route of the template doesn't have one yet
-			if (empty($route))
-			{
-				$template->TemplateRoute = ee('Model')->make('TemplateRoute');
-				$template->save();
-				$route = $template->TemplateRoute;
-			}
-
 			$group = $template->TemplateGroup;
 			$id = $template->template_id;
-			$route_id = $route->getId();
 
 			$required = ee('View')->make('_shared/form/field')
 				->render(array(
@@ -127,7 +119,7 @@ class Routes extends Design {
 					'field_name' => "routes[{$id}][route]",
 					'field' => array(
 						'type' => 'text',
-						'value' => ($route->route) ?: ''
+						'value' => ($route && $route->route) ? $route->route : ''
 					),
 					'grid' => FALSE,
 				));
@@ -189,6 +181,11 @@ class Routes extends Design {
 			$id = $template->template_id;
 			$submitted[$id]['route'] = trim($submitted[$id]['route']);
 
+			if (empty($submitted[$id]['route']))
+			{
+				continue;
+			}
+
 			if ( ! $template->TemplateRoute)
 			{
 				$template->TemplateRoute = ee('Model')->make('TemplateRoute');
@@ -196,13 +193,14 @@ class Routes extends Design {
 
 			$route = $template->TemplateRoute;
 
-			if (empty($submitted[$id]['route']))
+			// We default to not requiring all segments.
+			$route->route_required = FALSE;
+
+			if (isset($submitted[$id]['required']) && $submitted[$id]['required'] == 'y')
 			{
-				$template->TemplateRoute = NULL;
-				continue;
+				$route->route_required = TRUE;
 			}
 
-			$route->route_required = ($submitted[$id]['required'] != 'n');
 			$route->route = $submitted[$id]['route'];
 			$route->order = array_search($id, $order);
 

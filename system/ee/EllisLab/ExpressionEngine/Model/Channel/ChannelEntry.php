@@ -95,7 +95,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|validateUrlTitle',
+		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[site_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -235,6 +235,29 @@ class ChannelEntry extends ContentModel {
 		if ( ! (bool) preg_match("/^([-a-z0-9_.-])+$/i", $value))
 		{
 			return 'alpha_dash_period';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validate that the url title is unique for this site and return a custom
+	 * error with the channel entry title if it is not.
+	 */
+	public function validateUniqueUrlTitle($key, $value, $params, $rule)
+	{
+		$site_id = $this->getProperty($params[0]);
+
+		$entry = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'title')
+			->filter('site_id', $site_id)
+			->filter('url_title', $value)
+			->first();
+
+		if ($entry)
+		{
+			$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+			return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
 		}
 
 		return TRUE;

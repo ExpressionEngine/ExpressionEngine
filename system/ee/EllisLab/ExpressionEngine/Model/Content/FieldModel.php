@@ -106,6 +106,16 @@ abstract class FieldModel extends Model {
 	}
 
 	/**
+	 * Calling the Post Save Settings after every save. Grid (and others?)
+	 * saves its settings in the post_save_settings call.
+	 */
+	public function save()
+	{
+		parent::save();
+		$this->callPostSaveSettings();
+	}
+
+	/**
 	 * After inserting, add the columns to the data table
 	 */
 	public function onAfterInsert()
@@ -119,8 +129,6 @@ abstract class FieldModel extends Model {
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
-
-		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -155,8 +163,6 @@ abstract class FieldModel extends Model {
 
 			$this->diffColumns($old_columns, $new_columns);
 		}
-
-		$this->callPostSaveSettings();
 	}
 
 	protected function callSettingsModify($ft, $action, $changed = array())
