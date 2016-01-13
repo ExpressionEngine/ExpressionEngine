@@ -51,6 +51,7 @@ class Directory {
 	 * Get a config item from this directory
 	 *
 	 * @param String $item Config item name
+	 * @param Mixed  $default The value to return if $path can not be found
 	 * @param Mixed $default Default value to use if item doesn't exist
 	 */
 	public function get($item, $default = NULL)
@@ -62,6 +63,8 @@ class Directory {
 
 	/**
 	 * Check if this directory contains a given config file
+	 *
+	 * @return bool TRUE if it has the file, FALSE if not
 	 */
 	public function hasFile($filename)
 	{

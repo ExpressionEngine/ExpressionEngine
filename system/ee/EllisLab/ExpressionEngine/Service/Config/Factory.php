@@ -28,6 +28,9 @@ class Factory {
 
 	/**
 	 * Get a config directory
+	 *
+	 * @param string $path The path to the directory
+	 * @return obj Returns a Directory object
 	 */
 	public function getDirectory($path)
 	{
@@ -58,6 +61,7 @@ class Factory {
 	 * Get a config item
 	 *
 	 * @param String $name Config item name, optionally with a provider prefix
+	 * @param Mixed  $default The value to return if $path can not be found
 	 * @return Mixed The config item, or `$default` if it doesn't exist
 	 */
 	public function get($item, $default = NULL)
