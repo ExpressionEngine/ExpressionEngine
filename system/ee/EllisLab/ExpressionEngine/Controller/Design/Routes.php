@@ -202,7 +202,14 @@ class Routes extends Design {
 				continue;
 			}
 
-			$route->route_required = ($submitted[$id]['required'] != 'n');
+			// We default to not requiring all segments.
+			$route->route_required = FALSE;
+
+			if (isset($submitted[$id]['required']) && $submitted[$id]['required'] == 'y')
+			{
+				$route->route_required = TRUE;
+			}
+
 			$route->route = $submitted[$id]['route'];
 			$route->order = array_search($id, $order);
 
