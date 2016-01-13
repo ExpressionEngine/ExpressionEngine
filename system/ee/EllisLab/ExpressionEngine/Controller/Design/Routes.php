@@ -90,10 +90,12 @@ class Routes extends Design {
 				->with('TemplateGroup')
 				->with('TemplateRoute')
 				->filter('site_id', ee()->config->item('site_id'))
-				->order('TemplateRoute.order', 'asc')
 				->order('TemplateGroup.group_name', 'asc')
 				->order('template_name', 'asc')
-				->all();
+				->all()
+				->sortBy(function($template) {
+					return ($template->TemplateRoute) ? $template->TemplateRoute->order : INF;
+				});
 		}
 
 		foreach($templates as $template)
