@@ -46,6 +46,7 @@ class Updater {
 				'update_collation_config',
 				'fix_table_collations',
 				'ensure_upload_directories_are_correct',
+				'synchronize_layouts'
 			)
 		);
 
@@ -342,6 +343,50 @@ class Updater {
 				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 				$dir->save();
 			}
+		}
+	}
+
+	/**
+	 * Fields added after a layout was crated, never made it into the layout.
+	 *
+	 * @return void
+	 */
+	private function synchronize_layouts()
+	{
+		$layouts = ee('Model')->get('ChannelLayout')->all();
+
+		foreach ($layouts as $layout)
+		{
+			// Account for any new fields that have been added to the channel
+			// since the last edit
+			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
+
+			foreach ($layout->field_layout as $section)
+			{
+				foreach ($section['fields'] as $field_info)
+				{
+					if (strpos($field_info['field'], 'field_id_') == 0)
+					{
+						$id = str_replace('field_id_', '', $field_info['field']);
+						unset($custom_fields[$id]);
+					}
+				}
+			}
+
+			$field_layout = $layout->field_layout;
+
+			foreach ($custom_fields as $id => $val)
+			{
+				$field_info = array(
+					'field'     => 'field_id_' . $id,
+					'visible'   => TRUE,
+					'collapsed' => FALSE
+				);
+				$field_layout[0]['fields'][] = $field_info;
+			}
+
+			$layout->field_layout = $field_layout;
+			$layout->save();
 		}
 	}
 }
