@@ -62,6 +62,8 @@ class File implements Config {
 
 	/**
 	 * Check if the file has a given item
+	 *
+	 * @return bool TRUE if it has the item, FALSE if not
 	 */
 	public function has($path)
 	{
