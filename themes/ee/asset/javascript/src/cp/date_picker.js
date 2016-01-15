@@ -205,7 +205,7 @@ EE.cp.datePicker = {
 			}
 
 			if ($(this.element).val()) {
-				var timestamp = $(this.element).attr('data-timestamp');
+				var timestamp = $(this.element).data('timestamp');
 
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
@@ -248,6 +248,7 @@ EE.cp.datePicker = {
 				total_last	= EE.cp.datePicker.Month.total_days(year, month - 1),
 				leading		= EE.cp.datePicker.Month.first_day(year, month),
 				trailing	= 7 - ((leading + total) % 7),
+				today		= new Date,
 
 				prev		= (month - 1 > -1) ? month - 1 : 11,
 				next		= (month + 1 < 12) ? month + 1 : 0;
@@ -295,7 +296,16 @@ EE.cp.datePicker = {
 					out[out_i++] = '<tr>';
 				}
 
-				out[out_i++] = '<td><a href="#">';
+				if (today.getFullYear() == year
+					&& today.getMonth() == month
+					&& today.getDate() == (j + 1)
+					&& ! $(this.element).data('timestamp'))
+				{
+					out[out_i++] = '<td class="act"><a href="#">';
+				} else {
+					out[out_i++] = '<td><a href="#">';
+				}
+
 				out[out_i++] = j + 1;
 				out[out_i++] = '</a></td>';
 

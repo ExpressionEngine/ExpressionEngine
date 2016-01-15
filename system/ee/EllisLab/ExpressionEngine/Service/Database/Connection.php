@@ -40,7 +40,9 @@ class Connection extends \CI_DB_mysqli_connection {
 	}
 
 	/**
+	 * Gets the log
 	 *
+	 * @return Log The log
 	 */
 	public function getLog()
 	{
@@ -48,7 +50,10 @@ class Connection extends \CI_DB_mysqli_connection {
 	}
 
 	/**
+	 * Sets the log
 	 *
+	 * @param Log $log The log
+	 * @return void
 	 */
 	public function setLog($log)
 	{
