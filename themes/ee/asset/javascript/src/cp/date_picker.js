@@ -168,7 +168,7 @@ EE.cp.datePicker = {
 					$(this).closest('td').addClass('act');
 
 					if ($(that.element).val()) {
-						var d = new Date($(that.element).attr('data-timestamp') * 1000);
+						var d = new Date($(that.element).data('timestamp') * 1000);
 						d.setYear(that.year);
 						d.setMonth(that.month);
 						d.setDate($(this).text());
@@ -190,7 +190,7 @@ EE.cp.datePicker = {
 					}
 
 					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format));
-					$(that.element).attr('data-timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();
 					$('.date-picker-wrap').toggle();
