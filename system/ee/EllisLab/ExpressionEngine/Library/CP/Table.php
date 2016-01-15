@@ -213,7 +213,7 @@ class Table {
 		foreach ($columns as $label => $settings)
 		{
 			// 'label' key override
-			if (isset($settings['label']))
+			if (is_array($settings) && isset($settings['label']))
 			{
 				$label = $settings['label'];
 			}
