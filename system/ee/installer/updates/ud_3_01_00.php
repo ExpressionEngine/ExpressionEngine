@@ -401,10 +401,10 @@ class Updater {
 	{
 		if (ee()->db->table_exists('template_routes'))
 		{
-			ee()->db->where('route', '')->delete('template_routes');
+			ee()->db->or_where('route IS NULL OR route = ""');
+			ee()->db->delete('template_routes');
 		}
 	}
-
 }
 
 class UpdaterException_3_1_0 extends Exception
