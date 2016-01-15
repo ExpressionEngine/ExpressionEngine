@@ -46,7 +46,8 @@ class Updater {
 				'update_collation_config',
 				'fix_table_collations',
 				'ensure_upload_directories_are_correct',
-				'synchronize_layouts'
+				'synchronize_layouts',
+				'template_routes_remove_empty'
 			)
 		);
 
@@ -389,6 +390,21 @@ class Updater {
 			$layout->save();
 		}
 	}
+
+	/**
+	 * We were putting all templates into the routes table, regardless of whether
+	 * they had a route
+	 *
+	 * @return void
+	 */
+	private function template_routes_remove_empty()
+	{
+		if (ee()->db->table_exists('template_routes'))
+		{
+			ee()->db->where('route', '')->delete('template_routes');
+		}
+	}
+
 }
 
 class UpdaterException_3_1_0 extends Exception

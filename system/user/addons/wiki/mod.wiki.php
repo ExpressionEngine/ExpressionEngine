@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://github.com/EllisLab/Wiki/LICENSE
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -23,8 +23,6 @@
  * @link		http://ellislab.com
  */
 class Wiki {
-
-	var $version				= '2.3';
 
 	var $base_path				= '';
 	var $profile_path			= '';
@@ -90,15 +88,6 @@ class Wiki {
 		}
 
 		ee()->lang->loadfile('wiki');
-
-		/** ----------------------------------------
-		/**  Update Module Code
-		/** ----------------------------------------*/
-
-		if (isset(ee()->TMPL->module_data['Wiki']['version']) && $this->version > ee()->TMPL->module_data['Wiki']['version'])
-		{
-			$this->update_module(ee()->TMPL->module_data['Wiki']['version']);
-		}
 
 		/* ----------------------------------------
 		/*
@@ -5371,76 +5360,6 @@ class Wiki {
 	}
 
 
-
-	/** ------------------------------------
-	/**  Update Module
-	/** ------------------------------------*/
-
-	function update_module($current='')
-	{
-		if ($current == '' OR version_compare($current, $this->version, '=='))
-		{
-			return FALSE;
-		}
-
-		if (version_compare($current, '1.1', '<'))
-		{
-			ee()->db->query("ALTER TABLE `exp_wikis` DROP `wiki_namespaces_list`");
-			ee()->db->query("CREATE TABLE `exp_wiki_namespaces` (
-						`namespace_id` int(6) NOT NULL auto_increment,
-						`wiki_id` int(10) UNSIGNED NOT NULL,
-						`namespace_name` varchar(100) NOT NULL,
-						`namespace_label` varchar(150) NOT NULL,
-						`namespace_users` TEXT,
-						`namespace_admins` TEXT,
-						PRIMARY KEY `namespace_id` (`namespace_id`),
-						KEY `wiki_id` (`wiki_id`))");
-
-			/* -------------------------------
-			/*  The Category NS needs a non-changing short name, so we use
-			/*  'category'.  Prior to this it was using the Label, so we need
-			/*  to do a conversion for any category articles already in the
-			/*  exp_wiki_page database table.
-			/* -------------------------------*/
-
-			ee()->lang->loadfile('wiki');
-
-			$this->category_ns = (isset(ee()->lang->language['category_ns']))	? lang('category_ns') : $this->category_ns;
-
-			ee()->db->query("UPDATE exp_wiki_page SET page_namespace = 'category' WHERE page_namespace = '".ee()->db->escape_str($this->category_ns)."'");
-		}
-
-		if (version_compare($current, '1.2', '<'))
-		{
-			ee()->db->query("ALTER TABLE `exp_wiki_page` ADD `last_revision_id` INT(10) NOT NULL AFTER `last_updated`");
-
-			// Multiple table UPDATES are not supported until 4.0 and subqueries not until 4.1
-			if (version_compare(mysql_get_server_info(), '4.1-alpha', '>='))
-			{
-				ee()->db->query("UPDATE exp_wiki_page, exp_wiki_revisions
-									SET exp_wiki_page.last_revision_id =
-										(SELECT MAX(exp_wiki_revisions.revision_id)
-										FROM exp_wiki_revisions
-										WHERE exp_wiki_revisions.page_id = exp_wiki_page.page_id)
-									WHERE exp_wiki_page.page_id = exp_wiki_revisions.page_id");
-			}
-			else
-			{
-				// Slower, loopy-er method for older servers
-				$query = ee()->db->query("SELECT MAX(revision_id) AS last_revision_id, page_id FROM exp_wiki_revisions GROUP BY page_id");
-
-				foreach ($query->result() as $row)
-				{
-					ee()->db->query(ee()->db->update_string('exp_wiki_page', array('last_revision_id' => $row->last_revision_id), "page_id = '{$row->page_id}'"));
-				}
-			}
-
-		}
-
-		ee()->db->query("UPDATE exp_modules
-					SET module_version = '".ee()->db->escape_str($this->version)."'
-					WHERE module_name = 'Wiki'");
-	}
 }
 /* END Class */
 
