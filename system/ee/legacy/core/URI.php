@@ -473,7 +473,17 @@ class EE_URI {
 			return '/';
 		}
 
-		$uri = parse_url($uri, PHP_URL_PATH);
+		$parsed_url = parse_url($uri);
+
+		foreach (array('scheme', 'host', 'port', 'user', 'pass') as $component)
+		{
+			if (isset($parsed_url[$component]))
+			{
+				show_error('The URI you submitted is not allowed.', 400);
+			}
+		}
+
+		$uri = (isset($parsed_url['path'])) ? $parsed_url['path'] : '/';
 
 		// Do some final cleaning of the URI and return it
 		return str_replace(array('//', '../'), '/', trim($uri, '/'));
