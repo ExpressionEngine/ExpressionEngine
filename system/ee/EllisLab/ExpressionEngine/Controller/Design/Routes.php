@@ -185,6 +185,11 @@ class Routes extends Design {
 
 			if (empty($submitted[$id]['route']))
 			{
+				if ($template->TemplateRoute)
+				{
+					$template->TemplateRoute = NULL;
+					$template->save();
+				}
 				continue;
 			}
 
