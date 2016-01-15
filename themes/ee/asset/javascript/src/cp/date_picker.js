@@ -196,6 +196,7 @@ EE.cp.datePicker = {
 					$('.date-picker-wrap').toggle();
 
 					e.preventDefault();
+					e.stopPropagation();
 				});
 
 				// Prevent manual scrolling of the huge inner clip div
