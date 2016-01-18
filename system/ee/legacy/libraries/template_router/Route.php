@@ -114,17 +114,22 @@ class EE_Route {
 		foreach($this->segments as $segment)
 		{
 			$regex = $segment->regex();
-			$delimiter = '\/';
 
-			if ( ! $this->required)
+			$add_question_mark = ( ! $this->required);
+
+			if (is_object($segment) && empty($segment->parts))
 			{
-				$regex .= '?';
-				$delimiter = '\/?';
+			    $add_question_mark = FALSE;
 			}
 
 			if ($index < count($this->segments) - 1)
 			{
-				$regex .= $delimiter;
+			    $regex .= '\/';
+			}
+
+			if ($add_question_mark)
+			{
+			    $regex .= '?';
 			}
 
 			$url[] = $regex;
