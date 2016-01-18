@@ -118,6 +118,8 @@ and email %s to report the link that generated this message.',
 
 'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
 
+'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
+
 'checksum_changed_warning' => 'One or more core files have been altered:',
 
 'checksum_changed_accept' => 'Accept Changes',
