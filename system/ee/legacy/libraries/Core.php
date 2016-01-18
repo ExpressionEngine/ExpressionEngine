@@ -204,7 +204,7 @@ class EE_Core {
 		// Maybe the site has been moved.
 		// Let's try some basic autodiscovery if config items are set
 		// But the directory does not exist.
-		if ( ! is_dir($theme_path))
+		if ( ! is_dir($theme_path.'/ee'))
 		{
 			if (is_dir(FCPATH.'../themes/')) // We're in the system directory
 			{
