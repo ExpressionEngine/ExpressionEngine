@@ -387,8 +387,7 @@ class EE_Zip  {
 			$filename .= '.zip';
 		}
 
-		$CI =& get_instance();
-		$CI->load->helper('download');
+		ee()->load->helper('download');
 
 		$get_zip = $this->get_zip();
 

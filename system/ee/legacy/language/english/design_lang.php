@@ -262,9 +262,9 @@ $lang = array(
 
 'template_route_override_desc' => 'Overrides the ExpressionEngine standard <mark>group/template</mark> routing.',
 
-'require_all_segments' => 'Require all segments?',
+'require_all_segments' => 'Require all variables?',
 
-'require_all_segments_desc' => 'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
+'require_all_segments_desc' => 'When set to <b>yes</b>, all variables must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
 'btn_update_and_finish_editing' => 'Save &amp; Finish Editing',
 

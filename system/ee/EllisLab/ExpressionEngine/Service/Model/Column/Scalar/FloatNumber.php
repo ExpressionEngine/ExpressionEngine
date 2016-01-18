@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Float extends StaticType {
+class FloatNumber extends StaticType {
 
 	/**
 	 * Called when the user gets the column

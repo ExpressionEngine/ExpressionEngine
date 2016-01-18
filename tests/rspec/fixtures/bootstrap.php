@@ -5,6 +5,8 @@ $project_base = realpath(dirname(__FILE__).'/../../../system/').'/';
 define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
 define('APPPATH',  BASEPATH);
+define('PATH_THIRD',  SYSPATH.'user/addons/');
+define('PATH_ADDONS',  SYSPATH.'ee/EllisLab/Addons/');
 
 define('LD', '{');
 define('RD', '}');
@@ -65,7 +67,7 @@ function config_item($item)
 
 	if ( ! isset($_config_item[$item]))
 	{
-		$config =& get_config();
+		$config = get_config();
 
 		if ( ! isset($config[$item]))
 		{

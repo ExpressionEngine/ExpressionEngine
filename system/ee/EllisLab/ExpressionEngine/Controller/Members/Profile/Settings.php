@@ -105,27 +105,49 @@ class Settings extends Profile {
 		$this->load->helper('directory');
 
 		$path = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')
-			->filter('server_path', $path)
-			->first();
 
-		$fp = new FilePicker();
-		$fp->inject(ee()->view);
+		$directories = ee('Model')->get('UploadDestination')
+			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
+			->all()
+			->indexBy('name');
+
+		$default = $directories['Default Avatars'];
+
+		if ($this->member->avatar_filename)
+		{
+			foreach ($directories as $dir)
+			{
+				if ($dir->getFilesystem()->exists($this->member->avatar_filename))
+				{
+					$directory = $dir;
+					break;
+				}
+			}
+		}
+
+		if ( ! isset($directory))
+		{
+			$directory = $default;
+		}
+
+		$fp = ee('CP/FilePicker')->make($default->id);
+
 		$dirs = array();
 		$avatar_choices = array();
 
 		if ($directory)
 		{
-			$fp = new FilePicker();
-			$fp->inject(ee()->view);
-			$dirs[] = $fp->link('Avatars', $directory->id, array(
-				'image' => 'avatar',
-				'input' => 'avatar_filename',
-				'hasFilters' => FALSE,
-				'hasUpload' => FALSE,
-				'selected' => $this->member->avatar_filename,
-				'class' => 'avatarPicker'
-			));
+			$link = $fp->getLink('Default Avatars')
+				->withImage('avatar')
+				->withValueTarget('avatar_filename')
+				->disableFilters()
+				->disableUploads()
+				->asThumbs()
+				->setSelected($this->member->avatar_filename)
+				->setAttribute('class', 'avatarPicker');
+
+			$dirs[] = $link->render();
+
 			$avatar_choices = array(
 				'upload' => array(
 					'label' => 'upload_avatar',
@@ -249,37 +271,36 @@ class Settings extends Profile {
 			)
 		);
 
+		foreach ($this->member->getDisplay()->getFields() as $field)
+		{
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
+					)
+				)
+			);
+		}
+
 		if ($this->member->avatar_filename == "")
 		{
 			$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'url',
-				 'label'   => 'lang:timezone',
-				 'rules'   => 'valid_xss_check'
-			),
-			array(
-				 'field'   => 'location',
-				 'label'   => 'lang:location',
-				 'rules'   => 'valid_xss_check'
-			),
-			array(
-				 'field'   => 'bio',
-				 'label'   => 'lang:biography',
-				 'rules'   => 'valid_xss_check'
-			)
-		));
+		if ( ! empty($_POST))
+		{
+			$result = $this->saveSettings($vars['sections']);
 
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->saveSettings($vars['sections']))
+			if ( ! is_bool($result))
+			{
+				return $result;
+			}
+
+			if ($result)
 			{
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -288,14 +309,6 @@ class Settings extends Profile {
 					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
-				->addToBody(lang('settings_save_error_desc'))
-				->now();
 		}
 
 		ee()->cp->add_js_script(array(
@@ -332,7 +345,7 @@ class Settings extends Profile {
 		return parent::saveSettings($settings);
 	}
 
-	private function uploadAvatar()
+	protected function uploadAvatar()
 	{
 		$existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
 
@@ -343,7 +356,7 @@ class Settings extends Profile {
 
 		ee()->load->library('filemanager');
 		$directory = ee('Model')->get('UploadDestination')
-			->filter('server_path', ee()->config->item('avatar_path'))
+			->filter('name', 'Avatars')
 			->first();
 
 		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
@@ -395,7 +408,7 @@ class Settings extends Profile {
 	{
 		$url = ee()->input->post('link_avatar');
 		$directory = ee('Model')->get('UploadDestination')
-			->filter('server_path', ee()->config->item('avatar_path'))
+			->filter('name', 'Avatars')
 			->first();
 
 		if ( ! $directory)

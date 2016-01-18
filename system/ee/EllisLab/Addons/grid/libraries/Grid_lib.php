@@ -106,7 +106,10 @@ class Grid_lib {
 		$blank_column = array();
 		foreach ($columns as $column)
 		{
-			$column_headings[$column['col_label']] = array('desc' => $column['col_instructions']);
+			$column_headings[] = array(
+				'label' => $column['col_label'],
+				'desc' => $column['col_instructions']
+			);
 
 			switch ($column['col_type']) {
 				case 'rte':
@@ -865,7 +868,8 @@ class Grid_lib {
 				'field_name'	=> $field_name,
 				'column'		=> $column,
 				'fieldtypes'	=> $fieldtypes_dropdown,
-				'error_fields'  => $error_fields
+				'error_fields'  => $error_fields,
+				'new_column'	=> empty($column['col_id'])
 			),
 			TRUE
 		);

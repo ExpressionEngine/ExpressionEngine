@@ -44,7 +44,7 @@ class StringView extends View {
 	/**
 	 * Renders the view
 	 */
-	public function render($vars = array())
+	public function render(array $vars = array())
 	{
 		extract($vars);
 

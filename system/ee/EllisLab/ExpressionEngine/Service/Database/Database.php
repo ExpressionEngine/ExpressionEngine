@@ -42,7 +42,9 @@ class Database
 	}
 
 	/**
+	 * Returns a new Query object
 	 *
+	 * @return Query A Query object.
 	 */
 	public function newQuery()
 	{
@@ -63,6 +65,7 @@ class Database
 	 * Set the active configuration
 	 *
 	 * @param DBConfig $config DBConfig object
+	 * @return void
 	 */
 	public function setConfig(DBConfig $config)
 	{
@@ -70,7 +73,9 @@ class Database
 	}
 
 	/**
+	 * Gets the current DB connection. If there isn't one a new one is created.
 	 *
+	 * @return Connection A Connection object.
 	 */
 	public function getConnection()
 	{
@@ -83,7 +88,10 @@ class Database
 	}
 
 	/**
+	 * Sets the DB connection.
 	 *
+	 * @param Connection $connection Connection object
+	 * @return void
 	 */
 	public function setConnection(Connection $connection)
 	{
@@ -92,7 +100,9 @@ class Database
 	}
 
 	/**
+	 * Gets the log. If there isn't a log a new one is created.
 	 *
+	 * @return Log The Log
 	 */
 	public function getLog()
 	{
@@ -105,7 +115,10 @@ class Database
 	}
 
 	/**
+	 * Sets the log.
 	 *
+	 * @param Log $log Log object
+	 * @return void
 	 */
 	public function setLog(Log $log)
 	{
@@ -114,6 +127,8 @@ class Database
 
 	/**
 	 * Create a default connection object
+	 *
+	 * @return Connection A Connection object
 	 */
 	protected function newConnection()
 	{
@@ -131,6 +146,8 @@ class Database
 
 	/**
 	 * Close the database connection
+	 *
+	 * @return void
 	 */
 	public function closeConnection()
 	{
@@ -144,6 +161,8 @@ class Database
 
 	/**
 	 * Create a default log object
+	 *
+	 * @return Log A Log object
 	 */
 	protected function newLog()
 	{

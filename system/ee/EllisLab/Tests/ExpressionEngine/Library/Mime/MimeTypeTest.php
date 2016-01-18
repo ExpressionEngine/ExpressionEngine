@@ -8,6 +8,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	protected $mime_type;
 	protected $safe_mime_types = array();
+	protected $exception_class;
 
 	public function setUp()
 	{
@@ -21,6 +22,8 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 			'video/mp4',
 		);
 		$this->mime_type = new MimeType($this->safe_mime_types);
+
+		$this->exception_class = (PHP_VERSION_ID < 70000) ? 'PHPUnit_Framework_Error' : 'TypeError';
 	}
 
 	public function tearDown()
@@ -49,7 +52,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	public function testEmptyAddMimeTypesArgument()
 	{
-		$this->setExpectedException('PHPUnit_Framework_Error');
+		$this->setExpectedException($this->exception_class);
 		$this->mime_type->addMimeTypes();
 	}
 
@@ -69,11 +72,14 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	public function mimesDataProvider()
 	{
+		// setUp() not called for data providers?
+		$exception_class = (PHP_VERSION_ID < 70000) ? 'PHPUnit_Framework_Error' : 'TypeError';
+
 		return array(
-			array('Boolen Argument',          TRUE,                             NULL,                             'PHPUnit_Framework_Error'),
-			array('Integer Argument',         1,                                NULL,                             'PHPUnit_Framework_Error'),
-			array('Float Argument',           1.1,                              NULL,                             'PHPUnit_Framework_Error'),
-			array('String Argument',          "text/plain",                     NULL,                             'PHPUnit_Framework_Error'),
+			array('Boolen Argument',          TRUE,                             NULL,                             $exception_class),
+			array('Integer Argument',         1,                                NULL,                             $exception_class),
+			array('Float Argument',           1.1,                              NULL,                             $exception_class),
+			array('String Argument',          "text/plain",                     NULL,                             $exception_class),
 			array('Empty Array Argument',     array(),                          array(),                          FALSE),
 			array('Valid Array Argument',     array('text/html'),               array('text/html'),               FALSE),
 			array('Valid Array Argument',     array('text/html', 'text/plain'), array('text/html', 'text/plain'), FALSE),
@@ -81,9 +87,9 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 			array('Invalid Array Argument',   array('text'),                    NULL,                             'InvalidArgumentException'),
 			array('Invalid Array Argument',   array('text/html', 'text',),      NULL,                             'InvalidArgumentException'),
 			array('Invalid Array Argument',   array('a/b/c'),                   NULL,                             'InvalidArgumentException'),
-			array('Object Argument',          new \stdClass(),                  NULL,                             'PHPUnit_Framework_Error'),
-			array('Closure Argument',         function() { return TRUE; },      NULL,                             'PHPUnit_Framework_Error'),
-			array('NULL Argument',            NULL,                             NULL,                             'PHPUnit_Framework_Error'),
+			array('Object Argument',          new \stdClass(),                  NULL,                             $exception_class),
+			array('Closure Argument',         function() { return TRUE; },      NULL,                             $exception_class),
+			array('NULL Argument',            NULL,                             NULL,                             $exception_class),
 		);
 	}
 

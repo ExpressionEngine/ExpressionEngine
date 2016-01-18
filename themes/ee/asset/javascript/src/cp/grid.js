@@ -418,7 +418,7 @@ Grid.Settings.prototype = {
 	_bindCopyButton: function(context) {
 		var that = this;
 
-		context.on('click', '.grid-tools li.copy a', function(event) {
+		context.find('.grid-tools li.copy a').off('click').on('click', function(event) {
 			event.preventDefault();
 
 			var parentCol = $(this).parents('.grid-item');

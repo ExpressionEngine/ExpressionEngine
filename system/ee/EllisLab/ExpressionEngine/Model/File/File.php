@@ -135,11 +135,34 @@ class File extends Model {
 		return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . rawurlencode($this->file_name);
 	}
 
+	public function getThumbnailUrl()
+	{
+		return $this->getAbsoluteThumbnailURL();
+	}
+
 	public function onBeforeDelete()
 	{
 		if ($this->exists())
 		{
+			// Remove the file
 			unlink($this->getAbsolutePath());
+
+			// Remove the thumbnail if it exists
+			if (file_exists($this->getAbsoluteThumbnailPath()))
+			{
+				unlink($this->getAbsoluteThumbnailPath());
+			}
+
+			// Remove any manipulated files as well
+			foreach ($this->UploadDestination->FileDimensions as $file_dimension)
+			{
+				$file = rtrim($this->UploadDestination->server_path, '/') . '/_' . $file_dimension->short_name . '/' . $this->file_name;
+
+				if (file_exists($file))
+				{
+					unlink($file);
+				}
+			}
 		}
 	}
 

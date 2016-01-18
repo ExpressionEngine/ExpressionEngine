@@ -313,7 +313,7 @@ class Api_channel_fields extends Api {
 		{
 			$this->include_handler($field_type);
 
-			$this->field_types[$field_type] =& $this->_instantiate_handler($field_type);
+			$this->field_types[$field_type] = $this->_instantiate_handler($field_type);
 		}
 
 		// If we started with a field_id, but we're not on the frontend

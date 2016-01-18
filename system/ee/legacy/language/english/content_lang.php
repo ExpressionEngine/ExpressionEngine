@@ -479,6 +479,8 @@ $lang = array(
 
 'upload_file' => 'Upload File',
 
+'choose_file' => 'Choose File',
+
 'file_upload' => 'File Upload',
 
 'upload_dir_choose'		=> 'Choose an upload directory',
@@ -503,7 +505,7 @@ $lang = array(
 
 'title_not_unique' => 'An entry already exists with this title.  Titles must be unique.',
 
-'url_title_not_unique' => 'An entry already exists with this URL title.  URL titles must be unique.',
+'url_title_not_unique' => 'This URL title is being used by <b><a href="%s" rel="external">%s</a></b>. URL titles must be unique.',
 
 'entry_has_been_added' => 'New Entry Submitted',
 
@@ -737,11 +739,9 @@ $lang = array(
 'create_unordered_list' => 'create unordered list',
 'create_ordered_list' => 'create ordered list',
 'create_hyperlink' => 'create hyperlink',
-'upload_file' => 'upload file',
 'view_code' => 'view code',
 
 'launch_writemode' => 'launch writemode',
-'upload_file' => 'upload file',
 'open_spellcheck' => 'open spellcheck',
 'open_glossary' => 'open glossary',
 'open_emoji' => 'open emoji',
@@ -756,8 +756,6 @@ $lang = array(
 'no_entry_related' => 'No <b>entry</b> related.',
 'no_entries_related' => 'No <b>entries</b> related.',
 'no_entries_found' => 'No <b>entries</b> found',
-
-'upload_file' => 'upload file',
 
 'no_rows_created' => 'No rows created',
 'add_new_row' => 'add new row',

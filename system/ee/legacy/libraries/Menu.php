@@ -82,19 +82,11 @@ class EE_Menu {
 
 		if ($site_list)
 		{
-			$site_backlink = ee()->cp->get_safe_refresh();
-
-			if ($site_backlink)
-			{
-				$site_backlink = implode('|', explode(AMP, $site_backlink));
-				$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
-			}
-
 			foreach($site_list as $site_id => $site_name)
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => $site_backlink));
+					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode()));
 				}
 			}
 		}

@@ -5,6 +5,8 @@ $required_error = 'This field is required.'
 $integer_error = 'This field must contain an integer.'
 $natural_number = 'This field must contain only positive numbers.'
 $natural_number_not_zero = 'This field must contain a number greater than zero.'
+$numeric = 'This field must contain only numeric characters.'
+$greater_than = 'This field must be greater than'
 $invalid_path = 'The path you submitted is not valid.'
 $not_writable = 'The path you submitted is not writable.'
 $alpha_dash = 'This field may only contain alpha-numeric characters, underscores, and dashes.'
@@ -29,6 +31,9 @@ def no_php_js_errors
     page.should have_no_content('on line')
   end
   page.should have_no_content('Line Number:')
+
+  # Our custom PHP error handler
+  page.should have_no_content(', line')
 
   page.should have_no_content('Exception Caught')
 

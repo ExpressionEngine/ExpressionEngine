@@ -47,8 +47,7 @@ if ( ! function_exists('set_cookie'))
 	function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
 	{
 		// Set the config file options
-		$CI =& get_instance();
-		$CI->input->set_cookie($name, $value, $expire, $domain, $path, $prefix);
+		ee()->input->set_cookie($name, $value, $expire, $domain, $path, $prefix);
 	}
 }
 
@@ -66,8 +65,6 @@ if ( ! function_exists('get_cookie'))
 {
 	function get_cookie($index = '', $xss_clean = FALSE)
 	{
-		$CI =& get_instance();
-
 		$prefix = '';
 
 		if ( ! isset($_COOKIE[$index]) && config_item('cookie_prefix') != '')
@@ -75,7 +72,7 @@ if ( ! function_exists('get_cookie'))
 			$prefix = config_item('cookie_prefix');
 		}
 
-		return $CI->input->cookie($prefix.$index, $xss_clean);
+		return ee()->input->cookie($prefix.$index, $xss_clean);
 	}
 }
 

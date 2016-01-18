@@ -30,7 +30,7 @@ class Emoticon {
 	/**
 	  *  Constructor
 	  */
-	function Emoticon()
+	function __construct()
 	{
 		if (is_file(PATH_ADDONS.'emoticon/emoticons.php'))
 		{
