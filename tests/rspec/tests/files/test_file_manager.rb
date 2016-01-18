@@ -422,7 +422,7 @@ feature 'File Manager' do
 		@page.alert.text.should include "Files Not Found"
 		@page.alert.text.should include "Highlighted files cannot be found on the server."
 
-		@page.should have_css('tr.missing')
-	end
+    @page.should have_css('tr.missing')
+  end
 
 end
