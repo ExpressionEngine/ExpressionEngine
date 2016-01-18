@@ -12,7 +12,7 @@ $lang = array(
 	'variable_in_use' => 'Segment variable already in use: ',
 	'template_routes_header' => 'Template Routes',
 	'route' => 'Route',
-	'segments_required' => 'Require all Segments?',
+	'segments_required' => 'Require all Variables?',
 );
 
 /* End of file template_router_lang.php */
