@@ -371,6 +371,11 @@ class Cp {
 			$notices[] = sprintf(lang('version_mismatch'), ee()->config->item('app_version'), APP_VER);
 		}
 
+		if ( ! is_dir(PATH_THEMES))
+		{
+			$notices[] = sprintf(lang('theme_folder_wrong'), ee('CP/URL', '/cp/settings/urls'));
+		}
+
 		if ( ! empty($notices))
 		{
 			if ( ! $alert)
