@@ -230,7 +230,7 @@ class EntryListing {
 			}
 		}
 
-		$entries->with('Autosaves', 'Categories', 'Author', 'Channel');
+		$entries->with('Autosaves', 'Author', 'Channel');
 
 		$this->entries = $entries;
 	}

@@ -65,6 +65,8 @@ class Factory {
 
 	/**
 	 * Get all addons
+	 *
+	 * @return array An array of Addon objects.
 	 */
 	public function all()
 	{
@@ -85,6 +87,8 @@ class Factory {
 
 	/**
 	 * Fetch all installed addons
+	 *
+	 * @return array An array of Addon objects.
 	 */
 	public function installed()
 	{

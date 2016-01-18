@@ -39,7 +39,8 @@ class Stats extends Model {
 		'RecentMember' => array(
 			'type'     => 'BelongsTo',
 			'model'    => 'Member',
-			'from_key' => 'recent_member_id'
+			'from_key' => 'recent_member_id',
+			'weak'     => TRUE
 		)
 	);
 

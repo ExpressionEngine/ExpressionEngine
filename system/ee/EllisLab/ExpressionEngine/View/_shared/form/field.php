@@ -38,14 +38,7 @@ $no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
 	count($field['choices']) == 0);
 ?>
 <?php if ($no_results): ?>
-	<div class="no-results">
-		<p><?=lang($field['no_results']['text'])?></p>
-		<?php if (isset($field['no_results']['link_href'])): ?>
-			<p><a class="btn action" href="<?=$field['no_results']['link_href']?>">
-				<?=lang($field['no_results']['link_text'])?>
-			</a></p>
-		<?php endif ?>
-	</div>
+	<?php $this->embed('ee:_shared/form/no_results', $field['no_results']); ?>
 <?php endif ?>
 <?php if ($has_note): ?>
 	<div class="setting-note">

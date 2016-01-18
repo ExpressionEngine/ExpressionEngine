@@ -43,9 +43,10 @@ class Perpage extends Filter {
 	 * @param  int $total The total number of items available
 	 * @param  string $lang_key The optional lang key to use for the "All
 	 *                          <<$total>> items" option
+	 * @param  bool $is_modal Is this Perpage filter in/for a modal?
 	 * @return void
 	 */
-	public function __construct($total, $all_lang_key = 'all_items')
+	public function __construct($total, $all_lang_key = 'all_items', $is_modal = FALSE)
 	{
 		$total = (int) $total;
 
@@ -69,6 +70,12 @@ class Perpage extends Filter {
 			$total => sprintf(lang($all_lang_key), $total)
 		);
 		$this->default_value = 25;
+
+		if ($is_modal)
+		{
+			$this->options = array('10' => '10 '.lang('results')) + $this->options;
+			$this->default_value = 10;
+		}
 	}
 
 	/**

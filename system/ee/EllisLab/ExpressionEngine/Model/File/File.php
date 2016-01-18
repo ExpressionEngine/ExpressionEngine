@@ -135,6 +135,11 @@ class File extends Model {
 		return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . rawurlencode($this->file_name);
 	}
 
+	public function getThumbnailUrl()
+	{
+		return $this->getAbsoluteThumbnailURL();
+	}
+
 	public function onBeforeDelete()
 	{
 		if ($this->exists())

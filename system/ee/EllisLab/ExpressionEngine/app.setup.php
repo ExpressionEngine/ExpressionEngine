@@ -1,7 +1,6 @@
 <?php
 
 use EllisLab\ExpressionEngine\Library;
-use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
@@ -9,8 +8,9 @@ use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
+use EllisLab\ExpressionEngine\Service\Event;
+use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
-use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
@@ -21,6 +21,7 @@ use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
+use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -162,6 +163,22 @@ return array(
 			return new Alert\AlertCollection(ee()->session, $view);
 		},
 
+		'CP/FilePicker' => function($ee)
+		{
+			$fp = new FilePicker\Factory(
+				$ee->make('CP/URL')
+			);
+
+			$fp->injectModal(
+				$ee->make('CP/Modal'),
+				$ee->make('View')->make('ee:_shared/modal'),
+				ee()->cp
+			);
+
+			return $fp;
+		},
+
+
 		'CP/Modal' => function($ee)
 		{
 			return new Modal\ModalCollection;
@@ -193,6 +210,11 @@ return array(
 			$db->getLog()->saveQueries($save_queries);
 
 			return $db;
+		},
+
+		'File' => function($ee)
+		{
+			return new File\Factory();
 		},
 
 		'License' => function($ee)

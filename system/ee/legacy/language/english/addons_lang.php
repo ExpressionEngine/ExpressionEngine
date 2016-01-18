@@ -61,6 +61,8 @@ $lang = array(
 'settings_saved'			    =>		'Settings Saved',
 'settings_saved_desc'		    =>		'The settings for %s have been saved.',
 
+'extension_class_does_not_exist' => 'Class %c does not exist in (%f)',
+
 // Google Maps Keys
 'default_map'					=>		'Default Map',
 'manual_override'				=>		'Manual Override',

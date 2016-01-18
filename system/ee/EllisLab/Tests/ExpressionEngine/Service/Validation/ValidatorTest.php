@@ -147,6 +147,52 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse($result->isValid());
 	}
 
+	public function testGreaterThan()
+	{
+		$rules = array('a' => 'greater_than[8]');
+		$this->validator->setRules($rules);
+
+		// true
+		$result = $this->validator->validate(array('a' => 10));
+		$this->assertTrue($result->isValid());
+
+		$result = $this->validator->validate(array('a' => '13'));
+		$this->assertTrue($result->isValid());
+
+		// false
+		$result = $this->validator->validate(array('a' => 5));
+		$this->assertFalse($result->isValid());
+
+		$result = $this->validator->validate(array('a' => -5));
+		$this->assertFalse($result->isValid());
+
+		$result = $this->validator->validate(array('a' => '-5'));
+		$this->assertFalse($result->isValid());
+	}
+
+	public function testLessThan()
+	{
+		$rules = array('a' => 'less_than[8]');
+		$this->validator->setRules($rules);
+
+		// false
+		$result = $this->validator->validate(array('a' => 10));
+		$this->assertFalse($result->isValid());
+
+		$result = $this->validator->validate(array('a' => '13'));
+		$this->assertFalse($result->isValid());
+
+		// true
+		$result = $this->validator->validate(array('a' => 5));
+		$this->assertTrue($result->isValid());
+
+		$result = $this->validator->validate(array('a' => -5));
+		$this->assertTrue($result->isValid());
+
+		$result = $this->validator->validate(array('a' => '-5'));
+		$this->assertTrue($result->isValid());
+	}
+
 	/**
 	 * @dataProvider numericDataProvider
 	 */

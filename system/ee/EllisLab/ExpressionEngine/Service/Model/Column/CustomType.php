@@ -52,7 +52,7 @@ abstract class CustomType extends Entity implements Type {
 		return $this->serialize($this->getValues());
 	}
 
-	public function set($data)
+	public function set(array $data = array())
 	{
 		return $data;
 	}

@@ -71,9 +71,14 @@ abstract class AbstractDesign extends CP_Controller {
 				->withRemovalKey('group_name')
 			->withNoResultsText(lang('zero_template_groups_found'));
 
+		if (ee()->cp->allowed_group('can_edit_template_groups'))
+		{
+			$template_group_list->canReorder();
+		}
+
 		$template_groups = ee('Model')->get('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_name', 'asc');
+			->order('group_order', 'asc');
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
@@ -394,23 +399,29 @@ abstract class AbstractDesign extends CP_Controller {
 	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
 	{
 		$table = ee('CP/Table', array('autosort' => TRUE));
-		$table->setColumns(
-			array(
-				'template' => array(
-					'encode' => FALSE
-				),
-				'type' => array(
-					'encode' => FALSE
-				),
-				'hits',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
+
+		$columns = array(
+			'template' => array(
+				'encode' => FALSE
+			),
+			'type' => array(
+				'encode' => FALSE
+			),
 		);
+
+		if (bool_config_item('enable_hit_tracking'))
+		{
+			$columns[] = 'hits';
+		}
+
+		$columns['manage'] = array(
+			'type'	=> Table::COL_TOOLBAR
+		);
+		$columns[] = array(
+			'type'	=> Table::COL_CHECKBOX
+		);
+
+		$table->setColumns($columns);
 		$table->setNoResultsText('no_templates_found');
 
 		$data = array();
@@ -492,15 +503,20 @@ abstract class AbstractDesign extends CP_Controller {
 
 			$column = array(
 				$template_name,
-				'<span class="st-info">'.$type_col.'</span>',
-				$template->hits,
-				array('toolbar_items' => $toolbar),
-				array(
-					'name' => 'selection[]',
-					'value' => $template->template_id,
-					'data' => array(
-						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
-					)
+				'<span class="st-info">'.$type_col.'</span>'
+			);
+
+			if (bool_config_item('enable_hit_tracking'))
+			{
+				$column[] = $template->hits;
+			}
+
+			$column[] = array('toolbar_items' => $toolbar);
+			$column[] = array(
+				'name' => 'selection[]',
+				'value' => $template->template_id,
+				'data' => array(
+					'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
 				)
 			);
 

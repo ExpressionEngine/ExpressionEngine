@@ -106,6 +106,16 @@ abstract class FieldModel extends Model {
 	}
 
 	/**
+	 * Calling the Post Save Settings after every save. Grid (and others?)
+	 * saves its settings in the post_save_settings call.
+	 */
+	public function save()
+	{
+		parent::save();
+		$this->callPostSaveSettings();
+	}
+
+	/**
 	 * After inserting, add the columns to the data table
 	 */
 	public function onAfterInsert()
@@ -119,8 +129,6 @@ abstract class FieldModel extends Model {
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
-
-		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -155,8 +163,6 @@ abstract class FieldModel extends Model {
 
 			$this->diffColumns($old_columns, $new_columns);
 		}
-
-		$this->callPostSaveSettings();
 	}
 
 	protected function callSettingsModify($ft, $action, $changed = array())
@@ -320,8 +326,8 @@ abstract class FieldModel extends Model {
 	 */
 	private function ensureDefaultColumns($columns)
 	{
-		$id_field_name = 'field_id_'.$this->getId();
-		$ft_field_name = 'field_ft_'.$this->getId();
+		$id_field_name = $this->getColumnPrefix().'field_id_'.$this->getId();
+		$ft_field_name = $this->getColumnPrefix().'field_ft_'.$this->getId();
 
 		if ( ! isset($columns[$id_field_name]))
 		{
@@ -340,5 +346,15 @@ abstract class FieldModel extends Model {
 		}
 
 		return $columns;
+	}
+
+	/**
+	 * Set a prefix on the default columns we manage for fields
+	 *
+	 * @return	String	Prefix string to use
+	 */
+	public function getColumnPrefix()
+	{
+		return '';
 	}
 }

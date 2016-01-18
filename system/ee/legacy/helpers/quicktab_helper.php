@@ -31,14 +31,12 @@
   */
 function generate_quicktab($title = '')
 {
-	$EE =& get_instance();
-
 	$link  = '';
 	$linkt = '';
 	$top_level_items = array('content', 'design', 'addons', 'members', 'admin', 'tools', 'help');
 
-	if ($EE->input->get_post('M', TRUE) != 'main_menu_manager'
-		OR in_array($EE->input->get_post('Cdis', TRUE), $top_level_items))
+	if (ee()->input->get_post('M', TRUE) != 'main_menu_manager'
+		OR in_array(ee()->input->get_post('Cdis', TRUE), $top_level_items))
 	{
 		foreach ($_GET as $key => $val)
 		{
@@ -59,11 +57,11 @@ function generate_quicktab($title = '')
 
 	$show_link = TRUE;
 
-	if ($EE->session->userdata('quick_tabs') !== FALSE)
+	if (ee()->session->userdata('quick_tabs') !== FALSE)
 	{
 		$newlink = str_replace('/', '&', str_replace('--', '=', $link)).'|';
 
-		if (strpos($EE->session->userdata('quick_tabs'), $newlink))
+		if (strpos(ee()->session->userdata('quick_tabs'), $newlink))
 		{
 			$show_link = FALSE;
 		}

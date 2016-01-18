@@ -6,12 +6,12 @@ use EllisLab\ExpressionEngine\Library\Parser\AbstractLexer;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Token;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Comment;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Number;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Operator;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Other;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\String;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\StringLiteral;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Tag;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
@@ -558,7 +558,7 @@ class Lexer extends AbstractLexer {
 
 			switch ($type)
 			{
-				case 'BOOL':	 $obj = new Bool($lexeme);
+				case 'BOOL':	 $obj = new Boolean($lexeme);
 					break;
 				case 'COMMENT':	 $obj = new Comment($lexeme);
 					break;
@@ -568,7 +568,7 @@ class Lexer extends AbstractLexer {
 					break;
 				case 'OTHER':	 $obj = new Other($lexeme);
 					break;
-				case 'STRING':	 $obj = new String($lexeme);
+				case 'STRING':	 $obj = new StringLiteral($lexeme);
 					break;
 				case 'TAG':		 $obj = new Tag($lexeme);
 					break;
