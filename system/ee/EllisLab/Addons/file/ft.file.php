@@ -168,12 +168,6 @@ class File_ft extends EE_Fieldtype {
 		{
 			ee()->lang->loadfile('fieldtypes');
 
-			ee()->cp->add_js_script(array(
-				'file' => array(
-					'fields/file/cp'
-				),
-			));
-
 			if ($allowed_file_dirs == '')
 			{
 				$allowed_file_dirs = 'all';
@@ -222,6 +216,12 @@ class File_ft extends EE_Fieldtype {
 			{
 				$fp_edit->setSelected($file->file_id);
 			}
+
+			ee()->cp->add_js_script(array(
+				'file' => array(
+					'fields/file/cp'
+				),
+			));
 
 			return ee('View')->make('file:publish')->render(array(
 				'field_name' => $this->field_name,
