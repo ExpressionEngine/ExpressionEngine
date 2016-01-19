@@ -122,12 +122,14 @@
 				url = EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
 				name = $(elem).attr('name');
 
+			// Assume it's in a Grid
 			if (field.length == 0) {
 				field = $(elem).closest('td');
 
-				var row_id = $(field).data('row-id') ? $(field).data('row-id') : 0;
+				var row_id = $(field).data('row-id') ? $(field).data('row-id') : $(field).data('new-row-id');
 
 				data = $(field).find('input').serialize() + '&column_id=' + $(field).data('column-id') + '&row_id=' + row_id;
+
 				url = EE.publish.field.URL + '/' + $(elem).closest('table').attr('id');
 			}
 
