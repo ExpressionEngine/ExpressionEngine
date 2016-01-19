@@ -2437,7 +2437,7 @@ class EE_Template {
 
 		// Increment hit counter
 		if (($this->hit_lock == FALSE OR $this->hit_lock_override == TRUE) &&
-			ee()->config->item('enable_hit_tracking') != 'n')
+			bool_config_item('enable_hit_tracking'))
 		{
 			$this->template_hits = $row['hits'] + 1;
 			$this->hit_lock = TRUE;
@@ -2906,16 +2906,11 @@ class EE_Template {
 
 		//  Parse User-defined Global Variables first so that
 		//  they can use other standard globals
-		ee()->db->select('variable_name, variable_data');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		$query = ee()->db->get('global_variables');
+		$variables = ee('Model')->make('GlobalVariable')->loadAll();
 
-		if ($query->num_rows() > 0)
+		foreach ($variables as $var)
 		{
-			foreach ($query->result_array() as $row)
-			{
-				$str = str_replace(LD.$row['variable_name'].RD, $row['variable_data'], $str);
-			}
+			$str = str_replace(LD.$var->variable_name.RD, $var->variable_data, $str);
 		}
 
 		// {hits}

@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
 
-class Bool extends Token {
+class Boolean extends Token {
 
 	public function __construct($lexeme)
 	{

@@ -30,7 +30,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
-		$this->expr->add(new Token\Bool('TRUE'));
+		$this->expr->add(new Token\Boolean('TRUE'));
 
 		$this->assertTrue($this->expr->evaluate());
 	}
@@ -42,7 +42,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('!='));
-		$this->expr->add(new Token\Bool('FALSE'));
+		$this->expr->add(new Token\Boolean('FALSE'));
 
 		$this->assertTrue($this->expr->evaluate());
 	}
@@ -63,7 +63,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
-		$this->expr->add(new Token\Bool('FALSE'));
+		$this->expr->add(new Token\Boolean('FALSE'));
 
 		$this->assertTrue($this->expr->evaluate());
 	}
@@ -87,7 +87,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
-		$this->expr->add(new Token\String(''));
+		$this->expr->add(new Token\StringLiteral(''));
 
 		$this->assertTrue($this->expr->evaluate());
 	}
@@ -99,7 +99,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('!='));
-		$this->expr->add(new Token\Bool('TRUE'));
+		$this->expr->add(new Token\Boolean('TRUE'));
 
 		$this->assertTrue($this->expr->evaluate());
 	}
@@ -107,21 +107,21 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	public function truthyDataProvider()
 	{
 		return array(
-			array(new Token\String('ee')),
-			array(new Token\String('0')),
+			array(new Token\StringLiteral('ee')),
+			array(new Token\StringLiteral('0')),
 			array(new Token\Number(1)),
 			array(new Token\Number(0.001)),
-			array(new Token\Bool('TRUE')),
+			array(new Token\Boolean('TRUE')),
 		);
 	}
 
 	public function falseyDataProvider()
 	{
 		return array(
-			array(new Token\String('')),
+			array(new Token\StringLiteral('')),
 			array(new Token\Number(0)),
 			array(new Token\Number(0.0)),
-			array(new Token\Bool('FALSE')),
+			array(new Token\Boolean('FALSE')),
 		);
 	}
 }

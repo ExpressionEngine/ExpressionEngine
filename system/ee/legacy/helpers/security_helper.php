@@ -56,8 +56,7 @@ if ( ! function_exists('sanitize_filename'))
 {
 	function sanitize_filename($filename)
 	{
-		$CI =& get_instance();
-		return $CI->security->sanitize_filename($filename);
+		return ee()->security->sanitize_filename($filename);
 	}
 }
 

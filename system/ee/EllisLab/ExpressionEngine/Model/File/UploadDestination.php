@@ -83,7 +83,7 @@ class UploadDestination extends Model {
 		'url'                => 'required|validateUrl',
 		'allowed_types'      => 'enum[img,all]',
 		'default_modal_view' => 'enum[list,thumb]',
-		'max_size'           => 'isNatural',
+		'max_size'           => 'numeric|greaterThan[0]',
 		'max_height'         => 'isNatural',
 		'max_width'          => 'isNatural'
 	);
@@ -206,6 +206,17 @@ class UploadDestination extends Model {
 	}
 
 	/**
+	 * Get the backing filesystem for this upload destination
+	 */
+	public function getFilesystem()
+	{
+		$fs = ee('File')->getPath($this->getProperty('server_path'));
+		$fs->setUrl($this->getRawProperty('url'));
+
+		return $fs;
+	}
+
+	/**
 	 * Determines if the member group (by ID) has access permission to this
 	 * upload destination.
 	 *
@@ -260,7 +271,7 @@ class UploadDestination extends Model {
 	 */
 	public function exists()
 	{
-		return file_exists($this->server_path);
+		return file_exists($this->getProperty('server_path'));
 	}
 
 	/**
@@ -270,7 +281,7 @@ class UploadDestination extends Model {
 	 */
 	public function isWritable()
 	{
-		return is_writable($this->server_path);
+		return is_writable($this->getProperty('server_path'));
 	}
 
 }

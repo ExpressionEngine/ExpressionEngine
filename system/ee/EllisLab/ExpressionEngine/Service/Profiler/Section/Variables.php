@@ -59,8 +59,10 @@ class Variables extends ProfilerSection {
 	 *
 	 * @return void
 	 **/
-	public function setData($server, $cookie, $get, $post, $userdata)
+	public function setData($data)
 	{
+		extract($data);
+
 		$data['server'] = $this->prepServerData($server);
 		$data['cookie'] = $this->prepData($cookie);
 		$data['get'] = $this->prepData($get);

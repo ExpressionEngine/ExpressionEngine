@@ -11,11 +11,11 @@ feature 'Grid Field Settings' do
   # and start creating a new Grid field
   before(:each) do
     cp_session
-      @page = ChannelFieldForm.new
-      @page.load
-      no_php_js_errors
+    @page = ChannelFieldForm.new
+    @page.load
+    no_php_js_errors
 
-      @page.field_label.set 'Test Grid'
+    @page.field_label.set 'Test Grid'
 
     @page.field_type.select 'Grid'
   end
@@ -90,6 +90,14 @@ feature 'Grid Field Settings' do
     @page.should have_text('There are one or more columns without a column label.')
     @page.should have_text('Column field names must be unique.')
     @page.should have_text('There are one or more columns without a column name.')
+  end
+
+  it 'should only duplicate columns once' do
+    column1 = GridSettings::column(1)
+    column1.name.set 'test_column'
+    column2 = GridSettings::clone_column(1)
+    column3 = GridSettings::clone_column(2)
+    lambda { GridSettings::column(4) }.should raise_error(Capybara::ElementNotFound)
   end
 
   it 'should save column settings' do

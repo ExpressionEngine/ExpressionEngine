@@ -315,6 +315,7 @@ class Addons extends CP_Controller {
 				);
 
 				$attrs = array('class' => 'not-installed');
+				$addon_name = $info['name'];
 
 				if ($info['installed'])
 				{
@@ -325,6 +326,11 @@ class Addons extends CP_Controller {
 						$toolbar['settings'] = array(
 							'href' => $info['settings_url'],
 							'title' => lang('settings'),
+						);
+
+						$addon_name = array(
+							'content' => $addon_name,
+							'href' => $info['settings_url']
 						);
 					}
 
@@ -362,7 +368,7 @@ class Addons extends CP_Controller {
 				$row = array(
 					'attrs' => $attrs,
 					'columns' => array(
-						'addon' => $info['name'],
+						'addon' => $addon_name,
 						'version' => $this->formatVersionNumber($info['version']),
 						array('toolbar_items' => $toolbar)
 					)
@@ -513,14 +519,14 @@ class Addons extends CP_Controller {
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 
+				$name = $module['name'];
+
 				if ($UPD->update($version) !== FALSE)
 				{
 					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
 						->first();
 					$module->module_version = $addon_info->getVersion();
 					$module->save();
-
-					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
 
 					$updated[$party][$addon] = $name;
 				}
@@ -565,7 +571,7 @@ class Addons extends CP_Controller {
 				ee()->extensions->version_numbers[$class_name] = $addon_info->getVersion();
 
 				$model = ee('Model')->get('Extension')
-					->filter('name', $class_name)
+					->filter('class', $class_name)
 					->first();
 
 				$model->version = $addon_info->getVersion();
@@ -787,7 +793,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
-				if ($name && ! isset($uninstalled[$addon]))
+				if ($name && ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $name;
 				}
@@ -797,7 +803,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
-				if ($name && ! isset($uninstalled[$addon]))
+				if ($name && ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $name;
 				}
@@ -810,7 +816,7 @@ class Addons extends CP_Controller {
 					->filter('plugin_package', $addon)
 					->delete();
 
-				if ( ! isset($uninstalled[$addon]))
+				if ( ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $plugin['name'];
 				}
@@ -1102,8 +1108,10 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
-		ee()->lang->loadfile($name);
-		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+		// Use lang file if present, otherwise fallback to addon.setup
+		ee()->lang->loadfile($name, '', FALSE);
+		$display_name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
+			? lang(strtolower($name).'_module_name') : $info->getName();
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),
@@ -1191,6 +1199,7 @@ class Addons extends CP_Controller {
 		$model = ee('Model')->get('Plugin')
 			->filter('plugin_package', $name)
 			->first();
+
 		if ( ! is_null($model))
 		{
 			$data['installed'] = TRUE;
@@ -1310,7 +1319,7 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
-		$class_name =ucfirst($name) . '_ext';
+		$class_name = ucfirst($name) . '_ext';
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),
@@ -1351,7 +1360,7 @@ class Addons extends CP_Controller {
 				if ( ! class_exists($class_name))
 				{
 					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
-					continue;
+					return array();
 				}
 			}
 
@@ -1428,11 +1437,21 @@ class Addons extends CP_Controller {
 	{
 	 	$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		ee()->lang->loadfile($module, '', FALSE);
 
 		if (ee()->addons_installer->install($module, 'module', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			try
+			{
+				$info = ee('Addon')->get($module);
+			}
+			catch (\Exception $e)
+			{
+				show_404();
+			}
+
+			$name = (lang(strtolower($module).'_module_name') != strtolower($module).'_module_name')
+				? lang(strtolower($module).'_module_name') : $info->getName();
 		}
 
 		return $name;
@@ -1450,11 +1469,21 @@ class Addons extends CP_Controller {
 	{
 		$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		ee()->lang->loadfile($module, '', FALSE);
 
 		if (ee()->addons_installer->uninstall($module, 'module', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			try
+			{
+				$info = ee('Addon')->get($module);
+			}
+			catch (\Exception $e)
+			{
+				show_404();
+			}
+
+			$name = (lang(strtolower($module).'_module_name') != strtolower($module).'_module_name')
+				? lang(strtolower($module).'_module_name') : $info->getName();
 		}
 
 		return $name;

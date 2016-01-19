@@ -112,7 +112,7 @@ class Date extends Filter {
 			$date = ee()->localize->string_to_timestamp($value);
 			$this->timestamp = $date;
 			$this->display_value = ee()->localize->format_date($date_format, $date);
-			$this->selected_value = $date;
+			$this->selected_value = array($date, $date+86400);
 		}
 	}
 

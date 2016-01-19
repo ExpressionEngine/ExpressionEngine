@@ -80,8 +80,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20151217');
-		define('APP_VER',		'3.0.6');
+		define('APP_BUILD',		'20160118');
+		define('APP_VER',		'3.1.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -204,7 +204,7 @@ class EE_Core {
 		// Maybe the site has been moved.
 		// Let's try some basic autodiscovery if config items are set
 		// But the directory does not exist.
-		if ( ! is_dir($theme_path))
+		if ( ! is_dir($theme_path.'/ee'))
 		{
 			if (is_dir(FCPATH.'../themes/')) // We're in the system directory
 			{
@@ -222,6 +222,7 @@ class EE_Core {
 		define('URL_THEMES', $theme_url.'ee/');
 		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
@@ -348,19 +349,11 @@ class EE_Core {
 		// Load up any Snippets
 		if (REQ == 'ACTION' OR REQ == 'PAGE')
 		{
-			// load up any Snippets
-			ee()->db->select('snippet_name, snippet_contents');
-			ee()->db->where('(site_id = '.ee()->db->escape_str(ee()->config->item('site_id')).' OR site_id = 0)');
-			$fresh = ee()->db->get('snippets');
+			$fresh = ee('Model')->make('Snippet')->loadAll();
 
-			if ($fresh->num_rows() > 0)
+			if ($fresh->count() > 0)
 			{
-				$snippets = array();
-
-				foreach ($fresh->result() as $var)
-				{
-					$snippets[$var->snippet_name] = $var->snippet_contents;
-				}
+				$snippets = $fresh->getDictionary('snippet_name', 'snippet_contents');
 
 				// Thanks to @litzinger for the code suggestion to parse
 				// global vars in snippets...here we go.
@@ -403,8 +396,6 @@ class EE_Core {
 		$this->cp_loaded = TRUE;
 
 		$this->somebody_set_us_up_the_base();
-
-		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -535,8 +526,11 @@ class EE_Core {
 	final public function generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions.php';
-		$ACT = new EE_Actions($can_view_system, function($class, $method) {
-			$this->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
+
+		// @todo remove ridiculous dance when PHP 5.3 is no longer supported
+		$that = $this;
+		$ACT = new EE_Actions($can_view_system, function($class, $method) use ($that) {
+			$that->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
 		});
 	}
 
@@ -742,7 +736,7 @@ class EE_Core {
 	 *                                          that returns the transaction
 	 *                                          name
 	 */
-	private function set_newrelic_transaction($transaction_name)
+	public function set_newrelic_transaction($transaction_name)
 	{
 		if (extension_loaded('newrelic'))
 		{

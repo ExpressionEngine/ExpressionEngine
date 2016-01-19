@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.0.6';	// The version being installed
+	public $version           = '3.1.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -763,7 +763,7 @@ class Wizard extends CI_Controller {
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
 			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_general_ci'
+			'dbcollat' => 'utf8_unicode_ci'
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
@@ -1132,6 +1132,9 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('progress');
 
+		// if any of the underlying code uses caching, make sure we do nothing
+		ee()->config->set_item('cache_driver', 'dummy');
+
 		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
 
@@ -1237,7 +1240,8 @@ class Wizard extends CI_Controller {
 
 			if ( ! empty($UD->errors))
 			{
-				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+				ee()->load->helper('html');
+				$error_msg .= "</p>".ul($UD->errors)."<p>";
 			}
 
 			$this->set_output('error', array('error' => $error_msg));
@@ -2411,7 +2415,8 @@ class Wizard extends CI_Controller {
 	 */
 	public function canRenameAutomatically()
 	{
-		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		if (version_compare($this->version, '3.0.0', '=')
+			&& file_exists(SYSPATH.'user/cache/mailing_list.zip'))
 		{
 			return FALSE;
 		}

@@ -42,10 +42,8 @@ class Survey {
 	 */
 	function fetch_anon_server_data()
 	{
-		$CI =& get_instance();
-
-		$CI->db->select('site_system_preferences');
-		$query = $CI->db->get_where('sites', array('site_id' => 1));
+		ee()->db->select('site_system_preferences');
+		$query = ee()->db->get_where('sites', array('site_id' => 1));
 
 		$site_url = '';
 		$path_info_support = 'n';
@@ -58,10 +56,10 @@ class Survey {
 		}
 
 		// Get a list of add-ons in their third_party folder
-		$CI->load->helper('directory');
+		ee()->load->helper('directory');
 
-		$mysql_info = ($CI->db->dbdriver == 'mysqli')
-			? mysqli_get_server_info($CI->db->conn_id) : mysql_get_server_info();
+		$mysql_info = (ee()->db->dbdriver == 'mysqli')
+			? mysqli_get_server_info(ee()->db->conn_id) : mysql_get_server_info();
 
 		return array(
 			'anon_id'			=> md5($site_url),
@@ -72,8 +70,8 @@ class Survey {
 			'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", $mysql_info),
 			'path_info_support'	=> $path_info_support,
 			'addons'			=> json_encode(directory_map(PATH_THIRD, 1)),
-			'forums'			=> ($CI->config->item('forum_is_installed') == "y") ? 'y' : 'n',
-			'msm'				=> ($CI->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
+			'forums'			=> (ee()->config->item('forum_is_installed') == "y") ? 'y' : 'n',
+			'msm'				=> (ee()->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
 		);
 	}
 

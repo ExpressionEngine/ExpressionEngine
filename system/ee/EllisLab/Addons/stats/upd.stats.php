@@ -27,7 +27,7 @@ class Stats_upd {
 
 	var $version	= '2.0';
 
-	function Stats_upd()
+	function __construct()
 	{
 		ee()->load->dbforge();
 	}

@@ -95,15 +95,16 @@ class Rte_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
+		ee()->load->library('typography');
 		$str = ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags(
 				ee()->typography->parse_file_paths($data)
 			),
 			array(
 				'text_format'	=> 'xhtml',
-				'html_format'	=> $this->row['channel_html_formatting'],
-				'auto_links'	=> $this->row['channel_auto_link_urls'],
-				'allow_img_url' => $this->row['channel_allow_img_urls']
+				'html_format'	=> isset($this->row['channel_html_formatting']) ? $this->row['channel_html_formatting'] : 'all',
+				'auto_links'	=> isset($this->row['channel_auto_link_urls']) ? $this->row['channel_auto_link_urls'] : 'n',
+				'allow_img_url' => isset($this->row['channel_allow_img_urls']) ? $this->row['channel_allow_img_urls'] : 'y'
 			)
 		);
 

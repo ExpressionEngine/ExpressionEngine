@@ -89,7 +89,6 @@ if ( ! function_exists('sanitize_search_terms'))
 		$str = str_replace('T9nbyrrsXCXv0pqemUAq8ff', '.', $str);
 
 		// Kill naughty stuff...
-		$CI =& get_instance();
 		$str = ee('Security/XSS')->clean($str);
 
 		return trim($str);

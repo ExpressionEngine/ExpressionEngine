@@ -137,7 +137,6 @@ class Buttons extends Settings {
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/members/html_button_reorder',
-				'cp/sort_helper'
 			),
 			'plugin' => array(
 				'ee_table_reorder'

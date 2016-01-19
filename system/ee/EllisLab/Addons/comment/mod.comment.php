@@ -50,7 +50,7 @@ class Comment {
 	 *
 	 * @access	public
 	 */
-	function Comment()
+	function __construct()
 	{
 		$fields = array('name', 'email', 'url', 'location', 'comment');
 
@@ -505,6 +505,19 @@ class Comment {
 			}
 		}
 
+		// -------------------------------------------
+		// 'comment_entries_comment_ids_query' hook.
+		//  - Manipulate the database object performing the query to gather IDs of comments to display
+		//  - Added 3.1.0
+		//
+			if (ee()->extensions->active_hook('comment_entries_comment_ids_query') === TRUE)
+			{
+				ee()->extensions->call('comment_entries_comment_ids_query', ee()->db);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+			}
+		//
+		// -------------------------------------------
+
 		if ($enabled['pagination'])
 		{
 			if ($pagination->paginate === TRUE)
@@ -595,6 +608,19 @@ class Comment {
 
 			// Potentially a lot of information
 			$query->free_result();
+
+			// -------------------------------------------
+			// 'comment_entries_query_result' hook.
+			//  - Take the whole query result array, do what you wish
+			//  - Added 3.1.0
+			//
+				if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
+				{
+					$results = ee()->extensions->call('comment_entries_query_result', $results);
+					if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+				}
+			//
+			// -------------------------------------------
 		}
 
 		/** ----------------------------------------
@@ -2485,9 +2511,7 @@ class Comment {
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		//  Insert data
-		$sql = ee()->db->insert_string('exp_comments', $data);
-		ee()->db->query($sql);
-		$comment_id = ee()->db->insert_id();
+		$comment_id = ee('Model')->make('Comment', $data)->save()->getId();
 
 		if ($is_spam == TRUE)
 		{
@@ -2853,7 +2877,7 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
-     * remove_comment is used by the spam module to delete comments that are 
+     * remove_comment is used by the spam module to delete comments that are
 	 * flagged as spam from the spam trap
 	 *
 	 * @param integer $comment_id  The ID of the comment

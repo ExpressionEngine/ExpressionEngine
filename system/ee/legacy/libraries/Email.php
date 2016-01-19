@@ -2138,10 +2138,9 @@ class EE_Email {
 	 */
 	protected function _set_error_message($msg, $val = '')
 	{
-		$CI =& get_instance();
-		$CI->lang->load('email');
+		ee()->lang->load('email');
 
-		if (sscanf($msg, 'lang:%s', $line) !== 1 OR FALSE === ($line = $CI->lang->line($line)))
+		if (sscanf($msg, 'lang:%s', $line) !== 1 OR FALSE === ($line = ee()->lang->line($line)))
 		{
 			$this->_debug_msg[] = str_replace('%s', $val, $msg).'<br />';
 		}

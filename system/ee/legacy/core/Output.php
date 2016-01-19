@@ -110,11 +110,9 @@ class EE_Output {
 	 */
 	function set_header($header, $replace = TRUE)
 	{
-		$EE =& get_instance();
-
 		// We always need to send a content type
 
-		if ($EE->config->item('send_headers') != 'y' && strncasecmp($header, 'content-type', 12) != 0)
+		if (ee()->config->item('send_headers') != 'y' && strncasecmp($header, 'content-type', 12) != 0)
 		{
 			return;
 		}
@@ -186,8 +184,6 @@ class EE_Output {
 	 */
 	function _display($output = '')
 	{
-		$EE =& get_instance();
-
 		if ($output == '')
 		{
 			$output = $this->final_output;
@@ -196,7 +192,7 @@ class EE_Output {
 
 		// Generate No-Cache Headers
 
-		if ($EE->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
+		if (ee()->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
 		{
 			$this->set_status_header(200);
 
@@ -211,7 +207,7 @@ class EE_Output {
 
 		switch ($this->out_type)
 		{
-			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
+			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
 				break;
 			case 'css':		$this->set_header("Content-type: text/css");
 				break;
@@ -231,7 +227,7 @@ class EE_Output {
 				// 'template_types' hook.
 				//  - Provide information for custom template types.
 				//
-				$template_types = $EE->extensions->call('template_types', array());
+				$template_types = ee()->extensions->call('template_types', array());
 				//
 				// -------------------------------------------
 
@@ -253,28 +249,22 @@ class EE_Output {
 		// Compress the output
 		// We simply set the ci config value to true
 
-		if ($EE->config->item('gzip_output') == 'y' AND REQ == 'PAGE')
+		if (ee()->config->item('gzip_output') == 'y' AND REQ == 'PAGE')
 		{
-			$EE->config->set_item('compress_output', TRUE);
+			ee()->config->set_item('compress_output', TRUE);
 		}
 
 
 		// Parse query count
 		if (REQ != 'CP')
 		{
-			$output = str_replace(LD.'total_queries'.RD, $EE->db->query_count, $output);
+			$output = str_replace(LD.'total_queries'.RD, ee()->db->query_count, $output);
 		}
 
 		// Note:  We use globals because we can't use $CI =& get_instance()
 		// since this function is sometimes called by the caching mechanism,
 		// which happens before the CI super object is available.
 		global $BM, $CFG;
-
-		// Grab the super object if we can.
-		if (class_exists('CI_Controller'))
-		{
-			$CI =& get_instance();
-		}
 
 		// --------------------------------------------------------------------
 
@@ -286,10 +276,8 @@ class EE_Output {
 
 		// --------------------------------------------------------------------
 
-		// Do we need to write a cache file?  Only if the controller does not have its
-		// own _output() method and we are not dealing with a cache file, which we
-		// can determine by the existence of the $CI object above
-		if ($this->cache_expiration > 0 && isset($CI) && ! method_exists($CI, '_output'))
+		// Do we need to write a cache file?
+		if ($this->cache_expiration > 0)
 		{
 			$this->_write_cache($output);
 		}
@@ -341,7 +329,13 @@ class EE_Output {
 		if ($this->enable_profiler == TRUE && ! ee()->input->is_ajax_request())
 		{
 			$profiler = ee('Profiler')->addSection('performance', ee()->benchmark->getBenchmarkTimings())
-				->addSection('variables', $_SERVER, $_COOKIE, $_GET, $_POST, ee()->session->all_userdata())
+				->addSection('variables', array(
+					'server' => $_SERVER,
+					'cookie' => $_COOKIE,
+					'get' => $_GET,
+					'post' => $_POST,
+					'userdata' => ee()->session->all_userdata()
+				))
 				->addSection('database', array(ee('Database')));
 
 			// Add the template debugger to the output
@@ -374,16 +368,7 @@ class EE_Output {
 
 		// --------------------------------------------------------------------
 
-		// Does the controller contain a function named _output()?
-		// If so send the output there.  Otherwise, echo it.
-		if (method_exists($CI, '_output'))
-		{
-			$CI->_output($output);
-		}
-		else
-		{
-			echo $output;  // Send it to the browser!
-		}
+		echo $output;  // Send it to the browser!
 
 		log_message('debug', "Final output sent to browser");
 		log_message('debug', "Total execution time: ".$elapsed);
@@ -400,8 +385,6 @@ class EE_Output {
 	 */
 	function _send_feed(&$output)
 	{
-		$EE =& get_instance();
-
 		$request = ( ! function_exists('getallheaders')) ? array() : @getallheaders();
 
 		if (preg_match("|<ee\:last_update>(.*?)<\/ee\:last_update>|", $output, $matches))
@@ -411,7 +394,7 @@ class EE_Output {
 		}
 		else
 		{
-			$last_update = $EE->localize->now;
+			$last_update = ee()->localize->now;
 		}
 
 		$output = trim($output);
@@ -419,7 +402,7 @@ class EE_Output {
 
 		// Check for the 'If-Modified-Since' Header
 
-		if ($EE->config->item('send_headers') == 'y' && isset($request['If-Modified-Since']) && trim($request['If-Modified-Since']) != '')
+		if (ee()->config->item('send_headers') == 'y' && isset($request['If-Modified-Since']) && trim($request['If-Modified-Since']) != '')
 		{
 			$x				= explode(';', $request['If-Modified-Since']);
 			$modify_tstamp	= strtotime($x['0']);
@@ -434,7 +417,7 @@ class EE_Output {
 		}
 
 		$this->set_status_header(200);
-		$this->set_header("Content-Type: text/xml; charset=".$EE->config->item('output_charset'));
+		$this->set_header("Content-Type: text/xml; charset=".ee()->config->item('output_charset'));
 
 		$this->set_header('Expires: '.gmdate('D, d M Y H:i:s', $last_update+(60*60)).' GMT'); // One hour
 		$this->set_header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_update).' GMT');
@@ -458,8 +441,7 @@ class EE_Output {
 	 */
 	function fatal_error($error_msg = '', $use_lang = TRUE)
 	{
-		$EE =& get_instance();
-		$heading = ($use_lang == TRUE && is_object($EE->lang)) ? $EE->lang->line('error') : 'Error Message';
+		$heading = ($use_lang == TRUE && is_object(ee()->lang)) ? ee()->lang->line('error') : 'Error Message';
 
 		$data = array(	'title' 	=> $heading,
 						'heading'	=> $heading,
@@ -480,8 +462,7 @@ class EE_Output {
 	 */
 	function system_off_msg()
 	{
-		$EE =& get_instance();
-		$query = $EE->db->query("SELECT template_data FROM exp_specialty_templates WHERE site_id = '".$EE->db->escape_str($EE->config->item('site_id'))."' AND template_name = 'offline_template'");
+		$query = ee()->db->query("SELECT template_data FROM exp_specialty_templates WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND template_name = 'offline_template'");
 
 		$this->set_status_header(503, 'Service Temporarily Unavailable');
 		@header('Retry-After: 3600');
@@ -509,8 +490,6 @@ class EE_Output {
 	 */
 	function show_message($data, $xhtml = TRUE)
 	{
-		$EE =& get_instance();
-
 		@header("Cache-Control: no-cache, must-revalidate");
 		@header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 		@header("Pragma: no-cache");
@@ -529,11 +508,11 @@ class EE_Output {
 		}
 
 		$data['meta_refresh']	= ($data['redirect'] != '') ? "<meta http-equiv='refresh' content='".$data['rate']."; url=".ee('Security/XSS')->clean($data['redirect'])."'>" : '';
-		$data['charset']		= $EE->config->item('output_charset');
+		$data['charset']		= ee()->config->item('output_charset');
 
 		if (is_array($data['link']) AND count($data['link']) > 0)
 		{
-			$refresh_msg = ($data['redirect'] != '' AND $this->refresh_msg == TRUE) ? $EE->lang->line('click_if_no_redirect') : '';
+			$refresh_msg = ($data['redirect'] != '' AND $this->refresh_msg == TRUE) ? ee()->lang->line('click_if_no_redirect') : '';
 
 			$ltitle = ($refresh_msg == '') ? $data['link']['1'] : $refresh_msg;
 
@@ -542,17 +521,17 @@ class EE_Output {
 			$data['link'] = "<a href='".$url."'>".$ltitle."</a>";
 		}
 
-		if ($xhtml == TRUE && isset($EE->session))
+		if ($xhtml == TRUE && isset(ee()->session))
 		{
-			$EE->load->library('typography');
+			ee()->load->library('typography');
 
-			$data['content'] = $EE->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
+			$data['content'] = ee()->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
 		}
 
-		$EE->db->select('template_data');
-		$EE->db->where('site_id', $EE->config->item('site_id'));
-		$EE->db->where('template_name', 'message_template');
-		$query = $EE->db->get('specialty_templates');
+		ee()->db->select('template_data');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('template_name', 'message_template');
+		$query = ee()->db->get('specialty_templates');
 
 		$row = $query->row_array();
 
@@ -641,9 +620,7 @@ class EE_Output {
 			$this->set_status_header(500);
 		}
 
-		$EE =& get_instance();
-
-		if ($EE->config->item('send_headers') == 'y')
+		if (ee()->config->item('send_headers') == 'y')
 		{
 			if (is_array($msg))
 			{
@@ -673,13 +650,11 @@ class EE_Output {
 	 */
 	function send_cache_headers($modified, $max_age = 172800, $etag_path = NULL)
 	{
-		$EE =& get_instance();
-
-		if ($EE->config->item('send_headers') == 'y')
+		if (ee()->config->item('send_headers') == 'y')
 		{
 			$max_age		= (int) $max_age;
 			$modified		= (int) $modified;
-			$modified_since	= $EE->input->server('HTTP_IF_MODIFIED_SINCE');
+			$modified_since	= ee()->input->server('HTTP_IF_MODIFIED_SINCE');
 
 			// Remove anything after the semicolon
 

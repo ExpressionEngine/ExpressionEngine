@@ -59,7 +59,6 @@ class Quicklinks extends Settings {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/sort_helper',
 				'cp/members/quick_links_reorder',
 			),
 			'plugin' => array(

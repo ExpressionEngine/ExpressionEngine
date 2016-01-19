@@ -647,9 +647,8 @@ class EE_FTP {
 	 */
 	function _error($line)
 	{
-		$CI =& get_instance();
-		$CI->lang->load('ftp');
-		show_error($CI->lang->line($line));
+		ee()->lang->load('ftp');
+		show_error(ee()->lang->line($line));
 	}
 
 

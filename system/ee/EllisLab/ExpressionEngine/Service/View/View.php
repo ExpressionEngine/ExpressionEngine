@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Core\Provider;
 class View {
 
 	/**
-	 * @var str The path to the view template file ex. '_shared/form'
+	 * @var string The path to the view template file ex. '_shared/form'
 	 */
 	protected $path;
 
@@ -63,6 +63,13 @@ class View {
 	 * startBlock() and endBlock()
 	 */
 	private $blockStack;
+
+	/**
+	 * @var string A copy of the path argument sent to `render()` this avoids
+	 * a scope issue where `extract()` could override that value and try to
+	 * include something unintended.
+	 */
+	private $path_for_parse;
 
 	/**
 	 * Constructor
@@ -123,19 +130,19 @@ class View {
 	 */
 	protected function parse($path, $vars)
 	{
-		$rewrite = (version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == FALSE);
+		$this->path_for_parse = $path;
 
 		extract($vars);
 
 		ob_start();
 
-		if ($rewrite)
+		if ((version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == FALSE))
 		{
-			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($path))));
+			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($this->path_for_parse))));
 		}
 		else
 		{
-			include($path);
+			include($this->path_for_parse);
 		}
 
 		$buffer = ob_get_contents();

@@ -44,7 +44,7 @@ class EE_Config {
 	 */
 	public function __construct()
 	{
-		$this->config =& get_config();
+		$this->config = get_config();
 
 		// Change this path before release.
 		$this->config_path = SYSPATH.'user/config/config.php';
@@ -417,19 +417,17 @@ class EE_Config {
 	 */
 	public function site_pages($site_id = NULL, $data = NULL)
 	{
-		$EE =& get_instance();
-
 		$sites = array();
 
 		// If no site ID is specified, get ALL sites data
 		if (empty($site_id))
 		{
-			$sites = $EE->db->get('sites')->result_array();
+			$sites = ee()->db->get('sites')->result_array();
 		}
 		// If the site ID is set but no data passed in to decode, get it from the database
 		else if (empty($data))
 		{
-			$sites = $EE->db->get_where('sites', array('site_id' => $site_id))->result_array();
+			$sites = ee()->db->get_where('sites', array('site_id' => $site_id))->result_array();
 		}
 		// Otherwise, we have both parameters, create an array for processing
 		else
@@ -1198,6 +1196,7 @@ class EE_Config {
 			'database' => 'string',
 			'pconnect' => 'bool',
 			'dbprefix' => 'string',
+			'dbcollat' => 'string',
 			'db_debug' => 'bool'
 		);
 		$dbconfig = array_intersect_key($dbconfig, $allowed_properties);
