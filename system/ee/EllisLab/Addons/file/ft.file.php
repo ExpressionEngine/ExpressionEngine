@@ -186,6 +186,25 @@ class File_ft extends EE_Fieldtype {
 				->withNameTarget($this->field_name)
 				->withImage($this->field_name);
 
+			// If we are showing a single directory respect its default modal view
+			if (count($allowed_file_dirs) == 1
+				&& (int) $allowed_file_dirs[0])
+			{
+				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs[0])
+					->first();
+
+				switch ($dir->default_modal_view)
+				{
+					case 'thumb':
+						$fp_link->asThumbs();
+						break;
+
+					default:
+						$fp_link->asList();
+						break;
+				}
+			}
+
 			$fp_upload = clone $fp_link;
 			$fp_upload
 				->setText(lang('upload_file'))
