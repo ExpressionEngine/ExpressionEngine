@@ -21,14 +21,9 @@ class Directory extends Filesystem {
 	 */
 	protected function normalize($path)
 	{
-		$path = realpath($this->root.'/'.$path);
+		$path = $this->root.'/'.$path;
 
-		if ($path === FALSE)
-		{
-			return NULL;
-		}
-
-		if (strpos($path, $this->root) !== 0)
+		if (strpos($path, '..') !== 0)
 		{
 			throw new FilesystemException('Attempting to access file outside of directory.');
 		}

@@ -62,6 +62,8 @@ class Filesystem {
 	 */
 	public function write($path, $data, $overwrite = FALSE)
 	{
+		$path = $this->normalize($path);
+		
 		if ($this->isDir($path))
 		{
 			throw new FilesystemException("Cannot write file, path is a directory: {$path}");
@@ -71,7 +73,7 @@ class Filesystem {
 			throw new FilesystemException("File already exists: {$path}");
 		}
 
-		file_put_contents($this->normalize($path), $data);
+		file_put_contents($path, $data);
 
 		$this->ensureCorrectAccessMode($path);
 	}
@@ -84,7 +86,8 @@ class Filesystem {
 	 */
 	public function mkDir($path, $with_index = TRUE)
 	{
-		mkdir($this->normalize($path), DIR_WRITE_MODE, TRUE);
+		$path = $this->normalize($path);
+		mkdir($path, DIR_WRITE_MODE, TRUE);
 
 		if ($with_index)
 		{
@@ -478,6 +481,6 @@ class Filesystem {
 	 */
 	protected function normalize($path)
 	{
-		return realpath($path);
+		return $path;
 	}
 }
