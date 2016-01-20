@@ -234,6 +234,7 @@ class EE_Core {
 		// Load the very, very base classes
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
+		ee()->load->library('api');
 	}
 
 	// --------------------------------------------------------------------
