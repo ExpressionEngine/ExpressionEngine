@@ -205,6 +205,9 @@ Grid.Publish.prototype = {
 			)
 		);
 
+		// Add the new row ID to the field data
+		$('> td', el).attr('data-new-row-id', 'new_row_' + this.original_row_count);
+
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');
 

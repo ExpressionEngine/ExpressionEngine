@@ -389,6 +389,8 @@ class Metaweblog_api {
 			)
 		);
 
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_entries');
 		ee()->legacy_api->instantiate('channel_fields');

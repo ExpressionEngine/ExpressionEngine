@@ -18,7 +18,7 @@ if ( ! function_exists('xml_parser_create'))
 	show_error('Your PHP installation does not support XML');
 }
 
-if ( ! class_exists('CI_Xmlrpc'))
+if ( ! class_exists('EE_Xmlrpc'))
 {
 	show_error('You must load the Xmlrpc class before loading the Xmlrpcs class in order to create a server.');
 }
@@ -34,7 +34,7 @@ if ( ! class_exists('CI_Xmlrpc'))
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
-class EE_Xmlrpcs extends CI_Xmlrpc
+class EE_Xmlrpcs extends EE_Xmlrpc
 {
 	var $methods		= array();	//array of methods mapped to function names and signatures
 	var $debug_msg		= '';		// Debug Message

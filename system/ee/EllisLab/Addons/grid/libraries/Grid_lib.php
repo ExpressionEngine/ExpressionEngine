@@ -146,6 +146,15 @@ class Grid_lib {
 			if ( ! is_numeric($row_id))
 			{
 				$row['row_id'] = $row_id;
+
+				// We want to reserve the row-id data attribute for real row IDs, not
+				// the string placeholders, in case folks are relying on having a real
+				// number there or are using it to determine if a row is new or not
+				$data_row_id_attr = 'data-new-row-id';
+			}
+			else
+			{
+				$data_row_id_attr = 'data-row-id';
 			}
 
 			$field_columns = array();
@@ -158,7 +167,7 @@ class Grid_lib {
 					'attrs' => array(
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
-						'data-row-id' => $row_id,
+						$data_row_id_attr => $row_id,
 						'width' => $column['col_width'].'%',
 					)
 				);

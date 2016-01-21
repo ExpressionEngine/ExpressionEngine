@@ -168,12 +168,6 @@ class File_ft extends EE_Fieldtype {
 		{
 			ee()->lang->loadfile('fieldtypes');
 
-			ee()->cp->add_js_script(array(
-				'file' => array(
-					'fields/file/cp'
-				),
-			));
-
 			if ($allowed_file_dirs == '')
 			{
 				$allowed_file_dirs = 'all';
@@ -185,6 +179,25 @@ class File_ft extends EE_Fieldtype {
 				->withValueTarget($this->field_name)
 				->withNameTarget($this->field_name)
 				->withImage($this->field_name);
+
+			// If we are showing a single directory respect its default modal view
+			if (count($allowed_file_dirs) == 1
+				&& (int) $allowed_file_dirs[0])
+			{
+				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs[0])
+					->first();
+
+				switch ($dir->default_modal_view)
+				{
+					case 'thumb':
+						$fp_link->asThumbs();
+						break;
+
+					default:
+						$fp_link->asList();
+						break;
+				}
+			}
 
 			$fp_upload = clone $fp_link;
 			$fp_upload
@@ -203,6 +216,12 @@ class File_ft extends EE_Fieldtype {
 			{
 				$fp_edit->setSelected($file->file_id);
 			}
+
+			ee()->cp->add_js_script(array(
+				'file' => array(
+					'fields/file/cp'
+				),
+			));
 
 			return ee('View')->make('file:publish')->render(array(
 				'field_name' => $this->field_name,

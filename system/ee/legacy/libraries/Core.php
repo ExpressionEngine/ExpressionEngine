@@ -80,8 +80,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160118');
-		define('APP_VER',		'3.1.0');
+		define('APP_BUILD',		'20160120');
+		define('APP_VER',		'3.1.1');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -234,6 +234,7 @@ class EE_Core {
 		// Load the very, very base classes
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
+		ee()->load->library('api');
 	}
 
 	// --------------------------------------------------------------------
