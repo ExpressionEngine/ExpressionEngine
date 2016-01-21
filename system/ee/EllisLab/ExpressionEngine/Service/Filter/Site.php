@@ -100,7 +100,7 @@ class Site extends Filter {
 	{
 		$value = parent::value();
 
-		if ( ! is_numeric($value))
+		if ( ! is_numeric($value) && ! empty($value))
 		{
 			$needle = strtolower($value);
 
