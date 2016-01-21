@@ -27,7 +27,7 @@ class EE_Config {
 
 	public $config = array();
 	public $is_loaded = array();
-	public $_config_paths = array(SYSPATH, APPPATH);
+	public $_config_paths = array(SYSPATH.'user/', APPPATH);
 
 	public $config_path         = ''; // Set in the constructor below
 	public $default_ini         = array();
