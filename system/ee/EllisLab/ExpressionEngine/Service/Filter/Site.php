@@ -101,7 +101,7 @@ class Site extends Filter {
 			return '';
 		}
 
-		parent::render($view, $url);
+		return parent::render($view, $url);
 	}
 
 }
