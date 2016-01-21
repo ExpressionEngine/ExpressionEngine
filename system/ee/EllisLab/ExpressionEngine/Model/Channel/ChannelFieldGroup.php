@@ -17,7 +17,6 @@ class ChannelFieldGroup extends Model {
 			'to_key' => 'field_group',
 		),
 		'ChannelFields' => array(
-			'weak' => TRUE,
 			'type' => 'hasMany',
 			'model' => 'ChannelField'
 		)
