@@ -27,7 +27,7 @@ class EE_Config {
 
 	public $config = array();
 	public $is_loaded = array();
-	public $_config_paths = array(SYSPATH.'user/', APPPATH);
+	public $_config_paths = array();
 
 	public $config_path         = ''; // Set in the constructor below
 	public $default_ini         = array();
@@ -46,7 +46,7 @@ class EE_Config {
 	{
 		$this->config = get_config();
 
-		// Change this path before release.
+		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
 		$this->config_path = SYSPATH.'user/config/config.php';
 
 		$this->_initialize();
