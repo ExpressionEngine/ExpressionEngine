@@ -96,7 +96,7 @@ class Layouts extends AbstractChannelsController {
 					'content' => $layout->layout_name,
 					'href' => $edit_url
 				),
-				implode(',', $layout->MemberGroups->pluck('group_title')),
+				implode(', ', $layout->MemberGroups->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => $edit_url,
