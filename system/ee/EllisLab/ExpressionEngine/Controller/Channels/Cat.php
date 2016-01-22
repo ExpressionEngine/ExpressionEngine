@@ -1303,7 +1303,7 @@ class Cat extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$cat_field = $cat_field->save();
+				$cat_field->save();
 
 				if (is_null($field_id))
 				{
