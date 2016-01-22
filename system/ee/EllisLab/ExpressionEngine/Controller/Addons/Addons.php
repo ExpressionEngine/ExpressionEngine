@@ -1758,7 +1758,7 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'textarea',
 						'value' => str_replace("\\'", "'", $value),
-						'kill_pipes' => $options['1']['kill_pipes']
+						'kill_pipes' => isset($options['1']['kill_pipes']) ? $options['1']['kill_pipes'] : FALSE
 					);
 					break;
 
@@ -1774,7 +1774,7 @@ class Addons extends CP_Controller {
 			$vars['sections'][0][] = $element;
 		}
 
-		return ee('View')->make('_shared/form')->render($vars);
+		return ee('View')->make('_shared/form_with_box')->render($vars);
 	}
 
 	private function saveExtensionSettings($name)
