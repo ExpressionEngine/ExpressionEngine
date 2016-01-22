@@ -63,7 +63,7 @@ class EE_Config {
 	function _initialize()
 	{
 		// Fetch the config file
-		$config = get_config();
+		$config =& get_config();
 
 		// Is the config file blank?  If so it means that ExpressionEngine has not been installed yet
 		if ( ! isset($config) OR count($config) == 0)
