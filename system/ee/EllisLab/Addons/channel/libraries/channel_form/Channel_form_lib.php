@@ -1649,6 +1649,11 @@ GRID_FALLBACK;
 			}
 		}
 
+		if ( ! isset($_POST['url_title']))
+		{
+			$_POST['url_title'] = url_title($_POST['title']);
+		}
+
 		if (empty($this->field_errors) && empty($this->errors))
 		{
 			//temporarily change site_id for cross-site forms
