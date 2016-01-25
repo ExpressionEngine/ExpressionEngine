@@ -506,6 +506,7 @@ $lang = array(
 'title_not_unique' => 'An entry already exists with this title.  Titles must be unique.',
 
 'url_title_not_unique' => 'This URL title is being used by <b><a href="%s" rel="external">%s</a></b>. URL titles must be unique.',
+'url_title_not_unique_frontend' => 'This URL title is being used by another entry. URL titles must be unique.',
 
 'entry_has_been_added' => 'New Entry Submitted',
 
