@@ -817,7 +817,9 @@ class ChannelEntry extends ContentModel {
 	public function populateChannels($field)
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0 OR ee()->session->userdata('group_id') == 1)
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+				OR ee()->session->userdata('group_id') == 1
+				OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
