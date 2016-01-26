@@ -304,7 +304,7 @@ class EE_Template {
 			'template_name' => $this->template_name,
 			'template_group' => $this->group_name,
 			'template_id' => $this->template_id,
-			'template_type' => $this->embed_type ?: $this->template_type
+			'template_type' => $this->embed_type ?: $this->template_type,
 			'is_ajax_request' => AJAX_REQUEST
 		);
 
