@@ -173,7 +173,7 @@ class Updater {
 			// Does the path exist?
 			if (empty($avatar_path))
 			{
-				throw new UpdaterException_3_1_0('<kbd>avatar_path</kbd> is not a valid path.');
+				throw new UpdaterException_3_1_0('Please correct the avatar path in your config file.');
 			}
 
 			$avatar_paths[] = $avatar_path;
@@ -189,7 +189,7 @@ class Updater {
 
 			if ( ! file_exists($avatar_path))
 			{
-				throw new UpdaterException_3_1_0("<kbd>{$avatar_path}</kbd> is not a valid path.");
+				throw new UpdaterException_3_1_0("Please correct the avatar path in your config file.");
 			}
 
 			// Check to see if the directory is writable
@@ -197,20 +197,20 @@ class Updater {
 			{
 				if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
 				{
-					throw new UpdaterException_3_1_0("<kbd>{$avatar_path}</kbd> is not writeable.");
+					throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
 				}
 			}
 
 			// Create the default directory
 			if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
 			{
-				throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path}/default/</kbd>.");
+				throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
 			}
 
 			// Copy over the index.html
 			if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
 			{
-				throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path}/default/</kbd>.");
+				throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
 			}
 
 			$default_avatars = array(
@@ -232,13 +232,13 @@ class Updater {
 			);
 			foreach ($default_avatars as $filename)
 			{
-				if ( ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
+				if (file_exists($avatar_path.'/'.$filename)
+					&& ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
 				{
-					throw new UpdaterException_3_1_0("Could not copy default avatars to <kbd>{$avatar_path_clean}/default/</kbd>");
+					throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
 				}
 			}
 		}
-
 	}
 
 	private function update_collation_config()
@@ -411,6 +411,6 @@ class UpdaterException_3_1_0 extends Exception
 {
 	function __construct($message)
 	{
-		parent::__construct($message.' <a href="https://ellislab.com/expressionengine/user-guide/installation/version_notes_3.1.0.html">Please see 3.1.0 version notes.</a>');
+		parent::__construct($message.' <a href="https://docs.expressionengine.com/v3/installation/version_notes_3.1.0.html">Please see 3.1.0 version notes.</a>');
 	}
 }
