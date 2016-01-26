@@ -455,7 +455,6 @@ class Cp {
 		return NULL;
 	}
 
-
 	/**
 	 * EE Version Check function
 	 *
