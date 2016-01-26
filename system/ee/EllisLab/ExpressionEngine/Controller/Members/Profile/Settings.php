@@ -349,7 +349,7 @@ class Settings extends Profile {
 	{
 		$existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
 
-		if (file_exists($existing))
+		if (file_exists($existing) && is_file($existing))
 		{
 			unlink($existing);
 		}
