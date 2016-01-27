@@ -33,7 +33,7 @@ class Jquery {
 	{
 		if ( ! defined('PATH_JQUERY'))
 		{
-			define('PATH_JQUERY', PATH_THEMES.'javascript/'.PATH_JS.'/jquery/');
+			define('PATH_JQUERY', PATH_THEMES.'asset/javascript/'.PATH_JS.'/jquery/');
 		}
 
 		ee()->lang->loadfile('jquery');
