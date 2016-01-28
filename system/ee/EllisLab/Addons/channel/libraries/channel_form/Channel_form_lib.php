@@ -2513,6 +2513,7 @@ GRID_FALLBACK;
 		$meta = serialize($meta);
 
 		ee()->load->library('encrypt');
+
 		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
