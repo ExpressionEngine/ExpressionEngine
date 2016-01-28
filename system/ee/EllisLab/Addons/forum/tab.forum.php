@@ -136,29 +136,20 @@ class Forum_tab {
 		// No forums, nothing to show
 		if ($forum_id_override)
 		{
-			$settings['forum_topic_id']['field_type'] = 'hidden';
-			$settings['forum_body']['field_type'] = 'hidden';
-			$settings['forum_title']['field_type'] = 'hidden';
-
-			// unset($settings['forum_topic_id']);
-			// unset($settings['forum_body']);
-			// unset($settings['forum_title']);
+			$settings['forum_topic_id']['field_disabled'] = 'y';
+			$settings['forum_body']['field_disabled'] = 'y';
+			$settings['forum_title']['field_disabled'] = 'y';
 		}
 
 		// Edit - can't change text
 		if ($entry_id)
 		{
-			$settings['forum_id']['field_type'] = 'hidden';
-			$settings['forum_body']['field_type'] = 'hidden';
-
-			// unset($settings['forum_id']);
-			// unset($settings['forum_body']);
+			$settings['forum_id']['field_disabled'] = 'y';
+			$settings['forum_body']['field_disabled'] = 'y';
 
 			if ($forum_title == '')
 			{
-				$settings['forum_title']['field_type'] = 'hidden';
-
-				// unset($settings['forum_title']);
+				$settings['forum_title']['field_disabled'] = 'y';
 			}
 		}
 
