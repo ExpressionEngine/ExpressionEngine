@@ -95,7 +95,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|validateUrlTitle',
+		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[site_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -235,6 +235,34 @@ class ChannelEntry extends ContentModel {
 		if ( ! (bool) preg_match("/^([-a-z0-9_.-])+$/i", $value))
 		{
 			return 'alpha_dash_period';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validate that the url title is unique for this site and return a custom
+	 * error with the channel entry title if it is not.
+	 */
+	public function validateUniqueUrlTitle($key, $value, $params, $rule)
+	{
+		$site_id = $this->getProperty($params[0]);
+
+		$entry = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'title')
+			->filter('site_id', $site_id)
+			->filter('url_title', $value)
+			->first();
+
+		if ($entry)
+		{
+			if (defined('REQ') && REQ == 'CP')
+			{
+				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+				return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
+			}
+
+			return lang('url_title_not_unique_frontend');
 		}
 
 		return TRUE;
@@ -789,7 +817,9 @@ class ChannelEntry extends ContentModel {
 	public function populateChannels($field)
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0 OR ee()->session->userdata('group_id') == 1)
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+				OR ee()->session->userdata('group_id') == 1
+				OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)

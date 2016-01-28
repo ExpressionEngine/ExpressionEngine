@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Model\Member;
 
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 
 /**
  * Member

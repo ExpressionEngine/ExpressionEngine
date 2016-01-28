@@ -34,8 +34,9 @@
 			<?=ee('CP/Alert')->get('layout-form')?>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
-			<?php foreach ($tab->getFields() as $field): ?>
-				<fieldset class="col-group sortable<?php if ($field->isRequired()) echo ' required'; ?><?php if (end($tab->getFields()) == $field) echo' last'?>">
+			<?php $fields = $tab->getFields();
+			foreach ($fields as $field): ?>
+				<fieldset class="col-group sortable<?php if ($field->isRequired()) echo ' required'; ?><?php if (end($fields) == $field) echo' last'?>">
 					<div class="layout-tools col w-2">
 						<ul class="toolbar vertical">
 							<li class="move"><a href=""></a></li>

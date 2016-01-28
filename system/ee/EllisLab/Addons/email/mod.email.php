@@ -393,9 +393,11 @@ class Email {
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
+		ee()->load->helper('form');
+
 		// Process default variables
 		$default = array('message', 'name', 'to', 'from', 'subject', 'required');
-		foreach ($default as $field)
+		foreach ($default as $key)
 		{
 			// Adding slashes since they removed in _setup_form
 			$var = addslashes(

@@ -104,7 +104,8 @@
 					{
 						$field_class .= ' required';
 					}
-					if (end($tab->getFields()) == $field)
+					$fields = $tab->getFields();
+					if (end($fields) == $field)
 					{
 						$field_class .= ' last';
 					}

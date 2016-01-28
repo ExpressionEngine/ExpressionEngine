@@ -84,7 +84,7 @@ class SecurityPrivacy extends Settings {
 				),
 				array(
 					'title' => 'cookie_path',
-					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://ellislab.com/expressionengine/user-guide/cp/admin/cookie_settings.html#cookie-path')),
+					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/v3/cp/settings/security-privacy.html#path')),
 					'fields' => array(
 						'cookie_path' => array('type' => 'text')
 					)

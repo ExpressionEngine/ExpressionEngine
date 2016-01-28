@@ -28,7 +28,6 @@
  */
 class EE_Encrypt {
 
-	var $CI;
 	var $encryption_key	= '';
 	var $_hash_type	= 'sha1';
 	var $_mcrypt_exists = FALSE;
@@ -43,7 +42,6 @@ class EE_Encrypt {
 	 */
 	public function __construct()
 	{
-		$this->CI =& get_instance();
 		$this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? FALSE : TRUE;
 		log_message('debug', "Encrypt Class Initialized");
 	}
@@ -69,8 +67,7 @@ class EE_Encrypt {
 				return $this->encryption_key;
 			}
 
-			$CI =& get_instance();
-			$key = $CI->config->item('encryption_key');
+			$key = ee()->config->item('encryption_key');
 
 			if ($key == FALSE)
 			{

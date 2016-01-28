@@ -93,6 +93,8 @@ class Filepicker_mcp {
 		// directory filter
 		$requested = ee()->input->get('directory') ?: 'all';
 
+		$show = (empty($show) && $requested == 'all') ? 'all' : $show;
+
 		if ($show != 'all')
 		{
 			$dirs = $dirs->filter('id', (int) $show);
@@ -172,7 +174,7 @@ class Filepicker_mcp {
 				$filters = ee('CP/Filter')->add($dirFilter);
 			}
 
-			$filters = $filters->add('Perpage', $total_files, 'show_all_files');
+			$filters = $filters->add('Perpage', $total_files, 'show_all_files', TRUE);
 
 			$imgOptions = array(
 				'thumb' => 'thumbnails',
@@ -197,7 +199,7 @@ class Filepicker_mcp {
 		{
 			$base_url->setQueryStringVariable('hasFilters', $has_filters);
 
-			$perpage = 5;
+			$perpage = 25;
 			$page = ((int) ee()->input->get('page')) ?: 1;
 			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
 		}

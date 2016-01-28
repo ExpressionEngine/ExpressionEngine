@@ -36,7 +36,6 @@ class EE_Jquery extends EE_Javascript {
 
 	public function __construct($params)
 	{
-		$this->CI =& get_instance();
 		extract($params);
 
 		if ($autoload === TRUE)
@@ -710,16 +709,16 @@ class EE_Jquery extends EE_Javascript {
 	{
 		$container = $this->_prep_element($container);
 
-		$controller = (strpos('://', $controller) === FALSE) ? $controller : $this->CI->config->site_url($controller);
+		$controller = (strpos('://', $controller) === FALSE) ? $controller : ee()->config->site_url($controller);
 
 		// ajaxStart and ajaxStop are better choices here... but this is a stop gap
-		if ($this->CI->config->item('javascript_ajax_img') == '')
+		if (ee()->config->item('javascript_ajax_img') == '')
 		{
 			$loading_notifier = "Loading...";
 		}
 		else
 		{
-			$loading_notifier = '<img src=\'' . $this->CI->config->slash_item('base_url') . $this->CI->config->item('javascript_ajax_img') . '\' alt=\'Loading\' />';
+			$loading_notifier = '<img src=\'' . ee()->config->slash_item('base_url') . ee()->config->item('javascript_ajax_img') . '\' alt=\'Loading\' />';
 		}
 
 		$updater = "$($container).empty();\n"; // anything that was in... get it out
@@ -941,7 +940,7 @@ class EE_Jquery extends EE_Javascript {
 	{
 		// External references
 		$external_scripts = implode('', $this->jquery_code_for_load);
-		$this->CI->load->vars(array('library_src' => $external_scripts));
+		ee()->load->vars(array('library_src' => $external_scripts));
 
 		if (count($this->jquery_code_for_compile) == 0 )
 		{
@@ -956,7 +955,7 @@ class EE_Jquery extends EE_Javascript {
 
 		$output = ($script_tags === FALSE) ? $script : $this->inline($script);
 
-		$this->CI->load->vars(array($view_var => $output));
+		ee()->load->vars(array($view_var => $output));
 		return $output;
 	}
 

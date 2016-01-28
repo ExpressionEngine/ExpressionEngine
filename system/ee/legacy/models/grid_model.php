@@ -327,10 +327,12 @@ class Grid_model extends CI_Model {
 	 *
 	 * @param	array	Entry IDs to get row data for
 	 * @param	int		Field ID to get row data for
+	 * @param	string	Name of content type
 	 * @param	array	Options for the query, often filled by tag parameters
+	 * @param	boolean	Whether or not to get fresh data on this call instead of from the _grid_data cache
 	 * @return	array	Row data
 	 */
-	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array())
+	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE)
 	{
 		if ( ! is_array($entry_ids))
 		{
@@ -346,7 +348,7 @@ class Grid_model extends CI_Model {
 		{
 			// If we already have data for this particular tag configuation
 			// and entry ID, we don't need to get it again
-			if (isset($this->_grid_data[$field_id][$marker][$entry_id]))
+			if ($reset_cache === FALSE && isset($this->_grid_data[$field_id][$marker][$entry_id]))
 			{
 				unset($entry_ids[$key]);
 			}

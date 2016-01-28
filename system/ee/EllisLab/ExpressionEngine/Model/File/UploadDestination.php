@@ -134,23 +134,50 @@ class UploadDestination extends Model {
 	 * Returns the propety value using the overrides if present
 	 *
 	 * @param str $name The name of the property to fetch
-	 * @throws InvalidArgumentException if the property does not exist
 	 * @return mixed The value of the property
 	 */
 	public function __get($name)
 	{
 		$value = parent::__get($name);
 
-		// Check if have an override for this directory and that it's an
-		// array (as it should be)
-		if (isset($this->_property_overrides[$this->id])
-			&& is_array($this->_property_overrides[$this->id])
-			&& array_key_exists($name, $this->_property_overrides[$this->id]))
+		if ($this->hasOverride($name))
 		{
 			$value = $this->_property_overrides[$this->id][$name];
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Returns the propety value using the overrides if present
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return mixed The value of the property
+	 */
+	public function getProperty($name)
+	{
+		$value = parent::getProperty($name);
+
+		if ($this->hasOverride($name))
+		{
+			$value = $this->_property_overrides[$this->id][$name];
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Check if have an override for this directory and that it's an
+	 * array (as it should be)
+
+	 * @param str $name The name of the property to check
+	 * @return bool Property is overridden?
+	 */
+	private function hasOverride($name)
+	{
+		return (isset($this->_property_overrides[$this->id])
+			&& is_array($this->_property_overrides[$this->id])
+			&& array_key_exists($name, $this->_property_overrides[$this->id]));
 	}
 
 	/**

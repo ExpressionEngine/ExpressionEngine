@@ -286,7 +286,7 @@ EE.cp.formValidation = {
 			// See if this tab has its own submit button
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-ctrls input.btn').size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find('.form-ctrls input.btn') : form.find('.form-ctrls input.btn');
+			button = (tab_has_own_button) ? tab_container.find('.form-ctrls .btn') : form.find('.form-ctrls .btn');
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places

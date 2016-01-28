@@ -345,11 +345,11 @@ class Settings extends Profile {
 		return parent::saveSettings($settings);
 	}
 
-	public function uploadAvatar()
+	protected function uploadAvatar()
 	{
 		$existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
 
-		if (file_exists($existing))
+		if (file_exists($existing) && is_file($existing))
 		{
 			unlink($existing);
 		}

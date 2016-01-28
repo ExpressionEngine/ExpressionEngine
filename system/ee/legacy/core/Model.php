@@ -46,8 +46,7 @@ class EE_Model {
 	 */
 	function __get($key)
 	{
-		$CI =& get_instance();
-		return $CI->$key;
+		return ee()->$key;
 	}
 }
 // END Model Class

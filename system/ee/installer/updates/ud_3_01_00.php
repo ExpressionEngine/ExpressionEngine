@@ -45,6 +45,9 @@ class Updater {
 				'add_global_variable_edit_date',
 				'update_collation_config',
 				'fix_table_collations',
+				'ensure_upload_directories_are_correct',
+				'synchronize_layouts',
+				'template_routes_remove_empty'
 			)
 		);
 
@@ -144,69 +147,96 @@ class Updater {
  	 */
 	private function move_avatars()
 	{
-		$avatar_path = realpath(ee()->config->item('avatar_path'));
-		$avatar_path_clean = htmlentities($avatar_path);
+		$avatar_paths = array();
+		$avatar_path = ee()->config->item('avatar_path');
 
-		// Does the path exist?
-		if (empty($avatar_path))
+		// config file has precedence, otherwise do the per-site ones
+		if ( ! $avatar_path)
 		{
-			throw new UpdaterException_3_1_0('<kbd>avatar_path</kbd> is not defined.');
-		}
+			$site_prefs = ee('Model')->get('Site')->all()->indexBy('site_id');
 
-		// Check that we haven't already done this
-		if (file_exists($avatar_path.'/default/'))
-		{
-			return TRUE;
-		}
-
-		if ( ! file_exists($avatar_path))
-		{
-			throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not a valid path.");
-		}
-
-		// Check to see if the directory is writable
-		if ( ! is_writable($avatar_path))
-		{
-			if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
+			foreach ($site_prefs as $site_id => $site)
 			{
-				throw new UpdaterException_3_1_0("<kbd>{$avatar_path_clean}</kbd> is not writeable.");
+				$avatar_path = $site->site_member_preferences->avatar_path;
+				$avatar_path = realpath($avatar_path);
+
+				if ( ! empty($avatar_path))
+				{
+					$avatar_paths[] = $avatar_path;
+				}
 			}
 		}
-
-		// Create the default directory
-		if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
+		else
 		{
-			throw new UpdaterException_3_1_0("Could not create <kbd>{$avatar_path_clean}/default/</kbd>.");
-		}
+			$avatar_path = realpath($avatar_path);
 
-		// Copy over the index.html
-		if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
-		{
-			throw new UpdaterException_3_1_0("Could not copy <kbd>index.html</kbd> to <kbd>{$avatar_path_clean}/default/</kbd>.");
-		}
-
-		$default_avatars = array(
-			'avatar_tree_hugger_color.png',
-			'bad_fur_day.jpg',
-			'big_horns.jpg',
-			'eat_it_up.jpg',
-			'ee_paint.jpg',
-			'expression_radar.jpg',
-			'flying_high.jpg',
-			'hair.png',
-			'hanging_out.jpg',
-			'hello_prey.jpg',
-			'light_blur.jpg',
-			'ninjagirl.png',
-			'procotopus.png',
-			'sneak_squirrel.jpg',
-			'zombie_bunny.png'
-		);
-		foreach ($default_avatars as $filename)
-		{
-			if ( ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
+			// Does the path exist?
+			if (empty($avatar_path))
 			{
-				throw new UpdaterException_3_1_0("Could not copy default avatars to <kbd>{$avatar_path_clean}/default/</kbd>");
+				throw new UpdaterException_3_1_0('Please correct the avatar path in your config file.');
+			}
+
+			$avatar_paths[] = $avatar_path;
+		}
+
+		foreach ($avatar_paths as $avatar_path)
+		{
+			// Check that we haven't already done this
+			if (file_exists($avatar_path.'/default/'))
+			{
+				return TRUE;
+			}
+
+			if ( ! file_exists($avatar_path))
+			{
+				throw new UpdaterException_3_1_0("Please correct the avatar path in your config file.");
+			}
+
+			// Check to see if the directory is writable
+			if ( ! is_writable($avatar_path))
+			{
+				if ( ! @chmod($avatar_path, DIR_WRITE_MODE))
+				{
+					throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
+				}
+			}
+
+			// Create the default directory
+			if ( ! mkdir($avatar_path.'/default/', DIR_WRITE_MODE))
+			{
+				throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
+			}
+
+			// Copy over the index.html
+			if ( ! copy($avatar_path.'/index.html', $avatar_path.'/default/index.html'))
+			{
+				throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
+			}
+
+			$default_avatars = array(
+				'avatar_tree_hugger_color.png',
+				'bad_fur_day.jpg',
+				'big_horns.jpg',
+				'eat_it_up.jpg',
+				'ee_paint.jpg',
+				'expression_radar.jpg',
+				'flying_high.jpg',
+				'hair.png',
+				'hanging_out.jpg',
+				'hello_prey.jpg',
+				'light_blur.jpg',
+				'ninjagirl.png',
+				'procotopus.png',
+				'sneak_squirrel.jpg',
+				'zombie_bunny.png'
+			);
+			foreach ($default_avatars as $filename)
+			{
+				if (file_exists($avatar_path.'/'.$filename)
+					&& ! rename($avatar_path.'/'.$filename, $avatar_path.'/default/'.$filename))
+				{
+					throw new UpdaterException_3_1_0("Please correct the permissions on your avatar directory.");
+				}
 			}
 		}
 	}
@@ -240,12 +270,147 @@ class Updater {
 		}
 
 	}
+
+	private function ensure_upload_directories_are_correct()
+	{
+		$site_prefs = ee('Model')->get('Site')->all()->indexBy('site_id');
+
+		foreach ($site_prefs as $site_id => $prefs)
+		{
+			$member_prefs = $prefs->site_member_preferences;
+			$member_directories = array();
+
+			$member_directories['Avatars'] = array(
+				'server_path' => $member_prefs->avatar_path,
+				'url' => $member_prefs->avatar_url,
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->avatar_max_width,
+				'max_height' => $member_prefs->avatar_max_height,
+				'max_size' => $member_prefs->avatar_max_kb,
+			);
+
+			$member_directories['Default Avatars'] = array(
+				'server_path' => rtrim($member_prefs->avatar_path, '/').'/default/',
+				'url' => rtrim($member_prefs->avatar_url, '/').'/default/',
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->avatar_max_width,
+				'max_height' => $member_prefs->avatar_max_height,
+				'max_size' => $member_prefs->avatar_max_kb,
+			);
+
+			$member_directories['Member Photos'] = array(
+				'server_path' => $member_prefs->photo_path,
+				'url' => $member_prefs->photo_url,
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->photo_max_width,
+				'max_height' => $member_prefs->photo_max_height,
+				'max_size' => $member_prefs->photo_max_kb,
+			);
+
+			$member_directories['Signature Attachments'] = array(
+				'server_path' => $member_prefs->sig_img_path,
+				'url' => $member_prefs->sig_img_url,
+				'allowed_types' => 'img',
+				'max_width' => $member_prefs->sig_img_max_width,
+				'max_height' => $member_prefs->sig_img_max_height,
+				'max_size' => $member_prefs->sig_img_max_kb,
+			);
+
+			$member_directories['PM Attachments'] = array(
+				'server_path' => $member_prefs->prv_msg_upload_path,
+				'url' => str_replace('avatars', 'pm_attachments', $member_prefs->avatar_url),
+				'allowed_types' => 'img',
+				'max_size' => $member_prefs->prv_msg_attach_maxsize
+			);
+
+			$existing = ee('Model')->get('UploadDestination')
+				->fields('name')
+				->filter('name', 'IN', array_keys($member_directories))
+				->filter('site_id', $site_id)
+				->all()
+				->pluck('name');
+
+			foreach ($existing as $name)
+			{
+				unset($member_directories[$name]);
+			}
+
+			foreach ($member_directories as $name => $data)
+			{
+				$dir = ee('Model')->make('UploadDestination', $data);
+				$dir->site_id = $site_id;
+				$dir->name = $name;
+				$dir->removeNoAccess();
+				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
+				$dir->save();
+			}
+		}
+	}
+
+	/**
+	 * Fields added after a layout was crated, never made it into the layout.
+	 *
+	 * @return void
+	 */
+	private function synchronize_layouts()
+	{
+		$layouts = ee('Model')->get('ChannelLayout')->all();
+
+		foreach ($layouts as $layout)
+		{
+			// Account for any new fields that have been added to the channel
+			// since the last edit
+			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
+
+			foreach ($layout->field_layout as $section)
+			{
+				foreach ($section['fields'] as $field_info)
+				{
+					if (strpos($field_info['field'], 'field_id_') == 0)
+					{
+						$id = str_replace('field_id_', '', $field_info['field']);
+						unset($custom_fields[$id]);
+					}
+				}
+			}
+
+			$field_layout = $layout->field_layout;
+
+			foreach ($custom_fields as $id => $val)
+			{
+				$field_info = array(
+					'field'     => 'field_id_' . $id,
+					'visible'   => TRUE,
+					'collapsed' => FALSE
+				);
+				$field_layout[0]['fields'][] = $field_info;
+			}
+
+			$layout->field_layout = $field_layout;
+			$layout->save();
+		}
+	}
+
+	/**
+	 * We were putting all templates into the routes table, regardless of whether
+	 * they had a route
+	 *
+	 * @return void
+	 */
+	private function template_routes_remove_empty()
+	{
+		if (ee()->db->table_exists('template_routes'))
+		{
+			ee()->db->or_where('route IS NULL OR route = ""');
+			ee()->db->delete('template_routes');
+		}
+	}
 }
 
 class UpdaterException_3_1_0 extends Exception
 {
 	function __construct($message)
 	{
-		parent::__construct($message.' <a href="https://ellislab.com/expressionengine/user-guide/installation/version_notes_3.1.0.html">Please see 3.1.0 version notes.</a>');
+		parent::__construct($message.' <a href="https://docs.expressionengine.com/v3/installation/version_notes_3.1.0.html">Please see 3.1.0 version notes.</a>');
 	}
 }

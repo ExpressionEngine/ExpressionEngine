@@ -10,8 +10,8 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.htmlup
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://github.com/EllisLab/Wiki/LICENSEup
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource

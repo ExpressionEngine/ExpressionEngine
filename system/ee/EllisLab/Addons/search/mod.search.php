@@ -196,7 +196,7 @@ class Search {
 					{
 						foreach ($ignore as $badword)
 						{
-							$part = preg_replace("/\b".preg_quote($badword, '/')."\b/i","", $part);
+							$part = preg_replace("/\b".preg_quote($badword, '/')."\b/iu","", $part);
 						}
 					}
 

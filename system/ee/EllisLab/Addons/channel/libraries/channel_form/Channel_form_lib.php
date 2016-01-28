@@ -133,7 +133,7 @@ class Channel_form_lib
 		// ee()->router->set_class('ee');
 		ee()->load->library('javascript');
 		ee()->load->library('api');
-		// ee()->load->library('form_validation');
+		ee()->load->library('form_validation');
 		// ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->lang->loadfile('content');
@@ -1306,7 +1306,7 @@ GRID_FALLBACK;
 		$this->fetch_channel($this->_meta['channel_id']);
 
 		ee()->load->helper(array('url', 'form'));
-		ee()->load->library('api');
+		ee()->load->library(array('api', 'file_field'));
 		//ee()->legacy_api->instantiate('channel_fields');
 		ee()->load->library('filemanager');
 		ee()->load->library('form_validation');
@@ -1370,7 +1370,7 @@ GRID_FALLBACK;
 		//captcha check
 		$captcha_required = FALSE;
 
-		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			$captcha_required = TRUE;
 
@@ -1476,7 +1476,9 @@ GRID_FALLBACK;
 				// trick validation into calling the file fieldtype
 				if (isset($_FILES[$field->field_name]['name']))
 				{
-					$_POST[$field->field_name] = $_FILES[$field->field_name]['name'];
+					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
+			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';
+
 				}
 			}
 
@@ -1499,6 +1501,17 @@ GRID_FALLBACK;
 					//to get around _check_data_for_errors, a redundant check
 					$_POST['field_id_'.$field->field_id] = '1';
 				}
+			}
+			else
+			{
+				$field_rules = array();
+
+				if (isset($rules[$field->field_name]))
+				{
+					$field_rules = explode('|', $rules[$field->field_name]);
+				}
+
+				ee()->form_validation->set_rules($field->field_name, $field->field_label, implode('|', $field_rules));
 			}
 
 			foreach ($_POST as $key => $value)
@@ -1539,7 +1552,6 @@ GRID_FALLBACK;
 					$_POST['field_id_'.$field->field_id.'_'.$match[1]] = ee()->input->post($key, TRUE);
 				}
 			}
-
 		}
 
 		foreach ($this->title_fields as $field)
@@ -1549,8 +1561,6 @@ GRID_FALLBACK;
 			if (isset($this->default_fields[$field]) && ! $dropped)
 			{
 				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
-
-				ee()->form_validation->set_rules($field, $this->default_fields[$field]['field_label'], $this->default_fields[$field]['rules']);
 			}
 
 			if (ee()->input->post($field) !== FALSE)
@@ -1589,12 +1599,14 @@ GRID_FALLBACK;
 		}
 
 		//don't override status on edit, only on publish
-		if ( ! $this->edit && ! empty($this->settings['override_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
+		if ( ! $this->edit && ! empty($this->settings['default_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
-			$_POST['status'] = $this->settings['override_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
+			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 
 		$_POST['revision_post'] = $_POST;
+
+		$this->_member_group_override();
 
 		//added for EE2.1.2
 		ee()->legacy_api->instantiate('channel_categories');
@@ -1630,6 +1642,23 @@ GRID_FALLBACK;
 			ee()->api_channel_fields->settings[$field_id] = $settings;
 		}
 
+		// validate the custom validation parameters with the old validation library
+		if ( ! ee()->form_validation->run())
+		{
+			$errors = ee()->form_validation->_error_array;
+
+			if ( ! is_array($this->field_errors))
+			{
+				$this->field_errors = array();
+			}
+
+			foreach ($errors as $key => $message)
+			{
+				$field = ee()->form_validation->_field_data[$key]['label'];
+				$this->field_errors[$field] = $message;
+			}
+		}
+
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1643,6 +1672,11 @@ GRID_FALLBACK;
 			{
 				$_POST[$field_id] = $_POST[$field_name];
 			}
+		}
+
+		if ( ! isset($_POST['url_title']))
+		{
+			$_POST['url_title'] = url_title($_POST['title']);
 		}
 
 		if (empty($this->field_errors) && empty($this->errors))
@@ -1669,7 +1703,7 @@ GRID_FALLBACK;
 
 					$result = $this->entry->validate();
 
-					if (is_array($_POST['category']))
+					if (isset($_POST['category']) && is_array($_POST['category']))
 					{
 						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
 					}
@@ -1712,15 +1746,19 @@ GRID_FALLBACK;
 
 			ee()->config->set_item('site_id', $current_site_id);
 
+			$new_id = $this->entry('entry_id');
 			$this->clear_entry();
 
 			//load the just created entry into memory
-			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
+			$this->fetch_entry($new_id);
 		}
 		elseif ($captcha_required && $this->error_handling == 'inline')
 		{
 			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
+
+		// Reset their group_id back to 0
+		$this->_member_group_override(TRUE);
 
 		// -------------------------------------------
 		// 'channel_form_submit_entry_end' hook.
@@ -1795,6 +1833,7 @@ GRID_FALLBACK;
 
 			foreach ($this->field_errors as $field => $error)
 			{
+				$field = lang($field);
 				$field_errors[] = "<b>{$field}: </b>{$error}";
 			}
 
@@ -2251,7 +2290,7 @@ GRID_FALLBACK;
 						$this->settings[$column][$site_id] = array();
 					}
 
-					if ($column == 'require_captcha' || $column == 'allow_guest_posts')
+					if ($column == 'allow_guest_posts')
 					{
 						$value = $this->bool_string($value);
 					}
@@ -2474,6 +2513,7 @@ GRID_FALLBACK;
 		$meta = serialize($meta);
 
 		ee()->load->library('encrypt');
+
 		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
@@ -2721,7 +2761,7 @@ GRID_FALLBACK;
 			$show_future = (bool) $settings['future'];
 
 			ee()->db
-				->select('channel_titles.entry_id, channel_titles.title')
+				->select('channel_titles.entry_id, channel_titles.title, '.$settings['order_field'])
 				->order_by($settings['order_field'], $settings['order_dir']);
 
 			if ($limit)
@@ -3355,6 +3395,27 @@ SCRIPT;
 		return $ret;
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Assigns proper group id to logged out users
+	 *
+	 * @param	bool $reset Whether to reset to 0 or default member
+	 *
+	 * @return	void
+	 */
+	private function _member_group_override($reset = FALSE)
+	{
+		if (ee()->session->userdata('member_id'))
+		{
+			return;
+		}
+
+		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
+
+		ee()->session->userdata['group_id'] = $id;
+	}
 }
 
 /* End of file Channel_form_lib.php */

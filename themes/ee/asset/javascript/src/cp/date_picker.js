@@ -168,7 +168,7 @@ EE.cp.datePicker = {
 					$(this).closest('td').addClass('act');
 
 					if ($(that.element).val()) {
-						var d = new Date($(that.element).attr('data-timestamp') * 1000);
+						var d = new Date($(that.element).data('timestamp') * 1000);
 						d.setYear(that.year);
 						d.setMonth(that.month);
 						d.setDate($(this).text());
@@ -190,12 +190,13 @@ EE.cp.datePicker = {
 					}
 
 					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format));
-					$(that.element).attr('data-timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();
 					$('.date-picker-wrap').toggle();
 
 					e.preventDefault();
+					e.stopPropagation();
 				});
 
 				// Prevent manual scrolling of the huge inner clip div
@@ -205,7 +206,7 @@ EE.cp.datePicker = {
 			}
 
 			if ($(this.element).val()) {
-				var timestamp = $(this.element).attr('data-timestamp');
+				var timestamp = $(this.element).data('timestamp');
 
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
@@ -248,6 +249,7 @@ EE.cp.datePicker = {
 				total_last	= EE.cp.datePicker.Month.total_days(year, month - 1),
 				leading		= EE.cp.datePicker.Month.first_day(year, month),
 				trailing	= 7 - ((leading + total) % 7),
+				today		= new Date,
 
 				prev		= (month - 1 > -1) ? month - 1 : 11,
 				next		= (month + 1 < 12) ? month + 1 : 0;
@@ -295,7 +297,16 @@ EE.cp.datePicker = {
 					out[out_i++] = '<tr>';
 				}
 
-				out[out_i++] = '<td><a href="#">';
+				if (today.getFullYear() == year
+					&& today.getMonth() == month
+					&& today.getDate() == (j + 1)
+					&& ! $(this.element).data('timestamp'))
+				{
+					out[out_i++] = '<td class="act"><a href="#">';
+				} else {
+					out[out_i++] = '<td><a href="#">';
+				}
+
 				out[out_i++] = j + 1;
 				out[out_i++] = '</a></td>';
 

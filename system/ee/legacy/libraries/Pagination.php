@@ -67,8 +67,6 @@ class EE_Pagination {
 	 */
 	public function __construct($params = array())
 	{
-		$this->CI =& get_instance();
-
 		if (count($params) > 0)
 		{
 			$this->initialize($params);
@@ -252,7 +250,7 @@ class EE_Pagination {
 
 		// Is pagination being used over GET or POST?  If get, add a per_page query
 		// string. If post, add a trailing slash to the base URL if needed
-		if ($this->CI->config->item('enable_query_strings') === TRUE OR $this->page_query_string === TRUE)
+		if (ee()->config->item('enable_query_strings') === TRUE OR $this->page_query_string === TRUE)
 		{
 			$this->base_url = rtrim($this->base_url).'&amp;'.$this->query_string_segment.'=';
 		}
@@ -379,7 +377,7 @@ class EE_Pagination {
 	 */
 	private function _remove_double_slashes(&$array)
 	{
-		$this->CI->load->helper('string_helper');
+		ee()->load->helper('string_helper');
 
 		foreach ($array as $key => &$value)
 		{
@@ -403,11 +401,11 @@ class EE_Pagination {
 	private function _determine_current_page()
 	{
 		// Determine the current page number.
-		if ($this->CI->config->item('enable_query_strings') === TRUE OR $this->page_query_string === TRUE)
+		if (ee()->config->item('enable_query_strings') === TRUE OR $this->page_query_string === TRUE)
 		{
-			if ($this->CI->input->get($this->query_string_segment) != 0)
+			if (ee()->input->get($this->query_string_segment) != 0)
 			{
-				$this->cur_page = $this->CI->input->get($this->query_string_segment);
+				$this->cur_page = ee()->input->get($this->query_string_segment);
 
 				// Prep the current page - no funny business!
 				$this->cur_page = (int) $this->cur_page;
@@ -415,9 +413,9 @@ class EE_Pagination {
 		}
 		else
 		{
-			if ($this->CI->uri->segment($this->uri_segment) != 0)
+			if (ee()->uri->segment($this->uri_segment) != 0)
 			{
-				$this->cur_page = $this->CI->uri->segment($this->uri_segment);
+				$this->cur_page = ee()->uri->segment($this->uri_segment);
 
 				$this->cur_page = ltrim($this->cur_page, $this->prefix);
 				$this->cur_page = rtrim($this->cur_page, $this->suffix);

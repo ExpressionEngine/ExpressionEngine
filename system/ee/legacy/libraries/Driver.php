@@ -86,8 +86,7 @@ class EE_Driver_Library {
 		}
 
 		// Get package paths and filename case variations to search
-		$CI = get_instance();
-		$paths = $CI->load->get_package_paths(TRUE);
+		$paths = ee()->load->get_package_paths(TRUE);
 
 		// Is there an extension?
 		$class_name = $prefix.$child_name;
