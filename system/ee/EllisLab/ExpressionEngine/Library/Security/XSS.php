@@ -657,5 +657,4 @@ class XSS {
 	}
 }
 
-
 // EOF

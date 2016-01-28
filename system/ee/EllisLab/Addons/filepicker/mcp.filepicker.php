@@ -500,5 +500,4 @@ class Filepicker_mcp {
 	}
 }
 
-
 // EOF

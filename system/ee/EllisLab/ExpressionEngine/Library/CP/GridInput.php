@@ -247,5 +247,4 @@ class GridInput extends Table {
 	}
 }
 
-
 // EOF
