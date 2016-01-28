@@ -7,7 +7,7 @@ namespace EllisLab\Addons\Spam\Library;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -30,9 +30,9 @@ class Tokenizer {
 
 	/**
 	 * __construct
-	 * 
+	 *
 	 * @param int $ngrams  Size of the n-grams to calculate
-	 * @param string $pattern  Regex pattern used to split string, defaults to 
+	 * @param string $pattern  Regex pattern used to split string, defaults to
 	 * 						   splitting by character
 	 * @access public
 	 * @return void
@@ -44,10 +44,10 @@ class Tokenizer {
 	}
 
     /**
-     * Tokenize takes a string and splits it into ngrams. This will return 
+     * Tokenize takes a string and splits it into ngrams. This will return
      * an array of string.
-     * 
-     * @param mixed $string 
+     *
+     * @param mixed $string
      * @access public
      * @return array An array of strings split based on ngram
      */
@@ -68,9 +68,9 @@ class Tokenizer {
 
 	/**
 	 * Calculates the n-grams for a string
-	 * 
-	 * @param array $tokens 
-	 * @param int $n 
+	 *
+	 * @param array $tokens
+	 * @param int $n
 	 * @access private
 	 * @return array  The array of n-grams
 	 */

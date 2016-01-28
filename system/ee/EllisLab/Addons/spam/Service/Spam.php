@@ -7,10 +7,10 @@ namespace EllisLab\Addons\Spam\Service;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 3.0 
+ * @since		Version 3.0
  * @filesource
  */
 
@@ -48,19 +48,19 @@ class Spam {
 
 	/**
 	 * Returns true if the member is classified as a spammer
-	 * 
-	 * @param string $username 
-	 * @param string $email 
-	 * @param string $url 
-	 * @param string $ip 
+	 *
+	 * @param string $username
+	 * @param string $email
+	 * @param string $url
+	 * @param string $ip
 	 * @access public
 	 * @return boolean
 	 */
 	public function memberIsSpammer($username, $email, $url, $ip)
 	{
-		// Split IP address with spaces so TFIDF will calculate each octet as a 
+		// Split IP address with spaces so TFIDF will calculate each octet as a
 		// separate feature. We're definitely abusing TFIDF here but it should
-		// calculate the frequencies correctly barring any member names that 
+		// calculate the frequencies correctly barring any member names that
 		// overlap with our octets.
 		$ip = str_replace('.', ' ', $ip);
 
@@ -72,8 +72,8 @@ class Spam {
 
 	/**
 	 * Returns true if the string is classified as spam
-	 * 
-	 * @param string $source 
+	 *
+	 * @param string $source
 	 * @access public
 	 * @return boolean
 	 */
@@ -95,7 +95,7 @@ class Spam {
 	 * caught by the spam filter is manually flagged as ham, the spam module will
 	 * call the stored method with the unserialzed data as the argument. You must
 	 * provide a method to handle re-inserting this data.
-	 * 
+	 *
 	 * @param string $class    The class to call when re-inserting a false positive
 	 * @param string $method   The method to call when re-inserting a false positive
 	 * @param string $content  Array of content data
@@ -122,7 +122,7 @@ class Spam {
 
 	/**
 	 * load_default_classifier
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -151,7 +151,7 @@ class Spam {
 
 	/**
 	 * load_member_classifier
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */

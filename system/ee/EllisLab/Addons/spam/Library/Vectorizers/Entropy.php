@@ -9,7 +9,7 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -32,8 +32,8 @@ class Entropy implements Vectorizer {
 
 	/**
 	 * Estimates the entropy of a string by calculating the compression ratio.
-	 * 
-	 * @param string $source The source text 
+	 *
+	 * @param string $source The source text
 	 * @access public
 	 * @return float estimated entropy
 	 */
@@ -50,7 +50,7 @@ class Entropy implements Vectorizer {
 		else
 		{
 			$ratio = 0;
-		}	
+		}
 
 		return $ratio;
 	}

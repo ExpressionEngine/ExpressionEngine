@@ -53,7 +53,7 @@ class Wiki_upd {
 				KEY `page_moderated` (`page_moderated`),
 				KEY `has_categories` (`has_categories`)
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8";
-				
+
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_wiki_revisions` (
 				`revision_id` int(12) unsigned NOT NULL auto_increment,
@@ -300,14 +300,14 @@ class Wiki_upd {
 				'enabled'  => 'y'
 			));
 		}
-		
-		
+
+
 		if (version_compare($current, '3.0', '<'))
-		{		
-			// With 3.0 we no longer need the extension as the model 
+		{
+			// With 3.0 we no longer need the extension as the model
 			// takes care of it
-			ee()->db->delete('extensions', array('class' => 'Wiki_ext'));	
-		}	
+			ee()->db->delete('extensions', array('class' => 'Wiki_ext'));
+		}
 
 		return TRUE;
 	}

@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -50,10 +50,10 @@ class Revision extends Model {
             )
         )
 	);
-	
+
 	protected static $_events = array(
 		'afterInsert'
-	);	
+	);
 
 	protected $revision_id;
 	protected $page_id;
@@ -72,7 +72,7 @@ class Revision extends Model {
 			);
 
 			$this->getFrontend()->get('wiki:Page', $this->page_id)->first()->set($data)->save();
-			
+
 
 	}
 

@@ -30,7 +30,7 @@ var $_base_url = '';
 
 	public function __construct()
 	{
-		
+
 		$this->_base_url = ee('CP/URL')->make('addons/settings/wiki');
 	}
 
@@ -50,7 +50,7 @@ var $_base_url = '';
 		if ($wiki_id)
 		{
 			$valid_wiki =  ee('Model')->get('wiki:Wikis')->filter('wiki_id', $wiki_id)->first();
-			
+
 
 			if ( ! $valid_wiki)
 			{
@@ -64,14 +64,14 @@ var $_base_url = '';
 		else
 		{
 			$valid_wiki = ee('Model')->make('wiki:Wikis');
-			
+
 			$error_url = ee('CP/URL')->make('addons/settings/wiki/create');
-			$success_url = ee('CP/URL')->make('addons/settings/wiki');			
+			$success_url = ee('CP/URL')->make('addons/settings/wiki');
 
 			// Only auto-complete short name for new wikis
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
-				$("input[name=wiki_label_name]").bind("keyup keydown", 
+				$("input[name=wiki_label_name]").bind("keyup keydown",
 				function() {
 					$(this).ee_url_title("input[name=wiki_short_name]");
 				});
@@ -93,7 +93,7 @@ var $_base_url = '';
 				{
 					ee()->session->set_flashdata('highlight_id', $new_wiki);
 					ee()->functions->redirect($success_url);
-			
+
 				// If edit, show success message
 					ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -105,7 +105,7 @@ var $_base_url = '';
 				{
 					ee()->load->library('form_validation');
 					ee()->form_validation->_error_array = $result->renderErrors();
-				
+
 					ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('settings_error'))
@@ -113,12 +113,12 @@ var $_base_url = '';
 					->now();
 				}
 			}
-		
-		} // End Validation check on posted data		
-		
+
+		} // End Validation check on posted data
+
 
 		$vars['sections'] = $this->make_form($wiki_id, $valid_wiki);
-		
+
 		$vars['base_url'] = $this->_base_url.'/update/wiki&wiki_id='.$wiki_id;
 		$vars['save_btn_text'] = 'btn_save_settings';
 		$vars['save_btn_text_working'] = 'btn_saving';
@@ -127,15 +127,15 @@ var $_base_url = '';
  		return ee('View')->make('wiki:update')->render($vars);
 
 	}
-	
+
 
 	function make_form($wiki_id, $wiki = NULL)
 	{
 		$new = TRUE;
-		
+
 		ee()->load->helper('form');
 
-				
+
 		$wiki_users_value = (isset($wiki->wiki_users)) ? $wiki->wiki_users : '';
 		$wiki_admins_value = (isset($wiki->wiki_admins)) ?  $wiki->wiki_admins : '';
 
@@ -152,7 +152,7 @@ var $_base_url = '';
 		$member_group_options = ee()->wiki_model->member_group_options();
 		$wiki_users = explode('|', rtrim($wiki_users_value, '|'));
 		$wiki_admins = explode('|', rtrim($wiki_admins_value, '|'));
-		
+
 		$directories = ee()->wiki_model->fetch_upload_options();
 
 		$form_element = array(
@@ -164,15 +164,15 @@ var $_base_url = '';
 					'required' => TRUE
 				)
 			)
-		);		
+		);
 
 		if (isset($wiki->wiki_label_name))
 		{
 			$form_element['fields']['wiki_label_name']['value'] = $wiki['wiki_label_name'];
-		}		
-		
+		}
+
 		$form[] = $form_element;
-		
+
 		$form_element = array(
 			'title' => 'short_name',
 			'desc' => 'short_name_description',
@@ -183,14 +183,14 @@ var $_base_url = '';
 					'required' => TRUE
 				)
 			)
-		);		
+		);
 
 		if (isset($wiki->wiki_short_name))
 		{
 			$form_element['fields']['wiki_short_name']['value'] = $wiki->wiki_short_name;
-		}	
+		}
 
-		$form[] = $form_element;	
+		$form[] = $form_element;
 
 		$form_element = array(
 			'title' => 'text_format',
@@ -207,7 +207,7 @@ var $_base_url = '';
 		{
 			$form_element['fields']['wiki_text_format']['value'] = $wiki->wiki_text_format;
 		}
-						
+
 		$form[] = $form_element;
 
 		$form_element = array(
@@ -227,7 +227,7 @@ var $_base_url = '';
 		}
 
 		$form[] = $form_element;
-				
+
 		$form_element = array(
 			'title' => 'upload_dir',
 			'desc' => 'upload_dir_description',
@@ -242,7 +242,7 @@ var $_base_url = '';
 		if (isset($wiki->wiki_upload_dir))
 		{
 			$form_element['fields']['wiki_upload_dir']['value'] = $wiki->wiki_upload_dir;
-		}	
+		}
 
 		$form[] = $form_element;
 
@@ -258,10 +258,10 @@ var $_base_url = '';
 				)
 			)
 		);
-		
+
 		$form[] = $form_element;
 
-		
+
 		$form_element = array(
 			'title' => 'users',
 			'desc' => 'users_description',
@@ -276,7 +276,7 @@ var $_base_url = '';
 		);
 
 		$form[] = $form_element;
-		
+
 		$form_element = array(
 			'title' => 'revision_limit',
 			'desc' => 'revision_limit_description',
@@ -285,15 +285,15 @@ var $_base_url = '';
 					'type' => 'text',
 				)
 			)
-		);		
+		);
 
 		if (isset($wiki->wiki_revision_limit))
 		{
 			$form_element['fields']['wiki_revision_limit']['value'] = $wiki->wiki_revision_limit;
-		}	
-		
-		$form[] = $form_element;		
-		
+		}
+
+		$form[] = $form_element;
+
 			$form_element = array(
 			'title' => 'author_limit',
 			'desc' => 'author_limit_description',
@@ -302,15 +302,15 @@ var $_base_url = '';
 					'type' => 'text',
 				)
 			)
-		);		
+		);
 
 		if (isset($wiki->wiki_author_limit))
 		{
 			$form_element['fields']['wiki_author_limit']['value'] = $wiki->wiki_author_limit;
-		}	
+		}
 
 		$form[] = $form_element;
-		
+
 		$form_element = array(
 			'title' => 'moderation_emails',
 			'desc' => 'moderation_emails_description',
@@ -319,13 +319,13 @@ var $_base_url = '';
 					'type' => 'text',
 				)
 			)
-		);		
+		);
 
 		if (isset($wiki->wiki_moderation_emails))
 		{
 			$form_element['fields']['wiki_moderation_emails']['value'] = $wiki->wiki_moderation_emails;
-		}	
-		
+		}
+
 		$form[] = $form_element;
 
 
@@ -346,9 +346,9 @@ var $_base_url = '';
 		);
 
 		$form[] = $form_element;
-		
-		return array($form);		
-		
+
+		return array($form);
+
 	}
 
 
@@ -385,15 +385,15 @@ var $_base_url = '';
 			)
 		);
 		$grid->setNoResultsText('no_namespaces', 'add_namespaces');
-		
+
 		$member_choices = array();
 		$member_groups = ee()->api->get('MemberGroup');
 		$member_groups = $member_groups->all();
-		
+
 		foreach ($member_groups as $group)
 		{
 			$member_choices[$group->group_id] = $group->group_title;
-		}		
+		}
 
 		$grid->setBlankRow($this->getGridRow($member_choices));
 
@@ -476,7 +476,7 @@ var $_base_url = '';
 			'namespace_label' => '',
 			'namespace_name' => '',
 		);
-		
+
 		if ( ! isset($namespace['namespace_users']) )
 		{
 			$namespace['namespace_users'] = array();
@@ -489,7 +489,7 @@ var $_base_url = '';
 		if ( ! isset($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = array();
-		}	
+		}
 		elseif ( ! is_array($namespace['namespace_admins']))
 		{
 			$namespace['namespace_admins'] = explode('|', $namespace['namespace_admins']);
@@ -497,28 +497,28 @@ var $_base_url = '';
 
 		$namespace = array_merge($defaults, $namespace);
 		$namespace = array_map('form_prep', $namespace);
-		
+
 		$user_checkboxes = '';
-		
+
 		// Not sure about hard coding label?
 		foreach ($member_choices as $group_id => $group_name)
 		{
 			$selected = (in_array($group_id, $namespace['namespace_users'])) ? 'chosen' : '';
 			$check = ( ! empty($selected)) ? 'y' : '';
-			
+
 			$user_checkboxes .= '<label class="choice block '. $selected.'">'.form_checkbox('namespace_users[]', $group_id, $check).' '.$group_name.'</label>'."\n";
 		}
-		
+
 		$admin_checkboxes = '';
 
 		foreach ($member_choices as $group_id => $group_name)
 		{
 			$selected = (in_array($group_id, $namespace['namespace_admins'])) ? 'chosen' : '';
 			$check = ( ! empty($selected)) ? 'y' : '';
-			
+
 			$admin_checkboxes .= '<label class="choice block '. $selected.'">'.form_checkbox('namespace_admin[]', $group_id).' '.$group_name.'</label>'."\n";
-		}		
-		
+		}
+
 		return array(
 			array(
 				'html' => form_input('namespace_label', $namespace['namespace_label']),
@@ -535,7 +535,7 @@ var $_base_url = '';
 			array(
 				'html' => $admin_checkboxes,
 				'error' => $this->getGridFieldError($namespace, 'namespace_admins')
-			)				
+			)
 		);
 	}
 
@@ -571,7 +571,7 @@ var $_base_url = '';
 	{
 		$new = TRUE;
 		ee()->load->model('wiki_model');
-	
+
 		$fields = array('wiki_label_name',
 							'wiki_short_name',
 							'wiki_upload_dir',
@@ -597,7 +597,7 @@ var $_base_url = '';
 		if ($namespaces_query->num_rows() > 0)
 		{
 			$result = $namespaces_query->result_array();
-			
+
 			foreach ($result as $row)
 			{
 				$db_namespaces[$row['namespace_id']] = $row;
@@ -652,7 +652,7 @@ var $_base_url = '';
 		$labels = array();
 		$names  = array();
 
-		
+
 		//  Check existing for changes
 		//  If Short Name changes update article pages
 		$db_ids = array_keys($db_namespace);
@@ -664,7 +664,7 @@ var $_base_url = '';
 			{
 				$ns_admin = (isset($data['namespace_admins']) && is_array($data['namespace_admins'])) ? implode('|', $data['namespace_admins']) : '';
 				$ns_users = (isset($data['namespace_users']) && is_array($data['namespace_users'])) ? implode('|', $data['namespace_users'])  : '';
-				
+
 				// Let's update existing data regardless
 				$namespace_data = array(
 						'namespace_name'	=> $data['namespace_name'],
@@ -675,21 +675,21 @@ var $_base_url = '';
 
 
 				ee()->db->where('wiki_id', $wiki_id);
-				ee()->db->update('wiki_namespaces', $namespace_data);	
-				
-				
+				ee()->db->update('wiki_namespaces', $namespace_data);
+
+
 				// Check for namespace name change
 				if ($data['namespace_name'] != $db_namespace[$id]['namespace_name'])
 				{
 					ee()->db->set('page_namespace', $data['namespace_name']);
 					ee()->db->where('page_namespace', $db_namespace[$id]['namespace_name']);
-					ee()->db->update('wiki_page');					
+					ee()->db->update('wiki_page');
 				}
 
 				// Remove from db ids so we can delete any leftovers later
-				unset($db_namespace[$id]);	
+				unset($db_namespace[$id]);
 			}
-			
+
 			if (count($db_namespace))
 			{
 				ee()->db->where_in('namespace_id', array_keys($db_namespace));
@@ -713,7 +713,7 @@ var $_base_url = '';
 
 			ee()->db->insert('wiki_namespaces', $namespace_data);
 
-		}	
+		}
 
 	}
 
@@ -724,15 +724,15 @@ var $_base_url = '';
 
 	function ns_error($ns_id, $names, $labels)
 	{
-		if (trim($_POST['namespace_label_'.$ns_id]) == '' OR 
-		preg_match("/^\w+$/",$_POST['namespace_name_'.$ns_id]) OR 
-		$_POST['namespace_name_'.$ns_id] == 'category' OR 
-		in_array($_POST['namespace_name_'.$ns_id], $names) OR 
+		if (trim($_POST['namespace_label_'.$ns_id]) == '' OR
+		preg_match("/^\w+$/",$_POST['namespace_name_'.$ns_id]) OR
+		$_POST['namespace_name_'.$ns_id] == 'category' OR
+		in_array($_POST['namespace_name_'.$ns_id], $names) OR
 		in_array($_POST['namespace_label_'.$ns_id], $labels))
 		{
 			return TRUE;
 		}
-		
+
 		return FALSE;
 	}
 

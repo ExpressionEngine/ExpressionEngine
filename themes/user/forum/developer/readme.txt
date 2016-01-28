@@ -3,7 +3,7 @@
 -----------------------------------------------------
  https://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2015, EllisLab, Inc.
+ Copyright (c) 2003 - 2016, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT

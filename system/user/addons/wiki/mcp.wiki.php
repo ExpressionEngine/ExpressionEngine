@@ -255,7 +255,7 @@ class Wiki_mcp {
 	 * Provides Wiki Edit Screen HTML
 	 *
 	 * @access	public
-	 * @param	int $wiki_id The ID of the wiki to edit 
+	 * @param	int $wiki_id The ID of the wiki to edit
 	 * @return	string The page
 	 */
 	public function edit_wiki($wiki_id = 0)
@@ -277,11 +277,11 @@ class Wiki_mcp {
 		else
 		{
 			$valid_wiki = ee('Model')->make('wiki:Wiki');
-			
+
 			// Let's give it some default values
 			$valid_wiki->wiki_revision_limit = 200;
 			$valid_wiki->wiki_author_limit = 75;
-			
+
 			// Only auto-complete short name for new wikis
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
@@ -430,7 +430,7 @@ class Wiki_mcp {
 
 			$validate[$row_id] = $model;
 		}
-		
+
 
 		foreach ($validate as $row_id => $model)
 		{
@@ -580,7 +580,7 @@ class Wiki_mcp {
 			'fields' => array(
 				'wiki_revision_limit' => array(
 					'type' => 'text',
-					'value' => $wiki->wiki_revision_limit, 
+					'value' => $wiki->wiki_revision_limit,
 					'required' => TRUE
 				)
 			)

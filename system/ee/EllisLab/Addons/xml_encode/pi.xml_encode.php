@@ -6,7 +6,7 @@
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2015, EllisLab, Inc.
+ * @copyright		Copyright (c) 2004 - 2016, EllisLab, Inc.
  * @link			http://ellislab.com
  */
 

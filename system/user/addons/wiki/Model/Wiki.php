@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -73,10 +73,10 @@ class Wiki extends Model {
 
 
 
-	
+
 	protected static $_events = array(
 		'afterInsert'
-	);	
+	);
 
 	protected $wiki_id;
 	protected $wiki_label_name;
@@ -107,7 +107,7 @@ class Wiki extends Model {
 
 		return TRUE;
 	}
-	
+
 	public function validateShortName($key, $value, $params, $rule)
 	{
 		if (preg_match('/[^a-z0-9\-\_]/i', $value))
@@ -117,7 +117,7 @@ class Wiki extends Model {
 
 		return TRUE;
 	}
-	
+
 	public function onAfterInsert()
 	{
 			$data = array(
@@ -131,7 +131,7 @@ class Wiki extends Model {
 	}
 
 
-/*	
+/*
 		//  Default Index Page
 		$this->lang->loadfile('wiki');
 
@@ -156,7 +156,7 @@ class Wiki extends Model {
 
 		$this->db->where('page_id', $page_id);
 		$this->db->update('wiki_page', array('last_revision_id' => $last_revision_id));
-	
-*/	
+
+*/
 
 }

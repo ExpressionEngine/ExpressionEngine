@@ -10,7 +10,7 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -36,13 +36,13 @@ class Tfidf implements Vectorizer {
 	public $idf_lookup = array();
 	public $corpus = "";
 	public $limit = 1000;
-	
+
 	/**
 	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
 	 * then loop through each document and generate a frequency table.
-	 * 
+	 *
 	 * @access public
-	 * @param array   	 $source 
+	 * @param array   	 $source
 	 * @param Tokenizer  $tokenizer  Tokenizer object used to split string
 	 * @param array   	 $stop_words
 	 * @param array   	 $limit  Maximum number of features to select
@@ -100,7 +100,7 @@ class Tfidf implements Vectorizer {
 
 	/**
 	 * Computes a vector of feature values suitable for using with Naive Bayes
-	 * 
+	 *
 	 * @param string $source The string to vectorize
 	 * @access public
 	 * @return array An array of floats
@@ -114,9 +114,9 @@ class Tfidf implements Vectorizer {
 
 	/**
 	 * Calculate term frequency normalized by the maximum frequency
-	 * 
-	 * @param Document $doc 
-	 * @param string $term 
+	 *
+	 * @param Document $doc
+	 * @param string $term
 	 * @access public
 	 * @return float The term frequency
 	 */
@@ -127,8 +127,8 @@ class Tfidf implements Vectorizer {
 
 	/**
 	 * Calculate the inverse document frequency
-	 * 
-	 * @param mixed $term 
+	 *
+	 * @param mixed $term
 	 * @access public
 	 * @return float
 	 */
@@ -150,15 +150,15 @@ class Tfidf implements Vectorizer {
 
 	/**
 	 * _tfidf
-	 * 
-	 * @param Document $source 
+	 *
+	 * @param Document $source
 	 * @access private
 	 * @return array Calculated TFIDF vector
 	 */
 	private function _tfidf($source)
 	{
 		$vector = $this->tfidf_row;
-		
+
 		foreach ($source as $term => $freq)
 		{
 			if ( ! empty($this->vocabulary_index[$term]))
@@ -174,7 +174,7 @@ class Tfidf implements Vectorizer {
 
 	/**
 	 * Generate lookup tables
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */

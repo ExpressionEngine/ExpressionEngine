@@ -7,7 +7,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -42,7 +42,7 @@ class Update extends Query {
 
 		$backup = $object->getOriginal();
 		$this->prepObject($object);
-		
+
 		// Do not save if the object isn't dirty. We cannot do this in the model
 		// because the query builder can accept set() calls. Plus, we always want
 		// to cascade to children.
@@ -60,7 +60,7 @@ class Update extends Query {
 		$object->emit('afterSave');
 		$object->emit('afterUpdate', $backup);
 	}
-	
+
 	/**
 	 * Add any set() calls that were on the query builder to the object.
 	 */

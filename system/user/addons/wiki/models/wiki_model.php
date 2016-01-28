@@ -121,12 +121,12 @@ class Wiki_model extends CI_Model {
 			$this->db->update('wikis', $data);
 			return;
 		}
-		
+
 		//  New wikis need moar!
 
 		$this->db->insert('wikis', $data);
 		$wiki_id = $this->db->insert_id();
-		
+
 		//  Default Index Page
 		$this->lang->loadfile('wiki');
 
@@ -153,7 +153,7 @@ class Wiki_model extends CI_Model {
 		$this->db->update('wiki_page', array('last_revision_id' => $last_revision_id));
 
 		return $wiki_id;
-		
+
 	}
 
 	// ------------------------------------------------------------------------

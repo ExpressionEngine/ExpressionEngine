@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -32,8 +32,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Category extends Model {
 
 	protected static $_primary_key = 'cat_id';
-	protected static $_table_name = 'wiki_categories';	
-	
+	protected static $_table_name = 'wiki_categories';
+
 //	protected static $_gateway_names = array('CategoryGateway');
 
 /*
@@ -59,16 +59,16 @@ class Category extends Model {
 			'to_key' => 'parent_id'
 		)
 	);
-	
+
 */
 
 	protected static $_relationships = array(
 		'Wiki' => array(
 			'type' => 'belongsTo'
 		)
-	);	
+	);
 
-	
+
 
 	protected $cat_id;
 	protected $wiki_id;

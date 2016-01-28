@@ -9,7 +9,7 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -31,9 +31,9 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
 class ASCIIPrintable implements Vectorizer {
 
 	/**
-	 * Calculates the ratio of non-ASCII printable characters 
-	 * 
-	 * @param string $source The source text 
+	 * Calculates the ratio of non-ASCII printable characters
+	 *
+	 * @param string $source The source text
 	 * @access public
 	 * @return float The calculated ratio
 	 */

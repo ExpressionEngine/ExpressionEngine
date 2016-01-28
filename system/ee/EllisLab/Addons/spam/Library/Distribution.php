@@ -7,7 +7,7 @@ namespace EllisLab\Addons\Spam\Library;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -47,8 +47,8 @@ class Distribution {
 
 	/**
 	 * This is the PDF for the standard normal distribution
-	 * 
-	 * @param float $x 
+	 *
+	 * @param float $x
 	 * @access public
 	 * @return float
 	 */
