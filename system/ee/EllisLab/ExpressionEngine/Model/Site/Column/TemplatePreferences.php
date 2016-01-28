@@ -55,3 +55,5 @@ class TemplatePreferences extends CustomType {
 	}
 
 }
+
+// EOF

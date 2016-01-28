@@ -175,4 +175,4 @@ class Rte_ft extends EE_Fieldtype {
 
 // END Rte_ft class
 
-
+// EOF

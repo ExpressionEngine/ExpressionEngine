@@ -624,4 +624,5 @@ class Member_group_model extends CI_Model
 	}
 
 }
+
 // EOF

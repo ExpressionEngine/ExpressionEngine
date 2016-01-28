@@ -173,3 +173,4 @@ class EE_Throttling {
 }
 // END CLASS
 
+// EOF

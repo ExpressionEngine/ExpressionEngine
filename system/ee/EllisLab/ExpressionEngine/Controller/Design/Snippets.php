@@ -542,4 +542,5 @@ class Snippets extends AbstractDesignController {
 		return TRUE;
 	}
 }
+
 // EOF

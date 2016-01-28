@@ -20,4 +20,4 @@ $lang['ut_resource']		= 'Resource';
 $lang['ut_null']			= 'Null';
 $lang['ut_notes']			= 'Notes';
 
-
+// EOF

@@ -30,3 +30,5 @@ interface Type {
 	public static function create();
 
 }
+
+// EOF

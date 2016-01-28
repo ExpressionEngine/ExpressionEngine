@@ -959,3 +959,5 @@ class Spam_mcp {
 	}
 
 }
+
+// EOF

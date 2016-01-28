@@ -60,3 +60,5 @@ abstract class SerializedType implements Type {
 	}
 
 }
+
+// EOF

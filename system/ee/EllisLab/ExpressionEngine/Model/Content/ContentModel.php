@@ -393,3 +393,5 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 }
+
+// EOF

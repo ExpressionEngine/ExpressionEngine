@@ -53,3 +53,5 @@ class CategoryFieldDataGateway extends VariableColumnGateway {
 	protected $group_id;
 
 }
+
+// EOF

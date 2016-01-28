@@ -139,3 +139,5 @@ class Moderator extends Model {
 	}
 
 }
+
+// EOF

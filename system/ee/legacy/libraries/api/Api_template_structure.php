@@ -294,3 +294,4 @@ class Api_template_structure extends Api {
 }
 // END CLASS
 
+// EOF

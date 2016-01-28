@@ -168,3 +168,5 @@ class Gateway {
 		return array_merge($values, $this->_field_values);
 	}
 }
+
+// EOF

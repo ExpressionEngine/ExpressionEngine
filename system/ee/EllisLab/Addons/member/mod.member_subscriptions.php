@@ -152,3 +152,4 @@ class Member_subscriptions extends Member {
 }
 // END CLASS
 
+// EOF

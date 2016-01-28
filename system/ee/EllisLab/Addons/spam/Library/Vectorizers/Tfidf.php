@@ -198,4 +198,4 @@ class Tfidf implements Vectorizer {
 	}
 }
 
-
+// EOF

@@ -231,4 +231,5 @@ class Username extends Filter {
 	}
 
 }
+
 // EOF

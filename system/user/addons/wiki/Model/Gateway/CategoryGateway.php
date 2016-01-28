@@ -56,3 +56,5 @@ class CategoryGateway extends Gateway {
 	protected $cat_image;
 	protected $cat_order;
 }
+
+// EOF

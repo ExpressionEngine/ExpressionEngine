@@ -87,3 +87,5 @@ class Csrf_cookie implements Csrf_storage_backend {
 		}
 	}
 }
+
+// EOF

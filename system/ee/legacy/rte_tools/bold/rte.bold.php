@@ -74,3 +74,4 @@ class Bold_rte {
 
 } // END Bold_rte
 
+// EOF

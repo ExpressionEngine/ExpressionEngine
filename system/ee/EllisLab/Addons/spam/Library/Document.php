@@ -161,4 +161,4 @@ class Document implements Iterator {
 }
 // END CLASS
 
-
+// EOF

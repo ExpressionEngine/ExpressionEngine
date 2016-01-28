@@ -101,3 +101,5 @@ class Variables extends ProfilerSection {
 		return $prepped_data;
 	}
 }
+
+// EOF

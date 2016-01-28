@@ -9,3 +9,5 @@ return array(
 	'namespace'   => 'EllisLab\Addons\RssParser',
 	'settings_exist' => FALSE
 );
+
+// EOF

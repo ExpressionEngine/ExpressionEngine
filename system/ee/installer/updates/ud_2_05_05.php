@@ -39,3 +39,4 @@ class Updater {
 }
 /* END CLASS */
 
+// EOF

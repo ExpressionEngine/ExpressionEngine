@@ -166,3 +166,5 @@ class Purchase extends Model {
 		return TRUE;
 	}
 }
+
+// EOF

@@ -35,3 +35,5 @@ class EE_Template_router_max_length_converter implements EE_Template_router_conv
 	}
 
 }
+
+// EOF

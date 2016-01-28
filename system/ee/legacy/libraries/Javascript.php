@@ -847,5 +847,4 @@ class EE_Javascript {
 
 // END EE_Javascript
 
-
-
+// EOF

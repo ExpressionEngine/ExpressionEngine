@@ -45,4 +45,4 @@ class Links implements Vectorizer {
 
 }
 
-
+// EOF

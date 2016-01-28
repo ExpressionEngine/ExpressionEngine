@@ -33,3 +33,5 @@
 	<?php echo file_get_contents(__DIR__.'/error_toggle.js') ?>
 	</script>
 </html>
+
+// EOF

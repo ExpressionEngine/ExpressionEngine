@@ -215,3 +215,5 @@ class Forum extends Model {
 	}
 
 }
+
+// EOF

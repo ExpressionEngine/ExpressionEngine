@@ -42,3 +42,5 @@ class FileNotFound extends CP_Controller {
 		ee()->cp->render('errors/file_not_found', compact('url'));
 	}
 }
+
+// EOF

@@ -36,3 +36,5 @@ class Base64Array extends Base64 {
 	protected $data = array();
 
 }
+
+// EOF

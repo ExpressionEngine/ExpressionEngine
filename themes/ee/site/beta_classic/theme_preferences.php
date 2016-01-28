@@ -43,5 +43,4 @@ $template_preferences['site']['index'] = array('caching' => 'y', 'cache_refresh'
 
 $template_access['search']['index'] = array('Guests' => 'n', 'Pending' => 'n');
 
-
-
+// EOF

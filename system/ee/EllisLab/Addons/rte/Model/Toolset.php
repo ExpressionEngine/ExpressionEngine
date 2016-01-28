@@ -46,3 +46,5 @@ class Toolset extends Model {
 	protected $tools;
 	protected $enabled;
 }
+
+// EOF

@@ -44,3 +44,5 @@ class Enum extends ValidationRule {
 	}
 
 }
+
+// EOF

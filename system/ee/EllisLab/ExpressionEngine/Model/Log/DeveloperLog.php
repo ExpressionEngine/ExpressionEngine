@@ -56,3 +56,5 @@ class DeveloperLog extends Model {
 	protected $hash;
 
 }
+
+// EOF

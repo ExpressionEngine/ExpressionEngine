@@ -65,3 +65,4 @@ class Installer_template_model extends Template_model {
 
 }
 
+// EOF

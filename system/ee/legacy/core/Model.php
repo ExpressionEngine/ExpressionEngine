@@ -53,4 +53,4 @@ class EE_Model {
 
 class_alias('EE_Model', 'CI_Model');
 
-
+// EOF

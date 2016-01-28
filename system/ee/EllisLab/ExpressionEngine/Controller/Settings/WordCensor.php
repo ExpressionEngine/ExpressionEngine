@@ -113,3 +113,4 @@ class WordCensor extends Settings {
 }
 // END CLASS
 
+// EOF

@@ -36,4 +36,4 @@ $lang['no_html']  			= 'This field cannot contain HTML.';
 $lang['isset']				= "The %s field must have a value.";
 $lang['auth_password']		= "The password entered is incorrect.";
 
-
+// EOF

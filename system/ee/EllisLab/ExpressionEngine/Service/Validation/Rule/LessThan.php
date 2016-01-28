@@ -46,3 +46,5 @@ class LessThan extends ValidationRule {
 		return 'less_than';
 	}
 }
+
+// EOF

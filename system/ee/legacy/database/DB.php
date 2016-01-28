@@ -48,6 +48,4 @@ function DB($params = NULL)
 	return $database->newQuery();
 }
 
-
-
-
+// EOF

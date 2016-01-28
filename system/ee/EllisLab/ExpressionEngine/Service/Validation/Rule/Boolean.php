@@ -35,3 +35,5 @@ class Boolean extends ValidationRule {
 	}
 
 }
+
+// EOF

@@ -311,5 +311,4 @@ $config['rewrite_short_tags'] = TRUE;
 */
 $config['proxy_ips'] = "";
 
-
-
+// EOF

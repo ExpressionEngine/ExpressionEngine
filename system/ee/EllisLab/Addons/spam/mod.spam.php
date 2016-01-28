@@ -26,3 +26,5 @@
 class Spam {
 
 }
+
+// EOF

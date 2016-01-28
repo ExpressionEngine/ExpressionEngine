@@ -269,4 +269,5 @@ class Alert {
 		return $this;
 	}
 }
+
 // EOF

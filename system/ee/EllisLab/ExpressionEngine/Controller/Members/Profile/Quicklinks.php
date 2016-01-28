@@ -342,4 +342,4 @@ class Quicklinks extends Settings {
 }
 // END CLASS
 
-
+// EOF

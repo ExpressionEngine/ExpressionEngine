@@ -245,3 +245,4 @@ class QueryNode extends ParseNode {
 	}
 }
 
+// EOF

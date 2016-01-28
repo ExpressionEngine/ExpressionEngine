@@ -594,3 +594,4 @@ class Api_channel_structure extends Api {
 }
 // END CLASS
 
+// EOF

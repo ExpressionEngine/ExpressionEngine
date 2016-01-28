@@ -203,3 +203,5 @@ class MetaDataReader {
 		return substr($this->class, 0, strrpos($this->class, '\\'));
 	}
 }
+
+// EOF

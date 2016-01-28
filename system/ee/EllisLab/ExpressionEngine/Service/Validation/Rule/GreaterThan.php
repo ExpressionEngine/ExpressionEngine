@@ -46,3 +46,5 @@ class GreaterThan extends ValidationRule {
 		return 'greater_than';
 	}
 }
+
+// EOF

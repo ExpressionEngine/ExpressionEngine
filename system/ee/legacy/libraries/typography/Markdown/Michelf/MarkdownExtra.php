@@ -1612,3 +1612,5 @@ class MarkdownExtra extends \Michelf\Markdown {
 		}
 	}
 }
+
+// EOF

@@ -197,4 +197,5 @@ class InjectionContainer implements ServiceProvider {
 		return $object;
 	}
 }
+
 // EOF

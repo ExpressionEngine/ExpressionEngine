@@ -60,4 +60,4 @@ $foreign_characters = array(
 	'381'	=>	"zh",
 );
 
-
+// EOF

@@ -92,3 +92,4 @@ class Jquery_upd {
 }
 // End Jquery CP Class
 
+// EOF

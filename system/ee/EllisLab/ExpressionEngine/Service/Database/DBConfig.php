@@ -204,3 +204,5 @@ class DBConfig implements Config {
 		return $this->active_group;
 	}
 }
+
+// EOF

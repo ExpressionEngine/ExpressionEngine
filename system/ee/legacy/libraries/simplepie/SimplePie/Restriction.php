@@ -152,3 +152,5 @@ class SimplePie_Restriction
 		}
 	}
 }
+
+// EOF

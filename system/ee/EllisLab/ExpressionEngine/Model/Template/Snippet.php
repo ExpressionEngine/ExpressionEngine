@@ -233,3 +233,5 @@ class Snippet extends FileSyncedModel {
 		return $snippets;
 	}
 }
+
+// EOF

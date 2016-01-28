@@ -108,3 +108,5 @@ class Watermark extends Model {
 		return ($this->wm_type == 'text') ? TRUE : $rule->skip();
 	}
 }
+
+// EOF

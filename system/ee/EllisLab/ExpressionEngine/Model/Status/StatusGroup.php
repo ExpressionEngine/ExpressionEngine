@@ -74,3 +74,5 @@ class StatusGroup extends Model {
 		$closed->save();
 	}
 }
+
+// EOF

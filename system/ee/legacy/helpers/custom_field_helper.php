@@ -82,4 +82,4 @@ function decode_multi_field($data = '')
 	return str_replace(array('\|', '\\\\'), array('|', '\\'), $data);
 }
 
-
+// EOF

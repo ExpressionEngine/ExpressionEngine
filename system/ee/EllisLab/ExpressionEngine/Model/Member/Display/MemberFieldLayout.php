@@ -15,3 +15,5 @@ class MemberFieldLayout extends DefaultLayout {
 		return parent::transform($fields);
 	}
 }
+
+// EOF

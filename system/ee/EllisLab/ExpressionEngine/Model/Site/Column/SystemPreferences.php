@@ -135,3 +135,5 @@ class SystemPreferences extends CustomType {
 	}
 
 }
+
+// EOF

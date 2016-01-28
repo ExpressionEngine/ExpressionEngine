@@ -83,3 +83,5 @@ class FileDimension extends Model {
 		return TRUE;
 	}
 }
+
+// EOF

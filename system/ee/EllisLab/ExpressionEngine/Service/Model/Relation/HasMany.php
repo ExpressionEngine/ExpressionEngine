@@ -38,3 +38,5 @@ class HasMany extends HasOneOrMany {
 		return new ToMany($source, $this);
 	}
 }
+
+// EOF

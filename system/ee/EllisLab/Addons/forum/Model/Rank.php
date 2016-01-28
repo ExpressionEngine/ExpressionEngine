@@ -50,3 +50,5 @@ class Rank extends Model {
 	protected $rank_stars;
 
 }
+
+// EOF

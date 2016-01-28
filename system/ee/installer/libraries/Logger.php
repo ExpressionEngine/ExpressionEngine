@@ -63,4 +63,4 @@ class Installer_Logger extends EE_Logger {
 }
 // END CLASS
 
-
+// EOF

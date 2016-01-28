@@ -61,3 +61,5 @@ class Module extends Model {
 	protected $has_cp_backend;
 	protected $has_publish_fields;
 }
+
+// EOF

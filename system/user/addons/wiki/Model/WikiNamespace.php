@@ -73,3 +73,5 @@ class WikiNamespace extends Model {
 
 
 }
+
+// EOF

@@ -1048,4 +1048,4 @@ class Member_auth extends Member {
 }
 // END CLASS
 
-
+// EOF

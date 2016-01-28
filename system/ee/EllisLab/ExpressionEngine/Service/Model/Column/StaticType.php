@@ -66,3 +66,5 @@ abstract class StaticType implements Type {
 		return $data;
 	}
 }
+
+// EOF

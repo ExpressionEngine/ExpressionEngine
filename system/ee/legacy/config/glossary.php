@@ -71,4 +71,4 @@ $glossary[4][] = array('&rsquo;  &amp;rsquo;',		'&rsquo;');
 $glossary[4][] = array('&bull;  &amp;bull;',		'&bull;');
 $glossary[4][] = array('&middot;  &amp;middot;',	'&middot;');
 
-
+// EOF

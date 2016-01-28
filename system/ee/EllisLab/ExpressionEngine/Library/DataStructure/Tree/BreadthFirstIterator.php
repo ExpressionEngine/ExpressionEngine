@@ -152,3 +152,4 @@ class BreadthFirstIterator implements \OuterIterator {
 	}
 }
 
+// EOF

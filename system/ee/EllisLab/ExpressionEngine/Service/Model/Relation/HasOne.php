@@ -38,3 +38,5 @@ class HasOne extends HasOneOrMany {
 		return new ToOne($source, $this);
 	}
 }
+
+// EOF

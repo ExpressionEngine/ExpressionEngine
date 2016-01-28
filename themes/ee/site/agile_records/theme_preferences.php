@@ -52,4 +52,4 @@ $template_access['global_embeds']['index'] = $no_access;
 $template_access['news_embeds']['index'] = $no_access;
 $template_access['search']['index'] = $no_access;
 
-
+// EOF

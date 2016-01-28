@@ -105,3 +105,5 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 		return $tagdata;
 	}
 }
+
+// EOF

@@ -62,3 +62,5 @@ class Stats extends Model {
 	protected $last_cache_clear;
 
 }
+
+// EOF

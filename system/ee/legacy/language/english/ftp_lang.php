@@ -13,4 +13,4 @@ $lang['ftp_unable_to_rename']		= "Unable to rename the file.";
 $lang['ftp_unable_to_delete']		= "Unable to delete the file.";
 $lang['ftp_unable_to_move']			= "Unable to move the file.  Please make sure the destination directory exists.";
 
-
+// EOF

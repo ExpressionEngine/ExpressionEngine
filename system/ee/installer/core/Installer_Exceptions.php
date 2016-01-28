@@ -27,3 +27,4 @@ class Installer_Exceptions Extends EE_Exceptions {
 	// Yes, it's empty!
 }
 
+// EOF

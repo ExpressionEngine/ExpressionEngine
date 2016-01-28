@@ -566,4 +566,5 @@ class Files extends AbstractFilesController {
 			->defer();
 	}
 }
+
 // EOF

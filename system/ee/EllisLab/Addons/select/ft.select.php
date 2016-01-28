@@ -288,4 +288,4 @@ class Select_ft extends EE_Fieldtype {
 
 // END Select_ft class
 
-
+// EOF

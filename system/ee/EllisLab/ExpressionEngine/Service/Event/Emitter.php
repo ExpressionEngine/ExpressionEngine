@@ -171,3 +171,5 @@ class Emitter implements Publisher {
 		return spl_object_hash($object);
 	}
 }
+
+// EOF

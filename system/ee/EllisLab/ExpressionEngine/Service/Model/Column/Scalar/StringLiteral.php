@@ -67,3 +67,5 @@ class StringLiteral extends StaticType {
 		return is_scalar($data) ? (string) $data : '';
 	}
 }
+
+// EOF

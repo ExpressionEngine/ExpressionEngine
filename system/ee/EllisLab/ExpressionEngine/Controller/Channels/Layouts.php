@@ -476,4 +476,5 @@ class Layouts extends AbstractChannelsController {
 	}
 
 }
+
 // EOF

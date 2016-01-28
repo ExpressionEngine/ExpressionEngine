@@ -54,4 +54,4 @@ class Spaces implements Vectorizer {
 
 }
 
-
+// EOF

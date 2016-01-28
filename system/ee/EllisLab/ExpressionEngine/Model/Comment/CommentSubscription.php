@@ -53,3 +53,5 @@ class CommentSubscription extends Model {
 	protected $notification_sent;
 	protected $hash;
 }
+
+// EOF

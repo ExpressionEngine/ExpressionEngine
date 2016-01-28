@@ -105,3 +105,4 @@ class Channel_form_session extends EE_Session
 	}
 }
 
+// EOF

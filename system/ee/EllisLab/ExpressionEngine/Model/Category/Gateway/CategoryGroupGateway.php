@@ -53,3 +53,5 @@ class CategoryGroupGateway extends Gateway {
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 }
+
+// EOF

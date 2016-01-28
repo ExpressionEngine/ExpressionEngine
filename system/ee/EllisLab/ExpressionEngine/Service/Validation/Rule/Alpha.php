@@ -35,3 +35,5 @@ class Alpha extends ValidationRule {
 	}
 
 }
+
+// EOF

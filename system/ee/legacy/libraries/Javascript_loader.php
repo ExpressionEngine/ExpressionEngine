@@ -171,5 +171,4 @@ class Javascript_loader {
 	}
 }
 
-
-
+// EOF

@@ -162,3 +162,5 @@ class Spam_upd {
 	}
 
 }
+
+// EOF

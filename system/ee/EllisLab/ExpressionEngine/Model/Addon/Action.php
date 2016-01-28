@@ -41,3 +41,5 @@ class Action extends Model {
 	protected $method;
 	protected $csrf_exempt;
 }
+
+// EOF

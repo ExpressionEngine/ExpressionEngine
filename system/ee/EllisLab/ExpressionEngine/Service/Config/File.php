@@ -180,3 +180,5 @@ class File implements Config {
 		}
 	}
 }
+
+// EOF

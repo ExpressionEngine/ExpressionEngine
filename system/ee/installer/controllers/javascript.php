@@ -44,4 +44,4 @@ class Javascript {
 
 // END Javascript class
 
-
+// EOF

@@ -54,3 +54,5 @@ class CpLog extends Model {
 	protected $action;
 
 }
+
+// EOF

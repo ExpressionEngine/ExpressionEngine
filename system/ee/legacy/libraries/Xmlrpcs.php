@@ -538,5 +538,4 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 }
 // END XML_RPC_Server class
 
-
-
+// EOF

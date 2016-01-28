@@ -48,3 +48,5 @@ class Iterator extends FilesystemIterator {
 	}
 
 }
+
+// EOF

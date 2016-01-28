@@ -248,3 +248,4 @@ class SimplePie_Decode_HTML_Entities
 	}
 }
 
+// EOF

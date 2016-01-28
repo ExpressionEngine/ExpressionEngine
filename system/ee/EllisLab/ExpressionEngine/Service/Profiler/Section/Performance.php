@@ -76,3 +76,5 @@ class Performance extends ProfilerSection {
 		$this->data = array('performance' => $data);
 	}
 }
+
+// EOF

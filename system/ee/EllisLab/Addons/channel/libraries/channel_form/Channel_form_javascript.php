@@ -71,4 +71,4 @@ class Channel_form_javascript
 	}
 }
 
-
+// EOF

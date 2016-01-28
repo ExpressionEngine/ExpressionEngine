@@ -119,4 +119,4 @@ class Collection {
 
 }
 
-?>
+// EOF

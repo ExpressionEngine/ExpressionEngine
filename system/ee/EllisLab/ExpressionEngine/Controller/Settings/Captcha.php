@@ -140,4 +140,4 @@ class Captcha extends Settings {
 }
 // END CLASS
 
-
+// EOF

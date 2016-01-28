@@ -48,3 +48,5 @@ class Writable extends ValidationRule {
 	}
 
 }
+
+// EOF

@@ -688,4 +688,5 @@ class Comments extends AbstractPublishController {
 			->defer();
 	}
 }
+
 // EOF

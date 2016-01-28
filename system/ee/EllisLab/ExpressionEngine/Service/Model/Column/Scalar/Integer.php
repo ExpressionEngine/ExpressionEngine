@@ -67,3 +67,5 @@ class Integer extends StaticType {
 		return is_scalar($data) ? (int) $data : 0;
 	}
 }
+
+// EOF

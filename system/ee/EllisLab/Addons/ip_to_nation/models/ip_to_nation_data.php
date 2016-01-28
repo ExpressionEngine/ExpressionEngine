@@ -189,3 +189,4 @@ class Ip_to_nation_data extends CI_Model {
 	}
 }
 
+// EOF

@@ -56,3 +56,5 @@ class Callback extends ValidationRule {
 		return $this->last_error;
 	}
 }
+
+// EOF

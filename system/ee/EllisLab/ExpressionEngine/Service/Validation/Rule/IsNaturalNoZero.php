@@ -45,3 +45,5 @@ class IsNaturalNoZero extends ValidationRule {
 	}
 
 }
+
+// EOF

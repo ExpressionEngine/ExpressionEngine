@@ -31,4 +31,4 @@ class Installer_Functions extends EE_Functions {
 }
 // END CLASS
 
-
+// EOF

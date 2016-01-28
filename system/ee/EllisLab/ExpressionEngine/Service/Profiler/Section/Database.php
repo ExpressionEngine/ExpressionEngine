@@ -239,3 +239,5 @@ class Database extends ProfilerSection {
 		return $highlighted;
 	}
 }
+
+// EOF

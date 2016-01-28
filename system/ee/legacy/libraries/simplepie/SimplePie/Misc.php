@@ -2375,3 +2375,4 @@ function embed_wmedia(width, height, link) {
 	}
 }
 
+// EOF

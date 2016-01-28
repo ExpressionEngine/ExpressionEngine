@@ -39,3 +39,5 @@ class Numeric extends ValidationRule {
 		return 'is_numeric';
 	}
 }
+
+// EOF

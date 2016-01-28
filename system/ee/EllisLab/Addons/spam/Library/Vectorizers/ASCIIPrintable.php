@@ -54,4 +54,4 @@ class ASCIIPrintable implements Vectorizer {
 
 }
 
-
+// EOF

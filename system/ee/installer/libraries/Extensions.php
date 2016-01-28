@@ -31,4 +31,4 @@ class Installer_Extensions extends EE_Extensions {
 }
 // END CLASS
 
-
+// EOF

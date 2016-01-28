@@ -112,3 +112,5 @@ class Administrator extends Model {
 	}
 
 }
+
+// EOF

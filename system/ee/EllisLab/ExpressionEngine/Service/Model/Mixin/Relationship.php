@@ -133,3 +133,5 @@ class Relationship implements Mixin {
 		throw new \Exception('Illegal Relationship action: '.$action);
 	}
 }
+
+// EOF

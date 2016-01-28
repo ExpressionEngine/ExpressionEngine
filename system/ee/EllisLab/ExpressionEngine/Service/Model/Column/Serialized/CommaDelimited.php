@@ -48,3 +48,5 @@ class CommaDelimited extends SerializedType {
 	}
 
 }
+
+// EOF

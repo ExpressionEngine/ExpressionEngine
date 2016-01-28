@@ -607,5 +607,4 @@ if ( ! function_exists('timezones'))
 	}
 }
 
-
-
+// EOF

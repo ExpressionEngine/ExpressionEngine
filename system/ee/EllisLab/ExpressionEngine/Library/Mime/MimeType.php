@@ -208,4 +208,5 @@ class MimeType {
 	}
 
 }
+
 // EOF

@@ -322,3 +322,5 @@ abstract class Core {
 		return $routing;
 	}
 }
+
+// EOF

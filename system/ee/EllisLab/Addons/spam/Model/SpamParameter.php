@@ -26,3 +26,5 @@ class SpamParameter extends Model {
 	protected $variance;
 
 }
+
+// EOF

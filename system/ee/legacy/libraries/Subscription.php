@@ -518,3 +518,4 @@ class EE_Subscription {
 
 // END Subscription class
 
+// EOF

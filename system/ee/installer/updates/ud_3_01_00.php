@@ -414,3 +414,5 @@ class UpdaterException_3_1_0 extends Exception
 		parent::__construct($message.' <a href="https://docs.expressionengine.com/v3/installation/version_notes_3.1.0.html">Please see 3.1.0 version notes.</a>');
 	}
 }
+
+// EOF

@@ -69,3 +69,5 @@ class YesNo extends StaticType {
 		return ($data === TRUE || $data === 'y' || $data === 1);
 	}
 }
+
+// EOF

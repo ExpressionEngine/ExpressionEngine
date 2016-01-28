@@ -67,3 +67,5 @@ class Boolean extends StaticType {
 		return is_scalar($data) ? (bool) $data : FALSE;
 	}
 }
+
+// EOF

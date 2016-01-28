@@ -615,3 +615,5 @@ class EE_Channel_data_parser {
 		return TRUE;
 	}
 }
+
+// EOF

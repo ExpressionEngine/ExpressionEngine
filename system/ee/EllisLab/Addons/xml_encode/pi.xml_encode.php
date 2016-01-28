@@ -42,3 +42,4 @@ class Xml_encode {
 }
 // END CLASS
 
+// EOF

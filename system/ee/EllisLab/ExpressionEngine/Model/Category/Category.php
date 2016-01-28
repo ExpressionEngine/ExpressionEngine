@@ -121,3 +121,5 @@ class Category extends ContentModel {
 	}
 
 }
+
+// EOF

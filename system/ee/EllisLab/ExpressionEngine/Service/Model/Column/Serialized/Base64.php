@@ -46,3 +46,5 @@ class Base64 extends SerializedType {
 	}
 
 }
+
+// EOF

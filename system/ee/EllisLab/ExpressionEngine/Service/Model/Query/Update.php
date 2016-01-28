@@ -135,3 +135,5 @@ class Update extends Query {
 		$query->update($gateway->getTableName());
 	}
 }
+
+// EOF

@@ -29,3 +29,4 @@ class Emoticon_mcp {
 
 // END CLASS
 
+// EOF

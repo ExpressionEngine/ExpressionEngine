@@ -95,3 +95,5 @@ class MemberPreferences extends CustomType {
 	}
 
 }
+
+// EOF

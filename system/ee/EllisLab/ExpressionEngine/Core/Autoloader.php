@@ -109,3 +109,5 @@ class Autoloader {
 		//throw new \RuntimeException('Failed to load class: ' . $class . '!');
 	}
 }
+
+// EOF

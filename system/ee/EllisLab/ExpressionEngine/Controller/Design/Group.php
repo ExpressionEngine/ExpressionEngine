@@ -400,4 +400,5 @@ class Group extends AbstractDesignController {
 		return TRUE;
 	}
 }
+
 // EOF

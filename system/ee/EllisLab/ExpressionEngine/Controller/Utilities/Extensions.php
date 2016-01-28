@@ -394,4 +394,5 @@ class Extensions extends Utilities {
 	}
 
 }
+
 // EOF

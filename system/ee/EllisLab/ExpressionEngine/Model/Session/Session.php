@@ -48,3 +48,5 @@ class Session extends Model {
 	protected $last_activity;
 
 }
+
+// EOF

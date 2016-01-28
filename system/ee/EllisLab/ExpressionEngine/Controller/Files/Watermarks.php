@@ -476,4 +476,5 @@ class Watermarks extends AbstractFilesController {
 		ee()->cp->render('settings/form', $vars);
 	}
 }
+
 // EOF

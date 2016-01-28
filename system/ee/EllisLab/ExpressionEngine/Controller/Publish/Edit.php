@@ -533,4 +533,5 @@ class Edit extends AbstractPublishController {
 	}
 
 }
+
 // EOF

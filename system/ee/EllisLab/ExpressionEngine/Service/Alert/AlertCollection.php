@@ -284,4 +284,5 @@ class AlertCollection {
 	}
 
 }
+
 // EOF

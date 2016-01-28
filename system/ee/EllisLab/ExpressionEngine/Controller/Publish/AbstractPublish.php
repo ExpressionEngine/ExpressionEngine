@@ -253,4 +253,5 @@ abstract class AbstractPublish extends CP_Controller {
 	}
 
 }
+
 // EOF

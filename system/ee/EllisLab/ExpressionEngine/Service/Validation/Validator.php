@@ -340,3 +340,5 @@ class Validator {
 	}
 
 }
+
+// EOF

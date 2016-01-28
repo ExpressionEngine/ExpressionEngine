@@ -1963,4 +1963,5 @@ class Addons extends CP_Controller {
 		}
 	}
 }
+
 // EOF

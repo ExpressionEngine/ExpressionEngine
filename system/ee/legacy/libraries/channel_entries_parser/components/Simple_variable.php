@@ -454,3 +454,5 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		return $tagdata;
 	}
 }
+
+// EOF

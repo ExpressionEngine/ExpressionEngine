@@ -275,4 +275,5 @@ class Members extends AbstractDesignController {
 		ee()->cp->render('design/members/edit', $vars);
 	}
 }
+
 // EOF

@@ -44,3 +44,5 @@ class Fieldtype extends Model {
 	protected $has_global_settings;
 
 }
+
+// EOF

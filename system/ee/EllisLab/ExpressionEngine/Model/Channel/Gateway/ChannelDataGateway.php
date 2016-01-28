@@ -16,5 +16,4 @@ class ChannelDataGateway extends VariableColumnGateway {
 
 }
 
-
-
+// EOF

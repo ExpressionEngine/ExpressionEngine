@@ -127,3 +127,4 @@ class SimplePie_Copyright
 	}
 }
 
+// EOF

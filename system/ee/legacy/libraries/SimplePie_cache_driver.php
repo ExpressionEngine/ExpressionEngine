@@ -122,3 +122,5 @@ class EE_SimplePie_Cache_Driver implements SimplePie_Cache_Base
 		return ee()->cache->delete('/rss_parser/'.$this->name, Cache::GLOBAL_SCOPE);
 	}
 }
+
+// EOF

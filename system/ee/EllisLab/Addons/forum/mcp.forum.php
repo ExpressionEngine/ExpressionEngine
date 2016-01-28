@@ -3299,4 +3299,5 @@ class Forum_mcp extends CP_Controller {
 	}
 
 }
+
 // EOF

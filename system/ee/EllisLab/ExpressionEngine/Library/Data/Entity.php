@@ -693,3 +693,5 @@ abstract class Entity extends MixableImpl implements Publisher {
 	}
 
 }
+
+// EOF

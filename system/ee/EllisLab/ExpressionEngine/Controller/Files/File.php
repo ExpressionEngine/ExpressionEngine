@@ -412,4 +412,5 @@ class File extends AbstractFilesController {
 		force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
 	}
 }
+
 // EOF

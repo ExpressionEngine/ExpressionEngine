@@ -71,3 +71,5 @@ class VariableColumnModel extends Model {
 		return $this->_variable_values[$name];
 	}
 }
+
+// EOF

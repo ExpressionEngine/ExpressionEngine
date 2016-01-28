@@ -110,3 +110,5 @@ class Factory {
 		return (strpos($path, PATH_ADDONS) === 0 || strpos($path, PATH_THIRD) === 0);
 	}
 }
+
+// EOF

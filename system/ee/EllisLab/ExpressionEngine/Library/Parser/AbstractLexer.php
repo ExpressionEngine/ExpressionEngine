@@ -144,3 +144,5 @@ abstract class AbstractLexer {
 		return $this->str;
 	}
 }
+
+// EOF

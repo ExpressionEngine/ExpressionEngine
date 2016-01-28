@@ -132,3 +132,4 @@ class EE_Benchmark {
 
 // END CI_Benchmark class
 
+// EOF

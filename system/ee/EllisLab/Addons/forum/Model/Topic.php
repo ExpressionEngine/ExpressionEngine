@@ -179,3 +179,5 @@ class Topic extends Model {
 	}
 
 }
+
+// EOF

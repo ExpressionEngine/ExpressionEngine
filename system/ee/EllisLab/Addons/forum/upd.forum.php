@@ -1032,5 +1032,4 @@ class Forum_upd {
 }
 // END CLASS
 
-
-
+// EOF

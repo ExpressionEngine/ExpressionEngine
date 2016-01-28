@@ -110,5 +110,4 @@ if ( ! function_exists('encode_php_tags'))
 	}
 }
 
-
-
+// EOF

@@ -27,3 +27,4 @@ require_once(EE_APPPATH.'/libraries/Utf8_db_convert.php');
 
 class Installer_Utf8_db_convert extends Utf8_db_convert { }
 
+// EOF

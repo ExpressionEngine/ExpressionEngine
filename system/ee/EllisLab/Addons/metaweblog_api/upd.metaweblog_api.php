@@ -217,5 +217,4 @@ class Metaweblog_api_upd {
 	}
 }
 
-
-
+// EOF

@@ -173,4 +173,4 @@ class Template extends Settings {
 }
 // END CLASS
 
-
+// EOF

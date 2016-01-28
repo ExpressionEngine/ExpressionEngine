@@ -55,3 +55,5 @@ class EmailConsoleCache extends Model {
 
 
 }
+
+// EOF

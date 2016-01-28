@@ -30,4 +30,4 @@ class Installer_Layout extends EE_Layout {
 }
 // END CLASS
 
-
+// EOF

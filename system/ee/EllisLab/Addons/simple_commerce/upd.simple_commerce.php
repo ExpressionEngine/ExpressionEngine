@@ -251,4 +251,4 @@ class Simple_commerce_upd {
 	}
 }
 
-
+// EOF

@@ -507,3 +507,4 @@ if (ee()->config->item('remove_close_all_button') !== 'y')
 }
 // END CLASS
 
+// EOF

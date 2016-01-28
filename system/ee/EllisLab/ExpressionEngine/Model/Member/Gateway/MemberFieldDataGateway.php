@@ -43,3 +43,5 @@ class MemberFieldDataGateway extends VariableColumnGateway {
 	protected $member_id;
 
 }
+
+// EOF

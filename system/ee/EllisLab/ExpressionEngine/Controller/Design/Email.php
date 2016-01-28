@@ -343,4 +343,5 @@ class Email extends AbstractDesignController {
 	}
 
 }
+
 // EOF

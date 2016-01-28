@@ -12,3 +12,5 @@ return array(
 		'Moblog' => 'Model\Moblog'
 	)
 );
+
+// EOF

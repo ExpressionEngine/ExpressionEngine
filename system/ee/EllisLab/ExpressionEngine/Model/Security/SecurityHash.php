@@ -44,3 +44,5 @@ class SecurityHash extends Model {
 	protected $hash;
 	protected $used;
 }
+
+// EOF

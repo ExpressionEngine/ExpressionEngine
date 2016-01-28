@@ -469,4 +469,4 @@ class EE_Calendar {
 
 // END CI_Calendar class
 
-
+// EOF

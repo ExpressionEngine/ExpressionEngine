@@ -239,4 +239,4 @@ class Wiki_model extends CI_Model {
 }
 // END CLASS
 
-
+// EOF

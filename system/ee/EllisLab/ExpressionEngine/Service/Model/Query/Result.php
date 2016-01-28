@@ -257,3 +257,5 @@ class Result {
 		return $this;
 	}
 }
+
+// EOF

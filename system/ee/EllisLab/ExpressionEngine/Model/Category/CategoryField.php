@@ -105,3 +105,5 @@ class CategoryField extends FieldModel {
 		return 'category_field_data';
 	}
 }
+
+// EOF

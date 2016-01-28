@@ -376,4 +376,4 @@ class Addons_model extends CI_Model {
 	}
 }
 
-
+// EOF

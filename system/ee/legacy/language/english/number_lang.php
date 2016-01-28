@@ -6,3 +6,4 @@ $lang['megabyte_abbr'] = '<abbr title="Megabyte">MB</abbr>';
 $lang['kilobyte_abbr'] = '<abbr title="Kilobyte">KB</abbr>';
 $lang['bytes'] = "Bytes";
 
+// EOF

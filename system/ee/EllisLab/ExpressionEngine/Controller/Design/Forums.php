@@ -254,4 +254,5 @@ class Forums extends AbstractDesignController {
 		ee()->cp->render('design/forums/edit', $vars);
 	}
 }
+
 // EOF

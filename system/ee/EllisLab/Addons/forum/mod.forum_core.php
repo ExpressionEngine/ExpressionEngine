@@ -10816,4 +10816,4 @@ class Forum_Core extends Forum {
 }
 // END CLASS
 
-
+// EOF

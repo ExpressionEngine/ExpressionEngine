@@ -76,3 +76,5 @@ class Search extends Model {
 	protected $sort_order;
 
 }
+
+// EOF

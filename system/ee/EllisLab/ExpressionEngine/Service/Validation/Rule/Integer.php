@@ -40,3 +40,5 @@ class Integer extends ValidationRule {
 	}
 
 }
+
+// EOF

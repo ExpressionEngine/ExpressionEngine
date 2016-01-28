@@ -51,3 +51,5 @@ class MaxLength extends ValidationRule {
 		return 'max_length';
 	}
 }
+
+// EOF

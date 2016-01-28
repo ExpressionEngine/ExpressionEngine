@@ -48,3 +48,5 @@ class PipeDelimited extends SerializedType {
 	}
 
 }
+
+// EOF

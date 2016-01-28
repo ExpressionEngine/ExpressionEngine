@@ -147,3 +147,5 @@ class Directory {
 		return $default;
 	}
 }
+
+// EOF

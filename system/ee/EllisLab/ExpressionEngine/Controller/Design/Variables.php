@@ -557,4 +557,5 @@ class Variables extends AbstractDesignController {
 		return TRUE;
 	}
 }
+
 // EOF

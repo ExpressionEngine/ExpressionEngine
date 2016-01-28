@@ -464,4 +464,4 @@ class Text_ft extends EE_Fieldtype {
 
 // END Text_Ft class
 
-
+// EOF

@@ -59,3 +59,5 @@ class RevisionTracker extends Model {
 	protected $item_author_id;
 	protected $item_data;
 }
+
+// EOF

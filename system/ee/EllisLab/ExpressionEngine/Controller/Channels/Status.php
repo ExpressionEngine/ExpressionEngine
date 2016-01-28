@@ -812,4 +812,5 @@ class Status extends AbstractChannelsController {
 		return $status->save();
 	}
 }
+
 // EOF

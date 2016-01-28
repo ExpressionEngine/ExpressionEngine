@@ -98,4 +98,5 @@ class Custom extends Filter {
 	}
 
 }
+
 // EOF

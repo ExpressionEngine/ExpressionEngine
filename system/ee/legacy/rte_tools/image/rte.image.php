@@ -115,4 +115,4 @@ class Image_rte {
 
 } // END Image_rte
 
-
+// EOF

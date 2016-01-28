@@ -2245,4 +2245,4 @@ class EE_Email {
 }
 // END CLASS
 
-
+// EOF

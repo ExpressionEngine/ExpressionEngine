@@ -361,3 +361,5 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 		return new ArrayIterator($this->elements);
 	}
 }
+
+// EOF

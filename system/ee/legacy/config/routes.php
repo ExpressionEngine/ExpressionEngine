@@ -50,4 +50,4 @@ if (defined('REQ') && REQ == 'CP')
 	$route['404_override'] = "cp/error/file_not_found";
 }
 
-
+// EOF

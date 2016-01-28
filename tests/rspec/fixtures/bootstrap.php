@@ -234,3 +234,5 @@ ee()->di->register('Validation', function($di)
 });
 */
 $api = ee()->di->make('Model');
+
+// EOF

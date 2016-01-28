@@ -212,4 +212,5 @@ class FolderItem extends ListItem {
 	}
 
 }
+
 // EOF

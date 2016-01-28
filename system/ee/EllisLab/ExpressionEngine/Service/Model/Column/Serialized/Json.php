@@ -48,3 +48,5 @@ class Json extends SerializedType {
 	}
 
 }
+
+// EOF

@@ -142,5 +142,4 @@ class Notifications {
 
 // END Notifications class
 
-
-
+// EOF

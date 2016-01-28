@@ -61,3 +61,5 @@ $lang = array(
 	'updating_parameters' => 'Updating Parameters',
 	'training_finished' => 'Training Finished',
 );
+
+// EOF

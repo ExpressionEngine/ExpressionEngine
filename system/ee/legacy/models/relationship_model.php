@@ -227,3 +227,5 @@ class Relationship_model extends CI_Model {
 		return $longest;
 	}
 }
+
+// EOF

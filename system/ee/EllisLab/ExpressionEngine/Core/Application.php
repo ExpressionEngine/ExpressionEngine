@@ -255,3 +255,5 @@ class Application {
 		return $result;
 	}
 }
+
+// EOF

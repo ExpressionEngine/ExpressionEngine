@@ -103,3 +103,5 @@ class Attachment extends Model {
 	protected $is_image;
 
 }
+
+// EOF

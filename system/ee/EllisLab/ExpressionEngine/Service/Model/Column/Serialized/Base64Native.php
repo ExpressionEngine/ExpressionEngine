@@ -48,3 +48,5 @@ class Base64Native extends SerializedType {
 	}
 
 }
+
+// EOF

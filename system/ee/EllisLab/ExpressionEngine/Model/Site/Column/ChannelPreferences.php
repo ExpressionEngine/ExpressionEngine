@@ -60,3 +60,5 @@ class ChannelPreferences extends CustomType {
 		return Base64Native::serialize($data);
 	}
 }
+
+// EOF

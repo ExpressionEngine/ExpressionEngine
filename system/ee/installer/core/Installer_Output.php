@@ -27,3 +27,4 @@ class Installer_Output Extends EE_Output {
 	// Yes, it's empty!
 }
 
+// EOF

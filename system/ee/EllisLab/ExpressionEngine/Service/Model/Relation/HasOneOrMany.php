@@ -190,3 +190,5 @@ abstract class HasOneOrMany extends Relation {
 		return array($from, $to);
 	}
 }
+
+// EOF

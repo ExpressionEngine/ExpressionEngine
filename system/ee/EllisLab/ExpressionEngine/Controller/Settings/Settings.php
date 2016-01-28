@@ -193,4 +193,4 @@ class Settings extends CP_Controller {
 }
 // END CLASS
 
-
+// EOF

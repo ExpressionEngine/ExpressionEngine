@@ -302,4 +302,5 @@ class FilterFactory {
 	}
 
 }
+
 // EOF

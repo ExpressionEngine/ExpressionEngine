@@ -67,3 +67,4 @@ class EE_RSS_Parser {
 }
 // END CLASS
 
+// EOF

@@ -95,3 +95,5 @@ class Item extends Model {
 	protected $admin_email_template_unsubscribe;
 	protected $customer_email_template_unsubscribe;
 }
+
+// EOF

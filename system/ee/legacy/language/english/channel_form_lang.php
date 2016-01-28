@@ -31,5 +31,4 @@ $lang = array(
 	'valid_date' => 'The %s you submitted was not formatted correctly (year-month-day hour:minute)',
 );
 
-
-
+// EOF

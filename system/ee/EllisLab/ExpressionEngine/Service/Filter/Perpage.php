@@ -156,4 +156,5 @@ class Perpage extends Filter {
 	}
 
 }
+
 // EOF

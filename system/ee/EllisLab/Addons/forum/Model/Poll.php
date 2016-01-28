@@ -77,3 +77,5 @@ class Poll extends Model {
 	protected $total_votes;
 
 }
+
+// EOF

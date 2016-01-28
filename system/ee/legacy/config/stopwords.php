@@ -59,3 +59,4 @@ $ignore = array(
 	'with'	// no comma after last item
 );
 
+// EOF

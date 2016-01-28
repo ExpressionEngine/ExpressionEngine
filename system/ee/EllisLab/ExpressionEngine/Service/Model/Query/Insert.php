@@ -90,3 +90,5 @@ class Insert extends Update {
 		);
 	}
 }
+
+// EOF

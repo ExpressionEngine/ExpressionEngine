@@ -39,3 +39,5 @@ class Tool extends Model {
 	protected $class;
 	protected $enabled;
 }
+
+// EOF

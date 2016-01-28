@@ -31,3 +31,5 @@ class EE_Template_router_natural_converter implements EE_Template_router_convert
 	}
 
 }
+
+// EOF

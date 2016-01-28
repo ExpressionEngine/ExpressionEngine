@@ -201,3 +201,5 @@ class ChannelField extends FieldModel {
 	}
 
 }
+
+// EOF

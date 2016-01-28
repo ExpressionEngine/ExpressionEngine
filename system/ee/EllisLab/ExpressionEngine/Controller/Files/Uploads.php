@@ -1034,4 +1034,5 @@ class Uploads extends AbstractFilesController {
 		}
 	}
 }
+
 // EOF

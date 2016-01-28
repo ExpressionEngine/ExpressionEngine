@@ -36,3 +36,5 @@ interface Vectorizer {
 	public function vectorize($source);
 
 }
+
+// EOF

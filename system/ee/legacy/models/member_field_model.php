@@ -186,3 +186,5 @@ class Member_field_model extends CI_Model {
 	}
 
 }
+
+// EOF

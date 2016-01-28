@@ -310,4 +310,5 @@ class EntryListing {
 		return $status;
 	}
 }
+
 // EOF

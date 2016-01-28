@@ -532,3 +532,5 @@ class DataStore {
 		return $this->aliases[$name];
 	}
 }
+
+// EOF

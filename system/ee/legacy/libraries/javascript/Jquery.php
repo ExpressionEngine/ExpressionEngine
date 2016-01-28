@@ -1066,4 +1066,4 @@ class EE_Jquery extends EE_Javascript {
 
 }
 
-
+// EOF

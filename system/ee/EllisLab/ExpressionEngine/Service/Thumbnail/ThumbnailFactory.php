@@ -71,4 +71,5 @@ class ThumbnailFactory {
 	}
 
 }
+
 // EOF

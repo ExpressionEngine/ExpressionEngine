@@ -39,3 +39,5 @@ class ValidBase64 extends ValidationRule {
 		return 'valid_base64';
 	}
 }
+
+// EOF

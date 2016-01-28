@@ -49,3 +49,4 @@ class TreeIterator extends \RecursiveArrayIterator {
 	}
 }
 
+// EOF

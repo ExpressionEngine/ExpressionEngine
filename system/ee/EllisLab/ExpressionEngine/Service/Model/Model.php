@@ -829,3 +829,5 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		return spl_object_hash($this).':'.$this->getName().':'.$this->getId();
 	}
 }
+
+// EOF

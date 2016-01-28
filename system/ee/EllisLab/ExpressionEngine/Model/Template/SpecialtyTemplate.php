@@ -94,3 +94,5 @@ class SpecialtyTemplate extends Model {
 	}
 
 }
+
+// EOF

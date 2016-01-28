@@ -85,3 +85,5 @@ class SyntheticGateway extends Gateway {
 	}
 
 }
+
+// EOF

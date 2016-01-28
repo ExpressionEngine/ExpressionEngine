@@ -1105,5 +1105,4 @@ abstract class EE_Fieldtype {
 }
 // END EE_Fieldtype class
 
-
-
+// EOF

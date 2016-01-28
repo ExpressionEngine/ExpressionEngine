@@ -56,3 +56,5 @@ class PageGateway extends Gateway {
 	protected $last_revision_id;
 	protected $has_categories;
 }
+
+// EOF

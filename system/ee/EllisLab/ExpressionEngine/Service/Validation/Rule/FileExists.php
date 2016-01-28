@@ -65,3 +65,5 @@ class FileExists extends ValidationRule {
 	}
 
 }
+
+// EOF

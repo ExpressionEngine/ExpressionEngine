@@ -233,3 +233,5 @@ class CI_DB_mysqli_connection {
 		return $query;
 	}
 }
+
+// EOF

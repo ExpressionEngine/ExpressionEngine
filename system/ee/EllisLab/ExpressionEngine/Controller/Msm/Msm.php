@@ -684,4 +684,5 @@ class Msm extends CP_Controller {
 		ee()->session->userdata['assigned_sites'] = $assigned_sites;
 	}
 }
+
 // EOF

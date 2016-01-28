@@ -1400,4 +1400,4 @@ class Template_Group_Entity
 
 }
 
-
+// EOF

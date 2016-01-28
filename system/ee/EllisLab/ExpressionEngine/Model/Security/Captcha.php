@@ -42,3 +42,5 @@ class Captcha extends Model {
 	protected $word;
 
 }
+
+// EOF

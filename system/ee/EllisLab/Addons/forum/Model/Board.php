@@ -299,3 +299,5 @@ class Board extends Model {
 	}
 
 }
+
+// EOF

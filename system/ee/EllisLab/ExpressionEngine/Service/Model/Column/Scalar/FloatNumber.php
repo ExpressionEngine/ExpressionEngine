@@ -67,3 +67,5 @@ class FloatNumber extends StaticType {
 		return is_scalar($data) ? (float) $data : 0.0;
 	}
 }
+
+// EOF

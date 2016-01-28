@@ -57,5 +57,4 @@ $lang = array(
 	'UP14'	=> '(UTC +14:00) Line Islands'
 );
 
-
-
+// EOF

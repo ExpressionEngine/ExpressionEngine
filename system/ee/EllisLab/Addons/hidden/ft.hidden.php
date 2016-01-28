@@ -42,3 +42,4 @@ class Hidden_ft extends EE_Fieldtype {
 
 // END Hidden_Ft class
 
+// EOF

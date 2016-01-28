@@ -38,3 +38,5 @@ class SpamTrap extends Model {
 	protected $document;
 
 }
+
+// EOF

@@ -446,3 +446,5 @@ class Relationship_settings_form {
 	}
 
 }
+
+// EOF

@@ -2454,4 +2454,4 @@ class Wizard extends CI_Controller {
 	}
 }
 
-
+// EOF

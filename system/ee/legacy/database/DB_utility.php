@@ -406,5 +406,4 @@ class CI_DB_utility extends CI_DB_forge {
 
 }
 
-
-
+// EOF

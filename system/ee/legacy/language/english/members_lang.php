@@ -492,3 +492,4 @@ $lang = array(
 	"member_settings" => "Member Settings"
 );
 
+// EOF

@@ -174,4 +174,5 @@ class Date extends Filter {
 	}
 
 }
+
 // EOF

@@ -43,3 +43,5 @@ class PasswordLockout extends Model {
 	protected $username;
 
 }
+
+// EOF

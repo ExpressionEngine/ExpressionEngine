@@ -133,5 +133,4 @@ $config['encryption_key'] = '{encryption_key}';
 */
 $config['rewrite_short_tags'] = {rewrite_short_tags};
 
-
-
+// EOF

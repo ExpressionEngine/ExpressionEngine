@@ -909,5 +909,4 @@ class Auth_result {
 }
 // END Auth_member class
 
-
-
+// EOF

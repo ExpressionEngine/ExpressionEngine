@@ -41,3 +41,5 @@ class Plugin extends Model {
 	protected $is_typography_related;
 
 }
+
+// EOF

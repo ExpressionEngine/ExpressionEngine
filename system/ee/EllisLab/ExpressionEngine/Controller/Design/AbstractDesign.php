@@ -573,4 +573,5 @@ abstract class AbstractDesign extends CP_Controller {
 		$template->save();
 	}
 }
+
 // EOF

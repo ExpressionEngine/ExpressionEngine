@@ -161,4 +161,5 @@ class System extends AbstractDesignController {
 		ee()->cp->render('design/system/edit', $vars);
 	}
 }
+
 // EOF

@@ -257,3 +257,5 @@ class Statement {
 		return $result;
 	}
 }
+
+// EOF

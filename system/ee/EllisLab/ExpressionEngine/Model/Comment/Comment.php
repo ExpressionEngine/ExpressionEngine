@@ -135,3 +135,5 @@ class Comment extends Model {
 	}
 
 }
+
+// EOF

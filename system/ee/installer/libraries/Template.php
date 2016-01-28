@@ -313,4 +313,4 @@ class Installer_Template {
 }
 // END CLASS
 
-
+// EOF

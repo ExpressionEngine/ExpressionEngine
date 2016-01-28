@@ -335,4 +335,4 @@ class Radio_ft extends EE_Fieldtype {
 
 // END Radio_ft class
 
-
+// EOF

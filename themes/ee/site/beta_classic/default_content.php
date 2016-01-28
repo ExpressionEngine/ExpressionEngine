@@ -52,3 +52,4 @@ foreach ($Q as $sql)
 	$this->db->query($sql);
 }
 
+// EOF

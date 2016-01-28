@@ -72,3 +72,5 @@ class Token {
 		return htmlentities($this->type.' ('.$this->__toString().')');
 	}
 }
+
+// EOF

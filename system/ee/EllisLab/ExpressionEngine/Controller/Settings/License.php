@@ -130,4 +130,5 @@ class License extends Settings {
 		ee()->cp->render('settings/license', $vars);
 	}
 }
+
 // EOF

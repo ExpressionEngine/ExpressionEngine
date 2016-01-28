@@ -40,3 +40,5 @@ class Email extends ValidationRule {
 	}
 
 }
+
+// EOF

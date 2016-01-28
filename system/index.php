@@ -147,5 +147,4 @@
 
 	require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 
-
-
+// EOF

@@ -123,3 +123,4 @@ $lang = array(
 
 );
 
+// EOF

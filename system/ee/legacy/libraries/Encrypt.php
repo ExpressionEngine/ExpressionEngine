@@ -596,4 +596,4 @@ class EE_Encrypt {
 
 // END CI_Encrypt class
 
-
+// EOF

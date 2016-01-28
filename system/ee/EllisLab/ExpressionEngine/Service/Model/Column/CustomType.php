@@ -63,3 +63,5 @@ abstract class CustomType extends Entity implements Type {
 	}
 
 }
+
+// EOF

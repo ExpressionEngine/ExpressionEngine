@@ -234,3 +234,5 @@ class GlobalVariable extends FileSyncedModel {
 		return $variables;
 	}
 }
+
+// EOF

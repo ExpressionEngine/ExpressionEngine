@@ -31,3 +31,5 @@ class EE_Template_router_base64_converter implements EE_Template_router_converte
 	}
 
 }
+
+// EOF

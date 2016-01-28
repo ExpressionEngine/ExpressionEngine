@@ -55,5 +55,4 @@ class Installer_Lang Extends EE_Lang {
 	}
 }
 
-
-
+// EOF

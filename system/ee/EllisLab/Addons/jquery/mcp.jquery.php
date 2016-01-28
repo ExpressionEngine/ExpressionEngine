@@ -28,3 +28,4 @@ class Jquery_mcp {
 }
 // End Jquery CP Class
 
+// EOF

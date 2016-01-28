@@ -131,3 +131,5 @@ class Batch {
 		return $limit;
 	}
 }
+
+// EOF

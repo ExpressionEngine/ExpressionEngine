@@ -200,4 +200,5 @@ class URL implements \Serializable {
 		return base64_encode(serialize($this));
 	}
 }
+
 // EOF

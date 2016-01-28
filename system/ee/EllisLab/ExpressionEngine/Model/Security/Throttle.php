@@ -43,3 +43,5 @@ class Throttle extends Model {
 	protected $locked_out;
 
 }
+
+// EOF

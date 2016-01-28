@@ -507,3 +507,5 @@ class Addon {
 		require_once $this->getPath()."/{$prefix}.".$this->getPrefix().'.php';
 	}
 }
+
+// EOF

@@ -113,3 +113,5 @@ class MemberGateway extends Gateway {
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
 }
+
+// EOF

@@ -27,3 +27,5 @@
 class Filepicker {
 	public $return_data;
 }
+
+// EOF

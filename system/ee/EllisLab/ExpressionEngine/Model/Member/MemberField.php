@@ -176,3 +176,5 @@ class MemberField extends FieldModel {
 		return $key;
 	}
 }
+
+// EOF

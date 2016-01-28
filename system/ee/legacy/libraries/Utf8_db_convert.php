@@ -121,3 +121,5 @@ class Utf8_db_convert {
 		return TRUE;
 	}
 }
+
+// EOF

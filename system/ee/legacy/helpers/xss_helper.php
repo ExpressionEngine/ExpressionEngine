@@ -81,5 +81,4 @@ function xss_check()
 	return $xss_clean;
 }
 
-
-
+// EOF

@@ -43,3 +43,5 @@ class ResetPassword extends Model {
 	protected $resetcode;
 	protected $date;
 }
+
+// EOF

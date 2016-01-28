@@ -74,5 +74,4 @@ function generate_quicktab($title = '')
 	return BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager_add'.$tablink;
 }
 
-
-
+// EOF

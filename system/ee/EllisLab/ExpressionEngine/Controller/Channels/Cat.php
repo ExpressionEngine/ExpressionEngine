@@ -1347,4 +1347,5 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->render('settings/form', $vars);
 	}
 }
+
 // EOF

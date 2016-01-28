@@ -414,3 +414,5 @@ class Buttons extends Settings {
 
 }
 // END CLASS
+
+// EOF

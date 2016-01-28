@@ -368,4 +368,4 @@ function surrounding_character($string)
 	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
-
+// EOF

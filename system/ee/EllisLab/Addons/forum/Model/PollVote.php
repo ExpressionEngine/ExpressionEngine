@@ -75,3 +75,5 @@ class PollVote extends Model {
 	protected $choice_id;
 
 }
+
+// EOF

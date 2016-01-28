@@ -140,3 +140,4 @@ class QueryNodeIterator extends EE_TreeIterator {
 	}
 }
 
+// EOF

@@ -363,4 +363,4 @@ class Moblog_upd {
 }
 // END CLASS
 
-
+// EOF

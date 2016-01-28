@@ -57,4 +57,4 @@ if ( ! function_exists('send_email'))
 	}
 }
 
-
+// EOF

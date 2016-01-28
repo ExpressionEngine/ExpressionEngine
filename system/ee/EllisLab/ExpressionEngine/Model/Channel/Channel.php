@@ -376,3 +376,5 @@ class Channel extends StructureModel {
 		}
 	}
 }
+
+// EOF

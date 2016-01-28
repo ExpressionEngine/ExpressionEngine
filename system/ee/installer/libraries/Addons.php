@@ -31,4 +31,4 @@ class Installer_Addons extends EE_Addons {
 }
 // END CLASS
 
-
+// EOF

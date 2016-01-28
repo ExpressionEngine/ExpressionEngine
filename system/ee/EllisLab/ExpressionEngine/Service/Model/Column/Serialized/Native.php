@@ -48,3 +48,5 @@ class Native extends SerializedType {
 	}
 
 }
+
+// EOF

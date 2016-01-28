@@ -201,4 +201,4 @@ class Avatars extends Settings {
 }
 // END CLASS
 
-
+// EOF

@@ -802,5 +802,4 @@ class EE_BreadthFirstIterator implements OuterIterator {
 	}
 }
 
-
-
+// EOF

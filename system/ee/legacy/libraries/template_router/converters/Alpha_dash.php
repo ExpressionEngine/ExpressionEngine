@@ -31,3 +31,5 @@ class EE_Template_router_alpha_dash_converter implements EE_Template_router_conv
 	}
 
 }
+
+// EOF

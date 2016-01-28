@@ -260,3 +260,5 @@ class Template extends FileSyncedModel {
 		return TRUE;
 	}
 }
+
+// EOF

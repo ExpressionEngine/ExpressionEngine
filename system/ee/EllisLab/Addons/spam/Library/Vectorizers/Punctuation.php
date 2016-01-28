@@ -54,4 +54,4 @@ class Punctuation implements Vectorizer {
 
 }
 
-
+// EOF

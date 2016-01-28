@@ -729,4 +729,5 @@ abstract class AbstractChannels extends CP_Controller {
 		return $table;
 	}
 }
+
 // EOF

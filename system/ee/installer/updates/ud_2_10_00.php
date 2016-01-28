@@ -216,4 +216,5 @@ class Updater {
 		}
 	}
 }
+
 // EOF

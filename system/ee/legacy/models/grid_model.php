@@ -821,3 +821,5 @@ class Grid_model extends CI_Model {
 		return $content_type .'_'. $this->_table_prefix . $field_id;
 	}
 }
+
+// EOF

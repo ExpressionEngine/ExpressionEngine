@@ -206,3 +206,5 @@ class HasAndBelongsToMany extends Relation {
 		$this->pivot = array_merge($pivot, $options['pivot']);
 	}
 }
+
+// EOF

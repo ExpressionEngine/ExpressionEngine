@@ -45,3 +45,5 @@ class ChannelFormSettings extends Model {
 	protected $allow_guest_posts;
 	protected $default_author;
 }
+
+// EOF

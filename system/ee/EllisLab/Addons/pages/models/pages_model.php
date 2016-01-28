@@ -144,3 +144,4 @@ class Pages_model extends CI_Model {
 }
 // END CLASS
 
+// EOF

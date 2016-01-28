@@ -558,5 +558,4 @@ if ( ! function_exists('ellipsize'))
 	}
 }
 
-
-
+// EOF

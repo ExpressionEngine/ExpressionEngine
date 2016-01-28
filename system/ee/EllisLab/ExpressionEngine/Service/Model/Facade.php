@@ -124,3 +124,5 @@ class Facade {
 		return str_replace(':', '_m_', $str);
 	}
 }
+
+// EOF

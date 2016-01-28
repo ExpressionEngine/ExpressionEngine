@@ -350,4 +350,4 @@ class Bookmarks extends Settings {
 }
 // END CLASS
 
-
+// EOF

@@ -645,3 +645,5 @@ class Parser extends AbstractParser {
 		return $message;
 	}
 }
+
+// EOF

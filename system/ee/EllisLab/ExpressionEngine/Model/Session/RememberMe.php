@@ -50,3 +50,5 @@ class RememberMe extends Model {
 	protected $expiration;
 	protected $last_refresh;
 }
+
+// EOF

@@ -295,4 +295,4 @@ class MSM_Config extends EE_Config
 
 // END CLASS
 
-
+// EOF

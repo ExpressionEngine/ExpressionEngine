@@ -433,5 +433,4 @@ class Smartforge {
 
 // END SmartForge class
 
-
-
+// EOF

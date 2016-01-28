@@ -358,3 +358,5 @@ abstract class FieldModel extends Model {
 		return '';
 	}
 }
+
+// EOF

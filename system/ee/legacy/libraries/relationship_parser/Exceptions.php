@@ -24,3 +24,4 @@
  */
 class EE_Relationship_exception extends RuntimeException {}
 
+// EOF

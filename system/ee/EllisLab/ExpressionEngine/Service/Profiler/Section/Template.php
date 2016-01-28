@@ -83,3 +83,5 @@ class Template extends ProfilerSection {
 		$this->data = array('template' => $log);
 	}
 }
+
+// EOF

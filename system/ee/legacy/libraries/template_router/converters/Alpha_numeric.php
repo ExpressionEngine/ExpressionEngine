@@ -31,3 +31,5 @@ class EE_Template_router_alpha_numeric_converter implements EE_Template_router_c
 	}
 
 }
+
+// EOF

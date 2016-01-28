@@ -126,3 +126,4 @@ class Headings_rte {
 
 } // END Headings_rte
 
+// EOF

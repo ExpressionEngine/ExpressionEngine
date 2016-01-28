@@ -27,3 +27,4 @@ class Sc_model extends CI_Model {
 }
 // End Class
 
+// EOF

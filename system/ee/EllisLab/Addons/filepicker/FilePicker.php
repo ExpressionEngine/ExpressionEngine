@@ -190,4 +190,5 @@ class FilePicker {
 
 }
 
-?>
+
+// EOF

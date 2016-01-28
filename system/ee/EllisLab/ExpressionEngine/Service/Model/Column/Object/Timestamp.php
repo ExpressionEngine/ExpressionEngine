@@ -49,3 +49,5 @@ class Timestamp extends SerializedType {
 		return is_object($data) ? $data->getTimestamp() : intval($data);
 	}
 }
+
+// EOF

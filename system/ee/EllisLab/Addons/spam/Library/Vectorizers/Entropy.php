@@ -57,4 +57,4 @@ class Entropy implements Vectorizer {
 
 }
 
-
+// EOF

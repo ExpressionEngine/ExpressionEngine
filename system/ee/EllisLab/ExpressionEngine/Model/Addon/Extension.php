@@ -76,3 +76,5 @@ class Extension extends Model {
 		return unserialize($this->settings);
 	}
 }
+
+// EOF

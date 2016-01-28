@@ -121,3 +121,5 @@ class Csrf_database implements Csrf_storage_backend {
 	}
 
 }
+
+// EOF

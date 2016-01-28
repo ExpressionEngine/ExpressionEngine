@@ -991,5 +991,4 @@ class EE_Messages_send extends EE_Messages {
 
 }
 
-
-
+// EOF

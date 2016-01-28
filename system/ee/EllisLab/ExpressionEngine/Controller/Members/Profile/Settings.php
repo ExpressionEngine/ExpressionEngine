@@ -445,4 +445,4 @@ class Settings extends Profile {
 }
 // END CLASS
 
-
+// EOF

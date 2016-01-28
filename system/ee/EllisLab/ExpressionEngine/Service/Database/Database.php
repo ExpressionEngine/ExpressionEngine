@@ -169,3 +169,5 @@ class Database
 		return new Log('default');
 	}
 }
+
+// EOF

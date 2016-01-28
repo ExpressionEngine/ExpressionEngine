@@ -131,4 +131,5 @@ class Search extends AbstractChannelsController {
 	}
 
 }
+
 // EOF

@@ -116,4 +116,5 @@ class Thumbnail {
 	}
 
 }
+
 // EOF

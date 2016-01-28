@@ -196,3 +196,5 @@ class Log {
 		return $source;
 	}
 }
+
+// EOF

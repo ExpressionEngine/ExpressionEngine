@@ -121,3 +121,5 @@ class LocalPath extends SerializedType {
 		return $this->path ?: '';
 	}
 }
+
+// EOF

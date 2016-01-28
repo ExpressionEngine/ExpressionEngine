@@ -62,3 +62,4 @@ $smileys = array(
 
 		);
 
+// EOF

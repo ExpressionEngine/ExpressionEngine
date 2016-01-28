@@ -150,3 +150,5 @@ class Update_notices {
 		ee()->smartforge->create_table($this->table);
 	}
 }
+
+// EOF

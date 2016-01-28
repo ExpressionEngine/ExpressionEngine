@@ -258,4 +258,4 @@ class File_upload_preferences_model extends CI_Model
 	}
 }
 
-
+// EOF

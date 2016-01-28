@@ -174,4 +174,4 @@ class Communicate_model extends CI_Model {
 }
 // End class Communicate_model
 
-
+// EOF

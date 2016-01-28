@@ -50,3 +50,4 @@ $smileys = array(
 
 				);
 
+// EOF

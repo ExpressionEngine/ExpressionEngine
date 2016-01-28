@@ -51,3 +51,5 @@ class ExactLength extends ValidationRule {
 		return 'exact_length';
 	}
 }
+
+// EOF

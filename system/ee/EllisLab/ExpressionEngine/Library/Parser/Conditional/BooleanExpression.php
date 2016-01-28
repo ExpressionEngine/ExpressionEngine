@@ -477,3 +477,5 @@ class BooleanExpression {
 		);
 	}
 }
+
+// EOF

@@ -1555,5 +1555,4 @@ This URL must be on your web site (i.e.-http://www.yoursite.com/ipn.asp).
 
 }
 
-
-
+// EOF

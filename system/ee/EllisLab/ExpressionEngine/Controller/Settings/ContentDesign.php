@@ -193,4 +193,4 @@ class ContentDesign extends Settings {
 }
 // END CLASS
 
-
+// EOF

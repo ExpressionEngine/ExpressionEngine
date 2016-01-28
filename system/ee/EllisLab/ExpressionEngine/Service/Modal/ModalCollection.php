@@ -106,4 +106,5 @@ class ModalCollection {
 	}
 
 }
+
 // EOF

@@ -312,3 +312,5 @@ class UploadDestination extends Model {
 	}
 
 }
+
+// EOF

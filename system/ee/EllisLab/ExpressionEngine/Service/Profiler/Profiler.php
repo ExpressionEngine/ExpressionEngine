@@ -108,3 +108,5 @@ class Profiler {
 		return $view->render(array('sections' => $this->sections, 'rendered_sections' => $rendered_sections));
 	}
 }
+
+// EOF

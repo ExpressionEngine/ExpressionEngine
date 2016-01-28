@@ -418,3 +418,4 @@ class Layout_model extends CI_Model {
 	}
 }
 
+// EOF

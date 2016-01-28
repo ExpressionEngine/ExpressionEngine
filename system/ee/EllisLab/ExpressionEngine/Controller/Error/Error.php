@@ -34,3 +34,5 @@ class Error extends CP_Controller {
 		show_404();
 	}
 }
+
+// EOF

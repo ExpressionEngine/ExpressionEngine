@@ -577,3 +577,4 @@ class File {
 }
 // END CLASS
 
+// EOF

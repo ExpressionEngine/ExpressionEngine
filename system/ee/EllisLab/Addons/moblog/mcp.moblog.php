@@ -1096,4 +1096,4 @@ MAGIC;
 }
 // END CLASS
 
-
+// EOF

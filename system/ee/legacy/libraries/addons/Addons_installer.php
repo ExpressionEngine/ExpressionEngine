@@ -454,5 +454,4 @@ class Addons_installer {
 
 // END Addons_installer class
 
-
-
+// EOF

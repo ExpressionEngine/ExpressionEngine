@@ -43,3 +43,5 @@ class EmailTemplate extends Model {
 	protected $email_subject;
 	protected $email_body;
 }
+
+// EOF

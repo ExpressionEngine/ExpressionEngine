@@ -374,4 +374,4 @@ class Date_ft extends EE_Fieldtype {
 
 // END Date_ft class
 
-
+// EOF

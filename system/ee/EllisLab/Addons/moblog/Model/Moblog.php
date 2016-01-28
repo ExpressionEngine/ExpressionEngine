@@ -109,3 +109,5 @@ class Moblog extends Model {
 		return TRUE;
 	}
 }
+
+// EOF

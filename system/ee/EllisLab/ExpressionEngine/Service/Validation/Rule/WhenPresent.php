@@ -57,3 +57,5 @@ class WhenPresent extends ValidationRule {
 		$this->all_values = $values;
 	}
 }
+
+// EOF

@@ -15,4 +15,4 @@ $lang = array(
 	'segments_required' => 'Require all Variables?',
 );
 
-
+// EOF

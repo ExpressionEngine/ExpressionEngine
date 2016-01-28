@@ -1938,5 +1938,4 @@ class Metaweblog_api {
 	}
 }
 
-
-
+// EOF

@@ -483,3 +483,5 @@ class Fields extends AbstractChannelsController {
 	}
 
 }
+
+// EOF

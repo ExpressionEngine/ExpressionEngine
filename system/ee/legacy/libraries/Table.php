@@ -1058,5 +1058,4 @@ class EE_Table {
 
 // END EE_Table class
 
-
-
+// EOF

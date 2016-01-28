@@ -637,3 +637,5 @@ class Lexer extends AbstractLexer {
 		}
 	}
 }
+
+// EOF

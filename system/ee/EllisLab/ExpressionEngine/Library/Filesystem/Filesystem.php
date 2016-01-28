@@ -484,3 +484,5 @@ class Filesystem {
 		return $path;
 	}
 }
+
+// EOF

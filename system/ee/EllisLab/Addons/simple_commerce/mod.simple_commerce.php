@@ -1132,6 +1132,4 @@ class Simple_commerce {
 
 }
 
-
-
-
+// EOF

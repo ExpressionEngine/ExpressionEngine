@@ -83,3 +83,5 @@ class Status extends Model {
 		}
 	}
 }
+
+// EOF

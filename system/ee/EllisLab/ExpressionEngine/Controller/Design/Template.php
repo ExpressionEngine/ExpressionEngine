@@ -1077,4 +1077,5 @@ class Template extends AbstractDesignController {
 		return $html;
 	}
 }
+
 // EOF

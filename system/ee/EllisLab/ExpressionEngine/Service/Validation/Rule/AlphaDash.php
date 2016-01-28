@@ -39,3 +39,5 @@ class AlphaDash extends ValidationRule {
 		return 'alpha_dash';
 	}
 }
+
+// EOF

@@ -110,3 +110,5 @@ class Connection extends \CI_DB_mysqli_connection {
 	}
 
 }
+
+// EOF

@@ -8,3 +8,5 @@ abstract class StructureModel extends Model implements Structure {
 
 
 }
+
+// EOF

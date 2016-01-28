@@ -503,4 +503,4 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 // END Checkboxes_ft class
 
-
+// EOF

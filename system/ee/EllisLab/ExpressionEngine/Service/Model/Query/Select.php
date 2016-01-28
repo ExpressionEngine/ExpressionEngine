@@ -390,3 +390,5 @@ class Select extends Query {
 		return $this->aliases[$alias];
 	}
 }
+
+// EOF

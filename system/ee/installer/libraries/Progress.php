@@ -118,5 +118,4 @@ class ProgressIterator extends ArrayIterator {
 
 // END ProgressIterator class
 
-
-
+// EOF

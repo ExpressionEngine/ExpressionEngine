@@ -362,4 +362,4 @@ class Textarea_ft extends EE_Fieldtype {
 
 // END Textarea_ft class
 
-
+// EOF

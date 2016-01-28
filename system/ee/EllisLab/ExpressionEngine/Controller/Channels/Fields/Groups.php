@@ -302,3 +302,5 @@ class Groups extends AbstractChannelsController {
 	}
 
 }
+
+// EOF

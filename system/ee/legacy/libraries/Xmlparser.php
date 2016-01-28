@@ -308,5 +308,4 @@ class EE_XMLparser {
 
 }
 
-
-
+// EOF

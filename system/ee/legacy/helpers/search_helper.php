@@ -95,5 +95,4 @@ if ( ! function_exists('sanitize_search_terms'))
 	}
 }
 
-
-
+// EOF

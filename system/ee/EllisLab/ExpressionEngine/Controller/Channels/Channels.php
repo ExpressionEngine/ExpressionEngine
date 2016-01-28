@@ -1296,4 +1296,5 @@ class Channels extends AbstractChannelsController {
 		$channel->save();
 	}
 }
+
 // EOF

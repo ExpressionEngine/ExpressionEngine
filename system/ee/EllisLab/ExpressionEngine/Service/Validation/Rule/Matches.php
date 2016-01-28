@@ -54,3 +54,5 @@ class Matches extends ValidationRule {
 		$this->all_values = $values;
 	}
 }
+
+// EOF

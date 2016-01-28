@@ -114,3 +114,5 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_componen
 		return $tagdata;
 	}
 }
+
+// EOF

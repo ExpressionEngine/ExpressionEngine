@@ -337,3 +337,5 @@ class Pages_tab {
 	}
 
 }
+
+// EOF

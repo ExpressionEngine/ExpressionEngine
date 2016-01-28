@@ -321,3 +321,4 @@ class CI_DB_result {
 }
 // END DB_result class
 
+// EOF

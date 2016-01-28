@@ -51,3 +51,5 @@ class MinLength extends ValidationRule {
 		return 'min_length';
 	}
 }
+
+// EOF

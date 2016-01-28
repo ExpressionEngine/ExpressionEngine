@@ -388,3 +388,5 @@ class Delete extends Query {
 		return $parts;
 	}
 }
+
+// EOF

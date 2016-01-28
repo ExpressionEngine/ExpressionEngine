@@ -267,3 +267,5 @@ abstract class Relation {
 		}
 	}
 }
+
+// EOF

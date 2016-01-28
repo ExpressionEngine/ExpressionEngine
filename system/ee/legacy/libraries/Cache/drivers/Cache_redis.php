@@ -262,3 +262,4 @@ class EE_Cache_redis extends CI_Driver
 	}
 }
 
+// EOF

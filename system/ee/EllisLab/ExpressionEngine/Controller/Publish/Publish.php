@@ -351,4 +351,5 @@ class Publish extends AbstractPublishController {
 		$entry->set($data);
 	}
 }
+
 // EOF

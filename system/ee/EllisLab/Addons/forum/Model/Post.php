@@ -142,3 +142,5 @@ class Post extends Model {
 	}
 
 }
+
+// EOF

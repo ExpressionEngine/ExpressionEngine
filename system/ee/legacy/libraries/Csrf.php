@@ -197,3 +197,5 @@ class Csrf {
 		return preg_match('/^[a-f0-9]{'.self::TOKEN_LENGTH.'}$/', $token);
 	}
 }
+
+// EOF

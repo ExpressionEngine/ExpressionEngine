@@ -95,3 +95,5 @@ class CategoryGroup extends StructureModel {
 	}
 
 }
+
+// EOF

@@ -497,3 +497,5 @@ class SimplePie_HTTP_Parser
 		}
 	}
 }
+
+// EOF

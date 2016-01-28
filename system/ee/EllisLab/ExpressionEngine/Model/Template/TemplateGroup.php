@@ -200,3 +200,5 @@ class TemplateGroup extends Model {
 	}
 
 }
+
+// EOF

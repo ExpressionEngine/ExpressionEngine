@@ -39,3 +39,5 @@ class AlphaNumeric extends ValidationRule {
 		return 'alpha_numeric';
 	}
 }
+
+// EOF

@@ -130,3 +130,5 @@ class BelongsTo extends Relation {
 		return array($from, $to);
 	}
 }
+
+// EOF
