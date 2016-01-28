@@ -99,6 +99,10 @@ class Textarea_ft extends EE_Fieldtype {
 			}
 		}
 
+		$disabled = (isset($this->settings['field_disabled']))
+			? get_bool_from_string($this->settings['field_disabled'])
+			: FALSE;
+
 		if (REQ == 'CP')
 		{
 			$class = ($grid_markitup) ? 'markItUp' : '';
@@ -173,13 +177,20 @@ class Textarea_ft extends EE_Fieldtype {
 			return ee('View')->make('textarea:publish')->render($vars);
 		}
 
-		return form_textarea(array(
-			'name'	=> $this->name(),
-			'value'	=> $data,
-			'rows'	=> $this->settings['field_ta_rows'],
-			'dir'	=> $this->settings['field_text_direction'],
-			'class' => ($grid_markitup) ? 'markItUp' : ''
-		));
+		$params = array(
+			'name'     => $this->name(),
+			'value'    => $data,
+			'rows'     => $this->settings['field_ta_rows'],
+			'dir'      => $this->settings['field_text_direction'],
+			'class'    => ($grid_markitup) ? 'markItUp' : ''
+		);
+
+		if ($disabled)
+		{
+			$params['disabled'] = 'disabled';
+		}
+
+		return form_textarea($params);
 	}
 
 	// --------------------------------------------------------------------
