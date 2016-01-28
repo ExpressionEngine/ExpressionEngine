@@ -33,6 +33,7 @@ class EE_Encrypt {
 	var $_mcrypt_exists = FALSE;
 	var $_mcrypt_cipher;
 	var $_mcrypt_mode;
+	private $mb_available;
 
 	/**
 	 * Constructor
@@ -43,6 +44,7 @@ class EE_Encrypt {
 	public function __construct()
 	{
 		$this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? FALSE : TRUE;
+		$this->mb_available = (MB_ENABLED) ?: extension_loaded('mbstring');
 		log_message('debug', "Encrypt Class Initialized");
 	}
 
@@ -332,15 +334,15 @@ class EE_Encrypt {
 	{
 		$data = $this->_remove_cipher_noise($data, $key);
 		$init_size = mcrypt_get_iv_size($this->_get_cipher(), $this->_get_mode());
-		$mb_adjusted_data_length =  (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
+		$mb_adjusted_data_length =  ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
 
 		if ($init_size > $mb_adjusted_data_length)
 		{
 			return FALSE;
 		}
 
-		$init_vect = (MB_ENABLED) ? mb_substr($data, 0, $init_size, 'ascii') : substr($data, 0, $init_size);
-		$data = (MB_ENABLED) ? mb_substr($data, $init_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $init_size);
+		$init_vect = ($this->mb_available) ? mb_substr($data, 0, $init_size, 'ascii') : substr($data, 0, $init_size);
+		$data = ($this->mb_available) ? mb_substr($data, $init_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $init_size);
 		return rtrim(mcrypt_decrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), "\0");
 	}
 
@@ -361,9 +363,9 @@ class EE_Encrypt {
 	function _add_cipher_noise($data, $key)
 	{
 		$keyhash = $this->hash($key);
-		$keylen = (MB_ENABLED) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
-		$len = (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
+		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
 
         for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
@@ -393,9 +395,9 @@ class EE_Encrypt {
 	function _remove_cipher_noise($data, $key)
 	{
 		$keyhash = $this->hash($key);
-		$keylen = (MB_ENABLED) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
-		$len = (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
+		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
 
 		for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
