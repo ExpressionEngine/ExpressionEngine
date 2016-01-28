@@ -7,7 +7,7 @@
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- https://ellislab.com/expressionengine/user-guide/license.html
+ https://expressionengine.com/license
 =====================================================
  File: readme.txt
 -----------------------------------------------------
