@@ -192,7 +192,7 @@ if ( ! function_exists('reduce_multiples'))
  */
 if ( ! function_exists('random_string'))
 {
-	function random_string($type = 'alnum', $len = 8)
+	function random_string($type = 'alnum', $len = 8, $antipool = '')
 	{
 		switch($type)
 		{
@@ -215,6 +215,8 @@ if ( ! function_exists('random_string'))
 							break;
 					}
 
+					$pool = str_replace(str_split($antipool), '', $pool);
+
 					$str = '';
 					for ($i=0; $i < $len; $i++)
 					{
@@ -230,7 +232,8 @@ if ( ! function_exists('random_string'))
 			case 'encrypt'	:
 			case 'sha1'	:
 
-						ee()->load->helper('security');
+						$CI =& get_instance();
+						$CI->load->helper('security');
 
 						return sha1(uniqid(mt_rand(), TRUE));
 				break;
