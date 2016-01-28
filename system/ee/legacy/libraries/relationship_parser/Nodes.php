@@ -6,7 +6,7 @@
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class ParseNode extends EE_TreeNode {
 
@@ -207,7 +207,7 @@ class ParseNode extends EE_TreeNode {
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  *
  * We store a shortcut path to the kids that need their own queries:
  * http://en.wikipedia.org/wiki/Transitive_closure

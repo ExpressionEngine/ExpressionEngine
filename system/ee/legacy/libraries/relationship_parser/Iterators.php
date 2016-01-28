@@ -6,7 +6,7 @@
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  *
  * Does not go the into query node's children.
  */
@@ -88,7 +88,7 @@ class ParseNodeIterator extends EE_TreeIterator {
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  *
  * Iterates all of the tree's query nodes even if there are parse
  * nodes in between.

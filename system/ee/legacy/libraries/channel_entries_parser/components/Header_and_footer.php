@@ -7,7 +7,7 @@
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component {
 

@@ -7,7 +7,7 @@
  * @category		Plugin
  * @author			EllisLab Dev Team
  * @copyright		Copyright (c) 2004 - 2016, EllisLab, Inc.
- * @link			http://ellislab.com
+ * @link			https://ellislab.com
  */
 
 

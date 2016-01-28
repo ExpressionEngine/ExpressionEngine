@@ -2,7 +2,7 @@
 
 return array(
 	'author'      => 'EllisLab',
-	'author_url'  => 'http://ellislab.com/',
+	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'Wiki',
 	'description' => '',
 	'version'     => '3.0',
@@ -17,8 +17,8 @@ return array(
 		'Category' => 'Model\Category',
 		'CategoryArticle' => 'Model\CategoryArticle',
 		'Search' => 'Model\Search',
-		'Upload' => 'Model\Upload'		
-		
+		'Upload' => 'Model\Upload'
+
 	),
 
 	'models.dependencies' => array(

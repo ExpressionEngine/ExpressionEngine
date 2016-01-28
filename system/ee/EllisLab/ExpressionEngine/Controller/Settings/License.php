@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -22,7 +22,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class License extends Settings {
 

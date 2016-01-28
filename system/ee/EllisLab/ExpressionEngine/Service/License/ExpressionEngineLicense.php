@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Service\License;
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -21,7 +21,7 @@ namespace EllisLab\ExpressionEngine\Service\License;
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class ExpressionEngineLicense extends License {
 

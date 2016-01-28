@@ -12,7 +12,7 @@ use EllisLab\ExpressionEngine\Core\Provider;
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -26,7 +26,7 @@ use EllisLab\ExpressionEngine\Core\Provider;
  * @subpackage	Filesystem
  * @category	Library
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Factory {
 

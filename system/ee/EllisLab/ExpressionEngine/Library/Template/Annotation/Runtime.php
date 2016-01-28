@@ -9,7 +9,7 @@ namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.9.0
  * @filesource
  */
@@ -40,7 +40,7 @@ namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Runtime {
 

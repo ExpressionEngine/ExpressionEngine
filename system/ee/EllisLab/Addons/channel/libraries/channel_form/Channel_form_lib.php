@@ -8,7 +8,7 @@
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -24,7 +24,7 @@ require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.
  * @subpackage	Libraries
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Channel_form_lib
 {

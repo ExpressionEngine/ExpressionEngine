@@ -19,7 +19,7 @@ require_once BASEPATH."database/drivers/mysqli/mysqli_driver.php";
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -33,7 +33,7 @@ require_once BASEPATH."database/drivers/mysqli/mysqli_driver.php";
  * @subpackage	Database\Connection
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Query extends \CI_DB_mysqli_driver {
 

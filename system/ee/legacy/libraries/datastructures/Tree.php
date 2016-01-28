@@ -6,7 +6,7 @@
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -32,7 +32,7 @@
  * @subpackage	Core Datastructures
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Tree {
 
@@ -158,7 +158,7 @@ class EE_Tree {
  * @subpackage	Core Datastructures
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  *
  * If you're completely new to this ideas:
  * @see http://xlinux.nist.gov/dads/HTML/tree.html
@@ -613,7 +613,7 @@ class EE_TreeNode {
  * @subpackage	Core Datastructures
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_TreeIterator extends RecursiveArrayIterator {
 
@@ -661,7 +661,7 @@ class EE_TreeIterator extends RecursiveArrayIterator {
  * @subpackage	Core Datastructures
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_BreadthFirstIterator implements OuterIterator {
 

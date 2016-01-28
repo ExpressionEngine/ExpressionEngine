@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result;
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  * @since		Version 2.7
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result;
  * @subpackage	Libraries
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Grid_lib {
