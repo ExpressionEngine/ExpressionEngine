@@ -289,5 +289,4 @@ class Query extends Utilities {
 }
 // END CLASS
 
-/* End of file Query.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Query.php */
+

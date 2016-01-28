@@ -318,5 +318,3 @@ class Field_model extends CI_Model {
 
 }
 
-/* End of file field_model.php */
-/* Location: ./system/expressionengine/models/field_model.php */

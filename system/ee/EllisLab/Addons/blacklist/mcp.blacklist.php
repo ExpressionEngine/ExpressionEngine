@@ -683,5 +683,4 @@ class Blacklist_mcp {
 }
 // END CLASS
 
-/* End of file mcp.blacklist.php */
-/* Location: ./system/expressionengine/modules/blacklist/mcp.blacklist.php */
+

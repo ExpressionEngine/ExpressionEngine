@@ -42,7 +42,6 @@ $default_template_access = array('Banned' 	=> 'n',
 $template_preferences['site']['index'] = array('caching' => 'y', 'cache_refresh' => 60);
 
 $template_access['search']['index'] = array('Guests' => 'n', 'Pending' => 'n');
-				
 
-/* End of file theme_preferences.php */
-/* Location: ./themes/site/beta_classic/theme_preferences.php */
+
+

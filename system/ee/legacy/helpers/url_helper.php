@@ -623,5 +623,4 @@ if ( ! function_exists('_parse_attributes'))
 
 // --------------------------------------------------------------------
 
-/* End of file EE_url_helper.php */
-/* Location: ./system/expressionengine/helpers/EE_url_helper.php */
+

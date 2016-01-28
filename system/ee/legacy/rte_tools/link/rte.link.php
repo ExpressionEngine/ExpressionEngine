@@ -145,5 +145,3 @@ class Link_rte {
 
 } // END Link_rte
 
-/* End of file rte.link.php */
-/* Location: ./system/expressionengine/rte_tools/link/rte.link.php */

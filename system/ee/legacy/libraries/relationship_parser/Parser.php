@@ -710,5 +710,4 @@ class EE_Relationship_data_parser {
 	}
 }
 
-/* End of file Parser.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Parser.php */
+

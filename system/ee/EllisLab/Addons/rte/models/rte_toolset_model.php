@@ -332,5 +332,3 @@ class Rte_toolset_model extends CI_Model {
 }
 // END CLASS
 
-/* End of file rte_toolset_model.php */
-/* Location: ./system/expressionengine/modules/rte/models/rte_toolset_model.php */

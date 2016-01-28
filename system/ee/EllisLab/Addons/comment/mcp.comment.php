@@ -1692,5 +1692,3 @@ class Comment_mcp {
 }
 // END CLASS
 
-/* End of file mcp.comment.php */
-/* Location: ./system/expressionengine/modules/comment/mcp.comment.php */

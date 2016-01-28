@@ -783,5 +783,4 @@ class EE_Stats {
 }
 // END CLASS
 
-/* End of file mcp.stats.php */
-/* Location: ./system/expressionengine/Libraries/stats.php */
+

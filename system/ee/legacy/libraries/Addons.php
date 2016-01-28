@@ -444,5 +444,4 @@ class EE_Addons {
 }
 // END Addons class
 
-/* End of file Addons.php */
-/* Location: ./system/expressionengine/libraries/Addons.php */
+

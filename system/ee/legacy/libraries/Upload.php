@@ -1114,5 +1114,4 @@ class EE_Upload {
 }
 // END CLASS
 
-/* End of file EE_Upload.php */
-/* Location: ./system/expressionengine/libraries/EE_Upload.php */
+

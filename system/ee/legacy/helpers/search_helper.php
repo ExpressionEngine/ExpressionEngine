@@ -96,5 +96,4 @@ if ( ! function_exists('sanitize_search_terms'))
 }
 
 
-/* End of file search_helper.php */
-/* Location: ./system/helpers/search_helper.php */
+

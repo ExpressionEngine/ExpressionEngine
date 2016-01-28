@@ -321,5 +321,3 @@ class CI_DB_result {
 }
 // END DB_result class
 
-/* End of file DB_result.php */
-/* Location: ./system/database/DB_result.php */

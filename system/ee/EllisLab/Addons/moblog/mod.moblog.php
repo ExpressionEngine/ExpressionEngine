@@ -2339,5 +2339,4 @@ class Moblog {
 }
 // END CLASS
 
-/* End of file mod.moblog.php */
-/* Location: ./system/expressionengine/modules/moblog/mod.moblog.php */
+

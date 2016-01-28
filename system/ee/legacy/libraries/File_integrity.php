@@ -231,5 +231,3 @@ class File_integrity {
 
 // END File_integrity class
 
-/* End of file File_integrity.php */
-/* Location: ./system/expressionengine/libraries/File_integrity.php */

@@ -198,5 +198,4 @@ class Tfidf implements Vectorizer {
 	}
 }
 
-/* End of file Tfidf.php */
-/* Location: ./system/expressionengine/modules/spam/Library/Tfidf.php */
+

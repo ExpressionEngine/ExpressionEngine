@@ -431,5 +431,4 @@ class Stats extends Utilities {
 }
 // END CLASS
 
-/* End of file Stats.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Stats.php */
+

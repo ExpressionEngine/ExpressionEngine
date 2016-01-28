@@ -150,5 +150,4 @@ class Design_model extends CI_Model {
 	}
 
 }
-/* End of file design_model.php */
-/* Location: ./system/expressionengine/models/design_model.php */
+

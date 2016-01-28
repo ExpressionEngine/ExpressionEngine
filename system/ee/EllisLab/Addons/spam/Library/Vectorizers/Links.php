@@ -45,5 +45,4 @@ class Links implements Vectorizer {
 
 }
 
-/* End of file Links.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Links.php */
+

@@ -96,5 +96,4 @@ class Rte {
 }
 // END CLASS
 
-/* End of file mod.rte.php */
-/* Location: ./system/expressionengine/modules/rte/mod.rte.php */
+

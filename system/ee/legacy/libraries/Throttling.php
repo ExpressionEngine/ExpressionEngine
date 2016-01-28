@@ -173,5 +173,3 @@ class EE_Throttling {
 }
 // END CLASS
 
-/* End of file Throttling.php */
-/* Location: ./system/expressionengine/libraries/Throttling.php */

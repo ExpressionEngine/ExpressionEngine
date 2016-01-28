@@ -26,5 +26,4 @@ class Sc_model extends CI_Model {
 
 }
 // End Class
-/* End of file sc_model.php */
-/* Location: ./system/expressionengine/modules/simple_commerce/models/sc_model.php */
+

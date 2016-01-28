@@ -1096,5 +1096,4 @@ MAGIC;
 }
 // END CLASS
 
-/* End of file mcp.moblog.php */
-/* Location: ./system/expressionengine/modules/moblog/mcp.moblog.php */
+

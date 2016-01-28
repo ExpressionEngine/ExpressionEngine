@@ -596,5 +596,4 @@ class EE_Encrypt {
 
 // END CI_Encrypt class
 
-/* End of file Encrypt.php */
-/* Location: ./system/libraries/Encrypt.php */
+

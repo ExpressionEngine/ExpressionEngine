@@ -150,5 +150,4 @@ $this->config->update_site_prefs(array(
 	1 // site id
 );
 
-/* End of file default_content.php */
-/* Location: ./themes/ee/site/agile_records/default_content.php */
+

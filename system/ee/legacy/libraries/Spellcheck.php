@@ -1424,5 +1424,4 @@ EOH;
 }
 // END CLASS
 
-/* End of file Spellcheck.php */
-/* Location: ./system/expressionengine/libraries/Spellcheck.php */
+

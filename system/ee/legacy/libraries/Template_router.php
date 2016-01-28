@@ -161,5 +161,4 @@ class EE_Template_Router extends CI_Router {
 }
 // END CLASS
 
-/* End of file Template_router.php */
-/* Location: ./system/expressionengine/libraries/Template_router.php */
+

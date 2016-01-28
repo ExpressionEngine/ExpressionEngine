@@ -26,5 +26,4 @@
  // default expiration of two weeks, in seconds
  $config['remember_me_ttl'] = 60*60*24*14;
 
-/* End of file remember.php */
-/* Location: ./system/expressionengine/config/remember.php */
+

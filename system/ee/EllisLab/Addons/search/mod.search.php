@@ -1929,5 +1929,4 @@ function changemenu(index)
 }
 // END CLASS
 
-/* End of file mod.search.php */
-/* Location: ./system/expressionengine/modules/search/mod.search.php */
+

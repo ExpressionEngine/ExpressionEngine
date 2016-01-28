@@ -37,5 +37,4 @@ class Blacklist {
 }
 // END CLASS
 
-/* End of file mod.blacklist.php */
-/* Location: ./system/expressionengine/modules/blacklist/mod.blacklist.php */
+

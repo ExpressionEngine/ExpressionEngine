@@ -67,5 +67,3 @@ class EE_RSS_Parser {
 }
 // END CLASS
 
-/* End of file rss_parser.php */
-/* Location: ./system/expressionengine/libraries/rss_parser.php */

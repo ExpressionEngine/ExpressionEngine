@@ -1106,5 +1106,4 @@ abstract class EE_Fieldtype {
 // END EE_Fieldtype class
 
 
-/* End of file EE_Fieldtype.php */
-/* Location: ./system/expressionengine/fieldtypes/EE_Fieldtype.php */
+

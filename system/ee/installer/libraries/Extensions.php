@@ -31,5 +31,4 @@ class Installer_Extensions extends EE_Extensions {
 }
 // END CLASS
 
-/* End of file Extensions.php */
-/* Location: ./system/expressionengine/installer/libraries/Extensions.php */
+

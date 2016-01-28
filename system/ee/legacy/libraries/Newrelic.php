@@ -96,5 +96,4 @@ class Newrelic {
 }
 // END CLASS
 
-/* End of file Newrelic.php */
-/* Location: ./system/expressionengine/libraries/Newrelic.php */
+

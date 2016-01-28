@@ -61,5 +61,3 @@ $foreign_characters = array(
 );
 
 
-/* End of file foreign_chars.php */
-/* Location: ./system/expressionengine/config/foreign_chars.php */

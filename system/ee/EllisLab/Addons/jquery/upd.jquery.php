@@ -92,5 +92,3 @@ class Jquery_upd {
 }
 // End Jquery CP Class
 
-/* End of file upd.jquery.php */
-/* Location: ./system/expressionengine/modules/jquery/upd.jquery.php */

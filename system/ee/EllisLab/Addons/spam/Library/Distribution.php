@@ -73,5 +73,4 @@ class Distribution {
 
 }
 
-/* End of file Distribution.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Distribution.php */
+

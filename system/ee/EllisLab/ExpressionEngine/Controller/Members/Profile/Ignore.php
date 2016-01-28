@@ -170,5 +170,4 @@ class Ignore extends Profile {
 }
 // END CLASS
 
-/* End of file Ignore.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Ignore.php */
+

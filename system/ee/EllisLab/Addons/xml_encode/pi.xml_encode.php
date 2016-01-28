@@ -42,5 +42,3 @@ class Xml_encode {
 }
 // END CLASS
 
-/* End of file pi.xml_encode.php */
-/* Location: ./system/expressionengine/plugins/pi.xml_encode.php */

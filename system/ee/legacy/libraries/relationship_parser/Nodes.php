@@ -245,5 +245,3 @@ class QueryNode extends ParseNode {
 	}
 }
 
-/* End of file Nodes.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Nodes.php */

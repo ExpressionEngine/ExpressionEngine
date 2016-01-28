@@ -983,5 +983,4 @@ class Grid_lib {
 	}
 }
 
-/* End of file Grid_lib.php */
-/* Location: ./system/expressionengine/modules/grid/libraries/Grid_lib.php */
+

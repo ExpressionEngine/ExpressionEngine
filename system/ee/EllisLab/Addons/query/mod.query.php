@@ -85,5 +85,3 @@ class Query {
 }
 // END CLASS
 
-/* End of file mod.query.php */
-/* Location: ./system/expressionengine/modules/query/mod.query.php */

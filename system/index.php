@@ -148,5 +148,4 @@
 	require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 
 
-/* End of file index.php */
-/* Location: ./system/index.php */
+

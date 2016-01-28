@@ -175,6 +175,5 @@ class File_category_model extends CI_Model
 
 }
 
-/* End of file file_category_model.php */
-/* Location: ./system/expressionengine/models/file_category_model.php */
+
 

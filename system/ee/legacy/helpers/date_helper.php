@@ -608,5 +608,4 @@ if ( ! function_exists('timezones'))
 }
 
 
-/* End of file date_helper.php */
-/* Location: ./system/helpers/date_helper.php */
+

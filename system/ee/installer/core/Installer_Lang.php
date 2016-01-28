@@ -56,5 +56,4 @@ class Installer_Lang Extends EE_Lang {
 }
 
 
-/* End of file Installer_Lang.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Lang.php */
+

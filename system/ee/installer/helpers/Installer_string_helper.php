@@ -25,5 +25,3 @@
 
 include_once(EE_APPPATH.'helpers/string_helper.php');
 
-/* End of file Installer_string_helper.php */
-/* Location: ./system/expressionengine/installer/helpers/Installer_string_helper.php */

@@ -38,5 +38,3 @@ class Member_mcp {
 }
 // END CLASS
 
-/* End of file mcp.member.php */
-/* Location: ./system/expressionengine/modules/member/mcp.member.php */

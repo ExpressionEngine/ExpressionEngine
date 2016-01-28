@@ -50,5 +50,4 @@ function DB($params = NULL)
 
 
 
-/* End of file DB.php */
-/* Location: ./system/database/DB.php */
+

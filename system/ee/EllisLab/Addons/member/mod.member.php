@@ -2927,5 +2927,4 @@ class Member {
 }
 // END CLASS
 
-/* End of file mod.member.php */
-/* Location: ./system/expressionengine/modules/member/mod.member.php */
+

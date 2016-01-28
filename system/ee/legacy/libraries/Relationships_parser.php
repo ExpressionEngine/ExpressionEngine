@@ -146,5 +146,3 @@ class EE_Relationships_parser {
 }
 
 
-/* End of file Relationships.php */
-/* Location: ./system/expressionengine/libraries/Relationships.php */

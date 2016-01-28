@@ -158,5 +158,4 @@ class Subscriptions extends Settings {
 
 // END CLASS
 
-/* End of file Subscriptions.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Subscriptions.php */
+

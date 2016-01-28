@@ -137,5 +137,4 @@ class Comments extends Settings {
 }
 // END CLASS
 
-/* End of file Comments.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Comments.php */
+

@@ -374,5 +374,4 @@ class Date_ft extends EE_Fieldtype {
 
 // END Date_ft class
 
-/* End of file ft.date.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.date.php */
+

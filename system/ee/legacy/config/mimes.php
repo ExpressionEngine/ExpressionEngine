@@ -139,5 +139,4 @@ $whitelist = array(
 	'video/x-sgi-movie', // .movie
 );
 
-/* End of file mimes.php */
-/* Location: ./system/expressionengine/config/mimes.php */
+

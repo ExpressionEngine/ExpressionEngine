@@ -38,5 +38,4 @@ class Language_model extends CI_Model {
 
 }
 
-/* End of file language_model.php */
-/* Location: ./system/expressionengine/models/language_model.php */
+

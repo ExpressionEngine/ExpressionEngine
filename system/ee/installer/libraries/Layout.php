@@ -30,5 +30,4 @@ class Installer_Layout extends EE_Layout {
 }
 // END CLASS
 
-/* End of file layout.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Layout.php */
+

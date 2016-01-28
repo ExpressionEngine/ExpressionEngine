@@ -218,5 +218,4 @@ class Metaweblog_api_upd {
 }
 
 
-/* End of file upd.metaweblog_api.php */
-/* Location: ./system/expressionengine/modules/metaweblog_api/upd.metaweblog_api.php */
+

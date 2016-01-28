@@ -53,5 +53,4 @@ class EE_Model {
 
 class_alias('EE_Model', 'CI_Model');
 
-/* End of file Model.php */
-/* Location: ./system/core/Model.php */
+

@@ -82,5 +82,4 @@ class Delete extends Profile {
 }
 // END CLASS
 
-/* End of file Delete.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Delete.php */
+

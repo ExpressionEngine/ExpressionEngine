@@ -315,5 +315,4 @@ class Rte_tool_model extends CI_Model {
 }
 // END CLASS
 
-/* End of file rte_tool_model.php */
-/* Location: ./system/expressionengine/modules/rte/models/rte_tool_model.php */
+

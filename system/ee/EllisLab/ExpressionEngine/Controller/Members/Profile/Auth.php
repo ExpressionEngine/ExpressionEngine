@@ -331,5 +331,4 @@ class Auth extends Settings {
 }
 // END CLASS
 
-/* End of file Auth.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Auth.php */
+

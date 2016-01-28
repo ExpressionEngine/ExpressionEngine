@@ -548,5 +548,4 @@ class EE_Router {
 }
 // END Router Class
 
-/* End of file Router.php */
-/* Location: ./system/core/Router.php */
+

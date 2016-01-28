@@ -114,5 +114,4 @@ class HitTracking extends Settings {
 }
 // END CLASS
 
-/* End of file HitTracking.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/HitTracking.php */
+

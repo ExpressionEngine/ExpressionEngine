@@ -338,5 +338,3 @@ class EE_Blacklist {
 
 }
 
-/* End of file Blacklist.php */
-/* Location: ./system/expressionengine/libraries/Blacklist.php */

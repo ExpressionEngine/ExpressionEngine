@@ -219,5 +219,3 @@ class Ip_to_nation_upd {
 }
 // END CLASS
 
-/* End of file upd.ip_to_nation.php */
-/* Location: ./system/expressionengine/modules/ip_to_nation/upd.ip_to_nation.php */

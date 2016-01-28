@@ -263,5 +263,4 @@ class El_pings {
 }
 // END CLASS
 
-/* End of file El_pings.php */
-/* Location: ./system/expressionengine/libraries/El_pings.php */
+

@@ -803,5 +803,4 @@ class EE_BreadthFirstIterator implements OuterIterator {
 }
 
 
-/* End of file Tree.php */
-/* Location: ./system/expressionengine/libraries/datastructures/Tree.php */
+

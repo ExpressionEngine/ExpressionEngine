@@ -2244,5 +2244,4 @@ class Forum {
 }
 // END CLASS
 
-/* End of file mod.forum.php */
-/* Location: ./system/expressionengine/modules/forum/mod.forum.php */
+

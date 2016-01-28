@@ -31,5 +31,4 @@ class Installer_Functions extends EE_Functions {
 }
 // END CLASS
 
-/* End of file Functions.php */
-/* Location: ./system/expressionengine/installer/libraries/Functions.php */
+

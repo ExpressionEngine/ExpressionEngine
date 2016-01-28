@@ -193,5 +193,4 @@ class ContentDesign extends Settings {
 }
 // END CLASS
 
-/* End of file ContentDesign.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/ContentDesign.php */
+

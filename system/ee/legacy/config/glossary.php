@@ -72,5 +72,3 @@ $glossary[4][] = array('&bull;  &amp;bull;',		'&bull;');
 $glossary[4][] = array('&middot;  &amp;middot;',	'&middot;');
 
 
-/* End of file glossary.php */
-/* Location: ./system/expressionengine/config/glossary.php */

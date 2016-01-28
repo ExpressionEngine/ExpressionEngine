@@ -33,5 +33,4 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file image_lib_lang.php */
-/* Location: ./system/expressionengine/language/english/image_lib_lang.php */
+

@@ -294,5 +294,3 @@ class Api_template_structure extends Api {
 }
 // END CLASS
 
-/* End of file Api_template_structure.php */
-/* Location: ./system/expressionengine/libraries/api/Api_template_structure.php */

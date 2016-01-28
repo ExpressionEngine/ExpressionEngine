@@ -319,5 +319,4 @@ class EE_Driver {
 class_alias('EE_Driver_Library', 'CI_Driver_Library');
 class_alias('EE_Driver', 'CI_Driver');
 
-/* End of file Driver.php */
-/* Location: ./system/libraries/Driver.php */
+

@@ -1059,5 +1059,4 @@ class EE_Table {
 // END EE_Table class
 
 
-/* End of file EE_Table.php */
-/* Location: ./system/expressionengine/libraries/EE_Table.php */
+

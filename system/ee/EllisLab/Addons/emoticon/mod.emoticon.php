@@ -135,5 +135,4 @@ class Emoticon {
 }
 // END CLASS
 
-/* End of file mod.emoticon.php */
-/* Location: ./system/expressionengine/modules/emoticon/mod.emoticon.php */
+

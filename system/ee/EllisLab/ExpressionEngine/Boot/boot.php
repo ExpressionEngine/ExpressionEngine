@@ -145,5 +145,4 @@
 	$response->send();
 
 
-/* End of file boot.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Boot/boot.php */
+

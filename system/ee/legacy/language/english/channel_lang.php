@@ -657,5 +657,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file channel_lang.php */
-/* Location: ./system/expressionengine/language/english/channel_lang.php */
+

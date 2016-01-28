@@ -248,5 +248,4 @@ class Training {
 
 }
 
-/* End of file Spam_training.php */
-/* Location: ./system/expressionengine/modules/spam/Spam_training.php */
+

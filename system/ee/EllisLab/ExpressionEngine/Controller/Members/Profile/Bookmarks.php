@@ -350,5 +350,4 @@ class Bookmarks extends Settings {
 }
 // END CLASS
 
-/* End of file Bookmarks.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Bookmarks.php */
+

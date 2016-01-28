@@ -28,5 +28,3 @@ class Jquery_mcp {
 }
 // End Jquery CP Class
 
-/* End of file mcp.jquery.php */
-/* Location: ./system/expressionengine/modules/jquery/mcp.jquery.php */

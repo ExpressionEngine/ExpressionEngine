@@ -29,5 +29,3 @@ class Query_mcp {
 }
 // END CLASS
 
-/* End of file mcp.query.php */
-/* Location: ./system/expressionengine/modules/query/mcp.query.php */

@@ -183,5 +183,4 @@ class Search_upd {
 }
 // END CLASS
 
-/* End of file upd.search.php */
-/* Location: ./system/expressionengine/modules/search/upd.search.php */
+

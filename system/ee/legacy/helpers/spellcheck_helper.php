@@ -45,5 +45,4 @@ function build_spellcheck($field_id)
 	return $r;
 }
 
-/* End of file spellcheck_helper.php.php */
-/* Location: ./system/expressionengine/helpers/spellcheck_helper.php.php */
+

@@ -866,5 +866,3 @@ $words = array(
 				'zipper'
 				);
 
-/* End of file captcha.php */
-/* Location: ./system/expressionengine/config/captcha.php */

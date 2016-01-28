@@ -910,5 +910,4 @@ class Auth_result {
 // END Auth_member class
 
 
-/* End of file Authentication.php */
-/* Location: ./libraries/Authentication.php */
+

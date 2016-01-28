@@ -140,5 +140,4 @@ class CP_Controller extends EE_Controller {
 }
 
 
-/* End of file  */
-/* Location: system/expressionengine/libraries/core/EE_Controller.php */
+

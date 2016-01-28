@@ -3431,5 +3431,4 @@ CMT_EDIT_SCR;
 }
 // END CLASS
 
-/* End of file mod.comment.php */
-/* Location: ./system/expressionengine/modules/comment/mod.comment.php */
+

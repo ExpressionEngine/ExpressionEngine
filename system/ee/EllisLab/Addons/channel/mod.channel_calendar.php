@@ -755,5 +755,4 @@ class Channel_calendar extends Channel {
 }
 // END CLASS
 
-/* End of file mod.channel_calendar.php */
-/* Location: ./system/expressionengine/modules/channel/mod.channel_calendar.php */
+

@@ -202,5 +202,3 @@ class Pages_upd {
 }
 // END CLASS
 
-/* End of file upd.pages.php */
-/* Location: ./system/expressionengine/modules/pages/upd.pages.php */

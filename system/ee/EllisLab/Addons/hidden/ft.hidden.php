@@ -42,5 +42,3 @@ class Hidden_ft extends EE_Fieldtype {
 
 // END Hidden_Ft class
 
-/* End of file ft.hidden.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.hidden.php */

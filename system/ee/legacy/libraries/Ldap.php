@@ -443,5 +443,3 @@ class EE_LDAP {
 
 }
 
-/* End of file Ldap.php */
-/* Location: ./system/expressionengine/libraries/Ldap.php */

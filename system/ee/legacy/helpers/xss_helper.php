@@ -82,5 +82,4 @@ function xss_check()
 }
 
 
-/* End of file xss_helper.php */
-/* Location: ./system/expressionengine/helpers/xss_helper.php */
+

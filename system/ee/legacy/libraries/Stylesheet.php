@@ -192,5 +192,4 @@ class EE_Stylesheet {
 }
 // END CLASS
 
-/* End of file Stylesheet.php */
-/* Location: ./system/expressionengine/libraries/Stylesheet.php */
+

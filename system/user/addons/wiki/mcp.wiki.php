@@ -874,5 +874,4 @@ class Wiki_mcp {
 }
 /* END Class */
 
-/* End of file mcp.wiki.php */
-/* Location: ./system/expressionengine/modules/wiki/mcp.wiki.php */
+

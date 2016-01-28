@@ -1939,5 +1939,4 @@ class Metaweblog_api {
 }
 
 
-/* End of file mod.metaweblog_api.php */
-/* Location: ./system/expressionengine/modules/metaweblog_api/mod.metaweblog_api.php */
+

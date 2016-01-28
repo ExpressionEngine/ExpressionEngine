@@ -559,5 +559,4 @@ if ( ! function_exists('ellipsize'))
 }
 
 
-/* End of file EE_text_helper.php */
-/* Location: ./system/expressionengine/helpers/EE_text_helper.php */
+

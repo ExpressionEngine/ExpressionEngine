@@ -64,5 +64,3 @@ function enabled($which)
 	return ! ee()->view->disabled($which);
 }
 
-/* End of file */
-/* Location: system/expressionengine/helpers/view_helper.php */

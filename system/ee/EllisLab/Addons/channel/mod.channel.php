@@ -5389,5 +5389,4 @@ class Channel {
 }
 // END CLASS
 
-/* End of file mod.channel.php */
-/* Location: ./system/expressionengine/modules/channel/mod.channel.php */
+

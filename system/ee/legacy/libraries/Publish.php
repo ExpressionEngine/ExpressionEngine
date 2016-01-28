@@ -176,5 +176,3 @@ class Publish
 }
 // END CLASS
 
-/* End of file Publish.php */
-/* Location: ./system/expressionengine/libraries/Publish.php */

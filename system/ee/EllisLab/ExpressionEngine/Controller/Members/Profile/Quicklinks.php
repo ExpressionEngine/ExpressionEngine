@@ -342,5 +342,4 @@ class Quicklinks extends Settings {
 }
 // END CLASS
 
-/* End of file Quicklinks.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Quicklinks.php */
+

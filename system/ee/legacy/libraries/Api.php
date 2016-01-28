@@ -284,5 +284,3 @@ class Api {
 }
 // END CLASS
 
-/* End of file Api.php */
-/* Location: ./system/expressionengine/libraries/api/Api.php */

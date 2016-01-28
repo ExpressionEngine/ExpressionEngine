@@ -308,5 +308,4 @@ class Comment_upd {
 }
 // END CLASS
 
-/* End of file upd.comment.php */
-/* Location: ./system/expressionengine/modules/comment/upd.comment.php */
+

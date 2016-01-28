@@ -218,5 +218,4 @@ class Email extends Settings {
 }
 // END CLASS
 
-/* End of file Email.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Email.php */
+

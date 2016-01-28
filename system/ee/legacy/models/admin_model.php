@@ -251,5 +251,4 @@ class Admin_model extends CI_Model {
 	}
 }
 
-/* End of file admin_model.php */
-/* Location: ./system/expressionengine/models/admin_model.php */
+

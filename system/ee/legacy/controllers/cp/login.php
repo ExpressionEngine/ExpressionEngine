@@ -827,5 +827,4 @@ class Login extends CP_Controller {
 }
 // END CLASS
 
-/* End of file login.php */
-/* Location: ./system/expressionengine/controllers/cp/login.php */
+

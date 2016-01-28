@@ -846,5 +846,4 @@ $lang = array(
 );
 
 
-/* End of file publish_lang.php */
-/* Location: ./system/expressionengine/language/english/publish_lang.php */
+

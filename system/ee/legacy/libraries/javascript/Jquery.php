@@ -1066,5 +1066,4 @@ class EE_Jquery extends EE_Javascript {
 
 }
 
-/* End of file Jquery.php */
-/* Location: ./system/libraries/Jquery.php */
+

@@ -174,5 +174,4 @@ class Communicate_model extends CI_Model {
 }
 // End class Communicate_model
 
-/* End of file communicate_model.php */
-/* Location: ./system/expressionengine/models/communicate_model.php */
+

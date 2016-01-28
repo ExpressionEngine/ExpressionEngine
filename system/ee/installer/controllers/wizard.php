@@ -2454,5 +2454,4 @@ class Wizard extends CI_Controller {
 	}
 }
 
-/* End of file wizard.php */
-/* Location: ./system/expressionengine/installer/controllers/wizard.php */
+

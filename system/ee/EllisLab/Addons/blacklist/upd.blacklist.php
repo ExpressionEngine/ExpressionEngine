@@ -201,5 +201,3 @@ class Blacklist_upd {
 
 // END CLASS
 
-/* End of file upd.blacklist.php */
-/* Location: ./system/expressionengine/modules/blacklist/upd.blacklist.php */

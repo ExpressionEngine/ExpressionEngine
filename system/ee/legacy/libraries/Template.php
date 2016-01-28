@@ -4193,5 +4193,4 @@ class EE_Template {
 }
 // END CLASS
 
-/* End of file Template.php */
-/* Location: ./system/expressionengine/libraries/Template.php */
+

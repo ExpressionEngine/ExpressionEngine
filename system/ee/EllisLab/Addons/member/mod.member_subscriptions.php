@@ -152,5 +152,3 @@ class Member_subscriptions extends Member {
 }
 // END CLASS
 
-/* End of file mod.member_subscriptions.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_subscriptions.php */

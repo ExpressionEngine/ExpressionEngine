@@ -18,5 +18,4 @@ $lang['upload_bad_filename'] = "The file name you submitted already exists on th
 $lang['upload_not_writable'] = "The upload destination folder does not appear to be writable.";
 
 
-/* End of file upload_lang.php */
-/* Location: ./system/language/english/upload_lang.php */
+

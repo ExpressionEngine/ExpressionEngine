@@ -246,5 +246,3 @@ class Rte_upd {
 }
 // END CLASS
 
-/* End of file upd.rte.php */
-/* Location: ./system/expressionengine/modules/rte/upd.rte.php */

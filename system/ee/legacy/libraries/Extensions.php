@@ -279,5 +279,4 @@ class EE_Extensions {
 }
 // END CLASS
 
-/* End of file Extensions.php */
-/* Location: ./system/expressionengine/libraries/Extensions.php */
+

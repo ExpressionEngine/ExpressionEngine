@@ -209,5 +209,4 @@ class Login extends Profile {
 }
 // END CLASS
 
-/* End of file Settings.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Settings.php */
+

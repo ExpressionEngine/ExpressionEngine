@@ -754,5 +754,4 @@ class Member_register extends Member {
 }
 // END CLASS
 
-/* End of file mod.member_register.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_register.php */
+

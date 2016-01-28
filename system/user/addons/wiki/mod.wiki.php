@@ -5363,5 +5363,4 @@ class Wiki {
 }
 /* END Class */
 
-/* End of file mod.wiki.php */
-/* Location: ./system/expressionengine/modules/wiki/mod.wiki.php */
+

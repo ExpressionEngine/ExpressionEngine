@@ -291,5 +291,4 @@ $config['rewrite_short_tags'] = TRUE;
 
 
 
-/* End of file config.php */
-/* Location: ./system/expressionengine/installer/config/config.php */
+

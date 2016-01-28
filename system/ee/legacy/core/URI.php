@@ -844,5 +844,4 @@ class EE_URI {
 }
 // END CLASS
 
-/* End of file EE_URI.php */
-/* Location: ./system/expressionengine/libraries/EE_URI.php */
+

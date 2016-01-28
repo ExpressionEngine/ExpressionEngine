@@ -623,5 +623,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file cp_lang.php */
-/* Location: ./system/expressionengine/language/english/cp_lang.php */
+

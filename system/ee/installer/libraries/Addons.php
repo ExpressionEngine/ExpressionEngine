@@ -31,5 +31,4 @@ class Installer_Addons extends EE_Addons {
 }
 // END CLASS
 
-/* End of file Addons.php */
-/* Location: ./system/expressionengine/installer/libraries/Addons.php */
+

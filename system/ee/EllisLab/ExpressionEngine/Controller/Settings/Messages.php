@@ -224,5 +224,4 @@ class Messages extends Settings {
 }
 // END CLASS
 
-/* End of file Messages.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Messages.php */
+

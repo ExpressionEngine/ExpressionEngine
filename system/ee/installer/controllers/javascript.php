@@ -45,5 +45,3 @@ class Javascript {
 // END Javascript class
 
 
-/* End of file javascript.php */
-/* Location: ./system/expressionengine/installer/controllers/javascript.php */

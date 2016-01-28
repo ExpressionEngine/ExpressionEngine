@@ -262,5 +262,3 @@ class Status_model extends CI_Model {
 
 }
 
-/* End of file status_model.php */
-/* Location: ./system/expressionengine/models/status_model.php */

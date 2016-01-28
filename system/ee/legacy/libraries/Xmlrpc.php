@@ -1417,5 +1417,4 @@ class XML_RPC_Values extends EE_Xmlrpc
 }
 // END XML_RPC_Values Class
 
-/* End of file Xmlrpc.php */
-/* Location: ./system/libraries/Xmlrpc.php */
+

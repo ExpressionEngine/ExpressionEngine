@@ -72,5 +72,3 @@ class Pages {
 }
 // End Pages Class
 
-/* End of file mod.pages.php */
-/* Location: ./system/expressionengine/modules/pages/mod.pages.php */

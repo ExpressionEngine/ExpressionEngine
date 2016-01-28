@@ -251,5 +251,3 @@
 
 
 
-/* End of file ee_notice.js */
-/* Location: ./system/expressionengine/javascript/jquery/plugins/ee_notice.js */

@@ -107,5 +107,4 @@ class Publishing extends Profile {
 }
 // END CLASS
 
-/* End of file Publishing.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Publishing.php */
+

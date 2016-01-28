@@ -84,5 +84,3 @@ class Rss_upd {
 }
 // END CLASS
 
-/* End of file upd.rss.php */
-/* Location: ./system/expressionengine/modules/rss/upd.rss.php */

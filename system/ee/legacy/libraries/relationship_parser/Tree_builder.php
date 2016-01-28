@@ -582,5 +582,4 @@ class EE_relationship_tree_builder {
 	}
 }
 
-/* End of file Tree_builder.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Tree_builder.php */
+

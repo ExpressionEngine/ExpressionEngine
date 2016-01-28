@@ -162,5 +162,4 @@ class Member_upd {
 }
 // END CLASS
 
-/* End of file upd.member.php */
-/* Location: ./system/expressionengine/modules/member/upd.member.php */
+

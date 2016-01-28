@@ -217,5 +217,4 @@ class Javascript extends CI_Controller {
 	}
 }
 
-/* End of file javascript.php */
-/* Location: ./system/expressionengine/controllers/cp/javascript.php */
+

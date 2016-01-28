@@ -161,5 +161,4 @@ class Document implements Iterator {
 }
 // END CLASS
 
-/* End of file Document.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Document.php */
+

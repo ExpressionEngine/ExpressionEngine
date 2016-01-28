@@ -315,5 +315,3 @@ class Wiki_upd {
 }
 /* END Class */
 
-/* End of file upd.wiki.php */
-/* Location: ./system/expressionengine/modules/wiki/upd.wiki.php */

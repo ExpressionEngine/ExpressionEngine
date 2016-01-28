@@ -1034,5 +1034,3 @@ class Forum_upd {
 
 
 
-/* End of file upd.forum.php */
-/* Location: ./system/expressionengine/modules/forum/upd.forum.php */

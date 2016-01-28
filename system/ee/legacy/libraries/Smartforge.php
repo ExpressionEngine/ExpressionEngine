@@ -434,5 +434,4 @@ class Smartforge {
 // END SmartForge class
 
 
-/* End of file Smartforge.php */
-/* Location: ./system/expressionengine/libraries/Smartforge.php */
+

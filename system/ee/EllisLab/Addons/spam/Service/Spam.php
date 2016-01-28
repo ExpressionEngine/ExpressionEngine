@@ -176,5 +176,4 @@ class Spam {
 
 }
 
-/* End of file Spam_core.php */
-/* Location: ./system/expressionengine/modules/spam/Spam_core.php */
+

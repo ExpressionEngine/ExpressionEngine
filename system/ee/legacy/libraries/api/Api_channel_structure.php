@@ -594,5 +594,3 @@ class Api_channel_structure extends Api {
 }
 // END CLASS
 
-/* End of file Api_channel_structure.php */
-/* Location: ./system/expressionengine/libraries/api/Api_channel_structure.php */

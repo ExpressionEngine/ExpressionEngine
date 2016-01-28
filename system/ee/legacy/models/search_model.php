@@ -784,5 +784,4 @@ class Search_model extends CI_Model {
 	}
 }
 
-/* End of file search_model.php */
-/* Location: ./system/expressionengine/models/search_model.php */
+

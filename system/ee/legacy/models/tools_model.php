@@ -639,5 +639,4 @@ class Tools_model extends CI_Model {
 
 }
 
-/* End of file tools_model.php */
-/* Location: ./system/expressionengine/models/tools_model.php */
+

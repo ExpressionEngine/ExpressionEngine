@@ -337,5 +337,3 @@ class Layout {
 }
 // END CLASS
 
-/* End of file layout.php */
-/* Location: ./system/expressionengine/libraries/layout.php */

@@ -3120,5 +3120,4 @@ class Filemanager {
 
 // END Filemanager class
 
-/* End of file Filemanager.php */
-/* Location: ./system/expressionengine/libraries/Filemanager.php */
+

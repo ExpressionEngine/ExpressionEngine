@@ -230,5 +230,4 @@ class Stats {
 }
 // END CLASS
 
-/* End of file mod.stats.php */
-/* Location: ./system/expressionengine/modules/stats/mod.stats.php */
+

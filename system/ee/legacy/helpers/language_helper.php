@@ -46,5 +46,4 @@ if ( ! function_exists('lang'))
 }
 
 // ------------------------------------------------------------------------
-/* End of file language_helper.php */
-/* Location: ./system/helpers/language_helper.php */
+

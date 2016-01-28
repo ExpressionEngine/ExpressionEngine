@@ -301,5 +301,4 @@ class EE_Cache_file extends CI_Driver {
 	}
 }
 
-/* End of file Cache_file.php */
-/* Location: ./system/libraries/Cache/drivers/Cache_file.php */
+

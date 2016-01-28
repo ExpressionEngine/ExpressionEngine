@@ -97,5 +97,3 @@ class Ip_to_nation {
 }
 // END CLASS
 
-/* End of file mod.ip_to_nation.php */
-/* Location: ./system/expressionengine/modules/ip_to_nation/mod.ip_to_nation.php */

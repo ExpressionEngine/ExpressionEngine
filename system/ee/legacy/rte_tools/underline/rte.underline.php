@@ -72,5 +72,3 @@ class Underline_rte {
 
 } // END Underline_rte
 
-/* End of file rte.underline.php */
-/* Location: ./system/expressionengine/rte_tools/underline/rte.underline.php */

@@ -103,5 +103,4 @@ class Tokenizer {
 
 }
 
-/* End of file Tokenizer.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Tokenizer.php */
+

@@ -450,5 +450,4 @@ class EE_Validate {
 }
 // END CLASS
 
-/* End of file Validate.php */
-/* Location: ./system/expressionengine/libraries/Validate.php */
+

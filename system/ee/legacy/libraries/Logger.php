@@ -647,5 +647,4 @@ class EE_Logger {
 }
 // END CLASS
 
-/* End of file Logger.php */
-/* Location: ./system/expressionengine/libraries/Logger.php */
+

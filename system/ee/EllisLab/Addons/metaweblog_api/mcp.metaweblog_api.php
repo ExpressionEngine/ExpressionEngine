@@ -804,5 +804,4 @@ MAGIC;
 }
 
 
-/* End of file mcp.metaweblog_api.php */
-/* Location: ./system/expressionengine/modules/metaweblog_api/mcp.metaweblog_api.php */
+

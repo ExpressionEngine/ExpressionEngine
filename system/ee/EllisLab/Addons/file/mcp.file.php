@@ -31,5 +31,3 @@ class File_mcp {
 }
 // END CLASS
 
-/* End of file mcp.file.php */
-/* Location: ./system/expressionengine/modules/channel/mcp.file.php */

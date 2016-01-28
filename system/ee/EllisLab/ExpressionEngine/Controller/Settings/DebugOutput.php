@@ -178,5 +178,4 @@ class DebugOutput extends Settings {
 }
 // END CLASS
 
-/* End of file DebugOutput.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/DebugOutput.php */
+

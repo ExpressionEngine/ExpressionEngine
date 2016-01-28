@@ -368,5 +368,4 @@ function surrounding_character($string)
 	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
-/* End of file EE_string_helper.php */
-/* Location: ./system/expressionengine/helpers/EE_string_helper.php */
+

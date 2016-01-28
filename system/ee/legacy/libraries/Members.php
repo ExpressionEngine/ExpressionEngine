@@ -641,5 +641,4 @@ class Members {
 	}
 
 }
-/* End of file members.php */
-/* Location: ./system/expressionengine/libraries/members.php */
+

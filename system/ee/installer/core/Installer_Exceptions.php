@@ -27,5 +27,3 @@ class Installer_Exceptions Extends EE_Exceptions {
 	// Yes, it's empty!
 }
 
-/* End of file Installer_Exceptions.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Exceptions.php */

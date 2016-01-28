@@ -27,5 +27,3 @@ require_once(EE_APPPATH.'/libraries/Utf8_db_convert.php');
 
 class Installer_Utf8_db_convert extends Utf8_db_convert { }
 
-/* End of file layout.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Utf8_db_convert.php */

@@ -112,5 +112,4 @@ class EE extends EE_Controller {
 	}
 }
 
-/* End of file ee.php */
-/* Location: ./system/expressionengine/controllers/ee.php */
+

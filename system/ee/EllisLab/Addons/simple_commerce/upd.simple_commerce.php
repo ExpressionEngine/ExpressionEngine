@@ -252,5 +252,3 @@ class Simple_commerce_upd {
 }
 
 
-/* End of file upd.simple_commerce.php */
-/* Location: ./system/expressionengine/modules/simple_commerce/upd.simple_commerce.php */

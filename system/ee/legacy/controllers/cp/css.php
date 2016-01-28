@@ -140,5 +140,4 @@ class Css extends CI_Controller {
 }
 // END CLASS
 
-/* End of file css.php */
-/* Location: ./system/expressionengine/controllers/cp/css.php */
+

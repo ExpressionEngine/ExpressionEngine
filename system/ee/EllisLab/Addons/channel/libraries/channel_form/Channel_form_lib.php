@@ -3418,5 +3418,4 @@ SCRIPT;
 	}
 }
 
-/* End of file Channel_form_lib.php */
-/* Location: ./system/expressionengine/modules/channel/libraries/Channel_form_lib.php */
+

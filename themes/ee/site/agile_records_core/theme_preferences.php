@@ -53,6 +53,3 @@ $template_access['news_embeds']['index'] = $no_access;
 $template_access['search']['index'] = $no_access;
 
 
-/* End of file theme_preferences.php */
-/* Location: ./themes/ee/site/agile_records
-* /theme_preferences.php */

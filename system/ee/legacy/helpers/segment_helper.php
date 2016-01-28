@@ -112,5 +112,4 @@
 	}
 
 
-/* End of file snippets_helper.php */
-/* Location: ./system/expressionengine/helpers/segment_helper.php */
+

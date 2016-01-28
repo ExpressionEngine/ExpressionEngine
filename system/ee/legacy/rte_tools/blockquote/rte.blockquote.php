@@ -100,5 +100,3 @@ class Blockquote_rte {
 
 } // END Blockquote_rte
 
-/* End of file rte.blockquote.php */
-/* Location: ./system/expressionengine/rte_tools/blockquote/rte.blockquote.php */

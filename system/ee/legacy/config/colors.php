@@ -165,5 +165,3 @@ $colors = array(
 				'yellowgreen'			=> '#9acd32'
 		);
 
-/* End of file colors.php */
-/* Location: ./system/expressionengine/config/colors.php */

@@ -258,5 +258,4 @@ class File_upload_preferences_model extends CI_Model
 	}
 }
 
-/* End of file file_model.php */
-/* Location: ./system/expressionengine/models/file_model.php */
+

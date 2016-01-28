@@ -54,5 +54,4 @@ class Punctuation implements Vectorizer {
 
 }
 
-/* End of file Punctuation.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Punctuation.php */
+

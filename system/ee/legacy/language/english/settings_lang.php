@@ -783,5 +783,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file settings_lang.php */
-/* Location: ./system/expressionengine/language/english/settings_lang.php */
+

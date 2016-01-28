@@ -1400,5 +1400,4 @@ class Template_Group_Entity
 
 }
 
-/* End of file template_model.php */
-/* Location: ./system/expressionengine/models/template_model.php */
+

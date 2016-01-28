@@ -172,5 +172,4 @@ class Snippet_Entity {
 
 }
 
-/* End of file snippet_model.php */
-/* Location: ./system/expressionengine/models/snippet_model.php */
+

@@ -992,5 +992,4 @@ class EE_Messages_send extends EE_Messages {
 }
 
 
-/* End of file Messages_send.php */
-/* Location: ./system/expressionengine/libraries/Messages_send.php */
+

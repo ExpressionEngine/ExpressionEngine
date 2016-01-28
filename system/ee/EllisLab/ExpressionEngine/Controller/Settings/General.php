@@ -325,5 +325,4 @@ class General extends Settings {
 }
 // END CLASS
 
-/* End of file General.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/General.php */
+

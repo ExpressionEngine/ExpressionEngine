@@ -10816,5 +10816,4 @@ class Forum_Core extends Forum {
 }
 // END CLASS
 
-/* End of file mod.forum_core.php */
-/* Location: ./system/expressionengine/modules/forum/mod.forum_core.php */
+

@@ -385,5 +385,4 @@ class EE_Route {
 }
 // END CLASS
 
-/* End of file Route.php */
-/* Location: ./system/expressionengine/libraries/template_router/Route.php */
+

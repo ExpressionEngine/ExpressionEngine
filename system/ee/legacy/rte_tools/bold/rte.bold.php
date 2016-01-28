@@ -74,5 +74,3 @@ class Bold_rte {
 
 } // END Bold_rte
 
-/* End of file rte.bold.php */
-/* Location: ./system/expressionengine/rte_tools/bold/rte.bold.php */

@@ -426,5 +426,3 @@ HUMPTYDANCE;
 }
 // END CLASS
 
-/* End of file mod.rss.php */
-/* Location: ./system/expressionengine/modules/rss/mod.rss.php */

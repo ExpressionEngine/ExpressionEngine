@@ -205,5 +205,4 @@ class Pagination {
 
 // END CLASS
 
-/* End of file Pagination.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Library/Pagination/Pagination.php */
+

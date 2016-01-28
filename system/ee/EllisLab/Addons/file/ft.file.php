@@ -814,5 +814,4 @@ STYLIO;
 
 // END File_ft class
 
-/* End of file ft.file.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.file.php */
+

@@ -65,5 +65,3 @@ class Installer_template_model extends Template_model {
 
 }
 
-/* End of file installer_template_model.php */
-/* Location: ./system/expressionengine/installer/model/installer_template_model.php */

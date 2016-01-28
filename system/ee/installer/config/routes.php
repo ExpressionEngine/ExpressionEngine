@@ -45,5 +45,3 @@ $route['default_controller'] = "wizard";
 $route['404_override'] = "";
 
 
-/* End of file routes.php */
-/* Location: ./system/expressionengine/installer/config/routes.php */

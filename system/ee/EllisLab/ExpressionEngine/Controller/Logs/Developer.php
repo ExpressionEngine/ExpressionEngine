@@ -257,5 +257,4 @@ class Developer extends Logs {
 }
 // END CLASS
 
-/* End of file Developer.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Developer.php */
+

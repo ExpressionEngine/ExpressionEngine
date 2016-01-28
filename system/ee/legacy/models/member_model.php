@@ -1617,5 +1617,4 @@ class Member_model extends CI_Model {
 	}
 }
 
-/* End of file member_model.php */
-/* Location: ./system/expressionengine/models/member_model.php */
+

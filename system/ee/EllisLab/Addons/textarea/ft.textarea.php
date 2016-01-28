@@ -362,5 +362,4 @@ class Textarea_ft extends EE_Fieldtype {
 
 // END Textarea_ft class
 
-/* End of file ft.textarea.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.textarea.php */
+

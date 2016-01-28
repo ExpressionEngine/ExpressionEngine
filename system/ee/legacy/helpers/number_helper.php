@@ -97,5 +97,4 @@ if ( ! function_exists('get_bytes'))
 	}
 }
 
-/* End of file number_helper.php */
-/* Location: ./system/helpers/number_helper.php */
+

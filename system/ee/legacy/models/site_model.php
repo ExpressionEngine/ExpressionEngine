@@ -110,5 +110,3 @@ class Site_model extends CI_Model {
 
 }
 
-/* End of site_model.php */
-/* Location: ./system/expressionengine/models/site_model.php */

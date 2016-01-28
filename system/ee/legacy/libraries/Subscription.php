@@ -518,5 +518,3 @@ class EE_Subscription {
 
 // END Subscription class
 
-/* End of file Subscription.php */
-/* Location: ./system/expressionengine/libraries/Subscription.php */

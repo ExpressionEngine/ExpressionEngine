@@ -98,5 +98,3 @@ class View_source_rte {
 
 } // END View_source_rte
 
-/* End of file rte.view_source.php */
-/* Location: ./system/expressionengine/rte_tools/view_source/rte.view_source.php */

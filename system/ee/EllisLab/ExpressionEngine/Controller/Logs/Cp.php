@@ -137,5 +137,4 @@ class Cp extends Logs {
 }
 // END CLASS
 
-/* End of file CP.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Cp.php */
+

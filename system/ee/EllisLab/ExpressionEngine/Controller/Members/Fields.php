@@ -445,5 +445,4 @@ class Fields extends Members\Members {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Members/Fields.php */
+

@@ -88,5 +88,3 @@ class Emoticon_upd {
 }
 // END CLASS
 
-/* End of file upd.emoticon.php */
-/* Location: ./system/expressionengine/modules/emoticon/upd.emoticon.php */

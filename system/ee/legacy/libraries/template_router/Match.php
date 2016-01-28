@@ -40,5 +40,3 @@ class EE_Route_match {
 }
 // END CLASS
 
-/* End of file Match.php */
-/* Location: ./system/expressionengine/libraries/template_router/Match.php */

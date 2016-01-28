@@ -644,5 +644,4 @@ class Member_images extends Member {
 }
 // END CLASS
 
-/* End of file mod.member_images.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_images.php */
+

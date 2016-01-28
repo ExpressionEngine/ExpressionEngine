@@ -2245,5 +2245,4 @@ class EE_Email {
 }
 // END CLASS
 
-/* End of file EE_Email.php */
-/* Location: ./system/expressionengine/libraries/EE_Email.php */
+

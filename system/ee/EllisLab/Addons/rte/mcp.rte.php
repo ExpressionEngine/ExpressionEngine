@@ -522,5 +522,4 @@ class Rte_mcp {
 }
 // END CLASS
 
-/* End of file mcp.rte.php */
-/* Location: ./system/expressionengine/modules/rte/mcp.rte.php */
+

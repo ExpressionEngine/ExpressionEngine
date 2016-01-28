@@ -485,5 +485,4 @@ class Ip_to_nation_mcp {
 }
 // END CLASS
 
-/* End of file mcp.ip_to_nation.php */
-/* Location: ./system/expressionengine/modules/ip_to_nation/mcp.ip_to_nation.php */
+

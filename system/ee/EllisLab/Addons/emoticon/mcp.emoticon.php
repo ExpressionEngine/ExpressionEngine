@@ -29,5 +29,3 @@ class Emoticon_mcp {
 
 // END CLASS
 
-/* End of file mcp.emoticon.php */
-/* Location: ./system/expressionengine/modules/emoticon/mcp.emoticon.php */

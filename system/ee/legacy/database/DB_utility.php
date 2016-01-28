@@ -407,5 +407,4 @@ class CI_DB_utility extends CI_DB_forge {
 }
 
 
-/* End of file DB_utility.php */
-/* Location: ./system/database/DB_utility.php */
+

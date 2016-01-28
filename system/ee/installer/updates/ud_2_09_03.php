@@ -205,5 +205,4 @@ class Updater {
 }
 /* END CLASS */
 
-/* End of file ud_293.php */
-/* Location: ./system/expressionengine/installer/updates/ud_293.php */
+

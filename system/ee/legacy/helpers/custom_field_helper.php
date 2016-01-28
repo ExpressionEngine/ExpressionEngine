@@ -82,5 +82,4 @@ function decode_multi_field($data = '')
 	return str_replace(array('\|', '\\\\'), array('|', '\\'), $data);
 }
 
-/* End of file custom_field_helper.php */
-/* Location: ./system/expressionengine/helpers/custom_field_helper.php */
+

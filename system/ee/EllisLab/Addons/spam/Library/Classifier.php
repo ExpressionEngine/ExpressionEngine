@@ -115,5 +115,4 @@ class Classifier {
 
 }
 
-/* End of file Classifier.php */
-/* Location: ./system/expressionengine/modules/spam/Library/Classifier.php */
+

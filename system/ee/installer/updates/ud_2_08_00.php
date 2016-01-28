@@ -604,5 +604,4 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 /* END CLASS */
 
-/* End of file ud_280.php */
-/* Location: ./system/expressionengine/installer/updates/ud_280.php */
+

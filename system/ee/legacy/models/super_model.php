@@ -69,5 +69,3 @@ class Super_model extends CI_Model {
 }
 // END CLASS
 
-/* End of file super_model.php */
-/* Location: ./system/expressionengine/models/super_model.php */

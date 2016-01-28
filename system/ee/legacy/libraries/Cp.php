@@ -1208,5 +1208,4 @@ class Cp {
 	}
 }
 
-/* End of file Cp.php */
-/* Location: ./system/expressionengine/libraries/Cp.php */
+

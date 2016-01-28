@@ -219,5 +219,4 @@ abstract class Filter {
 }
 // END CLASS
 
-/* End of file Filter.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Filter.php */
+

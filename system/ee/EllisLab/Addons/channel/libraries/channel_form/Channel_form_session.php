@@ -105,5 +105,3 @@ class Channel_form_session extends EE_Session
 	}
 }
 
-/* End of file Channel_form_session.php */
-/* Location: ./system/expressionengine/modules/channel/library/Channel_form_session.php */

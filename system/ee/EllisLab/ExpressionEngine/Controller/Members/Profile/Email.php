@@ -168,5 +168,4 @@ class Email extends Settings {
 }
 // END CLASS
 
-/* End of file Email.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Email.php */
+

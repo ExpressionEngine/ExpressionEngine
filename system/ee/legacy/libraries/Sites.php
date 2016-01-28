@@ -30,5 +30,3 @@ class EE_Sites {
 }
 // END CLASS
 
-/* End of file Sites.php */
-/* Location: ./system/expressionengine/libraries/Sites.php */

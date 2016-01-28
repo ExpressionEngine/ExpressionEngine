@@ -308,5 +308,4 @@ class Rte_ext {
 
 }
 
-/* End of file ext.rte.php */
-/* Location: ./system/expressionengine/modules/rte/ext.rte.php */
+

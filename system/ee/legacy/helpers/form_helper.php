@@ -1238,5 +1238,4 @@ if ( ! function_exists('_get_validation_object'))
 	}
 }
 
-/* End of file EE_form_helper.php */
-/* Location: ./system/expressionengine/helpers/EE_form_helper.php */
+

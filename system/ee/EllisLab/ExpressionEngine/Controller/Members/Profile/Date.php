@@ -146,5 +146,4 @@ class Date extends Settings {
 }
 // END CLASS
 
-/* End of file Date.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Date.php */
+

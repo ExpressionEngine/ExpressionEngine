@@ -771,5 +771,4 @@ EOF;
 }
 // END CLASS
 
-/* End of file Localize.php */
-/* Location: ./system/expressionengine/libraries/Localize.php */
+

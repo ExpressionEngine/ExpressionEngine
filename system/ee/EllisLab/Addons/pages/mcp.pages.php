@@ -346,5 +346,4 @@ class Pages_mcp {
 }
 // END CLASS
 
-/* End of file mcp.pages.php */
-/* Location: ./system/expressionengine/modules/pages/mcp.pages.php */
+

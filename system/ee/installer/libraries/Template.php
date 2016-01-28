@@ -313,5 +313,4 @@ class Installer_Template {
 }
 // END CLASS
 
-/* End of file Template.php */
-/* Location: ./system/expressionengine/installer/libraries/Template.php */
+

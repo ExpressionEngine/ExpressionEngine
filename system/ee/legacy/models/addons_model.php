@@ -376,5 +376,4 @@ class Addons_model extends CI_Model {
 	}
 }
 
-/* End of file addons_model.php */
-/* Location: ./system/expressionengine/models/addons_model.php */
+

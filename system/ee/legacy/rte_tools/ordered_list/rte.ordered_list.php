@@ -80,5 +80,3 @@ class Ordered_list_rte {
 
 } // END Ordered_list_rte
 
-/* End of file rte.ordered_list.php */
-/* Location: ./system/expressionengine/rte_tools/ordered_list/rte.ordered_list.php */

@@ -503,5 +503,4 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 // END Checkboxes_ft class
 
-/* End of file ft.checkboxes.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.checkboxes.php */
+

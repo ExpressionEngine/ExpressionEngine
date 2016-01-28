@@ -518,5 +518,4 @@ class EE_Cache_memcached extends CI_Driver {
 	}
 }
 
-/* End of file Cache_memcached.php */
-/* Location: ./system/libraries/Cache/drivers/Cache_memcached.php */
+

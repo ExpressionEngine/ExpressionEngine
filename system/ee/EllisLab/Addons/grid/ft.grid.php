@@ -697,5 +697,4 @@ class Grid_ft extends EE_Fieldtype {
 	}
 }
 
-/* End of file ft.grid.php */
-/* Location: ./system/expressionengine/modules/ft.grid.php */
+

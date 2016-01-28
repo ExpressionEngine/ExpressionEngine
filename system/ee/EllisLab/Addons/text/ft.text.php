@@ -464,5 +464,4 @@ class Text_ft extends EE_Fieldtype {
 
 // END Text_Ft class
 
-/* End of file ft.text.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.text.php */
+

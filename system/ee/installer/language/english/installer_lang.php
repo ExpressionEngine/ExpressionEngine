@@ -122,5 +122,4 @@ $lang = array(
 'additional_comments'          => 'What could ExpressionEngine or EllisLab do to delight you?',
 
 );
-/* End of file installer_lang.php */
-/* Location: ./system/expressionengine/installer/language/english/installer_lang.php */
+

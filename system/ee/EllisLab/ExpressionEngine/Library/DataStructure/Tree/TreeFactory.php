@@ -129,5 +129,4 @@ class TreeFactory {
 
 
 
-/* End of file TreeFactory.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Model/DataStructure/Tree/TreeFactory.php */
+

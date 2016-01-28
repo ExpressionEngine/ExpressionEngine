@@ -1153,5 +1153,4 @@ class EE_Loader {
 	}
 }
 
-/* End of file EE_Loader.php */
-/* Location: ./system/expressionengine/core/EE_Loader.php */
+

@@ -455,5 +455,4 @@ class Addons_installer {
 // END Addons_installer class
 
 
-/* End of file Addons_installer.php */
-/* Location: ./system/expressionengine/libraries/addons/Addons_installer.php */
+

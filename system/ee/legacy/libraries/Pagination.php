@@ -962,5 +962,4 @@ class Pagination_object {
 
 // END Pagination class
 
-/* End of file Pagination.php */
-/* Location: ./system/expressionengine/libraries/Pagination.php */
+

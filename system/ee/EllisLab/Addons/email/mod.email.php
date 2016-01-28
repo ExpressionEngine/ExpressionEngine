@@ -1107,5 +1107,4 @@ class Email {
 }
 // END CLASS
 
-/* End of file mod.email.php */
-/* Location: ./system/expressionengine/modules/email/mod.email.php */
+

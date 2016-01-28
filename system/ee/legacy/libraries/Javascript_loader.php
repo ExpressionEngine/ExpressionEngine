@@ -172,5 +172,4 @@ class Javascript_loader {
 }
 
 
-/* End of file  */
-/* Location:  */
+

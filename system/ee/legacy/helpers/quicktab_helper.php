@@ -75,5 +75,4 @@ function generate_quicktab($title = '')
 }
 
 
-/* End of file quicktab_helper.php */
-/* Location: ./system/expressionengine/helpers/quicktab_helper.php */
+

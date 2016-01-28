@@ -27,5 +27,3 @@ class Stats_mcp {
 }
 // END CLASS
 
-/* End of file mcp.stats.php */
-/* Location: ./system/expressionengine/modules/stats/mcp.stats.php */

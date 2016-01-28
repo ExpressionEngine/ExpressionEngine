@@ -57,5 +57,4 @@ class Entropy implements Vectorizer {
 
 }
 
-/* End of file Entropy.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Entropy.php */
+

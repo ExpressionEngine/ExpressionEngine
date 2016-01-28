@@ -27,5 +27,3 @@ class Installer_Output Extends EE_Output {
 	// Yes, it's empty!
 }
 
-/* End of file Installer_Output.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Output.php */

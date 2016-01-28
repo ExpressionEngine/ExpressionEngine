@@ -165,5 +165,3 @@ $languages = array(
 					);
 
 
-/* End of file languages.php */
-/* Location: ./system/expressionengine/config/languages.php */

@@ -74,5 +74,3 @@ class Italic_rte {
 
 } // END Italic_rte
 
-/* End of file rte.italic.php */
-/* Location: ./system/expressionengine/rte_tools/italic/rte.italic.php */

@@ -276,5 +276,4 @@ class SecurityPrivacy extends Settings {
 }
 // END CLASS
 
-/* End of file SecurityPrivacy.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/SecurityPrivacy.php */
+

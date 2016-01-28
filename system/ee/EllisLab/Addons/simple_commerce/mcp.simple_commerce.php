@@ -1556,5 +1556,4 @@ This URL must be on your web site (i.e.-http://www.yoursite.com/ipn.asp).
 }
 
 
-/* End of file mcp.simple_commerce.php */
-/* Location: ./system/expressionengine/modules/simple_commerce/mcp.simple_commerce.php */
+

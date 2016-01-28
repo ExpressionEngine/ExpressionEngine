@@ -54,5 +54,4 @@ class Spaces implements Vectorizer {
 
 }
 
-/* End of file Spaces.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Spaces.php */
+

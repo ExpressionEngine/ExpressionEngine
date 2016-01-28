@@ -1253,5 +1253,4 @@ class Member_memberlist extends Member {
 }
 // END CLASS
 
-/* End of file mod.member_memberlist.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_memberlist.php */
+

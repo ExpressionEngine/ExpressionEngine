@@ -81,5 +81,3 @@ class Unordered_list_rte {
 
 } // END Unordered_list_rte
 
-/* End of file rte.unordered_list.php */
-/* Location: ./system/expressionengine/rte_tools/unordered_list/rte.unordered_list.php */

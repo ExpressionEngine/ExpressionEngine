@@ -32,5 +32,4 @@ $lang = array(
 );
 
 
-/* End of file channel_form_lang.php */
-/* Location: ./system/expressionengine/language/english/channel_form_lang.php */
+

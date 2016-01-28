@@ -1070,5 +1070,4 @@ class EE_Input {
 }
 // END CLASS
 
-/* End of file EE_Input.php */
-/* Location: ./system/expressionengine/libraries/EE_Input.php */
+

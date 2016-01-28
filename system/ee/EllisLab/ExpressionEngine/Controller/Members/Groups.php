@@ -1451,5 +1451,4 @@ class Groups extends Members\Members {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Members/Members.php */
+

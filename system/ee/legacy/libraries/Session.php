@@ -1507,5 +1507,4 @@ class EE_Session {
 }
 // END CLASS
 
-/* End of file Session.php */
-/* Location: ./system/expressionengine/libraries/Session.php */
+

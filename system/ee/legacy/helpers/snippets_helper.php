@@ -63,5 +63,4 @@ function layout_preview_links($data, $channel_id)
 	return $layout_preview_links;
 }
 
-/* End of file snippets_helper.php */
-/* Location: ./system/expressionengine/helpers/snippets_helper.php */
+

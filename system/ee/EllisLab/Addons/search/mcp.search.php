@@ -28,5 +28,3 @@ class Search_mcp {
 }
 // END CLASS
 
-/* End of file mcp.search.php */
-/* Location: ./system/expressionengine/modules/search/mcp.search.php */

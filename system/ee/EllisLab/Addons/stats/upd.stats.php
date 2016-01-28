@@ -102,5 +102,4 @@ class Stats_upd {
 }
 // END CLASS
 
-/* End of file upd.stats.php */
-/* Location: ./system/expressionengine/modules/stats/upd.stats.php */
+

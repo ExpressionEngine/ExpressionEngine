@@ -54,5 +54,4 @@ class ASCIIPrintable implements Vectorizer {
 
 }
 
-/* End of file ASCII_Printable.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/ASCII_Printable.php */
+

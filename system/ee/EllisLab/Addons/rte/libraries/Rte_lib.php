@@ -817,5 +817,4 @@ class Rte_lib {
 	}
 }
 
-/* End of file rte_lib.php */
-/* Location: ./system/expressionengine/modules/rte/libraries/rte_lib.php */
+

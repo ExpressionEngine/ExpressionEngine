@@ -91,5 +91,3 @@ class Query_upd {
 }
 // END CLASS
 
-/* End of file upd.query.php */
-/* Location: ./system/expressionengine/modules/query/upd.query.php */

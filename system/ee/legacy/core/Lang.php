@@ -225,5 +225,4 @@ class EE_Lang {
 }
 // END CLASS
 
-/* End of file EE_Lang.php */
-/* Location: ./system/expressionengine/libraries/EE_Lang.php */
+

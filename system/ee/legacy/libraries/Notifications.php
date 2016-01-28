@@ -143,5 +143,4 @@ class Notifications {
 // END Notifications class
 
 
-/* End of file Notifications.php */
-/* Location: ./system/expressionengine/libraries/Notifications.php */
+

@@ -84,5 +84,3 @@ class File_upd {
 }
 // END CLASS
 
-/* End of file upd.channel.php */
-/* Location: ./system/expressionengine/modules/channel/upd.channel.php */

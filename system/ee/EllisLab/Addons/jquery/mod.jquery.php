@@ -182,5 +182,4 @@ class Jquery {
 }
 // End Jquery Class
 
-/* End of file mod.jquery.php */
-/* Location: ./system/expressionengine/modules/jquery/mod.jquery.php */
+

@@ -175,5 +175,4 @@ class Rte_ft extends EE_Fieldtype {
 
 // END Rte_ft class
 
-/* End of file ft.rte.php */
-/* Location: ./system/expressionengine/modules/ft.rte.php */
+

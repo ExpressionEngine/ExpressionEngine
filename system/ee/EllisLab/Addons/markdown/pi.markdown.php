@@ -49,5 +49,4 @@ class Markdown {
 }
 
 
-/* End of file pi.markdown.php */
-/* Location: /system/expressionengine/third_party/markdown/pi.markdown.php */
+

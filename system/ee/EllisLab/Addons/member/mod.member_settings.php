@@ -2328,5 +2328,4 @@ UNGA;
 }
 // END CLASS
 
-/* End of file mod.member_settings.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_settings.php */
+

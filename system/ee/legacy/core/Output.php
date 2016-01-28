@@ -709,5 +709,4 @@ class EE_Output {
 }
 // END CLASS
 
-/* End of file EE_Output.php */
-/* Location: ./system/expressionengine/libraries/EE_Output.php */
+

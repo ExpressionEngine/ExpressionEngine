@@ -295,5 +295,4 @@ class MSM_Config extends EE_Config
 
 // END CLASS
 
-/* End of file Installer_Config.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Config.php */
+

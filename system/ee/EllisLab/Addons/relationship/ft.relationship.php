@@ -1093,5 +1093,4 @@ class Relationship_ft extends EE_Fieldtype {
 
 // END Relationship_ft class
 
-/* End of file ft.relationship.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.relationship.php */
+

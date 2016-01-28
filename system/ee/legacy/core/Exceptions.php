@@ -293,5 +293,4 @@ class EE_Exceptions {
 }
 // END Exceptions Class
 
-/* End of file EE_Exceptions.php */
-/* Location: ./system/expressionengine/libraries/EE_Exceptions.php */
+

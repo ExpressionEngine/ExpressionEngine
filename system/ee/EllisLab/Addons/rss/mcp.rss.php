@@ -28,5 +28,3 @@ class Rss_mcp {
 }
 // END CLASS
 
-/* End of file mcp.rss.php */
-/* Location: ./system/expressionengine/modules/rss/mcp.rss.php */

@@ -363,5 +363,4 @@ class Moblog_upd {
 }
 // END CLASS
 
-/* End of file upd.moblog.php */
-/* Location: ./system/expressionengine/modules/moblog/upd.moblog.php */
+

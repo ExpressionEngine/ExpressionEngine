@@ -96,5 +96,4 @@ if ( ! function_exists('delete_cookie'))
 }
 
 
-/* End of file cookie_helper.php */
-/* Location: ./system/helpers/cookie_helper.php */
+

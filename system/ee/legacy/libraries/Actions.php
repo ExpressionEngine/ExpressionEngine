@@ -225,5 +225,4 @@ class EE_Actions {
 }
 // END CLASS
 
-/* End of file Actions.php */
-/* Location: ./system/expressionengine/libraries/Actions.php */
+

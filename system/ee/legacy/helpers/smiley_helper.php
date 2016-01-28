@@ -275,5 +275,3 @@ EOF;
 }
 
 
-/* End of file smiley_helper.php */
-/* Location: ./system/helpers/smiley_helper.php */

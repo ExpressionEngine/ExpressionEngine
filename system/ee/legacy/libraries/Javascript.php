@@ -848,5 +848,4 @@ class EE_Javascript {
 // END EE_Javascript
 
 
-/* End of file EE_Javascript.php */
-/* Location: ./system/expressionengine/libraries/EE_Javascript.php */
+

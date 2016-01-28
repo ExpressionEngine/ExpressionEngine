@@ -1883,5 +1883,4 @@ class EE_Config {
 }
 // END CLASS
 
-/* End of file EE_Config.php */
-/* Location: ./system/expressionengine/libraries/EE_Config.php */
+

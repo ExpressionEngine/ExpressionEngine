@@ -195,5 +195,4 @@ class Urls extends Settings {
 }
 // END CLASS
 
-/* End of file Urls.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Urls.php */
+

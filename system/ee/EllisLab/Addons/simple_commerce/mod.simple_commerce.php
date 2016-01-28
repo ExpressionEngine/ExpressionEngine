@@ -1134,5 +1134,4 @@ class Simple_commerce {
 
 
 
-/* End of file mod.simple_commerce.php */
-/* Location: ./system/expressionengine/modules/simple_commerce/mod.simple_commerce.php */
+

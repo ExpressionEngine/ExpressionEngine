@@ -28,5 +28,4 @@ class Email_mcp {
 }
 // END CLASS
 
-/* End of file mcp.email.php */
-/* Location: ./system/expressionengine/modules/email/mcp.email.php */
+

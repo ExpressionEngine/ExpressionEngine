@@ -243,5 +243,4 @@ class Members extends Settings {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Members.php */
+

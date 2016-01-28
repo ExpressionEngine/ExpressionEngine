@@ -58,5 +58,4 @@ $lang = array(
 );
 
 
-/* End of file date_lang.php */
-/* Location: ./system/language/english/date_lang.php */
+

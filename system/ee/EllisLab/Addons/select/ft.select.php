@@ -288,5 +288,4 @@ class Select_ft extends EE_Fieldtype {
 
 // END Select_ft class
 
-/* End of file ft.select.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.select.php */
+

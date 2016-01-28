@@ -225,5 +225,4 @@ class Create extends Members {
 }
 // END CLASS
 
-/* End of file Create.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Create.php */
+

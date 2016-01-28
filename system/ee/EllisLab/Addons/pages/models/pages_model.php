@@ -144,5 +144,3 @@ class Pages_model extends CI_Model {
 }
 // END CLASS
 
-/* End of file pages_model.php */
-/* Location: ./system/expressionengine/modules/pages/models/pages_model.php */

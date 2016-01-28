@@ -98,5 +98,4 @@ $autoload['language'] = array();
 
 
 
-/* End of file autoload.php */
-/* Location: ./system/expressionengine/installer/config/autoload.php */
+

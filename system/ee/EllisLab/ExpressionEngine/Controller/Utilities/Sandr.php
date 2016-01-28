@@ -252,5 +252,4 @@ class Sandr extends Utilities {
 }
 // END CLASS
 
-/* End of file Sandr.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Sandr.php */
+

@@ -126,5 +126,3 @@ class Headings_rte {
 
 } // END Headings_rte
 
-/* End of file rte.headings.php */
-/* Location: ./system/expressionengine/rte_tools/headings/rte.headings.php */

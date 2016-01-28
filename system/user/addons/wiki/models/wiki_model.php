@@ -239,5 +239,4 @@ class Wiki_model extends CI_Model {
 }
 // END CLASS
 
-/* End of file wiki_model.php */
-/* Location: ./system/expressionengine/modules/wiki/models/wiki_model.php */
+

@@ -140,5 +140,3 @@ class QueryNodeIterator extends EE_TreeIterator {
 	}
 }
 
-/* End of file Iterators.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Iterators.php */

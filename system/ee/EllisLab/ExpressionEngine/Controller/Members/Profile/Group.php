@@ -177,5 +177,4 @@ class Group extends Profile {
 }
 // END CLASS
 
-/* End of file MemberGroup.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/MemberGroup.php */
+

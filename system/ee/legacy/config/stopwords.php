@@ -59,5 +59,3 @@ $ignore = array(
 	'with'	// no comma after last item
 );
 
-/* End of file stopwords.php */
-/* Location: ./system/expressionengine/config/stopwords.php */

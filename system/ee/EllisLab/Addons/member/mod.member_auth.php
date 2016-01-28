@@ -1048,5 +1048,4 @@ class Member_auth extends Member {
 }
 // END CLASS
 
-/* End of file mod.member_auth.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_auth.php */
+

@@ -131,5 +131,4 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file addons_lang.php */
-/* Location: ./system/expressionengine/language/english/addons_lang.php */
+

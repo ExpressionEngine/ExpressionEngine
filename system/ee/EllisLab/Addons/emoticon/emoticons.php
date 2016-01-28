@@ -50,5 +50,3 @@ $smileys = array(
 
 				);
 
-/* End of file emoticons.php */
-/* Location: ./system/expressionengine/modules/emoticon/emoticons.php */

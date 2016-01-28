@@ -1444,5 +1444,3 @@ $timezones = array(
 );
 
 
-/* End of file countries.php */
-/* Location: ./system/expressionengine/config/countries.php */

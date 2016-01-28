@@ -63,5 +63,4 @@ class Installer_Logger extends EE_Logger {
 }
 // END CLASS
 
-/* End of file logger.php */
-/* Location: ./system/expressionengine/installer/libraries/Logger.php */
+

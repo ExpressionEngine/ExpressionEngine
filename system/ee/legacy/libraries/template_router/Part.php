@@ -97,5 +97,4 @@ class EE_Route_segment_part {
 }
 // END CLASS
 
-/* End of file Segment.php */
-/* Location: ./system/expressionengine/libraries/template_router/Segment.php */
+

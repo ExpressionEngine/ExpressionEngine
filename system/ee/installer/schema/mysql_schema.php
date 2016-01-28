@@ -1672,5 +1672,4 @@ class EE_Schema {
 	}
 }
 
-/* End of file mysql_schema.php */
-/* Location: ./system/expressionengine/installer/schema/mysql_schema.php */
+

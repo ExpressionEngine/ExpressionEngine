@@ -365,5 +365,4 @@ class Multi_select_ft extends EE_Fieldtype {
 
 // END Multi_select_ft class
 
-/* End of file ft.multi_select.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.multi_select.php */
+

@@ -115,5 +115,4 @@ class Image_rte {
 
 } // END Image_rte
 
-/* End of file rte.image.php */
-/* Location: ./system/expressionengine/rte_tools/image/rte.image.php */
+

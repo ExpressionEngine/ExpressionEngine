@@ -292,5 +292,4 @@ class Profile extends CP_Controller {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Members.php */
+

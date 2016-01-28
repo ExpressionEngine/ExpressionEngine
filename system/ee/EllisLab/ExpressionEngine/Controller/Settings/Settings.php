@@ -193,5 +193,4 @@ class Settings extends CP_Controller {
 }
 // END CLASS
 
-/* End of file Settings.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Settings.php */
+

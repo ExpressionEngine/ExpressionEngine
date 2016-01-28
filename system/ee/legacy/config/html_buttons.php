@@ -92,5 +92,4 @@ $predefined_buttons = array(
 							);
 
 
-/* End of file html_buttons.php */
-/* Location: ./system/expressionengine/config/html_buttons.php */
+

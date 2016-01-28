@@ -337,5 +337,3 @@ class Remember {
 // END Remember class
 
 
-/* End of file Remember.php */
-/* Location: ./system/expressionengine/libraries/Remember.php */

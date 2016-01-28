@@ -113,5 +113,3 @@ class WordCensor extends Settings {
 }
 // END CLASS
 
-/* End of file WordCensor.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/WordCensor.php */

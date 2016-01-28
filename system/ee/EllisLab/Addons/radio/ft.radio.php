@@ -335,5 +335,4 @@ class Radio_ft extends EE_Fieldtype {
 
 // END Radio_ft class
 
-/* End of file ft.radio.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.radio.php */
+

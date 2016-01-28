@@ -1807,5 +1807,4 @@ class Api_channel_entries extends Api {
 }
 // END CLASS
 
-/* End of file Api_channel_entries.php */
-/* Location: ./system/expressionengine/libraries/api/Api_channel_entries.php */
+

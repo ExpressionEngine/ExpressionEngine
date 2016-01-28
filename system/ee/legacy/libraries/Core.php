@@ -794,5 +794,4 @@ class EE_Core {
 	}
 }
 
-/* End of file Core.php */
-/* Location: ./system/expressionengine/libraries/Core.php */
+

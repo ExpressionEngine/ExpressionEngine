@@ -147,5 +147,3 @@ class Comment_model extends CI_Model {
 	}
 }
 
-/* End of file comment_model.php */
-/* Location: ./system/expressionengine/modules/comment/models/comment_model.php */

@@ -24,5 +24,3 @@
  */
 class EE_Relationship_exception extends RuntimeException {}
 
-/* End of file Exceptions.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Exceptions.php */

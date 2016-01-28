@@ -761,5 +761,4 @@ class Grid_parser {
 	}
 }
 
-/* End of file Grid_parser.php */
-/* Location: ./system/expressionengine/modules/grid/libraries/Grid_parser.php */
+

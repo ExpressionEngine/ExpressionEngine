@@ -267,5 +267,3 @@ class Relative_date_object {
 
 // END Relative_Date class
 
-/* End of file Relative_Date.php */
-/* Location: ./system/expressionengine/libraries/Relative_date.php */

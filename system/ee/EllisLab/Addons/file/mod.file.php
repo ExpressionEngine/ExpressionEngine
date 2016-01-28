@@ -577,5 +577,3 @@ class File {
 }
 // END CLASS
 
-/* End of file mod.file.php */
-/* Location: ./system/expressionengine/modules/file/mod.file.php */

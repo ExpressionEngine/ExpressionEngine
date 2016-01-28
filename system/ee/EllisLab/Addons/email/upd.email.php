@@ -100,5 +100,4 @@ class Email_upd {
 }
 // END CLASS
 
-/* End of file upd.email.php */
-/* Location: ./system/expressionengine/modules/email/upd.email.php */
+

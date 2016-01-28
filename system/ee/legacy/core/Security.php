@@ -159,5 +159,4 @@ class EE_Security {
 }
 // END CLASS
 
-/* End of file EE_Security.php */
-/* Location: ./system/expressionengine/libraries/EE_Security.php */
+

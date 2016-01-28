@@ -290,5 +290,4 @@ class Channel_entries_model extends CI_Model {
 }
 // END CLASS
 
-/* End of file channel_entries_model.php */
-/* Location: ./system/expressionengine/models/channel_entries_model.php */
+

@@ -2220,5 +2220,4 @@ class EE_Functions {
 }
 // END CLASS
 
-/* End of file Functions.php */
-/* Location: ./system/expressionengine/libraries/Functions.php */
+

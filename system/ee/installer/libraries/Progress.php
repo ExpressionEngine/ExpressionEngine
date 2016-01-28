@@ -119,5 +119,4 @@ class ProgressIterator extends ArrayIterator {
 // END ProgressIterator class
 
 
-/* End of file Progress.php */
-/* Location: ./system/expressionengine/installer/libraries/Progress.php */
+

@@ -152,5 +152,4 @@ class Survey {
 }
 // END CLASS
 
-/* End of file Survey.php */
-/* Location: ./system/expressionengine/installer/libraries/Survey.php */
+

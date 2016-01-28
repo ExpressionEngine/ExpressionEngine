@@ -2180,5 +2180,4 @@ while (--j >= 0)
 
 }
 // END CLASS
-/* End of file Typography.php */
-/* Location: ./system/expressionengine/libraries/Typography.php */
+

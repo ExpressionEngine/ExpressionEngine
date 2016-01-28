@@ -71,5 +71,4 @@ else
 exit($str);
 
 
-/* End of file Redirect.php */
-/* Location: ./system/expressionengine/libraries/Redirect.php */
+

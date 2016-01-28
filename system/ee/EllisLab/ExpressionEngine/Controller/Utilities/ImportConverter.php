@@ -543,5 +543,4 @@ class ImportConverter extends Utilities {
 }
 // END CLASS
 
-/* End of file Import_converter.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/ImportConverter.php */
+

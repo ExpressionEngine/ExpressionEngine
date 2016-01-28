@@ -401,5 +401,4 @@ class Api_channel_categories extends Api {
 
 // END CLASS
 
-/* End of file Api_channel_categories.php */
-/* Location: ./system/expressionengine/libraries/api/Api_channel_categories.php */
+

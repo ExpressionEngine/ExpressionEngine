@@ -310,5 +310,3 @@ class EE_XMLparser {
 
 
 
-/* End of file Xmlparser.php */
-/* Location: ./system/expressionengine/libraries/Xmlparser.php */

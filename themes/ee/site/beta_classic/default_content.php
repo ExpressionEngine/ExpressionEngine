@@ -52,6 +52,3 @@ foreach ($Q as $sql)
 	$this->db->query($sql);
 }
 
-/* End of file default_content.php */
-/* Location: ./themes/site/beta_classic
-* /default_content.php */
