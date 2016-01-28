@@ -44,7 +44,7 @@ class EE_Encrypt {
 	public function __construct()
 	{
 		$this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? FALSE : TRUE;
-		$this->mb_available = (MB_ENABLED) ?: (function_exists('iconv') && extension_loaded('mbstring'));
+		$this->mb_available = (MB_ENABLED) ?: extension_loaded('mbstring');
 		log_message('debug', "Encrypt Class Initialized");
 	}
 
