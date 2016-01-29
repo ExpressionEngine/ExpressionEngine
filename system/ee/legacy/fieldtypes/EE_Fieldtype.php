@@ -415,6 +415,45 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get a given setting for the Fieldtype. Returns TRUE/FALSE for values that
+	 * use 'y' and 'n'. Returns `FALSE` if no setting is set.
+	 *
+	 * @param  string $key The key of the setting
+	 * @return mixed       The value of the setting
+	 */
+	public function get_setting($key, $default = FALSE)
+	{
+		if ( ! isset($this->settings[$key]))
+		{
+			return $default;
+		}
+
+		$boolean_fields = array(
+			'field_disabled',
+			'field_is_hidden',
+			'field_pre_populate',
+			'field_required',
+			'field_search',
+			'field_show_file_selector',
+			'field_show_fmt',
+			'field_show_formatting_btns',
+			'field_show_glossary',
+			'field_show_smileys',
+			'field_show_spellcheck',
+			'field_show_writemode',
+		);
+
+		if (in_array($key, $boolean_fields))
+		{
+			return get_bool_from_string($this->settings[$key]);
+		}
+
+		return $this->settings[$key];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Display Field Settings
 	 *
 	 * @param	array   Currently saved settings for this field

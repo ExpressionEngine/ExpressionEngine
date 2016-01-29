@@ -99,10 +99,6 @@ class Textarea_ft extends EE_Fieldtype {
 			}
 		}
 
-		$disabled = (isset($this->settings['field_disabled']))
-			? get_bool_from_string($this->settings['field_disabled'])
-			: FALSE;
-
 		if (REQ == 'CP')
 		{
 			$class = ($grid_markitup) ? 'markItUp' : '';
@@ -185,7 +181,7 @@ class Textarea_ft extends EE_Fieldtype {
 			'class'    => ($grid_markitup) ? 'markItUp' : ''
 		);
 
-		if ($disabled)
+		if ($this->get_setting('field_disabled'))
 		{
 			$params['disabled'] = 'disabled';
 		}
