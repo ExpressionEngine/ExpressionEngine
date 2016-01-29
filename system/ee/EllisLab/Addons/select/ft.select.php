@@ -71,11 +71,19 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
-		$text_direction = (isset($this->settings['field_text_direction']))
-			? $this->settings['field_text_direction'] : 'ltr';
-		$field_options = $this->_get_field_options($data);
+		$extra = 'dir="'.$this->get_setting('field_text_direction', 'ltr').'"';
 
-		$field = form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'"');
+		if ($this->get_setting('field_disabled'))
+		{
+			$extra .= ' disabled';
+		}
+
+		$field = form_dropdown(
+			$this->field_name,
+			$this->_get_field_options($data),
+			$data,
+			$extra
+		);
 
 		return $field;
 	}
