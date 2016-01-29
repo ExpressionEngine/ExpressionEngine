@@ -32,6 +32,11 @@ feature 'Forum Tab' do
     $db.query('SELECT forum_topic_id FROM exp_channel_titles ORDER BY entry_id desc LIMIT 1').each do |row|
       row['forum_topic_id'].should == 1
     end
+
+    click_link(title)
+    @page.tab_links[4].click
+    @page.forum_tab.should have_css('textarea[name=forum__forum_body][disabled]')
+    @page.forum_tab.should have_css('select[name=forum__forum_id][disabled]')
   end
 
   it 'associates a channel entry with a forum post when specifying a forum topic ID' do
