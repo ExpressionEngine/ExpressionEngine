@@ -102,7 +102,7 @@ class Forum_tab {
 				'field_label'          => lang('forum_body'),
 				'field_required'       => 'n',
 				'field_data'           => $forum_body,
-				'field_show_fmt'       => 'y',
+				'field_show_fmt'       => 'n',
 				'field_fmt_options'    => array(),
 				'field_instructions'   => '',
 				'field_text_direction' => 'ltr',
