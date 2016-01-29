@@ -185,8 +185,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 			if (is_array($option))
 			{
-				$out .= $this->_display_form($option['children'], $values, TRUE);
 				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked, $disabled).NBS.$option['name'].'</label>';
+				$out .= $this->_display_nested_form($option['children'], $values, TRUE);
 			}
 			else
 			{
