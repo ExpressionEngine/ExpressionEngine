@@ -1135,6 +1135,11 @@ class Members extends CP_Controller {
 		//  Fetch member ID numbers and build the query
 		$member_ids = ee()->input->post('selection', TRUE);
 
+		if (in_array(ee()->session->userdata['member_id'], $member_ids))
+		{
+			show_error(lang('can_not_delete_self'));
+		}
+
 		// Check to see if they're deleting super admins
 		$this->_super_admin_delete_check($member_ids);
 
