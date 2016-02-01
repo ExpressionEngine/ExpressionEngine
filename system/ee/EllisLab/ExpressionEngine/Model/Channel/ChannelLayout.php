@@ -52,16 +52,32 @@ class ChannelLayout extends Model implements LayoutInterface {
 		$layout = $this->getProperty('field_layout');
 		foreach ($layout as $section)
 		{
+			// Tabs have 4 pieces of data: an id, a name, a list of fields,
+			// and a visibility flag. If any of them are missing this is not
+			// a tab (but visiblity is non-essential so...) we'll skip it. This
+			// is better than a PHP error.
+			if ( ! (isset($section['id'])
+					&& isset($section['name'])
+					&& isset($section['fields']))
+				)
+			{
+				continue;
+			}
+
 			$tab = new LayoutTab($section['id'], $section['name']);
 
-			if ( ! $section['visible'])
+			// If they don't havea 'visible' key we'll assume it is visible
+			// and just move on.
+			if (isset($section['visible']) && ! $section['visible'])
 			{
 				$tab->hide();
 			}
 
 			foreach ($section['fields'] as $field_info)
 			{
-				if (empty($field_info))
+				// If the field_info does'nt have a 'field' key, this isn't
+				// really a field: skip it.
+				if (empty($field_info) || ! isset($field_info['field']))
 				{
 					continue;
 				}
@@ -76,12 +92,14 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 				$field = $fields[$field_id];
 
-				if ($field_info['collapsed'])
+				// Collapsed is "optional" and defaults to "not collapsed"
+				if (isset($field_info['collapsed']) && $field_info['collapsed'])
 				{
 					$field->collapse();
 				}
 
-				if ( ! $field_info['visible'])
+				// Visible is "optional" and defaults to "I can see you!"
+				if (isset($field_info['visible']) && ! $field_info['visible'])
 				{
 					$field->hide();
 				}
