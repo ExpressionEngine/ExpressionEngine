@@ -108,7 +108,8 @@ class Grid_lib {
 		{
 			$column_headings[] = array(
 				'label' => $column['col_label'],
-				'desc' => $column['col_instructions']
+				'desc' => $column['col_instructions'],
+				'required' => ($column['col_required'] == 'y')
 			);
 
 			switch ($column['col_type']) {
@@ -161,7 +162,7 @@ class Grid_lib {
 
 			foreach ($columns as $column)
 			{
-				$field_columns[] = array(
+				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
@@ -171,6 +172,13 @@ class Grid_lib {
 						'width' => $column['col_width'].'%',
 					)
 				);
+
+				if ($column['col_required'] == 'y')
+				{
+					$col['attrs']['class'] = 'required';
+				}
+
+				$field_columns[] = $col;
 			}
 			$data[] = array(
 				'attrs' => array('row_id' => $row_id),
