@@ -38,19 +38,26 @@ class Multi_select_ft extends EE_Fieldtype {
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
 
-		$text_direction = (isset($this->settings['field_text_direction']))
-			? $this->settings['field_text_direction'] : 'ltr';
+		$extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		if (REQ == 'CP')
 		{
 			return ee('View')->make('multi_select:publish')->render(array(
 				'field_name' => $this->field_name,
-				'values' => $values,
-				'options' => $field_options
+				'values'     => $values,
+				'options'    => $field_options,
+				'extra'      => $extra
 			));
 		}
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input"');
+		$extra .= ' dir="'.$this->get_setting('field_text_direction', 'ltr').'" class="multiselect_input"';
+
+		return form_multiselect(
+			$this->field_name.'[]',
+			$field_options,
+			$values,
+			$extra
+		);
 	}
 
 	// --------------------------------------------------------------------

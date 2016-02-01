@@ -173,13 +173,20 @@ class Textarea_ft extends EE_Fieldtype {
 			return ee('View')->make('textarea:publish')->render($vars);
 		}
 
-		return form_textarea(array(
-			'name'	=> $this->name(),
-			'value'	=> $data,
-			'rows'	=> $this->settings['field_ta_rows'],
-			'dir'	=> $this->settings['field_text_direction'],
-			'class' => ($grid_markitup) ? 'markItUp' : ''
-		));
+		$params = array(
+			'name'     => $this->name(),
+			'value'    => $data,
+			'rows'     => $this->settings['field_ta_rows'],
+			'dir'      => $this->settings['field_text_direction'],
+			'class'    => ($grid_markitup) ? 'markItUp' : ''
+		);
+
+		if ($this->get_setting('field_disabled'))
+		{
+			$params['disabled'] = 'disabled';
+		}
+
+		return form_textarea($params);
 	}
 
 	// --------------------------------------------------------------------

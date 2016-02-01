@@ -141,15 +141,16 @@ class Checkboxes_ft extends EE_Fieldtype {
 		if (REQ == 'CP')
 		{
 			return ee('View')->make('checkboxes:publish')->render(array(
-				'field_name' => $this->field_name,
-				'values' => $values,
-				'options' => $field_options,
-				'editable' => isset($this->settings['editable']) ? $this->settings['editable'] : FALSE,
-				'editing' => isset($this->settings['editing']) ? $this->settings['editing'] : FALSE,
-				'deletable' => isset($this->settings['deletable']) ? $this->settings['deletable'] : FALSE,
-				'group_id' => isset($this->settings['group_id']) ? $this->settings['group_id'] : 0,
-				'manage_toggle_label' => isset($this->settings['manage_toggle_label']) ? $this->settings['manage_toggle_label'] : lang('manage'),
-				'content_item_label' => isset($this->settings['content_item_label']) ? $this->settings['content_item_label'] : ''
+				'field_name'          => $this->field_name,
+				'values'              => $values,
+				'options'             => $field_options,
+				'editable'            => $this->get_setting('editable'),
+				'editing'             => $this->get_setting('editing'),
+				'disabled'            => ($this->get_setting('field_disabled')) ? 'disabled' : NULL,
+				'deletable'           => $this->get_setting('deletable'),
+				'group_id'            => $this->get_setting('group_id', 0),
+				'manage_toggle_label' => $this->get_setting('manage_toggle_label', lang('manage')),
+				'content_item_label'  => $this->get_setting('content_item_label', '')
 			));
 		}
 
@@ -175,7 +176,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 	protected function _display_nested_form($fields, $values, $child = FALSE)
 	{
-		$out = '';
+		$out      = '';
+		$disabled = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		foreach ($fields as $id => $option)
 		{
@@ -183,12 +185,12 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 			if (is_array($option))
 			{
-				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked).NBS.$option['name'].'</label>';
-				$out .= $this->_display_form($option['children'], $values, TRUE);
+				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked, $disabled).NBS.$option['name'].'</label>';
+				$out .= $this->_display_nested_form($option['children'], $values, TRUE);
 			}
 			else
 			{
-				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked).NBS.$option.'</label>';
+				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked, $disabled).NBS.$option.'</label>';
 			}
 		}
 

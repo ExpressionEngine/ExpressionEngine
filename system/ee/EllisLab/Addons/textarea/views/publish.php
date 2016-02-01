@@ -4,13 +4,19 @@ $attributes = array(
 	'value'	=> $value,
 	'rows'	=> $settings['field_ta_rows'],
 	'dir'	=> $settings['field_text_direction'],
-	'class' => $class
+	'class' => $class,
 );
 
 if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
 {
 	$attributes['data-markitup'] = 'yes';
 }
+
+if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
+{
+	$attributes['disabled'] = 'disabled';
+}
+
 ?>
 <?=form_textarea($attributes);?>
 <?php if ($toolbar || ( ! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>

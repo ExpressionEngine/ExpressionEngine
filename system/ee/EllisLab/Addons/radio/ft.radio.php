@@ -100,6 +100,7 @@ class Radio_ft extends EE_Fieldtype {
 			? $this->settings['field_text_direction'] : 'ltr';
 
 		$field_options = $this->_get_field_options($data);
+		$extra         = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		if (REQ == 'CP')
 		{
@@ -114,8 +115,9 @@ class Radio_ft extends EE_Fieldtype {
 
 			return ee('View')->make('radio:publish')->render(array(
 				'field_name' => $this->field_name,
-				'selected' => $data,
-				'options' => $field_options
+				'selected'   => $data,
+				'options'    => $field_options,
+				'extra'      => $extra
 			));
 		}
 
@@ -128,7 +130,7 @@ class Radio_ft extends EE_Fieldtype {
 		{
 			$selected = ($key == $data);
 
-			$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
+			$r .= '<label>'.form_radio($this->field_name, $value, $selected, $extra).NBS.$key.'</label>';
 		}
 
 		switch ($container)
@@ -275,9 +277,7 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ( ! isset($this->settings['field_pre_populate'])
-			OR $this->settings['field_pre_populate'] == 'n'
-				OR $this->settings['field_pre_populate'] == FALSE)
+		if ($this->get_setting('field_pre_populate') === FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
