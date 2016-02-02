@@ -43,9 +43,6 @@ class Boolean_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
-		$valid			= FALSE;
-		$field_options	= $this->settings['field_list_items'];
-
 		if ($data === FALSE
 			|| $data == ''
 			|| $data == 'y'
@@ -193,15 +190,28 @@ class Boolean_ft extends EE_Fieldtype {
 
 	public function grid_display_settings($data)
 	{
+		$defaults = array(
+			'field_list_items' => 'yn',
+		);
+
+		foreach ($defaults as $setting => $value)
+		{
+			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
+		}
+
 		return array(
 			'field_options' => array(
 				array(
-					'title' => 'radio_options',
-					'desc' => 'grid_radio_options_desc',
+					'title' => 'boolean_options',
+					'desc' => 'boolean_options_desc',
 					'fields' => array(
 						'field_list_items' => array(
-							'type' => 'textarea',
-							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
+							'type' => 'radio',
+							'choices' => array(
+								'yn' => lang('yes_no'),
+								'of' => lang('on_off')
+							),
+							'value' => $data['field_list_items']
 						)
 					)
 				)
