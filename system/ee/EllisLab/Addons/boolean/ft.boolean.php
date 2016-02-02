@@ -84,8 +84,6 @@ class Boolean_ft extends EE_Fieldtype {
 		{
 			$data = ($data == 'y') ? TRUE : FALSE;
 
-			// var_dump($data, $field_options, $extra, $this); die();
-
 			return ee('View')->make('boolean:publish')->render(array(
 				'field_name' => $this->field_name,
 				'selected'   => $data,
@@ -118,32 +116,6 @@ class Boolean_ft extends EE_Fieldtype {
 		}
 
 		return $r;
-	}
-
-	// --------------------------------------------------------------------
-
-	function replace_tag($data, $params = '', $tagdata = '')
-	{
-		// Experimental parameter, do not use
-		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
-		{
-			return ee()->functions->encode_ee_tags($data);
-		}
-
-		$text_format = ($this->content_type() == 'grid')
-			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
-
-		ee()->load->library('typography');
-
-		return ee()->typography->parse_type(
-			ee()->functions->encode_ee_tags($data),
-			array(
-				'text_format'	=> $text_format,
-				'html_format'	=> $this->row['channel_html_formatting'],
-				'auto_links'	=> $this->row['channel_auto_link_urls'],
-				'allow_img_url' => $this->row['channel_allow_img_urls']
-			)
-		);
 	}
 
 	// --------------------------------------------------------------------
