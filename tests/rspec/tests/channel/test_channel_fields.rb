@@ -36,8 +36,7 @@ feature 'Channel Fields' do
       save_field
     end
 
-    it 'saves a field'
-    do
+    it 'saves a field' do
       @page.fields_edit[1].click
       save_field
     end
