@@ -21,14 +21,14 @@ feature 'Channel Fields' do
       form = ChannelFieldForm.new
       form.all_there?.should == true
       form.field_type.select 'Date'
-      form.field_label.set 'Date'
-      form.field_name.set 'date'
+      form.field_label.set 'Shipping Date'
+      form.field_name.set 'shipping_date'
       form.submit
 
-      @page.alert.has_content?('The field Date has been').should == true
+      @page.alert.has_content?('The field Shipping Date has been').should == true
 
-      @page.fields.any? { |f| f.text.include?('Date') }.should == true
-      @page.fields.any? { |f| f.text.include?('{date}') }.should == true
+      @page.fields.any? { |f| f.text.include?('Shipping Date') }.should == true
+      @page.fields.any? { |f| f.text.include?('{shipping_date}') }.should == true
     end
 
     it 'creates a field' do
@@ -37,11 +37,21 @@ feature 'Channel Fields' do
     end
 
     it 'saves a field'
-    # TODO: Reenable once we fix https://github.com/EllisLab/ExpressionEngine/issues/464
-    # do
-    #   @page.fields_edit[1].click
-    #   save_field
-    # end
+    do
+      @page.fields_edit[1].click
+      save_field
+    end
+
+	it 'invalidates reserved words used in field_name' do
+        form = ChannelFieldForm.new
+        form.all_there?.should == true
+        form.field_type.select 'Date'
+        form.field_label.set 'Date'
+        form.field_name.set 'date'
+        form.submit
+
+        @page.alert.has_content?('Cannot Create Field').should == true
+	end
   end
 
   it 'deletes a field' do
