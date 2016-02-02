@@ -20,15 +20,15 @@ feature 'Channel Fields' do
     def save_field
       form = ChannelFieldForm.new
       form.all_there?.should == true
-      form.field_type.select 'Date'
-      form.field_label.set 'Shipping Date'
-      form.field_name.set 'shipping_date'
+      form.field_type.select 'Text Input'
+      form.field_label.set 'Shipping Method'
+      form.field_name.set 'shipping_method'
       form.submit
 
-      @page.alert.has_content?('The field Shipping Date has been').should == true
+      @page.alert.has_content?('The field Shipping Method has been').should == true
 
-      @page.fields.any? { |f| f.text.include?('Shipping Date') }.should == true
-      @page.fields.any? { |f| f.text.include?('{shipping_date}') }.should == true
+      @page.fields.any? { |f| f.text.include?('Shipping Method') }.should == true
+      @page.fields.any? { |f| f.text.include?('{shipping_method}') }.should == true
     end
 
     it 'creates a field' do
@@ -41,16 +41,17 @@ feature 'Channel Fields' do
       save_field
     end
 
-	it 'invalidates reserved words used in field_name' do
-        form = ChannelFieldForm.new
-        form.all_there?.should == true
-        form.field_type.select 'Date'
-        form.field_label.set 'Date'
-        form.field_name.set 'date'
-        form.submit
+    it 'invalidates reserved words used in field_name' do
+      @page.create_new.click
+      form = ChannelFieldForm.new
+      form.all_there?.should == true
+      form.field_type.select 'Date'
+      form.field_label.set 'Date'
+      form.field_name.set 'date'
+      form.submit
 
-        @page.alert.has_content?('Cannot Create Field').should == true
-	end
+      @page.alert.has_content?('Cannot Create Field').should == true
+    end
   end
 
   it 'deletes a field' do
