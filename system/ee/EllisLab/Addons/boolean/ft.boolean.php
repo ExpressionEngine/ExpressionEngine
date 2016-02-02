@@ -92,14 +92,27 @@ class Boolean_ft extends EE_Fieldtype {
 			));
 		}
 
-		$selected = $data;
+		if ($field_options == 'of')
+		{
+			$field_options = array(
+				lang('on') => 'y',
+				lang('off') => 'n'
+			);
+		}
+		else
+		{
+			$field_options = array(
+				lang('yes') => 'y',
+				lang('no') => 'n'
+			);
+		}
 
 		$r = '';
 		$class = 'choice mr';
 
 		foreach($field_options as $key => $value)
 		{
-			$selected = ($key == $data);
+			$selected = ($value == $data);
 
 			$r .= '<label>'.form_radio($this->field_name, $value, $selected, $extra).NBS.$key.'</label>';
 		}
