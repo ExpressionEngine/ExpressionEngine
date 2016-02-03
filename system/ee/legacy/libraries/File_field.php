@@ -599,13 +599,29 @@ class File_field {
 		$file['image_properties'] = $upload_dir['properties'];
 		$file['file_properties'] = $upload_dir['file_properties'];
 
-		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
+		$manipulations = ee('Model')->get('FileDimension')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('upload_location_id', $file['upload_location_id'])
+			->all();
 
-		foreach($manipulations as $m)
+		if ( ! empty($manipulations))
 		{
-			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
+			$f = ee('Model')->get('File', $file['file_id'])->first();
 
+			foreach($manipulations as $m)
+			{
+				$file['url:'.$m->short_name] = $file['path'].'_'.$m->short_name.'/'.$file['file_name'];
+
+				$dimensions = $m->getNewDimensionsOfFile($f);
+
+				if ($dimensions)
+				{
+					$file['width:'.$m->short_name]  = $dimensions['width'];
+					$file['height:'.$m->short_name] = $dimensions['height'];
+				}
+			}
 		}
+
 		return $file;
 	}
 
@@ -667,26 +683,6 @@ class File_field {
 		}
 
 		return $this->_upload_prefs;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Gets dimensions for an upload directory and caches them
-	 *
-	 * @param int $dir_id	ID of upload directory
-	 * @return array		Array of image manipulation settings
- 	 */
-	private function _get_dimensions_by_dir_id($dir_id)
-	{
-		if ( ! isset($this->_manipulations[$dir_id]))
-		{
-			ee()->load->model('file_model');
-
-			$this->_manipulations[$dir_id] = ee()->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
-		}
-
-		return $this->_manipulations[$dir_id];
 	}
 
 	// ------------------------------------------------------------------------
