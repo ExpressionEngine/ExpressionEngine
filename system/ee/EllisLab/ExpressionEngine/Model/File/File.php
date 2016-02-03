@@ -76,6 +76,18 @@ class File extends Model {
 	protected $modified_date;
 	protected $file_hw_original;
 
+	public function get__width()
+	{
+		$dimensions = explode(" ", $this->file_hw_original);
+		return $dimensions[1];
+	}
+
+	public function get__height()
+	{
+		$dimensions = explode(" ", $this->file_hw_original);
+		return $dimensions[0];
+	}
+
 	/**
 	 * Uses the file's mime-type to determine if the file is an image or not.
 	 *
