@@ -551,7 +551,7 @@ class Cat extends AbstractChannelsController {
 					->filter('cat_id', 'IN', $cat_ids);
 
 				// Grab the group ID for the possible AJAX return below
-				$group_id = $cats->first()->CategoryGroup->getId();
+				$group_id = ee('Model')->get('Category', $cat_ids[0])->first()->CategoryGroup->getId();
 
 				$cats->delete();
 
@@ -1303,7 +1303,7 @@ class Cat extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$cat_field = $cat_field->save();
+				$cat_field->save();
 
 				if (is_null($field_id))
 				{

@@ -295,7 +295,7 @@ class FilterFactory {
 
 		if (isset($this->container))
 		{
-			$filter->setQuery($this->container->make('Model')->get('Member'));
+			$filter->setQuery($this->container->make('Model')->get('Member')->order('username', 'asc'));
 		}
 
 		return $filter;

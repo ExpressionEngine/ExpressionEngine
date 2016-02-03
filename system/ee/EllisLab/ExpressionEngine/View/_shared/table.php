@@ -52,7 +52,9 @@ if ($wrap): ?>
 						}
 						?>
 						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
+							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
+							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
 							<?php endif ?>

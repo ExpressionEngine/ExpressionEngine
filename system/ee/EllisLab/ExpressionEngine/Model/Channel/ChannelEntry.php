@@ -256,8 +256,13 @@ class ChannelEntry extends ContentModel {
 
 		if ($entry)
 		{
-			$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-			return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
+			if (defined('REQ') && REQ == 'CP')
+			{
+				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+				return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
+			}
+
+			return lang('url_title_not_unique_frontend');
 		}
 
 		return TRUE;
@@ -812,7 +817,9 @@ class ChannelEntry extends ContentModel {
 	public function populateChannels($field)
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0 OR ee()->session->userdata('group_id') == 1)
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+				OR ee()->session->userdata('group_id') == 1
+				OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)

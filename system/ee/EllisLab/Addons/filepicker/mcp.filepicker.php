@@ -93,6 +93,8 @@ class Filepicker_mcp {
 		// directory filter
 		$requested = ee()->input->get('directory') ?: 'all';
 
+		$show = (empty($show) && $requested == 'all') ? 'all' : $show;
+
 		if ($show != 'all')
 		{
 			$dirs = $dirs->filter('id', (int) $show);

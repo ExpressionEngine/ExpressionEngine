@@ -195,23 +195,36 @@ class Layout {
 			return FALSE;
 		}
 
-		foreach ($tabs as $key => $val)
-		{
-			if ($namespace != '')
-			{
-				foreach ($val as $field_name => $data)
-				{
-					$tabs[$key][$namespace.'__'.$field_name] = $data;
-					unset($tabs[$key][$field_name]);
-				}
-			}
+		$layouts = ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
-			$clean_tabs[strtolower($key)] = $tabs[$key];
+		if ( ! $layouts)
+		{
+			return FALSE;
 		}
 
-		ee()->load->model('layout_model');
+		$tab_ids = array_keys($tabs);
 
-		return ee()->layout_model->update_layouts($clean_tabs, 'delete_tabs', $channel_id);
+		foreach ($layouts as $layout)
+		{
+			$old_field_layout = $layout->field_layout;
+			$new_field_layout = array();
+
+			foreach ($old_field_layout as $tab)
+			{
+				if (in_array($tab['id'], $tab_ids))
+				{
+					continue;
+				}
+				$new_field_layout[] = $tab;
+			}
+
+			$layout->field_layout = $new_field_layout;
+			$layout->save();
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -230,23 +243,55 @@ class Layout {
 			return FALSE;
 		}
 
+		$layouts = ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		if ( ! $layouts)
+		{
+			return FALSE;
+		}
+
+		$new_tabs = array();
+
 		foreach ($tabs as $key => $val)
 		{
-			if ($namespace != '')
+			$tab = array(
+				'id' => strtolower($key),
+				'name' => $key,
+				'visible' => TRUE,
+				'fields' => array()
+			);
+
+			foreach ($val as $field_name => $data)
 			{
-				foreach ($val as $field_name => $data)
+				if ( ! empty($namespace))
 				{
-					$tabs[$key][$namespace.'__'.$field_name] = $data;
-					unset($tabs[$key][$field_name]);
+					$field_name = $namespace . '__' . $field_name;
+					$tab['fields'][] = array(
+						'field' => $field_name,
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					);
 				}
 			}
 
-			$clean_tabs[strtolower($key)] = $tabs[$key];
+			$new_tabs[] = $tab;
 		}
 
 
-		ee()->load->model('layout_model');
-		ee()->layout_model->update_layouts($clean_tabs, 'add_tabs', $channel_id);
+		foreach ($layouts as $layout)
+		{
+			$field_layout = $layout->field_layout;
+
+			foreach ($new_tabs as $tab)
+			{
+				$field_layout[] = $tab;
+			}
+
+			$layout->field_layout = $field_layout;
+			$layout->save();
+		}
 	}
 
 

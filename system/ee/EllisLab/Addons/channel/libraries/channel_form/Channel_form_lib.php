@@ -133,7 +133,7 @@ class Channel_form_lib
 		// ee()->router->set_class('ee');
 		ee()->load->library('javascript');
 		ee()->load->library('api');
-		// ee()->load->library('form_validation');
+		ee()->load->library('form_validation');
 		// ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->lang->loadfile('content');
@@ -1502,6 +1502,17 @@ GRID_FALLBACK;
 					$_POST['field_id_'.$field->field_id] = '1';
 				}
 			}
+			else
+			{
+				$field_rules = array();
+
+				if (isset($rules[$field->field_name]))
+				{
+					$field_rules = explode('|', $rules[$field->field_name]);
+				}
+
+				ee()->form_validation->set_rules($field->field_name, $field->field_label, implode('|', $field_rules));
+			}
 
 			foreach ($_POST as $key => $value)
 			{
@@ -1541,7 +1552,6 @@ GRID_FALLBACK;
 					$_POST['field_id_'.$field->field_id.'_'.$match[1]] = ee()->input->post($key, TRUE);
 				}
 			}
-
 		}
 
 		foreach ($this->title_fields as $field)
@@ -1551,8 +1561,6 @@ GRID_FALLBACK;
 			if (isset($this->default_fields[$field]) && ! $dropped)
 			{
 				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
-
-				ee()->form_validation->set_rules($field, $this->default_fields[$field]['field_label'], $this->default_fields[$field]['rules']);
 			}
 
 			if (ee()->input->post($field) !== FALSE)
@@ -1634,6 +1642,23 @@ GRID_FALLBACK;
 			ee()->api_channel_fields->settings[$field_id] = $settings;
 		}
 
+		// validate the custom validation parameters with the old validation library
+		if ( ! ee()->form_validation->run())
+		{
+			$errors = ee()->form_validation->_error_array;
+
+			if ( ! is_array($this->field_errors))
+			{
+				$this->field_errors = array();
+			}
+
+			foreach ($errors as $key => $message)
+			{
+				$field = ee()->form_validation->_field_data[$key]['label'];
+				$this->field_errors[$field] = $message;
+			}
+		}
+
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1647,6 +1672,11 @@ GRID_FALLBACK;
 			{
 				$_POST[$field_id] = $_POST[$field_name];
 			}
+		}
+
+		if ( ! isset($_POST['url_title']))
+		{
+			$_POST['url_title'] = url_title($_POST['title']);
 		}
 
 		if (empty($this->field_errors) && empty($this->errors))
@@ -1803,6 +1833,7 @@ GRID_FALLBACK;
 
 			foreach ($this->field_errors as $field => $error)
 			{
+				$field = lang($field);
 				$field_errors[] = "<b>{$field}: </b>{$error}";
 			}
 
@@ -2482,6 +2513,7 @@ GRID_FALLBACK;
 		$meta = serialize($meta);
 
 		ee()->load->library('encrypt');
+
 		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
 	}
 

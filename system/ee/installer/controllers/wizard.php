@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.1.1';	// The version being installed
+	public $version           = '3.1.2';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -1481,10 +1481,12 @@ class Wizard extends CI_Controller {
 
 		if ($this->is_installed)
 		{
-			// for some reason 'charset' is not set in this context and will throw a PHP warning
+			// for some reason 'charset' is not set in this context and will
+			// throw a PHP warning
 			$msm_config = new MSM_Config();
 			$msm_config->default_ini['charset'] = 'UTF-8';
 			$msm_config->site_prefs('');
+			$msm_config->load(); // Must come after site_prefs() so config.php can override
 			$data['theme_url'] = $msm_config->item('theme_folder_url');
 			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/'.$javascript_dir;
 		}

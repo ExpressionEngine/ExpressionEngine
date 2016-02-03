@@ -4,7 +4,6 @@
 	<meta charset="utf-8">
 
 	<?=ee()->view->head_title($cp_page_title)?>
-	<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 	<?=ee()->view->head_link('css/global.css'); ?>
 	<?=ee()->view->head_link('css/file_browser.css'); ?>
 	<?=ee()->view->head_link('css/override.css'); ?>

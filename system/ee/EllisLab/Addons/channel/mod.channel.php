@@ -563,12 +563,12 @@ class Channel {
 				}
 			}
 
-			if ($this->EE->input->get_post($var))
+			if (ee()->input->get_post($var))
 			{
 				if (in_array($var, $this->_dynamic_parameters))
 				{
 					// Allow arrays
-					$param_value = $this->EE->input->get_post($var);
+					$param_value = ee()->input->get_post($var);
 
 					if (is_array($param_value))
 					{
@@ -586,7 +586,7 @@ class Channel {
 					$modifier = ($modifier == '&') ? '&&' : '|';
 
 					// Allow arrays
-					$param_value = $this->EE->input->get_post($var);
+					$param_value = ee()->input->get_post($var);
 
 					if (is_array($param_value))
 					{

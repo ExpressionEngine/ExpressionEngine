@@ -23,7 +23,7 @@ class Directory extends Filesystem {
 	{
 		$path = $this->root.'/'.$path;
 
-		if (strpos($path, '..') !== 0)
+		if (strpos($path, '..') !== FALSE)
 		{
 			throw new FilesystemException('Attempting to access file outside of directory.');
 		}

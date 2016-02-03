@@ -273,12 +273,14 @@ class Profile extends CP_Controller {
 
 		if ($validated->isNotValid())
 		{
-			ee()->load->helper('html_helper');
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('cp_message_issue'))
-				->addToBody($validated->getAllErrors())
+				->withTitle(lang('member_not_updated'))
+				->addToBody(lang('member_not_updated_desc'))
 				->now();
+
+			ee()->lang->load('content');
+			ee()->view->errors = $validated;
 
 			return FALSE;
 		}
