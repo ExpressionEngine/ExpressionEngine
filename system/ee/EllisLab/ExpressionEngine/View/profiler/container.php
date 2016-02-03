@@ -5,8 +5,13 @@
 <section id="debug">
 	<div class="col-group">
 		<div class="col w-16">
-			<div class="box has-tabs">
-				<h1>Something</h1>
+			<div class="bo
+			x has-tabs">
+				<h1>
+					<?=$uri?>
+					<br>
+					<i><b><?=lang('profiler_class_method')?></b>: <?=$class?>::<?=$method?></i>
+				</h1>
 				<div class="tab-wrap">
 					<ul class="tabs">
 						<?php foreach ($sections as $i => $section): ?>

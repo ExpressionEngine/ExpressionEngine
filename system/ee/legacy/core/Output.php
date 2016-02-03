@@ -328,12 +328,13 @@ class EE_Output {
 		// If so, load the Profile service and run it.
 		if ($this->enable_profiler == TRUE && ! ee()->input->is_ajax_request())
 		{
-			$profiler = ee('Profiler')->addSection('performance', ee()->benchmark->getBenchmarkTimings())
+			$profiler = ee('Profiler')
+				->addSection('performance', ee()->benchmark->getBenchmarkTimings())
 				->addSection('variables', array(
-					'server' => $_SERVER,
-					'cookie' => $_COOKIE,
-					'get' => $_GET,
-					'post' => $_POST,
+					'server'   => $_SERVER,
+					'cookie'   => $_COOKIE,
+					'get'      => $_GET,
+					'post'     => $_POST,
 					'userdata' => ee()->session->all_userdata()
 				))
 				->addSection('database', array(ee('Database')));
