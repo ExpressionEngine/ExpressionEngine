@@ -118,10 +118,18 @@ class Profiler {
 			$rendered_sections[] = $section->render($view, $index);
 		}
 
+		$directory = str_replace(
+			// We need to remove periods from the SYSPATH because the router
+			// removes periods from the entire directory
+			str_replace('.', '', SYSPATH),
+			'',
+			$this->router->directory
+		);
+
 		$view = $this->view_factory->make('profiler/container');
 		return $view->render(array(
 			'uri'               => $this->uri->uri_string,
-			'class'             => $this->router->namespace_prefix.'\\'.ucfirst($this->router->class),
+			'class'             => $directory.ucfirst($this->router->class),
 			'method'            => $this->router->method.'()',
 			'sections'          => $this->sections,
 			'rendered_sections' => $rendered_sections
