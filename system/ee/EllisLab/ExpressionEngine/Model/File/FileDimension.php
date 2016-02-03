@@ -82,6 +82,56 @@ class FileDimension extends Model {
 
 		return TRUE;
 	}
+
+	/**
+	 * Calcuates the dimensions of a given file based on the constraints of this
+	 * modification
+	 *
+	 * @param File $file A File entity
+	 * @return array An associative array with 'width' and 'height' keys.
+	 */
+	public function getNewDimensionsOfFile(File $file)
+	{
+		ee()->load->library('image_lib');
+		ee()->image_lib->clear();
+
+		$original_dimensions = explode(" ", $file->file_hw_original);
+
+		$width  = $this->width;
+		$height = $this->height;
+
+		// If either h/w unspecified, calculate the other here
+		if ($this->width == '' OR $this->width == 0)
+		{
+			$width = ($original_dimensions[1]/$original_dimensions[0])*$this->height;
+			$force_master_dim = 'height';
+		}
+		elseif ($this->height == '' OR $this->height == 0)
+		{
+			// Old h/old w * new width
+			$height = ($original_dimensions[0]/$original_dimensions[1])*$this->width;
+			$force_master_dim = 'width';
+		}
+
+		$config = array(
+			'source_image'   => $file->getAbsolutePath(),
+			'image_library'  => ee()->config->item('image_resize_protocol'),
+			'library_path'   => ee()->config->item('image_library_path'),
+			'maintain_ratio' => TRUE,
+			'width'          => $width,
+			'height'         => $height,
+			'master_dim'     => $force_master_dim
+		);
+
+		ee()->image_lib->initialize($config);
+
+		$dimensions = array(
+			'height' => ee()->image_lib->height,
+			'width'  => ee()->image_lib->width,
+		);
+
+		return $dimensions;
+	}
 }
 
 // EOF
