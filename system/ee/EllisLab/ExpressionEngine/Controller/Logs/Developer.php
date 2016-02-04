@@ -102,7 +102,7 @@ class Developer extends Logs {
 			// @TODO refactor to eliminate this query
 			ee()->load->dbforge();
 			$results = ee()->db->select('log_id')
-				->where($localized_description . " LIKE '%" . ee()->view->search_value . "%'")
+				->where($localized_description . " LIKE '%" . ee()->db->escape_like_str(ee()->view->search_value) . "%'")
 				->get('developer_log')
 				->result_array();
 
