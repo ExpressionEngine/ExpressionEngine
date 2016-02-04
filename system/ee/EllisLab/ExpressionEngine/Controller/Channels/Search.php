@@ -39,9 +39,9 @@ class Search extends AbstractChannelsController {
 			ee()->functions->redirect(ee('CP/URL')->make('channels'));
 		}
 
-		$search_terms = isset($_POST['search']) ? $_POST['search'] : $_GET['search'];
+		$search_terms = ee()->input->get_post('search');
 
-		$vars = array();
+		$vars = array('results' => array());
 
 		$search_sections = array(
 			'channels' => array(
@@ -123,6 +123,20 @@ class Search extends AbstractChannelsController {
 					'name'			=> $name
 				);
 			}
+		}
+
+		if (empty($vars['results']))
+		{
+			$base_url = ee('CP/URL')->make('channels/search',	ee()->cp->get_url_state())
+				->setQueryStringVariable('search', $search_terms);
+			$table = ee('CP/Table');
+
+			$vars['results'][] = array(
+				'heading'		=> sprintf(lang('search_results_heading'), 0, $search_terms),
+				'table'			=> $table->viewData($base_url),
+				'total_rows'	=> 0,
+				'name'			=> lang('search_results')
+			);
 		}
 
 		$vars['cp_page_title'] = sprintf(lang('search_for'), $search_terms);
