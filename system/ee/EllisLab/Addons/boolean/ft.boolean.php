@@ -45,8 +45,8 @@ class Boolean_ft extends EE_Fieldtype {
 	{
 		if ($data === FALSE
 			|| $data == ''
-			|| $data == 'y'
-			|| $data == 'n')
+			|| $data == '1'
+			|| $data == '0')
 		{
 			return TRUE;
 		}
@@ -77,35 +77,21 @@ class Boolean_ft extends EE_Fieldtype {
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 
-		$field_options = $this->settings['field_list_items'];
-		$extra         = ($this->get_setting('field_disabled')) ? 'disabled' : '';
+		$extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		if (REQ == 'CP')
 		{
-			$data = ($data == 'y') ? TRUE : FALSE;
-
 			return ee('View')->make('boolean:publish')->render(array(
 				'field_name' => $this->field_name,
 				'selected'   => $data,
-				'options'    => $field_options,
 				'extra'      => $extra
 			));
 		}
 
-		if ($field_options == 'of')
-		{
-			$field_options = array(
-				lang('on') => 'y',
-				lang('off') => 'n'
-			);
-		}
-		else
-		{
-			$field_options = array(
-				lang('yes') => 'y',
-				lang('no') => 'n'
-			);
-		}
+		$field_options = array(
+			lang('on') => 1,
+			lang('off') => 0
+		);
 
 		$r = '';
 		$class = 'choice mr';
@@ -131,81 +117,7 @@ class Boolean_ft extends EE_Fieldtype {
 		return $r;
 	}
 
-	// --------------------------------------------------------------------
-
-	function display_settings($data)
-	{
-		$defaults = array(
-			'field_fmt' => '',
-			'field_pre_populate' => FALSE,
-			'field_list_items' => '',
-			'field_pre_channel_id' => 0,
-			'field_pre_field_id' => 0,
-			'field_list_items' => 'yn',
-		);
-
-		foreach ($defaults as $setting => $value)
-		{
-			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
-		}
-
-		$settings = array(
-			array(
-				'title' => 'boolean_options',
-				'desc' => 'boolean_options_desc',
-				'fields' => array(
-					'field_list_items' => array(
-						'type' => 'radio',
-						'choices' => array(
-							'yn' => lang('yes_no'),
-							'of' => lang('on_off')
-						),
-						'value' => $data['field_list_items']
-					)
-				)
-			)
-		);
-
-		return array('field_options_boolean' => array(
-			'label' => 'field_options',
-			'group' => 'boolean',
-			'settings' => $settings
-		));
-	}
-
-	public function grid_display_settings($data)
-	{
-		$defaults = array(
-			'field_list_items' => 'yn',
-		);
-
-		foreach ($defaults as $setting => $value)
-		{
-			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
-		}
-
-		return array(
-			'field_options' => array(
-				array(
-					'title' => 'boolean_options',
-					'desc' => 'boolean_options_desc',
-					'fields' => array(
-						'field_list_items' => array(
-							'type' => 'radio',
-							'choices' => array(
-								'yn' => lang('yes_no'),
-								'of' => lang('on_off')
-							),
-							'value' => $data['field_list_items']
-						)
-					)
-				)
-			)
-		);
-	}
-
-	// --------------------------------------------------------------------
-
+	// -------------------------------
 	/**
 	 * Accept all content types.
 	 *
