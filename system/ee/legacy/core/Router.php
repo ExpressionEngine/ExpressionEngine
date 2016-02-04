@@ -226,7 +226,7 @@ class EE_Router {
 
 		// First check for a namespaced situation
 		$saved_segments = $segments;
-		$directory = realpath(APPPATH.'../EllisLab/ExpressionEngine/Controller').'/';
+		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controller/';
 		$namespace = '';
 		if (strtolower($segments[0]) == 'cp')
 		{
@@ -490,11 +490,11 @@ class EE_Router {
 	{
 		if ($append !== TRUE OR empty($this->directory))
 		{
-			$this->directory = str_replace('.', '', rtrim($dir, '/')).'/';
+			$this->directory = str_replace('.', '', trim($dir, '/')).'/';
 		}
 		else
 		{
-			$this->directory .= str_replace('.', '', rtrim($dir, '/')).'/';
+			$this->directory .= str_replace('.', '', trim($dir, '/')).'/';
 		}
 	}
 
