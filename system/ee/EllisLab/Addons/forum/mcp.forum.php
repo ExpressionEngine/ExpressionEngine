@@ -76,6 +76,34 @@ class Forum_mcp extends CP_Controller {
 			}
 		}
 
+		$aliases = $sidebar->addHeader(lang('forum_aliases'))
+			->withButton(lang('new'), ee('CP/URL')->make($this->base . 'create/alias'));
+
+		$alias_list = $aliases->addFolderList('aliases')
+			->withRemoveUrl(ee('CP/URL')->make($this->base . 'remove/alias', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
+			->withNoResultsText(sprintf(lang('no_found'), lang('forum_aliases')));
+
+		$all_aliases = ee('Model')->get('forum:Board')
+			->fields('board_id', 'board_label')
+			->filter('board_alias_id', '>', 0)
+			->all();
+
+		if (count($all_aliases))
+		{
+			foreach ($all_aliases as $alias)
+			{
+				$item = $alias_list->addItem($alias->board_label, ee('CP/URL')->make($this->base . 'index/' . $alias->board_id))
+					->withEditUrl(ee('CP/URL')->make($this->base . 'edit/alias/' . $alias->board_id))
+					->withRemoveConfirmation(lang('forum_board') . ': <b>' . $alias->board_label . '</b>')
+					->identifiedBy($alias->board_id);
+
+				if ($alias->board_id == $active)
+				{
+					$item->isActive();
+				}
+			}
+		}
+
 		$sidebar->addHeader(lang('templates'))
 			->withUrl(ee('CP/URL')->make('design/forums'));
 
@@ -488,7 +516,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board);
+				$this->saveBoardAndRedirect($board);
 			}
 		}
 
@@ -1199,6 +1227,246 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		ee()->functions->redirect($return);
+	}
+
+	// --------------------------------------------------------------------
+
+	private function createAlias()
+	{
+		$errors = NULL;
+
+		$defaults = array(
+			'board_id'						=> '',
+			'board_label'					=> '',
+			'board_name'					=> '',
+			'board_enabled'					=> 'y',
+			'board_forum_trigger'			=> 'forums',
+			'board_site_id'					=> 1,
+			'board_alias_id'				=> 0,
+			'board_forum_url'				=> ee()->functions->create_url('forums'),
+			'board_default_theme'			=> 'default',
+			'board_forum_permissions'		=> $this->getDefaultForumPermissions(),
+		);
+
+		$alias = ee('Model')->make('forum:Board', $defaults);
+
+		$result = $this->validateAlias($alias);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveBordAndRedirect($alias);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_forum_alias'),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/alias'),
+			'save_btn_text' => 'btn_save_alias',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->getAliasForm($alias),
+			'errors' => $errors,
+			'required' => TRUE
+		);
+
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=board_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=board_name]");
+			});
+		');
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		$this->generateSidebar();
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
+			),
+			'heading'    => lang('create_forum_alias'),
+		);
+	}
+
+	private function editAlias($id)
+	{
+		$errors = NULL;
+
+		$alias = ee('Model')->get('forum:Board', $id)->first();
+		if ( ! $alias)
+		{
+			show_404();
+		}
+
+		$result = $this->validateAlias($alias);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveAliasAndRedirect($alias);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('edit_forum_board'), $alias->board_label),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/alias/' . $id),
+			'save_btn_text' => 'btn_save_alias',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->getAliasForm($alias),
+			'errors' => $errors,
+			'required' => TRUE
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		$this->generateSidebar($id);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $alias->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+		);
+	}
+
+	private function validateAlias($alias)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($alias->isNew()) ? 'create' : 'edit';
+
+		$alias->set($_POST);
+		$result = $alias->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_forum_alias_error'))
+				->addToBody(lang($action . '_forum_alias_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveAliasAndRedirect($alias)
+	{
+		$action = ($alias->isNew()) ? 'create' : 'edit';
+
+		$alias->save();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_forum_alias_success'))
+			->addToBody(sprintf(lang($action . '_forum_alias_success_desc'), $alias->board_label))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $alias->board_id));
+	}
+
+	private function getAliasForm($alias)
+	{
+		$boards = ee('Model')->get('forum:Board')
+			->fields('board_id', 'board_label')
+			->filter('board_alias_id', 0)
+			->all()
+			->getDictionary('board_id', 'board_label');
+
+		$sections = array(
+			array(
+				array(
+					'title' => 'enable_alias',
+					'desc' => 'enable_board_desc',
+					'fields' => array(
+						'board_enabled' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $alias->board_enabled,
+						)
+					)
+				),
+				array(
+					'title' => 'name',
+					'desc' => 'name_desc',
+					'fields' => array(
+						'board_label' => array(
+							'type' => 'text',
+							'value' => $alias->board_label,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'short_name',
+					'desc' => 'alphadash_desc',
+					'fields' => array(
+						'board_name' => array(
+							'type' => 'text',
+							'value' => $alias->board_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'alias_url',
+					'desc' => 'alias_url_desc',
+					'fields' => array(
+						'board_forum_url' => array(
+							'type' => 'text',
+							'value' => $alias->board_forum_url,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'alias_url_segment',
+					'desc' => 'alias_url_segment_desc',
+					'fields' => array(
+						'board_forum_trigger' => array(
+							'type' => 'text',
+							'value' => $alias->board_forum_trigger,
+						)
+					)
+				),
+				array(
+					'title' => 'forum_board',
+					'desc' => 'forum_board_desc',
+					'fields' => array(
+						'board_alias_id' => array(
+							'type' => 'select',
+							'choices' => $boards,
+							'value' => $alias->board_alias_id,
+						)
+					)
+				),
+			)
+		);
+
+		return $sections;
 	}
 
 	// --------------------------------------------------------------------

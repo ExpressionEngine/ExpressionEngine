@@ -18,6 +18,7 @@ $lang = array(
 'templates' => 'Templates',
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
+'forum_aliases' => 'Forum Aliases',
 'create_new_board' => 'Create new forum board',
 
 // List / Index
@@ -33,6 +34,33 @@ $lang = array(
 
 // "Common"
 'recipients' => 'recipients',
+
+// Create / Edit Forum Alias Form
+
+'create_forum_alias' => 'Create Forum Alias',
+'enable_alias' => 'Enable alias',
+'alias_url' => 'Alias <abbr title="Unified Resource Locator">URL</abbr>',
+'alias_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the alias.',
+'alias_url_segment' => 'Alias <abbr title="Unified Resource Locator">URL</abbr> segment',
+'alias_url_segment_desc' => 'Word that triggers alias display. <b>Cannot</b> be the same as a template or template group.',
+'forum_board_desc' => 'Choose which forum board you want to create an alias for.',
+
+'btn_save_alias' => 'Save Alias',
+
+'create_forum_alias_success' => 'Forum Alias Created',
+'create_forum_alias_success_desc' => 'The forum alias <b>%s</b> has been created.',
+
+'create_forum_alias_error' => 'Cannot Create Forum Alias',
+'create_forum_alias_error_desc' => 'We were unable to create this forum alias, please review and fix errors below.',
+
+'edit_forum_alias_success' => 'Forum Alias Updated',
+'edit_forum_alias_success_desc' => 'The forum alias <b>%s</b> has been updated.',
+
+'edit_forum_alias_error' => 'Cannot Update Forum Alias',
+'edit_forum_alias_error_desc' => 'We were unable to update this forum alias, please review and fix errors below.',
+
+'forum_alias_removed' => 'Forum Alias Removed',
+'forum_alias_removed_desc' => 'The forum alias <b>%s</b> was removed.',
 
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
