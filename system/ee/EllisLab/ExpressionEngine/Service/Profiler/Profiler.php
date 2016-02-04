@@ -113,7 +113,9 @@ class Profiler {
 
 		$view = $this->view_factory->make('profiler/container');
 		return $view->render(array(
-			'uri'               => $this->uri->uri_string,
+			'uri'               => ($this->uri->uri_string)
+				? '/'.$this->uri->uri_string
+				: lang('site_homepage'),
 			'sections'          => $this->sections,
 			'rendered_sections' => $rendered_sections
 		));
