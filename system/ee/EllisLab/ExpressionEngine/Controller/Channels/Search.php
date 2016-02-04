@@ -92,6 +92,8 @@ class Search extends AbstractChannelsController {
 			)
 		);
 
+		$safe_search_terms = htmlentities($search_terms);
+
 		foreach ($search_sections as $name => $section)
 		{
 			$query = $section['query'];
@@ -117,7 +119,7 @@ class Search extends AbstractChannelsController {
 					->setQueryStringVariable('search', $search_terms);
 
 				$vars['results'][] = array(
-					'heading'		=> lang($name).'<br><i>'.sprintf(lang('section_search_results'), $search_terms).'</i>',
+					'heading'		=> lang($name).'<br><i>'.sprintf(lang('section_search_results'), $safe_search_terms).'</i>',
 					'table'			=> $table->viewData($base_url),
 					'total_rows'	=> $total_rows,
 					'name'			=> $name
@@ -132,14 +134,14 @@ class Search extends AbstractChannelsController {
 			$table = ee('CP/Table');
 
 			$vars['results'][] = array(
-				'heading'		=> sprintf(lang('search_results_heading'), 0, $search_terms),
+				'heading'		=> sprintf(lang('search_results_heading'), 0, $safe_search_terms),
 				'table'			=> $table->viewData($base_url),
 				'total_rows'	=> 0,
 				'name'			=> lang('search_results')
 			);
 		}
 
-		$vars['cp_page_title'] = sprintf(lang('search_for'), $search_terms);
+		$vars['cp_page_title'] = sprintf(lang('search_for'), $safe_search_terms);
 
 		return ee()->cp->render('channels/search', $vars);
 	}
