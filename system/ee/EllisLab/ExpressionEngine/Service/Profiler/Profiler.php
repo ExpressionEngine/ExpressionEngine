@@ -2,9 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
-use \EE_Lang;
-use \EE_URI;
-use \EE_Router;
+use EE_Lang;
+use EE_URI;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
@@ -48,22 +47,16 @@ class Profiler {
 	private $uri;
 
 	/**
-	 * @var EE_Router $router The EE_Router object
-	 */
-	private $router;
-
-	/**
 	 * Constructor
 	 * Inject:
 	 *   EE_Lang $lang for loadfile()
 	 *   ViewFactory $view_factory A ViewFactory object for making and rendering views
 	 */
-	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri, EE_Router $router)
+	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri)
 	{
 		$lang->loadfile('profiler');
 		$this->view_factory = $view_factory;
 		$this->uri = $uri;
-		$this->router = $router;
 	}
 
 	/**
@@ -118,19 +111,9 @@ class Profiler {
 			$rendered_sections[] = $section->render($view, $index);
 		}
 
-		$directory = str_replace(
-			// We need to remove periods from the SYSPATH because the router
-			// removes periods from the entire directory
-			str_replace('.', '', SYSPATH),
-			'',
-			$this->router->directory
-		);
-
 		$view = $this->view_factory->make('profiler/container');
 		return $view->render(array(
 			'uri'               => $this->uri->uri_string,
-			'class'             => $directory.ucfirst($this->router->class),
-			'method'            => $this->router->method.'()',
 			'sections'          => $this->sections,
 			'rendered_sections' => $rendered_sections
 		));

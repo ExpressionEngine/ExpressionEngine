@@ -20,4 +20,3 @@ $lang['profiler_gigabytes']            = 'GB';
 $lang['profiler_megabytes']            = 'MB';
 $lang['profiler_kilobytes']            = 'KB';
 $lang['profiler_bytes']                = 'B';
-$lang['profiler_class_method']         = 'Class/Method';
