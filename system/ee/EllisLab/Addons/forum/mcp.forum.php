@@ -92,9 +92,9 @@ class Forum_mcp extends CP_Controller {
 		{
 			foreach ($all_aliases as $alias)
 			{
-				$item = $alias_list->addItem($alias->board_label, ee('CP/URL')->make($this->base . 'index/' . $alias->board_id))
+				$item = $alias_list->addItem($alias->board_label, ee('CP/URL')->make($this->base . 'index/' . $alias->board_alias_id))
 					->withEditUrl(ee('CP/URL')->make($this->base . 'edit/alias/' . $alias->board_id))
-					->withRemoveConfirmation(lang('forum_board') . ': <b>' . $alias->board_label . '</b>')
+					->withRemoveConfirmation(lang('forum_alias') . ': <b>' . $alias->board_label . '</b>')
 					->identifiedBy($alias->board_id);
 
 				if ($alias->board_id == $active)

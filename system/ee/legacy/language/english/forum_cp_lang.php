@@ -18,6 +18,7 @@ $lang = array(
 'templates' => 'Templates',
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
+'forum_alias' => 'Forum Alias',
 'forum_aliases' => 'Forum Aliases',
 'create_new_board' => 'Create new forum board',
 
