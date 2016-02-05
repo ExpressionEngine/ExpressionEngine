@@ -56,8 +56,16 @@ class Updater {
 	 */
 	public function install_boolean_fieldtype()
 	{
-		ee()->load->library('addons/addons_installer');
-		ee()->addons_installer->install('boolean', 'fieldtype', FALSE);
+		ee()->db->insert('fieldtypes',
+			array(
+				'name'					=> 'boolean',
+				'version'				=> '1.0.0',
+				'settings'				=> 'YTowOnt9',
+				'has_global_settings'	=> 'n',
+			)
+		);
+
+		ee()->db->insert('content_types', array('name' => 'boolean'));
 	}
 }
 /* END CLASS */
