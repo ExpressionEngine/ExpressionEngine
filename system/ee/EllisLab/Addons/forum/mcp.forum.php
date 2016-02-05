@@ -1378,7 +1378,7 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_forum_alias_success_desc'), $alias->board_label))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $alias->board_id));
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $alias->board_alias_id));
 	}
 
 	private function getAliasForm($alias)
