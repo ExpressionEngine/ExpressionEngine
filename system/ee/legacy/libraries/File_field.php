@@ -90,7 +90,7 @@ class File_field {
 		}
 
 		// Get the thumbnail
-		$thumb_info = ee()->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
+		$thumb_info = ee()->filemanager->get_thumb(rawurldecode($vars['filename']), $vars['upload_location_id']);
 		$vars['thumb'] = $thumb_info['thumb'];
 		$vars['alt'] = $vars['filename'];
 

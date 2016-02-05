@@ -77,11 +77,11 @@ Grid.Publish.prototype = {
 		this.root.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
 			beforeSort: function(row) {
-				that._fireEvent('beforeSort', row.item);
+				that._fireEvent('beforeSort', row);
 			},
 			// Fire 'afterSort' event on sort stop
 			afterSort: function(row) {
-				that._fireEvent('afterSort', row.item);
+				that._fireEvent('afterSort', row);
 			}
 		});
 	},
