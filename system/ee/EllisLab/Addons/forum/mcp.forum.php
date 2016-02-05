@@ -84,7 +84,7 @@ class Forum_mcp extends CP_Controller {
 			->withNoResultsText(sprintf(lang('no_found'), lang('forum_aliases')));
 
 		$all_aliases = ee('Model')->get('forum:Board')
-			->fields('board_id', 'board_label')
+			->fields('board_id', 'board_alias_id', 'board_label')
 			->filter('board_alias_id', '>', 0)
 			->all();
 
@@ -95,12 +95,8 @@ class Forum_mcp extends CP_Controller {
 				$item = $alias_list->addItem($alias->board_label, ee('CP/URL')->make($this->base . 'index/' . $alias->board_alias_id))
 					->withEditUrl(ee('CP/URL')->make($this->base . 'edit/alias/' . $alias->board_id))
 					->withRemoveConfirmation(lang('forum_alias') . ': <b>' . $alias->board_label . '</b>')
-					->identifiedBy($alias->board_id);
-
-				if ($alias->board_id == $active)
-				{
-					$item->isActive();
-				}
+					->identifiedBy($alias->board_id)
+					->isInactive();
 			}
 		}
 
