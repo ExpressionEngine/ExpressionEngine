@@ -924,7 +924,7 @@ class ChannelEntry extends ContentModel {
 		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
 		$field->setItem('field_list_items', $category_list);
 
-		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_name');
+		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
 		$field->setData(implode('|', $set_categories));
 	}
 
