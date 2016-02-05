@@ -1258,7 +1258,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($alias);
+				$this->saveAliasAndRedirect($alias);
 			}
 		}
 
