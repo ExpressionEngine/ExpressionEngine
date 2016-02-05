@@ -81,6 +81,12 @@ class Boolean_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
+			ee()->cp->add_js_script(array(
+				'file' => array(
+					'fields/boolean/cp'
+				),
+			));
+
 			return ee('View')->make('boolean:publish')->render(array(
 				'field_name' => $this->field_name,
 				'selected'   => $data,

@@ -102,8 +102,7 @@ $(document).ready(function () {
 
 	// Category management tools toggle
 	$('body').on('click', '.toggle-tools a.toggle', function (e) {
-		var cat_container = $(this).parents('.nestable'),
-		    value;
+		var cat_container = $(this).parents('.nestable');
 
 		// On
 		if ($(this).hasClass('off')) {
@@ -124,16 +123,6 @@ $(document).ready(function () {
 			}, 400);
 			$('.toolbar', cat_container).stop().fadeOut();
 			$('input[type=checkbox]', cat_container).prop('disabled', false);
-		}
-
-		if ($(this).hasClass('on')) {
-			value = $(this).data('on-value');
-		} else {
-			value = $(this).data('off-value');
-		}
-
-		if (value) {
-			$(this).find('input[type="hidden"]').val(value);
 		}
 	});
 
