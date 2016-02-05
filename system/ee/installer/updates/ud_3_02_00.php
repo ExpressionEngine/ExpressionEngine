@@ -57,7 +57,7 @@ class Updater {
 	public function install_boolean_fieldtype()
 	{
 		ee()->load->library('addons/addons_installer');
-		ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE);
+		ee()->addons_installer->install('boolean', 'fieldtype', FALSE);
 	}
 }
 /* END CLASS */
