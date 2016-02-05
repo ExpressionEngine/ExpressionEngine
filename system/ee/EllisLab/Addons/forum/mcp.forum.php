@@ -1469,6 +1469,35 @@ class Forum_mcp extends CP_Controller {
 		return $sections;
 	}
 
+	private function removeAlias($id)
+	{
+		$alias = ee('Model')->get('forum:Board', $id)->first();
+
+		if ( ! $alias)
+		{
+			show_404();
+		}
+
+		$name = $alias->board_label;
+
+		$alias->delete();
+
+		ee('CP/Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('forum_alias_removed'))
+			->addToBody(sprintf(lang('forum_alias_removed_desc'), $name))
+			->defer();
+
+		$return = ee('CP/URL')->make($this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
+	}
+
 	// --------------------------------------------------------------------
 
 	private function createCategory($board_id)
