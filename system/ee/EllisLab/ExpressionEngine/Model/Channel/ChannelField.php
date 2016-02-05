@@ -61,7 +61,7 @@ class ChannelField extends FieldModel {
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
 		'group_id'             => 'required|integer',
-		'field_name'           => 'required|unique[site_id]',
+		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved',
 		'field_label'          => 'required',
 	//	'field_list_items'     => 'required',
 		'field_pre_populate'   => 'enum[y,n]',
@@ -198,6 +198,19 @@ class ChannelField extends FieldModel {
 				$channel_layout->save();
 			}
 		}
+	}
+
+	/**
+	 * Validate the field name to avoid variable name collisions
+	 */
+	public function validateNameIsNotReserved($key, $value, $params, $rule)
+	{
+		if (in_array($value, ee()->cp->invalid_custom_field_names()))
+		{
+			return lang('reserved_word');
+		}
+
+		return TRUE;
 	}
 
 }

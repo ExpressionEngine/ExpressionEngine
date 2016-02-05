@@ -572,7 +572,7 @@ class Template extends AbstractDesignController {
 		ee()->view->cp_heading = sprintf(
 			lang('search_results_heading'),
 			$templates->count(),
-			$search_terms
+			htmlentities($search_terms)
 		);
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
