@@ -828,7 +828,8 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 
-		return (strpos($permission_array[$item], '|'.ee()->session->userdata('group_id').'|') === FALSE) ? FALSE : TRUE;
+		$groups = explode('|', $permission_array[$item]);
+		return in_array(ee()->session->userdata('group_id'), $groups);
 	}
 
 	// --------------------------------------------------------------------
