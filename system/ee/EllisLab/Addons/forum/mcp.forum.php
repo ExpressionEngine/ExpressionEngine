@@ -458,7 +458,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board);
+				$this->saveBoardAndRedirect($board);
 			}
 		}
 
@@ -578,7 +578,7 @@ class Forum_mcp extends CP_Controller {
 		return $result;
 	}
 
-	private function saveBordAndRedirect($board)
+	private function saveBoardAndRedirect($board)
 	{
 		$action = ($board->isNew()) ? 'create' : 'edit';
 
