@@ -34,7 +34,30 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		ee()->load->dbforge();
+
+		$steps = new ProgressIterator(
+			array(
+				'install_boolean_fieldtype',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
+
 		return TRUE;
+	}
+
+	/**
+	 * Installs the new boolean fieldtype
+	 * @return void
+	 */
+	public function install_boolean_fieldtype()
+	{
+		ee()->load->library('addons/addons_installer');
+		ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE);
 	}
 }
 /* END CLASS */
