@@ -107,7 +107,6 @@ $lang = array(
 	"member_accounts" => "Membership Accounts",
 	'login_as_user' => "SuperAdmin Logging In as User",
 	'control_panel' => "Control Panel",
-	'site_homepage' => "Site Homepage",
 	'login_as_member_description' => "When you click submit, you will be logged in as the member '%screen_name%' and redirected to the page below.",
 	'other' => "Other",
 	'field_order_updated' => "Field order updated",
