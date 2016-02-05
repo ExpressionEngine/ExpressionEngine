@@ -25,7 +25,7 @@
 class Boolean_ft extends EE_Fieldtype {
 
 	var $info = array(
-		'name'		=> 'Boolean (Yes/No)',
+		'name'		=> 'Toggle (On/Off)',
 		'version'	=> '1.0.0'
 	);
 
