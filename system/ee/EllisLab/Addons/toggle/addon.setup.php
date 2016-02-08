@@ -6,7 +6,7 @@ return array(
 	'name'           => 'Toggle',
 	'description'    => 'On/Off Toggle Switch',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\BooleanField',
+	'namespace'      => 'EllisLab\Addons\ToggleField',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 );

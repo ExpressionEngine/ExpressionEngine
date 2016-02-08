@@ -38,7 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'install_boolean_fieldtype',
+				'install_toggle_fieldtype',
 			)
 		);
 
@@ -51,10 +51,10 @@ class Updater {
 	}
 
 	/**
-	 * Installs the new boolean fieldtype
+	 * Installs the new toggle fieldtype
 	 * @return void
 	 */
-	public function install_boolean_fieldtype()
+	public function install_toggle_fieldtype()
 	{
 		ee()->db->insert('fieldtypes',
 			array(
