@@ -14,7 +14,7 @@
 			placeholder="<?=$placeholder?>"
 			<?php if ($has_list_filter): ?>
 			autofocus="autofocus"
-			data-filter="true"
+			data-fuzzy-filter="true"
 			<?php endif; ?>
 		>
 	</fieldset>

@@ -203,7 +203,7 @@ ListFocus.prototype = {
 
 var keys = { 'enter': 13, 'escape': 27, 'up': 38, 'right': 39, 'down': 40 };
 
-$('.filter input, .filters input[data-filter=true]').each(function() {
+$('.filter input, .filters input[data-fuzzy-filter=true]').each(function() {
 
 	var input = $(this);
 	var list = $(this).closest('.sub-menu').find('ul');

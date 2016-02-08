@@ -6,7 +6,7 @@
 				<?php $menu = ee()->menu->generate_menu();
 				if (count($menu['channels']['create']) >= 10):?>
 				<fieldset class="filter-search">
-					<input type="text" value="" data-filter="true" autofocus="autofocus" placeholder="<?=lang('filter_channels')?>">
+					<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=lang('filter_channels')?>">
 				</fieldset>
 				<?php endif; ?>
 				<div class="scroll-wrap">
