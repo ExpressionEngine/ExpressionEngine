@@ -89,7 +89,7 @@ class Custom extends Filter {
 	 */
 	public function useListFilter()
 	{
-		$this->has_list_filter = count($this->options) >= 10;
+		$this->has_list_filter = count($this->options) > 10;
 		$this->has_custom_value = FALSE;
 		return $this;
 	}
