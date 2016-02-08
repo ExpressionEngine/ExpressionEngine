@@ -72,11 +72,11 @@ class Boolean_ft extends EE_Fieldtype {
 		{
 			ee()->cp->add_js_script(array(
 				'file' => array(
-					'fields/boolean/cp'
+					'fields/toggle/cp'
 				),
 			));
 
-			return ee('View')->make('boolean:publish')->render(array(
+			return ee('View')->make('toggle:publish')->render(array(
 				'field_name' => $this->field_name,
 				'selected'   => $data,
 				'disabled'   => $this->get_setting('field_disabled')
