@@ -281,7 +281,8 @@ class EntryListing {
 		}
 
 		$categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
-		$categories->disableCustomValue();
+		$categories->setPlaceholder(lang('filter_categories'));
+		$categories->useListFilter(); // disables custom values
 		return $categories;
 	}
 
