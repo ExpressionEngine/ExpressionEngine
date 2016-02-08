@@ -58,7 +58,7 @@ class Updater {
 	{
 		ee()->db->insert('fieldtypes',
 			array(
-				'name'					=> 'boolean',
+				'name'					=> 'toggle',
 				'version'				=> '1.0.0',
 				'settings'				=> 'YTowOnt9',
 				'has_global_settings'	=> 'n',
