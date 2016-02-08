@@ -83,7 +83,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(5).first_party_addons
+      @page.should have(6).first_party_addons
 
       # By uninstalled
       @page.first_party_status_filter.click
@@ -120,7 +120,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(5).first_party_addons
+      @page.should have(6).first_party_addons
 
       versions = @page.first_party_versions.map {|version| version.text}
 
