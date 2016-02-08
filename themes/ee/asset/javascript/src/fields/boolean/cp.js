@@ -15,6 +15,10 @@
 (function ($) {
 	$(document).ready(function () {
 		$('body').on('click', 'a.toggle-btn', function (e) {
+			if ($(this).hasClass('disabled')) {
+				return;
+			}
+
 			var input = $(this).find('input[type="hidden"]');
 
 			if ($(this).hasClass('off')){
