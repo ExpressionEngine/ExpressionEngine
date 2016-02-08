@@ -191,6 +191,8 @@ $lang = array(
 
 'nav_add_tab'					=> '+ Add',
 
+'filter_channels' => 'filter channels',
+
 //----------------------------
 // Develop Menu
 //----------------------------
@@ -504,6 +506,7 @@ $lang = array(
 'menu_edit' => 'Edit',
 'menu_files' => 'Files',
 'menu_members' => 'Members',
+'filter_channels' => 'filter channels',
 'my_profile' => 'My Profile',
 'name' => 'Name',
 'name_your_site' => 'Name your site',
