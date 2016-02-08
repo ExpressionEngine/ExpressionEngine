@@ -64,8 +64,6 @@ class Updater {
 				'has_global_settings'	=> 'n',
 			)
 		);
-
-		ee()->db->insert('content_types', array('name' => 'boolean'));
 	}
 }
 /* END CLASS */
