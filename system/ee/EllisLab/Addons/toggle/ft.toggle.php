@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Boolean_ft extends EE_Fieldtype {
+class Toggle_ft extends EE_Fieldtype {
 
 	var $info = array();
 
