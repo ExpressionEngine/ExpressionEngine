@@ -3,7 +3,7 @@
 return array(
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
-	'name'           => 'Toggle (On/Off)',
+	'name'           => 'Toggle',
 	'description'    => 'On/Off Toggle Switch',
 	'version'        => '1.0.0',
 	'namespace'      => 'EllisLab\Addons\BooleanField',
