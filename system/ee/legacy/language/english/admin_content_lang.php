@@ -110,12 +110,6 @@ $lang = array(
 'radio_options' => 'Radio options',
 'radio_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
 
-'boolean_options' => 'Boolean options',
-'boolean_options_desc' => 'Choose what the field will display.',
-
-'yes_no' => 'Show yes and no',
-'on_off' => 'Show on and off',
-
 'grid_checkbox_options_desc' => 'Each item will generate a single checkbox and label pair in the publish form.',
 'grid_select_options_desc' => 'Each item will be included in a select drop down menu in the publish form.',
 'grid_multiselect_options_desc' => 'Each item will be included in a multi-select in the publish form.',
