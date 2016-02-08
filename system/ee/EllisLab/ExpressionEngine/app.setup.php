@@ -140,7 +140,7 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'));
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
 		}
 
 	),

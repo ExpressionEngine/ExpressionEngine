@@ -6,7 +6,7 @@
 	<div class="col-group">
 		<div class="col w-16">
 			<div class="box has-tabs">
-				<h1>Something</h1>
+				<h1><?=$uri?></h1>
 				<div class="tab-wrap">
 					<ul class="tabs">
 						<?php foreach ($sections as $i => $section): ?>
