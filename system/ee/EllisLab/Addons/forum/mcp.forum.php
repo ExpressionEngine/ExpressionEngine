@@ -481,12 +481,12 @@ class Forum_mcp extends CP_Controller {
 			});
 		');
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
 			),
@@ -532,12 +532,12 @@ class Forum_mcp extends CP_Controller {
 			'required' => TRUE
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -1277,12 +1277,12 @@ class Forum_mcp extends CP_Controller {
 			});
 		');
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
 			),
@@ -1324,12 +1324,12 @@ class Forum_mcp extends CP_Controller {
 			'required' => TRUE
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $alias->board_label . ' '. lang('forum_listing')
 			),
@@ -1551,12 +1551,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->categoryForm($category),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -1596,12 +1596,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->categoryForm($category),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($category->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -1815,12 +1815,12 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($category->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				$return->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -1890,12 +1890,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->forumForm($forum),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -1935,12 +1935,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->forumForm($forum),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($forum->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -2399,12 +2399,12 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($forum->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				$return->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -2574,12 +2574,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->rankForm($rank),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar('ranks');
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'ranks')->compile() => lang('member_ranks')
 			),
@@ -2619,12 +2619,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->rankForm($rank),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar('ranks');
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'ranks')->compile() => lang('member_ranks')
 			),
@@ -2941,12 +2941,12 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -3199,12 +3199,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->moderatorForm($moderator),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
 				ee('CP/URL')->make($this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
@@ -3249,12 +3249,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->moderatorForm($moderator),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
 				ee('CP/URL')->make($this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
