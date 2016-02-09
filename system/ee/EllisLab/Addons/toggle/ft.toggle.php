@@ -50,6 +50,11 @@ class Toggle_ft extends EE_Fieldtype {
 		return ee()->lang->line('invalid_selection');
 	}
 
+	function save($data)
+	{
+		return (int) $data;
+	}
+
 	// --------------------------------------------------------------------
 
 	function display_field($data)
