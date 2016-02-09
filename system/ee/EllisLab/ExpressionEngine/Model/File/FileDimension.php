@@ -100,6 +100,8 @@ class FileDimension extends Model {
 		$width  = $this->width;
 		$height = $this->height;
 
+		$force_master_dim = FALSE;
+
 		// If either h/w unspecified, calculate the other here
 		if ($this->width == '' OR $this->width == 0)
 		{
