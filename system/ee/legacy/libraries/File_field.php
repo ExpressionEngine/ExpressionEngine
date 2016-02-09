@@ -599,25 +599,24 @@ class File_field {
 		$file['image_properties'] = $upload_dir['properties'];
 		$file['file_properties'] = $upload_dir['file_properties'];
 
-		$manipulations = ee('Model')->get('FileDimension')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('upload_location_id', $file['upload_location_id'])
-			->all();
+		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
 		if ( ! empty($manipulations))
 		{
-			$f = ee('Model')->get('File', $file['file_id'])->first();
+			$file_entity = ee('Model')->get('File', $file['file_id'])
+				->with('UploadDestination')
+				->first();
 
-			foreach($manipulations as $m)
+			foreach($manipulations as $manipulation)
 			{
-				$file['url:'.$m->short_name] = $file['path'].'_'.$m->short_name.'/'.$file['file_name'];
+				$file['url:'.$manipulation->short_name] = $file['path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
 
-				$dimensions = $m->getNewDimensionsOfFile($f);
+				$dimensions = $manipulation->getNewDimensionsOfFile($file_entity);
 
 				if ($dimensions)
 				{
-					$file['width:'.$m->short_name]  = $dimensions['width'];
-					$file['height:'.$m->short_name] = $dimensions['height'];
+					$file['width:'.$manipulation->short_name]  = $dimensions['width'];
+					$file['height:'.$manipulation->short_name] = $dimensions['height'];
 				}
 			}
 		}
@@ -765,6 +764,24 @@ class File_field {
 		));
 	}
 
+	/**
+	 * Gets dimensions for an upload directory and caches them
+	 *
+	 * @param int $dir_id	ID of upload directory
+	 * @return array		Array of image manipulation settings
+	 */
+	private function _get_dimensions_by_dir_id($dir_id)
+	{
+		if ( ! isset($this->_manipulations[$dir_id]))
+		{
+			$this->_manipulations[$dir_id] = ee('Model')->get('FileDimension')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('upload_location_id', $dir_id)
+			->all();
+		}
+
+		return $this->_manipulations[$dir_id];
+	}
 }
 
 // END File_field class
