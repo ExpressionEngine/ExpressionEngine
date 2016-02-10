@@ -53,7 +53,7 @@ Overlay.prototype = {
 		button.click(function(e) {
 			e.preventDefault();
 			that._button_actions()[action]();
-			that._hide_overlay();
+			that._hide_toolbar();
 		});
 
 		return listItem.append(button);
@@ -83,7 +83,7 @@ Overlay.prototype = {
 
 		this.$editor.on('mouseleave', 'figure img', function(event) {
 			if ($(event.toElement).parents('figure').size() == 0) {
-				that._hide_overlay();
+				that._hide_toolbar();
 			}
 		});
 	},
@@ -110,7 +110,7 @@ Overlay.prototype = {
 			return
 		}
 
-		this.$overlay.dblclick(function(e) {
+		this.$figure.dblclick(function(e) {
 			var	sel = window.getSelection(),
 				range = document.createRange();
 
@@ -119,7 +119,7 @@ Overlay.prototype = {
 			sel.removeAllRanges();
 			sel.addRange(range);
 
-			that._hide_overlay();
+			that._hide_toolbar();
 		});
 	},
 
@@ -133,9 +133,9 @@ Overlay.prototype = {
 	/**
 	 * Hide the overlay
 	 */
-	_hide_overlay: function() {
-		//this.$toolbar.remove();
-		//this.$current = null;
+	_hide_toolbar: function() {
+		this.$toolbar.remove();
+		this.$current = null;
 	},
 
 	/**
