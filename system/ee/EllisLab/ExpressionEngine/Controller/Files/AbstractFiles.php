@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controller\Files;
 use CP_Controller;
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
+use EllisLab\ExpressionEngine\Model\File\File;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
@@ -271,6 +272,153 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		return $table;
+	}
+
+	protected function getFileDataForm(File $file, $errors)
+	{
+		$html = '';
+
+		$sections = array(
+			array(
+				array(
+					'title' => 'file',
+					'desc' => 'file_desc',
+					'fields' => array(
+						'file' => array(
+							'type' => 'file',
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'title',
+					'fields' => array(
+						'title' => array(
+							'type' => 'text',
+							'value' => $file->title
+						)
+					)
+				),
+				array(
+					'title' => 'description',
+					'fields' => array(
+						'description' => array(
+							'type' => 'textarea',
+							'value' => $file->description
+						)
+					)
+				),
+				array(
+					'title' => 'credit',
+					'fields' => array(
+						'credit' => array(
+							'type' => 'text',
+							'value' => $file->credit
+						)
+					)
+				),
+				array(
+					'title' => 'location',
+					'fields' => array(
+						'location' => array(
+							'type' => 'text',
+							'value' => $file->location
+						)
+					)
+				),
+			)
+		);
+
+		if ($file->isNew())
+		{
+			unset($sections[0][0][0]);
+		}
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
+	}
+
+	protected function getCategoryForm(File $file, $errors)
+	{
+		$html = '';
+
+		$sections = array(
+			array(
+			)
+		);
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
+	}
+
+	protected function validateFile(File $file)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
+
+		$file->set($_POST);
+		$file->title = (ee()->input->post('title')) ?: $file->file_name;
+
+		$result = $file->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_error'))
+				->addToBody(lang($action . '_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	protected function saveFileAndRedirect(File $file)
+	{
+		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
+
+		if ($file->isNew())
+		{
+			$file->uploaded_by_member_id = ee()->session->userdata('member_id');
+			$file->upload_date = ee()->localize->now;
+		}
+
+		$file->modified_by_member_id = ee()->session->userdata('member_id');
+		$file->modified_date = ee()->localize->now;
+
+		$file->save();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_success'))
+			->addToBody(sprintf(lang($action . '_success_desc'), $file->title))
+			->defer();
+
+		if ($action == 'upload_filedata')
+		{
+			ee()->session->set_flashdata('file_id', $file->file_id);
+		}
+
+		ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 	}
 
 }
