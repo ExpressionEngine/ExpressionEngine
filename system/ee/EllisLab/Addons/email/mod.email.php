@@ -393,9 +393,11 @@ class Email {
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
+		ee()->load->helper('form');
+
 		// Process default variables
 		$default = array('message', 'name', 'to', 'from', 'subject', 'required');
-		foreach ($default as $field)
+		foreach ($default as $key)
 		{
 			// Adding slashes since they removed in _setup_form
 			$var = addslashes(
@@ -740,24 +742,8 @@ class Email {
 		$message = entities_to_ascii($message);
 		$message = ee()->typography->filter_censored_words($message);
 
-		// Check for spam
-		$text = "$subject $message";
-
-		if (ee('Spam')->isSpam($text))
-		{
-			$args = array(
-				$subject,
-				$message,
-				$approved_recipients,
-				$approved_tos,
-				$_POST
-			);
-			ee()->spam->moderate(__FILE__, 'Email', 'mail_recipients', NULL, $args, $text);
-		} else {
-			// Send mail
-			$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
-		}
-
+		// Send mail
+		$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
 	}
 
 	// --------------------------------------------------------------------

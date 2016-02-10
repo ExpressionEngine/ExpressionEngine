@@ -27,13 +27,6 @@ class Updater {
 
 	var $version_suffix = '';
 
-	function Updater()
-	{
-		$this->EE =& get_instance();
-		ee()->load->library('progress');
-
-	}
-
 	function do_update()
 	{
 		// update channel_data table changing text fields to NOT NULL
@@ -93,6 +86,7 @@ class Updater {
 			return TRUE;
 		}
 
+		ee()->load->library('progress');
 		ee()->progress->update_state("Creating Comment Subscription Table");
 
 			$fields = array(

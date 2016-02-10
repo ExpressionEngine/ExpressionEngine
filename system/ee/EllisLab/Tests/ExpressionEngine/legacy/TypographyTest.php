@@ -188,6 +188,12 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNotContains('<span>really</span>', $str);
 		$this->assertNotContains('<em>just</em>', $str);
 	}
+
+	public function testLinksWithSpaces()
+	{
+		$str = $this->typography->markdown(MARKDOWN);
+		$this->assertContains('<a href="https://packagecontrol.io/packages/Marked%20App%20Menu">Marked App Menu</a>', $str);
+	}
 }
 
 class TypographyStub extends EE_Typography
@@ -309,6 +315,8 @@ Markdown
 
 <div class="something">This shouldn't be parsed in Markdown with the no_markup
 	option set.</div>
+
+We also have a URL here that has spaces in it: [Marked App Menu](https://packagecontrol.io/packages/Marked%20App%20Menu).
 
 To see what else you can do with Markdown (including **tables**, **images**, **numbered lists**, and more) take a look at the [Cheatsheet][1]. And then try it out by typing in this box!
 

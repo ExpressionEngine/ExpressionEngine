@@ -593,7 +593,7 @@ class EE_Schema {
 			comment_max_chars int(5) unsigned NULL DEFAULT '5000',
 			comment_timelock int(5) unsigned NOT NULL default '0',
 			comment_require_email char(1) NOT NULL default 'y',
-			comment_text_formatting char(5) NOT NULL default 'xhtml',
+			comment_text_formatting char(40) NOT NULL default 'xhtml',
 			comment_html_formatting char(4) NOT NULL default 'safe',
 			comment_allow_img_urls char(1) NOT NULL default 'n',
 			comment_auto_link_urls char(1) NOT NULL default 'y',
@@ -1057,6 +1057,7 @@ class EE_Schema {
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			variable_name varchar(50) NOT NULL,
 			variable_data text NOT NULL,
+			`edit_date` int(10) NOT NULL DEFAULT 0,
 			PRIMARY KEY `variable_id` (`variable_id`),
 			KEY `variable_name` (`variable_name`),
 			KEY `site_id` (`site_id`)
@@ -1071,6 +1072,7 @@ class EE_Schema {
 			`site_id` int(4) NOT NULL,
 			`snippet_name` varchar(75) NOT NULL,
 			`snippet_contents` text NULL,
+			`edit_date` int(10) NOT NULL DEFAULT 0,
 			PRIMARY KEY (`snippet_id`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -1652,11 +1654,7 @@ class EE_Schema {
 			if (strncmp($sql, 'CREATE TABLE', 12) == 0)
 			{
 				$sql .= 'ENGINE=' . $this->default_engine . ' ';
-
-				if (UTF8_ENABLED === TRUE)
-				{
-					$sql .= 'DEFAULT CHARACTER SET '.ee()->db->escape_str(ee()->db->char_set).' COLLATE '.ee()->db->escape_str(ee()->db->dbcollat);
-				}
+				$sql .= 'DEFAULT CHARACTER SET '.ee()->db->escape_str(ee()->db->char_set).' COLLATE '.ee()->db->escape_str(ee()->db->dbcollat);
 			}
 
 			if (ee()->db->query($sql) === FALSE)

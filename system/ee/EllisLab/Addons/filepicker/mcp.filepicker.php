@@ -1,4 +1,28 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// --------------------------------------------------------------------
+
+/**
+ * ExpressionEngine File Picker Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
@@ -21,13 +45,39 @@ class Filepicker_mcp {
 		ee()->lang->loadfile('filemanager');
 	}
 
+	protected function getUserUploadDirectories()
+	{
+		$dirs = ee()->api->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all();
+
+		$member_group = ee()->session->userdata['group_id'];
+
+		return $dirs->filter(function($dir) use ($member_group)
+		{
+			return $dir->memberGroupHasAccess($member_group);
+		});
+	}
+
+	protected function getSystemUploadDirectories()
+	{
+		$dirs = ee()->api->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', '!=', 0)
+			->all();
+
+		return $dirs;
+	}
+
 	public function index()
 	{
 		// check if we have a request for a specific file id
 		$file = ee()->input->get('file');
+
 		if ( ! empty($file))
 		{
-			$this->fileInfo($file);
+			return $this->fileInfo($file);
 		}
 
 		if ($this->access === FALSE)
@@ -35,118 +85,135 @@ class Filepicker_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$dirs = ee()->api->get('UploadDestination')
-			->with('Files')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('module_id', 0);
+		$dirs = $this->getUserUploadDirectories();
 
-		$member_group = ee()->session->userdata['group_id'];
-		$dirs = $dirs->all()->filter(function($dir) use ($member_group){
-			return $dir->memberGroupHasAccess($member_group);
-		});
+		// directories we were asked to list
+		$show = ee()->input->get('directories');
 
-		$input_directory = ($dirs->count() == 1)
-			? $dirs->first()->id
-			: ee()->input->get('directory');
+		// directory filter
+		$requested = ee()->input->get('directory') ?: 'all';
 
-		if ( ! empty($input_directory))
+		$show = (empty($show) && $requested == 'all') ? 'all' : $show;
+
+		if ($show != 'all')
 		{
-			$id = $input_directory;
+			$dirs = $dirs->filter('id', (int) $show);
 		}
 
-		// Restrict things if we're in a file field that enforces a directory
-		if (isset($id)
-			&& (ctype_digit($id) || is_int($id))
-			&& ee()->input->get('restrict') == TRUE)
+		// only have one? use it
+		if ($dirs->count() == 1)
 		{
-			$dirs = $dirs->filter('id', (int) $id);
+			$requested = $dirs->first()->id;
 		}
 
 		$directories = $dirs->indexBy('id');
+		$files = NULL;
 
-		if (empty($id) || $id == 'all')
+		if ($requested == 'all')
 		{
-			$id = 'all';
 			$files = ee('Model')->get('File')
 				->filter('upload_location_id', 'IN', $dirs->getIds())
-				->filter('site_id', ee()->config->item('site_id'))
-				->all();
+				->filter('site_id', ee()->config->item('site_id'));
+
+			$total_files = $files->count();
 
 			$type = ee()->input->get('type') ?: 'list';
 		}
 		else
 		{
-			if (empty($directories[$id]))
+			// selected something but we don't have that directory? check
+			// the system dirs, just in case
+			if (empty($directories[$requested]))
 			{
-				$id = 1;
-				//show_error(lang('invalid_upload_destination'));
+				$system_dirs = $this->getSystemUploadDirectories()->indexBy('id');
+
+				if (empty($system_dirs[$requested]))
+				{
+					show_error(lang('no_upload_destination'));
+				}
+
+				$dir = $system_dirs[$requested];
+				$files = $dir->getFilesystem()->all();
+				$total_files = iterator_count($files);
 			}
-
-			$dir = $directories[$id];
-			$files = $dir->Files;
-
-			// Only show member directories if it's avatars
-			if ($dir->Module && $dir->Module->module_name == 'Member')
+			else
 			{
-				if ($dir->server_path == ee()->config->item('avatar_path'))
-				{
-					$files = $dir->server_path->files;
+				$dir = $directories[$requested];
 
-					// Only show system avatars
-					$files = $files->filter(function($file) use($dir) {
-						$path = $dir->server_path . $file->file_name;
-						return ! is_writable($path);
-					});
-				}
-				else
-				{
-					show_error(lang('invalid_upload_destination'));
-				}
+				$files = ee('Model')->get('File')
+					->filter('upload_location_id', $dir->getId())
+					->filter('site_id', ee()->config->item('site_id'));
+
+				$total_files = $files->count();
 			}
 
 			$type = ee()->input->get('type') ?: $dir->default_modal_view;
 		}
 
-		// Filter out any files that are no longer on disk
-		$files = $files->filter(function($file) { return $file->exists(); });
+		$has_filters = ee()->input->get('hasFilters');
 
 		$base_url = ee('CP/URL', $this->base_url);
+		$base_url->setQueryStringVariable('directories', $show);
+		$base_url->setQueryStringVariable('directory', $requested);
+		$base_url->setQueryStringVariable('type', $type);
 
-		if (ee()->input->get('hasFilters') !== '0')
+		if ($has_filters !== '0')
 		{
 			$vars['type'] = $type;
 			$filters = ee('CP/Filter');
 
-			$directories = array_filter($directories, function($dir) {return $dir->module_id == 0;});
 			if (count($directories) > 1)
 			{
 				$directories = array_map(function($dir) {return $dir->name;}, $directories);
 				$directories = array('all' => lang('all')) + $directories;
 
 				$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
-					->disableCustomValue();
+					->disableCustomValue()
+					->setDefaultValue($requested);
 
 				$filters = ee('CP/Filter')->add($dirFilter);
 			}
 
-			$filters = $filters->add('Perpage', $files->count(), 'show_all_files');
+			$filters = $filters->add('Perpage', $total_files, 'show_all_files', TRUE);
 
 			$imgOptions = array(
 				'thumb' => 'thumbnails',
 				'list' => 'list'
 			);
+
 			$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
 				->disableCustomValue()
 				->setDefaultValue($type);
+
 			$filters = $filters->add($imgFilter);
 
 			$perpage = $filters->values();
 			$perpage = $perpage['perpage'];
+
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
+
 			$vars['filters'] = $filters->render($base_url);
 		}
+		else
+		{
+			$base_url->setQueryStringVariable('hasFilters', $has_filters);
 
-		$base_url->setQueryStringVariable('directory', $id);
-		$base_url->setQueryStringVariable('type', $type);
+			$perpage = 25;
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
+		}
+
+
+		if ( ! $files instanceOf \Iterator)
+		{
+			$files = $files->limit($perpage)->offset($offset)->all();
+			$files = $files->getIterator();
+		}
+		else
+		{
+			$files = new \LimitIterator($files, $offset, $perpage);
+		}
 
 		if ($this->images || $type == 'thumb')
 		{
@@ -162,6 +229,7 @@ class Filepicker_mcp {
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
+			$vars['type'] = $type;
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
@@ -169,21 +237,17 @@ class Filepicker_mcp {
 		if (ee()->input->get('hasUpload') !== '0')
 		{
 			$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
-			$vars['upload']->setQueryStringVariable('directory', $id);
+			$vars['upload']->setQueryStringVariable('directory', $requested);
 		}
 
-		$vars['dir'] = $id;
+		$vars['dir'] = $requested;
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $total_files)
+			->perPage($perpage)
+			->currentPage($page)
+			->render($base_url);
 
-		$vars['cp_heading'] = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
+		$vars['cp_heading'] = $requested == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
 		return ee('View')->make('filepicker:ModalView')->render($vars);
 	}

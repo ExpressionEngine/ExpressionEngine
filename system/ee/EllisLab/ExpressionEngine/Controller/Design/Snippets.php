@@ -89,14 +89,11 @@ class Snippets extends AbstractDesignController {
 		$table->setColumns($columns);
 
 		$data = array();
-		$snippets = ee('Model')->get('Snippet')
-			->filter('site_id', ee()->config->item('site_id'))
-			->orFilter('site_id', 0)
-			->all();
+		$snippets = ee('Model')->make('Snippet')->loadAll();
 
 		$base_url = ee('CP/URL')->make('design/snippets');
 
-		foreach($snippets as $snippet)
+		foreach ($snippets as $snippet)
 		{
 			if ($snippet->site_id == 0)
 			{
@@ -301,8 +298,8 @@ class Snippets extends AbstractDesignController {
 		$snippet = ee('Model')->get('Snippet')
 			->filter('snippet_id', $snippet_id)
 			->filterGroup()
-			->filter('site_id', ee()->config->item('site_id'))
-			->orFilter('site_id', 0)
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
 			->endFilterGroup()
 			->first();
 
@@ -441,7 +438,10 @@ class Snippets extends AbstractDesignController {
 		}
 
 		$snippets = ee('Model')->get('Snippet', $snippet_ids)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->all();
 
 		$names = $snippets->pluck('snippet_name');

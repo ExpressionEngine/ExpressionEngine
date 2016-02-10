@@ -89,10 +89,7 @@ class Variables extends AbstractDesignController {
 		$table->setColumns($columns);
 
 		$data = array();
-		$variables = ee('Model')->get('GlobalVariable')
-			->filter('site_id', ee()->config->item('site_id'))
-			->orFilter('site_id', 0)
-			->all();
+		$variables = ee('Model')->make('GlobalVariable')->loadAll();
 
 		$base_url = ee('CP/URL')->make('design/variables');
 
@@ -301,7 +298,10 @@ class Variables extends AbstractDesignController {
 
 		$variable = ee('Model')->get('GlobalVariable')
 			->filter('variable_id', $variable_id)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->first();
 
 		if ( ! $variable)
@@ -439,7 +439,10 @@ class Variables extends AbstractDesignController {
 		}
 
 		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->all();
 
 		$names = $variables->pluck('variable_name');

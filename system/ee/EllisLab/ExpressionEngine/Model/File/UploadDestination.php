@@ -83,7 +83,7 @@ class UploadDestination extends Model {
 		'url'                => 'required|validateUrl',
 		'allowed_types'      => 'enum[img,all]',
 		'default_modal_view' => 'enum[list,thumb]',
-		'max_size'           => 'isNatural',
+		'max_size'           => 'numeric|greaterThan[0]',
 		'max_height'         => 'isNatural',
 		'max_width'          => 'isNatural'
 	);
@@ -134,23 +134,50 @@ class UploadDestination extends Model {
 	 * Returns the propety value using the overrides if present
 	 *
 	 * @param str $name The name of the property to fetch
-	 * @throws InvalidArgumentException if the property does not exist
 	 * @return mixed The value of the property
 	 */
 	public function __get($name)
 	{
 		$value = parent::__get($name);
 
-		// Check if have an override for this directory and that it's an
-		// array (as it should be)
-		if (isset($this->_property_overrides[$this->id])
-			&& is_array($this->_property_overrides[$this->id])
-			&& array_key_exists($name, $this->_property_overrides[$this->id]))
+		if ($this->hasOverride($name))
 		{
 			$value = $this->_property_overrides[$this->id][$name];
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Returns the propety value using the overrides if present
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return mixed The value of the property
+	 */
+	public function getProperty($name)
+	{
+		$value = parent::getProperty($name);
+
+		if ($this->hasOverride($name))
+		{
+			$value = $this->_property_overrides[$this->id][$name];
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Check if have an override for this directory and that it's an
+	 * array (as it should be)
+
+	 * @param str $name The name of the property to check
+	 * @return bool Property is overridden?
+	 */
+	private function hasOverride($name)
+	{
+		return (isset($this->_property_overrides[$this->id])
+			&& is_array($this->_property_overrides[$this->id])
+			&& array_key_exists($name, $this->_property_overrides[$this->id]));
 	}
 
 	/**
@@ -203,6 +230,17 @@ class UploadDestination extends Model {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Get the backing filesystem for this upload destination
+	 */
+	public function getFilesystem()
+	{
+		$fs = ee('File')->getPath($this->getProperty('server_path'));
+		$fs->setUrl($this->getRawProperty('url'));
+
+		return $fs;
 	}
 
 	/**
@@ -260,7 +298,7 @@ class UploadDestination extends Model {
 	 */
 	public function exists()
 	{
-		return file_exists($this->server_path);
+		return file_exists($this->getProperty('server_path'));
 	}
 
 	/**
@@ -270,7 +308,7 @@ class UploadDestination extends Model {
 	 */
 	public function isWritable()
 	{
-		return is_writable($this->server_path);
+		return is_writable($this->getProperty('server_path'));
 	}
 
 }

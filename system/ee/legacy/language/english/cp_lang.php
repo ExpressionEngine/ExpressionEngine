@@ -268,6 +268,8 @@ $lang = array(
 
 'build' => 'build date:',
 
+'version_identifier' => 'identifier:',
+
 'license_number' => 'License Number',
 
 'invalid_license' => 'INVALID LICENSE',
@@ -502,6 +504,8 @@ $lang = array(
 'menu_edit' => 'Edit',
 'menu_files' => 'Files',
 'menu_members' => 'Members',
+'filter_channels' => 'filter channels',
+'filter_categories' => 'filter categories',
 'my_profile' => 'My Profile',
 'name' => 'Name',
 'name_your_site' => 'Name your site',

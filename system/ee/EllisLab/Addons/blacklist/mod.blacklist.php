@@ -29,7 +29,7 @@ class Blacklist {
 	/**
 	  * Constructor
 	  */
-	function Blacklist()
+	function __construct()
 	{
 		return $this->return_data;
 	}

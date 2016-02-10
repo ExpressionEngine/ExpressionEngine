@@ -136,7 +136,7 @@ class Publish extends AbstractPublishController {
 	 */
 	public function create($channel_id = NULL, $autosave_id = NULL)
 	{
-		if ( ! isset($channel_id))
+		if ( ! $channel_id)
 		{
 			show_404();
 		}
@@ -150,7 +150,7 @@ class Publish extends AbstractPublishController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
-		if (!$channel)
+		if ( ! $channel)
 		{
 			show_error(lang('no_channel_exists'));
 		}
@@ -310,6 +310,11 @@ class Publish extends AbstractPublishController {
 			),
 			'file' => array('cp/publish/publish', 'cp/channel/category_edit')
 		));
+
+		if ($entry->Channel->CategoryGroups)
+		{
+			$this->addCategoryModals();
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}

@@ -660,9 +660,16 @@ class Members extends CP_Controller {
 		$perpage = $this->input->get_post('perpage');
 		$perpage = $perpage ? $perpage : $params['perpage'];
 
-		if (key($state['sort']) == 'member_group')
+		$convert = array(
+			'member_group' => 'group_id',
+			'dates' => 'join_date'
+		);
+
+		$sort_key = key($state['sort']);
+
+		if (isset($convert[$sort_key]))
 		{
-			$sort = array('group_id' => array_pop($state['sort']));
+			$sort = array($convert[$sort_key] => array_pop($state['sort']));
 		}
 		else
 		{
@@ -1128,14 +1135,29 @@ class Members extends CP_Controller {
 		//  Fetch member ID numbers and build the query
 		$member_ids = ee()->input->post('selection', TRUE);
 
+		if (in_array(ee()->session->userdata['member_id'], $member_ids))
+		{
+			show_error(lang('can_not_delete_self'));
+		}
+
 		// Check to see if they're deleting super admins
 		$this->_super_admin_delete_check($member_ids);
 
 		// If we got this far we're clear to delete the members
-		ee()->load->model('member_model');
-		$heir = (ee()->input->post('heir_action') == 'assign') ?
-			ee()->input->post('heir') : NULL;
-		ee()->member_model->delete_member($member_ids, $heir);
+		// First, assign an heir if we are to do so
+		if (ee()->input->post('heir_action') == 'assign')
+		{
+			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
+
+			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
+			$entries->Author = $heir;
+			$entries->save();
+
+			$heir->updateAuthorStats();
+		}
+
+		// If we got this far we're clear to delete the members
+		ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
 
 		// Send member deletion notifications
 		$this->_member_delete_notifications($member_ids);

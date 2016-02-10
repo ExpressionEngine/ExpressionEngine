@@ -27,7 +27,7 @@ $lang = array(
 
 'metaweblog_entry_status' => 'Status',
 
-'metaweblog_entry_status_desc' => 'Default status to use for entires from this MetaWeblog.',
+'metaweblog_entry_status_desc' => 'Default status to use for entries from this MetaWeblog.',
 
 'metaweblog_channel' => 'Channel',
 

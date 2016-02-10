@@ -81,6 +81,14 @@ function createCodeMirror(code_textarea)
 		lint: EE.codemirror_linter
 	});
 
+	$('.CodeMirror').resizable({
+		handles: "s",
+		resize: function() {
+			cm.setSize(null, $(this).height());
+			cm.refresh();
+		}
+	});
+
 	cm.setSize(null, orig_height);
 	return cm;
 }

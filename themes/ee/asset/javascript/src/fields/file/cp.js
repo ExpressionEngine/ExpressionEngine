@@ -62,6 +62,6 @@
 			$('.file-chosen img', cell).attr('id', safe_name);
 
 			setupFileField(cell);
-		})
+		});
 	});
 })(jQuery);

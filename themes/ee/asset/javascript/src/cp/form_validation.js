@@ -13,11 +13,27 @@
 (function($) {
 
 $(document).ready(function() {
-
 	EE.cp.formValidation.init();
 });
 
 EE.cp.formValidation = {
+
+	paused: false,
+
+	pause: function(noTimer) {
+		this.paused = true;
+		if (noTimer === undefined)
+		{
+			var that = this;
+			setTimeout(function(){
+				that.resume();
+			}, 3000);
+		}
+	},
+
+	resume: function() {
+		this.paused = false;
+	},
 
 	/**
 	 * @param	{jQuery object}	form	Optional jQuery object of form
@@ -48,16 +64,21 @@ EE.cp.formValidation = {
 		var that = this;
 
 		$('input[type=text], input[type=password], textarea', container).blur(function() {
-
 			// Unbind keydown validation when the invalid field loses focus
 			$(this).unbind('keydown');
+			var element = $(this);
 
-			that._sendAjaxRequest($(this));
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
 		});
 
 		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+			var element = $(this);
 
-			that._sendAjaxRequest($(this));
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
 		});
 
 		// Upon loading the page with invalid fields, bind the text field
@@ -153,7 +174,7 @@ EE.cp.formValidation = {
 					// Replace button text with working text and disable the button to prevent further clicks
 					if ($button.is('input')) {
 						$button.attr('value', $button.data('work-text'));
-					} else if ($button.is('button') && event.target == el) {
+					} else if ($button.is('button')) {
 						$button.text($button.data('work-text'));
 					}
 				}
@@ -190,7 +211,7 @@ EE.cp.formValidation = {
 	_dismissSuccessAlert: function(form) {
 
 		$('input, select, textarea', form).change(function(event) {
-			var success = $('div.alert.success');
+			var success = form.find('div.alert.success');
 
 			if (success.size() > 0)
 			{
@@ -217,6 +238,9 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
+		if (this.paused) {
+			return;
+		}
 
 		var form = field.parents('form');
 
@@ -262,7 +286,7 @@ EE.cp.formValidation = {
 			// See if this tab has its own submit button
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-ctrls input.btn').size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find('.form-ctrls input.btn') : form.find('.form-ctrls input.btn');
+			button = (tab_has_own_button) ? tab_container.find('.form-ctrls .btn') : form.find('.form-ctrls .btn');
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places

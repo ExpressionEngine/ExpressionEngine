@@ -646,9 +646,7 @@ class EE_Input {
 	 */
 	function cookie($index = '', $xss_clean = FALSE)
 	{
-		$EE =& get_instance();
-
-		$prefix = ( ! $EE->config->item('cookie_prefix')) ? 'exp_' : $EE->config->item('cookie_prefix').'_';
+		$prefix = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
 
 		return ( ! isset($_COOKIE[$prefix.$index]) ) ? FALSE : stripslashes($_COOKIE[$prefix.$index]);
 	}
@@ -753,8 +751,6 @@ class EE_Input {
 	 */
 	function filter_get_data($request_type = 'PAGE')
 	{
-		$EE =& get_instance();
-
 		/*
  		* --------------------------------------------------------------------
  		*  Is the request a URL redirect redirect?  Moved from the index so we can have config variables!
@@ -785,9 +781,9 @@ class EE_Input {
 			&& isset($_GET['BK'])
 			&& isset($_GET['channel_id'])
 			&& isset($_GET['title'])
-			&& $EE->session->userdata('admin_sess') == 1)
+			&& ee()->session->userdata('admin_sess') == 1)
 		{
-			if (in_array($EE->input->get_post('channel_id'), $EE->functions->fetch_assigned_channels()))
+			if (in_array(ee()->input->get_post('channel_id'), ee()->functions->fetch_assigned_channels()))
 			{
 				$filter_keys = FALSE;
 			}
@@ -802,7 +798,7 @@ class EE_Input {
 				if ( ! $clean)
 				{
 					// Only notify super admins of the offending data
-					if ($EE->session->userdata('group_id') == 1)
+					if (ee()->session->userdata('group_id') == 1)
 					{
 						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
 

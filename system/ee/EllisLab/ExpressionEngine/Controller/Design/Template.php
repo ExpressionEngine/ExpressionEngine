@@ -90,14 +90,16 @@ class Template extends AbstractDesignController {
 		if (ee()->input->post('template_id'))
 		{
 			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
-				->first()
-				->getValues();
+				->first();
 
-			unset($master_template['template_id']);
-			unset($master_template['group_id']);
-			unset($master_template['hits']);
+			$properties = $master_template->getValues();
 
-			$template->set($master_template);
+			unset($properties['template_id']);
+			unset($properties['site_id']);
+			unset($properties['group_id']);
+			unset($properties['hits']);
+
+			$template->set($properties);
 		}
 
 		$result = $this->validateTemplate($template);
@@ -113,6 +115,10 @@ class Template extends AbstractDesignController {
 				if ( ! ee()->input->post('template_id'))
 				{
 					$template->NoAccess = NULL;
+				}
+				else
+				{
+					$template->NoAccess = $master_template->NoAccess;
 				}
 
 				$template->save();
@@ -179,14 +185,14 @@ class Template extends AbstractDesignController {
 					'type' => 'submit',
 					'value' => 'finish',
 					'text' => sprintf(lang('btn_save'), lang('template')),
-					'working' => 'btn_create_template_working'
+					'working' => 'btn_saving'
 				),
 				array(
 					'name' => 'submit',
 					'type' => 'submit',
 					'value' => 'edit',
 					'text' => 'btn_create_and_edit_template',
-					'working' => 'btn_create_template_working'
+					'working' => 'btn_saving'
 				),
 			),
 		);
@@ -382,7 +388,7 @@ class Template extends AbstractDesignController {
 				$toolbar = ee('View')->make('_shared/toolbar')->render(array(
 					'toolbar_items' => array(
 							'txt-only' => array(
-								'href' => ee('CP/URL', 'design/template/edit/' . $template->getId(), array('version' => $version->getId())),
+								'href' => ee('CP/URL')->make('design/template/edit/' . $template->getId(), array('version' => $version->getId())),
 								'title' => lang('view'),
 								'content' => lang('view')
 							),
@@ -566,7 +572,7 @@ class Template extends AbstractDesignController {
 		ee()->view->cp_heading = sprintf(
 			lang('search_results_heading'),
 			$templates->count(),
-			$search_terms
+			htmlentities($search_terms)
 		);
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());

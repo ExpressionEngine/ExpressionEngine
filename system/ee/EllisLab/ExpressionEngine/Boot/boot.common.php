@@ -378,7 +378,7 @@ if ( ! function_exists('log_message'))
 			return;
 		}
 
-		$_log =& load_class('Log');
+		$_log = load_class('Log');
 		$_log->write_log($level, $message, $php_error);
 	}
 }

@@ -82,7 +82,7 @@ class Statement {
 	 */
 	public function addElseIf(BooleanExpression $expression)
 	{
-		if ($this->isDone())
+		if ($this->isDone() || $this->encountered_true_condition)
 		{
 			return FALSE;
 		}

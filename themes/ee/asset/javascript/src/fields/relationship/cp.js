@@ -122,12 +122,14 @@
 				url = EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
 				name = $(elem).attr('name');
 
+			// Assume it's in a Grid
 			if (field.length == 0) {
 				field = $(elem).closest('td');
 
-				var row_id = $(field).data('row-id') ? $(field).data('row-id') : 0;
+				var row_id = $(field).data('row-id') ? $(field).data('row-id') : $(field).data('new-row-id');
 
 				data = $(field).find('input').serialize() + '&column_id=' + $(field).data('column-id') + '&row_id=' + row_id;
+
 				url = EE.publish.field.URL + '/' + $(elem).closest('table').attr('id');
 			}
 
@@ -156,6 +158,8 @@
 							tmpStr = searchField.val();
 						searchField.val('');
 						searchField.val(tmpStr);
+
+						$('.w-8.relate-wrap .scroll-wrap', field).sortable(sortable_options);
 					}
 				});
 			}, delay);
@@ -185,12 +189,14 @@
 		});
 
 		// Sortable!
-		$('.w-8.relate-wrap .scroll-wrap').sortable({
+		var sortable_options = {
 			axis: 'y',
 			cursor: 'move',
 			handle: '.relate-reorder',
 			items: 'label',
-		});
+		};
+
+		$('.w-8.relate-wrap .scroll-wrap').sortable(sortable_options);
 
 		$('.publish form').on('submit', function (e) {
 			$('.w-8.relate-wrap .scroll-wrap').each(function() {
@@ -198,10 +204,15 @@
 				var relationship = $(this).closest('.relate-wrap')
 					.siblings('.relate-wrap').first();
 
+				// Adding a new grid row will enable all the disabled sort fields
+				$(this).find('input:hidden[name$="[sort][]"]').attr('disabled', 'disabled');
+
 				var i = 1;
 				$(this).find('label.relate-manage').each(function () {
 					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']').closest('label');
-					label.find('input:hidden[name$="[sort][]"]').first().val(i);
+					var sort = label.find('input:hidden[name$="[sort][]"]').first();
+					sort.removeAttr('disabled');
+					sort.val(i);
 					i++;
 				});
 			});

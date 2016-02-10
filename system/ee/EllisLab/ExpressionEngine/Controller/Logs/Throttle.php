@@ -113,7 +113,7 @@ class Throttle extends Logs {
 			// Set the page heading
 			if ( ! empty(ee()->view->search_value))
 			{
-				ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+				ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 			}
 
 			$logs = $logs->order('last_activity', 'desc')

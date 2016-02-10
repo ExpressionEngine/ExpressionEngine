@@ -226,7 +226,7 @@ feature 'Member Group List' do
     @page.edit.name.set 'Moderators'
     @page.edit.description.set 'Moderators description.'
     @page.edit.security_lock[0].click
-    @page.edit.website_access.each(&:click)
+    @page.edit.website_access[1].click
     @page.edit.can_view_profiles[0].click
     @page.edit.can_delete_self[0].click
     @page.edit.mbr_delete_notify_emails.set 'team@ellislab.com'

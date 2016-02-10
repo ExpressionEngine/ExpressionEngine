@@ -39,7 +39,6 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_move_database_information',
-				'_install_required_modules',
 				'_update_email_cache_table',
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
@@ -64,6 +63,7 @@ class Updater {
 				'_remove_referrer_module_artifacts',
 				'_update_channels_table',
 				'_update_channel_titles_table',
+				'_install_required_modules',
 				'_export_mailing_lists',
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
@@ -121,7 +121,7 @@ class Updater {
 		ee()->load->library('addons');
 
 		$installed_modules = ee()->db->select('module_name')->get('modules');
-		$required_modules = array('filepicker', 'comment', 'search');
+		$required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');
 
 		foreach ($installed_modules->result() as $installed_module)
 		{

@@ -27,7 +27,7 @@ class Comment_upd {
 
 	var $version = '2.3.2';
 
-	function Comment_upd()
+	function __construct()
 	{
 		ee()->load->dbforge();
 	}

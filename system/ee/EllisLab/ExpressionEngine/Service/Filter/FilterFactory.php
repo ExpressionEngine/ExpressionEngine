@@ -260,16 +260,17 @@ class FilterFactory {
 	 * @param  int $total The total number of items available
 	 * @param  string $lang_key The optional lang key to use for the "All
 	 *                          <<$total>> items" option
+	 * @param  bool $is_modal Is this Perpage filter in/for a modal?
 	 * @return Filter\Perpage a Perpage Filter object
 	 */
-	protected function createDefaultPerpage($total, $lang_key = NULL)
+	protected function createDefaultPerpage($total, $lang_key = NULL, $is_modal = FALSE)
 	{
 		if ( ! isset($lang_key))
 		{
 			return new Filter\Perpage($total);
 		}
 
-		return new Filter\Perpage($total, $lang_key);
+		return new Filter\Perpage($total, $lang_key, $is_modal);
 	}
 
 	/**
@@ -294,7 +295,7 @@ class FilterFactory {
 
 		if (isset($this->container))
 		{
-			$filter->setQuery($this->container->make('Model')->get('Member'));
+			$filter->setQuery($this->container->make('Model')->get('Member')->order('username', 'asc'));
 		}
 
 		return $filter;

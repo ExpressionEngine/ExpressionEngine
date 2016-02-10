@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.0.4';	// The version being installed
+	public $version           = '3.1.2';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -66,6 +66,7 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
+		'file',
 		'filepicker',
 		'search'
 	);
@@ -332,6 +333,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for finfo_open
+		if ( ! function_exists('finfo_open'))
+		{
+			$this->set_output('error', array('error' => lang('fileinfo_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -415,6 +423,16 @@ class Wizard extends CI_Controller {
 		{
 			$this->set_output('error', array('error' => lang('unreadable_update')));
 			return FALSE;
+		}
+
+		// Make sure the Member module is installed in the case the user is
+		// upgrading from Core to Standard
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		if ( ! IS_CORE
+			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(array('member'));
 		}
 
 		// If this is FALSE it means the user is running the most current
@@ -745,7 +763,7 @@ class Wizard extends CI_Controller {
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
 			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_general_ci'
+			'dbcollat' => 'utf8_unicode_ci'
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
@@ -960,8 +978,10 @@ class Wizard extends CI_Controller {
 	{
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
-		// Try to rename automatically
-		if ($this->rename_installer())
+		// Try to rename automatically if there are no errors
+		if ($this->rename_installer()
+			&& empty($template_variables['errors'])
+			&& empty($template_variables['error_messages']))
 		{
 			ee()->load->helper('url');
 			redirect($cp_login_url);
@@ -1112,6 +1132,9 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('progress');
 
+		// if any of the underlying code uses caching, make sure we do nothing
+		ee()->config->set_item('cache_driver', 'dummy');
+
 		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
 
@@ -1217,7 +1240,8 @@ class Wizard extends CI_Controller {
 
 			if ( ! empty($UD->errors))
 			{
-				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+				ee()->load->helper('html');
+				$error_msg .= "</p>".ul($UD->errors)."<p>";
 			}
 
 			$this->set_output('error', array('error' => $error_msg));
@@ -1457,10 +1481,12 @@ class Wizard extends CI_Controller {
 
 		if ($this->is_installed)
 		{
-			// for some reason 'charset' is not set in this context and will throw a PHP warning
+			// for some reason 'charset' is not set in this context and will
+			// throw a PHP warning
 			$msm_config = new MSM_Config();
 			$msm_config->default_ini['charset'] = 'UTF-8';
 			$msm_config->site_prefs('');
+			$msm_config->load(); // Must come after site_prefs() so config.php can override
 			$data['theme_url'] = $msm_config->item('theme_folder_url');
 			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/'.$javascript_dir;
 		}
@@ -2246,10 +2272,6 @@ class Wizard extends CI_Controller {
 			$config['index_page'] = $config['site_index'];
 		}
 
-		// BUILD_REMOVE_CJS_START
-		$config['use_compressed_js'] = 'n';
-		// BUILD_REMOVE_CJS_END
-
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
 
@@ -2395,7 +2417,8 @@ class Wizard extends CI_Controller {
 	 */
 	public function canRenameAutomatically()
 	{
-		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		if (version_compare($this->version, '3.0.0', '=')
+			&& file_exists(SYSPATH.'user/cache/mailing_list.zip'))
 		{
 			return FALSE;
 		}

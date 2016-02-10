@@ -1,4 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\Addons\FilePicker\FilePicker;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -135,6 +138,19 @@ class Text_ft extends EE_Fieldtype {
 				'settings'        => $this->settings,
 				'format_options'  => $format_options,
 			);
+
+			if (isset($this->settings['field_show_file_selector'])
+				&& $this->settings['field_show_file_selector'] == 'y')
+			{
+				$fp = new FilePicker();
+				$fp->inject(ee()->view);
+				$vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
+
+				ee()->cp->add_js_script(array(
+					'file' => array('fields/textarea/cp'),
+					'plugin' => array('ee_txtarea')
+				));
+			}
 
 			return ee('View')->make('text:publish')->render($vars);
 		}
@@ -323,8 +339,9 @@ class Text_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{
 		return array(
-			'field_maxl'			=> ee()->input->post('field_maxl'),
-			'field_content_type'	=> ee()->input->post('field_content_type')
+			'field_maxl'				=> ee()->input->post('field_maxl'),
+			'field_content_type'		=> ee()->input->post('field_content_type'),
+			'field_show_file_selector'	=> ee()->input->post('field_show_file_selector')
 		);
 	}
 

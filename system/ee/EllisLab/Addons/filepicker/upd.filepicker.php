@@ -1,5 +1,29 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// --------------------------------------------------------------------
+
+/**
+ * ExpressionEngine File Picker Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+
 class Filepicker_upd {
 
 	public $version	= '1.0';
@@ -12,11 +36,87 @@ class Filepicker_upd {
 	 */
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('FilePicker', '$this->version', 'y', 'n')";
+		$mod_data = array(
+			'module_name'        => 'Filepicker',
+			'module_version'     => $this->version,
+			'has_cp_backend'     => 'y',
+			'has_publish_fields' => 'n'
+		);
 
-		foreach ($sql as $query)
+		ee()->db->insert('modules', $mod_data);
+
+		// Install default upload directories
+		$site_id = 1;
+		$member_directories = array();
+
+		// When installing, ee()->config will contain the installer app values,
+		// not the ExpressionEngine application values.
+		// So fetch them from the model - dj
+		$member_prefs = ee('Model')->get('Site', $site_id)->first()->site_member_preferences;
+
+		$member_directories['Avatars'] = array(
+			'server_path' => $member_prefs->avatar_path,
+			'url' => $member_prefs->avatar_url,
+			'allowed_types' => 'img',
+			'max_width' => $member_prefs->avatar_max_width,
+			'max_height' => $member_prefs->avatar_max_height,
+			'max_size' => $member_prefs->avatar_max_kb,
+		);
+
+		$member_directories['Default Avatars'] = array(
+			'server_path' => rtrim($member_prefs->avatar_path, '/').'/default/',
+			'url' => rtrim($member_prefs->avatar_url, '/').'/default/',
+			'allowed_types' => 'img',
+			'max_width' => $member_prefs->avatar_max_width,
+			'max_height' => $member_prefs->avatar_max_height,
+			'max_size' => $member_prefs->avatar_max_kb,
+		);
+
+		$member_directories['Member Photos'] = array(
+			'server_path' => $member_prefs->photo_path,
+			'url' => $member_prefs->photo_url,
+			'allowed_types' => 'img',
+			'max_width' => $member_prefs->photo_max_width,
+			'max_height' => $member_prefs->photo_max_height,
+			'max_size' => $member_prefs->photo_max_kb,
+		);
+
+		$member_directories['Signature Attachments'] = array(
+			'server_path' => $member_prefs->sig_img_path,
+			'url' => $member_prefs->sig_img_url,
+			'allowed_types' => 'img',
+			'max_width' => $member_prefs->sig_img_max_width,
+			'max_height' => $member_prefs->sig_img_max_height,
+			'max_size' => $member_prefs->sig_img_max_kb,
+		);
+
+		$member_directories['PM Attachments'] = array(
+			'server_path' => $member_prefs->prv_msg_upload_path,
+			'url' => str_replace('avatars', 'pm_attachments', $member_prefs->avatar_url),
+			'allowed_types' => 'img',
+			'max_size' => $member_prefs->prv_msg_attach_maxsize
+		);
+
+		$existing = ee('Model')->get('UploadDestination')
+			->fields('name')
+			->filter('name', 'IN', array_keys($member_directories))
+			->filter('site_id', $site_id)
+			->all()
+			->pluck('name');
+
+		foreach ($existing as $name)
 		{
-			ee()->db->query($query);
+			unset($member_directories[$name]);
+		}
+
+		foreach ($member_directories as $name => $data)
+		{
+			$dir = ee('Model')->make('UploadDestination', $data);
+			$dir->site_id = $site_id;
+			$dir->name = $name;
+			$dir->removeNoAccess();
+			$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
+			$dir->save();
 		}
 
 		return TRUE;
@@ -30,14 +130,16 @@ class Filepicker_upd {
 	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'FilePicker'");
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
-		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Filepicker'";
+		$mod_id = ee()->db->select('module_id')
+			->get_where('modules', array(
+				'module_name' => 'Filepicker'
+			))->row('module_id');
 
-		foreach ($sql as $query)
-		{
-			ee()->db->query($query);
-		}
+		ee()->db->where('module_id', $mod_id)
+			->delete('module_member_groups');
+
+		ee()->db->where('module_name', 'Filepicker')
+			->delete('modules');
 
 		return TRUE;
 	}

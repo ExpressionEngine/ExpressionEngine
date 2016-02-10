@@ -9,7 +9,6 @@
 		<?php endif;?>
 
 		<?=ee()->view->head_link('css/common.min.css'); ?>
-		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
@@ -36,7 +35,7 @@
 					<?php endif; ?>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 1 || ee()->cp->allowed_group('can_admin_sites'))): ?>
 						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a>
-						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
+						<a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>" rel="external"><?=lang('view')?></a>
 						<ul class="sites-list sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
@@ -72,8 +71,9 @@
 							<div class="sub-menu">
 								<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
 									<form class="filter">
-										<input type="text" class="autofocus" value="" placeholder="filter channels">
+										<input type="text" class="autofocus" value="" placeholder="<?=lang('filter_channels')?>">
 									</form>
+									<div class="scroll-wrap">
 								<?php endif ?>
 								<ul class="channels-create">
 									<?php $last = ee()->cp->allowed_group('can_create_channels') ? NULL : end($cp_main_menu['channels']['create']); ?>
@@ -84,6 +84,9 @@
 									<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('new_channel')?></a></li>
 									<?php endif; ?>
 								</ul>
+								<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
+								</div>
+								<?php endif ?>
 							</div>
 						</li>
 						<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')): ?>
@@ -92,8 +95,9 @@
 							<div class="sub-menu">
 								<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
 									<form class="filter">
-										<input type="text" class="autofocus" value="" placeholder="filter channels">
+										<input type="text" class="autofocus" value="" placeholder="<?=lang('filter_channels')?>">
 									</form>
+									<div class="scroll-wrap">
 								<?php endif ?>
 								<ul class="channels-edit">
 									<li class="search-channel<?php if (empty($cp_main_menu['channels']['edit'])): ?> last<?php endif ?>" data-search="<?= strtolower(lang('view_all')) ?>">
@@ -112,6 +116,9 @@
 										<li class="<?=$class?>" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 									<?php endforeach ?>
 								</ul>
+								<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
+									</div>
+								<?php endif ?>
 							</div>
 						</li>
 						<?php endif; ?>

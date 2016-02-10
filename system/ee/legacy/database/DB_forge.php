@@ -35,7 +35,7 @@ class CI_DB_forge {
 	 * Grabs the CI super object instance so we can access it.
 	 *
 	 */
-	function CI_DB_forge()
+	function __construct()
 	{
 		$this->db = ee('db');
 	}

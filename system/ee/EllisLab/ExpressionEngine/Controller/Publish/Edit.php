@@ -83,7 +83,10 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table', array('sort_dir' => 'desc'));
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_entry_date',
+		));
 
 		$table->setColumns(
 			array(
@@ -142,6 +145,15 @@ class Edit extends AbstractPublishController {
 			else
 			{
 				$can_edit = FALSE;
+			}
+
+			// wW had a delete cascade issue that could leave entries orphaned and
+			// resulted in errors, so we'll sneakily use this controller to clean up
+			// for now.
+			if (is_null($entry->Channel))
+			{
+				$entry->delete();
+				continue;
 			}
 
 			$autosaves = $entry->Autosaves->count();
@@ -299,6 +311,7 @@ class Edit extends AbstractPublishController {
 	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
+			->with('Channel', 'Versions')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -377,7 +390,7 @@ class Edit extends AbstractPublishController {
 			// and we need to clear them out
 			if ( ! isset($_POST['categories']))
 			{
-				$entry->Categories = NULL;
+				$entry->categories = array();
 			}
 
 			$result = $entry->validate();
@@ -463,8 +476,13 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
+			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
+
+		if ($entry->Channel->CategoryGroups)
+		{
+			$this->addCategoryModals();
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}

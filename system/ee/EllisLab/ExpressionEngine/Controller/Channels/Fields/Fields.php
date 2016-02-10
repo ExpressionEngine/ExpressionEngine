@@ -255,50 +255,39 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
-
-		if ($field->isNew())
-		{
-			// This field is disabled and not present in POST when editing and existing field
-			$field->field_type = $_POST['field_type'];
-		}
-
 		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 
 		$field->set($_POST);
 
+		if ($field->field_pre_populate)
+		{
+			list($channel_id, $field_id) = explode('_', $_POST['field_pre_populate_id']);
+
+			$field->field_pre_channel_id = $channel_id;
+			$field->field_pre_field_id = $field_id;
+		}
+
 		return $field;
 	}
 
 	private function form(ChannelField $field = NULL)
 	{
-		$fieldtypes = ee('Model')->get('Fieldtype');
-
-		if ($field)
-		{
-			$fieldtypes = $fieldtypes->filter('name', $field->field_type);
-		}
-
-		$fieldtypes = $fieldtypes->order('name')
-			->all();
-
-		$fieldtype_choices = array();
-
-		foreach ($fieldtypes as $fieldtype)
-		{
-			$info = ee('App')->get($fieldtype->name);
-			$fieldtype_choices[$fieldtype->name] = $info->getName();
-		}
-
 		if ( ! $field)
 		{
 			$field = ee('Model')->make('ChannelField');
 		}
 
-		$field->field_type = ($field->field_type) ?: 'text';
+		$fieldtype_choices = $field->getCompatibleFieldtypes();
 
-		$fieldtype_disabled = ! $field->isNew();
+		$fieldtypes = ee('Model')->get('Fieldtype')
+			->fields('name')
+			->filter('name', 'IN', array_keys($fieldtype_choices))
+			->order('name')
+			->all();
+
+		$field->field_type = ($field->field_type) ?: 'text';
 
 		$sections = array(
 			array(
@@ -310,8 +299,7 @@ class Fields extends AbstractChannelsController {
 							'type' => 'select',
 							'choices' => $fieldtype_choices,
 							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
-							'value' => $field->field_type,
-							'disabled' => $fieldtype_disabled
+							'value' => $field->field_type
 						)
 					)
 				),

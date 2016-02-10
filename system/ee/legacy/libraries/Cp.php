@@ -76,14 +76,12 @@ class Cp {
 	 */
 	public function set_default_view_variables()
 	{
-		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 
 		// Javascript Path Constants
-
-		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/');
-		define('JS_FOLDER', $js_folder);
+		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/');
+		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
+		define('JS_FOLDER', PATH_JS);
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
@@ -182,7 +180,7 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation')
+			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters')
 		);
 
 		$js_scripts['plugin'][] = 'ee_navigation';
@@ -231,6 +229,7 @@ class Cp {
 		$this->add_js_script('file', 'cp/global_end');
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+		ee()->view->version_identifier = APP_VER_ID;
 
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
@@ -372,6 +371,11 @@ class Cp {
 			$notices[] = sprintf(lang('version_mismatch'), ee()->config->item('app_version'), APP_VER);
 		}
 
+		if ( ! is_dir(PATH_THEMES))
+		{
+			$notices[] = sprintf(lang('theme_folder_wrong'), ee('CP/URL', '/cp/settings/urls'));
+		}
+
 		if ( ! empty($notices))
 		{
 			if ( ! $alert)
@@ -450,7 +454,6 @@ class Cp {
 
 		return NULL;
 	}
-
 
 	/**
 	 * EE Version Check function
@@ -651,17 +654,25 @@ class Cp {
 			return max($mtimes);
 		}
 
-		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
-			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
 				break;
-			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
+			case 'package':
+				if (strpos($name, ':') !== FALSE)
+				{
+					list($package, $name) = explode(':', $name);
+				}
+				else
+				{
+					$package = $name;
+				}
+
+				$file = PATH_THIRD.$package.'/javascript/'.$name.'.js';
 				break;
 			case 'fp_module':	$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
@@ -856,7 +867,8 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
+
+		$this->add_js_script(array('package' => $package.':'.$file));
 	}
 
 	// --------------------------------------------------------------------
@@ -873,7 +885,15 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+
+		if (REQ == 'CP')
+		{
+			$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		}
+		else
+		{
+			$url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').AMP.'type=css'.AMP.'package='.$package.AMP.'file='.$file;
+		}
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}

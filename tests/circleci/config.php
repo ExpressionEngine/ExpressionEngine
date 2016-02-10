@@ -19,7 +19,7 @@ if (function_exists('opcache_reset'))
 }
 
 $config['site_url'] = 'http://ee2.test:8080/';
-$config['app_version'] = '3.0.4';
+$config['app_version'] = '3.1.2';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
@@ -30,7 +30,6 @@ $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
-$config['use_compressed_js'] = 'n';
 $config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(

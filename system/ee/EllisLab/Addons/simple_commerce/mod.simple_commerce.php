@@ -43,7 +43,7 @@ class Simple_commerce {
 	/** ----------------------------------------
 	/**  Constructor
 	/** ----------------------------------------*/
-	function Simple_commerce()
+	function __construct()
 	{
 		$this->possible_post = array('business', 'receiver_email', 'receiver_id', 'item_name',
 									 'item_number', 'quantity', 'invoice', 'custom', 'memo',
