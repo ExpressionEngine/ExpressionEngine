@@ -36,6 +36,10 @@ $lang = array(
 
 'edit_file_metadata' => 'Edit "%s" Meta Data',
 
+'file_data' => 'File Data',
+
+'categories' => 'Categories',
+
 'title' => 'Title',
 
 'description' => 'Description',
@@ -280,9 +284,9 @@ $lang = array(
 'upload_member_groups_desc' => 'The following user groups are allowed to upload to this directory.</em>
 <em>Super Administrators are <b>always</b> allowed.',
 
-'upload_category_groups' => 'Allowed category groups',
+'upload_category_groups' => 'Category groups',
 
-'upload_category_groups_desc' => 'The following category groups are allowed to upload to this directory.',
+'upload_category_groups_desc' => 'Allow files to be assigned to categories from the following groups.',
 
 'directory_saved' => 'Upload directory saved',
 
