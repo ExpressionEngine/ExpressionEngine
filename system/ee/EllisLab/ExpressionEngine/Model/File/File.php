@@ -60,6 +60,13 @@ class File extends Model {
 		),
 	);
 
+	protected static $_validation_rules = array(
+		'title'       => 'xss',
+		'description' => 'xss',
+		'credit'      => 'xss',
+		'location'    => 'xss',
+	);
+
 	protected $file_id;
 	protected $site_id;
 	protected $title;
@@ -204,6 +211,37 @@ class File extends Model {
 	public function isWritable()
 	{
 		return is_writable($this->getAbsolutePath());
+	}
+
+	/**
+	 * Cleans the values by stripping tags and trimming
+	 *
+	 * @param string $str The string to be cleaned
+	 * @return string A clean string
+	 */
+	private function stripAndTrim($str)
+	{
+		return trim(strip_tags($str));
+	}
+
+	public function set__title($value)
+	{
+		$this->setRawProperty('title', $this->stripAndTrim($value));
+	}
+
+	public function set__description($value)
+	{
+		$this->setRawProperty('description', $this->stripAndTrim($value));
+	}
+
+	public function set__credit($value)
+	{
+		$this->setRawProperty('credit', $this->stripAndTrim($value));
+	}
+
+	public function set__location($value)
+	{
+		$this->setRawProperty('location', $this->stripAndTrim($value));
 	}
 
 }
