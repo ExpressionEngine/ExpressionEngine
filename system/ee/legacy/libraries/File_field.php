@@ -430,7 +430,7 @@ class File_field {
 		// Query for files based on file names and directory ID
 		if ( ! empty($file_names))
 		{
-			$file_names = ee()->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
+			$file_names = $this->get_files_by_name($file_names, $dir_ids);
 		}
 
 		$file_ids = array_diff($file_ids, $this->_file_ids);
@@ -448,6 +448,49 @@ class File_field {
 			$file_names,
 			$file_ids
 		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Queries for files based on file name using the Models and returns a
+	 * File_field library-compatible array of file information
+	 *
+	 * @param	array	$file_names	Array of file names to search for
+	 * @param	int 	$dir_ids	Array of directory IDs to search in
+	 * @return 	array	File data as array, with model object accessible on 'model_object' key
+	 */
+	private function get_files_by_name($file_names, $dir_ids)
+	{
+		if (empty($file_names) OR empty($dir_ids))
+		{
+			return FALSE;
+		}
+
+		if ( ! is_array($file_names))
+		{
+			$file_names = array($file_names);
+		}
+
+		if ( ! is_array($dir_ids))
+		{
+			$dir_ids = array($dir_ids);
+		}
+
+		$files = ee('Model')->get('File')
+			->with('UploadDestination')
+			->filter('file_name', 'IN', $file_names)
+			->filter('upload_location_id', 'IN', $dir_ids)
+			->all();
+
+		$files_as_array = array();
+
+		foreach ($files as $file)
+		{
+			$files_as_array[] = array_merge($file->toArray(), array('model_object' => $file));
+		}
+
+		return $files_as_array;
 	}
 
 	// ------------------------------------------------------------------------
@@ -603,15 +646,11 @@ class File_field {
 
 		if ( ! empty($manipulations))
 		{
-			$file_entity = ee('Model')->get('File', $file['file_id'])
-				->with('UploadDestination')
-				->first();
-
 			foreach($manipulations as $manipulation)
 			{
 				$file['url:'.$manipulation->short_name] = $file['path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
 
-				$dimensions = $manipulation->getNewDimensionsOfFile($file_entity);
+				$dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
 
 				if ($dimensions)
 				{
