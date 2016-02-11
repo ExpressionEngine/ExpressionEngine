@@ -51,6 +51,9 @@ EE.cp.formValidation = {
 
 		this._focusFirstError();
 		this._scrollGrid();
+
+		// These are the text input selectors we listen to for activity
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
 	},
 
 	/**
@@ -63,7 +66,7 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$('input[type=text], input[type=password], textarea', container).blur(function() {
+		$(this._textInputSelectors, container).blur(function() {
 			// Unbind keydown validation when the invalid field loses focus
 			$(this).unbind('keydown');
 			var element = $(this);
@@ -99,9 +102,9 @@ EE.cp.formValidation = {
 		// Get the first container that has a text input inside it, then get
 		// the first text input
 		var textInput = $('.invalid')
-			.has('input[type=text], textarea')
+			.has(this._textInputSelectors)
 			.first()
-			.find('input[type=text], textarea')
+			.find(this._textInputSelectors)
 			.first();
 
 		// Bail if no field to focus
