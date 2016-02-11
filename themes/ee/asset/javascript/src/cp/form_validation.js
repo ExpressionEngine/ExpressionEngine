@@ -43,6 +43,9 @@ EE.cp.formValidation = {
 		var form = form || $('form'),
 			that = this;
 
+		// These are the text input selectors we listen to for activity
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+
 		form.each(function(index, el) {
 
 			that._bindButtonStateChange($(el));
@@ -51,9 +54,6 @@ EE.cp.formValidation = {
 
 		this._focusFirstError();
 		this._scrollGrid();
-
-		// These are the text input selectors we listen to for activity
-		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
 	},
 
 	/**
