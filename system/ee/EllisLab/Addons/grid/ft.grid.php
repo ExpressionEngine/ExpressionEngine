@@ -462,7 +462,8 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Fresh settings forms ready to be used for added columns
 		$vars['settings_forms'] = array();
-		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $fieldtype_data)
+		$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
+		foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
 		{
 			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
