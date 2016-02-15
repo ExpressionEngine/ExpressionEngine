@@ -60,7 +60,7 @@ class Updater {
 			array(
 				'name'					=> 'toggle',
 				'version'				=> '1.0.0',
-				'settings'				=> 'YTowOnt9',
+				'settings'				=> base64_encode(serialize(array())),
 				'has_global_settings'	=> 'n',
 			)
 		);
