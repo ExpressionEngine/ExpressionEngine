@@ -28,6 +28,9 @@ class Toggle_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
+	/**
+	 * Fetch the fieldtype's name and version from it's addon.setup.php file.
+	 */
 	public function __construct()
 	{
 		$addon = ee('Addon')->get('toggle');
@@ -37,6 +40,9 @@ class Toggle_ft extends EE_Fieldtype {
 		);
 	}
 
+	/**
+	 * @see EE_Fieldtype::validate()
+	 */
 	function validate($data)
 	{
 		if ($data === FALSE
@@ -50,27 +56,37 @@ class Toggle_ft extends EE_Fieldtype {
 		return ee()->lang->line('invalid_selection');
 	}
 
+	/**
+	 * @see EE_Fieldtype::save()
+	 */
 	function save($data)
 	{
 		return (int) $data;
 	}
 
-	// --------------------------------------------------------------------
-
+	/**
+	 * @see EE_Fieldtype::display_field()
+	 */
 	function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
 
-	// --------------------------------------------------------------------
-
+	/**
+	 * @see _display_field()
+	 */
 	function grid_display_field($data)
 	{
 		return $this->_display_field(form_prep($data), 'grid');
 	}
 
-	// --------------------------------------------------------------------
-
+	/**
+	 * Displays the field for the CP or Frontend, and accounts for grid
+	 *
+	 * @param string $data Stored data for the field
+	 * @param string $container What type of container is this field in, 'fieldset' or 'grid'?
+	 * @return string Field display
+	 */
 	private function _display_field($data, $container = 'fieldset')
 	{
 		if (REQ == 'CP')
@@ -117,7 +133,6 @@ class Toggle_ft extends EE_Fieldtype {
 		return $html;
 	}
 
-	// -------------------------------
 	/**
 	 * Accept all content types.
 	 *
