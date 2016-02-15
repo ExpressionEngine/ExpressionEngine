@@ -540,7 +540,21 @@ class EE_Output {
 			$row['template_data']  = str_replace('{'.$key.'}', $val, $row['template_data'] );
 		}
 
-		echo  stripslashes($row['template_data'] );
+		$output = stripslashes($row['template_data']);
+
+		// -------------------------------------------
+		// 'output_show_message' hook.
+		//  - Modify the HTML output of the message
+		//  - added 3.2.0
+		//
+			if (ee()->extensions->active_hook('output_show_message') === TRUE)
+			{
+				$output = ee()->extensions->call('output_show_message', $data, $output);
+			}
+		//
+		// -------------------------------------------
+
+		echo $output;
 		exit;
 	}
 
