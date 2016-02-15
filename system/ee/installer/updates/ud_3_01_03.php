@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 3.0.7
+ * @since		Version 3.1.3
  * @filesource
  */
 
@@ -63,7 +63,5 @@ class Updater {
 		$msm_config->update_site_prefs(array('memberlist_order_by' => 'id'));
 	}
 }
-/* END CLASS */
 
-/* End of file ud_3_00_07.php */
-/* Location: ./system/expressionengine/installer/updates/ud_3_00_07.php */
+// EOF
