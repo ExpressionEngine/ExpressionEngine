@@ -112,28 +112,10 @@ class Grid_lib {
 				'required' => ($column['col_required'] == 'y')
 			);
 
-			switch ($column['col_type']) {
-				case 'rte':
-					$class = 'grid-rte';
-					break;
-				case 'relationship':
-					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
-					break;
-				case 'textarea':
-					$class = 'grid-textarea';
-					break;
-				case 'toggle':
-					$class = 'grid-toggle';
-					break;
-				default:
-					$class = '';
-					break;
-			}
-
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
 				'attrs' => array(
-					'class' => $class,
+					'class' => $this->get_class_for_column($column),
 					'data-fieldtype' => $column['col_type'],
 					'data-column-id' => $column['col_id'],
 					'width' => $column['col_width'].'%',
@@ -165,29 +147,11 @@ class Grid_lib {
 
 			foreach ($columns as $column)
 			{
-				switch ($column['col_type']) {
-					case 'rte':
-						$class = 'grid-rte';
-						break;
-					case 'relationship':
-						$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
-						break;
-					case 'textarea':
-						$class = 'grid-textarea';
-						break;
-					case 'toggle':
-						$class = 'grid-toggle';
-						break;
-					default:
-						$class = '';
-						break;
-				}
-
 				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
-						'class' => $class,
+						'class' => $this->get_class_for_column($column),
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
 						$data_row_id_attr => $row_id,
@@ -211,6 +175,29 @@ class Grid_lib {
 		$grid->setData($data);
 
 		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
+	}
+
+	protected function get_class_for_column($column)
+	{
+		switch ($column['col_type']) {
+			case 'rte':
+				$class = 'grid-rte';
+				break;
+			case 'relationship':
+				$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+				break;
+			case 'textarea':
+				$class = 'grid-textarea';
+				break;
+			case 'toggle':
+				$class = 'grid-toggle';
+				break;
+			default:
+				$class = '';
+				break;
+		}
+
+		return $class;
 	}
 
 	// ------------------------------------------------------------------------
