@@ -9,9 +9,11 @@
 				<li>
 					<a class="has-sub" href=""><?=lang('auto_saved_entries')?></a>
 					<div class="sub-menu">
+						<?php if ($entry->getAutosaves()->count() >= 10): ?>
 						<fieldset class="filter-search">
-							<input type="text" value="" placeholder="<?=lang('filter_autosaves')?>">
+							<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=lang('filter_autosaves')?>">
 						</fieldset>
+						<?php endif; ?>
 						<div class="scroll-wrap">
 							<ul>
 								<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>

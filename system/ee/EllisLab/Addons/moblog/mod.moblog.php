@@ -133,7 +133,7 @@ class Moblog {
 
 		$expired = array();
 
-		ee()->load->library('cache');
+		ee()->load->driver('cache');
 
 		foreach($query->result_array() as $row)
 		{
@@ -141,8 +141,7 @@ class Moblog {
 
 			if ($data === FALSE)
 			{
-				ee()->cache->set('/moblog/' . $row['moblog_id'], 'hi', $row['moblog_time_interval'] * 60, Cache::GLOBAL_SCOPE);
-				$this->set_cache($row['moblog_id']);
+				ee()->cache->save('/moblog/' . $row['moblog_id'], 'hi', $row['moblog_time_interval'] * 60, Cache::GLOBAL_SCOPE);
 				$expired[] = $row['moblog_id'];
 			}
 		}

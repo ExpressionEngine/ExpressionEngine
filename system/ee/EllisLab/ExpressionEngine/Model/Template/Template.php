@@ -100,6 +100,10 @@ class Template extends FileSyncedModel {
 		'protect_javascript' => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterSave',
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -258,5 +262,11 @@ class Template extends FileSyncedModel {
 		}
 
 		return TRUE;
+	}
+
+	public function onAfterSave()
+	{
+		parent::onAfterSave();
+		ee()->functions->clear_caching('all');
 	}
 }

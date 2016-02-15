@@ -308,6 +308,10 @@ class ChannelEntry extends ContentModel {
 		{
 			ee()->functions->clear_caching('all');
 		}
+		else
+		{
+			ee()->functions->clear_caching('sql');
+		}
 	}
 
 	public function onAfterInsert()
