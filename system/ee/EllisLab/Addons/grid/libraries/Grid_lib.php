@@ -116,11 +116,14 @@ class Grid_lib {
 				case 'rte':
 					$class = 'grid-rte';
 					break;
+				case 'relationship':
+					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+					break;
 				case 'textarea':
 					$class = 'grid-textarea';
 					break;
-				case 'relationship':
-					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+				case 'toggle':
+					$class = 'grid-toggle';
 					break;
 				default:
 					$class = '';
@@ -162,10 +165,29 @@ class Grid_lib {
 
 			foreach ($columns as $column)
 			{
+				switch ($column['col_type']) {
+					case 'rte':
+						$class = 'grid-rte';
+						break;
+					case 'relationship':
+						$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+						break;
+					case 'textarea':
+						$class = 'grid-textarea';
+						break;
+					case 'toggle':
+						$class = 'grid-toggle';
+						break;
+					default:
+						$class = '';
+						break;
+				}
+
 				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
+						'class' => $class,
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
 						$data_row_id_attr => $row_id,
