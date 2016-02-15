@@ -142,9 +142,9 @@ class Members extends Settings {
 						'memberlist_order_by' => array(
 							'type' => 'select',
 							'choices' => array(
-								'id' => lang('id'),
-								'username' => lang('username'),
-								'join_date' => lang('memberlist_order_by_reg_date'),
+								'id'           => lang('id'),
+								'username'     => lang('username'),
+								'dates'        => lang('join_date'),
 								'member_group' => lang('member_group')
 							)
 						)

@@ -497,9 +497,9 @@ $lang = array(
 
 'memberlist_sort_order_desc' => 'Sorting order for the member listing.',
 
-'memberlist_sort_order_opt_asc' => 'Ascending (A-Z)',
+'memberlist_sort_order_opt_asc' => 'Ascending (A-Z/Oldest-Newest)',
 
-'memberlist_sort_order_opt_desc' => 'Descending (Z-A)',
+'memberlist_sort_order_opt_desc' => 'Descending (Z-A/Newest-Oldest)',
 
 'memberlist_row_limit' => 'Total results',
 
