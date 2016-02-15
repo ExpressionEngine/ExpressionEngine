@@ -43,7 +43,7 @@ class Toggle_ft extends EE_Fieldtype {
 	/**
 	 * @see EE_Fieldtype::validate()
 	 */
-	function validate($data)
+	public function validate($data)
 	{
 		if ($data === FALSE
 			|| $data == ''
@@ -59,7 +59,7 @@ class Toggle_ft extends EE_Fieldtype {
 	/**
 	 * @see EE_Fieldtype::save()
 	 */
-	function save($data)
+	public function save($data)
 	{
 		return (int) $data;
 	}
@@ -67,7 +67,7 @@ class Toggle_ft extends EE_Fieldtype {
 	/**
 	 * @see EE_Fieldtype::display_field()
 	 */
-	function display_field($data)
+	public function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
@@ -75,7 +75,7 @@ class Toggle_ft extends EE_Fieldtype {
 	/**
 	 * @see _display_field()
 	 */
-	function grid_display_field($data)
+	public function grid_display_field($data)
 	{
 		return $this->_display_field(form_prep($data), 'grid');
 	}
