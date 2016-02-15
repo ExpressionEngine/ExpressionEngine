@@ -134,6 +134,17 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! $dir->exists())
+		{
+			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+			ee('CP/Alert')->makeInline('missing-directory')
+				->asWarning()
+				->cannotClose()
+				->withTitle(sprintf(lang('directory_not_found'), $dir->server_path))
+				->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
+				->now();
+		}
+
 		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
 		$base_url = ee('CP/URL')->make('files/directory/' . $id);

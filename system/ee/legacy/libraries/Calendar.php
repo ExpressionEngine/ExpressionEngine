@@ -45,11 +45,9 @@ class EE_Calendar {
 	 */
 	public function __construct($config = array())
 	{
-		$this->CI =& get_instance();
-
-		if ( ! in_array('calendar_lang.php', $this->CI->lang->is_loaded, TRUE))
+		if ( ! in_array('calendar_lang.php', ee()->lang->is_loaded, TRUE))
 		{
-			$this->CI->lang->load('calendar');
+			ee()->lang->load('calendar');
 		}
 
 		$this->local_time = time();
@@ -273,12 +271,12 @@ class EE_Calendar {
 
 		$month = $month_names[$month];
 
-		if ($this->CI->lang->line($month) === FALSE)
+		if (ee()->lang->line($month) === FALSE)
 		{
 			return ucfirst(str_replace('cal_', '', $month));
 		}
 
-		return $this->CI->lang->line($month);
+		return ee()->lang->line($month);
 	}
 
 	// --------------------------------------------------------------------
@@ -314,7 +312,7 @@ class EE_Calendar {
 		$days = array();
 		foreach ($day_names as $val)
 		{
-			$days[] = ($this->CI->lang->line('cal_'.$val) === FALSE) ? ucfirst($val) : $this->CI->lang->line('cal_'.$val);
+			$days[] = (ee()->lang->line('cal_'.$val) === FALSE) ? ucfirst($val) : ee()->lang->line('cal_'.$val);
 		}
 
 		return $days;

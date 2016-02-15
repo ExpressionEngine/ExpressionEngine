@@ -71,7 +71,10 @@ $lang = array(
 'preference' => 'Preference',
 
 'pag_first_link' => '&lsaquo; First',
+
 'pag_last_link' => 'Last &rsaquo;',
+
+'site_homepage' => 'Site Homepage',
 
 //----------------------------
 // Errors
@@ -117,6 +120,8 @@ and email %s to report the link that generated this message.',
 'missing_mime_config' => 'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
 
 'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
+
+'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
 
 'checksum_changed_warning' => 'One or more core files have been altered:',
 

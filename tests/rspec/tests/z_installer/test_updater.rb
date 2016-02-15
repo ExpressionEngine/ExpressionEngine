@@ -215,6 +215,20 @@ feature 'Updater' do
       @page.has_download?.should == true
       File.exist?(mailing_list_zip).should == true
     end
+
+    test_version
+  end
+
+  def test_version
+    File.open(File.expand_path('../../system/user/config/config.php'), 'r') do |file|
+      config_version = file.read.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
+
+      File.open(File.expand_path('../../system/ee/installer/controllers/wizard.php'), 'r') do |file|
+        wizard_version = file.read.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
+
+        config_version.should == wizard_version
+      end
+    end
   end
 
   def test_templates

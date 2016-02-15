@@ -5,6 +5,8 @@ $required_error = 'This field is required.'
 $integer_error = 'This field must contain an integer.'
 $natural_number = 'This field must contain only positive numbers.'
 $natural_number_not_zero = 'This field must contain a number greater than zero.'
+$numeric = 'This field must contain only numeric characters.'
+$greater_than = 'This field must be greater than'
 $invalid_path = 'The path you submitted is not valid.'
 $not_writable = 'The path you submitted is not writable.'
 $alpha_dash = 'This field may only contain alpha-numeric characters, underscores, and dashes.'
@@ -23,18 +25,21 @@ end
 # Runs when a page is visted and after every example to ensure no
 # PHP or JavaScript errors are present
 def no_php_js_errors
-	# Search for "on line" or "Line Number:" since they're in pretty much
+  # Search for "on line" or "Line Number:" since they're in pretty much
   # in every PHP error
   if not page.current_url.include? 'logs/developer'
     page.should have_no_content('on line')
   end
   page.should have_no_content('Line Number:')
 
+  # Our custom PHP error handler
+  page.should have_no_content(', line')
+
   page.should have_no_content('Exception Caught')
 
-	# Capybara makes JS error messages available in this array,
-	# let's make sure it's empty; we can also check for any console
-	# message but we're just checking for errors now
+  # Capybara makes JS error messages available in this array,
+  # let's make sure it's empty; we can also check for any console
+  # message but we're just checking for errors now
   if page.driver.error_messages.any?
     raise StandardError, "JS Error: " + page.driver.error_messages.join(" ")
   end

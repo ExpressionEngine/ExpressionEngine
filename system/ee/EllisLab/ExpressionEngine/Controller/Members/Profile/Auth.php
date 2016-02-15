@@ -174,12 +174,7 @@ class Auth extends Settings {
 		if ($this->config->item('allow_username_change') != 'y' &&
 			$this->session->userdata('group_id') != 1)
 		{
-			if ($_POST['current_password'] == '')
-			{
-				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->member->member_id);
-			}
-
-			$_POST['username'] = $_POST['current_username'];
+			$_POST['username'] = $this->member->username;
 		}
 
 		// validate for unallowed blank values

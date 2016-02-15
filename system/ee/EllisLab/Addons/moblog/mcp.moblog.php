@@ -297,7 +297,6 @@ EOT;
 		{
 			$channels = $channels->filter('site_id', 1);
 		}
-
 		$channels = $channels->all();
 
 		$channels_options = array();
@@ -306,6 +305,37 @@ EOT;
 			$channels_options[$channel->channel_id] = (ee()->config->item('multiple_sites_enabled') === 'y')
 				? $channel->Site->site_label.NBS.'-'.NBS.$channel->channel_title : $channel->channel_title;
 		}
+
+		$author_options = array();
+
+		// First, get member groups who should be in the list
+		$member_groups = ee('Model')->get('MemberGroup')
+			->with('AssignedChannels')
+			->filter('include_in_authorlist', 'y')
+			->fields('group_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		// Then authors who are individually selected to appear in author list
+		$authors = ee('Model')->get('Member')
+			->fields('username', 'screen_name')
+			->filter('in_authorlist', 'y');
+
+		// Then grab any members that are part of the member groups we found
+		if ($member_groups)
+		{
+			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
+		}
+
+		$authors->order('screen_name');
+		$authors->order('username');
+
+		foreach ($authors->all() as $author)
+		{
+			$author_options[$author->getId()] = $author->getMemberName();
+		}
+
+		$moblog_authors = $author_options;// ee('Model')->get('Member')->fields('member_id', 'screen_name')->limit(100)->all()->getDictionary('member_id', 'screen_name');
 
 		$vars['sections'] = array(
 			array(
@@ -378,7 +408,7 @@ EOT;
 					'fields' => array(
 						'moblog_categories' => array(
 							'type' => 'checkbox',
-							'choices' => ee('Model')->get('Category')->all()->getDictionary('cat_id', 'cat_name'),
+							'choices' => ee('Model')->get('Category')->fields('cat_id', 'cat_name')->all()->getDictionary('cat_id', 'cat_name'),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -388,7 +418,7 @@ EOT;
 					'fields' => array(
 						'moblog_field_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('ChannelField')->all()->getDictionary('field_id', 'field_label'),
+							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'label')->all()->getDictionary('field_id', 'field_label'),
 							'value' => $moblog->moblog_field_id
 						)
 					)
@@ -398,7 +428,7 @@ EOT;
 					'fields' => array(
 						'moblog_status' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('Status')->all()->getDictionary('status', 'status'),
+							'choices' => ee('Model')->get('Status')->fields('status')->all()->getDictionary('status', 'status'),
 							'value' => $moblog->moblog_status
 						)
 					)
@@ -408,7 +438,7 @@ EOT;
 					'fields' => array(
 						'moblog_author_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('Member')->all()->getDictionary('member_id', 'screen_name'),
+							'choices' => $moblog_authors,
 							'value' => $moblog->moblog_author_id
 						)
 					)
@@ -554,6 +584,7 @@ EOT;
 						'moblog_upload_directory' => array(
 							'type' => 'select',
 							'choices' => ee('Model')->get('UploadDestination')
+								->fields('site_id', 'module_id', 'id', 'name')
 								->filter('site_id', ee()->config->item('site_id'))
 								->filter('module_id', 0)
 								->all()

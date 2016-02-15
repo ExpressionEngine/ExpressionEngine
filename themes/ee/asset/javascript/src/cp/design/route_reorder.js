@@ -17,6 +17,7 @@
 $(document).ready(function() {
 
 	$('table').eeTableReorder({});
+	$('table tbody').sortable('option', 'helper', 'original');
 
 });
 

@@ -103,7 +103,7 @@ class TemplateRoute extends Model {
 	public function onBeforeSave()
 	{
 		ee()->load->library('template_router');
-		$ee_route = new EE_Route($this->getProperty('route'), $this->route_required);
+		$ee_route = new EE_Route($this->getProperty('route'), $this->getProperty('route_required'));
 		$this->setProperty('route_parsed', $ee_route->compile());
 	}
 

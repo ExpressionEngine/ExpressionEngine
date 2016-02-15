@@ -49,10 +49,12 @@ class Pages_mcp {
 		{
 			foreach($query->result_array() as $row)
 			{
-				$$row['configuration_name'] = $row['configuration_value'];
+				if ($row['configuration_name'] == 'homepage_display')
+				{
+					$this->homepage_display = $row['configuration_value'];
+					break;
+				}
 			}
-
-			$this->homepage_display = $homepage_display;
 		}
 
 		ee()->view->header = array(

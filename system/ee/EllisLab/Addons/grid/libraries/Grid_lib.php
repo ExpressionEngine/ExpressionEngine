@@ -106,7 +106,11 @@ class Grid_lib {
 		$blank_column = array();
 		foreach ($columns as $column)
 		{
-			$column_headings[$column['col_label']] = array('desc' => $column['col_instructions']);
+			$column_headings[] = array(
+				'label' => $column['col_label'],
+				'desc' => $column['col_instructions'],
+				'required' => ($column['col_required'] == 'y')
+			);
 
 			switch ($column['col_type']) {
 				case 'rte':
@@ -143,22 +147,38 @@ class Grid_lib {
 			if ( ! is_numeric($row_id))
 			{
 				$row['row_id'] = $row_id;
+
+				// We want to reserve the row-id data attribute for real row IDs, not
+				// the string placeholders, in case folks are relying on having a real
+				// number there or are using it to determine if a row is new or not
+				$data_row_id_attr = 'data-new-row-id';
+			}
+			else
+			{
+				$data_row_id_attr = 'data-row-id';
 			}
 
 			$field_columns = array();
 
 			foreach ($columns as $column)
 			{
-				$field_columns[] = array(
+				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
-						'data-row-id' => $row_id,
+						$data_row_id_attr => $row_id,
 						'width' => $column['col_width'].'%',
 					)
 				);
+
+				if ($column['col_required'] == 'y')
+				{
+					$col['attrs']['class'] = 'required';
+				}
+
+				$field_columns[] = $col;
 			}
 			$data[] = array(
 				'attrs' => array('row_id' => $row_id),
@@ -865,7 +885,8 @@ class Grid_lib {
 				'field_name'	=> $field_name,
 				'column'		=> $column,
 				'fieldtypes'	=> $fieldtypes_dropdown,
-				'error_fields'  => $error_fields
+				'error_fields'  => $error_fields,
+				'new_column'	=> empty($column['col_id'])
 			),
 			TRUE
 		);

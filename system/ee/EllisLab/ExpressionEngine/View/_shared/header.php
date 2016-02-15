@@ -9,7 +9,6 @@
 		<?php endif;?>
 
 		<?=ee()->view->head_link('css/common.min.css'); ?>
-		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>

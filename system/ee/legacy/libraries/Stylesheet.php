@@ -115,7 +115,6 @@ class EE_Stylesheet {
 	 */
 	private function _ee_channel_form_css()
 	{
-		$files[] = PATH_THEMES.'cp/default/css/jquery-ui-1.8.16.custom.css';
 		$files[] = PATH_THEMES.'cp/default/css/channel_form.css';
 
 		$out = '';
@@ -125,13 +124,6 @@ class EE_Stylesheet {
 			if (file_exists($file))
 			{
 				$out .= file_get_contents($file);
-
-				if ($file == PATH_THEMES.'cp/default/css/jquery-ui-1.8.16.custom.css')
-				{
-					$theme_url = URL_THEMES.'cp/'.ee()->config->item('cp_theme');
-
-					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
-				}
 			}
 		}
 

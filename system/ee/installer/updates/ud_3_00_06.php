@@ -38,7 +38,6 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_synchronize_layouts',
 				'_comment_formatting'
 			)
 		);
@@ -51,50 +50,7 @@ class Updater {
 		return TRUE;
 	}
 
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Fields added after a layout was crated, never made it into the layout.
-	 *
-	 * @return void
-	 */
-	private function _synchronize_layouts()
-	{
-		$layouts = ee('Model')->get('ChannelLayout')->all();
-
-		foreach ($layouts as $layout)
-		{
-			// Account for any new fields that have been added to the channel
-			// since the last edit
-			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
-
-			foreach ($layout->field_layout as $section)
-			{
-				foreach ($section['fields'] as $field_info)
-				{
-					if (strpos($field_info['field'], 'field_id_') == 0)
-					{
-						$id = str_replace('field_id_', '', $field_info['field']);
-						unset($custom_fields[$id]);
-					}
-				}
-			}
-
-			$field_layout = $layout->field_layout;
-
-			foreach ($custom_fields as $id => $val)
-			{
-				$field_info = array(
-					'field'     => 'field_id_' . $id,
-					'visible'   => TRUE,
-					'collapsed' => FALSE
-				);
-				$field_layout[0]['fields'][] = $field_info;
-			}
-
-			$layout->field_layout = $field_layout;
-		}
-	}
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Increase the column for storing comment formatting

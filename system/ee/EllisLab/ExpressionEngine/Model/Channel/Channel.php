@@ -114,6 +114,7 @@ class Channel extends StructureModel {
 
 	protected static $_events = array(
 		'beforeSave',
+		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -275,6 +276,74 @@ class Channel extends StructureModel {
 			{
 				$this->setProperty($column, '');
 			}
+		}
+	}
+
+	public function onAfterUpdate($previous)
+	{
+		// Only scnchronize if the category groups changed and we have a layout
+		if (isset($previous['cat_group']) && count($this->ChannelLayouts))
+		{
+			$this->syncCatGroupsWithLayouts();
+		}
+	}
+
+	/**
+	 * We offer a discrete field per category group. Layouts save the the field
+	 * order and tab location of all fields. When a category group is added to,
+	 * or removed from a Channel, we need to update all of its Layouts, either
+	 * adding a field or removing one.
+	 */
+	private function syncCatGroupsWithLayouts()
+	{
+		$cat_groups = array();
+
+		foreach (explode('|', $this->cat_group) as $group_id)
+		{
+			$cat_groups['categories[cat_group_id_'.$group_id.']'] = TRUE;
+		}
+
+		foreach ($this->ChannelLayouts as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+
+			foreach ($field_layout as $i => $section)
+			{
+				foreach ($section['fields'] as $j => $field_info)
+				{
+					// All category fields begin with "categories"
+					if (strpos($field_info['field'], 'categories') === 0)
+					{
+						$field_name = $field_info['field'];
+
+						// Is it already accounted for?
+						if (in_array($field_name, array_keys($cat_groups)))
+						{
+							unset($cat_groups[$field_name]);
+						}
+
+						// If not, it was removed and needs to be deleted
+						else
+						{
+							unset($field_layout[$i]['fields'][$j]);
+						}
+					}
+				}
+			}
+
+			// Add the new category groups
+			foreach (array_keys($cat_groups) as $cat_group)
+			{
+				$field_info = array(
+					'field' => $cat_group,
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				);
+				$field_layout[2]['fields'][] = $field_info;
+			}
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
 		}
 	}
 

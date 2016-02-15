@@ -41,6 +41,7 @@ class Table {
 	protected $data = array();
 	protected $action_buttons = array();
 	protected $action_content;
+	protected $localize;
 
 	/**
 	 * Config can have these keys:
@@ -203,6 +204,7 @@ class Table {
 
 		// Default settings for columns
 		$defaults = array(
+			'label'		=> NULL,
 			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
@@ -210,11 +212,13 @@ class Table {
 
 		foreach ($columns as $label => $settings)
 		{
-			// If column has no label, like for a select-all checkbox column
-			$empty_label = (is_int($label) && is_array($settings));
-
-			// No column settings, just label
-			if (is_int($label) && is_string($settings))
+			// 'label' key override
+			if (is_array($settings) && isset($settings['label']))
+			{
+				$label = $settings['label'];
+			}
+			// Column has no settings, value is label
+			else if (is_int($label) && is_string($settings))
 			{
 				$label = $settings;
 			}
@@ -237,14 +241,13 @@ class Table {
 				$settings = $defaults;
 			}
 
-			if ($empty_label)
+			// If this passes, label was likely set as column's key, set it
+			if ( ! isset($settings['label']) && ! is_int($label))
 			{
-				$this->columns[] = $settings;
+				$settings['label'] = $label;
 			}
-			else
-			{
-				$this->columns[$label] = $settings;
-			}
+
+			$this->columns[] = $settings;
 		}
 	}
 
@@ -490,10 +493,10 @@ class Table {
 		if ($subheadings)
 		{
 			$sort_dir = $this->getSortDir();
-
-			uksort($this->data, function ($a, $b) use ($sort_dir)
+			$that = $this;
+			uksort($this->data, function ($a, $b) use ($that, $sort_dir)
 			{
-				$cmp = $this->compareData($a, $b);
+				$cmp = $that->compareData($a, $b);
 				return ($sort_dir == 'asc') ? $cmp : -$cmp;
 			});
 
@@ -521,11 +524,16 @@ class Table {
 		$sort_col = $this->getSortCol();
 		$sort_dir = $this->getSortDir();
 
-		usort($rows, function ($a, $b) use ($columns, $sort_col, $sort_dir)
+		// Errors are suppressed due to a PHP bug where PHP incorrectly assumes
+		// an array has been changed in a usort function
+		$that = $this;
+		usort($rows, function ($a, $b) use ($that, $columns, $sort_col, $sort_dir)
 		{
-			$search = array_keys($columns);
+			$search = array_map(function($column) {
+				return $column['label'];
+			}, $columns);
 			$index  = array_search($sort_col, $search);
-			$cmp    = $this->compareData(
+			$cmp    = $that->compareData(
 				$a['columns'][$index]['content'],
 				$b['columns'][$index]['content']
 			);
@@ -550,9 +558,9 @@ class Table {
 		else
 		{
 			// Check for dates
-			$date_format = ee()->localize->get_date_format();
-			$date_a = ee()->localize->string_to_timestamp($a, TRUE, $date_format);
-			$date_b = ee()->localize->string_to_timestamp($b, TRUE, $date_format);
+			$date_format = $this->localize->get_date_format();
+			$date_a = $this->localize->string_to_timestamp($a, TRUE, $date_format);
+			$date_b = $this->localize->string_to_timestamp($b, TRUE, $date_format);
 
 			if ($date_a !== FALSE && $date_b !== FALSE)
 			{
@@ -672,10 +680,14 @@ class Table {
 	 */
 	private function getSortCol()
 	{
+		$search = array_map(function($column) {
+			return $column['label'];
+		}, $this->columns);
+
 		if ((empty($this->config['sort_col']) && count($this->columns) > 0) OR
-			! in_array($this->config['sort_col'], array_keys($this->columns)))
+			! in_array($this->config['sort_col'], $search))
 		{
-			return key($this->columns);
+			return isset($this->columns[0]) ? $this->columns[0]['label'] : NULL;
 		}
 
 		return $this->config['sort_col'];
@@ -711,6 +723,15 @@ class Table {
 			'action_text'	=> $action_text,
 			'action_link'	=> $action_link
 		);
+	}
+
+	/**
+	 * Inject the Localize object
+	 * @param Localize $localize An instance of the Localize class
+	 */
+	public function setLocalize($localize)
+	{
+		$this->localize = $localize;
 	}
 }
 

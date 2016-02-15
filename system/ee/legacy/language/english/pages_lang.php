@@ -46,6 +46,8 @@ $lang = array(
 
 'pages_templates_desc' => 'Default templates for each channel.',
 
+'create_template' => 'Create Template',
+
 //----------------------------------------
 
 'pages_manager' => 'Pages Manager',

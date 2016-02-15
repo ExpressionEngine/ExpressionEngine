@@ -227,7 +227,8 @@ class Groups extends Members\Members {
 		}
 
 		$vars = array(
-			'cp_page_title' => lang('create_member_group')
+			'cp_page_title' => lang('create_member_group'),
+			'website_access' => 'can_view_online_system',
 		);
 		$this->base_url = ee('CP/URL')->make('members/groups/create/', $this->query_string);
 
@@ -656,8 +657,20 @@ class Groups extends Members\Members {
 				->getDictionary('group_id', 'group_name');
 
 			$addons = ee('Model')->get('Module')
+				->fields('module_id', 'module_name')
 				->filter('module_name', 'NOT IN', array('channel', 'comment', 'filepicker')) // @TODO This REALLY needs abstracting.
 				->all()
+				->filter(function($addon) {
+					$provision = ee('Addon')->get(strtolower($addon->module_name));
+
+					if ( ! $provision)
+					{
+						return FALSE;
+					}
+
+					$addon->module_name = $provision->getName();
+					return TRUE;
+				})
 				->getDictionary('module_id', 'module_name');
 
 			$allowed_channels = ee('Model')->get('Channel')

@@ -77,11 +77,11 @@ Grid.Publish.prototype = {
 		this.root.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
 			beforeSort: function(row) {
-				that._fireEvent('beforeSort', row.item);
+				that._fireEvent('beforeSort', row);
 			},
 			// Fire 'afterSort' event on sort stop
 			afterSort: function(row) {
-				that._fireEvent('afterSort', row.item);
+				that._fireEvent('afterSort', row);
 			}
 		});
 	},
@@ -204,6 +204,9 @@ Grid.Publish.prototype = {
 				'new_row_' + this.original_row_count
 			)
 		);
+
+		// Add the new row ID to the field data
+		$('> td', el).attr('data-new-row-id', 'new_row_' + this.original_row_count);
 
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');

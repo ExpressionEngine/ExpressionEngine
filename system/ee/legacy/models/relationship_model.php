@@ -95,6 +95,7 @@ class Relationship_model extends CI_Model {
 		$db->select('L0.grid_row_id as L0_grid_row_id');
 		$db->select($relative_parent.' AS L0_parent');
 		$db->select($relative_child.' as L0_id');
+		$db->select('L0.order');
 		$db->from($this->_table.' as L0');
 
 		if ($type == self::GRID)
@@ -149,6 +150,7 @@ class Relationship_model extends CI_Model {
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
 				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
 				$db->select('L' . $level . '.child_id as L' . $level . '_id');
+				$db->select('L' . $level . '.order');
 			}
 
 		}

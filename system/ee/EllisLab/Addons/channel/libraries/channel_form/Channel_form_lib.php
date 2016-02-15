@@ -77,6 +77,8 @@ class Channel_form_lib
 	protected $_form_attributes = array();
 	protected $_installed_mods  = array('smileys' => FALSE, 'spellcheck' => FALSE);
 
+	protected $member;
+
 
 	private $all_params = array(
 		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
@@ -131,7 +133,7 @@ class Channel_form_lib
 		// ee()->router->set_class('ee');
 		ee()->load->library('javascript');
 		ee()->load->library('api');
-		// ee()->load->library('form_validation');
+		ee()->load->library('form_validation');
 		// ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->lang->loadfile('content');
@@ -156,12 +158,19 @@ class Channel_form_lib
 		ee()->config->set_item('site_id', $this->site_id);
 
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
-		$this->load_session_override();
+
+		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
+		$this->member = ee('Model')->get('Member', $member_id)->with('MemberGroup')->first();
+
+		if ( ! $this->member)
+		{
+			return ee()->TMPL->no_results();
+		}
+
+		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
 
 		// Can they post?
-		$assigned_channels = ee()->functions->fetch_assigned_channels();
-
-		if ( ! in_array($this->channel('channel_id'), $assigned_channels))
+		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() !== 1)
 		{
 			return ee()->TMPL->no_results();
 		}
@@ -193,7 +202,7 @@ class Channel_form_lib
 			$this->edit = TRUE;
 		}
 
-		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != ee()->session->userdata('member_id'))
+		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $member_id)
 		{
 			throw new Channel_form_exception(lang('channel_form_author_only'));
 		}
@@ -682,15 +691,7 @@ class Channel_form_lib
 		}
 
 		//set group-based return url
-		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
-
-		// Nothin'
-		if (ee()->session->userdata('member_id') == 0)
-		{
-			$this->form_loaded = FALSE;
-			return;
-		}
-
+		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.$this->member->MemberGroup->getId())) ? ee()->TMPL->fetch_param('return_'.$this->member->MemberGroup->getId()) : ee()->TMPL->fetch_param('return'));
 
 		// build the form
 
@@ -700,7 +701,7 @@ class Channel_form_lib
 			'RET'	  				=> $RET,
 			'URI'	  				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
 			'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
-			'author_id'				=> ee()->session->userdata('member_id'),
+			'author_id'				=> $this->member->getId(),
 			'channel_id'			=> $this->channel('channel_id'),
 			'entry_id'				=> 0
 		);
@@ -748,7 +749,6 @@ class Channel_form_lib
 		$this->_build_javascript();
 
 		ee()->config->set_item('site_id', $current_site_id);
-		$this->unload_session_override();
 
 
 		//make head appear by default
@@ -757,10 +757,7 @@ class Channel_form_lib
 			$return = ee()->TMPL->swap_var_single('channel_form_assets', $this->head, $return);
 		}
 		// Head should only be there if the param is there and there is a valid member_id
-		elseif (
-			$this->bool_string(ee()->TMPL->fetch_param('include_assets'), TRUE) AND
-			($this->logged_out_member_id OR ee()->session->userdata('member_id'))
-		)
+		elseif ($this->bool_string(ee()->TMPL->fetch_param('include_assets'), TRUE) AND $this->member)
 		{
 			$return .= $this->head;
 		}
@@ -807,7 +804,7 @@ class Channel_form_lib
 			ee()->session->set_cache(
 				__CLASS__,
 				'html_buttons',
-				ee()->admin_model->get_html_buttons(ee()->session->userdata('member_id'))
+				ee()->admin_model->get_html_buttons($this->member->getId())
 			);
 		}
 
@@ -870,7 +867,7 @@ class Channel_form_lib
 				'url_title_prefix'	=> $this->channel('url_title_prefix'),
 				'default_entry_title' => $this->channel('default_entry_title')
 			),
-			'user_id' => ee()->session->userdata('member_id'),
+			'user_id' => $this->member->getId(),
 			'lang' => array(
 					'confirm_exit'			=> lang('confirm_exit'),
 					'add_new_html_button'	=> lang('add_new_html_button')
@@ -1309,7 +1306,7 @@ GRID_FALLBACK;
 		$this->fetch_channel($this->_meta['channel_id']);
 
 		ee()->load->helper(array('url', 'form'));
-		ee()->load->library('api');
+		ee()->load->library(array('api', 'file_field'));
 		//ee()->legacy_api->instantiate('channel_fields');
 		ee()->load->library('filemanager');
 		ee()->load->library('form_validation');
@@ -1357,15 +1354,23 @@ GRID_FALLBACK;
 				$this->fetch_logged_out_member($logged_out_member_id);
 			}
 		}
-		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		{
-			$this->fetch_logged_out_member($this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')]);
+			$this->fetch_logged_out_member($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]);
+		}
+
+		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
+		$this->member = ee('Model')->get('Member', $member_id)->with('MemberGroup')->first();
+
+		if ( ! $this->member)
+		{
+			throw new Channel_form_exception(lang('channel_form_invalid_author'));
 		}
 
 		//captcha check
 		$captcha_required = FALSE;
 
-		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			$captcha_required = TRUE;
 
@@ -1423,7 +1428,7 @@ GRID_FALLBACK;
 
 			// Check for author_only setting
 			if 	((isset($this->_meta['author_only']) && $this->_meta['author_only'] != FALSE) &&
-				$this->entry('author_id') != ee()->session->userdata('member_id'))
+				$this->entry('author_id') != $this->member->getId())
 			{
 				throw new Channel_form_exception(lang('channel_form_author_only'));
 			}
@@ -1471,7 +1476,9 @@ GRID_FALLBACK;
 				// trick validation into calling the file fieldtype
 				if (isset($_FILES[$field->field_name]['name']))
 				{
-					$_POST[$field->field_name] = $_FILES[$field->field_name]['name'];
+					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
+			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';
+
 				}
 			}
 
@@ -1494,6 +1501,17 @@ GRID_FALLBACK;
 					//to get around _check_data_for_errors, a redundant check
 					$_POST['field_id_'.$field->field_id] = '1';
 				}
+			}
+			else
+			{
+				$field_rules = array();
+
+				if (isset($rules[$field->field_name]))
+				{
+					$field_rules = explode('|', $rules[$field->field_name]);
+				}
+
+				ee()->form_validation->set_rules($field->field_name, $field->field_label, implode('|', $field_rules));
 			}
 
 			foreach ($_POST as $key => $value)
@@ -1534,7 +1552,6 @@ GRID_FALLBACK;
 					$_POST['field_id_'.$field->field_id.'_'.$match[1]] = ee()->input->post($key, TRUE);
 				}
 			}
-
 		}
 
 		foreach ($this->title_fields as $field)
@@ -1544,8 +1561,6 @@ GRID_FALLBACK;
 			if (isset($this->default_fields[$field]) && ! $dropped)
 			{
 				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
-
-				ee()->form_validation->set_rules($field, $this->default_fields[$field]['field_label'], $this->default_fields[$field]['rules']);
 			}
 
 			if (ee()->input->post($field) !== FALSE)
@@ -1584,14 +1599,14 @@ GRID_FALLBACK;
 		}
 
 		//don't override status on edit, only on publish
-		if ( ! $this->edit && ! empty($this->settings['override_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
+		if ( ! $this->edit && ! empty($this->settings['default_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
-			$_POST['status'] = $this->settings['override_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
+			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 
 		$_POST['revision_post'] = $_POST;
 
-		$this->load_session_override();
+		$this->_member_group_override();
 
 		//added for EE2.1.2
 		ee()->legacy_api->instantiate('channel_categories');
@@ -1627,6 +1642,23 @@ GRID_FALLBACK;
 			ee()->api_channel_fields->settings[$field_id] = $settings;
 		}
 
+		// validate the custom validation parameters with the old validation library
+		if ( ! ee()->form_validation->run())
+		{
+			$errors = ee()->form_validation->_error_array;
+
+			if ( ! is_array($this->field_errors))
+			{
+				$this->field_errors = array();
+			}
+
+			foreach ($errors as $key => $message)
+			{
+				$field = ee()->form_validation->_field_data[$key]['label'];
+				$this->field_errors[$field] = $message;
+			}
+		}
+
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1642,6 +1674,11 @@ GRID_FALLBACK;
 			}
 		}
 
+		if ( ! isset($_POST['url_title']))
+		{
+			$_POST['url_title'] = url_title($_POST['title']);
+		}
+
 		if (empty($this->field_errors) && empty($this->errors))
 		{
 			//temporarily change site_id for cross-site forms
@@ -1650,7 +1687,7 @@ GRID_FALLBACK;
 
 			ee()->config->set_item('site_id', $this->site_id);
 
-			if (in_array($this->channel('channel_id'), ee()->functions->fetch_assigned_channels()))
+			if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() === 1)
 			{
 				// Lastly we check for spam before inserting the data
 				$is_spam = ee('Spam')->isSpam($spam_content);
@@ -1666,7 +1703,7 @@ GRID_FALLBACK;
 
 					$result = $this->entry->validate();
 
-					if (is_array($_POST['category']))
+					if (isset($_POST['category']) && is_array($_POST['category']))
 					{
 						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
 					}
@@ -1709,17 +1746,19 @@ GRID_FALLBACK;
 
 			ee()->config->set_item('site_id', $current_site_id);
 
+			$new_id = $this->entry('entry_id');
 			$this->clear_entry();
 
 			//load the just created entry into memory
-			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
+			$this->fetch_entry($new_id);
 		}
 		elseif ($captcha_required && $this->error_handling == 'inline')
 		{
 			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
 
-		$this->unload_session_override();
+		// Reset their group_id back to 0
+		$this->_member_group_override(TRUE);
 
 		// -------------------------------------------
 		// 'channel_form_submit_entry_end' hook.
@@ -1794,6 +1833,7 @@ GRID_FALLBACK;
 
 			foreach ($this->field_errors as $field => $error)
 			{
+				$field = lang($field);
 				$field_errors[] = "<b>{$field}: </b>{$error}";
 			}
 
@@ -2185,9 +2225,9 @@ GRID_FALLBACK;
 			return;
 		}
 
-		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guests'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guest_posts'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		{
-			$logged_out_member_id = $this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')];
+			$logged_out_member_id = $this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')];
 		}
 
 		$logged_out_member_id = $this->sanitize_int($logged_out_member_id);
@@ -2250,7 +2290,7 @@ GRID_FALLBACK;
 						$this->settings[$column][$site_id] = array();
 					}
 
-					if ($column == 'require_captcha' || $column == 'allow_guest_posts')
+					if ($column == 'allow_guest_posts')
 					{
 						$value = $this->bool_string($value);
 					}
@@ -2312,19 +2352,8 @@ GRID_FALLBACK;
 			$this->statuses[$index]['checked'] = ($status['status'] == $this->entry('status')) ? ' checked="checked"' : '';
 		}
 
-		// Remove statuses the member does not have access to.
-		// hat tip to @litzinger for the fix.
-		if (ee()->session->userdata('member_id') != 0)
-		{
-			$member_group_id = ee()->session->userdata('group_id');
-		}
-		// In the event the person isn't logged in, figure out what group_id
-		// we're supposed to be using
-		else
-		{
-			$this->fetch_logged_out_member();
-			$member_group_id = $this->logged_out_group_id;
-		}
+		$member_group_id = $this->member->MemberGroup->getId();
+
 		$no_access = ee()->db->where('member_group', $member_group_id)
 								  ->get('status_no_access')
 								  ->result_array();
@@ -2436,7 +2465,7 @@ GRID_FALLBACK;
 		$bool_variable = array('secure_return', 'json', 'author_only');
 		// required, channel, return
 
-		$m_group_id = ee()->session->userdata('group_id');
+		$m_group_id = $this->member->MemberGroup->getId();
 
 		// We'll just take all of the parameters and put then in an array
 		$params = array_merge(array_keys(ee()->TMPL->tagparams), $bool_variable);
@@ -2484,6 +2513,7 @@ GRID_FALLBACK;
 		$meta = serialize($meta);
 
 		ee()->load->library('encrypt');
+
 		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
@@ -2731,7 +2761,7 @@ GRID_FALLBACK;
 			$show_future = (bool) $settings['future'];
 
 			ee()->db
-				->select('channel_titles.entry_id, channel_titles.title')
+				->select('channel_titles.entry_id, channel_titles.title, '.$settings['order_field'])
 				->order_by($settings['order_field'], $settings['order_dir']);
 
 			if ($limit)
@@ -3078,34 +3108,6 @@ GRID_FALLBACK;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Loads the session override library
-	 *
-	 * @return	void
-	 */
-	public function load_session_override()
-	{
-		if (empty($this->logged_out_member_id))
-		{
-			return;
-		}
-
-		$this->temp_session = ee()->session;
-
-		if ( ! class_exists('Channel_from_session'))
-		{
-			require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_session.php';
-		}
-
-		ee()->session = new Channel_form_session(array(
-			'session_object' => $this->temp_session,
-			'logged_out_member_id' => $this->logged_out_member_id,
-			'logged_out_group_id' => $this->logged_out_group_id
-		));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Replaces a tag
 	 *
 	 * @param	mixed $field_name
@@ -3264,25 +3266,6 @@ GRID_FALLBACK;
 	// --------------------------------------------------------------------
 
 	/**
-	 * unload_session_override
-	 *
-	 * @return	void
-	 */
-	public function unload_session_override()
-	{
-		if (empty($this->logged_out_member_id))
-		{
-			return;
-		}
-
-		ee()->session = $this->temp_session;
-
-		unset($this->temp_session);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * unserialize
 	 *
 	 * @param	mixed $data
@@ -3412,6 +3395,27 @@ SCRIPT;
 		return $ret;
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Assigns proper group id to logged out users
+	 *
+	 * @param	bool $reset Whether to reset to 0 or default member
+	 *
+	 * @return	void
+	 */
+	private function _member_group_override($reset = FALSE)
+	{
+		if (ee()->session->userdata('member_id'))
+		{
+			return;
+		}
+
+		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
+
+		ee()->session->userdata['group_id'] = $id;
+	}
 }
 
 /* End of file Channel_form_lib.php */

@@ -27,7 +27,8 @@ if ($wrap): ?>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
-				<?php foreach ($columns as $label => $settings): ?>
+				<?php foreach ($columns as $settings):
+					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
 							<?php if ( ! empty($data)): // Hide checkbox if no data ?>
@@ -51,7 +52,9 @@ if ($wrap): ?>
 						}
 						?>
 						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
+							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
+							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
 							<?php endif ?>

@@ -251,6 +251,14 @@ class Profile extends CP_Controller {
 								$this->member->$field_name = $post;
 							}
 						}
+
+						$name = str_replace('m_field_id_', 'field_ft_', $field_name);
+
+						// Set custom field format override if available, too
+						if (strpos($name, 'field_ft_') !== FALSE && ee()->input->post($name))
+						{
+							$this->member->{"m_$name"} = ee()->input->post($name);
+						}
 					}
 				}
 			}
@@ -258,14 +266,21 @@ class Profile extends CP_Controller {
 
 		$validated = $this->member->validate();
 
+		if ($response = $this->ajaxValidation($validated))
+		{
+			return $response;
+		}
+
 		if ($validated->isNotValid())
 		{
-			ee()->load->helper('html_helper');
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('cp_message_issue'))
-				->addToBody($validated->getAllErrors())
+				->withTitle(lang('member_not_updated'))
+				->addToBody(lang('member_not_updated_desc'))
 				->now();
+
+			ee()->lang->load('content');
+			ee()->view->errors = $validated;
 
 			return FALSE;
 		}

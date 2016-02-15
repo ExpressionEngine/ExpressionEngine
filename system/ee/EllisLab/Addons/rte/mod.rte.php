@@ -53,7 +53,7 @@ class Rte {
 		$selector = urldecode(str_replace('"', "'", $selector));
 
 		ee()->load->library('rte_lib');
-		$js = ee()->rte_lib->build_js($toolset_id, $selector, $includes);
+		$js = ee()->rte_lib->build_js($toolset_id, $selector, $includes, REQ == 'CP');
 
 		ee()->output->enable_profiler(FALSE);
 		ee()->output->out_type = 'js';

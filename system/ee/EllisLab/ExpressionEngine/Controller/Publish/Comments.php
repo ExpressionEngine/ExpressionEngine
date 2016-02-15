@@ -163,7 +163,7 @@ class Comments extends AbstractPublishController {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 		}
 		else
 		{
@@ -277,7 +277,7 @@ class Comments extends AbstractPublishController {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 		}
 		else
 		{
@@ -466,7 +466,10 @@ class Comments extends AbstractPublishController {
 	private function buildTableFromCommentQuery(Builder $comments)
 	{
 		ee()->load->helper('text');
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_comment_date',
+		));
 
 		$table->setColumns(
 			array(

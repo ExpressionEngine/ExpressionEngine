@@ -50,7 +50,7 @@ class Filesystem {
 			throw new FilesystemException("Cannot read file: {$path}");
 		}
 
-		return file_get_contents($path);
+		return file_get_contents($this->normalize($path));
 	}
 
 	/**
@@ -62,6 +62,8 @@ class Filesystem {
 	 */
 	public function write($path, $data, $overwrite = FALSE)
 	{
+		$path = $this->normalize($path);
+		
 		if ($this->isDir($path))
 		{
 			throw new FilesystemException("Cannot write file, path is a directory: {$path}");
@@ -84,6 +86,7 @@ class Filesystem {
 	 */
 	public function mkDir($path, $with_index = TRUE)
 	{
+		$path = $this->normalize($path);
 		mkdir($path, DIR_WRITE_MODE, TRUE);
 
 		if ($with_index)
@@ -121,7 +124,7 @@ class Filesystem {
 			throw new FilesystemException("File does not exist {$path}");
 		}
 
-		return @unlink($path);
+		return @unlink($this->normalize($path));
 	}
 
 	/**
@@ -144,7 +147,7 @@ class Filesystem {
 			return TRUE;
 		}
 
-		$contents = new FilesystemIterator($path);
+		$contents = new FilesystemIterator($this->normalize($path));
 
 		foreach ($contents as $item)
 		{
@@ -160,7 +163,7 @@ class Filesystem {
 
 		if ( ! $leave_empty)
 		{
-			@rmdir($path);
+			@rmdir($this->normalize($path));
 		}
 
 		return TRUE;
@@ -188,9 +191,10 @@ class Filesystem {
 	 */
 	protected function attemptFastDelete($path)
 	{
-		$path_delete = $path.'_delete_'.mt_rand();
+		$normal_path = $this->normalize($path);
+		$path_delete = $normal_path.'_delete_'.mt_rand();
 
-		@exec("mv {$path} {$path_delete}", $out, $ret);
+		@exec("mv {$normal_path} {$path_delete}", $out, $ret);
 
 		if (isset($ret) && $ret == 0)
 		{
@@ -218,7 +222,11 @@ class Filesystem {
 			throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
 		}
 
-		rename($source, $dest);
+		rename(
+			$this->normalize($source),
+			$this->normalize($dest)
+		);
+
 		$this->ensureCorrectAccessMode($dest);
 	}
 
@@ -235,7 +243,11 @@ class Filesystem {
 			throw new FilesystemException("Cannot copy non-existent path: {$source}");
 		}
 
-		copy($source, $dest);
+		rename(
+			$this->normalize($source),
+			$this->normalize($dest)
+		);
+
 		$this->ensureCorrectAccessMode($dest);
 	}
 
@@ -247,7 +259,7 @@ class Filesystem {
 	 */
 	public function dirname($path)
 	{
-		return dirname($path);
+		return dirname($this->normalize($path));
 	}
 
 	/**
@@ -258,7 +270,7 @@ class Filesystem {
 	 */
 	public function basename($path)
 	{
-		return basename($path);
+		return basename($this->normalize($path));
 	}
 
 	/**
@@ -269,7 +281,7 @@ class Filesystem {
 	 */
 	public function filename($path)
 	{
-		return pathinfo($path, PATHINFO_FILENAME);
+		return pathinfo($this->normalize($path), PATHINFO_FILENAME);
 	}
 
 	/**
@@ -280,7 +292,7 @@ class Filesystem {
 	 */
 	public function extension($path)
 	{
-		return pathinfo($path, PATHINFO_EXTENSION);
+		return pathinfo($this->normalize($path), PATHINFO_EXTENSION);
 	}
 
 	/**
@@ -291,7 +303,12 @@ class Filesystem {
 	 */
 	public function exists($path)
 	{
-		return file_exists($path);
+		if ($path = $this->normalize($path))
+		{
+			return file_exists($path);
+		}
+
+		return FALSE;
 	}
 
 	/**
@@ -307,7 +324,7 @@ class Filesystem {
 			throw new FilesystemException("File does not exist: {$path}");
 		}
 
-		return filemtime($path);
+		return filemtime($this->normalize($path));
 	}
 
 	/**
@@ -325,11 +342,11 @@ class Filesystem {
 
 		if (isset($time))
 		{
-			touch($path, $time);
+			touch($this->normalize($path), $time);
 		}
 		else
 		{
-			touch($path);
+			touch($this->normalize($path));
 		}
 	}
 
@@ -341,7 +358,7 @@ class Filesystem {
 	 */
 	public function isDir($path)
 	{
-		return is_dir($path);
+		return is_dir($this->normalize($path));
 	}
 
 	/**
@@ -352,7 +369,7 @@ class Filesystem {
 	 */
 	public function isFile($path)
 	{
-		return is_file($path);
+		return is_file($this->normalize($path));
 	}
 
 	/**
@@ -363,7 +380,18 @@ class Filesystem {
 	 */
 	public function isReadable($path)
 	{
-		return is_readable($path);
+		return is_readable($this->normalize($path));
+	}
+
+	/**
+	 * Change the access mode of a file
+	 *
+	 * @param String $path Path to Change
+	 * @param Int Mode, please provide an octal
+	 */
+	public function chmod($path, $mode)
+	{
+		return @chmod($this->normalize($path), $mode);
 	}
 
 	/**
@@ -379,14 +407,14 @@ class Filesystem {
 		// If we're on a Unix server with safe_mode off we call is_writable
 		if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)
 		{
-			return is_writable($path);
+			return is_writable($this->normalize($path));
 		}
 
 		// For windows servers and safe_mode "on" installations we'll actually
 		// write a file then read it.  Bah...
 		if ($this->isDir($path))
 		{
-			$path = rtrim($path, '/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
+			$path = rtrim($this->normalize($path), '/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
 
 			if (($fp = @fopen($path, FOPEN_WRITE_CREATE)) === FALSE)
 			{
@@ -436,11 +464,23 @@ class Filesystem {
 	{
 		if ($this->isDir($path))
 		{
-			@chmod($dest, DIR_WRITE_MODE);
+			$this->chmod($path, DIR_WRITE_MODE);
 		}
 		else
 		{
-			@chmod($dest, FILE_WRITE_MODE);
+			$this->chmod($path, FILE_WRITE_MODE);
 		}
+	}
+
+	/**
+	 * Normalize the path for a native function call
+	 *
+	 * This is used by classes that extend this one to, for example, root
+	 * the filesystem in a specific location. It can also be used for sanity
+	 * checks, but beware that it is slow.
+	 */
+	protected function normalize($path)
+	{
+		return $path;
 	}
 }

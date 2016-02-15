@@ -144,7 +144,7 @@ class EntryListing {
 		}
 
 		$this->category_filter = $this->createCategoryFilter($channel);
-		$this->status_filter = $this->createStatusFilter();
+		$this->status_filter = $this->createStatusFilter($channel);
 
 		$this->filters = ee('CP/Filter')
 			->add($this->channel_filter)
@@ -230,7 +230,7 @@ class EntryListing {
 			}
 		}
 
-		$entries->with('Autosaves', 'Categories', 'Author', 'Channel');
+		$entries->with('Autosaves', 'Author', 'Channel');
 
 		$this->entries = $entries;
 	}

@@ -11,7 +11,10 @@
 							</fieldset>
 							<div class="scroll-wrap">
 								<ul class="channels-pages-create">
-									<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
+									<?php
+									$menus = ee()->menu->generate_menu();
+									foreach ($menus['channels']['create'] as $channel_name => $link):
+									?>
 										<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 									<?php endforeach ?>
 								</ul>
