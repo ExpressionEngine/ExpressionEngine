@@ -124,6 +124,13 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Displays the field for the CP or Frontend, and accounts for grid
+	 *
+	 * @param string $data Stored data for the field
+	 * @param string $container What type of container is this field in, 'fieldset' or 'grid'?
+	 * @return string Field display
+	 */
 	private function _display_field($data, $container = 'fieldset')
 	{
 		array_merge($this->settings, $this->settings_vars);
