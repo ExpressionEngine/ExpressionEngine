@@ -18,6 +18,7 @@ use EllisLab\ExpressionEngine\Service\Profiler;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
+use EllisLab\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
@@ -141,8 +142,20 @@ return array(
 		'Profiler' => function($ee)
 		{
 			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
-		}
+		},
 
+		'Updater' => function($ee)
+		{
+			return new Updater\Updater(
+				$ee->make('License')->getEELicense()->getData('license_number'),
+				// Will be dynamic later
+				'https://dl.dropboxusercontent.com/u/28047/ExpressionEngine3.1.2.zip',
+				$ee->make('Curl'),
+				$ee->make('Filesystem'),
+				new \ZipArchive(),
+				$ee->make('Config')->getFile()
+			);
+		}
 	),
 
 	'services.singletons' => array(
