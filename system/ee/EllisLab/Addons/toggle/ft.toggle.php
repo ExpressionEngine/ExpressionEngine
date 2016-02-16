@@ -134,6 +134,48 @@ class Toggle_ft extends EE_Fieldtype {
 	}
 
 	/**
+	 * Set the column to be TINYINT
+	 *
+	 * @param array $data The field data
+	 * @return array  [column => column_definition]
+	 */
+	public function settings_modify_column($data)
+	{
+		return $this->get_column_type($data);
+	}
+
+	/**
+	 * Set the grid column to be TINYINT
+	 *
+	 * @param array $data The field data
+	 * @return array  [column => column_definition]
+	 */
+	public function grid_settings_modify_column($data)
+	{
+		return $this->get_column_type($data, TRUE);
+	}
+
+
+	/**
+	 * Helper method for column definitions
+	 *
+	 * @param array $data The field data
+	 * @param bool  $grid Is grid field?
+	 * @return array  [column => column_definition]
+	 */
+	protected function get_column_type($data, $grid = FALSE)
+	{
+		$id = ($grid) ? 'col_id'.$field_id : 'field_id'.$field_id;
+
+		return array(
+			$id.'_'.$data[$id] => array(
+				'type'		=> 'TINYINT',
+				'default'	=> 0
+			)
+		);
+	}
+
+	/**
 	 * Accept all content types.
 	 *
 	 * @param string  The name of the content type
