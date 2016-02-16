@@ -165,7 +165,7 @@ class Toggle_ft extends EE_Fieldtype {
 	 */
 	protected function get_column_type($data, $grid = FALSE)
 	{
-		$id = ($grid) ? 'col_id'.$field_id : 'field_id'.$field_id;
+		$id = ($grid) ? 'col_id' : 'field_id';
 
 		return array(
 			$id.'_'.$data[$id] => array(
