@@ -115,6 +115,19 @@ class FileDimension extends Model {
 			$force_master_dim = 'width';
 		}
 
+		// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
+		if (($force_master_dim == 'height' && $original_dimensions[0] < $height) OR
+			($force_master_dim == 'width' && $original_dimensions[1] < $width) OR
+			($force_master_dim == FALSE &&
+				($original_dimensions[1] < $width && $original_dimensions[0] < $height)
+			))
+		{
+			return array(
+				'height' => $original_dimensions[0],
+				'width'  => $original_dimensions[1],
+			);
+		}
+
 		$config = array(
 			'source_image'   => $file->getAbsolutePath(),
 			'image_library'  => ee()->config->item('image_resize_protocol'),
@@ -125,7 +138,57 @@ class FileDimension extends Model {
 			'master_dim'     => $force_master_dim
 		);
 
-		ee()->image_lib->initialize($config);
+		if (isset($this->resize_type) && $this->resize_type == 'crop')
+		{
+			// Scale the larger dimension up so only one dimension of our
+			// image fits within the desired dimension
+			if ($original_dimensions[1] > $original_dimensions[0])
+			{
+				$config['width'] = round($original_dimensions[1] * $height / $original_dimensions[0]);
+
+				// If the new width ends up being smaller than the
+				// resized width
+				if ($config['width'] < $width)
+				{
+					$config['width'] = $width;
+					$config['master_dim'] = 'width';
+				}
+			}
+			elseif ($original_dimensions[0] > $original_dimensions[1])
+			{
+				$config['height'] = round($original_dimensions[0] * $width / $original_dimensions[1]);
+
+				// If the new height ends up being smaller than the
+				// desired resized height
+				if ($config['height'] < $height)
+				{
+					$config['height'] = $height;
+					$config['master_dim'] = 'height';
+				}
+			}
+			// If we're dealing with a perfect square image
+			elseif ($original_dimensions[0] == $original_dimensions[1])
+			{
+				// And the desired image is landscape, edit the
+				// square image's width to fit
+				if ($width > $height ||
+					$width == $height)
+				{
+					$config['width'] = $width;
+					$config['master_dim'] = 'width';
+				}
+				// If the desired image is portrait, edit the
+				// square image's height to fit
+				elseif ($width < $height)
+				{
+					$config['height'] = $height;
+					$config['master_dim'] = 'height';
+				}
+			}
+			$config['maintain_ratio'] = FALSE;
+		}
+
+		$ret = ee()->image_lib->initialize($config);
 
 		$dimensions = array(
 			'height' => ee()->image_lib->height,
