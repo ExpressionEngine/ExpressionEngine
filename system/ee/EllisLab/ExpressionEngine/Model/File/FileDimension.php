@@ -185,10 +185,17 @@ class FileDimension extends Model {
 					$config['master_dim'] = 'height';
 				}
 			}
+
+			ee()->image_lib->initialize($config);
+
+			$config['x_axis'] = ((ee()->image_lib->width / 2) - ($width / 2));
+			$config['y_axis'] = ((ee()->image_lib->height / 2) - ($height / 2));
 			$config['maintain_ratio'] = FALSE;
+			$config['width'] = $width;
+			$config['height'] = $height;
 		}
 
-		$ret = ee()->image_lib->initialize($config);
+		ee()->image_lib->initialize($config);
 
 		$dimensions = array(
 			'height' => ee()->image_lib->height,
