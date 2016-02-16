@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Library\Curl;
 
 abstract class Request {
 
+	protected $headers = array();
+
 	public function __construct($url, $data, $callback = NULL)
 	{
 		$this->config = array(
