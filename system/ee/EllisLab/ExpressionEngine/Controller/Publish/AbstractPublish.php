@@ -266,8 +266,6 @@ abstract class AbstractPublish extends CP_Controller {
 			unset($_POST['author_id']);
 		}
 
-		var_dump($_POST);
-
 		// Get all the fields that should be in the DOM. Any that were not
 		// POSTed will be set to NULL. This addresses a bug where browsers
 		// do not POST unchecked checkboxes.
