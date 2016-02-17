@@ -168,6 +168,11 @@ class Toggle_ft extends EE_Fieldtype {
 			),
 		);
 
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
+
 		return array('field_options_toggle' => array(
 			'label' => 'field_options',
 			'group' => 'toggle',
