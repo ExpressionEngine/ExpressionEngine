@@ -123,17 +123,17 @@ class Updater {
 		// TODO? May need to check recursive permissions on each of these?
 		if ( ! $this->filesystem->isWritable($this->path()))
 		{
-			throw new UpdaterException('Cache folder not writable.');
+			throw new UpdaterException('Cache folder not writable.', 1);
 		}
 
 		if ( ! $this->filesystem->isWritable(SYSPATH.'ee/'))
 		{
-			throw new UpdaterException('system/ee folder not writable.');
+			throw new UpdaterException('system/ee folder not writable.', 2);
 		}
 
 		if ( ! $this->filesystem->isWritable(PATH_THEMES))
 		{
-			throw new UpdaterException('themes/ee folder not writable.');
+			throw new UpdaterException('themes/ee folder not writable.', 3);
 		}
 	}
 
@@ -179,17 +179,17 @@ class Updater {
 		// Make sure everything looks normal
 		if ($curl->getHeader('http_code') != '200')
 		{
-			throw new UpdaterException('Could not download update. Status code: ' . $curl->getHeader('http_code'));
+			throw new UpdaterException('Could not download update. Status code: ' . $curl->getHeader('http_code'), 4);
 		}
 
 		if (trim($curl->getHeader('Content-Type'), '"') != 'application/zip')
 		{
-			throw new UpdaterException('Could not download update. Unexpected MIME type response: ' . $curl->getHeader('Content-Type'));
+			throw new UpdaterException('Could not download update. Unexpected MIME type response: ' . $curl->getHeader('Content-Type'), 5);
 		}
 
 		if ( ! $curl->getHeader('MD5-Hash'))
 		{
-			throw new UpdaterException('Could not find hash header to verify zip archive integrity.');
+			throw new UpdaterException('Could not find hash header to verify zip archive integrity.', 6);
 		}
 
 		// Write the file
@@ -198,7 +198,7 @@ class Updater {
 		// Make sure the file's MD5 matches what we were given in the header
 		if (trim($curl->getHeader('MD5-Hash'), '"') != md5_file($this->getArchiveFilePath()))
 		{
-			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('MD5-Hash') . ' does not match ' . md5_file($this->getArchiveFilePath()));
+			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('MD5-Hash') . ' does not match ' . md5_file($this->getArchiveFilePath()), 7);
 		}
 	}
 

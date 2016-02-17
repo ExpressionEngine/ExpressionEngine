@@ -180,7 +180,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		}
 		catch (UpdaterException $e)
 		{
-			// UpdaterException caught? Good!
+			$this->assertEquals(1, $e->getCode());
 		}
 
 		$this->filesystem->shouldReceive('isWritable')
@@ -200,7 +200,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		}
 		catch (UpdaterException $e)
 		{
-			// UpdaterException caught? Good!
+			$this->assertEquals(2, $e->getCode());
 		}
 
 		$this->filesystem->shouldReceive('isWritable')
@@ -225,7 +225,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		}
 		catch (UpdaterException $e)
 		{
-			// UpdaterException caught? Good!
+			$this->assertEquals(3, $e->getCode());
 		}
 	}
 }
