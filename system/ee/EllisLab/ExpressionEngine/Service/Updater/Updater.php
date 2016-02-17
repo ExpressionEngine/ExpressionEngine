@@ -176,14 +176,30 @@ class Updater {
 
 		$data = $curl->exec();
 
+		// Make sure everything looks normal
 		if ($curl->getHeader('http_code') != '200')
 		{
 			throw new UpdaterException('Could not download update. Status code: ' . $curl->getHeader('http_code'));
 		}
 
+		if (trim($curl->getHeader('Content-Type'), '"') != 'application/zip')
+		{
+			throw new UpdaterException('Could not download update. Unexpected MIME type response: ' . $curl->getHeader('Content-Type'));
+		}
+
+		if ( ! $curl->getHeader('MD5-Hash'))
+		{
+			throw new UpdaterException('Could not find hash header to verify zip archive integrity.');
+		}
+
+		// Write the file
 		$this->filesystem->write($this->getArchiveFilePath(), $data, TRUE);
 
-		// TODO: Verify ZIP integrity via MD5 header
+		// Make sure the file's MD5 matches what we were given in the header
+		if (trim($curl->getHeader('MD5-Hash'), '"') != md5_file($this->getArchiveFilePath()))
+		{
+			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('MD5-Hash') . ' does not match ' . md5_file($this->getArchiveFilePath()));
+		}
 	}
 
 	/**
