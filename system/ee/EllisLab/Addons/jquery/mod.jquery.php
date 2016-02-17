@@ -31,6 +31,7 @@ class Jquery {
 	 */
 	function __construct()
 	{
+		ee()->logger->deprecated('3.2.0');
 		if ( ! defined('PATH_JQUERY'))
 		{
 			define('PATH_JQUERY', PATH_THEMES.'asset/javascript/'.PATH_JS.'/jquery/');

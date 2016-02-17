@@ -128,8 +128,6 @@ class Checkboxes_ft extends EE_Fieldtype {
 	{
 		array_merge($this->settings, $this->settings_vars);
 
-		$values = decode_multi_field($data);
-
 		if (isset($this->settings['string_override']) && $this->settings['string_override'] != '')
 		{
 			return $this->settings['string_override'];

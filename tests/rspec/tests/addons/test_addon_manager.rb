@@ -83,7 +83,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(5).first_party_addons
+      @page.should have(6).first_party_addons
 
       # By uninstalled
       @page.first_party_status_filter.click
@@ -107,7 +107,7 @@ feature 'Add-On Manager' do
       @page.should_not have_first_party_pagination
 
       # RTE has the correct version number now
-      @page.should have(1).first_party_addons # Email + RTE
+      @page.should have(2).first_party_addons
     end
 
     it 'retains filters on sort' do
@@ -120,7 +120,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(5).first_party_addons
+      @page.should have(6).first_party_addons
 
       versions = @page.first_party_versions.map {|version| version.text}
 
@@ -157,7 +157,7 @@ feature 'Add-On Manager' do
 
       @page.first_party_version_header[:class].should eq 'highlight'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
-      sorted_versions[-1].should == '1.0.1'
+      sorted_versions[-1].should == '1.0'
     end
 
     it 'retains filters on searching' do

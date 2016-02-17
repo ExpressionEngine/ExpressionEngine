@@ -21,5 +21,3 @@
 		</section>
 	</body>
 </html>
-
-// EOF
