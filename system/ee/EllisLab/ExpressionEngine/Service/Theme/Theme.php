@@ -72,14 +72,14 @@ class Theme {
 		return $this->ee_theme_path . $path;
 	}
 
-	public function getUrl($url)
+	public function getUrl($path)
 	{
-		if (file_exists($this->user_theme_url . $url))
+		if (file_exists($this->user_theme_path . $path))
 		{
-			return $this->user_theme_url . $url;
+			return $this->user_theme_url . $path;
 		}
 
-		return $this->ee_theme_url . $url;
+		return $this->ee_theme_url . $path;
 	}
 
 	public function listThemes($kind)
