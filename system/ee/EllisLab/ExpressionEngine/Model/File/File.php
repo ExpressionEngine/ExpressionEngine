@@ -76,6 +76,33 @@ class File extends Model {
 	protected $modified_date;
 	protected $file_hw_original;
 
+	public function get__width()
+	{
+		$dimensions = explode(" ", $this->getProperty('file_hw_original'));
+		return $dimensions[1];
+	}
+
+	public function get__height()
+	{
+		$dimensions = explode(" ", $this->getProperty('file_hw_original'));
+		return $dimensions[0];
+	}
+
+	public function get__file_hw_original()
+	{
+		if (empty($this->file_hw_original))
+		{
+			ee()->load->library('filemanager');
+			$image_dimensions = ee()->filemanager->get_image_dimensions($this->getAbsolutePath());
+			if ($image_dimensions !== FALSE)
+			{
+				$this->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
+			}
+		}
+
+		return $this->file_hw_original;
+	}
+
 	/**
 	 * Uses the file's mime-type to determine if the file is an image or not.
 	 *
