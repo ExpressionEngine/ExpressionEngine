@@ -101,7 +101,7 @@ class Radio_ft extends EE_Fieldtype {
 	 */
 	private function _display_field($data, $container = 'fieldset')
 	{
-		$this->settings = array_merge($this->settings, $this->settings_vars);
+		$this->settings = array_merge($this->settings_vars, $this->settings);
 
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
