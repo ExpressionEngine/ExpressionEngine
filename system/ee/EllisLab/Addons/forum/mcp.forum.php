@@ -658,7 +658,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_default_theme' => array(
 							'type' => 'select',
-							'choices' => $this->getForumThemes(),
+							'choices' => ee('ee:Theme')->listThemes('forum'),
 							'value' => $board->board_default_theme,
 						)
 					)
@@ -3267,16 +3267,6 @@ class Forum_mcp extends CP_Controller {
 
 		$UPD = new Forum_upd();
 		return $UPD->forum_set_base_permissions();
-	}
-
-	/**
-	 * Gets a list of the forum themes available
-	 *
-	 * @return array An associateive array of theme directories
-	 */
-	private function getForumThemes()
-	{
-		return ee('ee:Theme')->listThemes('forum');
 	}
 
 }
