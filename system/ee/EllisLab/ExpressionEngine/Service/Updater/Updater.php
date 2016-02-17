@@ -152,15 +152,15 @@ class Updater {
 	protected function cleanUpOldUpgrades()
 	{
 		// Delete any old zip archives
-		if ($this->filesystem->isFile($this->path().$this->filename))
+		if ($this->filesystem->isFile($this->getArchiveFilePath()))
 		{
-			$this->filesystem->delete($this->path().$this->filename);
+			$this->filesystem->delete($this->getArchiveFilePath());
 		}
 
 		// Delete old extracted archives
-		if ($this->filesystem->isDir($this->path().$this->extracted_folder))
+		if ($this->filesystem->isDir($this->getExtractedArchivePath()))
 		{
-			$this->filesystem->delete($this->path().$this->extracted_folder);
+			$this->filesystem->delete($this->getExtractedArchivePath());
 		}
 	}
 
@@ -176,7 +176,12 @@ class Updater {
 
 		$data = $curl->exec();
 
-		$this->filesystem->write($this->path().$this->filename, $data, TRUE);
+		if ($curl->getHeader('http_code') != '200')
+		{
+			throw new UpdaterException('Could not download update. Status code: ' . $curl->getHeader('http_code'));
+		}
+
+		$this->filesystem->write($this->getArchiveFilePath(), $data, TRUE);
 
 		// TODO: Verify ZIP integrity via MD5 header
 	}
@@ -186,11 +191,11 @@ class Updater {
 	 */
 	public function unzipPackage()
 	{
-		$this->filesystem->mkDir($this->path().$this->extracted_folder);
+		$this->filesystem->mkDir($this->getExtractedArchivePath());
 
-		if ($this->zip_archive->open($this->path().$this->filename) === TRUE)
+		if ($this->zip_archive->open($this->getArchiveFilePath()) === TRUE)
 		{
-			$this->zip_archive->extractTo($this->path().$this->extracted_folder);
+			$this->zip_archive->extractTo($this->getExtractedArchivePath());
 			$this->zip_archive->close();
 		}
 	}
@@ -214,8 +219,30 @@ class Updater {
 	}
 
 	/**
+	 * Constructs and returns the path to the downloaded zip archive
+	 *
+	 * @return	string	Path to downloaded zip archive
+	 */
+	protected function getArchiveFilePath()
+	{
+		return $this->path() . $this->filename;
+	}
+
+	/**
+	 * Constructs and returns the path to the extracted archive path
+	 *
+	 * @return	string	Path to extracted archive
+	 */
+	protected function getExtractedArchivePath()
+	{
+		return $this->path() . $this->extracted_folder;
+	}
+
+	/**
 	 * Optionally creates and returns the path in which we will be working with
 	 * our files
+	 *
+	 * @return	string	Path to folder in the cache folder for working with updates
 	 */
 	protected function path()
 	{
