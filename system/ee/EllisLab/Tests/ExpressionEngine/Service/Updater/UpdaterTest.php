@@ -104,25 +104,128 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('cache/path/');
 
 		$this->filesystem->shouldReceive('mkDir');
-		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE);
-		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE);
+		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
 		$this->filesystem->shouldReceive('delete')->twice();
 
 		$this->filesystem->shouldReceive('isWritable')
 			->with('cache/path/ee_update/')
-			->andReturn(TRUE);
+			->andReturn(TRUE)
+			->once();
 
 		$this->filesystem->shouldReceive('isWritable')
 			->with(SYSPATH.'ee/')
-			->andReturn(TRUE);
+			->andReturn(TRUE)
+			->once();
 
 		define('PATH_THEMES', 'themes/path');
 		$this->filesystem->shouldReceive('isWritable')
 			->with(PATH_THEMES)
-			->andReturn(TRUE);
+			->andReturn(TRUE)
+			->once();
 
 		$this->updater->preflight();
 
-		// TODO: test possible Preflight exceptions
+		$this->filesystem->shouldReceive('isWritable')
+			->with('cache/path/ee_update/')
+			->andReturn(TRUE)
+			->times(3);
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with(SYSPATH.'ee/')
+			->andReturn(TRUE)
+			->times(3);
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with(PATH_THEMES)
+			->andReturn(TRUE)
+			->times(3);
+
+		$this->filesystem->shouldReceive('isFile')->andReturn(FALSE)->once();
+		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('delete')->once();
+
+		$this->updater->preflight();
+
+		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('isDir')->andReturn(FALSE)->once();
+		$this->filesystem->shouldReceive('delete')->once();
+
+		$this->updater->preflight();
+
+		$this->filesystem->shouldReceive('isFile')->andReturn(FALSE)->once();
+		$this->filesystem->shouldReceive('isDir')->andReturn(FALSE)->once();
+		$this->filesystem->shouldReceive('delete')->never();
+
+		$this->updater->preflight();
+
+		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE);
+		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE);
+		$this->filesystem->shouldReceive('delete');
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with('cache/path/ee_update/')
+			->andReturn(FALSE)
+			->once();
+
+		// I ran into the need to test for exceptions in various cases and
+		// just setting a blanket exception expectation for the test wasn't
+		// working because the only criteria for passing is that the exception
+		// is thrown at least once, but I needed to specifically make sure it
+		// was thrown x times
+		try
+		{
+			$this->updater->preflight();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			// UpdaterException caught? Good!
+		}
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with('cache/path/ee_update/')
+			->andReturn(TRUE)
+			->once();
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with(SYSPATH.'ee/')
+			->andReturn(FALSE)
+			->once();
+
+		try
+		{
+			$this->updater->preflight();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			// UpdaterException caught? Good!
+		}
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with('cache/path/ee_update/')
+			->andReturn(TRUE)
+			->once();
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with(SYSPATH.'ee/')
+			->andReturn(TRUE)
+			->once();
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with(PATH_THEMES)
+			->andReturn(FALSE)
+			->once();
+
+		try
+		{
+			$this->updater->preflight();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			// UpdaterException caught? Good!
+		}
 	}
 }
