@@ -838,6 +838,8 @@ $lang = array(
  * 3.0
  */
 
+'default_value' => 'Default value',
+
 'field_max_length' => 'Maximum characters',
 
 'field_fmt' => 'Text formatting',
