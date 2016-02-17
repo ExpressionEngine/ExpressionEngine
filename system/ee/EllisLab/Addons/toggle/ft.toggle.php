@@ -28,6 +28,12 @@ class Toggle_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
+	// used in display_field() below to set
+	// some defaults for third party usage
+	var $settings_vars = array(
+		'field_default_value'	=> '0',
+	);
+
 	/**
 	 * Fetch the fieldtype's name and version from it's addon.setup.php file.
 	 */
@@ -89,6 +95,10 @@ class Toggle_ft extends EE_Fieldtype {
 	 */
 	private function _display_field($data, $container = 'fieldset')
 	{
+		$this->settings = array_merge($this->settings, $this->settings_vars);
+
+		$data = $data ?: $this->settings['field_default_value'];
+
 		if (REQ == 'CP')
 		{
 			ee()->cp->add_js_script(array(
@@ -133,6 +143,45 @@ class Toggle_ft extends EE_Fieldtype {
 		return $html;
 	}
 
+	function display_settings($data)
+	{
+		$defaults = array(
+			'field_default_value' => 0
+		);
+
+		foreach ($defaults as $setting => $value)
+		{
+			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
+		}
+
+		$this->field_name = 'field_default_value';
+
+		$settings = array(
+			array(
+				'title' => 'default_value',
+				'fields' => array(
+					'field_default_value' => array(
+						'type' => 'html',
+						'content' => $this->_display_field($data['field_default_value'])
+					)
+				)
+			),
+		);
+
+		return array('field_options_toggle' => array(
+			'label' => 'field_options',
+			'group' => 'toggle',
+			'settings' => $settings
+		));
+	}
+
+	function save_settings($data)
+	{
+		return array(
+			'field_default_value' => $data['field_default_value']
+		);
+	}
+
 	/**
 	 * Set the column to be TINYINT
 	 *
@@ -154,7 +203,6 @@ class Toggle_ft extends EE_Fieldtype {
 	{
 		return $this->get_column_type($data, TRUE);
 	}
-
 
 	/**
 	 * Helper method for column definitions
