@@ -89,7 +89,7 @@ class FolderItem extends ListItem {
 	 */
 	public function asDefaultItem()
 	{
-		$this->class .= 'default ';
+		$this->addClass('default');
 		return $this;
 	}
 
@@ -187,7 +187,7 @@ class FolderItem extends ListItem {
 	 */
 	public function render(ViewFactory $view)
 	{
-		$class = trim($this->class);
+		$class = $this->getClass();
 
 		if ($class)
 		{
