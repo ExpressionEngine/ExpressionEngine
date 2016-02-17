@@ -62,6 +62,14 @@ class Theme {
 		$this->user_theme_url = $user_theme_url;
 	}
 
+	/**
+	 * Gets the full path to the indicated file/directory. If the file/directory
+	 * exists in the user's theme folder use that, otherwise use the ee theme
+	 * folder.
+	 *
+	 * @param string $path The relative path to the file/directory, i.e. "forum/default"
+	 * @return string The full path to the file/directory
+	 */
 	public function getPath($path)
 	{
 		if (file_exists($this->user_theme_path . $path))
@@ -72,6 +80,14 @@ class Theme {
 		return $this->ee_theme_path . $path;
 	}
 
+	/**
+	 * Gets the URL to the indicated file/directory. If the file/directory
+	 * exists in the user's theme folder use that, otherwise use the ee theme
+	 * folder.
+	 *
+	 * @param string $path The relative path to the file/directory, i.e. "forum/default"
+	 * @return string The URL to the file/directory
+	 */
 	public function getUrl($path)
 	{
 		if (file_exists($this->user_theme_path . $path))
@@ -82,6 +98,16 @@ class Theme {
 		return $this->ee_theme_url . $path;
 	}
 
+	/**
+	 * Gets a list of all the themes available of a certain kind. When a theme
+	 * exists under both the user folder and the ee folder, the user folder is
+	 * prefered.
+	 *
+	 * @param string $path A path to a directory we want to list
+	 * @return array An associative array of the contents of the directory
+	 *  using the file/folder name as the key and making a presentable name as
+	 *  the value, i.e. 'my_happy_theme' => 'My Happy Theme'
+	 */
 	public function listThemes($kind)
 	{
 		// EE first so the User based themes can override.
@@ -91,6 +117,15 @@ class Theme {
 		);
 	}
 
+	/**
+	 * Gets the contents of a directory using the "folder" name as the key and
+	 * transforms that into a presentable name.
+	 *
+	 * @param string $path A path to a directory we want to list
+	 * @return array An associative array of the contents of the directory
+	 *  using the file/folder name as the key and making a presentable name as
+	 *  the value, i.e. 'my_happy_theme' => 'My Happy Theme'
+	 */
 	protected function listDirectory($path)
 	{
 		$files = array();
