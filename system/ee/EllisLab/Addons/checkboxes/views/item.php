@@ -20,7 +20,7 @@
 			$class .= ' chosen';
 		}
 
-		$extra = implode(' ', array($editing, $disabled));
+		$extra = trim(implode(' ', array($editing, $disabled)));
 ?>
 	<li<?php if ($editable): ?> class="nestable-item" data-id="<?=$key?>"<?php endif ?> style="overflow:hidden">
 		<label class="<?=$class?>">
