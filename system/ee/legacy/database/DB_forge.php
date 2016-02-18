@@ -92,7 +92,7 @@ class CI_DB_forge {
 	 * @param	string	type
 	 * @return	void
 	 */
-	function add_key($key = '', $primary = FALSE)
+	function add_key($key, $primary = FALSE)
 	{
 		if (is_array($key))
 		{
@@ -128,9 +128,9 @@ class CI_DB_forge {
 	 * @param	string	collation
 	 * @return	void
 	 */
-	function add_field($field = '')
+	function add_field($field)
 	{
-		if ($field == '')
+		if (empty($field))
 		{
 			show_error('Field information is required.');
 		}
@@ -140,12 +140,12 @@ class CI_DB_forge {
 			if ($field == 'id')
 			{
 				$this->add_field(array(
-										'id' => array(
-													'type' => 'INT',
-													'constraint' => 9,
-													'auto_increment' => TRUE
-													)
-								));
+					'id' => array(
+						'type'           => 'INT',
+						'constraint'     => 9,
+						'auto_increment' => TRUE
+					)
+				));
 				$this->add_key('id', TRUE);
 			}
 			else
@@ -163,7 +163,6 @@ class CI_DB_forge {
 		{
 			$this->fields = array_merge($this->fields, $field);
 		}
-
 	}
 
 	// --------------------------------------------------------------------
@@ -175,9 +174,9 @@ class CI_DB_forge {
 	 * @param	string	the table name
 	 * @return	bool
 	 */
-	function create_table($table = '', $if_not_exists = FALSE)
+	function create_table($table, $if_not_exists = FALSE)
 	{
-		if ($table == '')
+		if (empty($table))
 		{
 			show_error('A table name is required for that operation.');
 		}
@@ -252,9 +251,9 @@ class CI_DB_forge {
 	 * @param	string	the column definition
 	 * @return	bool
 	 */
-	function add_column($table = '', $field = array(), $after_field = '')
+	function add_column($table, array $field, $after_field = '')
 	{
-		if ($table == '')
+		if (empty($table))
 		{
 			show_error('A table name is required for that operation.');
 		}
@@ -298,15 +297,14 @@ class CI_DB_forge {
 	 * @param	string	the column name
 	 * @return	bool
 	 */
-	function drop_column($table = '', $column_name = '')
+	function drop_column($table, $column_name)
 	{
-
-		if ($table == '')
+		if (empty($table))
 		{
 			show_error('A table name is required for that operation.');
 		}
 
-		if ($column_name == '')
+		if (empty($column_name))
 		{
 			show_error('A column name is required for that operation.');
 		}
@@ -327,12 +325,11 @@ class CI_DB_forge {
 	 * @access	public
 	 * @param	string	the table name
 	 * @param	string	the column name
-	 * @param	string	the column definition
 	 * @return	bool
 	 */
-	function modify_column($table = '', $field = array(), $settings = array())
+	function modify_column($table, array $field)
 	{
-		if ($table == '')
+		if (empty($table))
 		{
 			show_error('A table name is required for that operation.');
 		}
@@ -349,7 +346,7 @@ class CI_DB_forge {
 				show_error('Field information is required.');
 			}
 
-			$sql = $this->_alter_table('CHANGE', $this->db->dbprefix.$table, $this->fields, '', $settings);
+			$sql = $this->_alter_table('CHANGE', $this->db->dbprefix.$table, $this->fields);
 
 			$this->_reset();
 

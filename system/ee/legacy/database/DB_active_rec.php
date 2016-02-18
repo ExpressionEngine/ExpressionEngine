@@ -116,7 +116,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	an alias
 	 * @return	object
 	 */
-	function select_max($select = '', $alias = '')
+	function select_max($select, $alias = '')
 	{
 		return $this->_max_min_avg_sum($select, $alias, 'MAX');
 	}
@@ -133,7 +133,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	an alias
 	 * @return	object
 	 */
-	function select_min($select = '', $alias = '')
+	function select_min($select, $alias = '')
 	{
 		return $this->_max_min_avg_sum($select, $alias, 'MIN');
 	}
@@ -150,7 +150,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	an alias
 	 * @return	object
 	 */
-	function select_avg($select = '', $alias = '')
+	function select_avg($select, $alias = '')
 	{
 		return $this->_max_min_avg_sum($select, $alias, 'AVG');
 	}
@@ -167,7 +167,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	an alias
 	 * @return	object
 	 */
-	function select_sum($select = '', $alias = '')
+	function select_sum($select, $alias = '')
 	{
 		return $this->_max_min_avg_sum($select, $alias, 'SUM');
 	}
@@ -187,9 +187,9 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	an alias
 	 * @return	object
 	 */
-	function _max_min_avg_sum($select = '', $alias = '', $type = 'MAX')
+	function _max_min_avg_sum($select, $alias = '', $type = 'MAX')
 	{
-		if ( ! is_string($select) OR $select == '')
+		if ( ! is_string($select) OR empty($select))
 		{
 			$this->display_error('db_invalid_query');
 		}
@@ -252,7 +252,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 */
 	function distinct($val = TRUE)
 	{
-		$this->ar_distinct = (is_bool($val)) ? $val : TRUE;
+		if ( ! is_bool($val))
+		{
+			ee()->logger->deprecated('3.2.0', 'Use CI_DB_active_rec::distinct() with a boolean parameter only.');
+		}
+
+		$this->ar_distinct = (bool) $val;
 		return $this;
 	}
 
@@ -529,7 +534,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	array	The values searched on
 	 * @return	object
 	 */
-	function where_in($key = NULL, $values = NULL)
+	function where_in($key, $values)
 	{
 		return $this->_where_in($key, $values);
 	}
@@ -547,7 +552,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	array	The values searched on
 	 * @return	object
 	 */
-	function or_where_in($key = NULL, $values = NULL)
+	function or_where_in($key, $values)
 	{
 		return $this->_where_in($key, $values, FALSE, 'OR ');
 	}
@@ -565,7 +570,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	array	The values searched on
 	 * @return	object
 	 */
-	function where_not_in($key = NULL, $values = NULL)
+	function where_not_in($key, $values)
 	{
 		return $this->_where_in($key, $values, TRUE);
 	}
@@ -583,7 +588,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	array	The values searched on
 	 * @return	object
 	 */
-	function or_where_not_in($key = NULL, $values = NULL)
+	function or_where_not_in($key, $values)
 	{
 		return $this->_where_in($key, $values, TRUE, 'OR ');
 	}
@@ -1030,7 +1035,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	the offset clause
 	 * @return	object
 	 */
-	function get($table = '', $limit = null, $offset = null)
+	function get($table = '', $limit = NULL, $offset = NULL)
 	{
 		if ($table != '')
 		{
@@ -1097,7 +1102,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	the offset clause
 	 * @return	object
 	 */
-	function get_where($table = '', $where = null, $limit = null, $offset = null)
+	function get_where($table = '', $where = NULL, $limit = NULL, $offset = NULL)
 	{
 		if ($table != '')
 		{
