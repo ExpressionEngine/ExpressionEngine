@@ -73,6 +73,13 @@ abstract class FieldModel extends Model {
 
 	public function set(array $data = array())
 	{
+		// getField() requires that we have a field type, but we might be trying
+		// to set it! So, if we are, we'll do that first.
+		if (isset($data['field_type']))
+		{
+			$this->setProperty('field_type', $data['field_type']);
+		}
+
 		$field = $this->getField($this->getSettingsValues());
 		$data = array_merge($data, $field->saveSettingsForm($data));
 

@@ -68,6 +68,7 @@ class Comment extends Model {
 	protected static $_events = array(
 		'afterInsert',
 		'afterDelete',
+		'afterSave',
 	);
 
 	protected $comment_id;
@@ -106,6 +107,12 @@ class Comment extends Model {
 
 		$last_author->updateAuthorStats();
 		$this->updateCommentStats();
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
 	}
 
 	private function updateCommentStats()

@@ -308,6 +308,10 @@ class ChannelEntry extends ContentModel {
 		{
 			ee()->functions->clear_caching('all');
 		}
+		else
+		{
+			ee()->functions->clear_caching('sql');
+		}
 	}
 
 	public function onAfterInsert()
@@ -853,7 +857,7 @@ class ChannelEntry extends ContentModel {
 			->filter('in_authorlist', 'y');
 
 		// Then grab any members that are part of the member groups we found
-		if ($member_groups)
+		if ($member_groups->count())
 		{
 			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}
