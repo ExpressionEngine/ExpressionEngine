@@ -80,7 +80,7 @@ class Url_Ft extends EE_Fieldtype {
 				return TRUE;
 			}
 
-			return sprintf(lang('url_ft_invalid_url_scheme'), implode(', ', $this->get_setting('allowed_url_schemes')));
+			return sprintf(lang('url_ft_invalid_url_scheme'), '<code>'.implode('</code>, <code>', $this->get_setting('allowed_url_schemes')).'</code>');
 		}
 
 		$scheme = $parsed_url['scheme'].'://';
