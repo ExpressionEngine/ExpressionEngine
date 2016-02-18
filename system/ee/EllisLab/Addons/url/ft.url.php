@@ -29,8 +29,8 @@ class Url_Ft extends EE_Fieldtype {
 	 * @var array $info Legacy Fieldtype info array
 	 */
 	public $info = array(
-		'name'		=> 'URL',
-		'version'	=> '1.0.0'
+		'name'    => 'URL',
+		'version' => '1.0.0'
 	);
 
 	/**
@@ -48,7 +48,7 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  array  $data  Field data
 	 * @return mixed  TRUE when valid, an error string when not
-	 **/
+	 */
 	public function validate($data)
 	{
 		ee()->lang->loadfile('fieldtypes');
@@ -100,7 +100,7 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  array   $data  Field data
 	 * @return string  Prepped Form field
-	 **/
+	 */
 	public function save($data)
 	{
 		return $this->prepForStorage($data);
@@ -113,15 +113,15 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  array   $data  Field data
 	 * @return string  Form field
-	 **/
+	 */
 	public function display_field($data)
 	{
 		$default_scheme = $this->get_setting('url_scheme_placeholder');
 
 		$field = array(
-			'name'               => $this->field_name,
-			'value'              => $data,
-			'placeholder'		 => $default_scheme
+			'name'        => $this->field_name,
+			'value'       => $data,
+			'placeholder' => $default_scheme
 		);
 
 		return form_input($field);
@@ -136,7 +136,7 @@ class Url_Ft extends EE_Fieldtype {
 	 * @param  array   $params   Variable tag parameters
 	 * @param  mixed   $tagdata  The tagdata if a var pair, FALSE if not
 	 * @return string  Parsed string
-	 **/
+	 */
 	public function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		return ee()->functions->encode_ee_tags($data);
@@ -149,7 +149,7 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  array  $data  Field Settings
 	 * @return array  Field options
-	 **/
+	 */
 	public function display_settings($data)
 	{
 		ee()->lang->loadfile('fieldtypes');
@@ -186,8 +186,8 @@ class Url_Ft extends EE_Fieldtype {
 		}
 
 		return array('field_options_url_field' => array(
-			'label' => 'field_options',
-			'group' => 'url_field',
+			'label'    => 'field_options',
+			'group'    => 'url_field',
 			'settings' => $settings
 		));
 	}
@@ -199,7 +199,7 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  array  $data  Field data
 	 * @return array  Settings to save
-	 **/
+	 */
 	public function grid_save_settings($data)
 	{
 		return $data;
@@ -212,7 +212,7 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  array  $data  Field data
 	 * @return array  Settings to save
-	 **/
+	 */
 	public function save_settings($data)
 	{
 		return array(
@@ -241,11 +241,11 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  bool   $only_defaults  Whether or not to only return the default set
 	 * @return array  Valid Protocol Options
-	 **/
+	 */
 	private function getProtocols($only_defaults = FALSE)
 	{
 		$protocols = array(
-			'http://' => 'http://',
+			'http://'  => 'http://',
 			'https://' => 'https://'
 		);
 
@@ -255,7 +255,7 @@ class Url_Ft extends EE_Fieldtype {
 		}
 
 		$protocols += array(
-			'//'	=> '// ('.lang('url_ft_protocol_relative_url').')',
+			'//'     => '// ('.lang('url_ft_protocol_relative_url').')',
 			'ftp://' => 'ftp://',
 		);
 
@@ -269,7 +269,7 @@ class Url_Ft extends EE_Fieldtype {
 	 *
 	 * @param  string  $url  The URL to store
 	 * @return string  A sanitized string, ready for storage and use in HTML attributes
-	 **/
+	 */
 	private function prepForStorage($url)
 	{
 		// disable $double_encode so entities don't bubble out of control on edits
