@@ -9,7 +9,7 @@ namespace EllisLab\ExpressionEngine\Service\Permission;
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 3.0
+ * @since		Version 3.2
  * @filesource
  */
 
@@ -51,16 +51,16 @@ class Permission {
 	 * @param	string  single permission name
 	 * @return	bool    TRUE if member has permission
 	 */
-	public function has($permission)
+	public function has()
 	{
 		$which = func_get_args();
 
 		if (count($which) !== 1)
 		{
-			throw new \BadFunctionCallException('Invalid parameter count.');
+			throw new \BadFunctionCallException('Invalid parameter count, must have exactly 1.');
 		}
 
-		return $this->hasAll($which);
+		return $this->hasAll($which[0]);
 	}
 
 	// --------------------------------------------------------------------
@@ -70,19 +70,17 @@ class Permission {
 	 *
 	 * Member access validation
 	 *
-	 * @param	mixed   any number of permission names
+	 * @param	mixed   array or any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
-	public function hasAll($which = FALSE)
+	public function hasAll()
 	{
-		if ( ! is_array($which))
-		{
-			$which = func_get_args();
 
-			if ( ! count($which))
-			{
-				throw new \BadFunctionCallException('Invalid parameter count.');
-			}
+		$which = func_get_args();
+
+		if ( ! count($which))
+		{
+			throw new \BadFunctionCallException('Invalid parameter count, 1 or more arguments required.');
 		}
 
 		// Super Admins always have access
@@ -111,7 +109,7 @@ class Permission {
 	 *
 	 * Member access validation
 	 *
-	 * @param	string  any number of permission names
+	 * @param	mixed   array or any number of permission names
 	 * @return	bool    TRUE if member has any permissions in the set
 	 */
 	public function hasAny()
@@ -120,9 +118,8 @@ class Permission {
 
 		if ( ! count($which))
 		{
-			throw new \BadFunctionCallException('Invalid parameter count.');
+			throw new \BadFunctionCallException('Invalid parameter count, 1 or more arguments required.');
 		}
-
 
 		// Super Admins always have access
 		if ($this->getUserdatum('group_id') == 1)
