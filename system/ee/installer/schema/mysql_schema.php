@@ -910,19 +910,6 @@ class EE_Schema {
 			KEY `site_id` (`site_id`)
 		)";
 
-		// Control panel search
-
-		$Q[] = "CREATE TABLE `exp_cp_search_index` (
-			`search_id` int(10) UNSIGNED NOT NULL auto_increment,
-			`controller` varchar(20) default NULL,
-			`method` varchar(50) default NULL,
-			`language` varchar(20) default NULL,
-			`access` varchar(50) default NULL,
-			`keywords` text,
-			PRIMARY KEY `search_id` (`search_id`),
-			FULLTEXT(`keywords`)
-		) ENGINE=MyISAM ";
-
 		// HTML buttons
 		// These are the buttons that appear on the PUBLISH page.
 		// Each member can have their own set of buttons

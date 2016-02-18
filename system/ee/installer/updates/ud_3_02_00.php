@@ -34,7 +34,29 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		ee()->load->dbforge();
+
+		$steps = new ProgressIterator(
+			array(
+				'drop_cp_search_table',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
+
 		return TRUE;
+	}
+
+	/**
+	 * Drop the unused cp_search_index. This table was never public, and
+	 * completely unused in v3, so no third parties should be accessing it.
+	 */
+	protected function drop_cp_search_table()
+	{
+		ee()->smartforge->drop_table('cp_search_index');
 	}
 }
 /* END CLASS */

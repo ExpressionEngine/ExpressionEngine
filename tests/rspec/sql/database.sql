@@ -64,7 +64,6 @@ DROP TABLE IF EXISTS `exp_email_cache_ml`;
 DROP TABLE IF EXISTS `exp_email_cache_mg`;
 DROP TABLE IF EXISTS `exp_email_cache`;
 DROP TABLE IF EXISTS `exp_developer_log`;
-DROP TABLE IF EXISTS `exp_cp_search_index`;
 DROP TABLE IF EXISTS `exp_cp_log`;
 DROP TABLE IF EXISTS `exp_content_types`;
 DROP TABLE IF EXISTS `exp_comments`;
@@ -450,18 +449,6 @@ CREATE TABLE `exp_cp_log` (
   `action` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE `exp_cp_search_index` (
-  `search_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `controller` varchar(20) DEFAULT NULL,
-  `method` varchar(50) DEFAULT NULL,
-  `language` varchar(20) DEFAULT NULL,
-  `access` varchar(50) DEFAULT NULL,
-  `keywords` text,
-  PRIMARY KEY (`search_id`),
-  FULLTEXT KEY `keywords` (`keywords`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
@@ -1640,10 +1627,6 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `exp_cp_log` WRITE;
-UNLOCK TABLES;
-
-
-LOCK TABLES `exp_cp_search_index` WRITE;
 UNLOCK TABLES;
 
 
