@@ -124,6 +124,11 @@ class Url_Ft extends EE_Fieldtype {
 			'placeholder' => $default_scheme
 		);
 
+		if ($this->get_setting('field_disabled'))
+		{
+			$field['disabled'] = 'disabled';
+		}
+
 		return form_input($field);
 	}
 
