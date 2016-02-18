@@ -389,6 +389,8 @@ https://support.ellislab.com/',
 
 "no_timezones" => "No Timezones",
 
+'curl_not_installed' => 'cURL is not installed on your server',
+
 // IGNORE
 ''=>'');
 /* End of file core_lang.php */
