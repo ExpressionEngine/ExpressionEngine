@@ -106,7 +106,7 @@ class CI_DB_mysqli_connection {
 		$time_start = microtime(TRUE);
 		$memory_start = memory_get_usage();
 
-		$query = $this->enforceCharsetAndCollation($query);
+		$query = $this->enforceCreateTableParameters($query);
 
 		try
 		{
@@ -205,17 +205,25 @@ class CI_DB_mysqli_connection {
 	 * @param String $query Query to check
 	 * @return Rewritten query, if necessary
 	 */
-	private function enforceCharsetAndCollation($query)
+	private function enforceCreateTableParameters($query)
 	{
-		$charset = $this->config['char_set'];
-		$collation = $this->config['dbcollat'];
-
 		$query = trim($query);
 
 		if (strncasecmp($query, 'CREATE TABLE', 12) != 0)
 		{
 			return $query;
 		}
+
+		$query = $this->enforceCharsetAndCollation($query);
+		$query = $this->addEngineIfNotPresent($query);
+
+		return $query;
+	}
+
+	private function enforceCharsetAndCollation($query)
+	{
+		$charset = $this->config['char_set'];
+		$collation = $this->config['dbcollat'];
 
 		$find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
 		$want = "DEFAULT CHARACTER SET {$charset} COLLATE {$collation}";
@@ -227,7 +235,21 @@ class CI_DB_mysqli_connection {
 		else
 		{
 			$query = rtrim($query, ';');
-			$query .= $want.';';
+			$query .= ' '.$want.';';
+		}
+
+		return $query;
+	}
+
+	private function addEngineIfNotPresent($query)
+	{
+		$find = '/ENGINE\s*=\s*(\w+)/';
+		$want = "ENGINE=InnoDB";
+
+		if ( ! preg_match($find, $query))
+		{
+			$query = rtrim($query, ';');
+			$query .= ' '.$want.';';
 		}
 
 		return $query;
