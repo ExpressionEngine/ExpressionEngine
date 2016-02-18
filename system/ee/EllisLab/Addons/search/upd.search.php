@@ -52,7 +52,7 @@ class Search_upd {
 					 result_page varchar(70) NOT NULL,
 					 PRIMARY KEY `search_id` (`search_id`),
 					 KEY `site_id` (`site_id`)
-					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+					) CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search_log (
 					id int(10) NOT NULL auto_increment,
@@ -65,7 +65,7 @@ class Search_upd {
 					search_terms varchar(200) NOT NULL,
 					PRIMARY KEY `id` (`id`),
 					KEY `site_id` (`site_id`)
-					) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+					) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		foreach ($sql as $query)
 		{

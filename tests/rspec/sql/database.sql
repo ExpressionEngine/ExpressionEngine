@@ -92,7 +92,7 @@ CREATE TABLE `exp_accessories` (
   `controllers` text,
   `accessory_version` varchar(12) NOT NULL,
   PRIMARY KEY (`accessory_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_actions` (
@@ -101,7 +101,7 @@ CREATE TABLE `exp_actions` (
   `method` varchar(50) NOT NULL,
   `csrf_exempt` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`action_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_captcha` (
@@ -111,7 +111,7 @@ CREATE TABLE `exp_captcha` (
   `word` varchar(20) NOT NULL,
   PRIMARY KEY (`captcha_id`),
   KEY `word` (`word`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_categories` (
@@ -128,7 +128,7 @@ CREATE TABLE `exp_categories` (
   KEY `group_id` (`group_id`),
   KEY `cat_name` (`cat_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_category_field_data` (
@@ -138,7 +138,7 @@ CREATE TABLE `exp_category_field_data` (
   PRIMARY KEY (`cat_id`),
   KEY `site_id` (`site_id`),
   KEY `group_id` (`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_category_fields` (
@@ -159,7 +159,7 @@ CREATE TABLE `exp_category_fields` (
   PRIMARY KEY (`field_id`),
   KEY `site_id` (`site_id`),
   KEY `group_id` (`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_category_groups` (
@@ -173,14 +173,14 @@ CREATE TABLE `exp_category_groups` (
   `can_delete_categories` text,
   PRIMARY KEY (`group_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_category_posts` (
   `entry_id` int(10) unsigned NOT NULL,
   `cat_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`entry_id`,`cat_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channel_data` (
@@ -204,7 +204,7 @@ CREATE TABLE `exp_channel_data` (
   PRIMARY KEY (`entry_id`),
   KEY `channel_id` (`channel_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channel_entries_autosave` (
@@ -243,7 +243,7 @@ CREATE TABLE `exp_channel_entries_autosave` (
   KEY `entry_date` (`entry_date`),
   KEY `expiration_date` (`expiration_date`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channel_fields` (
@@ -273,7 +273,7 @@ CREATE TABLE `exp_channel_fields` (
   KEY `group_id` (`group_id`),
   KEY `field_type` (`field_type`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channel_form_settings` (
@@ -286,14 +286,14 @@ CREATE TABLE `exp_channel_form_settings` (
   PRIMARY KEY (`channel_form_settings_id`),
   KEY `site_id` (`site_id`),
   KEY `channel_id` (`channel_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channel_member_groups` (
   `group_id` smallint(4) unsigned NOT NULL,
   `channel_id` int(6) unsigned NOT NULL,
   PRIMARY KEY (`group_id`,`channel_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channel_titles` (
@@ -330,7 +330,7 @@ CREATE TABLE `exp_channel_titles` (
   KEY `entry_date` (`entry_date`),
   KEY `expiration_date` (`expiration_date`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_channels` (
@@ -389,7 +389,7 @@ CREATE TABLE `exp_channels` (
   KEY `field_group` (`field_group`),
   KEY `channel_name` (`channel_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_comment_subscriptions` (
@@ -403,7 +403,7 @@ CREATE TABLE `exp_comment_subscriptions` (
   PRIMARY KEY (`subscription_id`),
   KEY `entry_id` (`entry_id`),
   KEY `member_id` (`member_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_comments` (
@@ -428,7 +428,7 @@ CREATE TABLE `exp_comments` (
   KEY `status` (`status`),
   KEY `site_id` (`site_id`),
   KEY `comment_date_idx` (`comment_date`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_content_types` (
@@ -436,7 +436,7 @@ CREATE TABLE `exp_content_types` (
   `name` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`content_type_id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_cp_log` (
@@ -449,7 +449,7 @@ CREATE TABLE `exp_cp_log` (
   `action` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_developer_log` (
@@ -470,7 +470,7 @@ CREATE TABLE `exp_developer_log` (
   `snippets` text,
   `hash` char(32) NOT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_email_cache` (
@@ -491,21 +491,21 @@ CREATE TABLE `exp_email_cache` (
   `wordwrap` char(1) NOT NULL DEFAULT 'y',
   `attachments` mediumtext,
   PRIMARY KEY (`cache_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_email_cache_mg` (
   `cache_id` int(6) unsigned NOT NULL,
   `group_id` smallint(4) NOT NULL,
   PRIMARY KEY (`cache_id`,`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_email_cache_ml` (
   `cache_id` int(6) unsigned NOT NULL,
   `list_id` smallint(4) NOT NULL,
   PRIMARY KEY (`cache_id`,`list_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_email_console_cache` (
@@ -519,7 +519,7 @@ CREATE TABLE `exp_email_console_cache` (
   `subject` varchar(120) NOT NULL,
   `message` mediumtext NOT NULL,
   PRIMARY KEY (`cache_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_email_tracker` (
@@ -530,7 +530,7 @@ CREATE TABLE `exp_email_tracker` (
   `sender_username` varchar(50) NOT NULL,
   `number_recipients` int(4) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`email_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_entry_versioning` (
@@ -542,7 +542,7 @@ CREATE TABLE `exp_entry_versioning` (
   `version_data` mediumtext NOT NULL,
   PRIMARY KEY (`version_id`),
   KEY `entry_id` (`entry_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_extensions` (
@@ -555,7 +555,7 @@ CREATE TABLE `exp_extensions` (
   `version` varchar(10) NOT NULL DEFAULT '',
   `enabled` char(1) NOT NULL DEFAULT 'y',
   PRIMARY KEY (`extension_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_field_groups` (
@@ -564,7 +564,7 @@ CREATE TABLE `exp_field_groups` (
   `group_name` varchar(50) NOT NULL,
   PRIMARY KEY (`group_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_fieldtypes` (
@@ -574,7 +574,7 @@ CREATE TABLE `exp_fieldtypes` (
   `settings` text,
   `has_global_settings` char(1) DEFAULT 'n',
   PRIMARY KEY (`fieldtype_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_file_categories` (
@@ -584,7 +584,7 @@ CREATE TABLE `exp_file_categories` (
   `is_cover` char(1) DEFAULT 'n',
   KEY `file_id` (`file_id`),
   KEY `cat_id` (`cat_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_file_dimensions` (
@@ -599,7 +599,7 @@ CREATE TABLE `exp_file_dimensions` (
   `watermark_id` int(4) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `upload_location_id` (`upload_location_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_file_watermarks` (
@@ -625,7 +625,7 @@ CREATE TABLE `exp_file_watermarks` (
   `wm_shadow_distance` int(3) unsigned DEFAULT NULL,
   `wm_shadow_color` varchar(7) DEFAULT NULL,
   PRIMARY KEY (`wm_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_files` (
@@ -647,7 +647,7 @@ CREATE TABLE `exp_files` (
   PRIMARY KEY (`file_id`),
   KEY `upload_location_id` (`upload_location_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_global_variables` (
@@ -659,7 +659,7 @@ CREATE TABLE `exp_global_variables` (
   PRIMARY KEY (`variable_id`),
   KEY `variable_name` (`variable_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_grid_columns` (
@@ -677,7 +677,7 @@ CREATE TABLE `exp_grid_columns` (
   `col_settings` text,
   PRIMARY KEY (`col_id`),
   KEY `field_id` (`field_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_html_buttons` (
@@ -693,7 +693,7 @@ CREATE TABLE `exp_html_buttons` (
   `classname` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_layout_publish` (
@@ -707,13 +707,13 @@ CREATE TABLE `exp_layout_publish` (
   KEY `site_id` (`site_id`),
   KEY `member_group` (`member_group`),
   KEY `channel_id` (`channel_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_layout_publish_member_groups` (
   `layout_id` int(10) unsigned NOT NULL,
   `group_id` int(4) unsigned NOT NULL,
   PRIMARY KEY `layout_id_group_id` (`layout_id`, `group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_bulletin_board` (
   `bulletin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -726,13 +726,13 @@ CREATE TABLE `exp_member_bulletin_board` (
   PRIMARY KEY (`bulletin_id`),
   KEY `sender_id` (`sender_id`),
   KEY `hash` (`hash`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_member_data` (
   `member_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`member_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_member_fields` (
@@ -755,7 +755,7 @@ CREATE TABLE `exp_member_fields` (
   `m_field_order` int(3) unsigned NOT NULL,
   `m_field_text_direction` char(3) DEFAULT 'ltr',
   PRIMARY KEY (`m_field_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_member_groups` (
@@ -863,7 +863,7 @@ CREATE TABLE `exp_member_groups` (
     `can_access_import` char(1) NOT NULL DEFAULT 'n',
     `can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`group_id`,`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_homepage` (
   `member_id` int(10) unsigned NOT NULL,
@@ -884,7 +884,7 @@ CREATE TABLE `exp_member_homepage` (
   `pmachine_news_feed` char(1) NOT NULL DEFAULT 'n',
   `pmachine_news_feed_order` int(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`member_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_member_search` (
@@ -900,7 +900,7 @@ CREATE TABLE `exp_member_search` (
   PRIMARY KEY (`search_id`),
   KEY `member_id` (`member_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_members` (
@@ -988,7 +988,7 @@ CREATE TABLE `exp_members` (
   KEY `group_id` (`group_id`),
   KEY `unique_id` (`unique_id`),
   KEY `password` (`password`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_message_attachments` (
@@ -1003,7 +1003,7 @@ CREATE TABLE `exp_message_attachments` (
   `attachment_size` int(10) unsigned NOT NULL DEFAULT '0',
   `is_temp` char(1) NOT NULL DEFAULT 'y',
   PRIMARY KEY (`attachment_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_message_copies` (
@@ -1023,7 +1023,7 @@ CREATE TABLE `exp_message_copies` (
   KEY `message_id` (`message_id`),
   KEY `recipient_id` (`recipient_id`),
   KEY `sender_id` (`sender_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_message_data` (
@@ -1042,7 +1042,7 @@ CREATE TABLE `exp_message_data` (
   `message_status` varchar(25) NOT NULL DEFAULT '',
   PRIMARY KEY (`message_id`),
   KEY `sender_id` (`sender_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_message_folders` (
@@ -1058,7 +1058,7 @@ CREATE TABLE `exp_message_folders` (
   `folder9_name` varchar(50) NOT NULL DEFAULT '',
   `folder10_name` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`member_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_message_listed` (
@@ -1068,14 +1068,14 @@ CREATE TABLE `exp_message_listed` (
   `listed_description` varchar(100) NOT NULL DEFAULT '',
   `listed_type` varchar(10) NOT NULL DEFAULT 'blocked',
   PRIMARY KEY (`listed_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_module_member_groups` (
   `group_id` smallint(4) unsigned NOT NULL,
   `module_id` mediumint(5) unsigned NOT NULL,
   PRIMARY KEY (`group_id`,`module_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_modules` (
@@ -1085,7 +1085,7 @@ CREATE TABLE `exp_modules` (
   `has_cp_backend` char(1) NOT NULL DEFAULT 'n',
   `has_publish_fields` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`module_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_online_users` (
@@ -1100,7 +1100,7 @@ CREATE TABLE `exp_online_users` (
   PRIMARY KEY (`online_id`),
   KEY `date` (`date`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_password_lockout` (
@@ -1113,7 +1113,7 @@ CREATE TABLE `exp_password_lockout` (
   KEY `login_date` (`login_date`),
   KEY `ip_address` (`ip_address`),
   KEY `user_agent` (`user_agent`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE exp_plugins (
 	plugin_id int(10) unsigned NOT NULL auto_increment,
@@ -1122,7 +1122,7 @@ CREATE TABLE exp_plugins (
 	plugin_version varchar(12) NOT NULL,
 	is_typography_related char(1) NOT NULL default 'n',
 	PRIMARY KEY `plugin_id` (`plugin_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_relationships` (
   `relationship_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
@@ -1138,7 +1138,7 @@ CREATE TABLE `exp_relationships` (
   KEY `child_id` (`child_id`),
   KEY `field_id` (`field_id`),
   KEY `grid_row_id` (`grid_row_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_remember_me` (
@@ -1152,7 +1152,7 @@ CREATE TABLE `exp_remember_me` (
   `last_refresh` int(10) DEFAULT '0',
   PRIMARY KEY (`remember_me_id`),
   KEY `member_id` (`member_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_reset_password` (
@@ -1161,7 +1161,7 @@ CREATE TABLE `exp_reset_password` (
   `resetcode` varchar(12) NOT NULL,
   `date` int(10) NOT NULL,
   PRIMARY KEY (`reset_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_revision_tracker` (
@@ -1174,7 +1174,7 @@ CREATE TABLE `exp_revision_tracker` (
   `item_data` mediumtext NOT NULL,
   PRIMARY KEY (`tracker_id`),
   KEY `item_id` (`item_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_rte_tools` (
@@ -1184,7 +1184,7 @@ CREATE TABLE `exp_rte_tools` (
   `enabled` char(1) DEFAULT 'y',
   PRIMARY KEY (`tool_id`),
   KEY `enabled` (`enabled`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_rte_toolsets` (
@@ -1196,7 +1196,7 @@ CREATE TABLE `exp_rte_toolsets` (
   PRIMARY KEY (`toolset_id`),
   KEY `member_id` (`member_id`),
   KEY `enabled` (`enabled`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_search` (
@@ -1213,7 +1213,7 @@ CREATE TABLE `exp_search` (
   `result_page` varchar(70) NOT NULL,
   PRIMARY KEY (`search_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_search_log` (
@@ -1227,7 +1227,7 @@ CREATE TABLE `exp_search_log` (
   `search_terms` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_security_hashes` (
@@ -1237,7 +1237,7 @@ CREATE TABLE `exp_security_hashes` (
   `hash` varchar(40) NOT NULL,
   PRIMARY KEY (`hash_id`),
   KEY `session_id` (`session_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_sessions` (
@@ -1253,7 +1253,7 @@ CREATE TABLE `exp_sessions` (
   PRIMARY KEY (`session_id`),
   KEY `member_id` (`member_id`),
   KEY `last_activity_idx` (`last_activity`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_sites` (
@@ -1269,7 +1269,7 @@ CREATE TABLE `exp_sites` (
   `site_pages` TEXT NOT NULL ,
   PRIMARY KEY (`site_id`),
   KEY `site_name` (`site_name`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_snippets` (
@@ -1280,7 +1280,7 @@ CREATE TABLE `exp_snippets` (
   `edit_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`snippet_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_specialty_templates` (
@@ -1298,7 +1298,7 @@ CREATE TABLE `exp_specialty_templates` (
   PRIMARY KEY (`template_id`),
   KEY `template_name` (`template_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_stats` (
@@ -1320,7 +1320,7 @@ CREATE TABLE `exp_stats` (
   `last_cache_clear` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`stat_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_status_groups` (
@@ -1329,14 +1329,14 @@ CREATE TABLE `exp_status_groups` (
   `group_name` varchar(50) NOT NULL,
   PRIMARY KEY (`group_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_status_no_access` (
   `status_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
   PRIMARY KEY (`status_id`,`member_group`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_statuses` (
@@ -1349,7 +1349,7 @@ CREATE TABLE `exp_statuses` (
   PRIMARY KEY (`status_id`),
   KEY `group_id` (`group_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_template_groups` (
@@ -1362,21 +1362,21 @@ CREATE TABLE `exp_template_groups` (
   KEY `site_id` (`site_id`),
   KEY `group_name_idx` (`group_name`),
   KEY `group_order_idx` (`group_order`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_template_member_groups` (
   `group_id` smallint(4) unsigned NOT NULL,
   `template_group_id` mediumint(5) unsigned NOT NULL,
   PRIMARY KEY (`group_id`,`template_group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_template_no_access` (
   `template_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
   PRIMARY KEY (`template_id`,`member_group`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_template_routes` (
@@ -1388,7 +1388,7 @@ CREATE TABLE `exp_template_routes` (
   `route_required` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`route_id`),
   KEY `template_id` (`template_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_templates` (
@@ -1414,7 +1414,7 @@ CREATE TABLE `exp_templates` (
   KEY `group_id` (`group_id`),
   KEY `template_name` (`template_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_throttle` (
@@ -1426,14 +1426,14 @@ CREATE TABLE `exp_throttle` (
   PRIMARY KEY (`throttle_id`),
   KEY `ip_address` (`ip_address`),
   KEY `last_activity` (`last_activity`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_upload_no_access` (
   `upload_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
   PRIMARY KEY (`upload_id`,`member_group`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_upload_prefs` (
@@ -1458,7 +1458,7 @@ CREATE TABLE `exp_upload_prefs` (
   `module_id` int(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 

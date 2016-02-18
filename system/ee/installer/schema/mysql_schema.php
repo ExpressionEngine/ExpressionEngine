@@ -11,7 +11,7 @@ class EE_Schema {
 	var $default_entry	= '';
 	var $theme_path		= '';
 
-	private $default_engine = 'MyISAM';
+	private $default_engine = 'InnoDB';
 
 	/**
 	 * Returns a platform-specific query that looks for EE tables
