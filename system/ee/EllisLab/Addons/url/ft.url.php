@@ -165,8 +165,8 @@ class Url_Ft extends EE_Fieldtype {
 				'fields' => array(
 					'allowed_url_schemes' => array(
 						'type' => 'checkbox',
-						'choices' => $this->getProtocols(),
-						'value' => (isset($data['allowed_url_schemes'])) ? $data['allowed_url_schemes'] : $this->getProtocols(TRUE),
+						'choices' => $this->getSchemes(),
+						'value' => (isset($data['allowed_url_schemes'])) ? $data['allowed_url_schemes'] : $this->getSchemes(TRUE),
 						'required' => TRUE
 					)
 				)
@@ -177,7 +177,7 @@ class Url_Ft extends EE_Fieldtype {
 				'fields' => array(
 					'url_scheme_placeholder' => array(
 						'type' => 'select',
-						'choices' => $this->getProtocols(),
+						'choices' => $this->getSchemes(),
 						'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : '',
 						'required' => TRUE
 					)
@@ -242,12 +242,12 @@ class Url_Ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Protocols
+	 * Get Schemes
 	 *
 	 * @param  bool   $only_defaults  Whether or not to only return the default set
-	 * @return array  Valid Protocol Options
+	 * @return array  Valid URL Scheme Options
 	 */
-	private function getProtocols($only_defaults = FALSE)
+	private function getSchemes($only_defaults = FALSE)
 	{
 		$protocols = array(
 			'http://'  => 'http://',
