@@ -97,7 +97,7 @@ class Toggle_ft extends EE_Fieldtype {
 	{
 		$this->settings = array_merge($this->settings_vars, $this->settings);
 
-		$data = $data ?: $this->settings['field_default_value'];
+		$data = is_null($data) ? $this->settings['field_default_value'] : $data;
 
 		if (REQ == 'CP')
 		{
@@ -223,7 +223,7 @@ class Toggle_ft extends EE_Fieldtype {
 		return array(
 			$id.'_'.$data[$id] => array(
 				'type'		=> 'TINYINT',
-				'default'	=> 0
+				'null'      => TRUE
 			)
 		);
 	}
