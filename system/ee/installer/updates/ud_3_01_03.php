@@ -60,7 +60,7 @@ class Updater {
 	private function update_memberlist_order_by()
 	{
 		$msm_config = new MSM_Config();
-		$msm_config->update_site_prefs(array('memberlist_order_by' => 'member_id'));
+		$msm_config->update_site_prefs(array('memberlist_order_by' => 'member_id'), 'all');
 	}
 }
 
