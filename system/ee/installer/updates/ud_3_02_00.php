@@ -25,7 +25,8 @@
  */
 class Updater {
 
-	var $version_suffix = '';
+	public $version_suffix = '';
+	public $errors = array();
 
 	/**
 	 * Do Update
@@ -34,9 +35,41 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		return TRUE;
+		$steps = new ProgressIterator(
+			array(
+				'add_email_address_field'
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			try
+			{
+				$this->$v();
+			}
+			catch (Exception $e)
+			{
+				$this->errors[] = $e->getMessage();
+			}
+		}
+
+		return empty($this->errors);
+	}
+
+	/**
+	 * New "Email Address" Field Type in 3.2.0
+	 */
+	private function add_email_address_field()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'email_address',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
 	}
 }
-/* END CLASS */
+// END CLASS
 
 // EOF
