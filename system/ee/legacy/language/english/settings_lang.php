@@ -739,7 +739,7 @@ $lang = array(
 
 "lockout_time" => "Lockout time",
 
-"lockout_time_desc" => "The length of time a user should be locked out of your site if they exceed the limits.",
+"lockout_time_desc" => "The number of seconds a user should be locked out of your site if they exceed the limits.",
 
 'banishment_type' => 'Lock out action',
 
