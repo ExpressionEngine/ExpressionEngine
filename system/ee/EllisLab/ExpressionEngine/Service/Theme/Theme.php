@@ -135,7 +135,7 @@ class Theme {
 			return $files;
 		}
 
-		while (FALSE !== ($folder = readdir($fp)))
+		while (($folder = readdir($fp)) !== FALSE)
 		{
 			if (@is_dir($path . $folder) && substr($folder, 0, 1) != '.')
 			{
