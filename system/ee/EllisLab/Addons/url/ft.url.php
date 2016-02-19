@@ -283,6 +283,6 @@ class Url_Ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 }
-// END Url_field_Ft class
+// END CLASS
 
 // EOF
