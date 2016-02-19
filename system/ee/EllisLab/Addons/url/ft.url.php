@@ -15,7 +15,7 @@
 // --------------------------------------------------------------------
 
 /**
- * ExpressionEngine Text Fieldtype Class
+ * ExpressionEngine URL Fieldtype Class
  *
  * @package     ExpressionEngine
  * @subpackage  Fieldtypes
@@ -190,24 +190,11 @@ class Url_Ft extends EE_Fieldtype {
 			return array('field_options' => $settings);
 		}
 
-		return array('field_options_url_field' => array(
+		return array('field_options_url' => array(
 			'label'    => 'field_options',
-			'group'    => 'url_field',
+			'group'    => 'url',
 			'settings' => $settings
 		));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Save Settings for Grid column
-	 *
-	 * @param  array  $data  Field data
-	 * @return array  Settings to save
-	 */
-	public function grid_save_settings($data)
-	{
-		return $data;
 	}
 
 	// --------------------------------------------------------------------
@@ -221,8 +208,8 @@ class Url_Ft extends EE_Fieldtype {
 	public function save_settings($data)
 	{
 		return array(
-			'allowed_url_schemes' => ee()->input->post('allowed_url_schemes'),
-			'url_scheme_placeholder' => ee()->input->post('url_scheme_placeholder')
+			'allowed_url_schemes' => $data['allowed_url_schemes'],
+			'url_scheme_placeholder' => $data['url_scheme_placeholder']
 		);
 	}
 
