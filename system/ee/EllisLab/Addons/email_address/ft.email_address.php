@@ -57,7 +57,8 @@ class Email_address_Ft extends EE_Fieldtype {
 
 		if ( ! $result->isValid())
 		{
-			return lang('email_address_ft_invalid_email');
+			$error = $result->getErrors('email');
+			return $error['email'];
 		}
 
 		return TRUE;

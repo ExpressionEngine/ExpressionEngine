@@ -96,9 +96,6 @@ $lang = array(
 'grid_copy_field'			=> 'copy field',
 'grid_remove_field'			=> 'remove field',
 
-// Email Address
-'email_address_ft_invalid_email' => 'Invalid Email Address',
-
 // IGNORE
 ''=>'');
 
