@@ -31,7 +31,12 @@ class Email extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		return (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
+		if ($value != filter_var($value, FILTER_SANITIZE_EMAIL) OR ! filter_var($value, FILTER_VALIDATE_EMAIL))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	public function getLanguageKey()

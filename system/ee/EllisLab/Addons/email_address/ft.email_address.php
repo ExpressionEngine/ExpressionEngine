@@ -53,9 +53,9 @@ class Email_address_Ft extends EE_Fieldtype {
 			return TRUE;
 		}
 
-		$clean_email = filter_var($data, FILTER_SANITIZE_EMAIL);
+		$result = ee('Validation')->make(array('email' => 'email'))->validate(array('email' => $data));
 
-		if ($data != $clean_email OR ! filter_var($data, FILTER_VALIDATE_EMAIL))
+		if ( ! $result->isValid())
 		{
 			return lang('email_address_ft_invalid_email');
 		}
