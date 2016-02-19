@@ -46,8 +46,8 @@ class CI_DB_forge {
 	 * Create database
 	 *
 	 * @access	public
-	 * @param	string	the database name
-	 * @return	bool
+	 * @param	string $db_name The database name
+	 * @return	CI_DB_result The query result object
 	 */
 	function create_database($db_name)
 	{
@@ -67,8 +67,8 @@ class CI_DB_forge {
 	 * Drop database
 	 *
 	 * @access	public
-	 * @param	string	the database name
-	 * @return	bool
+	 * @param	string $db_name The database name
+	 * @return	CI_DB_result The query result object
 	 */
 	function drop_database($db_name)
 	{
@@ -88,8 +88,8 @@ class CI_DB_forge {
 	 * Add Key
 	 *
 	 * @access	public
-	 * @param	string	key
-	 * @param	string	type
+	 * @param	string $key The name of field to add a key for
+	 * @param	string $primary Set to TRUE to make this a PRIMARY KEY
 	 * @return	void
 	 */
 	function add_key($key, $primary = FALSE)
@@ -125,7 +125,8 @@ class CI_DB_forge {
 	 * Add Field
 	 *
 	 * @access	public
-	 * @param	string	collation
+	 * @param	array $field The field definition as a multidimensional
+	 *                       associative array
 	 * @return	void
 	 */
 	function add_field($field)
@@ -171,8 +172,10 @@ class CI_DB_forge {
 	 * Create Table
 	 *
 	 * @access	public
-	 * @param	string	the table name
-	 * @return	bool
+	 * @param	string $table The name of the table to create
+	 * @param   boolean $if_not_exists Set to TRUE to create it if it doesn't
+	 *                                 exist
+	 * @return	CI_DB_result The query result object
 	 */
 	function create_table($table, $if_not_exists = FALSE)
 	{
@@ -204,8 +207,8 @@ class CI_DB_forge {
 	 * Drop Table
 	 *
 	 * @access	public
-	 * @param	string	the table name
-	 * @return	bool
+	 * @param	string $table_name The table to DROP
+	 * @return	CI_DB_result The query result object
 	 */
 	function drop_table($table_name)
 	{
@@ -225,9 +228,9 @@ class CI_DB_forge {
 	 * Rename Table
 	 *
 	 * @access	public
-	 * @param	string	the old table name
-	 * @param	string	the new table name
-	 * @return	bool
+	 * @param	string $table_name The old table name
+	 * @param	string $new_table_name The new table name
+	 * @return	CI_DB_result The query result object
 	 */
 	function rename_table($table_name, $new_table_name)
 	{
@@ -246,12 +249,14 @@ class CI_DB_forge {
 	 * Column Add
 	 *
 	 * @access	public
-	 * @param	string	the table name
-	 * @param	string	the column name
-	 * @param	string	the column definition
+	 * @param	string $table The table name to add the column to
+	 * @param	array $field The field definition as a multidimensional
+	 *                       associative array
+	 * @param	string $after_field The field that should come before this new
+	 *                              field
 	 * @return	bool
 	 */
-	function add_column($table, array $field, $after_field = '')
+	function add_column($table, $field, $after_field = '')
 	{
 		if (empty($table))
 		{
@@ -293,9 +298,9 @@ class CI_DB_forge {
 	 * Column Drop
 	 *
 	 * @access	public
-	 * @param	string	the table name
-	 * @param	string	the column name
-	 * @return	bool
+	 * @param	string $table The table that contains the column to drop
+	 * @param	string $column_name
+	 * @return	CI_DB_result The query result object
 	 */
 	function drop_column($table, $column_name)
 	{
@@ -323,11 +328,13 @@ class CI_DB_forge {
 	 * Column Modify
 	 *
 	 * @access	public
-	 * @param	string	the table name
-	 * @param	string	the column name
+	 * @param	string $table The name of the table containing the column to
+	 *                        modify
+	 * @param	array $field The field definition as a multidimensional
+	 *                       associative array
 	 * @return	bool
 	 */
-	function modify_column($table, array $field)
+	function modify_column($table, $field)
 	{
 		if (empty($table))
 		{
