@@ -3,7 +3,7 @@
 return array(
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
-	'name'           => 'Email',
+	'name'           => 'Email Address',
 	'description'    => 'Email Address Field',
 	'version'        => '1.0.0',
 	'namespace'      => 'EllisLab\Addons\EmailAddress',

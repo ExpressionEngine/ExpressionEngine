@@ -15,7 +15,7 @@
 // --------------------------------------------------------------------
 
 /**
- * ExpressionEngine Text Fieldtype Class
+ * ExpressionEngine Email Fieldtype Class
  *
  * @package     ExpressionEngine
  * @subpackage  Fieldtypes
@@ -29,7 +29,7 @@ class Email_address_Ft extends EE_Fieldtype {
 	 * @var array $info Legacy Fieldtype info array
 	 */
 	public $info = array(
-		'name'    => 'Email',
+		'name'    => 'Email Address',
 		'version' => '1.0.0'
 	);
 
@@ -76,7 +76,7 @@ class Email_address_Ft extends EE_Fieldtype {
 		$field = array(
 			'name'        => $this->field_name,
 			'value'       => $data,
-			'placeholder' => 'mailbox@example.com'
+			'placeholder' => 'username@example.com'
 		);
 
 		if ($this->get_setting('field_disabled'))
@@ -105,6 +105,39 @@ class Email_address_Ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Replace Tag :mailto
+	 *
+	 * @param  string  $data     The email address
+	 * @param  array   $params   Variable tag parameters
+	 * @param  mixed   $tagdata  The tagdata if a var pair, FALSE if not
+	 * @return string  Parsed string
+	 */
+	public function replace_mailto($data, $params = array(), $tagdata = FALSE)
+	{
+		// use the address as the title if not provided
+		$title = (isset($params['title'])) ? $params['title'] : $data;
+		$email = (isset($params['subject'])) ? $data.'?subject='.rawurlencode($params['subject']) : $data;
+
+
+		if ( ! isset($params['encode']) OR get_bool_from_string($params['encode']) != FALSE)
+		{
+			ee()->load->library('typography');
+			ee()->typography->initialize();
+
+			$mailto = ee()->typography->encode_email($email, $title, TRUE);
+		}
+		else
+		{
+			echo 'here';
+			$mailto = '<a href="mailto:'.$email.'">'.$title.'</a>';
+		}
+
+		return $mailto;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Accept all content types.
 	 *
 	 * @param  string  The name of the content type
@@ -117,6 +150,6 @@ class Email_address_Ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 }
-// END Email_address_Ft class
+// END CLASS
 
 // EOF
