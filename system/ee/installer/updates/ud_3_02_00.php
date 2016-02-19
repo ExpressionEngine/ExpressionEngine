@@ -37,6 +37,7 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
+				'add_url_field',
 				'add_email_address_field'
 			)
 		);
@@ -54,6 +55,20 @@ class Updater {
 		}
 
 		return empty($this->errors);
+	}
+
+	/**
+	 * New "URL" Field Type in 3.2.0
+	 */
+	private function add_url_field()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'url',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
 	}
 
 	/**
