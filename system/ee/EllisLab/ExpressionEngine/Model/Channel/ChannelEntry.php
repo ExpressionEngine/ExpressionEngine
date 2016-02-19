@@ -818,20 +818,13 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	function getAllowedChannels()
-	{
-		// Channels
-		$allowed = (ee()->session->userdata('member_id') == 0
-				OR ee()->session->userdata('group_id') == 1
-				OR ! is_array(ee()->session->userdata('assigned_channels')))
-			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
-
-		return $allowed;
-	}
 
 	public function populateChannels($field)
 	{
-		$allowed_channel_ids = $this->getAllowedChannels();
+		$allowed_channel_ids =  (ee()->session->userdata('member_id') == 0
+			OR ee()->session->userdata('group_id') == 1
+			OR ! is_array(ee()->session->userdata('assigned_channels')))
+			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -847,26 +840,17 @@ class ChannelEntry extends ContentModel {
  	/**
 	 * Populate the Authors dropdown
 	 *
-	 *	If the session data is not Superadmin AND doesn't contain permission
-	 * to post to the channel, the author list is empty
-	 *	Otherwise the following are included in the author list regardless of
+	 * The following are included in the author list regardless of
 	 * their channel posting permissions:
 	 *	  The current user
 	 *	  The current author (if editing)
 	 *	  Anyone in a group set to 'include_in_authorlist'
-	 *   Any individual member set to in_authorlist
+	 *    Any individual member 'in_authorlist'
 	 *
 	 */
 	public function populateAuthors($field)
 	{
 		$author_options = array();
-
-		if (ee()->session->userdata('group_id') != 1 AND
-			! isset(ee()->session->userdata['assigned_channels'][$channel_id]))
-		{
-			$field->setItem('field_list_items', $author_options);
-			return;
-		}
 
 		// Default author
 		$author = $this->Author;
