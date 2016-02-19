@@ -818,13 +818,20 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	public function populateChannels($field)
+	function getAllowedChannels()
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+		$allowed = (ee()->session->userdata('member_id') == 0
 				OR ee()->session->userdata('group_id') == 1
 				OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
+
+		return $allowed;
+	}
+
+	public function populateChannels($field)
+	{
+		$allowed_channel_ids = $this->getAllowedChannels();
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -836,18 +843,44 @@ class ChannelEntry extends ContentModel {
 		$field->setItem('field_list_items', $channel_filter_options);
 	}
 
+
+ 	/**
+	 * Populate the Authors dropdown
+	 *
+	 *	If the session data is not Superadmin AND doesn't contain permission
+	 * to post to the channel, the author list is empty
+	 *	Otherwise the following are included in the author list regardless of
+	 * their channel posting permissions:
+	 *	  The current user
+	 *	  The current author (if editing)
+	 *	  Anyone in a group set to 'include_in_authorlist'
+	 *   Any individual member set to in_authorlist
+	 *
+	 */
 	public function populateAuthors($field)
 	{
 		$author_options = array();
 
+		if (ee()->session->userdata('group_id') != 1 AND
+			! isset(ee()->session->userdata['assigned_channels'][$channel_id]))
+		{
+			$field->setItem('field_list_items', $author_options);
+			return;
+		}
+
+		// Default author
+		$author = $this->Author;
+		$author_options[$author->getId()] = $author->getMemberName();
+
+		if ($author->getId() != ee()->session->userdata('member_id'))
+		{
+			$author_options[ee()->session->userdata('member_id')] =
+			ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+		}
+
 		// First, get member groups who should be in the list
 		$member_groups = ee('Model')->get('MemberGroup')
-			->with('AssignedChannels')
-			->filterGroup()
-			->orFilter('include_in_authorlist', 'y')
-			->orFilter('AssignedChannels.channel_id', $this->channel_id)
-			->endFilterGroup()
-			->fields('group_id')
+			->filter('include_in_authorlist', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
