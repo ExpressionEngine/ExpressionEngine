@@ -247,8 +247,10 @@ class Url_Ft extends EE_Fieldtype {
 		}
 
 		$protocols += array(
-			'//'     => '// ('.lang('url_ft_protocol_relative_url').')',
-			'ftp://' => 'ftp://',
+			'//'      => '// ('.lang('url_ft_protocol_relative_url').')',
+			'ftp://'  => 'ftp://',
+			'sftp://' => 'sftp://',
+			'ssh://'  => 'ssh://',
 		);
 
 		return $protocols;
