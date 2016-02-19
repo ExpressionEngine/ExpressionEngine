@@ -128,7 +128,6 @@ class Email_address_Ft extends EE_Fieldtype {
 		}
 		else
 		{
-			echo 'here';
 			$mailto = '<a href="mailto:'.$email.'">'.$title.'</a>';
 		}
 
