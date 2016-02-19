@@ -57,7 +57,7 @@ class Permission {
 
 		if (count($which) !== 1)
 		{
-			throw new \BadFunctionCallException('Invalid parameter count, must have exactly 1.');
+			throw new \BadMethodCallException('Invalid parameter count, must have exactly 1.');
 		}
 
 		return $this->hasAll($which[0]);
@@ -80,7 +80,7 @@ class Permission {
 
 		if ( ! count($which))
 		{
-			throw new \BadFunctionCallException('Invalid parameter count, 1 or more arguments required.');
+			throw new \BadMethodCallException('Invalid parameter count, 1 or more arguments required.');
 		}
 
 		// Super Admins always have access
@@ -118,7 +118,7 @@ class Permission {
 
 		if ( ! count($which))
 		{
-			throw new \BadFunctionCallException('Invalid parameter count, 1 or more arguments required.');
+			throw new \BadMethodCallException('Invalid parameter count, 1 or more arguments required.');
 		}
 
 		// Super Admins always have access
@@ -135,7 +135,7 @@ class Permission {
 
 			if ($k === TRUE OR $k == 'y')
 			{
-				$result = TRUE;
+				return TRUE;
 			}
 		}
 
