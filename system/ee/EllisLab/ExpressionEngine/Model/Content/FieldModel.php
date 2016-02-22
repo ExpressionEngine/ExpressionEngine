@@ -154,14 +154,18 @@ abstract class FieldModel extends Model {
 	public function onAfterUpdate($changed)
 	{
 		$old_type = (isset($changed['field_type'])) ? $changed['field_type'] : $this->field_type;
+		$old_action = (isset($changed['field_type'])) ? 'delete' : 'get_info';
 
 		$old_ft = $this->getFieldtypeInstance($old_type, $changed);
-		$old_columns = $this->callSettingsModify($old_ft, 'delete', $changed);
+		$old_columns = $this->callSettingsModify($old_ft, $old_action, $changed);
 
 		$new_ft = $this->getFieldtypeInstance();
 		$new_columns = $this->callSettingsModify($new_ft, 'get_info');
 
-		$this->diffColumns($old_columns, $new_columns);
+		if ( ! empty($old_columns) || ! empty($new_columns))
+		{
+			$this->diffColumns($old_columns, $new_columns);
+		}
 	}
 
 	protected function callSettingsModify($ft, $action, $changed = array())
