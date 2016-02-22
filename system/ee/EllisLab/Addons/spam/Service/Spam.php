@@ -25,6 +25,15 @@ namespace EllisLab\Addons\Spam\Service;
  */
 
 class Spam {
+	/**
+	 * @var Classifier The currently active classifier
+	 */
+	protected $classifier;
+
+	/**
+	 * @var Bool If this module isn't installed, we won't do anything
+	 */
+	protected $installed = FALSE;
 
 	/**
 	 * Constructor
