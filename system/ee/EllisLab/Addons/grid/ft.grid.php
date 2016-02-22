@@ -676,6 +676,8 @@ class Grid_ft extends EE_Fieldtype {
 
 			ee()->grid_model->delete_field($data['field_id'], $this->content_type());
 		}
+
+		return array();
 	}
 
 	// --------------------------------------------------------------------
