@@ -2,6 +2,8 @@
 
 namespace EllisLab\Addons\Spam\Service;
 
+use EllisLab\ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -24,7 +26,8 @@ namespace EllisLab\Addons\Spam\Service;
  * @link		https://ellislab.com
  */
 
-class Spam {
+class Spam implements SpamProtocol {
+
 	/**
 	 * @var Classifier The currently active classifier
 	 */
@@ -54,9 +57,8 @@ class Spam {
 	/**
 	 * Returns true if the string is classified as spam
 	 *
-	 * @param string $source
-	 * @access public
-	 * @return boolean
+	 * @param string $source Text to classify
+	 * @return bool Is Spam?
 	 */
 	public function isSpam($source)
 	{
@@ -81,7 +83,6 @@ class Spam {
 	 * @param string $method   The method to call when re-inserting a false positive
 	 * @param string $content  Array of content data
 	 * @param string $doc      The document that was classified as spam
-	 * @access public
 	 * @return void
 	 */
 	public function moderate($file, $class, $approve_method, $remove_method, $content, $doc)
@@ -104,10 +105,9 @@ class Spam {
 	/**
 	 * load_default_classifier
 	 *
-	 * @access public
-	 * @return void
+	 * @return Classifier
 	 */
-	public function loadDefaultClassifier()
+	protected function loadDefaultClassifier()
 	{
 		$training = ee('spam:Training', 'default');
 		$stop_words = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
