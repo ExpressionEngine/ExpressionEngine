@@ -1920,7 +1920,7 @@ class Member {
 		if ($this->theme_path == '')
 		{
 			$theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
-			$this->theme_path = PATH_MBR_THEMES."{$theme}/";
+			$this->theme_path = ee('Theme')->getPath('member/'.$theme.'/');
 		}
 
 		if ( ! file_exists($this->theme_path.$which.'.html'))

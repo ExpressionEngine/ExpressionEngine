@@ -17,6 +17,7 @@ use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
 use EllisLab\ExpressionEngine\Service\Sidebar;
+use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
@@ -132,6 +133,11 @@ return array(
 		'Spam' => function($ee)
 		{
 			return new Spam();
+		},
+
+		'Theme' => function($ee)
+		{
+			return new Theme\Theme(PATH_THEMES, URL_THEMES, PATH_THIRD_THEMES, URL_THIRD_THEMES);
 		},
 
 		'Thumbnail' => function($ee)
