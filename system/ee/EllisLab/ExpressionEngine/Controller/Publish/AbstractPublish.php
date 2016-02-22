@@ -261,11 +261,6 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$action = ($entry->isNew()) ? 'create' : 'edit';
 
-		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
-		{
-			unset($_POST['author_id']);
-		}
-
 		// Get all the fields that should be in the DOM. Any that were not
 		// POSTed will be set to NULL. This addresses a bug where browsers
 		// do not POST unchecked checkboxes.
@@ -288,6 +283,11 @@ abstract class AbstractPublish extends CP_Controller {
 					}
 				}
 			}
+		}
+
+		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+		{
+			unset($_POST['author_id']);
 		}
 
 		$entry->set($_POST);

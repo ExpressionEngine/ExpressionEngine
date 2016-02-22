@@ -139,6 +139,12 @@ class Comment extends Model {
 		$stats->total_comments = $total_comments;
 		$stats->last_comment_date = $last_comment_date;
 		$stats->save();
+
+		// Update comment count for the entry
+		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
+
+		$this->Entry->comment_total = $total_entry_comments;
+		$this->Entry->save();
 	}
 
 }
