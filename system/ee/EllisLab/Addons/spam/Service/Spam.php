@@ -47,30 +47,6 @@ class Spam {
 	}
 
 	/**
-	 * Returns true if the member is classified as a spammer
-	 *
-	 * @param string $username
-	 * @param string $email
-	 * @param string $url
-	 * @param string $ip
-	 * @access public
-	 * @return boolean
-	 */
-	public function memberIsSpammer($username, $email, $url, $ip)
-	{
-		// Split IP address with spaces so TFIDF will calculate each octet as a
-		// separate feature. We're definitely abusing TFIDF here but it should
-		// calculate the frequencies correctly barring any member names that
-		// overlap with our octets.
-		$ip = str_replace('.', ' ', $ip);
-
-		$text = implode(' ', array($username, $email, $url, $ip));
-		$source = ee('spam:Source', $text);
-
-		return $this->memberClassifier->classify($source, 'spam');
-	}
-
-	/**
 	 * Returns true if the string is classified as spam
 	 *
 	 * @param string $source
@@ -148,32 +124,6 @@ class Spam {
 
 		return $training->loadClassifier($vectorizers);
 	}
-
-	/**
-	 * load_member_classifier
-	 *
-	 * @access public
-	 * @return void
-	 */
-	public function loadMemberClassifier()
-	{
-		$training = ee('spam:Training', 'member');
-		$stop_words = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
-		$tokenizer = ee('spam:Tokenizer');
-
-		$tfidf = ee('spam:Vectorizers/Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->getVocabulary()->getDictionary('term', 'count');
-		$tfidf->document_count = $training->getDocumentCount();
-		$tfidf->generateLookups();
-
-		$vectorizers = array();
-		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
-		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
-		$vectorizers[] = $tfidf;
-
-		return $training->loadClassifier($vectorizers);
-	}
-
 }
 
 // EOF
