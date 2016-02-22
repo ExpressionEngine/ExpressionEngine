@@ -104,6 +104,13 @@ class EE_Core {
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
+		// For core we need to alias our replacement classes or they'll get
+		// not found errors
+		if (IS_CORE)
+		{
+			require_once SYSPATH.'ee/EllisLab/ExpressionEngine/FreeVersion/aliases.php';
+		}
+
 		// boot the addons
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
