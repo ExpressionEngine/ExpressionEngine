@@ -223,7 +223,8 @@ class Toggle_ft extends EE_Fieldtype {
 		return array(
 			$id.'_'.$data[$id] => array(
 				'type'		=> 'TINYINT',
-				'null'      => TRUE
+				'null'      => FALSE,
+				'default'   => $data['field_settings']['field_default_value']
 			)
 		);
 	}
