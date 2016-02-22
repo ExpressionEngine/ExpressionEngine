@@ -1241,8 +1241,8 @@ class Members extends CP_Controller {
 	private function _member_delete_notifications($member_ids)
 	{
 		// Email notification recipients
-		$group_query = ee()->db->distinct('member_id')
-			->select('screen_name, email, mbr_delete_notify_emails')
+		$group_query = ee()->db->distinct()
+			->select('member_id, screen_name, email, mbr_delete_notify_emails')
 			->join('member_groups', 'members.group_id = member_groups.group_id', 'left')
 			->where('mbr_delete_notify_emails !=', '')
 			->where_in('member_id', $member_ids)
