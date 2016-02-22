@@ -158,8 +158,10 @@ class Toggle_ft extends EE_Fieldtype {
 
 		$settings = array(
 			array(
-				'title' => 'default_value',
-				'fields' => array(
+				'title'     => 'default_value',
+				'desc'      => 'toggle_default_value_desc',
+				'desc_cont' => 'toggle_default_value_desc_cont',
+				'fields'    => array(
 					'field_default_value' => array(
 						'type' => 'html',
 						'content' => $this->_display_field($data['field_default_value'])
