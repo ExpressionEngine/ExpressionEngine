@@ -34,7 +34,7 @@ class Blacklist_mcp {
 	 *
 	 * @access	public
 	 */
-	public function Blacklist_mcp( $switch = TRUE )
+	public function __construct( $switch = TRUE )
 	{
 		ee()->load->dbforge();
 
@@ -95,7 +95,7 @@ class Blacklist_mcp {
 
 		$vars = array(
 			'allow_write_htaccess' => $allow_write_htaccess,
-			'base_url' => ee('CP/URL', 'addons/settings/blacklist/save_htaccess_path'),
+			'base_url' => ee('CP/URL')->make('addons/settings/blacklist/save_htaccess_path'),
 			'cp_page_title' => lang('blacklist_module_name') . ' ' . lang('settings'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -150,7 +150,7 @@ class Blacklist_mcp {
 	{
 		if (ee()->session->userdata('group_id') != '1' OR ee()->input->get_post('htaccess_path') === FALSE OR (ee()->input->get_post('htaccess_path') == '' && ee()->config->item('htaccess_path') === FALSE))
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		ee()->load->library('form_validation');
@@ -173,7 +173,7 @@ class Blacklist_mcp {
 				->withTitle(lang('htaccess_path_removed'))
 				->addToBody(lang('htaccess_path_removed_desc'))
 				->defer();
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		$this->write_htaccess(ee()->input->get_post('htaccess_path'));
@@ -183,7 +183,7 @@ class Blacklist_mcp {
 			->withTitle(lang('htaccess_written_successfully'))
 			->addToBody(lang('htaccess_written_successfully_desc'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	private function _check_path($str)
@@ -221,7 +221,7 @@ class Blacklist_mcp {
 
 		if (ee()->session->userdata('group_id') != '1' OR $htaccess_path == '')
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		if ( ! $fp = @fopen($htaccess_path, FOPEN_READ))
@@ -335,7 +335,7 @@ class Blacklist_mcp {
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('blacklist_downloaded'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	// --------------------------------------------------------------------
@@ -354,7 +354,7 @@ class Blacklist_mcp {
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('whitelist_downloaded'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	// --------------------------------------------------------------------
@@ -368,7 +368,7 @@ class Blacklist_mcp {
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('lists_updated_desc'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	/**
@@ -581,7 +581,9 @@ class Blacklist_mcp {
 			show_error(lang("ref_no_{$listtype}list_table"));
 		}
 
-		if ( ! $license = ee()->config->item('license_number'))
+		$license = ee('License')->getEELicense();
+
+		if ( ! $license->isValid())
 		{
 			show_error(lang('ref_no_license'));
 		}
@@ -590,13 +592,16 @@ class Blacklist_mcp {
 		ee()->load->library('xmlrpc');
 		ee()->xmlrpc->server('http://ping.expressionengine.com/index.php', 80);
 		ee()->xmlrpc->method("ExpressionEngine.{$listtype}list");
-		ee()->xmlrpc->request(array($license));
+		ee()->xmlrpc->request(array($license->getData('license_number')));
 
 		if (ee()->xmlrpc->send_request() === FALSE)
 		{
-			// show the error and stop
-			$vars['message'] = lang("ref_{$listtype}list_irretrievable").BR.BR.ee()->xmlrpc->display_error();
-			return ee()->load->view('update', $vars, TRUE);
+			ee('CP/Alert')->makeInline('lists-form')
+				->asIssue()
+				->withTitle(lang("ref_{$listtype}list_irretrievable"))
+				->addToBody(ee()->xmlrpc->display_error())
+				->defer();
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		// Array of our returned info

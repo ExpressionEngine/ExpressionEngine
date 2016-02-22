@@ -55,8 +55,8 @@ class FileDimension extends Model {
 	protected static $_validation_rules = array(
 		'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
-		'width'       => 'isNatural|validateDimension|required',
-		'height'      => 'isNatural|validateDimension|required'
+		'width'       => 'isNatural|validateDimension',
+		'height'      => 'isNatural|validateDimension'
 	);
 
 	protected $id;
@@ -70,10 +70,16 @@ class FileDimension extends Model {
 	protected $watermark_id;
 
 	/**
-	 * Require dimensions only if no watermark is set
+	 * At least a height OR a width must be specified if there is no watermark selected
 	 */
 	public function validateDimension($key, $value, $params, $rule)
 	{
-		return empty($this->watermark_id) ? TRUE : $rule->skip();
+		if (empty($this->width) && empty($this->height) && empty($this->watermark_id))
+		{
+			$rule->stop();
+			return lang('image_manip_dimension_required');
+		}
+
+		return TRUE;
 	}
 }

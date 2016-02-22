@@ -2,9 +2,11 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
+		<?php if ($show_create_button): ?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=$create_url?>"><?=lang('create_new')?></a>
 		</fieldset>
+		<?php endif; ?>
 		<h1><?=$cp_page_title?><br><i><?=$cp_page_title_desc?></i></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
@@ -23,7 +25,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'channels/fields/groups/', ee()->cp->get_url_state()),
+	'form_url'	=> ee('CP/URL')->make('channels/fields/groups/', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

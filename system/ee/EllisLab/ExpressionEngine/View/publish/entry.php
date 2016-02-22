@@ -9,18 +9,22 @@
 				<li>
 					<a class="has-sub" href=""><?=lang('auto_saved_entries')?></a>
 					<div class="sub-menu">
+						<?php if ($entry->getAutosaves()->count() >= 10): ?>
 						<fieldset class="filter-search">
-							<input type="text" value="" placeholder="<?=lang('filter_autosaves')?>">
+							<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=lang('filter_autosaves')?>">
 						</fieldset>
-						<ul>
-							<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>
-								<?php if ($entry->entry_id): ?>
-								<li><a href="<?=ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
-								<?php else: ?>
-								<li><a href="<?=ee('CP/URL', 'publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
-								<?php endif;?>
-							<?php endforeach; ?>
-						</ul>
+						<?php endif; ?>
+						<div class="scroll-wrap">
+							<ul>
+								<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>
+									<?php if ($entry->entry_id): ?>
+									<li><a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+									<?php else: ?>
+									<li><a href="<?=ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+									<?php endif;?>
+								<?php endforeach; ?>
+							</ul>
+						</div>
 					</div>
 				</li>
 			</ul>
@@ -68,7 +72,7 @@
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 			<?php foreach ($tab->getFields() as $field): ?>
-			<?php if ( ! $field->isVisible()) continue; ?>
+			<?php if ( ! $field->isRequired() && ! $field->isVisible()) continue; ?>
 				<?php
 					switch ($field->getType())
 					{
@@ -90,7 +94,20 @@
 					}
 
 					$field_class = 'col-group';
-					if (end($tab->getFields()) == $field)
+					if ($field->getStatus() == 'warning')
+					{
+						$field_class .= ' warned';
+					}
+					if ($errors->hasErrors($field->getName()) && $field->getType() != 'grid')
+					{
+						$field_class .= ' invalid';
+					}
+					if ($field->isRequired())
+					{
+						$field_class .= ' required';
+					}
+					$fields = $tab->getFields();
+					if (end($fields) == $field)
 					{
 						$field_class .= ' last';
 					}
@@ -98,35 +115,22 @@
 				<?php if ($field->getType() == 'grid'): ?>
 				<div class="grid-publish <?=$field_class?>">
 				<?php else: ?>
-				<fieldset class="<?=$field_class?><?php if ($field->getStatus() == 'warning') echo ' warned'; ?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?><?php if ($field->isRequired()) echo ' required'; ?>">
+				<fieldset class="<?=$field_class?>">
 				<?php endif; ?>
-					<div class="setting-txt col <?=$width?>">
+					<div class="setting-txt col <?=$width?><?php if ($errors->hasErrors($field->getName()) && $field->getType() == 'grid'):?> invalid<?php endif ?>">
 						<h3<?php if ($field->isCollapsed()) echo ' class="field-closed"';?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>><?=$field->getInstructions()?></em>
 						<?php if ($field->get('field_id') == 'categories' &&
 								$entry->Channel->cat_group &&
 								ee()->cp->allowed_group('can_edit_categories')): ?>
-							<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=$field->get('cat_group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
-						<?php ee('CP/Modal')->startModal('add-category'); ?>
-
-						<div class="modal-wrap modal-add-category hidden">
-							<div class="modal">
-								<div class="col-group">
-									<div class="col w-16">
-										<a class="m-close" href="#"></a>
-										<div class="box">
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<?php ee('CP/Modal')->endModal(); ?>
+							<p><a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="<?=$field->get('group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php endif; ?>
 					</div>
 					<div class="setting-field col <?=$width?> last"<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>>
 					<?php if ($field->get('field_id') == 'revisions'): ?>
 						<?=$revisions?>
+					<?php elseif ($field->getSetting('string_override') !== NULL): ?>
+						<?=$field->getSetting('string_override')?>
 					<?php else: ?>
 						<?=$field->getForm()?>
 						<?=$errors->renderError($field->getName())?>
@@ -142,7 +146,7 @@
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
 				<?php if ($entry->Channel->enable_versioning): ?>
-				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
+				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>" data-submit-text="<?=lang('btn_save_revision')?>">
 				<?php endif; ?>
 				<?=cp_form_submit($button_text, lang('btn_saving'))?>
 			</fieldset>

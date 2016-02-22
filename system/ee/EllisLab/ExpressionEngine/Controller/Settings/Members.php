@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Members extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */
@@ -45,7 +55,7 @@ class Members extends Settings {
 		}
 
 		ee()->load->model('member_model');
-		$themes = $this->member_model->get_theme_list(PATH_MBR_THEMES);
+		$themes = ee('Theme')->listThemes('member');
 
 		$member_themes = array();
 		foreach ($themes as $file => $name)
@@ -77,6 +87,20 @@ class Members extends Settings {
 					)
 				),
 				array(
+					'title' => 'approved_member_notification',
+					'desc' => 'approved_member_notification_desc',
+					'fields' => array(
+						'approved_member_notification' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'declined_member_notification',
+					'desc' => 'declined_member_notification_desc',
+					'fields' => array(
+						'declined_member_notification' => array('type' => 'yes_no')
+					)
+				),
+				array(
 					'title' => 'require_terms_of_service',
 					'desc' => 'require_terms_of_service_desc',
 					'fields' => array(
@@ -92,7 +116,6 @@ class Members extends Settings {
 				),
 				array(
 					'title' => 'default_member_group',
-					'desc' => 'default_member_group_desc',
 					'fields' => array(
 						'default_member_group' => array(
 							'type' => 'select',
@@ -119,11 +142,10 @@ class Members extends Settings {
 						'memberlist_order_by' => array(
 							'type' => 'select',
 							'choices' => array(
-								'total_posts' => lang('memberlist_order_by_opt_posts'),
-								'screen_name' => lang('memberlist_order_by_opt_screenname'),
-								'total_entries' => lang('memberlist_order_by_opt_entries'),
-								'join_date' => lang('memberlist_order_by_reg_date'),
-								'total_comments' => lang('memberlist_order_by_opt_comments')
+								'member_id'    => lang('id'),
+								'username'     => lang('username'),
+								'dates'        => lang('join_date'),
+								'member_group' => lang('member_group')
 							)
 						)
 					)
@@ -178,7 +200,7 @@ class Members extends Settings {
 			)
 		);
 
-		$base_url = ee('CP/URL', 'settings/members');
+		$base_url = ee('CP/URL')->make('settings/members');
 
 		ee()->form_validation->set_rules(array(
 			array(

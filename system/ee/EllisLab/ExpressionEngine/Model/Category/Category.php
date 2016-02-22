@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 
 /**
@@ -32,6 +33,8 @@ class Category extends ContentModel {
 
 	protected static $_primary_key = 'cat_id';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
+
+	protected static $_hook_id = 'category';
 
 	protected static $_relationships = array(
 		'CategoryGroup' => array(

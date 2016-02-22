@@ -828,7 +828,8 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 
-		return (strpos($permission_array[$item], '|'.ee()->session->userdata('group_id').'|') === FALSE) ? FALSE : TRUE;
+		$groups = explode('|', $permission_array[$item]);
+		return in_array(ee()->session->userdata('group_id'), $groups);
 	}
 
 	// --------------------------------------------------------------------
@@ -4934,6 +4935,87 @@ class Forum_Core extends Forum {
 	// ----------------------------------------------------------------------
 
 	/**
+	 * Moderation method used by the spam module. Takes a query generated from
+	 * the submit_post method.
+	 */
+	public function moderate_post($query)
+	{
+		ee()->db->query($sql);
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Display errors
+	 */
+	public function display_errors()
+	{
+		if (ee()->input->post('preview') !== FALSE OR $this->submission_error != '')
+		{
+			$type = array(
+					'newtopic'		=> 'new_topic_page',
+					'edittopic'		=> 'edit_topic_page',
+					'newreply'		=> 'new_reply_page',
+					'editreply'		=> 'edit_reply_page',
+					'quotetopic'	=> 'new_reply_page',
+					'quotereply'	=> 'new_reply_page'
+					);
+
+			if ($this->use_trigger())
+			{
+				return $this->display_forum($type[$this->current_request]);
+			}
+
+			if (count($this->attachments) > 0)
+			{
+				$_POST['attach'] = implode('|', $this->attachments);
+			}
+
+			// Then we are in a template.  We have to call this template.  Dude.
+			// We still have to send the preview information though.  Curious.
+
+			ee()->functions->clear_caching('all');
+
+			unset($_POST['ACT']);
+
+			if ( ! isset(ee()->TMPL))
+			{
+				ee()->load->library('template', NULL, 'TMPL');
+			}
+
+			$x = explode('/',$this->trigger);
+
+			if ( ! isset($x[1]))
+			{
+				$query = ee()->db->query("SELECT tg.group_name
+									 FROM exp_templates t, exp_template_groups tg
+									 WHERE t.group_id = tg.group_id
+									 AND t.template_name = '".ee()->db->escape_str($x['0'])."'
+									 AND tg.is_site_default = 'y'");
+
+				if ($query->num_rows() == 1)
+				{
+					$x['1'] = $x['0'];
+					$x['0'] = $query->row('group_name') ;
+				}
+				else
+				{
+					$x['1'] = 'index';
+				}
+			}
+
+			// a new copy of the class will be instantiated when it runs the tag in the template
+			// so we need to store the submission errors that will be needed for display
+			ee()->session->cache['forum']['submission_error'] = $this->submission_error;
+
+			ee()->TMPL->run_template_engine();
+
+			return;
+		}
+	}
+	// ----------------------------------------------------------------------
+
+	/**
 	 * Submission Error Display
 	 */
 	function submission_errors()
@@ -5697,69 +5779,17 @@ class Forum_Core extends Forum {
 		// Or... do we have errors to display?
 		ee()->stats->update_stats();
 
-		if (ee()->input->post('preview') !== FALSE OR $this->submission_error != '')
+		// Check for spam
+		$spam = FALSE;
+		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
 		{
-			$type = array(
-					'newtopic'		=> 'new_topic_page',
-					'edittopic'		=> 'edit_topic_page',
-					'newreply'		=> 'new_reply_page',
-					'editreply'		=> 'edit_reply_page',
-					'quotetopic'	=> 'new_reply_page',
-					'quotereply'	=> 'new_reply_page'
-					);
-
-			if ($this->use_trigger())
-			{
-				return $this->display_forum($type[$this->current_request]);
-			}
-
-			if (count($this->attachments) > 0)
-			{
-				$_POST['attach'] = implode('|', $this->attachments);
-			}
-
-			// Then we are in a template.  We have to call this template.  Dude.
-			// We still have to send the preview information though.  Curious.
-
-			ee()->functions->clear_caching('all');
-
-			unset($_POST['ACT']);
-
-			if ( ! isset(ee()->TMPL))
-			{
-				ee()->load->library('template', NULL, 'TMPL');
-			}
-
-			$x = explode('/',$this->trigger);
-
-			if ( ! isset($x[1]))
-			{
-				$query = ee()->db->query("SELECT tg.group_name
-									 FROM exp_templates t, exp_template_groups tg
-									 WHERE t.group_id = tg.group_id
-									 AND t.template_name = '".ee()->db->escape_str($x['0'])."'
-									 AND tg.is_site_default = 'y'");
-
-				if ($query->num_rows() == 1)
-				{
-					$x['1'] = $x['0'];
-					$x['0'] = $query->row('group_name') ;
-				}
-				else
-				{
-					$x['1'] = 'index';
-				}
-			}
-
-			// a new copy of the class will be instantiated when it runs the tag in the template
-			// so we need to store the submission errors that will be needed for display
-			ee()->session->cache['forum']['submission_error'] = $this->submission_error;
-
-			ee()->TMPL->run_template_engine($x['0'], (( ! isset($x['1'])) ? 'index' : $x['1']));
-
-			return;
+			$body = ee()->input->get_post('body');
+			$title = ee()->input->get_post('title');
+			$text = "$title $body";
+			$spam = ee('Spam')->isSpam($text);
 		}
 
+		$this->display_errors();
 		$announcement = 'n';
 
 		if (ee()->input->get_post('announcement') == 'y')
@@ -5841,7 +5871,13 @@ class Forum_Core extends Forum {
 						$data['topic_date']				= ee()->localize->now;
 						$data['board_id']				= $this->fetch_pref('board_id');
 
-						ee()->db->query(ee()->db->insert_string('exp_forum_topics', $data));
+						$sql = ee()->db->insert_string('exp_forum_topics', $data);
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
+
 						$data['topic_id'] = ee()->db->insert_id();
 
 						// Where should we send the user to?  Normally we'll send them to either
@@ -5883,7 +5919,14 @@ class Forum_Core extends Forum {
 						$data['topic_edit_author']	= ee()->session->userdata['member_id'];
 						$data['topic_edit_date']	= ee()->localize->now;
 
-						ee()->db->query(ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->get_post('topic_id'))));
+						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->get_post('topic_id')));
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
+
+
 						$data['topic_id'] = $this->current_id;
 
 						if ($announcement == 'n')
@@ -5935,7 +5978,12 @@ class Forum_Core extends Forum {
 						$data['post_date']	= ee()->localize->now;
 						$data['board_id']	= $this->fetch_pref('board_id');
 
-						ee()->db->query(ee()->db->insert_string('exp_forum_posts', $data));
+						$sql = ee()->db->insert_string('exp_forum_posts', $data);
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
 
 						$data['post_id'] = ee()->db->insert_id();
 
@@ -5962,7 +6010,12 @@ class Forum_Core extends Forum {
 						$data['post_edit_author']	= ee()->session->userdata['member_id'];
 						$data['post_edit_date']		= ee()->localize->now;
 
-						ee()->db->query(ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'"));
+						$sql = ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'");
+
+						if ( ! $spam)
+						{
+							ee()->db->query($sql);
+						}
 
 						// Determine the redirect location
 						ee()->db->select('COUNT(*) as count');
@@ -5975,6 +6028,15 @@ class Forum_Core extends Forum {
 					}
 
 				break;
+		}
+
+		if ($spam)
+		{
+			$args = array($sql);
+			ee('Spam')->moderate(__FILE__, 'Forum Post', 'moderate_post', NULL, $args, $text);
+
+			$this->submission_error = lang('spam');
+			$this->display_errors();
 		}
 
 		// Fetch/Set the "topic tracker" cookie
@@ -6174,7 +6236,7 @@ class Forum_Core extends Forum {
 		if (is_array($notify_addresses) AND count($notify_addresses) > 0)
 		{
 			$swap = array(
-							'name_of_poster'	=> $this->_convert_special_chars(ee()->session->userdata('screen_name')),
+							'name_of_poster'	=> ee()->session->userdata('screen_name'),
 							'forum_name'		=> $this->fetch_pref('board_label'),
 							'title'				=> $title,
 							'body'				=> $body,
@@ -6245,7 +6307,7 @@ class Forum_Core extends Forum {
 		$action_id  = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
 
 		$swap = array(
-			'name_of_poster'	=> $this->_convert_special_chars(ee()->session->userdata('screen_name')),
+			'name_of_poster'	=> ee()->session->userdata('screen_name'),
 			'forum_name'		=> $this->fetch_pref('board_label'),
 			'title'				=> $title,
 			'body'				=> $body,
@@ -9556,24 +9618,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Parse and prep 'reply_results' conditionals
-		if(preg_match_all("/".LD."if reply_results.*?".RD.".*?".LD."\/if".RD."/s", $template, $rconds, PREG_SET_ORDER))
-		{
-			$marker = '4654487c320f2';
-
-			foreach ($rconds as $key => $val)
-			{
-				// replace 'reply_results' with a marker
-				$rconds[$key][1] = ee()->functions->prep_conditionals($rconds[$key][0], array('reply_results' => $marker), 'y');
-
-				// protect PHP tags within the conditional since we'll be evaluating this code later
-				// and don't want to interfere with their PHP parsing settings
-				$rconds[$key][1] = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $rconds[$key][1]);
-
-				// convert our prepped EE conditionals to PHP
-				$rconds[$key][1] = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $rconds[$key][1]);
-				$rconds[$key][1] = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s*(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $rconds[$key][1]);
-			}
-		}
+		preg_match_all("/".LD."if reply_results.*?".RD.".*?".LD."\/if".RD."/s", $template, $rconds, PREG_SET_ORDER);
 
 		ee()->load->helper('date');
 
@@ -9643,19 +9688,8 @@ class Forum_Core extends Forum {
 				foreach ($rconds as $rcond)
 				{
 					$num_replies = (isset($post_ids[$row['topic_id']])) ? count($post_ids[$row['topic_id']]) : 0;
-
-					$rcond[1] = str_replace($marker, $num_replies, $rcond[1]);
-
-					ob_start();
-
-					ee()->functions->evaluate($rcond[1]);
-
-					$result = ob_get_clean();
-
-					// turn PHP tags back to their old wily ways
-					$result = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $result);
-
-					$temp = str_replace($rcond[0], $result, $temp);
+					$rcond[1] = ee()->functions->prep_conditionals($rcond[0], array('reply_results' => $num_replies), 'y');
+					$temp = str_replace($rcond[0], $rcond[1], $temp);
 				}
 			}
 

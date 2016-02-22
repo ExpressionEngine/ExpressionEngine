@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Email extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_comm'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */
@@ -80,6 +90,12 @@ class Email extends Settings {
 					'desc' => 'smtp_server_desc',
 					'fields' => array(
 						'smtp_server' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'smtp_port',
+					'fields' => array(
+						'smtp_port' => array('type' => 'text')
 					)
 				),
 				array(
@@ -140,12 +156,17 @@ class Email extends Settings {
 				'field' => 'smtp_server',
 				'label' => 'lang:smtp_server',
 				'rules' => 'callback__smtp_required_field'
+			),
+			array(
+				'field' => 'smtp_port',
+				'label' => 'lang:smtp_port',
+				'rules' => 'is_natural_no_zero'
 			)
 		));
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/email');
+		$base_url = ee('CP/URL')->make('settings/email');
 
 		if (AJAX_REQUEST)
 		{

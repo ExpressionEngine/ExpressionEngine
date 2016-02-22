@@ -16,7 +16,7 @@ $(document).ready(function () {
 		var value = parseInt($(this).val());
 		if (value >= threshold) {
 			if ($('#threshold-warning').length == 0) {
-				var html = '<div id="threshold-warning" class="alert banner warn">';
+				var html = '<div id="threshold-warning" class="alert warn">';
 				html = html + '<p>' + $(this).data('threshold-text') + '</p>';
 				html = html + '<a class="close" href=""></a>';
 				html = html + '</div>';

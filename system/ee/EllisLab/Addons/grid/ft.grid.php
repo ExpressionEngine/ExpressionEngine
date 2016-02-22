@@ -31,6 +31,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
+	private $error_fields = array();
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -148,7 +150,16 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->_load_grid_lib();
 
-		return ee()->grid_lib->display_field($grid, $data);
+	 	$field = ee()->grid_lib->display_field($grid, $data);
+
+		if (REQ != 'CP')
+		{
+			// channel form is not guaranteed to have this wrapper class,
+			// but the js requires it
+			$field = '<div class="grid-publish">'.$field.'</div>';
+		}
+
+		return $field;
 	}
 
 	// --------------------------------------------------------------------
@@ -451,7 +462,8 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Fresh settings forms ready to be used for added columns
 		$vars['settings_forms'] = array();
-		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $fieldtype_data)
+		$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
+		foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
 		{
 			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
@@ -460,7 +472,7 @@ class Grid_ft extends EE_Fieldtype {
 		$vars['columns'] = array();
 
 		// Validation error, repopulate
-		if (isset($_POST['grid']) && $_POST['field_type'] == 'grid')
+		if (isset($_POST['grid']))
 		{
 			$columns = $_POST['grid']['cols'];
 
@@ -539,7 +551,6 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('ui', 'sortable');
-		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('file', 'cp/grid');
 
 		ee()->javascript->output('EE.grid_settings();');
@@ -575,10 +586,11 @@ class Grid_ft extends EE_Fieldtype {
 
 		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
 
+		$this->error_fields = array();
+
 		if ($validate !== TRUE)
 		{
 			$errors = array();
-			$this->error_fields = array();
 
 			// Gather error messages and fields with errors so that we can
 			// display the error messages and highlight the fields that

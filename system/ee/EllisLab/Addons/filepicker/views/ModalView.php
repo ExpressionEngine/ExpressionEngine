@@ -1,6 +1,6 @@
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<?php if (is_numeric($dir)): ?>
+	<?php if ( ! empty($upload) && is_numeric($dir)): ?>
 	<fieldset class="tbl-search right">
 		<a class="btn tn action" href="<?=$upload?>">Upload New File</a>
 	</fieldset>
@@ -14,23 +14,30 @@
 	<?php if (isset($filters)) echo $filters; ?>
 
 	<?php if($type == 'thumb'): ?>
+	<div class="tbl-wrap">
 		<table class='img-grid'>
-		<?php foreach (array_chunk($files->asArray(), 4) as $row): ?>
+		<?php $i = 1;?>
+		<?php foreach ($files as $file): ?>
+			<?php if ($i % 5 == 1):?>
 			<tr>
-				<?php foreach ($row as $file): ?>
+			<?php endif; ?>
 				<td>
-					<a data-id="<?=$file->file_id?>" class="filepicker-item" href="#">
+					<a data-id="<?=$file->file_id ?: $file->file_name ?>" data-url="<?=ee('CP/URL')->make($data_url_base, array('file' => $file->file_id))?>" class="filepicker-item" href="#">
 						<?php if ($file->isImage()): ?>
-						<img src="<?=$file->getAbsoluteURL()?>" alt="<?=$file->file_name?>">
+						<img src="<?=$file->getThumbnailUrl()?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
 						<span class="file-thumb"><b><?=$file->file_name?></b></span>
 						<?php endif; ?>
 					</a>
 				</td>
-				<?php endforeach ?>
+			<?php if ($i % 5 == 0): ?>
 			</tr>
+			<?php endif; ?>
+		<?php $i++; ?>
 		<?php endforeach ?>
+			</tr>
 		</table>
+	</div>
 	<?php else: ?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 	<?php endif; ?>

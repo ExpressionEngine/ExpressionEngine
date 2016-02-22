@@ -47,6 +47,19 @@ class SpecialtyTemplate extends Model {
 		),
 	);
 
+	protected static $_validation_rules = array(
+		'enable_template'  => 'enum[y,n]',
+		'template_name'    => 'required',
+		'data_title'       => 'required',
+		'template_type'    => 'required',
+		'template_subtype' => 'required',
+		'template_data'    => 'required',
+	);
+
+	protected static $_events = array(
+		'afterSave',
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $enable_template;
@@ -84,4 +97,8 @@ class SpecialtyTemplate extends Model {
 		return (isset($vars[$this->template_name])) ? $vars[$this->template_name] : array();
 	}
 
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
+	}
 }

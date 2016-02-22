@@ -277,17 +277,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _clear_cache()
 	{
-		$cache_path = EE_APPPATH.'cache';
-
-		// Attempt to grab cache_path config if it's set
-		if ($path = ee()->config->item('cache_path'))
-		{
-			$cache_path = ee()->config->item('cache_path');
-		}
-
 		ee()->load->helper('file');
-
-		delete_files($cache_path, TRUE, 0, array('.htaccess', 'index.html'));
+		delete_files(PATH_CACHE, TRUE, 0, array('.htaccess', 'index.html'));
 	}
 
 	// --------------------------------------------------------------------

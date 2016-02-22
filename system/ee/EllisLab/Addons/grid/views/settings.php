@@ -16,7 +16,7 @@
 	</div><!-- /grid-clip -->
 </div><!-- /grid-wrap -->
 
-<div id="grid_col_settings_elements" class="hidden">
+<div id="grid_col_settings_elements" data-group="always-hidden" class="hidden">
 	<?=$blank_col?>
 
 	<?php foreach ($settings_forms as $form): ?>

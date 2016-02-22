@@ -36,9 +36,9 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
-		$this->handleBulkActions(ee('CP/URL', 'files', ee()->cp->get_url_state()));
+		$this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
-		$base_url = ee('CP/URL', 'files');
+		$base_url = ee('CP/URL')->make('files');
 
 		$search_terms = ee()->input->get_post('search');
 		if ($search_terms)
@@ -47,6 +47,8 @@ class Files extends AbstractFilesController {
 		}
 
 		$files = ee('Model')->get('File')
+			->with('UploadDestination')
+			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$filters = ee('CP/Filter')
@@ -71,7 +73,8 @@ class Files extends AbstractFilesController {
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0);
 
 		$upload_destinations = $upload_destinations->all();
 
@@ -85,7 +88,7 @@ class Files extends AbstractFilesController {
 
 		$vars['directories'] = $upload_destinations;
 
-		ee()->javascript->set_global('file_view_url', ee('CP/URL', 'files/file/view/###')->compile());
+		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -131,9 +134,20 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->handleBulkActions(ee('CP/URL', 'files/directory/' . $id, ee()->cp->get_url_state()));
+		if ( ! $dir->exists())
+		{
+			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+			ee('CP/Alert')->makeInline('missing-directory')
+				->asWarning()
+				->cannotClose()
+				->withTitle(sprintf(lang('directory_not_found'), $dir->server_path))
+				->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
+				->now();
+		}
 
-		$base_url = ee('CP/URL', 'files/directory/' . $id);
+		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
+
+		$base_url = ee('CP/URL')->make('files/directory/' . $id);
 
 		$filters = ee('CP/Filter')
 			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
@@ -149,13 +163,14 @@ class Files extends AbstractFilesController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
+		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
 			->currentPage($vars['table']['page'])
 			->render($base_url);
 
-		ee()->javascript->set_global('file_view_url', ee('CP/URL', 'files/file/view/###')->compile());
+		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -169,13 +184,22 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_page_title = lang('file_manager');
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
+		// Check to see if they can sync the directory
+		$upload_destination = ee('Model')->get('UploadDestination')
+			->filter('id', $id)
+			->first();
+		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
+			&& $upload_destination->memberGroupHasAccess(ee()->session->userdata('group_id'));
+
 		ee()->cp->render('files/directory', $vars);
 	}
 
 	public function export()
 	{
 		$files = ee('Model')->get('File')
+			->with('UploadDestination')
 			->fields('file_id')
+			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$this->exportFiles($files->all()->pluck('file_id'));
@@ -186,6 +210,11 @@ class Files extends AbstractFilesController {
 
 	public function upload($dir_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$dir = ee('Model')->get('UploadDestination', $dir_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -202,7 +231,7 @@ class Files extends AbstractFilesController {
 
 		if ( ! $dir->exists())
 		{
-			$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
+			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
 			ee('CP/Alert')->makeStandard()
 				->asIssue()
 				->withTitle(lang('file_not_found'))
@@ -226,7 +255,7 @@ class Files extends AbstractFilesController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
-			'base_url' => ee('CP/URL', 'files/upload/' . $dir_id),
+			'base_url' => ee('CP/URL')->make('files/upload/' . $dir_id),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -344,7 +373,7 @@ class Files extends AbstractFilesController {
 					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $dir_id));
+				ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $dir_id));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -365,6 +394,11 @@ class Files extends AbstractFilesController {
 
 	public function rmdir()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$id = ee()->input->post('dir_id');
 		$dir = ee('Model')->get('UploadDestination', $id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -389,17 +423,11 @@ class Files extends AbstractFilesController {
 			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
 			->defer();
 
-		$return_url = ee('CP/URL', 'files');
+		$return_url = ee('CP/URL')->make('files');
 
 		if (ee()->input->post('return'))
 		{
-			$return = base64_decode(ee()->input->post('return'));
-			$uri_elements = json_decode($return, TRUE);
-
-			if ($uri_elements['path'] != 'cp/files/directory/' . $id)
-			{
-				$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-			}
+			$return_url = ee('CP/URL')->decodeUrl(ee()->input->post('return'));
 		}
 
 		ee()->functions->redirect($return_url);
@@ -504,6 +532,11 @@ class Files extends AbstractFilesController {
 
 	private function remove($file_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_files'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($file_ids))
 		{
 			$file_ids = array($file_ids);

@@ -131,9 +131,6 @@ class EE_Blacklist {
 			return TRUE;
 		}
 
-		// Load the typography helper so we can do entity_decode()
-		ee()->load->helper('typography');
-
 		foreach($query->result_array() as $row)
 		{
 			if ($row['blacklisted_type'] == 'url' && $row['blacklisted_value'] != '' && $this->whitelisted != 'y')
@@ -155,7 +152,7 @@ class EE_Blacklist {
 					}
 
 					// Convert Entities Before Testing
-					$value = entity_decode($value);
+					$value = ee('Security/XSS')->entity_decode($value);
 					$value .= ' ';
 
 					// Clear period from the end of URLs

@@ -2,13 +2,15 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($base_url)?>
+		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL', 'channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
 		</fieldset>
+		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<div class="tbl-list-wrap">
-			<?php if (count($categories->children()) != 0): ?>
+			<?php if (count($categories->children()) != 0 && $can_delete_categories): ?>
 				<div class="tbl-list-ctrl">
 					<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
 				</div>
@@ -22,7 +24,7 @@
 						<li>
 							<div class="tbl-row no-results">
 								<div class="none">
-									<p><?=lang('categories_not_found')?> <a class="btn action" href="<?=ee('CP/URL', 'channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_category_btn')?></a></p>
+									<p><?=lang('categories_not_found')?> <a class="btn action" href="<?=ee('CP/URL')->make('channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_category_btn')?></a></p>
 								</div>
 							</div>
 						</li>
@@ -44,7 +46,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'channels/cat/remove-cat'),
+	'form_url'	=> ee('CP/URL')->make('channels/cat/remove-cat'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove',
 		'cat_group_id'	=> $cat_group->group_id

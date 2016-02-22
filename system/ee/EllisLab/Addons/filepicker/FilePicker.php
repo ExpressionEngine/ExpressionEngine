@@ -28,18 +28,28 @@ class FilePicker {
 
 	public function link($text, $dir = 'all', $data = array())
 	{
-		$qs = array('directory' => $dir);
+		$qs = array('directories' => $dir);
 
 		if ( ! empty($data['image']))
 		{
-			$qs['type'] = 'thumbnails';
+			$qs['type'] = 'thumb';
 		}
 		else
 		{
 			$qs['type'] = 'list';
 		}
 
-		$href = ee('CP/URL', $this->controller, $qs);
+		if ( isset($data['hasFilters']))
+		{
+			$qs['hasFilters'] = $data['hasFilters'];
+		}
+
+		if ( isset($data['hasUpload']))
+		{
+			$qs['hasUpload'] = $data['hasUpload'];
+		}
+
+		$href = ee('CP/URL')->make($this->controller, $qs);
 		$extra = "";
 		$class = "";
 
@@ -58,6 +68,11 @@ class FilePicker {
 			$extra .= " data-input-name='{$data['name']}'";
 		}
 
+		if ( ! empty($data['selected']))
+		{
+			$extra .= " data-selected='{$data['selected']}'";
+		}
+
 		if ( ! empty($data['callback']))
 		{
 			$extra .= " data-callback='{$data['callback']}'";
@@ -71,12 +86,13 @@ class FilePicker {
 		return "<a class='m-link filepicker $class' rel='modal-file' href='$href' $extra>". $text ."</a>";
 	}
 
-	public function buildTableFromFileCollection(Collection $files, $limit = 20)
+	public function buildTableFromFileCollection($files, $limit = 20, $selected = NULL)
 	{
-		$table = Table::fromGlobals(array(
-			'autosort' => TRUE,
-			'limit' => $limit
+		$table = ee('CP/Table', array(
+			'limit' => $limit,
+			'class' => 'file-list'
 		));
+
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
@@ -95,16 +111,21 @@ class FilePicker {
 		}
 
 		$data = array();
-
-		$file_id = ee()->session->flashdata('file_id');
+		$i = 0;
 
 		foreach ($files as $file)
 		{
-			if ( ! $file->getUploadDestination()
-				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE
-				|| ! $file->exists())
+			$i++;
+
+			if ($file instanceOf \SplFileObject)
 			{
-				continue;
+				$new_file = new \StdClass;
+				$new_file->title = $file->getFilename();
+				$new_file->file_name = $file->getFilename();
+				$new_file->mime_type = $file->getMimeType();
+				$new_file->file_id = $i++;
+				$new_file->upload_date = $file->getMTime();
+				$file = $new_file;
 			}
 
 			$column = array(
@@ -113,7 +134,16 @@ class FilePicker {
 				ee()->localize->human_time($file->upload_date),
 			);
 
-			$attrs = array('data-id' => $file->file_id);
+			$attrs = array(
+				'data-id' => $file->file_id,
+				'data-url' => ee('CP/URL')->make($this->controller, array('file' => $file->file_id))
+			);
+
+			if ($file->file_id == $selected)
+			{
+				$attrs = array('class' => 'selected');
+				$column[0] = '<span></span>' . $column[0];
+			}
 
 			$data[] = array(
 				'attrs'		=> $attrs,
@@ -150,7 +180,7 @@ class FilePicker {
 			return FALSE;
 		}
 
-		if (in_array($member_group_id, $dir->getNoAccess()->pluck('group_id')))
+		if (in_array($member_group_id, $dir->NoAccess->pluck('group_id')))
 		{
 			return FALSE;
 		}

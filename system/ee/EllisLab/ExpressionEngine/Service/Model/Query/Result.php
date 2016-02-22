@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 class Result {
 
 	protected $builder;
-	protected $frontend;
+	protected $facade;
 
 	protected $db_result;
 
@@ -125,7 +125,7 @@ class Result {
 
 			$name = $this->aliases[$alias];
 
-			$object = $this->frontend->make($name);
+			$object = $this->facade->make($name);
 			$object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
 			$object->fill($model_data);
 
@@ -251,9 +251,9 @@ class Result {
 		}
 	}
 
-	public function setFrontend($frontend)
+	public function setFacade($facade)
 	{
-		$this->frontend = $frontend;
+		$this->facade = $facade;
 		return $this;
 	}
 }

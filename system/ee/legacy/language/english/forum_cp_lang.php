@@ -18,16 +18,13 @@ $lang = array(
 'templates' => 'Templates',
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
-'zero_forum_boards_found' => 'Zero <b>Forum Boards</b> found',
-'no_forum_boards' => 'No forum boards available',
 'create_new_board' => 'Create new forum board',
 
 // List / Index
 'forum_listing' => 'Forum listing',
-'no_categories' => 'No categories available',
 'create_new_category' => 'Create new category',
+'categories' => 'Categories',
 
-'no_forums' => 'No forums available',
 'new_forum' => 'New forum',
 'create_new_forum' => 'Create new forum',
 
@@ -86,7 +83,7 @@ $lang = array(
 'attachments_per_post_desc' => 'Maximum attachments allowed per post.',
 
 'upload_directory' => 'Upload directory',
-'upload_directory_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+'upload_directory_desc' => 'Full path location of this <mark>upload</mark> directory.',
 
 'allowed_file_types' => 'Allowed file types?',
 'allowed_file_types_desc' => '',
@@ -351,7 +348,8 @@ $lang = array(
 'administrators' => 'Administrators',
 'administrators_desc' => 'Have access to all administration tools for all forums in this board.',
 
-'no_admins' => 'No administrators available',
+'forum_admins' => 'Forum Administrators',
+
 'create_new_admin' => 'Create new admin',
 
 'group' => 'group',
@@ -376,8 +374,8 @@ $lang = array(
 'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 'invalid_username' => 'The username you submitted does not appear to be valid',
 
-'fadmins_removed' => 'Administrators Removed',
-'fadmins_removed_desc' => 'The following administrators were removed',
+'admins_removed' => 'Administrators Removed',
+'admins_removed_desc' => 'The following administrators were removed',
 
 // Moderators
 

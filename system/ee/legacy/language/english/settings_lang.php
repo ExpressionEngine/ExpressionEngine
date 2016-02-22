@@ -20,7 +20,11 @@ $lang = array(
 
 'comment_settings' => 'Comment Settings',
 
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+
 'template_settings' => 'Template Settings',
+
+'hit_tracking' => 'Hit Tracking',
 
 'pages_settings' => 'Pages Settings',
 
@@ -101,31 +105,37 @@ $lang = array(
 
 'version_update_available' => 'A newer version of ExpressionEngine is available',
 
-'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
+'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s" rel="external">Download the latest version</a> and follow the <a href="%s" rel="external">update instructions</a>.',
 
 /**
  * License & Registration
  */
 
-'license_and_reg_title' => 'License &amp; Registration Settings',
-
-'license_contact_name' => 'Account holder name',
-
-'license_contact_name_desc' => 'Name of individual or company that owns this license.',
-
-'license_contact' => 'Account holder Email',
-
-'license_contact_desc' => 'Contact Email for the account that owns this license.',
-
-'license_number' => 'License number',
-
-'license_number_desc' => 'Found on your <a href="%s">purchase management</a> page.',
+'license_and_registration' => 'License &amp; Registration',
+'license_and_registration_settings' => 'License &amp; Registration Settings',
 
 'license_updated' => 'License &amp; Registration Updated',
-
 'license_updated_desc' => 'Your license and registration information has been saved successfully.',
 
-'invalid_license_number' => 'The license number provided is not a valid license number.',
+'license_file_upload_error' => 'Cannot Update License &amp; Registration',
+'license_file_upload_error_desc' => 'We were unable to update the license &amp; registration, please review and fix errors below.',
+
+'license_file_error' => 'License Invalid',
+'license_file_corrupt_license_file' => 'The license file provided is missing data.',
+'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
+'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'license_file_invalid_license_number' => 'The license file provided is invalid.',
+
+'license_file_fail' => 'License not saved',
+'license_file_permissions' => 'The license file could not be saved. Check the permissions on <b>%s</b>.',
+
+'license_file' => 'License file',
+'license_file_desc' => 'Found on your <a href="%s" rel="external">purchase management</a> page.',
+
+'site_limit' => 'Site limit',
+
+'features_limited' => 'Features Limited',
+'features_limited_desc' => 'The Core version of ExpressionEngine is feature limited. <a href="%s" rel="external">Upgrade today.</a>',
 
 /**
  * URLs and Path Settings
@@ -207,6 +217,8 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
+'smtp_port' => 'Server Port',
+
 'sending_options' => 'Sending Options',
 
 'mail_format' => 'Mail format',
@@ -233,17 +245,13 @@ $lang = array(
  * Debugging & Output
  */
 
-'enable_debugging' => 'Enable debugging?',
+'enable_errors' => 'Enable error reporting?',
 
-'enable_debugging_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
 
-'show_profiler' => 'Display profiler?',
+'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
-
-'template_debugging' => 'Display template debugging?',
-
-'template_debugging_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see a list of details concerning the processing of the page.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
@@ -336,6 +344,8 @@ $lang = array(
 
 'thumbnail_suffix_desc' => 'Added to all auto-generated thumbnails. <b>Example</b>: photo_thumb.jpg',
 
+'emoticons' => 'Emoticons',
+
 'enable_emoticons' => 'Enable emoticons?',
 
 'enable_emoticons_desc' => 'When set to <b>yes</b>, text based emoticons will be converted to image based emoticons.',
@@ -360,7 +370,7 @@ $lang = array(
 
 'comment_word_censoring_desc' => 'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
 
-'comment_moderation_override' => 'Moderate expired entires?',
+'comment_moderation_override' => 'Moderate expired entries?',
 
 'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an expired entry will be submitted as closed and require review by a moderator.',
 
@@ -394,9 +404,26 @@ $lang = array(
 
 'save_tmpl_files_desc' => 'When set to yes, ExpressionEngine will store your templates as files on your server.',
 
-'tmpl_file_basepath' => 'Template directory',
+/**
+ * Hit Tracking
+ */
 
-'tmpl_file_basepath_desc' => 'Full path location of your <mark>template</mark> directory.',
+'enable_online_user_tracking' => 'Enable online user tracking?',
+'enable_online_user_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will track logged in users.',
+
+'enable_hit_tracking' => 'Enable template hit tracking?',
+'enable_hit_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a template is viewed.',
+
+'enable_entry_view_tracking' => 'Enable entry view tracking?',
+'enable_entry_view_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a channel entry is viewed.',
+
+'log_referrers' => 'Enable referrer tracking?',
+'log_referrers_desc' => 'When set to <b>yes</b>, ExpressionEngine will track all incoming links.',
+
+'max_referrers' => 'Maximum recent referrers to save',
+
+'dynamic_tracking_disabling' => 'Suspend threshold?',
+'dynamic_tracking_disabling_desc' => 'All tracking will be suspended when the number of online visitors exceeds this number.</em> <em>Online user tracking must be enabled to use this feature. <a href="%s" ref="external">Learn more</a>',
 
 /**
  * Word Censoring
@@ -436,6 +463,14 @@ $lang = array(
 
 'req_mbr_activation_opt_manual' => 'Manually moderated by administrator',
 
+'approved_member_notification' => 'Notify members when approved?',
+
+'approved_member_notification_desc' => 'When set to <b>yes</b>, members will receive an email notification when their member registration is approved.',
+
+'declined_member_notification' => 'Notify members when declined?',
+
+'declined_member_notification_desc' => 'When set to <b>yes</b>, members will receive an email notification when their member registration is declined.',
+
 'require_terms_of_service' => 'Require terms of service?',
 
 'require_terms_of_service_desc' => 'When set to <b>yes</b>, users must agree to terms of service during registration.',
@@ -445,8 +480,6 @@ $lang = array(
 'allow_member_localization_desc' => 'When set to <b>yes</b>, members will be able to set a specific time and date localization for their account.',
 
 'default_member_group' => 'Default member group',
-
-'default_member_group_desc' => 'When a member meets the lock out requirement.',
 
 'member_theme' => 'Member profile theme',
 
@@ -458,23 +491,15 @@ $lang = array(
 
 'memberlist_order_by_desc' => 'Sorting type for the member listing.',
 
-'memberlist_order_by_opt_posts' => 'Total posts',
-
-'memberlist_order_by_opt_screenname' => 'Screen name',
-
 'memberlist_order_by_opt_entries' => 'Total entries',
-
-'memberlist_order_by_reg_date' => 'Registration date',
-
-'memberlist_order_by_opt_comments' => 'Total comments',
 
 'memberlist_sort_order' => 'Order by',
 
 'memberlist_sort_order_desc' => 'Sorting order for the member listing.',
 
-'memberlist_sort_order_opt_asc' => 'Ascending (A-Z)',
+'memberlist_sort_order_opt_asc' => 'Ascending (A-Z/Oldest-Newest)',
 
-'memberlist_sort_order_opt_desc' => 'Descending (Z-A)',
+'memberlist_sort_order_opt_desc' => 'Descending (Z-A/Newest-Oldest)',
 
 'memberlist_row_limit' => 'Total results',
 
@@ -512,7 +537,13 @@ $lang = array(
 
 'attachment_settings' => 'Attachment Settings',
 
-'prv_msg_upload_path' => 'Upload directory',
+'prv_msg_upload_url' => 'Upload directory',
+
+'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
+
+'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
+
+'prv_msg_upload_path' => 'Upload path',
 
 'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
@@ -708,7 +739,7 @@ $lang = array(
 
 "lockout_time" => "Lockout time",
 
-"lockout_time_desc" => "The length of time a user should be locked out of your site if they exceed the limits.",
+"lockout_time_desc" => "The number of seconds a user should be locked out of your site if they exceed the limits.",
 
 'banishment_type' => 'Lock out action',
 
@@ -723,6 +754,23 @@ $lang = array(
 'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
 'banishment_message' => 'Message',
+
+/**
+ * HTML Buttons
+ */
+
+'create_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Created',
+'create_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been created.',
+
+'create_html_buttons_error' => 'Cannot Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+'create_html_buttons_error_desc' => 'We were unable to create this <abbr title="Hyper-Text Markup Language">HTML</abbr> button, please review and fix errors below.',
+
+'edit_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Updated',
+'edit_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been updated.',
+
+'edit_html_buttons_error' => 'Cannot Update <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+'edit_html_buttons_error_desc' => 'We were unable to update this <abbr title="Hyper-Text Markup Language">HTML</abbr> button, please review and fix errors below.',
+
 
 ''=>''
 );

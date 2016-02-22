@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionException;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -401,7 +401,7 @@ class Parser extends AbstractParser {
 	{
 		if ($this->safety === TRUE)
 		{
-			$expression->add(new Bool(FALSE));
+			$expression->add(new Boolean(FALSE));
 		}
 		else
 		{
@@ -416,7 +416,7 @@ class Parser extends AbstractParser {
 	 */
 	protected function addFalse($expression)
 	{
-		$expression->add(new Bool(FALSE));
+		$expression->add(new Boolean(FALSE));
 	}
 
 	/**

@@ -67,10 +67,10 @@ feature 'Member Settings' do
     @page.req_mbr_activation.select 'No activation required'
     @page.require_terms_of_service_n.click
     @page.allow_member_localization_n.click
-    @page.default_member_group.select 'Super Admins'
+    @page.default_member_group.select 'Super Admin'
     @page.member_theme.select 'Default'
-    @page.memberlist_order_by.select 'Total entries'
-    @page.memberlist_sort_order.select 'Ascending (A-Z)'
+    @page.memberlist_order_by.select 'Join Date'
+    @page.memberlist_sort_order.select 'Ascending (A-Z/Oldest-Newest)'
     @page.memberlist_row_limit.select '50'
     @page.new_member_notification_y.click
     @page.mbr_notification_emails.set 'test@test.com'
@@ -83,7 +83,7 @@ feature 'Member Settings' do
     @page.allow_member_localization_n.checked?.should == true
     @page.default_member_group.value.should == '1'
     @page.member_theme.value.should == 'default'
-    @page.memberlist_order_by.value.should == 'total_entries'
+    @page.memberlist_order_by.value.should == 'dates'
     @page.memberlist_sort_order.value.should == 'asc'
     @page.memberlist_row_limit.value.should == '50'
     @page.new_member_notification_y.checked?.should == true

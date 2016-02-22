@@ -34,6 +34,11 @@ class FieldDisplay {
 		return $this->field->getName();
 	}
 
+	public function getShortName()
+	{
+		return $this->field->getShortName();
+	}
+
 	public function getStatus()
 	{
 		return $this->field->getStatus();

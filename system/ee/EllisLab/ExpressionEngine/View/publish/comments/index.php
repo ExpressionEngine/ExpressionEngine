@@ -9,7 +9,7 @@
 		<h1>
 			<?=$cp_heading?>
 			<ul class="toolbar">
-				<li class="settings"><a href="<?=ee('CP/URL', 'settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
+				<li class="settings"><a href="<?=ee('CP/URL')->make('settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
 			</ul>
 		</h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
@@ -17,16 +17,22 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+			<?php if ($can_delete || $can_moderate): ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
+				<?php if ($can_delete): ?>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-comment"><?=lang('remove')?></option>
+				<?php endif; ?>
+				<?php if ($can_moderate): ?>
 				<option value="open"><?=lang('set_to_open')?></option>
 				<option value="closed"><?=lang('set_to_closed')?></option>
 				<option value="pending"><?=lang('set_to_pending')?></option>
+				<?php endif; ?>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
+			<?php endif; ?>
 		<?php endif; ?>
 	<?=form_close()?>
 </div>

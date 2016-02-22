@@ -1,15 +1,15 @@
-$(document).ready(function(){
+if (EE.cp === undefined) {
+	EE.cp = {};
+}
 
-	function zeropad(val) {
+EE.cp.datePicker = {
+
+	zeropad: function (val) {
 		val += '';
 		return (val.length == 2) ? val : '0' + val;
-	}
+	},
 
-	// hat tip: http://stevenlevithan.com/assets/misc/date.format.js
-
-	var date_format_regex = /%d|%D|%j|%l|%N|%S|%w|%z|%W|%F|%m|%M|%n|%t|%L|%o|%Y|%y|%a|%A|%B|%g|%G|%h|%H|%i|%s|%u|%e|%I|%O|%P|%T|%Z|%c|%r|%U|"[^"]*"|'[^']*'/g;
-
-	function get_formatted_date(date, mask) {
+	get_formatted_date: function (date, mask) {
 		var year = date.getFullYear(),
 			month = date.getMonth() + 1,
 			day = date.getDate(),
@@ -49,7 +49,7 @@ $(document).ready(function(){
 
 		var flags = {
 			// Day
-			d: zeropad(day),
+			d: this.zeropad(day),
 			D: EE.lang.date.days[dow],
 			j: day,
 			l: EE.lang.date.days[dow],
@@ -63,7 +63,7 @@ $(document).ready(function(){
 
 			// Month
 			F: EE.lang.date.months.full[month-1],
-			m: zeropad(month),
+			m: this.zeropad(month),
 			M: EE.lang.date.months.abbreviated[month-1],
 			n: month,
 			t: days_in_month,
@@ -80,10 +80,10 @@ $(document).ready(function(){
 			// B: '???',
 			g: hour,
 			G: date.getHours(),
-			h: zeropad(hour),
-			H: zeropad(date.getHours()),
-			i: zeropad(minute),
-			s: zeropad(date.getSeconds()),
+			h: this.zeropad(hour),
+			H: this.zeropad(date.getHours()),
+			i: this.zeropad(minute),
+			s: this.zeropad(date.getSeconds()),
 			u: date.getMilliseconds(),
 
 			// Timezone
@@ -100,13 +100,17 @@ $(document).ready(function(){
 			U: Math.floor(date.getTime() / 1000)
 		};
 
+		// hat tip: http://stevenlevithan.com/assets/misc/date.format.js
+
+		var date_format_regex = /%d|%D|%j|%l|%N|%S|%w|%z|%W|%F|%m|%M|%n|%t|%L|%o|%Y|%y|%a|%A|%B|%g|%G|%h|%H|%i|%s|%u|%e|%I|%O|%P|%T|%Z|%c|%r|%U|"[^"]*"|'[^']*'/g;
+
 		return mask.replace(date_format_regex, function (match) {
 			match = match.replace('%', '');
 			return match in flags ? flags[match] : match.slice(1, match.length - 1);
 		});
-	}
+	},
 
-	var Calendar = {
+	Calendar: {
 		calendars: [],
 		element: null,
 
@@ -123,12 +127,20 @@ $(document).ready(function(){
 			this.element = element;
 			this.calendars = [];
 
+			var that = this;
+
 			if ($('.date-picker-wrap').length == 0) {
-				$('body').append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');
+				var parent = $('body');
+
+				if ($('#cform').length) {
+					parent = $('#cform');
+				}
+
+				parent.append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');
 
 				// listen for clicks on elements classed with .date-picker-next
 				$('.date-picker-clip-inner').on('click', '.date-picker-next', function(e){
-					Month.next();
+					EE.cp.datePicker.Month.next();
 
 					// animate the scrolling of .date-picker-clip forwards
 					// to the next .date-picker-item
@@ -140,7 +152,7 @@ $(document).ready(function(){
 
 				// listen for clicks on elements classed with .date-picker-back
 				$('.date-picker-clip-inner').on('click', '.date-picker-prev', function(e){
-					Month.prev();
+					EE.cp.datePicker.Month.prev();
 
 					// animate the scrolling of .date-picker-clip backwards
 					// to the previous .date-picker-item
@@ -155,13 +167,13 @@ $(document).ready(function(){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
 
-					if ($(Calendar.element).val()) {
-						var d = new Date($(Calendar.element).attr('data-timestamp') * 1000);
-						d.setYear(Calendar.year);
-						d.setMonth(Calendar.month);
+					if ($(that.element).val()) {
+						var d = new Date($(that.element).data('timestamp') * 1000);
+						d.setYear(that.year);
+						d.setMonth(that.month);
 						d.setDate($(this).text());
 					} else {
-						var d = new Date(Calendar.year, Calendar.month, $(this).text());
+						var d = new Date(that.year, that.month, $(this).text());
 					}
 
 					var now = new Date();
@@ -169,18 +181,39 @@ $(document).ready(function(){
 					d.setMinutes(now.getMinutes());
 					d.setSeconds(now.getSeconds());
 
-					$(Calendar.element).val(get_formatted_date(d, EE.date.date_format));
-					$(Calendar.element).attr('data-timestamp', get_formatted_date(d, '%U'));
+					var date_format = EE.date.date_format;
 
-					$(Calendar.element).focus();
+					// Allow custom date format via data-date-format parameter
+					if ($(that.element).data('dateFormat'))
+					{
+						date_format = $(that.element).data('dateFormat');
+					}
+
+					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format));
+					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+
+					$(that.element).focus();
 					$('.date-picker-wrap').toggle();
 
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+				// Prevent manual scrolling of the huge inner clip div
+				$('.date-picker-clip-inner').on('mousewheel', function(e){
 					e.preventDefault();
 				});
 			}
 
 			if ($(this.element).val()) {
-				d = new Date($(this.element).attr('data-timestamp') * 1000);
+				var timestamp = $(this.element).data('timestamp');
+
+				if ( ! timestamp) {
+					d = new Date(Date.parse($(this.element).val()));
+				} else {
+					d = new Date(timestamp * 1000);
+				}
+
 				selected = d.getUTCDate();
 				year  = d.getUTCFullYear();
 				month = d.getUTCMonth();
@@ -208,14 +241,15 @@ $(document).ready(function(){
 			this.month = month;
 			this.year = year;
 
-			if (Calendar.calendars.indexOf(year + '-' + month) > -1) {
+			if (this.calendars.indexOf(year + '-' + month) > -1) {
 				return null;
 			}
 
-			var total		= Month.total_days(year, month),
-				total_last	= Month.total_days(year, month - 1),
-				leading		= Month.first_day(year, month),
+			var total		= EE.cp.datePicker.Month.total_days(year, month),
+				total_last	= EE.cp.datePicker.Month.total_days(year, month - 1),
+				leading		= EE.cp.datePicker.Month.first_day(year, month),
 				trailing	= 7 - ((leading + total) % 7),
+				today		= new Date,
 
 				prev		= (month - 1 > -1) ? month - 1 : 11,
 				next		= (month + 1 < 12) ? month + 1 : 0;
@@ -263,7 +297,16 @@ $(document).ready(function(){
 					out[out_i++] = '<tr>';
 				}
 
-				out[out_i++] = '<td><a href="#">';
+				if (today.getFullYear() == year
+					&& today.getMonth() == month
+					&& today.getDate() == (j + 1)
+					&& ! $(this.element).data('timestamp'))
+				{
+					out[out_i++] = '<td class="act"><a href="#">';
+				} else {
+					out[out_i++] = '<td><a href="#">';
+				}
+
 				out[out_i++] = j + 1;
 				out[out_i++] = '</a></td>';
 
@@ -284,18 +327,18 @@ $(document).ready(function(){
 			return preamble.join('') + out.join('') + closing.join('');
 		}
 
-	};
+	},
 
-	var Month = {
+	Month: {
 
 		select: function(month) {
-			var d = new Date(Calendar.year, month);
+			var d = new Date(EE.cp.datePicker.Calendar.year, month);
 
-			return Calendar.generate(d.getFullYear(), d.getMonth());
+			return EE.cp.datePicker.Calendar.generate(d.getFullYear(), d.getMonth());
 		},
 
 		prev: function() {
-			var html = this.select(Calendar.month - 1);
+			var html = this.select(EE.cp.datePicker.Calendar.month - 1);
 			if (html != null) {
 				$('.date-picker-clip-inner').prepend(html);
 				var pos = $('.date-picker-clip').scrollLeft();
@@ -304,7 +347,7 @@ $(document).ready(function(){
 		},
 
 		next: function() {
-			var html = this.select(Calendar.month + 1);
+			var html = this.select(EE.cp.datePicker.Calendar.month + 1);
 			if (html != null) {
 				$('.date-picker-clip-inner').append(html);
 			}
@@ -317,9 +360,9 @@ $(document).ready(function(){
 		first_day: function(year, month) {
 			return new Date(year, month, 1).getDay();
 		}
-	};
+	},
 
-	var Day = {
+	Day: {
 
 		select: function(day) {
 			var days_in_month = $('.week a').not('.dim'),
@@ -335,26 +378,29 @@ $(document).ready(function(){
 
 			return false;
 		}
-	};
+	},
 
-	bind_date_picker($('input[rel="date-picker"]').not('.grid-input-form input'));
+	bind: function (elements) {
+		$('input[rel="date-picker"]').on('focus', function() {
+			// find the position of the input clicked
+			var pos = $(this).offset();
+			EE.cp.datePicker.Calendar.init(this);
+			// position and toggle the .date-picker-wrap relative to the input clicked
+			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
+		});
+	}
+};
+
+$(document).ready(function () {
+
+	EE.cp.datePicker.bind($('input[rel="date-picker"]').not('.grid-input-form input'));
 
 	// Date fields inside a Grid need to be bound when a new row is added
 	if (Grid !== undefined)
 	{
 		Grid.bind('date', 'display', function(cell)
 		{
-			bind_date_picker($('input[rel="date-picker"]', cell));
-		});
-	}
-
-	function bind_date_picker(elements) {
-		$('input[rel="date-picker"]').on('focus', function() {
-			// find the position of the input clicked
-			var pos = $(this).offset();
-			Calendar.init(this);
-			// position and toggle the .date-picker-wrap relative to the input clicked
-			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
+			EE.cp.datePicker.bind($('input[rel="date-picker"]', cell));
 		});
 	}
 
@@ -371,5 +417,4 @@ $(document).ready(function(){
 			$('.date-picker-wrap').hide();
 		}
 	});
-
-}); // close (document).ready
+});

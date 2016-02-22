@@ -13,7 +13,6 @@ $lang = array(
 'filter_by_status' => 'status',
 'custom_date' => 'custom date',
 'custom_limit' => 'custom limit',
-'clear_filters' => 'Clear filters',
 'all_entries' => 'All %d entries',
 
 'column_entry_id' => 'ID#',
@@ -37,8 +36,6 @@ $lang = array(
 'btn_create_new_entry_in_channel' => 'Create New in %s',
 
 'btn_create_new' => 'Create New',
-
-'success' => 'Success',
 
 'entries_removed_desc' => 'The following entries were removed',
 
@@ -172,16 +169,6 @@ $lang = array(
 'calendar' => 'Calendar',
 
 'edit_categories' => 'Edit Categories',
-
-'revisions' => 'Revisions',
-
-'rev_id' => '#',
-
-'rev_date' => 'Date',
-
-'rev_author' => 'Author',
-
-'current' => 'Current',
 
 'revision' => 'Revision',
 
@@ -363,7 +350,7 @@ $lang = array(
 
 'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
 
-'no_entries_exist' => 'There are no entries in this channel',
+'no_entries_exist' => 'No <b>Entries</b> found.',
 
 'select_channel_to_post_in' => 'Choose a channel to post in',
 
@@ -418,7 +405,6 @@ $lang = array(
 
 'add_author'		=> 'Add Author',
 'add_author_desc' 	=> 'Group settings over-ride individual settings, and some users cannot be removed from the author list.',
-'no_potential_authors' => 'There are no members available to add to the author list.', // who aren't already on it
 
 'hide_toolbar'		=> 'hide toolbar',
 'show_toolbar'		=> 'show toolbar',
@@ -446,6 +432,8 @@ $lang = array(
 'open' => 'Open',
 
 'close' => 'Close',
+
+'spam' => 'SPAM',
 
 'closed' => 'Closed',
 
@@ -491,6 +479,8 @@ $lang = array(
 
 'upload_file' => 'Upload File',
 
+'choose_file' => 'Choose File',
+
 'file_upload' => 'File Upload',
 
 'upload_dir_choose'		=> 'Choose an upload directory',
@@ -515,7 +505,8 @@ $lang = array(
 
 'title_not_unique' => 'An entry already exists with this title.  Titles must be unique.',
 
-'url_title_not_unique' => 'An entry already exists with this URL title.  URL titles must be unique.',
+'url_title_not_unique' => 'This URL title is being used by <b><a href="%s" rel="external">%s</a></b>. URL titles must be unique.',
+'url_title_not_unique_frontend' => 'This URL title is being used by another entry. URL titles must be unique.',
 
 'entry_has_been_added' => 'New Entry Submitted',
 
@@ -613,13 +604,9 @@ $lang = array(
 
 'non_image' => 'Non-image',
 
-'success' => 'Success!',
-
 'you_have_uploaded' => 'You have uploaded the following file:',
 
 'choose_a_destination' => 'Where would like your file to appear?',
-
-'no_entry_fields' => 'There are no entry fields in this channel.',
 
 'posted_by' => 'Author:',
 
@@ -753,11 +740,9 @@ $lang = array(
 'create_unordered_list' => 'create unordered list',
 'create_ordered_list' => 'create ordered list',
 'create_hyperlink' => 'create hyperlink',
-'upload_file' => 'upload file',
 'view_code' => 'view code',
 
 'launch_writemode' => 'launch writemode',
-'upload_file' => 'upload file',
 'open_spellcheck' => 'open spellcheck',
 'open_glossary' => 'open glossary',
 'open_emoji' => 'open emoji',
@@ -772,8 +757,6 @@ $lang = array(
 'no_entry_related' => 'No <b>entry</b> related.',
 'no_entries_related' => 'No <b>entries</b> related.',
 'no_entries_found' => 'No <b>entries</b> found',
-
-'upload_file' => 'upload file',
 
 'no_rows_created' => 'No rows created',
 'add_new_row' => 'add new row',
@@ -834,9 +817,6 @@ $lang = array(
 'search_entries' => 'Search Entries',
 
 'unable_to_load_tab' => 'Unable to load requested publish tab file: %s',
-
-'unable_to_load_field_type' => 'Unable to load requested field type file:  %s.<br />
-Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
 
 'no_templates' => 'No Templates',
 

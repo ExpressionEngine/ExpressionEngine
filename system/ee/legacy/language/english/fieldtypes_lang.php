@@ -84,6 +84,7 @@ $lang = array(
 'grid_col_label_required'	=> 'There are one or more columns without a column label.',
 'grid_col_name_required'	=> 'There are one or more columns without a column name.',
 'grid_col_name_reserved'	=> 'One or more columns are using a column name reserved for other template functionality.',
+'grid_duplicate_col_label'	=> 'Column field labels must be unique.',
 'grid_duplicate_col_name'	=> 'Column field names must be unique.',
 'grid_numeric_percentage'	=> 'Column widths must be numeric.',
 'grid_invalid_column_name'	=> 'Column names must contain only alpha-numeric characters and no spaces.',

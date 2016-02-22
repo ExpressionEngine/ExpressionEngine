@@ -27,8 +27,20 @@ if ( ! isset($required) || ! is_bool($required))
 <?php if (isset($tabs)):?>
 	<div class="tab-wrap">
 		<ul class="tabs">
-			<?php foreach (array_keys($tabs) as $i => $name): ?>
-				<li><a<?php if ($i == 0) echo ' class="act"'?> href="" rel="t-<?=$i?>"><?=lang($name)?></a></li>
+			<?php
+				foreach (array_keys($tabs) as $i => $name):
+					$class = '';
+					if ($i == 0)
+					{
+						$class = 'act';
+					}
+
+					if (strpos($tabs[$name], 'class="ee-form-error-message"') !== FALSE)
+					{
+						$class .= ' invalid';
+					}
+				?>
+				<li><a<?php if ($class) echo ' class="' . $class . '"'?> href="" rel="t-<?=$i?>"><?=lang($name)?></a></li>
 			<?php endforeach; ?>
 		</ul>
 <?php endif; ?>
@@ -135,14 +147,21 @@ if ( ! isset($alerts_name))
 			<?php foreach ($buttons as $button): ?>
 				<?php
 					$class = 'btn';
+
 					$disabled = '';
 					$button_text = lang($button['text']);
 
-					if (ee()->form_validation->errors_exist() OR (isset($errors) && $errors->isNotValid()))
+					if ((ee()->has('form_validation') && ee()->form_validation->errors_exist())
+						OR (isset($errors) && $errors->isNotValid()))
 					{
 						$class = 'btn disable';
 						$disabled = 'disabled="disabled"';
 						$button_text = lang('btn_fix_errors');
+					}
+
+					if (isset($button['class']))
+					{
+						$class .= ' ' . $button['class'];
 					}
 				?>
 				<button class="<?=$class?>" <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>

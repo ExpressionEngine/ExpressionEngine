@@ -73,7 +73,7 @@ class WordCensor extends Settings {
 			)
 		);
 
-		$base_url = ee('CP/URL', 'settings/word-censor');
+		$base_url = ee('CP/URL')->make('settings/word-censor');
 
 		ee()->form_validation->set_rules(array(
 			array(

@@ -146,7 +146,7 @@ class Publish
 				foreach ($link_info as $val)
 				{
 					$edit_links[] = array(
-						'url' =>  ee('CP/URL', 'admin_content/category_editor', array('group_id' => $val['group_id'])),
+						'url' =>  ee('CP/URL')->make('admin_content/category_editor', array('group_id' => $val['group_id'])),
 						'group_name' => $val['group_name']
 					);
 				}

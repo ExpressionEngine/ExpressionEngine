@@ -13,6 +13,7 @@ module Installer
     element :email_address, 'input[name=email_address]'
     element :password, 'input[name=password]'
 
+    element :license_agreement, 'input[name=license_agreement]'
     element :install_submit, 'form input[type=submit]'
   end
 end

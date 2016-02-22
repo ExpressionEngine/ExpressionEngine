@@ -38,14 +38,7 @@ $no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
 	count($field['choices']) == 0);
 ?>
 <?php if ($no_results): ?>
-	<div class="no-results">
-		<p><?=lang($field['no_results']['text'])?></p>
-		<?php if (isset($field['no_results']['link_href'])): ?>
-			<p><a class="btn action" href="<?=$field['no_results']['link_href']?>">
-				<?=lang($field['no_results']['link_text'])?>
-			</a></p>
-		<?php endif ?>
-	</div>
+	<?php $this->embed('ee:_shared/form/no_results', $field['no_results']); ?>
 <?php endif ?>
 <?php if ($has_note): ?>
 	<div class="setting-note">
@@ -91,12 +84,12 @@ case 'inline_radio': ?>
 <?php break;
 
 case 'yes_no': ?>
-	<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$attrs?>> yes</label>
-	<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$attrs?>> no</label>
+	<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang('yes')?></label>
+	<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang('no')?></label>
 <?php break;
 
 case 'select': ?>
-	<?=form_dropdown($field_name, $field['choices'], $value, $attrs)?>
+<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs); ?>
 <?php break;
 
 case 'checkbox': ?>
@@ -163,11 +156,30 @@ case 'image': ?>
 	<figure class="file-chosen">
 		<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
 		<ul class="toolbar">
+			<?php if( ! array_key_exists('edit', $field) || $field['edit']): ?>
 			<li class="edit"><a href="" title="edit"></a></li>
+			<?php endif; ?>
 			<li class="remove"><a href="" title="remove"></a></li>
 		</ul>
 		<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 	</figure>
+<?php break;
+
+case 'slider': ?>
+	<div class="slider">
+		<input type="range" rel="range-value"
+			id="<?=$field_name?>"
+			name="<?=$field_name?>"
+			value="<?=$value?>"
+			min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
+			max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
+			step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
+			<?= isset($field['list']) ? "list='{$field['list']}'" : NULL ?>
+		>
+		<div class="slider-output">
+			<output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
+		</div>
+	</div>
 <?php break;
 
 case 'action_button': ?>
@@ -182,6 +194,6 @@ case 'html': ?>
 </div>
 <?php endif ?>
 <?php if ( ! $grid): ?>
-	<?=form_error($field_name)?>
+	<?=form_error(rtrim($field_name, '[]'))?>
 	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
 <?php endif ?>

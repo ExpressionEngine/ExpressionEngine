@@ -51,7 +51,7 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$base_url = ee('CP/URL', 'addons/settings/metaweblog_api');
+		$base_url = ee('CP/URL')->make('addons/settings/metaweblog_api');
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
@@ -72,14 +72,7 @@ class Metaweblog_api_mcp {
 				)
 			)
 		);
-		$table->setNoResultsText('no_something_or_other');
-
-		if ($metaweblogs->num_rows() == 0)
-		{
-			$vars['table'] = $table->viewData($this->_base_url);
-			$vars['base_url'] = clone $vars['table']['base_url'];
-			return ee()->load->view('index', $vars, TRUE);
-		}
+		$table->setNoResultsText('no_configurations', 'metaweblog_create', ee('CP/URL')->make('addons/settings/metaweblog_api/create'));
 
 		$data = array();
 
@@ -89,18 +82,22 @@ class Metaweblog_api_mcp {
 				'name' => 'selection[]',
 				'value' => $metaweblog->metaweblog_id,
 				'data'	=> array(
-					'confirm' => lang('metaweblog') . ': <b>' . htmlentities($metaweblog->metaweblog_pref_name, ENT_QUOTES) . '</b>'
+					'confirm' => lang('metaweblog') . ': <b>' . htmlentities($metaweblog->metaweblog_pref_name, ENT_QUOTES, 'UTF-8') . '</b>'
 				)
 			);
 
+			$edit_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id));
 			$columns = array(
 				$metaweblog->metaweblog_id,
-				$metaweblog->metaweblog_pref_name,
+				array(
+					'content' => $metaweblog->metaweblog_pref_name,
+					'href' => $edit_url
+				),
 				$api_url . '&id=' . $metaweblog->metaweblog_id,
 				array(
 					'toolbar_items' => array(
 						'edit' => array(
-							'href' => ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
+							'href' => $edit_url,
 							'title' => lang('edit')
 						)
 					)
@@ -125,14 +122,11 @@ class Metaweblog_api_mcp {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['base_url'] = clone $vars['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		// Paginate!
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('configurations') . ': <b>### ' . lang('configurations') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -175,7 +169,7 @@ class Metaweblog_api_mcp {
 			->addToBody(sprintf(lang('configurations_removed_desc'), count($ids)))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 	}
 
 	// --------------------------------------------------------------------
@@ -204,7 +198,7 @@ class Metaweblog_api_mcp {
 
 		if ($id == '')
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 		}
 
 		$channels = array();
@@ -225,18 +219,18 @@ class Metaweblog_api_mcp {
 		if ($id == 'new')
 		{
 			$create = TRUE;
-			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/create');
+			$base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/create');
 		}
 		else
 		{
 			$create = FALSE;
-			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify/' . $id);
+			$base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify/' . $id);
 
 			$query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
 
 			if ($query->num_rows() == 0)
 			{
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 			}
 
 			foreach($query->row_array() as $name => $value)
@@ -523,7 +517,7 @@ class Metaweblog_api_mcp {
 
 			return array(
 				'heading'    => $vars['cp_page_title'],
-				'breadcrumb' => array(ee('CP/URL', 'addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
+				'breadcrumb' => array(ee('CP/URL')->make('addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
 				'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
 			);
 		}
@@ -568,7 +562,7 @@ class Metaweblog_api_mcp {
 				->addToBody($message)
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 		}
 	}
 

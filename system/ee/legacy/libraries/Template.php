@@ -40,6 +40,7 @@ class EE_Template {
 	public $php_parse_location   = 'output';	// Where in the chain the PHP gets parsed
 	public $template_edit_date   = '';			// Template edit date
 	public $templates_sofar      =  '';			// Templates processed so far, subtemplate tracker
+	public $templates_loaded     = array();		// Templates loaded so far (yes, redundant)
 	public $attempted_fetch      = array();		// Templates attempted to fetch but may have bailed due to recursive embeds
 	public $encode_email         = TRUE;		// Whether to use the email encoder.  This is set automatically
 	public $hit_lock_override    = FALSE;		// Set to TRUE if you want hits tracked on sub-templates
@@ -62,7 +63,7 @@ class EE_Template {
 	public $var_single           = array();		// "Single" variables
 	public $var_cond             = array();		// "Conditional" variables
 	public $var_pair             = array();		// "Paired" variables
-	public $global_vars          = array();		// This array can be set via the path.php file
+	public $global_vars          = array();		// This array can be set via the assign_to_config
 	public $embed_vars           = array();		// This array can be set via the {embed} tag
 	public $layout_vars          = array();		// This array can be set via the {layout} tag
 	public $segment_vars         = array();		// Array of segment variables
@@ -122,7 +123,7 @@ class EE_Template {
 			$this->sites[ee()->config->item('site_id')] = ee()->config->item('site_short_name');
 		}
 
-		if (ee()->config->item('template_debugging') === 'y' && ee()->session->userdata['group_id'] == 1)
+		if (ee()->config->item('show_profiler') === 'y' && ee()->session->userdata['group_id'] == 1)
 		{
 			$this->debugging = TRUE;
 
@@ -153,7 +154,7 @@ class EE_Template {
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
-		$this->log_item("Path.php Template: {$template_group}/{$template}");
+		$this->log_item("Template: {$template_group}/{$template}");
 
 		$this->fetch_and_parse($template_group, $template, FALSE);
 
@@ -190,6 +191,9 @@ class EE_Template {
 	 */
 	public function fetch_and_parse($template_group = '', $template = '', $is_embed = FALSE, $site_id = '', $is_layout = FALSE)
 	{
+		// Set a default site_ID
+		$site_id = ($site_id) ?: ee()->config->item('site_id');
+
 		// add this template to our subtemplate tracker
 		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
 
@@ -199,11 +203,16 @@ class EE_Template {
 
 		$this->cache_status = 'NO_CACHE';
 
-		$this->log_item("Retrieving Template");
-
 		$this->template = ($template_group != '' AND $template != '') ?
 			$this->fetch_template($template_group, $template, FALSE, $site_id) :
 			$this->parse_template_uri();
+
+		// Add the template to our list of templates loaded
+		$this->templates_loaded[] = array(
+			'group_name'    => $this->group_name,
+			'template_name' => $this->template_name,
+			'site_id'       => $site_id
+		);
 
 		$this->log_item("Template Type: ".$this->template_type);
 
@@ -305,13 +314,11 @@ class EE_Template {
 		// Mark our template for better errors
 		$this->template = $this->markContext().$this->template;
 
-		// Parse manual variables and Snippets
-		// These are variables that can be set in the path.php file
+		// Parse assign_to_config variables and Snippets
 
 		if (count(ee()->config->_global_vars) > 0)
 		{
-			$this->log_item("Snippets (Keys): ".implode('|', array_keys(ee()->config->_global_vars)));
-			$this->log_item("Snippets (Values): ".trim(implode('|', ee()->config->_global_vars)));
+			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
 			foreach (ee()->config->_global_vars as $key => &$val)
 			{
@@ -352,8 +359,7 @@ class EE_Template {
 		// Parse {embed} tag variables
 		if ($is_embed === TRUE && count($this->embed_vars) > 0)
 		{
-			$this->log_item("Embed Variables (Keys): ".implode('|', array_keys($this->embed_vars)));
-			$this->log_item("Embed Variables (Values): ".trim(implode('|', $this->embed_vars)));
+			$this->log_item("Embed Variables:", $this->embed_vars);
 
 			foreach ($this->embed_vars as $key => $val)
 			{
@@ -369,8 +375,7 @@ class EE_Template {
 		// Parse {layout} tag variables
 		if ($is_layout === TRUE && count($this->layout_vars) > 0)
 		{
-			$this->log_item("layout Variables (Keys): ".implode('|', array_keys($this->layout_vars)));
-			$this->log_item("layout Variables (Values): ".trim(implode('|', $this->layout_vars)));
+			$this->log_item("layout Variables:", $this->layout_vars);
 
 			foreach ($this->layout_vars as $key => $val)
 			{
@@ -401,8 +406,6 @@ class EE_Template {
 		{
 			$this->template = str_replace(LD.$date_key.RD, $date_val, $this->template);
 		}
-
-		$this->log_item("Parse Date Format String Constants");
 
 		$dates = array();
 		// Template's Last Edit time {template_edit_date format="%Y %m %d %H:%i:%s"}
@@ -1027,8 +1030,6 @@ class EE_Template {
 					$matches[0] = ee()->functions->full_tag($matches[0]);
 				}
 
-				$this->log_item("Tag: ".$matches[0]);
-
 				$raw_tag = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $matches[0]);
 
 				$tag_length = strlen($raw_tag);
@@ -1101,8 +1102,6 @@ class EE_Template {
 				{
 					// Assign the data contained between the opening/closing tag pair
 
-					$this->log_item("Closing Tag Found");
-
 					$block = substr($this->template, $data_start, $out_point);
 
 					// Fetch the "no_results" data
@@ -1110,13 +1109,20 @@ class EE_Template {
 					$no_results = '';
 					$no_results_block = '';
 
-					if (strpos($block, 'if no_results') !== FALSE && preg_match("/".LD."if no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $block, $match))
+					// Remove {categories} for the {if no_results} search
+					$block_temp = preg_replace(
+						'/{categories[^}]*}(.+?){\/categories[^}]*}/is',
+						'',
+						$block
+					);
+
+					if (strpos($block_temp, 'if no_results') !== FALSE && preg_match("/".LD."if no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $block_temp, $match))
 					{
 						// Match the entirety of the conditional, dude.  Bad Rick!
 
 						if (stristr($match[1], LD.'if'))
 						{
-							$match[0] = ee()->functions->full_tag($match[0], $block, LD.'if', LD.'\/'."if".RD);
+							$match[0] = ee()->functions->full_tag($match[0], $block_temp, LD.'if', LD.'\/'."if".RD);
 						}
 
 						$no_results = substr($match[0], strlen(LD."if no_results".RD), -strlen(LD.'/'."if".RD));
@@ -1223,12 +1229,12 @@ class EE_Template {
 			$this->var_pair		= array();
 			$this->loop_count 	= 0;
 
-			$this->log_item("Parsing Tags in Template");
+			$this->log_item("Detecting Tags in Template");
 
 			// Run the template parser
 			$this->parse_tags();
 
-			$this->log_item("Processing Tags");
+			$this->log_item("Running Tags");
 
 			// Run the class/method handler
 			$this->process_tags();
@@ -1312,13 +1318,11 @@ class EE_Template {
 					else
 					{
 						$plugins[] = $this->tag_data[$i]['class'];
-						$this->log_item("Plugin Tag: ".ucfirst($this->tag_data[$i]['class']).'/'.$this->tag_data[$i]['method']);
 					}
 				}
 				else
 				{
 					$modules[] = $this->tag_data[$i]['class'];
-					$this->log_item("Module Tag: ".ucfirst($this->tag_data[$i]['class']).'/'.$this->tag_data[$i]['method']);
 				}
 			}
 		}
@@ -1344,16 +1348,12 @@ class EE_Template {
 
 		// Loop through the master array containing our extracted template data
 
-		$this->log_item("Beginning Final Tag Data Processing");
-
 		reset($this->tag_data);
 
 		for ($i = 0; $i < count($this->tag_data); $i++)
 		{
 			if ($this->tag_data[$i]['cache'] != 'CURRENT')
 			{
-				$this->log_item("Calling Class/Method: ".ucfirst($this->tag_data[$i]['class'])."/".$this->tag_data[$i]['method']);
-
 				/* ---------------------------------
 				/*  Plugin as Parameter
 				/*
@@ -1511,7 +1511,7 @@ class EE_Template {
 				else
 				{
 					$fqcn = $addon->getFrontendClass();
-					$this->log_item(" -> Class Called: ".$fqcn);
+					$this->log_item("Calling Tag: <code>{$this->tag_data[$i]['tag']}</code>");
 
 					$EE = new $fqcn();
 				}
@@ -1577,8 +1577,6 @@ class EE_Template {
 				the output of the class must be assigned to a variable called $this->return_data
 
 				*/
-
-				$this->log_item(" -> Method Called: ".$meth_name);
 
 				if ((strtolower($class_name) == strtolower($meth_name)) OR ($meth_name == '__construct'))
 				{
@@ -1912,17 +1910,7 @@ class EE_Template {
 
 			// Build the path to the page cache and get the number of files we have in
 			// the cache; this is more memory-efficient than using Cache::cache_info
-			$cache_path = APPPATH.'cache'.DIRECTORY_SEPARATOR;
-
-			// Attempt to grab cache_path config if it's set
-			if ($path = ee()->config->item('cache_path'))
-			{
-				$path = ee()->config->item('cache_path');
-				$cache_path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-			}
-
-			// Build the path to the page cache, should be site_short_name/page_cache
-			// as no page cache is set globally
+			$cache_path  = PATH_CACHE;
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
 
@@ -1972,8 +1960,6 @@ class EE_Template {
 	 */
 	public function parse_template_uri()
 	{
-		$this->log_item("Parsing Template URI");
-
 		// Does the first segment exist?  No?  Show the default template
 		if (ee()->uri->segment(1) === FALSE)
 		{
@@ -2055,7 +2041,7 @@ class EE_Template {
 				else // A valid template was not found
 				{
 					// is there a file we can automatically create this template from?
-					if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+					if (ee()->config->item('save_tmpl_files') == 'y')
 					{
 						if ($this->_create_from_file($template_group, ee()->uri->segment(2)))
 						{
@@ -2095,7 +2081,7 @@ class EE_Template {
 			if ($duplicate == TRUE OR $this->strict_urls == TRUE)
 			{
 				// is there a file we can automatically create this template from?
-				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -2162,8 +2148,7 @@ class EE_Template {
 			else
 			{
 				// is there a file we can automatically create this template from?
-				if (ee()->config->item('save_tmpl_files') == 'y'
-					&& ee()->config->item('tmpl_file_basepath') != '')
+				if (ee()->config->item('save_tmpl_files') == 'y')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -2205,6 +2190,7 @@ class EE_Template {
 
 			$this->template_type = "404";
 			$template = explode('/', $site_404);
+			$this->layout_vars = array(); // Reset Layout vars
 			$this->fetch_and_parse($template[0], $template[1]);
 			$out = $this->parse_globals($this->final_template);
 			ee()->output->out_type = "404";
@@ -2351,7 +2337,7 @@ class EE_Template {
 		if ($query->num_rows() == 0)
 		{
 			// is there a file we can automatically create this template from?
-			if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
 				$t_group = ($show_404) ? $template_group_404 : $template_group;
 				$t_template = ($show_404) ? $template_404 : $template;
@@ -2376,8 +2362,6 @@ class EE_Template {
 				return FALSE;
 			}
 		}
-
-		$this->log_item("Template Found");
 
 		// HTTP Authentication
 		if ($query->row('enable_http_auth') == 'y')
@@ -2408,8 +2392,6 @@ class EE_Template {
 		// Is the current user allowed to view this template?
 		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
 		{
-			$this->log_item("Determining Template Access Privileges");
-
 			if (ee()->session->userdata('group_id') != 1)
 			{
 				ee()->db->select('COUNT(*) as count');
@@ -2419,6 +2401,8 @@ class EE_Template {
 
 				if ($result->row('count') > 0)
 				{
+					$this->log_item("No Template Access Privileges");
+
 					if ($this->depth > 0)
 					{
 						return '';
@@ -2426,7 +2410,7 @@ class EE_Template {
 
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
-						a.cache, a.refresh, a.hits,
+						a.cache, a.refresh, a.hits, a.protect_javascript,
 						a.allow_php, a.php_parse_location, b.group_name')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
@@ -2453,7 +2437,7 @@ class EE_Template {
 
 		// Increment hit counter
 		if (($this->hit_lock == FALSE OR $this->hit_lock_override == TRUE) &&
-			ee()->config->item('enable_hit_tracking') != 'n')
+			bool_config_item('enable_hit_tracking'))
 		{
 			$this->template_hits = $row['hits'] + 1;
 			$this->hit_lock = TRUE;
@@ -2541,7 +2525,7 @@ class EE_Template {
 		}
 
 		// Retrieve template file if necessary
-		if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+		if (ee()->config->item('save_tmpl_files') == 'y')
 		{
 			$site_switch = FALSE;
 
@@ -2564,9 +2548,7 @@ class EE_Template {
 			ee()->load->library('api');
 			ee()->legacy_api->instantiate('template_structure');
 
-			$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
-
-			$basepath .= ee()->config->item('site_short_name').'/'
+			$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/'
 				.$row['group_name'].'.group/'.$row['template_name']
 				.ee()->api_template_structure->file_extensions($row['template_type']);
 
@@ -2616,7 +2598,7 @@ class EE_Template {
 	 */
 	function _create_from_file($template_group, $template, $db_check = FALSE)
 	{
-		if (ee()->config->item('save_tmpl_files') != 'y' OR ee()->config->item('tmpl_file_basepath') == '')
+		if (ee()->config->item('save_tmpl_files') != 'y')
 		{
 			return FALSE;
 		}
@@ -2648,7 +2630,7 @@ class EE_Template {
 		ee()->legacy_api->instantiate('template_structure');
 		ee()->load->model('template_model');
 
-		$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/'.$template_group.'.group';
+		$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/'.$template_group.'.group';
 
 		if ( ! is_dir($basepath))
 		{
@@ -2924,16 +2906,11 @@ class EE_Template {
 
 		//  Parse User-defined Global Variables first so that
 		//  they can use other standard globals
-		ee()->db->select('variable_name, variable_data');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		$query = ee()->db->get('global_variables');
+		$variables = ee('Model')->make('GlobalVariable')->loadAll();
 
-		if ($query->num_rows() > 0)
+		foreach ($variables as $var)
 		{
-			foreach ($query->result_array() as $row)
-			{
-				$str = str_replace(LD.$row['variable_name'].RD, $row['variable_data'], $str);
-			}
+			$str = str_replace(LD.$var->variable_name.RD, $var->variable_data, $str);
 		}
 
 		// {hits}
@@ -3006,9 +2983,9 @@ class EE_Template {
 					{
 						$css_versions[$row['group_name'].'/'.$row['template_name']] = $row['edit_date'];
 
-						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+						if (ee()->config->item('save_tmpl_files') == 'y')
 						{
-							$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/';
+							$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/';
 							$basepath .= $row['group_name'].'.group/'.$row['template_name'].'.css';
 
 							if (is_file($basepath))
@@ -3070,6 +3047,9 @@ class EE_Template {
 		// App version: {build}
 		$str = str_replace(LD.'app_build'.RD, APP_BUILD, $str);
 		$str = str_replace(LD.'build'.RD, APP_BUILD, $str);
+
+		// App version: {version_identifier}
+		$str = str_replace(LD.'version_identifier'.RD, APP_VER_ID, $str);
 
 		// {charset} and {lang}
 		$str = str_replace(LD.'charset'.RD, ee()->config->item('output_charset'), $str);
@@ -3370,10 +3350,11 @@ class EE_Template {
 	 *
 	 * @access	public
 	 * @param	string
+	 * @param   mixed   string/array of detailed log data
 	 * @return	void
 	 */
 
-	function log_item($str)
+	function log_item($str, $details = FALSE)
 	{
 		if ($this->debugging !== TRUE)
 		{
@@ -3391,10 +3372,22 @@ class EE_Template {
 
 		if (function_exists('memory_get_usage'))
 		{
-			$memory_usage = ' / '.number_format(round(memory_get_usage()/1024/1024, 2),2).'MB';
+			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2);
 		}
 
-		$this->log[] = '('.number_format($time, 6). $memory_usage . ') '.$str;
+		$last = end($this->log);
+		$time = number_format($time, 6);
+		$time_gain = $time - $last['time'];
+		$memory_gain = $memory_usage - $last['memory'];
+
+		$this->log[] = array(
+			'time' => $time,
+			'memory' => $memory_usage,
+			'message' => $str,
+			'details' => ($details) ? var_export($details, TRUE) : $details,
+			'time_gain' => $time_gain,
+			'memory_gain' => $memory_gain
+		);
 	}
 
 	// --------------------------------------------------------------------

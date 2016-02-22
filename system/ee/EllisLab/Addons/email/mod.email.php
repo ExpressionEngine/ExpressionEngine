@@ -393,9 +393,11 @@ class Email {
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
+		ee()->load->helper('form');
+
 		// Process default variables
 		$default = array('message', 'name', 'to', 'from', 'subject', 'required');
-		foreach ($default as $field)
+		foreach ($default as $key)
 		{
 			// Adding slashes since they removed in _setup_form
 			$var = addslashes(
@@ -561,28 +563,6 @@ class Email {
 		{
 			return ee()->output->show_user_error('general', array(lang('em_unauthorized_request')));
 		}
-
-		// Return Variables
-		$x = explode('|', $_POST['RET']);
-		unset($_POST['RET']);
-
-		if (is_numeric($x['0']))
-		{
-			$return_link = ee()->functions->form_backtrack($x['0']);
-		}
-		else
-		{
-			$return_link = $x[0];
-
-			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
-			{
-				$return_link = ee()->functions->form_backtrack(1);
-			}
-		}
-
-		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
-
-		$return_name = ( ! isset($x['1']) OR $x['1'] == '') ? $site_name : $x['1'];
 
 		// ERROR Checking
 		// If the message is empty, bounce them back
@@ -759,7 +739,31 @@ class Email {
 			$message = $required."\n".$message;
 		}
 
-		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' &&
+		$message = entities_to_ascii($message);
+		$message = ee()->typography->filter_censored_words($message);
+
+		// Send mail
+		$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * mail_recipients
+	 *
+	 * @param mixed $subject
+	 * @param mixed $message
+	 * @param mixed $approved_recipients Array of all recipients
+	 * @param mixed $approved_tos Array of non-BCC recipients
+	 * @param mixed $data The POST data from the email form
+	 * @param array $settings
+	 * @access public
+	 * @return void
+	 */
+	function mail_recipients($subject, $message, $approved_recipients, $approved_tos, $data)
+	{
+		// Define a few settings
+		if (isset($data['allow_html']) && $data['allow_html'] == 'y' &&
 			strlen(strip_tags($message)) != strlen($message))
 		{
 			$mail_type = 'html';
@@ -769,10 +773,28 @@ class Email {
 			$mail_type = 'plain';
 		}
 
-		$message = entities_to_ascii($message);
-		$message = ee()->typography->filter_censored_words($message);
+		// Return Variables
+		$x = explode('|', $_POST['RET']);
+		unset($_POST['RET']);
 
-		// Send email
+		if (is_numeric($x['0']))
+		{
+			$return_link = ee()->functions->form_backtrack($x['0']);
+		}
+		else
+		{
+			$return_link = $x[0];
+
+			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			{
+				$return_link = ee()->functions->form_backtrack(1);
+			}
+		}
+
+		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
+
+		$return_name = ( ! isset($x['1']) OR $x['1'] == '') ? $site_name : $x['1'];
+
 		ee()->load->library('email');
 		ee()->email->wordwrap = true;
 		ee()->email->mailtype = $mail_type;

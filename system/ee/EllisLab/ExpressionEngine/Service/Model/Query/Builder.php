@@ -2,8 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
+use EllisLab\ExpressionEngine\Service\Model\Query\Result;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -31,6 +31,7 @@ use EllisLab\ExpressionEngine\Service\Model\DataStore;
 class Builder {
 
 	protected $from;
+	protected $facade;
 	protected $datastore;
 
 	protected $set = array();
@@ -142,12 +143,12 @@ class Builder {
 
 		if ($this->isFutile())
 		{
-			return new Collection();
+			return new Result($this, array(), array(), array());
 		}
 
 		return $this->datastore
 			->selectQuery($this)
-			->setFrontend($this->frontend);
+			->setFacade($this->facade);
 	}
 
 	/**
@@ -475,18 +476,18 @@ class Builder {
 	/**
 	 *
 	 */
-	public function setFrontend($frontend)
+	public function setFacade($facade)
 	{
-		$this->frontend = $frontend;
+		$this->facade = $facade;
 	}
 
 
 	/**
 	 *
 	 */
-	public function getFrontend()
+	public function getFacade()
 	{
-		return $this->frontend;
+		return $this->facade;
 	}
 
 

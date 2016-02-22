@@ -2,7 +2,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/rank/')?>"><?=lang('create_new')?></a>
+				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/rank/')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=$cp_heading?></h1>
 			<?=ee('CP/Alert')->getAllInlines()?>

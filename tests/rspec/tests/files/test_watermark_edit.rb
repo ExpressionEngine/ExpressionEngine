@@ -18,7 +18,7 @@ feature 'Watermark Create/Edit' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'Attention: Watermark not saved'
+    @page.should have_css 'div.alert.issue'
     should_have_error_text(@page.wm_name, $required_error)
 
     # AJAX validation
@@ -107,6 +107,13 @@ feature 'Watermark Create/Edit' do
     @page.wm_shadow_color.set '000'
     @page.submit
 
+    @page.should have_css 'div.alert.success'
+    no_php_js_errors
+
+    click_link 'Test'
+
+    no_php_js_errors
+
     @page.wm_name.value.should == 'Test'
     @page.wm_type.value.should == 'text'
     @page.wm_vrt_alignment.value.should == 'middle'
@@ -124,9 +131,6 @@ feature 'Watermark Create/Edit' do
     @page.wm_use_drop_shadow[1].checked?.should == true
     @page.wm_shadow_distance.value.should == '50'
     @page.wm_shadow_color.value.should == '000'
-
-    @page.should have_css 'div.alert.success'
-    @page.alert.text.should include 'Watermark saved'
   end
 
   it 'should save and load an image watermark' do
@@ -151,6 +155,13 @@ feature 'Watermark Create/Edit' do
     @page.wm_y_transp.set 60
     @page.submit
 
+    @page.should have_css 'div.alert.success'
+    no_php_js_errors
+
+    click_link 'Test'
+
+    no_php_js_errors
+
     @page.wm_name.value.should == 'Test'
     @page.wm_type.value.should == 'image'
     @page.wm_vrt_alignment.value.should == 'bottom'
@@ -162,9 +173,6 @@ feature 'Watermark Create/Edit' do
     @page.wm_opacity.value.should == '40'
     @page.wm_x_transp.value.should == '50'
     @page.wm_y_transp.value.should == '60'
-
-    @page.should have_css 'div.alert.success'
-    @page.alert.text.should include 'Watermark saved'
   end
 
   it 'should reject XSS' do

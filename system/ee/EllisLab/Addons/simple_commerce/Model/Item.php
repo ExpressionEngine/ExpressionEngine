@@ -65,10 +65,14 @@ class Item extends Model {
 			'weak' => TRUE
 		),
 		'ChannelEntry' => array(
-			'type' => 'hasOne',
+			'type' => 'belongsTo',
 			'model' => 'ee:ChannelEntry',
 			'from_key' => 'entry_id',
-			'weak' => TRUE
+			'weak' => TRUE,
+			'inverse' => array(
+				'name' => 'Item',
+				'type' => 'hasMany'
+			)
 		)
 	);
 

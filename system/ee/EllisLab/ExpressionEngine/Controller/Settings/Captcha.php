@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Captcha extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_security_settings'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	public function index()
 	{
 		$vars['sections'] = array(
@@ -97,7 +107,7 @@ class Captcha extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/captcha');
+		$base_url = ee('CP/URL')->make('settings/captcha');
 
 		if (AJAX_REQUEST)
 		{

@@ -1,11 +1,11 @@
 <div class="box">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-item')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/create-item')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=lang('all_items')?>
 			<ul class="toolbar">
-				<li class="download"><a href="<?=ee('CP/URL', 'addons/settings/simple_commerce/export_items')?>" title="<?=lang('export_items')?>"></a></li>
+				<li class="download"><a href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/export_items')?>" title="<?=lang('export_items')?>"></a></li>
 			</ul>
 		</h1>
 		<?=ee('CP/Alert')->get('items-table')?>
@@ -26,7 +26,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'addons/settings/simple_commerce/remove-item'),
+	'form_url'	=> ee('CP/URL')->make('addons/settings/simple_commerce/remove-item'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

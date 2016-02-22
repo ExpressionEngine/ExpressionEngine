@@ -32,7 +32,10 @@ Used in the control panel only.',
 'subscriptions' => 'Current Subscriptions',
 
 'search_subscriptions' => 'Search Subscriptions',
+
 'unsubscribe_success' => 'You have been succesfully unsubscribed.',
+
+'no_subscriptions_found' => 'No <b>Subscriptions</b> found.',
 
 'utilities' => 'Utilities',
 
@@ -195,11 +198,9 @@ Used in the control panel only.',
 
 "12_hour" => "12 Hour with AM/PM",
 
-"include_seconds" => "Show seconds?",
-
 'time_format' => 'Time Formatting',
 
-'your_html_buttons' => 'HTML Formatting Buttons',
+'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
 'change_password' => 'Change Password',
 
@@ -363,9 +364,19 @@ Used in the control panel only.',
 
 'password_change_warning' => 'Note: You have changed your password so you will have to log back in.',
 
-'html_buttons' => 'HTML Formatting Buttons',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
-'html_buttons_updated' => 'HTML Buttons Updated',
+'create_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Created',
+'create_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been created.',
+
+'create_html_buttons_error' => 'Cannot Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+'create_html_buttons_error_desc' => 'We were unable to create this <abbr title="Hyper-Text Markup Language">HTML</abbr> button, please review and fix errors below.',
+
+'edit_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Updated',
+'edit_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been updated.',
+
+'edit_html_buttons_error' => 'Cannot Update <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+'edit_html_buttons_error_desc' => 'We were unable to update this <abbr title="Hyper-Text Markup Language">HTML</abbr> button, please review and fix errors below.',
 
 'only_self_qucklink_access' => 'You are not allowed to access another member\'s Quick Links',
 
@@ -425,6 +436,8 @@ Used in the control panel only.',
 
 'bookmarklet_instructions' => 'Drag links to your bookmarks bar to save them.',
 
+'no_bookmarklets_found' => 'No <b>Bookmarklets</b> found.',
+
 'smart_notifications' => 'Enable smart notifications',
 
 'smart_notifications_desc' => 'When set to <b>enable</b>, smart notifications will be possible.',
@@ -435,7 +448,7 @@ Used in the control panel only.',
 
 'login_as_member' => 'Login as Member',
 
-'html_buttons_updated' => 'HTML Buttons Updated',
+'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
 'sidebar_updated' => 'Sidebar State Updated',
 
@@ -462,13 +475,25 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'blocked_members' => 'Blocked Members',
 
+'no_blocked_members_found' => 'No <b>Blocked members</b> found.',
+
+'cp_settings' => 'CP Settings',
+
+'default_cp_homepage_myaccount_desc' => 'Set your homepage for the control panel.',
+
+'member_group_default' => 'Member group default',
+
 'email_username' => 'Email %s',
 
 'login_as' => 'Login as %s',
 
+'cp_index' => 'CP Index',
+
 'delete_username' => 'Delete %s',
 
 'choose_avatar' => 'Choose from library',
+
+'update_avatar_path' => '</em><em>Please update your <a href="%s">avatar</a> upload settings.',
 
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
 
@@ -493,6 +518,11 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'site_index' => 'Site Index',
 
 'btn_login' => 'Login',
+
+'quick_links_ajax_reorder_fail' => 'Attention: Failed to save quick links order',
+'quick_links_ajax_reorder_fail_desc' => 'We failed to save your new quick links order. Refresh the page and make sure you\'re logged in.',
+
+'no_quick_links_found' => 'No <b>Quick links</b> found.',
 
 ''=>''
 );

@@ -37,6 +37,8 @@ class Addons extends CP_Controller {
 	var $params			= array();
 	var $base_url;
 
+	protected $assigned_modules = array();
+
 	/**
 	 * Constructor
 	 */
@@ -46,7 +48,18 @@ class Addons extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			// possible exception for FilePicker
+			if (strncmp(ee()->uri->uri_string, 'cp/addons/settings/filepicker', 29) == 0)
+			{
+				if (! ee()->cp->allowed_group('can_access_files'))
+				{
+					show_error(lang('unauthorized_access'));
+				}
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'));
+			}
 		}
 
 		ee()->lang->loadfile('addons');
@@ -56,11 +69,16 @@ class Addons extends CP_Controller {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = ee('CP/URL', 'addons');
+		$this->base_url = ee('CP/URL')->make('addons');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
 		ee()->legacy_api->instantiate('channel_fields');
+
+		$this->assigned_modules = ee('Model')->get('MemberGroup', ee()->session->userdata('group_id'))
+			->first()
+			->AssignedModules
+			->pluck('module_id');
 	}
 
 	// --------------------------------------------------------------------
@@ -207,9 +225,15 @@ class Addons extends CP_Controller {
 			'third' => count($addons['third'])
 		), $developers);
 
+		$return_url = ee('CP/URL')->getCurrentUrl();
+		if (ee()->view->search_value)
+		{
+			$return_url->setQueryStringVariable('search', ee()->view->search_value);
+		}
+
 		foreach (array('first', 'third') as $party)
 		{
-			if ( ! count($addons[$party]))
+			if ($party == 'third' && ! count($addons[$party]))
 			{
 				continue;
 			}
@@ -228,20 +252,26 @@ class Addons extends CP_Controller {
 			);
 
 			$table = ee('CP/Table', $config);
-			$table->setColumns(
-				array(
-					'addon',
-					'version' => array(
-						'encode' => FALSE
-					),
-					'manage' => array(
-						'type'	=> Table::COL_TOOLBAR
-					),
-					array(
-						'type'	=> Table::COL_CHECKBOX
-					)
+			$columns =	array(
+				'addon',
+				'version' => array(
+					'encode' => FALSE
+				),
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
 				)
 			);
+
+
+			if (ee()->cp->allowed_group('can_admin_addons'))
+			{
+				$columns[] = array(
+					'type'	=> Table::COL_CHECKBOX
+				);
+			}
+
+			$table->setColumns($columns);
+
 			$table->setNoResultsText('no_addon_search_results');
 
 			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
@@ -276,13 +306,16 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL', 'addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => $return_url->encode())),
 						'title' => lang('install'),
+						'content' => lang('install'),
+						'type' => 'txt-only',
 						'class' => 'add'
 					)
 				);
 
 				$attrs = array('class' => 'not-installed');
+				$addon_name = $info['name'];
 
 				if ($info['installed'])
 				{
@@ -293,6 +326,11 @@ class Addons extends CP_Controller {
 						$toolbar['settings'] = array(
 							'href' => $info['settings_url'],
 							'title' => lang('settings'),
+						);
+
+						$addon_name = array(
+							'content' => $addon_name,
+							'href' => $info['settings_url']
 						);
 					}
 
@@ -312,7 +350,7 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL', 'addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => $return_url->encode())),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -322,28 +360,39 @@ class Addons extends CP_Controller {
 					$attrs = array();
 				}
 
-				$data[] = array(
+				if ( ! ee()->cp->allowed_group('can_admin_addons'))
+				{
+					unset($toolbar['install']);
+				}
+
+				$row = array(
 					'attrs' => $attrs,
 					'columns' => array(
-						'addon' => $info['name'],
+						'addon' => $addon_name,
 						'version' => $this->formatVersionNumber($info['version']),
-						array('toolbar_items' => $toolbar),
-						array(
-							'name' => 'selection[]',
-							'value' => $info['package'],
-							'data'	=> array(
-								'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
-							)
-						)
+						array('toolbar_items' => $toolbar)
 					)
 				);
+
+				if (ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$row['columns'][] = array(
+						'name' => 'selection[]',
+						'value' => $info['package'],
+						'data'	=> array(
+							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
+						)
+					);
+				}
+
+				$data[] = $row;
 			}
 
 			$table->setData($data);
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url;
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', $return_url->encode());
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
@@ -390,9 +439,6 @@ class Addons extends CP_Controller {
 			'third' => array()
 		);
 
-		// @TODO move these 2 things out of "add-ons" entirely
-		$uninstallable = array('channel', 'comment', 'filepicker');
-
 		foreach ($addon_infos as $name => $info)
 		{
 			$info = ee('Addon')->get($name);
@@ -411,7 +457,7 @@ class Addons extends CP_Controller {
 			{
 				if (file_exists($info->getPath() . '/README.md'))
 				{
-					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+					$addon['manual_url'] = ee('CP/URL')->make('addons/manual/' . $name);
 					$addon['manual_external'] = FALSE;
 				}
 				elseif ($info->get('docs_url'))
@@ -438,6 +484,11 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -468,14 +519,14 @@ class Addons extends CP_Controller {
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 
+				$name = $module['name'];
+
 				if ($UPD->update($version) !== FALSE)
 				{
 					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
 						->first();
-					$module->module_version = $UPD->version;
+					$module->module_version = $addon_info->getVersion();
 					$module->save();
-
-					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
 
 					$updated[$party][$addon] = $name;
 				}
@@ -486,6 +537,7 @@ class Addons extends CP_Controller {
 				&& $fieldtype['installed'] === TRUE
 				&& array_key_exists('update', $fieldtype))
 			{
+				ee()->api_channel_fields->include_handler($addon);
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
 				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
 				{
@@ -495,7 +547,7 @@ class Addons extends CP_Controller {
 							->filter('name', $addon)
 							->first();
 
-						$model->version = $FT->info['version'];
+						$model->version = $addon_info->getVersion();
 						$model->save();
 
 						if ( ! isset($updated[$party][$addon]))
@@ -516,7 +568,14 @@ class Addons extends CP_Controller {
 				$class_name = $extension['class'];
 				$Extension = new $class();
 				$Extension->update_extension($extension['version']);
-				ee()->extensions->version_numbers[$class_name] = $Extension->version;
+				ee()->extensions->version_numbers[$class_name] = $addon_info->getVersion();
+
+				$model = ee('Model')->get('Extension')
+					->filter('class', $class_name)
+					->first();
+
+				$model->version = $addon_info->getVersion();
+				$model->save();
 
 				if ( ! isset($updated[$party][$addon]))
 				{
@@ -570,9 +629,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -588,6 +645,11 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -679,9 +741,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -697,6 +757,11 @@ class Addons extends CP_Controller {
 	 */
 	private function remove($addons)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($addons))
 		{
 			$addons = array($addons);
@@ -728,7 +793,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
-				if ($name && ! isset($uninstalled[$addon]))
+				if ($name && ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $name;
 				}
@@ -738,7 +803,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
-				if ($name && ! isset($uninstalled[$addon]))
+				if ($name && ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $name;
 				}
@@ -751,7 +816,7 @@ class Addons extends CP_Controller {
 					->filter('plugin_package', $addon)
 					->delete();
 
-				if ( ! isset($uninstalled[$addon]))
+				if ( ! isset($uninstalled[$party][$addon]))
 				{
 					$uninstalled[$party][$addon] = $plugin['name'];
 				}
@@ -771,7 +836,14 @@ class Addons extends CP_Controller {
 			}
 		}
 
-		ee()->functions->redirect($this->base);
+		$return = $this->base_url;
+
+		if (ee()->input->get('return'))
+		{
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -784,16 +856,18 @@ class Addons extends CP_Controller {
 	 */
 	public function settings($addon, $method = NULL)
 	{
+		$this->assertUserHasAccess($addon);
+
 		ee()->view->cp_page_title = lang('addon_manager');
 
 		$vars = array();
 		$breadcrumb = array(
-			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->view->header = array(
 			'title' => lang('addon_manager'),
-			'form_url' => ee('CP/URL', 'addons'),
+			'form_url' => ee('CP/URL')->make('addons'),
 			'search_button_value' => lang('search_addons_button')
 		);
 
@@ -843,7 +917,7 @@ class Addons extends CP_Controller {
 				if ($method == 'save')
 				{
 					$this->saveFieldtypeSettings($fieldtype);
-					ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
+					ee()->functions->redirect(ee('CP/URL')->make('addons/settings/' . $addon));
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
@@ -858,7 +932,7 @@ class Addons extends CP_Controller {
 					if ($method == 'save')
 					{
 						$this->saveExtensionSettings($addon);
-						ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
+						ee()->functions->redirect(ee('CP/URL')->make('addons/settings/' . $addon));
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
@@ -888,6 +962,8 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
+		$this->assertUserHasAccess($addon);
+
 		try
 		{
 			$info = ee('Addon')->get($addon);
@@ -985,7 +1061,7 @@ class Addons extends CP_Controller {
 		ee()->menu->register_left_nav($nav);
 		ee()->view->header = array(
 			'title' => lang('addon_manager'),
-			'form_url' => ee('CP/URL', 'addons'),
+			'form_url' => ee('CP/URL')->make('addons'),
 			'search_button_value' => lang('search_addons_button')
 		);
 
@@ -994,7 +1070,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
@@ -1032,8 +1108,10 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
-		ee()->lang->loadfile($name);
-		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+		// Use lang file if present, otherwise fallback to addon.setup
+		ee()->lang->loadfile($name, '', FALSE);
+		$display_name = (lang(strtolower($name).'_module_name') != strtolower($name).'_module_name')
+			? lang(strtolower($name).'_module_name') : $info->getName();
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),
@@ -1050,12 +1128,13 @@ class Addons extends CP_Controller {
 
 		if ($module)
 		{
+			$data['module_id'] = $module->module_id;
 			$data['installed'] = TRUE;
 			$data['version'] = $module->module_version;
 
 			if ($info->get('settings_exist'))
 			{
-				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 
 			if ($info->hasInstaller())
@@ -1120,6 +1199,7 @@ class Addons extends CP_Controller {
 		$model = ee('Model')->get('Plugin')
 			->filter('plugin_package', $name)
 			->first();
+
 		if ( ! is_null($model))
 		{
 			$data['installed'] = TRUE;
@@ -1194,7 +1274,7 @@ class Addons extends CP_Controller {
 				{
 					$data['settings'] = $model->settings;
 				}
-				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 		}
 
@@ -1239,7 +1319,7 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
-		$class_name =ucfirst($name) . '_ext';
+		$class_name = ucfirst($name) . '_ext';
 
 		$data = array(
 			'developer'		=> $info->getAuthor(),
@@ -1280,7 +1360,7 @@ class Addons extends CP_Controller {
 				if ( ! class_exists($class_name))
 				{
 					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
-					continue;
+					return array();
 				}
 			}
 
@@ -1294,7 +1374,7 @@ class Addons extends CP_Controller {
 
 			if ($info->get('settings_exist'))
 			{
-				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 		}
 
@@ -1357,11 +1437,21 @@ class Addons extends CP_Controller {
 	{
 	 	$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		ee()->lang->loadfile($module, '', FALSE);
 
 		if (ee()->addons_installer->install($module, 'module', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			try
+			{
+				$info = ee('Addon')->get($module);
+			}
+			catch (\Exception $e)
+			{
+				show_404();
+			}
+
+			$name = (lang(strtolower($module).'_module_name') != strtolower($module).'_module_name')
+				? lang(strtolower($module).'_module_name') : $info->getName();
 		}
 
 		return $name;
@@ -1379,11 +1469,21 @@ class Addons extends CP_Controller {
 	{
 		$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		ee()->lang->loadfile($module, '', FALSE);
 
 		if (ee()->addons_installer->uninstall($module, 'module', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			try
+			{
+				$info = ee('Addon')->get($module);
+			}
+			catch (\Exception $e)
+			{
+				show_404();
+			}
+
+			$name = (lang(strtolower($module).'_module_name') != strtolower($module).'_module_name')
+				? lang(strtolower($module).'_module_name') : $info->getName();
 		}
 
 		return $name;
@@ -1394,7 +1494,7 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs a fieldtype
 	 *
-	 * @param  str	$$fieldtype	The add-on to install
+	 * @param  str	$fieldtype	The add-on to install
 	 * @return str				The name of the add-on just installed
 	 */
 	private function installFieldtype($fieldtype)
@@ -1454,12 +1554,12 @@ class Addons extends CP_Controller {
 		if (ee()->session->userdata['group_id'] != 1)
 		{
 			// Do they have access to this module?
-			if ( ! isset($module) OR
-				 ! isset(ee()->session->userdata['assigned_modules'][$module->module_id]) OR
-				ee()->session->userdata['assigned_modules'][$module->module_id] !== TRUE)
+			if ( ! isset($module))
 			{
 				show_error(lang('unauthorized_access'));
 			}
+
+			$this->assertUserHasAccess($addon);
 		}
 		else
 		{
@@ -1549,7 +1649,7 @@ class Addons extends CP_Controller {
 		}
 
 		$vars = array(
-			'base_url' => ee('CP/URL', 'addons/settings/' . $name . '/save'),
+			'base_url' => ee('CP/URL')->make('addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -1658,7 +1758,7 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'textarea',
 						'value' => str_replace("\\'", "'", $value),
-						'kill_pipes' => $options['1']['kill_pipes']
+						'kill_pipes' => isset($options['1']['kill_pipes']) ? $options['1']['kill_pipes'] : FALSE
 					);
 					break;
 
@@ -1674,7 +1774,7 @@ class Addons extends CP_Controller {
 			$vars['sections'][0][] = $element;
 		}
 
-		return ee('View')->make('_shared/form')->render($vars);
+		return ee('View')->make('_shared/form_with_box')->render($vars);
 	}
 
 	private function saveExtensionSettings($name)
@@ -1756,7 +1856,7 @@ class Addons extends CP_Controller {
 
 	private function getFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1771,7 +1871,7 @@ class Addons extends CP_Controller {
 		if (is_array($fieldtype_settings))
 		{
 			$vars = array(
-				'base_url' => ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'),
+				'base_url' => ee('CP/URL')->make('addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
 				'save_btn_text_working' => 'btn_saving',
@@ -1783,7 +1883,7 @@ class Addons extends CP_Controller {
 		{
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
-			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= form_open(ee('CP/URL')->make('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('CP/Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
@@ -1798,7 +1898,7 @@ class Addons extends CP_Controller {
 
 	private function saveFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1841,8 +1941,26 @@ class Addons extends CP_Controller {
 		$parts[0] = '<b>' . $parts[0] . '</b>';
 		return implode('.', $parts);
 	}
-}
-// END CLASS
 
-/* End of file Addons.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Addons/Addons.php */
+	private function assertUserHasAccess($addon)
+	{
+		if (ee()->session->userdata('group_id') == 1)
+		{
+			return;
+		}
+
+		$module = $this->getModule($addon);
+
+		if ($addon == 'filepicker' && ee()->cp->allowed_group('can_access_files') && isset($module['module_id']))
+		{
+			$this->assigned_modules[] = $module['module_id'];
+		}
+
+ 		if ( ! isset($module['module_id'])
+			|| ! in_array($module['module_id'], $this->assigned_modules))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+}
+// EOF

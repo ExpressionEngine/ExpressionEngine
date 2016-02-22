@@ -10,8 +10,13 @@ class ChannelFieldGroup extends Model {
 	protected static $_table_name = 'field_groups';
 
 	protected static $_relationships = array(
-		'ChannelFields' => array(
+		'Channels' => array(
 			'weak' => TRUE,
+			'type' => 'hasMany',
+			'model' => 'Channel',
+			'to_key' => 'field_group',
+		),
+		'ChannelFields' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelField'
 		)

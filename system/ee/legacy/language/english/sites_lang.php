@@ -12,6 +12,10 @@ $lang = array(
 'sites_removed_desc' => 'The following sites were removed',
 'create_site' => 'Create Site',
 'edit_site' => 'Edit Site',
+'name_desc' => 'Full descriptive name of this site.',
+'short_name_desc' => 'Short name for this site.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'description_desc' => 'A brief description of this site.',
+'btn_site_limit_reached' => 'Site Limit reached',
 'btn_create_site' => 'Create Site',
 'btn_edit_site' => 'Edit Site',
 'site_online' => 'Website online?',
@@ -30,6 +34,8 @@ $lang = array(
 'site_deleted' => 'Site Deleted',
 'site_created' => 'Site Created',
 'site_updated' => 'Site Updated',
+'site_limit_reached' => 'Site limit reached',
+'site_limit_reached_desc' => 'Site manager allows you to manage additional websites from a single ExpressionEngine installation. You have reached this limit.</p><p>You can <a href="%s" rel="external">purchase additional site licenses</a> at EllisLab.com.',
 
 ''=>''
 );

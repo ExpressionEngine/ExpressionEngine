@@ -112,7 +112,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSaveInsert()
 	{
-		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Frontend');
+		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Facade');
 		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
 
 		$fe->shouldReceive('get')->andReturn($qb);
@@ -127,13 +127,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($m->isNew());
 		$this->assertTrue($m->isDirty());
 
-		$m->setFrontend($fe);
+		$m->setFacade($fe);
 		$m->save();
 	}
 
 	public function testSaveUpdate()
 	{
-		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Frontend');
+		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Facade');
 		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
 
 		$fe->shouldReceive('get')->andReturn($qb);
@@ -153,7 +153,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse($m->isNew());
 
 		$m->name = 'Robert';
-		$m->setFrontend($fe);
+		$m->setFacade($fe);
 		$m->save();
 
 		// post insert assertions
@@ -162,7 +162,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testDelete()
 	{
-		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Frontend');
+		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Facade');
 		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
 
 		$fe->shouldReceive('get')->andReturn($qb);
@@ -175,7 +175,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		// pre delete assertion
 		$this->assertFalse($m->isNew());
 
-		$m->setFrontend($fe);
+		$m->setFacade($fe);
 		$m->delete();
 
 		// post delete assertions

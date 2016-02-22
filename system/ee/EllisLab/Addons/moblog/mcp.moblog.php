@@ -81,7 +81,7 @@ EOT;
 			)
 		));
 
-		$table->setNoResultsText('no_moblogs', 'create_moblog', ee('CP/URL', 'addons/settings/moblog/create'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('moblogs')), 'create_moblog', ee('CP/URL')->make('addons/settings/moblog/create'));
 
 		$sort_map = array(
 			'col_id' => 'moblog_id',
@@ -96,20 +96,24 @@ EOT;
 		$data = array();
 		foreach ($moblogs as $moblog)
 		{
+			$edit_url = ee('CP/URL')->make('addons/settings/moblog/edit/'.$moblog['moblog_id']);
 			$columns = array(
 				$moblog['moblog_id'],
-				$moblog['moblog_full_name'],
+				array(
+					'content' => $moblog['moblog_full_name'],
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'copy' => array(
-						'href' => ee('CP/URL', 'addons/settings/moblog/create/'.$moblog['moblog_id']),
+						'href' => ee('CP/URL')->make('addons/settings/moblog/create/'.$moblog['moblog_id']),
 						'title' => lang('copy')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL', 'addons/settings/moblog/check/'.$moblog['moblog_id']),
+						'href' => ee('CP/URL')->make('addons/settings/moblog/check/'.$moblog['moblog_id']),
 						'title' => (lang('check_now')),
 						'content' => strtolower(lang('check_now'))
 					)
@@ -118,7 +122,7 @@ EOT;
 					'name' => 'moblogs[]',
 					'value' => $moblog['moblog_id'],
 					'data'	=> array(
-						'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES) . '</b>'
+						'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -137,7 +141,7 @@ EOT;
 
 		$table->setData($data);
 
-		$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog');
+		$vars['base_url'] = ee('CP/URL')->make('addons/settings/moblog');
 		$vars['table'] = $table->viewData($vars['base_url']);
 
 		$vars['pagination'] = ee('CP/Pagination', count($moblogs))
@@ -181,7 +185,7 @@ EOT;
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/moblog', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -221,7 +225,7 @@ EOT;
 
 			$alert_key = 'created';
 			$vars['cp_page_title'] = lang('create_moblog');
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create');
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/moblog/create');
 
 			$moblog = ee('Model')->make('moblog:Moblog');
 		}
@@ -236,13 +240,13 @@ EOT;
 
 			$alert_key = 'updated';
 			$vars['cp_page_title'] = lang('edit_moblog');
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog_id);
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/moblog/edit/'.$moblog_id);
 		}
 
 		if ($duplicate)
 		{
 			$moblog = ee('Model')->get('moblog:Moblog', $moblog_id)->first();
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create/'.$moblog_id);
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/moblog/create/'.$moblog_id);
 		}
 
 		if ( ! empty($_POST))
@@ -274,7 +278,7 @@ EOT;
 					->addToBody(sprintf(lang('moblog_'.$alert_key.'_desc'), $moblog->moblog_full_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/moblog'));
 			}
 			else
 			{
@@ -293,7 +297,6 @@ EOT;
 		{
 			$channels = $channels->filter('site_id', 1);
 		}
-
 		$channels = $channels->all();
 
 		$channels_options = array();
@@ -302,6 +305,37 @@ EOT;
 			$channels_options[$channel->channel_id] = (ee()->config->item('multiple_sites_enabled') === 'y')
 				? $channel->Site->site_label.NBS.'-'.NBS.$channel->channel_title : $channel->channel_title;
 		}
+
+		$author_options = array();
+
+		// First, get member groups who should be in the list
+		$member_groups = ee('Model')->get('MemberGroup')
+			->with('AssignedChannels')
+			->filter('include_in_authorlist', 'y')
+			->fields('group_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		// Then authors who are individually selected to appear in author list
+		$authors = ee('Model')->get('Member')
+			->fields('username', 'screen_name')
+			->filter('in_authorlist', 'y');
+
+		// Then grab any members that are part of the member groups we found
+		if ($member_groups->count())
+		{
+			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
+		}
+
+		$authors->order('screen_name');
+		$authors->order('username');
+
+		foreach ($authors->all() as $author)
+		{
+			$author_options[$author->getId()] = $author->getMemberName();
+		}
+
+		$moblog_authors = $author_options;// ee('Model')->get('Member')->fields('member_id', 'screen_name')->limit(100)->all()->getDictionary('member_id', 'screen_name');
 
 		$vars['sections'] = array(
 			array(
@@ -374,7 +408,7 @@ EOT;
 					'fields' => array(
 						'moblog_categories' => array(
 							'type' => 'checkbox',
-							'choices' => ee('Model')->get('Category')->all()->getDictionary('cat_id', 'cat_name'),
+							'choices' => ee('Model')->get('Category')->fields('cat_id', 'cat_name')->all()->getDictionary('cat_id', 'cat_name'),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -384,7 +418,7 @@ EOT;
 					'fields' => array(
 						'moblog_field_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('ChannelField')->all()->getDictionary('field_id', 'field_label'),
+							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'label')->all()->getDictionary('field_id', 'field_label'),
 							'value' => $moblog->moblog_field_id
 						)
 					)
@@ -394,7 +428,7 @@ EOT;
 					'fields' => array(
 						'moblog_status' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('Status')->all()->getDictionary('status', 'status'),
+							'choices' => ee('Model')->get('Status')->fields('status')->all()->getDictionary('status', 'status'),
 							'value' => $moblog->moblog_status
 						)
 					)
@@ -404,7 +438,7 @@ EOT;
 					'fields' => array(
 						'moblog_author_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('Member')->all()->getDictionary('member_id', 'screen_name'),
+							'choices' => $moblog_authors,
 							'value' => $moblog->moblog_author_id
 						)
 					)
@@ -550,7 +584,9 @@ EOT;
 						'moblog_upload_directory' => array(
 							'type' => 'select',
 							'choices' => ee('Model')->get('UploadDestination')
+								->fields('site_id', 'module_id', 'id', 'name')
 								->filter('site_id', ee()->config->item('site_id'))
+								->filter('module_id', 0)
 								->all()
 								->getDictionary('id', 'name'),
 							'value' => $moblog->moblog_upload_directory
@@ -588,7 +624,7 @@ EOT;
 
 		return array(
 			'heading'    => $vars['cp_page_title'],
-			'breadcrumb' => array(ee('CP/URL', 'addons/settings/moblog')->compile() => lang('moblog') . ' ' . lang('configuration')),
+			'breadcrumb' => array(ee('CP/URL')->make('addons/settings/moblog')->compile() => lang('moblog') . ' ' . lang('configuration')),
 			'body'       => ee('View')->make('moblog:create')->render($vars)
 		);
 	}
@@ -1054,7 +1090,7 @@ MAGIC;
 				->defer();
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/moblog', ee()->cp->get_url_state()));
 	}
 
 }

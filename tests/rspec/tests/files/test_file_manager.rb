@@ -71,8 +71,8 @@ feature 'File Manager' do
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
 		@page.perpage_filter.text.should eq 'show (25)'
-		@page.title_name_header[:class].should eq 'highlight'
-		@page.should have(26).files
+		@page.date_added_header[:class].should eq 'highlight'
+		@page.should have(11).files
 	end
 
 	# General Tests
@@ -96,7 +96,7 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (50)"
 		@page.should_not have_pagination
-		@page.should have(26).files
+		@page.should have(11).files
 	end
 
 	it 'can change the page size manually', :all_files => true do
@@ -108,8 +108,8 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 		@page.should have(6).files
 	end
 
@@ -125,12 +125,15 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(7).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
 		@page.should have(6).files
 	end
 
 	it 'can reverse sort by title/name', :all_files => true, :perpage => 50 do
+		@page.title_name_header.find('a.sort').click
+		no_php_js_errors
+
 		a_to_z_titles = @page.title_names.map {|title| title.text}
 
 		@page.title_name_header.find('a.sort').click
@@ -164,16 +167,16 @@ feature 'File Manager' do
 		@page.file_types.map {|file_type| file_type.text}.should == a_to_z_file_types.reverse!
 	end
 
-	it 'can sort by date added', :all_files => true, :perpage => 50 do
-		dates_added = @page.dates_added.map {|date_added| date_added.text}
-
-		@page.date_added_header.find('a.sort').click
-		no_php_js_errors
-
-		@page.date_added_header[:class].should eq 'highlight'
-		sorted_dates_added = @page.dates_added.map {|date_added| date_added.text}
-		sorted_dates_added.should_not == dates_added
-	end
+	# it 'can sort by date added', :all_files => true, :perpage => 50 do
+	# 	dates_added = @page.dates_added.map {|date_added| date_added.text}
+	#
+	# 	@page.date_added_header.find('a.sort').click
+	# 	no_php_js_errors
+	#
+	# 	@page.date_added_header[:class].should eq 'highlight'
+	# 	sorted_dates_added = @page.dates_added.map {|date_added| date_added.text}
+	# 	sorted_dates_added.should_not == dates_added
+	# end
 
 	it 'can reverse sort by date added', :all_files => true, :perpage => 50 do
 		@page.date_added_header.find('a.sort').click
@@ -245,7 +248,7 @@ feature 'File Manager' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include 'File: 25 Files'
+		@page.modal.text.should include 'File: 10 Files'
 	end
 
 	it 'can remove a single file', :all_files => true do
@@ -320,7 +323,7 @@ feature 'File Manager' do
 	end
 
 	it 'displays an itemized modal when attempting to remove a directory', :all_files => true do
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 
@@ -332,7 +335,7 @@ feature 'File Manager' do
 	end
 
 	it 'can remove a directory', :all_files => true do
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 
@@ -352,7 +355,7 @@ feature 'File Manager' do
 
 		@page.sidebar.find('li.act').text.should eq 'About'
 
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 
@@ -419,7 +422,7 @@ feature 'File Manager' do
 		@page.alert.text.should include "Files Not Found"
 		@page.alert.text.should include "Highlighted files cannot be found on the server."
 
-		@page.should have_css('tr.missing')
-	end
+    @page.should have_css('tr.missing')
+  end
 
 end

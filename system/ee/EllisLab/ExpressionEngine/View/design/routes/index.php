@@ -6,8 +6,10 @@
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php $this->embed('_shared/pagination'); ?>
-		<fieldset class="tbl-bulk-act hidden">
-			<button class="btn submit"><?=lang('submit')?></button>
-		</fieldset>
+		<?php if ( ! empty($table['data'])): ?>
+			<fieldset class="tbl-bulk-act">
+				<button class="btn submit"><?=lang('update')?></button>
+			</fieldset>
+		<?php endif ?>
 	<?=form_close()?>
 </div>

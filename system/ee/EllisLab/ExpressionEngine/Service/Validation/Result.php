@@ -214,7 +214,7 @@ class Result {
 
 		<?php foreach ($rules as $rule): ?>
 			<?php list($key, $params) = $rule->getLanguageData(); ?>
-			<em class="ee-form-error-message"><?=sprintf(lang($key), $params) ?></em>
+			<em class="ee-form-error-message"><?=vsprintf(lang($key), $params) ?></em>
 		<?php endforeach; ?>
 STR;
 	}
@@ -227,7 +227,7 @@ STR;
 		return <<<'STR'
 		<?php $this->lang->load('form_validation'); ?>
 		<?php list($key, $params) = $rule->getLanguageData(); ?>
-		<?=sprintf(lang($key), $params) ?>
+		<?=vsprintf(lang($key), $params) ?>
 STR;
 	}
 }

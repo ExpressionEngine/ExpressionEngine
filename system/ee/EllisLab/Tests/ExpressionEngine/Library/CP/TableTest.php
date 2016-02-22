@@ -20,6 +20,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 	public function testsTableCreation($config, $data, $expected, $columns, $description)
 	{
 		$this->table = new Table($config);
+		$this->table->setLocalize(new Localize());
 		$this->table->setColumns($columns);
 		$this->table->setData($data);
 		$this->assertEquals($expected, $this->table->viewData(), $description);
@@ -53,32 +54,38 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		// We should get this on output
 		$expected_cols = array(
-			'Name' => array(
+			array(
+				'label'		=> 'Name',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
-			'Records' => array(
+			array(
+				'label'		=> 'Records',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
-			'Size' => array(
+			array(
+				'label'		=> 'Size',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
-			'Manage' => array(
+			array(
+				'label'		=> 'Manage',
 				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_TOOLBAR
 			),
-			'Status' => array(
+			array(
+				'label'		=> 'Status',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_STATUS
 			),
 			array(
+				'label'		=> NULL,
 				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_CHECKBOX
@@ -124,6 +131,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'           => FALSE,
 			'reorder_header' => FALSE,
 			'class'             => '',
+			'table_attrs'       => array(),
 			'sortable'          => TRUE,
 			'subheadings'       => FALSE,
 			'columns'           => $expected_cols,
@@ -247,7 +255,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$config = array(
 			'wrap'			=> FALSE,
-			'sort_col'		=> 'Some column',
+			'sort_col'		=> 'Records',
 			'sort_dir'		=> 'desc',
 			'search'		=> 'My search',
 			'no_results'	=> $no_results
@@ -380,6 +388,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'           => FALSE,
 			'reorder_header' => FALSE,
 			'class'             => '',
+			'table_attrs'       => array(),
 			'sortable'          => TRUE,
 			'subheadings'       => FALSE,
 			'columns'           => $expected_cols,
@@ -471,6 +480,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$config['autosearch'] = TRUE;
 		$config['search'] = 'data 2';
+		$config['attrs'] = array('data-test' => 'test');
 
 		$expected = array(
 			'base_url'          => NULL,
@@ -487,6 +497,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'           => FALSE,
 			'reorder_header' => FALSE,
 			'class'             => '',
+			'table_attrs'       => array('data-test' => 'test'),
 			'sortable'          => TRUE,
 			'subheadings'       => FALSE,
 			'columns'           => $expected_cols,
@@ -1471,5 +1482,18 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$return[] = array($config, $data, $columns, 'Test invalid data for checkboxes');
 
 		return $return;
+	}
+}
+
+class Localize
+{
+	public function get_date_format($seconds = FALSE)
+	{
+		return '%n/%j/%Y';
+	}
+
+	public function string_to_timestamp($human_string, $localized = TRUE, $date_format = NULL)
+	{
+		return strtotime($human_string);
 	}
 }

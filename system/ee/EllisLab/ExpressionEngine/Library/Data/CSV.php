@@ -6,7 +6,7 @@ class CSV {
 
 	private $header = array();
 	private $data = array();
-	private $delimiter = ', ';
+	private $delimiter = ',';
 	private $enclosure = '"';
 
 	/**

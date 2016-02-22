@@ -38,23 +38,25 @@ $lang = array(
 
 'has' => 'has',
 
-'channel_fields' => 'Channel Fields',
+'field_groups' => 'Field Groups',
 
 'members' => 'Members',
 
 'register_new' => 'Register New',
 
-'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator. You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
+'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator.',
+
+'new_members_permission_desc' => 'You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
 
 'banned_members' => 'Banned Members',
 
 'content' => 'Content',
 
-'content_desc' => 'Entries in channels, this is what folks visit to experience.',
+'content_desc' => 'Channel entries, why folks visit.',
 
-'entries_with_comments' => 'Entries with %d comments',
+'entries_with_comments' => '<b>%d</b> Entries with %d comments',
 
-'closed_entries_with_comments' => 'Closed entries with %d comments.',
+'closed_entries_with_comments' => '<b>%d</b> Closed entries with %d comments.',
 
 ''=>''
 );

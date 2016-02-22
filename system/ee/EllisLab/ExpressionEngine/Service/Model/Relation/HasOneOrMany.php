@@ -91,16 +91,16 @@ abstract class HasOneOrMany extends Relation {
 	{
 		list($from, $to) = $this->getKeys();
 
+		$ids = array();
+
 		if (is_array($targets) || $targets instanceOf Collection)
 		{
-			$ids = array();
-
 			foreach ($targets as $target)
 			{
 				$ids[] = $target->getId();
 			}
 		}
-		else
+		elseif (isset($targets))
 		{
 			$ids = array($targets->getId());
 		}

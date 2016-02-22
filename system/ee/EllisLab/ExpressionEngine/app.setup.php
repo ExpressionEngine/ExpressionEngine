@@ -1,22 +1,29 @@
 <?php
 
 use EllisLab\ExpressionEngine\Library;
-use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
+use EllisLab\ExpressionEngine\Service\Event;
+use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
-use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
+use EllisLab\ExpressionEngine\Service\Permission;
+use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\Sidebar;
+use EllisLab\ExpressionEngine\Service\Theme;
+use EllisLab\ExpressionEngine\Service\Thumbnail;
+use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
-use EllisLab\ExpressionEngine\Service\Sidebar;
-use EllisLab\ExpressionEngine\Service\Thumbnail;
-use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\Addons\Spam\Service\Spam;
+use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -51,7 +58,6 @@ return array(
 		{
 			$grid = new Library\CP\GridInput(
 				$config,
-				ee()->view,
 				ee()->cp,
 				ee()->config,
 				ee()->javascript
@@ -62,15 +68,22 @@ return array(
 
 		'CP/Table' => function($ee, $config = array())
 		{
-			return Library\CP\Table::fromGlobals($config);
+			$table = Library\CP\Table::fromGlobals($config);
+			$table->setLocalize(ee()->localize);
+			return $table;
 		},
 
-		'CP/URL' => function($ee, $path, $qs = array(), $cp_url = '', $session_id = NULL)
+		'CP/URL' => function($ee, $path = NULL)
 		{
-			$session_id = $session_id ?: ee()->session->session_id();
-			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
+			$cp_url = ee()->config->item('cp_url');
+			$site_index = ee()->functions->fetch_site_index(0,0);
+			$uri_string = ee()->uri->uri_string();
+			$session_id = ee()->session->session_id();
+			$default_cp_url = SELF;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
+			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+
+			return (is_null($path)) ? $factory : $factory->make($path);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
@@ -99,6 +112,11 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
+		'Curl' => function($ee)
+		{
+			return new Curl\RequestFactory();
+		},
+
 		'View' => function($ee)
 		{
 			return new View\ViewFactory($ee);
@@ -106,10 +124,20 @@ return array(
 
 		'Model' => function($ee)
 		{
-			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
-			$frontend->setValidationFactory($ee->make('Validation'));
+			$facade = new Model\Facade($ee->make('Model/Datastore'));
+			$facade->setValidationFactory($ee->make('Validation'));
 
-			return $frontend;
+			return $facade;
+		},
+
+		'Spam' => function($ee)
+		{
+			return new Spam();
+		},
+
+		'Theme' => function($ee)
+		{
+			return new Theme\Theme(PATH_THEMES, URL_THEMES, PATH_THIRD_THEMES, URL_THIRD_THEMES);
 		},
 
 		'Thumbnail' => function($ee)
@@ -119,9 +147,14 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'));
-		}
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
+		},
 
+		'Permission' => function($ee)
+		{
+			$userdata = ee()->session->userdata;
+			return new Permission\Permission($userdata);
+		}
 	),
 
 	'services.singletons' => array(
@@ -141,6 +174,22 @@ return array(
 			$view = $ee->make('View')->make('_shared/alert');
 			return new Alert\AlertCollection(ee()->session, $view);
 		},
+
+		'CP/FilePicker' => function($ee)
+		{
+			$fp = new FilePicker\Factory(
+				$ee->make('CP/URL')
+			);
+
+			$fp->injectModal(
+				$ee->make('CP/Modal'),
+				$ee->make('View')->make('ee:_shared/modal'),
+				ee()->cp
+			);
+
+			return $fp;
+		},
+
 
 		'CP/Modal' => function($ee)
 		{
@@ -163,18 +212,49 @@ return array(
 			$config = $ee->make('Config')->getFile();
 
 			$db_config = new Database\DBConfig($config);
+			$db = new Database\Database($db_config);
 
-			return new Database\Database($db_config);
+			// we'll go by what's in the config file first - site prefs
+			// may end up turning this off, but we load those so late that
+			// it has led to some early query loops being missed. Better to
+			// be more aggressive on this front.
+			$save_queries = ($config->get('show_profiler', 'n') == 'y' OR DEBUG == 1);
+			$db->getLog()->saveQueries($save_queries);
+
+			return $db;
+		},
+
+		'File' => function($ee)
+		{
+			return new File\Factory();
+		},
+
+		'License' => function($ee)
+		{
+			$default_key_path = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
+			$default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
+
+			return new License\LicenseFactory($default_key);
 		},
 
 		'Model/Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
+			$addons = $ee->make('Addon')->installed();
+
+			$installed_prefixes = array('ee');
+
+			foreach ($addons as $addon)
+			{
+				$installed_prefixes[] = $addon->getProvider()->getPrefix();
+			}
 
 			return new Model\DataStore(
 				$ee->make('Database'),
 				$app->getModels(),
-				$ee->getPrefix()
+				$app->forward('getModelDependencies'),
+				$ee->getPrefix(),
+				$installed_prefixes
 			);
 		},
 
@@ -277,5 +357,8 @@ return array(
 			// ..\Email
 			'EmailCache' => 'Model\Email\EmailCache',
 			'EmailTracker' => 'Model\Email\EmailTracker',
+
+			// ..\Revision
+			'RevisionTracker' => 'Model\Revision\RevisionTracker'
 	)
 );

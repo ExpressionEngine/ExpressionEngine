@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class Throttling extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_security_settings'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	public function index()
 	{
 		$vars['sections'] = array(
@@ -135,7 +145,7 @@ class Throttling extends Settings {
 			)
 		));
 
-		$base_url = ee('CP/URL', 'settings/throttling');
+		$base_url = ee('CP/URL')->make('settings/throttling');
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 

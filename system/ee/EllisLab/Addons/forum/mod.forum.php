@@ -27,7 +27,7 @@
 class Forum {
 
 
-	public $version				= '3.1.19';
+	public $version				= '3.1.20';
 	public $build				= '20150501';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
@@ -95,6 +95,8 @@ class Forum {
 	public $include_exceptions	= array(
 			'head_extra', 'spellcheck_js', 'body_extra');
 
+	protected $forum_core; // the "core" class object. Refactor, ho!
+
 	/**
 	 * Constructor
 	 */
@@ -127,26 +129,26 @@ class Forum {
 		{
 			require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
-			ee()->FRM_CORE = new Forum_Core();
+			$this->forum_core = new Forum_Core();
 
 			$vars = get_object_vars($this);
 
 			foreach($vars as $key => $value)
 			{
-				ee()->FRM_CORE->{$key} = $value;
+				$this->forum_core->{$key} = $value;
 			}
 
 			// Verify Permissions
 			// Before serving the page we'll see if the user is authorized
 
-			if ( ! ee()->FRM_CORE->_is_authorized())
+			if ( ! $this->forum_core->_is_authorized())
 			{
-				ee()->FRM_CORE->set_page_title(lang('error'));
-				$error = ee()->FRM_CORE->display_forum('error_page');
+				$this->forum_core->set_page_title(lang('error'));
+				$error = $this->forum_core->display_forum('error_page');
 
 				if ($this->use_trigger() === FALSE)
 				{
-					$this->return_data = ee()->FRM_CORE->return_data;
+					$this->return_data = $this->forum_core->return_data;
 				}
 				else
 				{
@@ -161,11 +163,11 @@ class Forum {
 
 			if ( ! ee()->input->get_post('ACT'))
 			{
-				ee()->FRM_CORE->display_forum();
+				$this->forum_core->display_forum();
 			}
 
 			// If Template Parser Request
-			$this->return_data = ee()->FRM_CORE->return_data;
+			$this->return_data = $this->forum_core->return_data;
 		}
 	}
 
@@ -324,29 +326,29 @@ class Forum {
 
 	// --------------------------------------------------------------------
 
-	public function submit_post() { return ee()->FRM_CORE->submit_post(); }
-	public function delete_post() { return ee()->FRM_CORE->delete_post(); }
-	public function change_status() { return ee()->FRM_CORE->change_status(); }
-	public function move_topic() { return ee()->FRM_CORE->move_topic(); }
-	public function move_reply() { return ee()->FRM_CORE->move_reply(); }
-	public function do_merge() { return ee()->FRM_CORE->do_merge(); }
-	public function do_split() { return ee()->FRM_CORE->do_split(); }
-	public function do_report() { return ee()->FRM_CORE->do_report(); }
+	public function submit_post() { return $this->forum_core->submit_post(); }
+	public function delete_post() { return $this->forum_core->delete_post(); }
+	public function change_status() { return $this->forum_core->change_status(); }
+	public function move_topic() { return $this->forum_core->move_topic(); }
+	public function move_reply() { return $this->forum_core->move_reply(); }
+	public function do_merge() { return $this->forum_core->do_merge(); }
+	public function do_split() { return $this->forum_core->do_split(); }
+	public function do_report() { return $this->forum_core->do_report(); }
 
 	public function delete_subscription()
 	{
-		return ee()->FRM_CORE->delete_subscription();
+		return $this->forum_core->delete_subscription();
 	}
 
 	public function display_attachment()
 	{
-		return ee()->FRM_CORE->display_attachment();
+		return $this->forum_core->display_attachment();
 	}
 
 	public function topic_titles()
 	{
-		if ( ! is_object(ee()->FRM_CORE)) return;
-		return ee()->FRM_CORE->topic_titles();
+		if ( ! is_object($this->forum_core)) return;
+		return $this->forum_core->topic_titles();
 	}
 
 	// --------------------------------------------------------------------
@@ -627,8 +629,9 @@ class Forum {
 		}
 
 		$path = $this->theme.'/'.$classname.'/'.$which.'.html';
+		$full_path = ee('Theme')->getPath('forum/'.$path);
 
-		if ( ! is_file($this->fetch_pref('board_theme_path').$path))
+		if ( ! is_file($full_path))
 		{
 			return ee()->output->fatal_error('Unable to locate the following forum theme file: '.$path);
 		}
@@ -636,11 +639,11 @@ class Forum {
 		if ($this->fetch_pref('board_allow_php') == 'y' AND $this->fetch_pref('board_php_stage') == 'i')
 		{
 			return $this->parse_template_php($this->_prep_element(
-				trim(file_get_contents($this->fetch_pref('board_theme_path').$path))
+				trim(file_get_contents($full_path))
 			));
 		}
 
-		return $this->_prep_element(trim(file_get_contents($this->fetch_pref('board_theme_path').$path)));
+		return $this->_prep_element(trim(file_get_contents($full_path)));
 	}
 
 	// --------------------------------------------------------------------
@@ -769,9 +772,6 @@ class Forum {
 		{
 			$this->preferences['member_profile_path'] 	= $this->forum_path(ee()->config->item('profile_trigger').'/');
 		}
-
-		$this->preferences['board_theme_path'] = PATH_THIRD_THEMES.'forum/';
-		$this->preferences['board_theme_url']  = URL_THEMES.'forum/';
 	}
 
 	// --------------------------------------------------------------------
@@ -789,9 +789,9 @@ class Forum {
 		$this->mbr_class_loaded = TRUE;
 		include_once PATH_ADDONS.'member/mod.member.php';
 
-		ee()->MBR = new Member();
+		$this->MBR = new Member();
 
-		ee()->MBR->_set_properties(
+		$this->MBR->_set_properties(
 				array(
 						'trigger'			=> ee()->config->item('profile_trigger'),
 						'theme_class'		=> 'theme_member',
@@ -801,17 +801,17 @@ class Forum {
 						'basepath'			=> $this->forum_path(ee()->config->item('profile_trigger')),
 						'forum_path'		=> $this->forum_path(),
 						'image_url'			=> $this->image_url,
-						'theme_path'		=> $this->fetch_pref('board_theme_path').$this->theme.'/forum_member/',
-						'css_file_path'		=> $this->fetch_pref('board_theme_url').$this->theme.'/theme.css',
+						'theme_path'		=> ee('Theme')->getPath('forum/'.$this->theme.'/forum_member/'),
+						'css_file_path'		=> ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
 						'board_id'			=> $this->fetch_pref('board_id')
 					)
 			);
 
-		$template = str_replace('{include:member_manager}', ee()->MBR->manager(), $template);
+		$template = str_replace('{include:member_manager}', $this->MBR->manager(), $template);
 
-		$this->head_extra = ee()->MBR->head_extra;
+		$this->head_extra = $this->MBR->head_extra;
 
-		if (ee()->MBR->show_headings == TRUE)
+		if ($this->MBR->show_headings == TRUE)
 		{
 			$template = $this->allow_if('show_headings', $template);
 		}
@@ -845,12 +845,6 @@ class Forum {
 	 */
 	protected function _check_theme_path()
 	{
-		// Check path to master folder containing all the themes
-		if ( ! is_dir($this->fetch_pref('board_theme_path')))
-		{
-			return ee()->output->fatal_error('Unable to locate the forum theme folder.');
-		}
-
 		// Grab theme.  Can be from a cookie or user pref
 		$forum_theme = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('forum_theme') : '';
 
@@ -881,15 +875,15 @@ class Forum {
 
 		// Check path to folder containing the requested theme
 		$this->theme = ($forum_theme != '' &&
-		@is_dir($this->fetch_pref('board_theme_path').$forum_theme)) ? $forum_theme : $this->fetch_pref('board_default_theme');
+		@is_dir(ee('Theme')->getPath('forum/'.$forum_theme))) ? $forum_theme : $this->fetch_pref('board_default_theme');
 
-		if ( ! @is_dir($this->fetch_pref('board_theme_path').$this->theme))
+		if ( ! @is_dir(ee('Theme')->getPath('forum/'.$this->theme)))
 		{
 			return ee()->output->fatal_error('Unable to locate the forum theme folder.');
 		}
 
 		// Set path to the image folder for the particular theme
-		$this->image_url = $this->fetch_pref('board_theme_url').$this->theme.'/images/';
+		$this->image_url = ee('Theme')->getUrl('forum/'.$this->theme.'/images/');
 	}
 
 	// --------------------------------------------------------------------
@@ -1182,7 +1176,7 @@ class Forum {
 		// If the member class is loaded we'll set the page title based on its page title
 		if ($this->mbr_class_loaded == TRUE AND $this->current_page_name == '')
 		{
-			$this->current_page_name = ee()->MBR->page_title;
+			$this->current_page_name = $this->MBR->page_title;
 		}
 
 		if (is_null($this->feeds_enabled) OR $this->feeds_enabled === FALSE)
@@ -1255,8 +1249,8 @@ class Forum {
 				'module_version'           => $this->version,
 				'forum_build'              => $this->build,
 				'error_message'            => $this->error_message,
-				'path:theme_css'           => $this->fetch_pref('board_theme_url').$this->theme.'/theme.css',
-				'path:theme_js'            => $this->fetch_pref('board_theme_url').$this->theme.'/theme/javascript/',
+				'path:theme_css'           => ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
+				'path:theme_js'            => ee('Theme')->getUrl('forum/'.$this->theme.'/theme/javascript/'),
 				'site_url'                 => ee()->config->item('site_url'),
 				'password_max_length'      => PASSWORD_MAX_LENGTH
 			)
@@ -1739,7 +1733,7 @@ class Forum {
 												);
 			}
 
-			if (FALSE !== ($mbr_crumb = ee()->MBR->_fetch_member_crumb(ee()->uri->segment(3+$this->seg_addition))))
+			if (FALSE !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(3+$this->seg_addition))))
 			{
 				return $this->_build_crumbs(lang($mbr_crumb), $crumbs, lang($mbr_crumb));
 			}
@@ -1747,7 +1741,7 @@ class Forum {
 
 			if (ee()->uri->segment(3+$this->seg_addition) == 'messages')
 			{
-				if (FALSE !== ($mbr_crumb = ee()->MBR->_fetch_member_crumb(ee()->uri->segment(4+$this->seg_addition))))
+				if (FALSE !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(4+$this->seg_addition))))
 				{
 					return $this->_build_crumbs(lang($mbr_crumb), $crumbs, lang($mbr_crumb));
 				}
@@ -2082,22 +2076,7 @@ class Forum {
 	 */
 	public function fetch_theme_list()
 	{
-		$filelist = array();
-
-		if ($fp = @opendir($this->fetch_pref('board_theme_path')))
-		{
-			while (false !== ($file = readdir($fp)))
-			{
-				if (is_dir($this->fetch_pref('board_theme_path').$file) AND substr($file, 0, 1) != '.' AND substr($file, 0, 1) != '_')
-				{
-					$filelist[] = $file;
-				}
-			}
-
-			closedir($fp);
-		}
-
-		return $filelist;
+		return ee('ee:Theme')->listThemes('forum');
 	}
 
 	// --------------------------------------------------------------------

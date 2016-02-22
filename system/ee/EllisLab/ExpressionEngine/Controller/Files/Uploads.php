@@ -45,11 +45,6 @@ class Uploads extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');
@@ -60,6 +55,11 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar(NULL);
 		return $this->form();
 	}
@@ -72,6 +72,11 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function edit($upload_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
@@ -87,7 +92,7 @@ class Uploads extends AbstractFilesController {
 		if (is_null($upload_id))
 		{
 			ee()->view->cp_page_title = lang('create_upload_directory');
-			ee()->view->base_url = ee('CP/URL', 'files/uploads/create');
+			ee()->view->base_url = ee('CP/URL')->make('files/uploads/create');
 			$upload_destination = ee('Model')->make('UploadDestination');
 			$upload_destination->site_id = ee()->config->item('site_id');
 		}
@@ -101,7 +106,7 @@ class Uploads extends AbstractFilesController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
-			ee()->view->base_url = ee('CP/URL', 'files/uploads/edit/'.$upload_id);
+			ee()->view->base_url = ee('CP/URL')->make('files/uploads/edit/'.$upload_id);
 		}
 
 		if ( ! empty($_POST))
@@ -141,7 +146,7 @@ class Uploads extends AbstractFilesController {
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $new_upload_id));
+				ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $new_upload_id));
 			}
 			else
 			{
@@ -331,7 +336,7 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('upload_directory'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -630,12 +635,15 @@ class Uploads extends AbstractFilesController {
 
 		$validate = array();
 
-		foreach ($upload_destination->FileDimensions as $model)
+		if ( ! empty($image_sizes))
 		{
-			$row_id = 'row_id_'.$model->getId();
-			$model->set($image_sizes['rows'][$row_id]);
+			foreach ($upload_destination->FileDimensions as $model)
+			{
+				$row_id = 'row_id_'.$model->getId();
+				$model->set($image_sizes['rows'][$row_id]);
 
-			$validate[$row_id] = $model;
+				$validate[$row_id] = $model;
+			}
 		}
 
 		foreach ($new_sizes as $row_id => $columns)
@@ -648,6 +656,16 @@ class Uploads extends AbstractFilesController {
 
 		foreach ($validate as $row_id => $model)
 		{
+			if ($model->height === '')
+			{
+				$model->height = 0;
+			}
+
+			if ($model->width === '')
+			{
+				$model->width = 0;
+			}
+
 			$result = $model->validate();
 
 			if ( ! $result->isValid())
@@ -666,9 +684,14 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function sync($upload_id = NULL)
 	{
+		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if (empty($upload_id))
 		{
-			ee()->functions->redirect(ee('CP/URL', 'files/uploads'));
+			ee()->functions->redirect(ee('CP/URL')->make('files/uploads'));
 		}
 
 		$this->generateSidebar($upload_id);
@@ -679,6 +702,11 @@ class Uploads extends AbstractFilesController {
 			ee()->session->userdata('group_id'),
 			$upload_id
 		);
+
+		if (empty($upload_destination))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 		// Get a listing of raw files in the directory
 		ee()->load->library('filemanager');
@@ -740,7 +768,7 @@ class Uploads extends AbstractFilesController {
 			);
 		}
 
-		$base_url = ee('CP/URL', 'files/uploads/sync/'.$upload_id);
+		$base_url = ee('CP/URL')->make('files/uploads/sync/'.$upload_id);
 
 		ee()->cp->add_js_script('file', 'cp/files/synchronize');
 
@@ -751,7 +779,7 @@ class Uploads extends AbstractFilesController {
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
 				'sync_baseurl'    => $base_url->compile(),
-				'sync_endpoint'   => ee('CP/URL', 'files/uploads/do_sync_files')->compile(),
+				'sync_endpoint'   => ee('CP/URL')->make('files/uploads/do_sync_files')->compile(),
 				'sync_dir_name'   => $upload_destination['name'],
 			)
 		));
@@ -762,7 +790,7 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
 
 		// Errors are given through a POST to this same page
 		$errors = ee()->input->post('errors');
@@ -887,8 +915,8 @@ class Uploads extends AbstractFilesController {
 				}
 
 				// Rename the file
-				if ( ! @copy(ee()->_upload_dirs[$id]['server_path'].$file['name'],
-							ee()->_upload_dirs[$id]['server_path'].$clean_filename))
+				if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
+							$this->_upload_dirs[$id]['server_path'].$clean_filename))
 				{
 					$errors[$file['name']] = lang('invalid_filename');
 					continue;
@@ -944,7 +972,7 @@ class Uploads extends AbstractFilesController {
 					TRUE 	// Don't overwrite existing thumbs
 				);
 
-				$file_path_name = ee()->_upload_dirs[$id]['server_path'].$file['name'];
+				$file_path_name = $this->_upload_dirs[$id]['server_path'].$file['name'];
 
 				// Update dimensions
 				$image_dimensions = ee()->filemanager->get_image_dimensions($file_path_name);

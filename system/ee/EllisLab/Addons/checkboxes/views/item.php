@@ -11,7 +11,7 @@
 			$value = $value['name'];
 		}
 
-		$checked = (in_array(form_prep($value), $values)) ? TRUE : FALSE;
+		$checked = (in_array($key, $values) OR in_array(form_prep($key), $values));
 
 		$class = 'choice block';
 
@@ -20,12 +20,27 @@
 			$class .= ' chosen';
 		}
 ?>
-	<li>
-		<label class="<?=$class?>"><?=form_checkbox($field_name.'[]', $key, $checked)?> <?=$value?></label>
+	<li<?php if ($editable): ?> class="nestable-item" data-id="<?=$key?>"<?php endif ?> style="overflow:hidden">
+		<label class="<?=$class?>">
+			<?php if ($editable): ?>
+				<span class="list-reorder" <?php if ( ! $editing): ?>style="margin-left:-50px"<?php endif ?>></span>
+			<?php endif ?>
+			<?=form_checkbox($field_name.'[]', $key, $checked, $editing ? 'disabled="disabled"' : '')?> <?=$value?>
+			<?php if ($editable OR $deletable): ?>
+				<ul class="toolbar<?php if ( ! $editing): ?> hidden<?php endif ?>">
+					<?php if ($editable): ?>
+						<li class="edit"><a class="m-link" rel="modal-checkboxes-edit" data-group-id="<?=$group_id?>" data-content-id="<?=$key?>" href=""></a></li>
+					<?php endif ?>
+					<?php if ($deletable): ?>
+						<li class="remove"><a class="m-link" rel="modal-checkboxes-confirm-remove" data-confirm="<?='<b>'.$content_item_label.'</b>: '.$value?>" data-content-id="<?=$key?>" href=""></a></li>
+					<?php endif ?>
+				</ul>
+			<?php endif ?>
+		</label>
 <?php
 	if (isset($children)):
 ?>
-		<ul>
+		<ul<?php if ($editable): ?> class="nestable-list"<?php endif ?>>
 			<?php $this->embed('item', array('options' => $children, 'values' => $values)); ?>
 		</ul>
 <?php

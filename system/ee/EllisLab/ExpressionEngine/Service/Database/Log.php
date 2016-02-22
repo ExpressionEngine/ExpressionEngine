@@ -63,6 +63,9 @@ class Log {
 
 	/**
 	 * Turn on/off saving queries
+	 *
+	 * @param bool $save TRUE to save, FALSE to not
+	 * @return void
 	 */
 	public function saveQueries($save = TRUE)
 	{
@@ -71,8 +74,13 @@ class Log {
 
 	/**
 	 * Add a query to the log
+	 *
+	 * @param string $sql
+	 * @param foo $time
+	 * @param foo $memory
+	 * @return void
 	 */
-	public function addQuery($sql, $time)
+	public function addQuery($sql, $time, $memory)
 	{
 		$this->count++;
 
@@ -98,12 +106,14 @@ class Log {
 				);
 			}
 
-			$this->queries[] = array($query, $location, $time);
+			$this->queries[] = array($query, $location, $time, $memory);
 		}
 	}
 
 	/**
 	 * Get all logged queries and their execution times
+	 *
+	 * @return array The queries.
 	 */
 	public function getQueries()
 	{
@@ -112,6 +122,8 @@ class Log {
 
 	/**
 	 * Get the total query count
+	 *
+	 * @return int The number of queries
 	 */
 	public function getQueryCount()
 	{
@@ -120,6 +132,8 @@ class Log {
 
 	/**
 	 * Get the query metrics (tracks duplicates)
+	 *
+	 * @return
 	 */
 	public function getQueryMetrics()
 	{

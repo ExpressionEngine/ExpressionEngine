@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class SecurityPrivacy extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_security_settings'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	public function index()
 	{
 		$vars['sections'] = array(
@@ -74,7 +84,7 @@ class SecurityPrivacy extends Settings {
 				),
 				array(
 					'title' => 'cookie_path',
-					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://ellislab.com/expressionengine/user-guide/cp/admin/cookie_settings.html#cookie-path')),
+					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/v3/cp/settings/security-privacy.html#path')),
 					'fields' => array(
 						'cookie_path' => array('type' => 'text')
 					)
@@ -226,7 +236,7 @@ class SecurityPrivacy extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/security-privacy');
+		$base_url = ee('CP/URL')->make('settings/security-privacy');
 
 		ee('CP/Alert')->makeInline('security-tip')
 			->asWarning()

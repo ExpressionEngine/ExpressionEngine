@@ -24,8 +24,6 @@ $lang = array(
 
 'filter_channels' => 'filter channels',
 
-'success' => 'Success',
-
 'pages_deleted_desc' => 'The following Page URLs were deleted',
 
 'pages_settings' => 'Pages Settings',
@@ -47,6 +45,8 @@ $lang = array(
 'pages_templates' => 'Templates',
 
 'pages_templates_desc' => 'Default templates for each channel.',
+
+'create_template' => 'Create Template',
 
 //----------------------------------------
 

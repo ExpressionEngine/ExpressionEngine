@@ -29,7 +29,7 @@ class Stats {
 	/**
 	 *  Constructor
 	 */
-	public function Stats()
+	public function __construct()
 	{
 		ee()->stats->load_stats();
 

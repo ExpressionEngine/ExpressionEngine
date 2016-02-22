@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Subscriptions extends Profile {
+class Subscriptions extends Settings {
 
 	private $base_url = 'members/profile/subscriptions';
 
@@ -40,7 +40,7 @@ class Subscriptions extends Profile {
 		parent::__construct();
 		ee()->load->library('members');
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Subscriptions extends Profile {
 						'name' => 'selection[]',
 						'value' => $subscription['id'],
 						'data'	=> array(
-							'confirm' => lang('subscription') . ': <b>' . htmlentities($subscription['title'], ENT_QUOTES) . '</b>'
+							'confirm' => lang('subscription') . ': <b>' . htmlentities($subscription['title'], ENT_QUOTES, 'UTF-8') . '</b>'
 						)
 					)
 				);
@@ -92,7 +92,7 @@ class Subscriptions extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_subscriptions_found');
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
@@ -146,8 +146,12 @@ class Subscriptions extends Profile {
 			}
 		}
 
-		ee()->view->set_message('success', lang('unsubscribe_success'), $cp_message, TRUE);
-		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('unsubscribe_success'))
+			->addToBody($cp_message)
+			->defer();
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 	}
 
 }

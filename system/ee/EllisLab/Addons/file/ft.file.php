@@ -56,17 +56,82 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		return ee()->file_field->validate(
-			$data,
-			$this->name(),
-			$this->settings['field_required'],
-			array(
-				'grid_row_id' => isset($this->settings['grid_row_id'])
-					? $this->settings['grid_row_id'] : NULL,
-				'grid_field_id' => isset($this->settings['grid_field_id'])
-					? $this->settings['grid_field_id'] : NULL
-			)
-		);
+		// Is it required but empty?
+		if (($this->settings['field_required'] === TRUE
+			|| $this->settings['field_required'] == 'y')
+				&& empty($data))
+		{
+			return array('value' => '', 'error' => lang('required'));
+		}
+
+		// Is it optional and empty?
+		if (($this->settings['field_required'] === FALSE
+			|| $this->settings['field_required'] == 'n')
+				&& empty($data))
+		{
+			return array('value' => '');
+		}
+
+
+		// Does it look like '{filedir_n}file_name.ext'?
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			$upload_location_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+
+			$file = ee('Model')->get('File')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('upload_location_id', $upload_location_id)
+				->filter('file_name', $file_name)
+				->first();
+
+			if ($file)
+			{
+				$check_permissions = FALSE;
+
+				// Is this an edit?
+				if ($this->content_id)
+				{
+					// Are we validating on grid data?
+					if (isset($this->settings['grid_row_id']))
+					{
+						ee()->load->model('grid_model');
+						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->settings['grid_content_type']);
+
+						// If this filed was we need to check permissions.
+						if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data)
+						{
+							$check_permissions = TRUE;
+						}
+					}
+					else
+					{
+						$entry = ee('Model')->get('ChannelEntry', $this->content_id)->first();
+						$field_name = $this->name();
+
+						// If this filed was we need to check permissions.
+						if ($entry && $entry->$field_name != $data)
+						{
+							$check_permissions = TRUE;
+						}
+					}
+				}
+				else
+				{
+					$check_permissions = TRUE;
+				}
+
+				if ($check_permissions &&
+					$file->memberGroupHasAccess(ee()->session->userdata['group_id']) == FALSE)
+				{
+					return array('value' => '', 'error' => lang('directory_no_access'));
+				}
+
+				return array('value' => $data);
+			}
+		}
+
+		return array('value' => '', 'error' => lang('invalid_selection'));
 	}
 
 	// --------------------------------------------------------------------
@@ -91,7 +156,9 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
+		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all')
+			? $this->settings['allowed_directories']
+			: '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
@@ -101,28 +168,69 @@ class File_ft extends EE_Fieldtype {
 		{
 			ee()->lang->loadfile('fieldtypes');
 
+			if ($allowed_file_dirs == '')
+			{
+				$allowed_file_dirs = 'all';
+			}
+
+			$fp = ee('CP/FilePicker')->make($allowed_file_dirs);
+
+			$fp_link = $fp->getLink()
+				->withValueTarget($this->field_name)
+				->withNameTarget($this->field_name)
+				->withImage($this->field_name);
+
+			// If we are showing a single directory respect its default modal view
+			if (count($allowed_file_dirs) == 1
+				&& (int) $allowed_file_dirs[0])
+			{
+				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs[0])
+					->first();
+
+				switch ($dir->default_modal_view)
+				{
+					case 'thumb':
+						$fp_link->asThumbs();
+						break;
+
+					default:
+						$fp_link->asList();
+						break;
+				}
+			}
+
+			$fp_upload = clone $fp_link;
+			$fp_upload
+				->setText(lang('upload_file'))
+				->setAttribute('class', 'btn action file-field-filepicker');
+
+			$fp_edit = clone $fp_link;
+			$fp_edit
+				->setText('')
+				->setAttribute('title', lang('edit'))
+				->setAttribute('class', 'file-field-filepicker');
+
+			$file = $this->_parse_field($data);
+
+			if ($file)
+			{
+				$fp_edit->setSelected($file->file_id);
+			}
+
 			ee()->cp->add_js_script(array(
 				'file' => array(
 					'fields/file/cp'
 				),
 			));
 
-			$fp = new FilePicker();
-			$fp->inject(ee()->view);
-
-			if ($allowed_file_dirs == '')
-			{
-				$allowed_file_dirs = 'all';
-			}
-
-			$file = $this->_parse_field($data);
-
 			return ee('View')->make('file:publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => ee('CP/URL', $fp->controller, array('directory' => $allowed_file_dirs))
+				'fp_url' => $fp->getUrl(),
+				'fp_upload' => $fp_upload,
+				'fp_edit' => $fp_edit
 			));
 		}
 
@@ -270,7 +378,7 @@ JSC;
 		{
 			ee()->session->cache['file_field']['css'] = TRUE;
 
-			$styles = <<<CSS
+			$styles = <<<STYLIO
 			<style type="text/css">
 			.file_set {
 				color: #5F6C74;
@@ -312,7 +420,8 @@ JSC;
 				clear: both;
 			}
 			</style>
-CSS;
+STYLIO;
+
 			$styles = preg_replace('/\s+/is', ' ', $styles);
 			ee()->cp->add_to_head($styles);
 		}
@@ -500,6 +609,14 @@ CSS;
 		// Number of existing files to show? 0 means all
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
+		$directory_choices = array('all' => lang('all'));
+		$directory_choices += ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all()
+			->getDictionary('id', 'name');
+
 		$settings = array(
 			'field_options_file' => array(
 				'label' => 'field_options',
@@ -522,7 +639,7 @@ CSS;
 						'fields' => array(
 							'allowed_directories' => array(
 								'type' => 'select',
-								'choices' => $this->_allowed_directories_options(),
+								'choices' => $directory_choices,
 								'value' => $allowed_directories
 							)
 						)
@@ -618,30 +735,6 @@ CSS;
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Returns dropdown-ready array of allowed upload directories
-	 */
-	private function _allowed_directories_options()
-	{
-		ee()->load->model('file_upload_preferences_model');
-
-		$directory_options['all'] = lang('all');
-
-		if (empty($this->_dirs))
-		{
-			$this->_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
-		}
-
-		foreach($this->_dirs as $dir)
-		{
-			$directory_options[$dir['id']] = $dir['name'];
-		}
-
-		return $directory_options;
-	}
-
-	// --------------------------------------------------------------------
-
 	function validate_settings($settings)
 	{
 		$validator = ee('Validation')->make(array(
@@ -672,10 +765,9 @@ CSS;
 	 * Form Validation callback; makes sure there are file upload
 	 * directories available before allowing a new file field to be saved
 	 *
-	 * @param	string	Selected file dir
 	 * @return	boolean	Whether or not to pass validation
 	 */
-	public function _validate_file_settings($file_dir)
+	public function _validate_file_settings($key, $value, $params, $rule)
 	{
 		// count upload dirs
 		if ( ! $this->_check_directories())
@@ -683,7 +775,7 @@ CSS;
 			ee()->lang->load('fieldtypes');
 			return sprintf(
 				lang('file_ft_no_upload_directories'),
-				ee('CP/URL', 'files/uploads/create')
+				ee('CP/URL')->make('files/uploads/create')
 			);
 		}
 
@@ -702,11 +794,8 @@ CSS;
 	 */
 	public function _check_directories()
 	{
-		ee()->load->model('file_upload_preferences_model');
-		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
-
 		// count upload dirs
-		return (count($upload_dir_prefs) !== 0);
+		return (ee('Model')->get('UploadDestination')->filter('module_id', 0)->count() !== 0);
 	}
 
 	// --------------------------------------------------------------------

@@ -67,7 +67,8 @@ class TemplateGroup extends Model {
 		'beforeInsert',
 		'afterDelete',
 		'afterInsert',
-		'afterUpdate'
+		'afterUpdate',
+		'afterSave',
 	);
 
 	protected $group_id;
@@ -114,11 +115,38 @@ class TemplateGroup extends Model {
 
 			$new_path = $this->getFolderPath();
 
-			$fs = new Filesystem();
-			$fs->rename($old_path, $new_path);
+			if ($old_path !== NULL && $new_path !== NULL)
+			{
+				$fs = new Filesystem();
+				$fs->rename($old_path, $new_path);
+			}
 		}
 
 		$this->ensureFolderExists();
+	}
+
+	/**
+	 * After saving, if this template group is makred as the site default,
+	 * then we need to ensure that all other template groups for this
+	 * site are not set as the default
+	 */
+	public function onAfterSave()
+	{
+		if ($this->getProperty('is_site_default'))
+		{
+			$template_groups = $this->getFrontend()->get('TemplateGroup')
+				->filter('site_id', $this->site_id)
+				->filter('is_site_default', 'y')
+				->filter('group_id', '!=', $this->group_id)
+				->all();
+
+			if ($template_groups)
+			{
+				$template_groups->is_site_default = FALSE;
+				$template_groups->save();
+			}
+		}
+
 	}
 
 	/**
@@ -132,7 +160,7 @@ class TemplateGroup extends Model {
 
 		if (isset($path) && ! $fs->isDir($path))
 		{
-			$fs->mkDir($path);
+			$fs->mkDir($path, FALSE);
 		}
 	}
 
@@ -146,7 +174,7 @@ class TemplateGroup extends Model {
 			return NULL;
 		}
 
-		$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/');
+		$basepath = PATH_TMPL;
 
 		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
 		{
@@ -154,7 +182,7 @@ class TemplateGroup extends Model {
 		}
 
 		$site = ee()->config->item('site_short_name');
-		return $basepath.'/'.$site.'/'.$this->group_name . '.group';
+		return $basepath.$site.'/'.$this->group_name . '.group';
 	}
 
 	/**

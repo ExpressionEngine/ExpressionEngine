@@ -14,7 +14,7 @@ abstract class FieldModel extends Model {
 	);
 
 
-	protected $_facade;
+	protected $_field_facade;
 
 	/**
 	 * Return the storing table
@@ -38,22 +38,22 @@ abstract class FieldModel extends Model {
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) ||
-			$this->_facade->getType() != $this->getFieldType() ||
-			$this->_facade->getId() != $this->getId())
+		if ( ! isset($this->_field_facade) ||
+			$this->_field_facade->getType() != $this->getFieldType() ||
+			$this->_field_facade->getId() != $this->getId())
 		{
 			$values = array_merge($this->getValues(), $override);
 
-			$this->_facade = new FieldFacade($this->getId(), $values);
-			$this->_facade->setContentType($this->getContentType());
+			$this->_field_facade = new FieldFacade($this->getId(), $values);
+			$this->_field_facade->setContentType($this->getContentType());
 		}
 
 		if (isset($this->field_fmt))
 		{
-			$this->_facade->setFormat($this->field_fmt);
+			$this->_field_facade->setFormat($this->field_fmt);
 		}
 
-		return $this->_facade;
+		return $this->_field_facade;
 	}
 
 	public function getSettingsForm()
@@ -73,6 +73,13 @@ abstract class FieldModel extends Model {
 
 	public function set(array $data = array())
 	{
+		// getField() requires that we have a field type, but we might be trying
+		// to set it! So, if we are, we'll do that first.
+		if (isset($data['field_type']))
+		{
+			$this->setProperty('field_type', $data['field_type']);
+		}
+
 		$field = $this->getField($this->getSettingsValues());
 		$data = array_merge($data, $field->saveSettingsForm($data));
 
@@ -106,6 +113,16 @@ abstract class FieldModel extends Model {
 	}
 
 	/**
+	 * Calling the Post Save Settings after every save. Grid (and others?)
+	 * saves its settings in the post_save_settings call.
+	 */
+	public function save()
+	{
+		parent::save();
+		$this->callPostSaveSettings();
+	}
+
+	/**
 	 * After inserting, add the columns to the data table
 	 */
 	public function onAfterInsert()
@@ -119,8 +136,6 @@ abstract class FieldModel extends Model {
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
-
-		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -155,8 +170,6 @@ abstract class FieldModel extends Model {
 
 			$this->diffColumns($old_columns, $new_columns);
 		}
-
-		$this->callPostSaveSettings();
 	}
 
 	protected function callSettingsModify($ft, $action, $changed = array())
@@ -320,8 +333,8 @@ abstract class FieldModel extends Model {
 	 */
 	private function ensureDefaultColumns($columns)
 	{
-		$id_field_name = 'field_id_'.$this->getId();
-		$ft_field_name = 'field_ft_'.$this->getId();
+		$id_field_name = $this->getColumnPrefix().'field_id_'.$this->getId();
+		$ft_field_name = $this->getColumnPrefix().'field_ft_'.$this->getId();
 
 		if ( ! isset($columns[$id_field_name]))
 		{
@@ -340,5 +353,15 @@ abstract class FieldModel extends Model {
 		}
 
 		return $columns;
+	}
+
+	/**
+	 * Set a prefix on the default columns we manage for fields
+	 *
+	 * @return	String	Prefix string to use
+	 */
+	public function getColumnPrefix()
+	{
+		return '';
 	}
 }

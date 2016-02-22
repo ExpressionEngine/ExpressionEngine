@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Bookmarks extends Profile {
+class Bookmarks extends Settings {
 
 	private $base_url = 'members/profile/bookmarks';
 
@@ -46,7 +46,7 @@ class Bookmarks extends Profile {
 		}
 
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url  = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}
 
 	/**
@@ -62,23 +62,17 @@ class Bookmarks extends Profile {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/profile/bookmarks/edit/' . $id, $this->query_string),
+					'href' => ee('CP/URL')->make('members/profile/bookmarks/edit/' . $id, $this->query_string),
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
-			$path = ee('CP/URL',
-				'content_publish/entry_form',
-				array(
-					'Z'          => 1,
-					'BK'         => 1,
-					'channel_id' => $bookmark->channel
-				)
-			)->compile();
+			$path = ee()->config->item('cp_url').'?/cp/publish/create/'.$bookmark->channel;
+			$path .= '&BK=1&';
 
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";
-			$link = "javascript:bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$bookmark->field."='+encodeURI(bm),'bmentry',''))";
-			$link = urlencode($link);
+			$link = "bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&field_id_".$bookmark->field."='+encodeURI(bm),'bmentry',''))";
+			$link = 'javascript:'.urlencode($link);
 
 			$links[] = array(
 				'name' => "<a href='$link'>{$bookmark->name}</a>",
@@ -87,7 +81,7 @@ class Bookmarks extends Profile {
 					'name' => 'selection[]',
 					'value' => $id,
 					'data'	=> array(
-						'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -107,12 +101,12 @@ class Bookmarks extends Profile {
 			)
 		);
 
-		$table->setNoResultsText('no_search_results');
+		$table->setNoResultsText('no_bookmarklets_found');
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = ee('CP/URL', 'members/profile/bookmarks/create', $this->query_string)->compile();
-		$data['form_url'] = ee('CP/URL', 'members/profile/bookmarks/delete', $this->query_string)->compile();
+		$data['new'] = ee('CP/URL')->make('members/profile/bookmarks/create', $this->query_string)->compile();
+		$data['form_url'] = ee('CP/URL')->make('members/profile/bookmarks/delete', $this->query_string)->compile();
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('bookmarks') . ': <b>### ' . lang('bookmarks') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -133,7 +127,8 @@ class Bookmarks extends Profile {
 	 */
 	public function create()
 	{
-		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
+		$this->base_url = ee('CP/URL')->make($this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_bookmarklet')
@@ -162,7 +157,8 @@ class Bookmarks extends Profile {
 	 */
 	public function edit($id)
 	{
-		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
+		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
+		$this->base_url = ee('CP/URL')->make($this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_bookmarklet')
@@ -198,7 +194,7 @@ class Bookmarks extends Profile {
 		$this->bookmarks = array_diff_key($this->bookmarks, array_flip($selection));
 		$this->saveBookmarks();
 
-		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 	}
 
 	/**
@@ -239,12 +235,46 @@ class Bookmarks extends Profile {
 		}
 		else
 		{
-			$channel = ee('Model')->get('Channel', array($channel_id));
+			$channel = ee('Model')->get('Channel', $channel_id)->first();
 		}
 
 		if ( ! empty($channel))
 		{
 			$fields = $channel->CustomFields->getDictionary('field_id', 'field_label');
+		}
+
+		if ($channels)
+		{
+			$bookmarklet_field_fields = array(
+				'channel' => array(
+					'type' => 'select',
+					'choices' => $channels,
+					'value' => $channel,
+					'required' => TRUE
+				),
+				'field' => array(
+					'type' => 'select',
+					'choices' => $fields,
+					'value' => $field,
+					'required' => TRUE
+				)
+			);
+		}
+		else
+		{
+			$bookmarklet_field_fields = array(
+				'channel' => array(
+					'type' => 'select',
+					'choices' => $channels,
+					'value' => $channel,
+					'required' => TRUE,
+					'no_results' => array(
+						'text' => 'no_channels',
+						'link_text' => 'create_new_channel',
+						'link_href' => ee('CP/URL', 'channels/create')
+					)
+				),
+			);
 		}
 
 		$vars['sections'] = array(
@@ -263,20 +293,7 @@ class Bookmarks extends Profile {
 				array(
 					'title' => 'bookmarklet_field',
 					'desc' => 'bookmarklet_field_desc',
-					'fields' => array(
-						'channel' => array(
-							'type' => 'select',
-							'choices' => $channels,
-							'value' => $channel,
-							'required' => TRUE
-						),
-						'field' => array(
-							'type' => 'select',
-							'choices' => $fields,
-							'value' => $field,
-							'required' => TRUE
-						)
-					)
+					'fields' => $bookmarklet_field_fields
 				)
 			)
 		);
@@ -300,12 +317,16 @@ class Bookmarks extends Profile {
 			{
 				if ($this->saveBookmarks())
 				{
-					ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+					ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 				}
 			}
 			elseif (ee()->form_validation->errors_exist())
 			{
-				ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_erorr'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
 			}
 		}
 
@@ -323,7 +344,7 @@ class Bookmarks extends Profile {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('bookmarklet'));
-		ee()->view->save_btn_text_working = 'btn_save_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 }

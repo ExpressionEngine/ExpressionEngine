@@ -58,6 +58,13 @@ class EE_Core {
 			@set_time_limit((REQ == 'CP') ? 300 : 90);
 		}
 
+		// If someone's trying to access the CP but EE_APPPATH is defined, it likely
+		// means the installer is still active; redirect to clean path
+		if (defined('EE_APPPATH') && ee()->uri->segment(1) == 'cp')
+		{
+			header('Location: '.SELF);
+		}
+
 		// some path constants to simplify things
 		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
@@ -65,17 +72,17 @@ class EE_Core {
 		define('PATH_EXT',    SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_FT',     SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_RTE',    APPPATH . 'rte_tools/');
-
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_THIRD', $addon_path);
+		define('PATH_THIRD',  SYSPATH . 'user/addons/');
+		define('PATH_CACHE',  SYSPATH . 'user/cache/');
+		define('PATH_TMPL',   SYSPATH . 'user/templates/');
+		define('PATH_JS',     'src');
 
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20150807');
-		define('APP_VER',		'3.0.0');
+		define('APP_BUILD',		'20160215');
+		define('APP_VER',		'3.1.3');
+		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -98,6 +105,7 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
 
 		// Set ->api on the legacy facade to the model factory
@@ -196,7 +204,7 @@ class EE_Core {
 		// Maybe the site has been moved.
 		// Let's try some basic autodiscovery if config items are set
 		// But the directory does not exist.
-		if ( ! is_dir($theme_path))
+		if ( ! is_dir($theme_path.'/ee'))
 		{
 			if (is_dir(FCPATH.'../themes/')) // We're in the system directory
 			{
@@ -214,32 +222,19 @@ class EE_Core {
 		define('URL_THEMES', $theme_url.'ee/');
 		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
-		define('PATH_CP_GBL_IMG', PATH_THEMES_GLOBAL_ASSET.'img/');
+		define('PATH_CP_GBL_IMG', URL_THEMES_GLOBAL_ASSET.'img/');
 		unset($theme_path);
 
 		// Load the very, very base classes
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
-
-		if (extension_loaded('newrelic'))
-		{
-			ee()->load->library('newrelic');
-
-			if (ee()->config->item('use_newrelic') == 'n')
-			{
-				ee()->newrelic->disable_autorum();
-			}
-			else
-			{
-				ee()->newrelic->set_appname();
-				ee()->newrelic->name_transaction();
-			}
-		}
+		ee()->load->library('api');
 	}
 
 	// --------------------------------------------------------------------
@@ -261,16 +256,12 @@ class EE_Core {
 
 		$this->ee_loaded = TRUE;
 
-		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
+		$this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
-			'file', 'forum', 'ip_to_nation', 'jquery', 'member',
+			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
-			'search', 'simple_commerce', 'stats', 'wiki', 'filepicker'
-		);
-		$this->standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
-			'simple_commerce', 'wiki', 'filepicker'
+			'search', 'simple_commerce', 'spam', 'stats'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
@@ -359,19 +350,11 @@ class EE_Core {
 		// Load up any Snippets
 		if (REQ == 'ACTION' OR REQ == 'PAGE')
 		{
-			// load up any Snippets
-			ee()->db->select('snippet_name, snippet_contents');
-			ee()->db->where('(site_id = '.ee()->db->escape_str(ee()->config->item('site_id')).' OR site_id = 0)');
-			$fresh = ee()->db->get('snippets');
+			$fresh = ee('Model')->make('Snippet')->loadAll();
 
-			if ($fresh->num_rows() > 0)
+			if ($fresh->count() > 0)
 			{
-				$snippets = array();
-
-				foreach ($fresh->result() as $var)
-				{
-					$snippets[$var->snippet_name] = $var->snippet_contents;
-				}
+				$snippets = $fresh->getDictionary('snippet_name', 'snippet_contents');
 
 				// Thanks to @litzinger for the code suggestion to parse
 				// global vars in snippets...here we go.
@@ -413,9 +396,7 @@ class EE_Core {
 
 		$this->cp_loaded = TRUE;
 
-		$this->_somebody_set_us_up_the_base();
-
-		define('PATH_CP_THEME', PATH_THEMES.'cp/');
+		$this->somebody_set_us_up_the_base();
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -435,6 +416,10 @@ class EE_Core {
 			));
 
 			$_GET = array_merge($get, $_GET);
+		}
+		else
+		{
+			$get = array();
 		}
 
 
@@ -496,6 +481,13 @@ class EE_Core {
 		{
 			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
 		}
+
+		$this->set_newrelic_transaction(function () use ($get) {
+			$request = $get;
+			array_shift($request);
+			$request = implode('/', $request);
+			return 'CP: '.$request;
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -504,7 +496,7 @@ class EE_Core {
 	 * Define the BASE constant
 	 * @return void
 	 */
-	private function _somebody_set_us_up_the_base()
+	private function somebody_set_us_up_the_base()
 	{
 		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
@@ -535,7 +527,12 @@ class EE_Core {
 	final public function generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions.php';
-		$ACT = new EE_Actions($can_view_system);
+
+		// @todo remove ridiculous dance when PHP 5.3 is no longer supported
+		$that = $this;
+		$ACT = new EE_Actions($can_view_system, function($class, $method) use ($that) {
+			$that->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -560,7 +557,6 @@ class EE_Core {
 			$template_group = (string) ee()->config->item('template_group');
 		}
 
-
 		// If the forum module is installed and the URI contains the "triggering" word
 		// we will override the template parsing class and call the forum class directly.
 		// This permits the forum to be more light-weight as the template engine is
@@ -568,12 +564,12 @@ class EE_Core {
 		$forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
 		$profile_trigger = ee()->config->item('profile_trigger');
 
-
 		if ( ! IS_CORE && $forum_trigger &&
 			in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
+			$this->set_newrelic_transaction($forum_trigger.'/'.$FRM->current_request);
 			return;
 		}
 
@@ -588,9 +584,14 @@ class EE_Core {
 
 			require PATH_MOD.'member/mod.member.php';
 
+			// Clean up the URLs to remove unnecessary detail
+			$this->set_newrelic_transaction(function() {
+				$request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+				return preg_replace('/search\/.*$/', 'search', $request);
+			});
+
 			$member = new Member();
 			$member->_set_properties(array('trigger' => $profile_trigger));
-
 			ee()->output->set_output($member->manager());
 			return;
 		}
@@ -668,6 +669,12 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
+
+		// Record the New Relic transaction
+		$this->set_newrelic_transaction(function() {
+			$template = ee()->TMPL->templates_loaded[0];
+			return "{$template['group_name']}/{$template['template_name']}";
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -718,6 +725,38 @@ class EE_Core {
 			}
 
 			ee()->functions->clear_caching('all');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the New Relic transasction name
+	 * @param String/callable $transaction_name Either a string containing the
+	 *                                          transaction name or a callable
+	 *                                          that returns the transaction
+	 *                                          name
+	 */
+	public function set_newrelic_transaction($transaction_name)
+	{
+		if (extension_loaded('newrelic'))
+		{
+			ee()->load->library('newrelic');
+
+			if (ee()->config->item('use_newrelic') == 'n')
+			{
+				ee()->newrelic->disable_autorum();
+			}
+			else
+			{
+				if (is_callable($transaction_name))
+				{
+					$transaction_name = call_user_func($transaction_name);
+				}
+
+				ee()->newrelic->set_appname();
+				ee()->newrelic->name_transaction($transaction_name);
+			}
 		}
 	}
 

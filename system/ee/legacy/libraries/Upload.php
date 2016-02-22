@@ -793,7 +793,6 @@ class EE_Upload {
 			return FALSE;
 		}
 
-		$CI =& get_instance();
 		return ee('Security/XSS')->clean($data, TRUE);
 	}
 
@@ -807,21 +806,20 @@ class EE_Upload {
 	 */
 	public function set_error($msg)
 	{
-		$CI =& get_instance();
-		$CI->lang->load('upload');
+		ee()->lang->load('upload');
 
 		if (is_array($msg))
 		{
 			foreach ($msg as $val)
 			{
-				$msg = ($CI->lang->line($val) == FALSE) ? $val : $CI->lang->line($val);
+				$msg = (ee()->lang->line($val) == FALSE) ? $val : ee()->lang->line($val);
 				$this->error_msg[] = $msg;
 				log_message('error', $msg);
 			}
 		}
 		else
 		{
-			$msg = ($CI->lang->line($msg) == FALSE) ? $msg : $CI->lang->line($msg);
+			$msg = (ee()->lang->line($msg) == FALSE) ? $msg : ee()->lang->line($msg);
 			$this->error_msg[] = $msg;
 			log_message('error', $msg);
 		}

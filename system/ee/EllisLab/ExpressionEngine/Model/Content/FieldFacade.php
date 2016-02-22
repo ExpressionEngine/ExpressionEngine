@@ -15,6 +15,11 @@ class FieldFacade {
 	private $content_type;
 	private $value;
 
+	/**
+	 * @var Flag to ensure defaults are only loaded once
+	 */
+	private $populated = FALSE;
+
 	public function __construct($field_id, array $metadata)
 	{
 		$this->id = $field_id;
@@ -34,6 +39,11 @@ class FieldFacade {
 	public function getName()
 	{
 		return $this->field_name;
+	}
+
+	public function getShortName()
+	{
+		return $this->getItem('field_name') ?: $this->getName();
 	}
 
 	public function setContentId($id)
@@ -68,20 +78,26 @@ class FieldFacade {
 
 	protected function ensurePopulatedDefaults()
 	{
+		if ($this->populated)
+		{
+			return;
+		}
+
+		$this->populated = TRUE;
+
 		if ($callback = $this->getItem('populateCallback'))
 		{
-			$this->setItem('populateCallback', NULL);
 			call_user_func($callback, $this);
 		}
 		elseif ($data = $this->getItem('field_data'))
 		{
-			$this->setItem('field_data', NULL);
 			$this->setData($data);
 		}
 	}
 
 	public function setData($data)
 	{
+		$this->ensurePopulatedDefaults();
 		$this->data = $data;
 	}
 
@@ -146,7 +162,8 @@ class FieldFacade {
 			if (isset($result['value']))
 			{
 				$this->setData($result['value']);
-				$result = TRUE;
+
+				$result = (isset($result['error'])) ? $result['error'] : TRUE;
 			}
 
 			if (isset($result['error']))
@@ -221,6 +238,12 @@ class FieldFacade {
 	{
 		$this->initField();
 		return ee()->api_channel_fields->apply('post_save_settings', array($data));
+	}
+
+	public function delete()
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('delete', array(array($this->getContentId())));
 	}
 
 	public function getStatus()

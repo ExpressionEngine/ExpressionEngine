@@ -306,7 +306,7 @@ content associated with your account will also be deleted.',
 
 'cannot_delete_self' => 'You are not allowed to delete your own membership account.',
 
-'cannot_delete_super_admin' => 'You cannot delete a Super Admin unless at least one other exists.',
+'cannot_delete_super_admin' => 'You may not delete the only Super Admin. Please create a new Super Admin first.',
 
 'mbr_account_deleted' => 'You have successfully deleted your account and all associated content.',
 

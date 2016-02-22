@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controller\Publish;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -31,6 +32,19 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
  */
 class Edit extends AbstractPublishController {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group_any(
+			'can_edit_other_entries',
+			'can_edit_self_entries'
+			))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * Displays all available entries
 	 *
@@ -44,13 +58,19 @@ class Edit extends AbstractPublishController {
 		}
 
 		$vars = array();
-		$base_url = ee('CP/URL', 'publish/edit');
-		$channel_name = '';
+		$base_url = ee('CP/URL')->make('publish/edit');
+		$channel_title = '';
 
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
+
+		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+		{
+			$entries->filter('author_id', ee()->session->userdata('member_id'));
+		}
+
 		$count = $entries->count();
 
 		if ( ! empty(ee()->view->search_value))
@@ -58,13 +78,16 @@ class Edit extends AbstractPublishController {
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
-		ee()->view->filters = $filters->render($base_url);
-		ee()->view->search_value = ee()->input->get_post('search');
+		$vars['filters'] = $filters->render($base_url);
+		$vars['search_value'] = ee()->input->get_post('search');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_entry_date',
+		));
 
 		$table->setColumns(
 			array(
@@ -72,7 +95,9 @@ class Edit extends AbstractPublishController {
 				'column_title' => array(
 					'encode' => FALSE
 				),
-				'column_comment_total',
+				'column_comment_total' => array(
+					'encode' => FALSE
+				),
 				'column_entry_date',
 				'column_status' => array(
 					'type'	=> Table::COL_STATUS
@@ -87,20 +112,10 @@ class Edit extends AbstractPublishController {
 		);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
-		$channels = ee('Model')->get('Channel')
-			->fields('channel_id', 'channel_name')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		if (count($channels) == 1)
-		{
-			$channel_id = $channels[0]->channel_id;
-			$channel_name = $channels[0]->channel_name;
-		}
-
 		if ($channel_id)
 		{
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_name).'</a>';
+			$channel = ee('Model')->get('Channel', $channel_id)->first();
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 		}
 		else
 		{
@@ -120,21 +135,57 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
+			if (ee()->cp->allowed_group('can_edit_other_entries')
+				|| (ee()->cp->allowed_group('can_edit_self_entries') &&
+					$entry->author_id == ee()->session->userdata('member_id')
+					)
+				)
+			{
+				$can_edit = TRUE;
+			}
+			else
+			{
+				$can_edit = FALSE;
+			}
+
+			// wW had a delete cascade issue that could leave entries orphaned and
+			// resulted in errors, so we'll sneakily use this controller to clean up
+			// for now.
+			if (is_null($entry->Channel))
+			{
+				$entry->delete();
+				continue;
+			}
+
 			$autosaves = $entry->Autosaves->count();
 
-			$edit_link = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
-			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES). '</a>';
+			if ($can_edit)
+			{
+				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+				$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</a>';
+			}
+			else
+			{
+				$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+			}
 
 			if ($autosaves)
 			{
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
-			if ($entry->comment_total > 1)
+			if ($entry->comment_total > 0)
 			{
-				$comments = '(<a href="' . ee('CP/URL', 'publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+				if (ee()->cp->allowed_group('can_moderate_comments'))
+				{
+					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+				}
+				else
+				{
+					$comments = '(' . $entry->comment_total . ')';
+				}
 			}
 			else
 			{
@@ -150,14 +201,33 @@ class Edit extends AbstractPublishController {
 				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
 				$toolbar['view'] = array(
 					'href' => ee()->cp->masked_url($view_url),
-					'title' => lang('view')
+					'title' => lang('view'),
+					'rel' => 'external'
 				);
 			}
 
-			$toolbar['edit'] = array(
-				'href' => $edit_link,
-				'title' => lang('edit')
-			);
+			if ($can_edit)
+			{
+				$toolbar['edit'] = array(
+					'href' => $edit_link,
+					'title' => lang('edit')
+				);
+			}
+
+			if (ee()->cp->allowed_group('can_delete_all_entries')
+				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
+					$entry->author_id == ee()->session->userdata('member_id')
+					)
+				)
+			{
+				$can_delete = TRUE;
+			}
+			else
+			{
+				$can_delete = FALSE;
+			}
+
+			$disabled_checkbox = ! $can_delete;
 
 			$column = array(
 				$entry->entry_id,
@@ -169,8 +239,9 @@ class Edit extends AbstractPublishController {
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
+					'disabled' => $disabled_checkbox,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
+						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -213,17 +284,26 @@ class Edit extends AbstractPublishController {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
+				'cp/publish/entry-list'
 			),
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_name);
+			$vars['cp_heading'] = sprintf(lang('all_channel_entries'), $channel_title);
+		}
+
+		if (AJAX_REQUEST)
+		{
+			return array(
+				'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
+				'url' => $vars['form_url']->compile()
+			);
 		}
 
 		ee()->cp->render('publish/edit/index', $vars);
@@ -232,12 +312,19 @@ class Edit extends AbstractPublishController {
 	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
+			->with('Channel', 'Versions')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $entry)
 		{
 			show_error(lang('no_entries_matching_that_criteria'));
+		}
+
+		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
+			&& $entry->author_id != ee()->session->userdata('member_id'))
+		{
+			show_error(lang('unauthorized_access'));
 		}
 
 		// -------------------------------------------
@@ -258,7 +345,7 @@ class Edit extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
+			'form_url' => ee('CP/URL')->make('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_publish'),
@@ -291,78 +378,6 @@ class Edit extends AbstractPublishController {
 			}
 		}
 
-		if (count($_POST))
-		{
-			$entry->set($_POST);
-
-			// if categories are not in POST, then they've unchecked everything
-			// and we need to clear them out
-			if ( ! isset($_POST['categories']))
-			{
-				$entry->Categories = NULL;
-			}
-
-			$result = $entry->validate();
-
-			if (AJAX_REQUEST)
-			{
-				$field = ee()->input->post('ee_fv_field');
-				// Remove any namespacing to run validation for the parent field
-				$field = preg_replace('/\[.+?\]/', '', $field);
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
-			}
-
-			if ($result->isValid())
-			{
-				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
-				{
-					$entry->saveVersion();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('revision_saved'))
-						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
-				}
-				else
-				{
-					$entry->edit_date = ee()->localize->now;
-					$entry->save();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('edit_entry_success'))
-						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('filter_by_channel' => $entry->channel_id)));
-				}
-			}
-			else
-			{
-				$vars['errors'] = $result;
-				// Hacking
-				ee()->load->library('form_validation');
-				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('CP/Alert')->makeInline('entry-form')
-					->asIssue()
-					->withTitle(lang('edit_entry_error'))
-					->addToBody(lang('edit_entry_error_desc'))
-					->now();
-			}
-		}
-
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $entry->channel_id)
@@ -370,10 +385,21 @@ class Edit extends AbstractPublishController {
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
 
-		$vars = array_merge($vars, array(
-			'entry' => $entry,
-			'layout' => $entry->getDisplay($channel_layout),
-		));
+		$vars['layout'] = $entry->getDisplay($channel_layout);
+
+		$result = $this->validateEntry($entry, $vars['layout']);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$vars['errors'] = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveEntryAndRedirect($entry);
+			}
+		}
+
+		$vars['entry'] = $entry;
 
 		$this->setGlobalJs($entry, TRUE);
 
@@ -383,18 +409,29 @@ class Edit extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/channel/publish')
+			'file' => array('cp/publish/publish')
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
+			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
+
+		if ($entry->Channel->CategoryGroups)
+		{
+			$this->addCategoryModals();
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}
 
 	private function remove($entry_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_all_entries')
+			&& ! ee()->cp->allowed_group('can_delete_self_entries'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($entry_ids))
 		{
 			$entry_ids = array($entry_ids);
@@ -413,6 +450,11 @@ class Edit extends AbstractPublishController {
 			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 		}
 
+		if ( ! ee()->cp->allowed_group('can_delete_all_entries'))
+		{
+			$entries->filter('author_id', ee()->session->userdata('member_id'));
+		}
+
 		$entry_names = $entries->all()->pluck('title');
 
 		$entries->delete();
@@ -424,7 +466,7 @@ class Edit extends AbstractPublishController {
 			->addToBody($entry_names)
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', 'publish/edit', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
 	}
 
 }

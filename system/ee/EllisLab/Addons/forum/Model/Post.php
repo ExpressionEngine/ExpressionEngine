@@ -55,7 +55,11 @@ class Post extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'author_id',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Post',
+				'type' => 'hasMany'
+			)
 		),
 		'Board' => array(
 			'type' => 'belongsTo'
@@ -65,13 +69,29 @@ class Post extends Model {
 			'from_key' => 'post_edit_author',
 			'to_key'   => 'member_id',
 			'model'    => 'ee:Member',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Post',
+				'type' => 'hasMany'
+			)
 		),
 		'Forum' => array(
 			'type' => 'belongsTo'
 		),
+		'ForumLastPost' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'post_id',
+			'to_key'   => 'forum_last_post_id',
+			'model'    => 'Forum',
+		),
 		'Topic' => array(
 			'type' => 'belongsTo'
+		),
+		'TopicLastPost' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'post_id',
+			'to_key'   => 'last_post_id',
+			'model'    => 'Topic',
 		),
 	);
 

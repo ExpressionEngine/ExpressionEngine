@@ -68,7 +68,7 @@ class CI_DB_mysqli_result extends CI_DB_result {
 
 		for ($i = 0; $i < $num; $i++)
 		{
-			$meta = $this->pdo_statement->getColumnMeta();
+			$meta = $this->pdo_statement->getColumnMeta($i);
 			$field_names[] = $meta['name'];
 		}
 

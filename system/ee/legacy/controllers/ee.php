@@ -102,46 +102,6 @@ class EE extends EE_Controller {
 			$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
 		}
 
-		// Add the template debugger to the output
-
-		if (isset($this->TMPL) &&
-			is_object($this->TMPL) &&
-			isset($this->TMPL->debugging) &&
-			$this->TMPL->debugging === TRUE &&
-			$this->TMPL->template_type != 'js')
-		{
-			if ($this->session->userdata['group_id'] == 1)
-			{
-				$output .= '<div style="color: #333; background-color: #ededed; margin:10px; padding-bottom:10px;" id="expressionengine_template_debug">';
-				$output .= "<div style=\"text-align: left; font-family: Sans-serif; font-size: 11px; margin: 12px; padding: 6px\"><hr size='1'><b>TEMPLATE DEBUGGING</b><hr size='1'></div>";
-
-				foreach ($this->TMPL->log as $val)
-				{
-					$val = str_replace(array("\t", '&amp;nbsp;'), array(' ', '&nbsp;'), htmlentities($val, ENT_QUOTES));
-
-					$x = explode(':', $val, 2);
-
-					if (count($x) > 1)
-					{
-						$val = '<strong>'.$x['0'].':</strong>'.$x['1'];
-					}
-					else
-					{
-						$val = '<strong>'.$val.'</strong>';
-					}
-
-					$output .= "<div style=\"text-align: left; font-family: Sans-serif; font-size: 11px; margin: 12px 12px 6px 22px;\">".$val."</div>";
-				}
-
-				if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '')
-				{
-					$output .= "<div style='text-align: left; font-family: Sans-serif; font-size: 11px; margin: 12px 12px 6px 22px;'><strong>Memory Usage: ".number_format($usage)." bytes</strong></div>";
-				}
-
-				$output .= '</div>';
-			}
-		}
-
 		echo $output;
 
 		// Garbage Collection

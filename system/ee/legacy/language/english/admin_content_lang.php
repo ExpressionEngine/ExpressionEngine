@@ -24,15 +24,11 @@ $lang = array(
 
 'create_field_group' => 'Create Field Group',
 
-'custom_fields_not_found' => 'Zero <b>custom fields</b> found',
+'custom_fields_not_found' => 'No <b>custom fields</b> found',
 
 'create_new_field' => 'Create New Field',
 
-'btn_create_field_group' => 'Create Field Group',
-
 'edit_field_group' => 'Edit Field Group',
-
-'btn_edit_field_group' => 'Edit Field Group',
 
 'create_field_group_success' => 'Field Group Created',
 
@@ -49,8 +45,6 @@ $lang = array(
 'edit_field_group_error' => 'Cannot Update Field Group',
 
 'edit_field_group_error_desc' => 'We were unable to update this field group, please review and fix errors below.',
-
-'success' => 'Success',
 
 'field_groups_removed_desc' => 'The following field groups were removed',
 
@@ -274,8 +268,6 @@ $lang = array(
 
 'restrict_status_to_group' => 'Restrict status to members of specific groups',
 
-'no_publishing_groups' => 'There are no Member Groups available that permit publishing',
-
 'status_updated' => 'Status updated',
 
 'status_deleted' => 'Status deleted',
@@ -424,21 +416,25 @@ $lang = array(
 
 'none' => 'None',
 
-'define_html_buttons' => 'HTML Formatting Button Definitions',
+'html_button' => 'HTML Button',
 
-'create_html_button' => 'Create HTML Button',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
-'edit_html_button' => 'Edit HTML Button',
+'define_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Button Definitions',
 
-'save_html_button' => 'Save HTML Button',
+'create_html_button' => 'Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
 
-'no_buttons' => 'No HTML buttons defined.',
+'edit_html_button' => 'Edit <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'save_html_button' => 'Save <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'no_buttons' => 'No <abbr title="Hyper-Text Markup Language">HTML</abbr> buttons defined.',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 
 'add_preset_button' => 'Add Preset Button:',
 
-'tag_name' => 'Tag Name',
+'tag_name' => 'Name',
 
 'tag_open' => 'Opening Tag',
 
@@ -448,13 +444,15 @@ $lang = array(
 
 'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
-'accesskey' => 'Tag shortcut',
+'accesskey' => 'Shortcut',
 
 'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 
 'tag_order' => 'Order',
 
 'row' => 'Row',
+
+'no_buttons_found' => 'No <b>HTML Buttons</b> found.',
 
 //----------------------------
 // Generic Phrases
@@ -581,8 +579,6 @@ $lang = array(
 'exclude_from_publish' 		=> 'Channel Assignment',
 'exclude_from_files'		=> 'File Assignment',
 
-'no_member_groups_available' => 'There are no member groups allowed to %x categories.  You may assign these privileges using the member group editor: ',
-
 'member_group' => 'Member Group',
 
 'member_groups' => 'Member Groups',
@@ -621,7 +617,7 @@ $lang = array(
 
 'custom_field_created' => 'Custom Field Created',
 
-'no_field_groups' => 'No field groups found',
+'no_field_groups' => 'No <b>Field Groups</b> found.',
 
 'delete_field' => 'Delete Field',
 
@@ -640,6 +636,8 @@ $lang = array(
 'field_name_cont' => 'Single word, no spaces. Underscores and dashes allowed',
 
 'field_type' => 'Type',
+
+'inavlid_field_type' => 'Invalid field type',
 
 'field_max_length' => 'Maxlength',
 
@@ -780,7 +778,6 @@ $lang = array(
 'delete_status' => 'Delete Status',
 
 'delete_status_confirmation' => 'Are you sure you want to delete the following status?',
-
 
 'url_title_prefix' => 'URL Title Prefix',
 

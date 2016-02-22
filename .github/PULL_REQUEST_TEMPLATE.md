@@ -1,0 +1,4 @@
+- [ ] Write automated tests
+- [ ] Write or update documentation
+- [ ] Add changelog item(s)
+- [ ] Add `in-review` label and @ notify at least two people

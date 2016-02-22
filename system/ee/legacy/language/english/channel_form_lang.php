@@ -1,11 +1,13 @@
-<?php 
+<?php
 
-$lang = array( 
+$lang = array(
 	'channel_form_no_channel' => 'No channel was specified.',
+	'channel_form_unknown_channel' => 'The specified channel does not exist.',
 	'channel_form_invalid_guest_member_id' => 'The provided member id to use for guest submissions is invalid.',
 	'channel_form_require_entry' => 'You must specify a valid entry to edit.',
 	'channel_form_author_only' => 'You are not the author of this entry.',
-	
+	'channel_form_invalid_author' => 'This entry does not have a valid author for submission.',
+
 	/* rules */
 	'form_decryption_failed' => 'Decryption of form settings failed.',
 	'required' => 'The %s field is required.',

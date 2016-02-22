@@ -40,15 +40,7 @@ class EE_Cache_file extends CI_Driver {
 	public function __construct()
 	{
 		ee()->load->helper('file');
-
-		$this->_cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
-
-		// Attempt to grab cache_path config if it's set
-		if ($path = ee()->config->item('cache_path'))
-		{
-			$path = ee()->config->item('cache_path');
-			$this->_cache_path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		}
+		$this->_cache_path = PATH_CACHE;
 	}
 
 	// ------------------------------------------------------------------------

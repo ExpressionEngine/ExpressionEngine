@@ -53,22 +53,28 @@ class Forums extends AbstractDesignController {
 		ee()->lang->loadfile('specialty_tmp');
 	}
 
-	public function index($theme = 'default')
+	public function index($theme = '')
 	{
-		$base_path = PATH_THIRD_THEMES . '/forum/' . ee()->security->sanitize_filename($theme);
+		if (empty($theme))
+		{
+			$theme = $this->getDefaultTheme();
+		}
+
+		$base_path = ee('Theme')->getPath('forum/' . ee()->security->sanitize_filename($theme));
 
 		if ( ! is_dir($base_path))
 		{
 			show_error(lang('unable_to_find_templates'));
 		}
 
-		$this->load->helper('directory');
+		ee()->load->helper('directory');
 
 		$vars = array();
 
-		$base_url = ee('CP/URL', 'design/forums/index/' . $theme);
+		$base_url = ee('CP/URL')->make('design/forums/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
+		$table->setNoResultsText('no_templates_found');
 		$table->setColumns(
 			array(
 				'template',
@@ -79,20 +85,30 @@ class Forums extends AbstractDesignController {
 		);
 
 		$data = array();
-		foreach (directory_map($base_path, TRUE) as $dir)
+		foreach (directory_map($base_path) as $dir => $files)
 		{
 			$path = $base_path . '/' . $dir;
 
-			foreach (directory_map($path, TRUE) as $file)
+			if ( ! is_array($files))
+			{
+				continue;
+			}
+
+			foreach ($files as $file)
 			{
 				if (strpos($file, '.') !== FALSE)
 				{
-					$human = ucwords(str_replace('_', ' ', substr($file, 0, -strlen(strrchr($file, '.')))));
+					$human = str_replace('_', ' ', substr($file, 0, -strlen(strrchr($file, '.'))));
+					$edit_url = ee('CP/URL')->make('design/forums/edit/' . $theme . '/' . $dir . '/' . $human);
+					$human = ucfirst($human);
 					$data[$dir][] = array(
-						(lang($human) == FALSE) ? $human : lang($human),
+						array(
+							'content' => (lang($human) == FALSE) ? $human : lang($human),
+							'href' => $edit_url
+							),
 						array('toolbar_items' => array(
 							'edit' => array(
-								'href' => ee('CP/URL', 'design/forums/edit/' . $theme . '/' . $dir . '/' . $human),
+								'href' => $edit_url,
 								'title' => lang('edit')
 							),
 						))
@@ -110,15 +126,12 @@ class Forums extends AbstractDesignController {
 		ee()->load->model('member_model');
 
 		$themes = array();
-		foreach (directory_map(PATH_THIRD_THEMES . '/forum/', TRUE) as $dir)
+		foreach (ee('Theme')->listThemes('forum') as $dir => $name)
 		{
-			if (is_dir(PATH_THIRD_THEMES . '/forum/' . $dir))
-			{
-				$themes[ee('CP/URL', 'design/forums/index/' . $dir)->compile()] = ucfirst(str_replace("_", " ", $dir));
-			}
+			$themes[ee('CP/URL')->make('design/forums/index/' . $dir)->compile()] = $name;
 		}
 
-		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/forums/index/' . $theme));
+		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/forums/index/' . $theme));
 
 		$this->generateSidebar('forums');
 		ee()->view->cp_page_title = lang('template_manager');
@@ -127,20 +140,49 @@ class Forums extends AbstractDesignController {
 		ee()->javascript->change("select[name=\'theme\']", 'window.location.href = $(this).val()');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'addons/settings/forum')->compile() => lang('forum_manager'),
+			ee('CP/URL')->make('addons/settings/forum')->compile() => lang('forum_manager'),
 		);
 
 		ee()->cp->render('design/forums/index', $vars);
 	}
 
+	private function getDefaultTheme()
+	{
+		$files = ee('Theme')->listThemes('forum');
+
+		if (empty($files))
+		{
+			show_error(lang('unable_to_find_templates'));
+		}
+
+		if (isset($files['default']))
+		{
+			return 'default';
+		}
+		else
+		{
+			foreach (array_keys($files) as $file)
+			{
+				$dir = array_shift($files);
+
+				if (is_dir($theme_path . $dir))
+				{
+					return $dir;
+				}
+			}
+		}
+
+		show_error(lang('unable_to_find_templates'));
+	}
+
 	public function edit($theme, $dir, $file)
 	{
-		$path = PATH_THIRD_THEMES . '/forum/'
+		$path = ee('Theme')->getPath('forum/'
 			.ee()->security->sanitize_filename($theme)
 			.'/'
 			.ee()->security->sanitize_filename($dir)
 			.'/'
-			.ee()->security->sanitize_filename($file . '.html');
+			.ee()->security->sanitize_filename($file . '.html'));
 
 		if ( ! file_exists($path))
 		{
@@ -167,7 +209,7 @@ class Forums extends AbstractDesignController {
 				if (ee()->input->post('submit') == 'finish')
 				{
 					$alert->defer();
-					ee()->functions->redirect(ee('CP/URL', 'design/forums'));
+					ee()->functions->redirect(ee('CP/URL')->make('design/forums'));
 				}
 
 				$alert->now();
@@ -189,7 +231,7 @@ class Forums extends AbstractDesignController {
 		fclose($fp);
 
 		$vars = array(
-			'form_url'      => ee('CP/URL', 'design/forums/edit/' . $theme . '/' . $dir . '/' . $file),
+			'form_url'      => ee('CP/URL')->make('design/forums/edit/' . $theme . '/' . $dir . '/' . $file),
 			'edit_date'     => ee()->localize->human_time($fstat['mtime']),
 			'template_data' => file_get_contents($path),
 		);
@@ -198,8 +240,8 @@ class Forums extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/forums/')->compile() => sprintf(lang('breadcrumb_group'), lang('forums'))
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/forums/')->compile() => sprintf(lang('breadcrumb_group'), lang('forums'))
 		);
 
 		ee()->cp->render('design/forums/edit', $vars);

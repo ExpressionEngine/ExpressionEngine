@@ -9,11 +9,16 @@
 							<fieldset class="filter-search">
 								<input type="text" value="" placeholder="<?=lang('filter_channels')?>">
 							</fieldset>
-							<ul class="channels-pages-create">
-								<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
-									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
-								<?php endforeach ?>
-							</ul>
+							<div class="scroll-wrap">
+								<ul class="channels-pages-create">
+									<?php
+									$menus = ee()->menu->generate_menu();
+									foreach ($menus['channels']['create'] as $channel_name => $link):
+									?>
+										<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<?php endforeach ?>
+								</ul>
+							</div>
 						</div>
 					</li>
 				</ul>
@@ -40,7 +45,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'addons/settings/pages'),
+	'form_url'	=> ee('CP/URL')->make('addons/settings/pages'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

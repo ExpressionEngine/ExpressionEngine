@@ -41,20 +41,23 @@ class Homepage extends CP_Controller {
 
 		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
-		$vars['number_of_new_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('comment_date', '>', ee()->session->userdata['last_visit'])
-			->count();
+		if (ee()->config->item('enable_comments') == 'y')
+		{
+			$vars['number_of_new_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('comment_date', '>', ee()->session->userdata['last_visit'])
+				->count();
 
-		$vars['number_of_pending_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('status', 'p')
-			->count();
+			$vars['number_of_pending_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 'p')
+				->count();
 
-		$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('status', 's')
-			->count();;
+			$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 's')
+				->count();
+		}
 
 		$vars['number_of_channels'] = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -68,7 +71,7 @@ class Homepage extends CP_Controller {
 				->channel_id;
 		}
 
-		$vars['number_of_channel_fields'] = ee('Model')->get('ChannelField')
+		$vars['number_of_channel_field_groups'] = ee('Model')->get('ChannelFieldGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
@@ -88,6 +91,17 @@ class Homepage extends CP_Controller {
 			->filter('Entry.status', 'closed')
 			->count();
 
+		$vars['spam_module_installed'] = (ee('Model')->get('Module')->filter('module_name', 'Spam')->count());
+
+		$vars['can_moderate_comments'] = ee()->cp->allowed_group('can_moderate_comments');
+		$vars['can_edit_comments'] = ee()->cp->allowed_group('can_edit_all_comments');
+		$vars['can_access_members'] = ee()->cp->allowed_group('can_access_members');
+		$vars['can_create_members'] = ee()->cp->allowed_group('can_create_members');
+		$vars['can_access_channels'] = ee()->cp->allowed_group('can_admin_channels');
+		$vars['can_create_channels'] = ee()->cp->allowed_group('can_create_channels');
+		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
+		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
+
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
 	}
@@ -99,7 +113,7 @@ class Homepage extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$return = ee('CP/URL', 'homepage');
+		$return = ee('CP/URL')->make('homepage');
 
 		if (ee()->input->post('return'))
 		{
@@ -117,9 +131,7 @@ class Homepage extends CP_Controller {
 				}
 			}
 
-			$return = base64_decode(ee()->input->post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->post('return'));
 		}
 
 		ee()->functions->redirect($return);

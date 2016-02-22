@@ -112,7 +112,7 @@ class Member_images extends Member {
 		}
 
 		// Do we have what we need in $_POST?
-		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
+		$body = ee()->input->post('body', TRUE);
 		if (empty($body)
 			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
@@ -188,7 +188,16 @@ class Member_images extends Member {
 			$template = $this->_allow_if('avatar', $template);
 			$template = $this->_deny_if('no_avatar', $template);
 
-			$cur_avatar_url = ee()->config->slash_item('avatar_url').$query->row('avatar_filename') ;
+			$avatar_url = ee()->config->slash_item('avatar_url');
+			$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			{
+				$avatar_url .= 'default/';
+			}
+
+			$cur_avatar_url	= $avatar_url.$query->row('avatar_filename');
+
 			$avatar_width 	= $query->row('avatar_width') ;
 			$avatar_height 	= $query->row('avatar_height') ;
 		}
@@ -225,7 +234,7 @@ class Member_images extends Member {
 
 			while (FALSE !== ($file = readdir($fp)))
 			{
-				if (is_dir($avatar_path.$file) AND $file != 'uploads' AND $file != '.' AND $file != '..')
+				if (is_dir($avatar_path.$file) AND $file != 'uploads' AND $file != '.' AND $file != '..' AND $file != '_thumbs')
 				{
 					if ($np = @opendir($avatar_path.$file))
 					{

@@ -34,12 +34,22 @@ class Settings extends Profile {
 
 	private $base_url = 'members/profile/settings';
 
+	protected function permissionCheck()
+	{
+		$id = ee()->input->get('id');
+
+		if ($id != $this->session->userdata['member_id'] && ! empty($id))
+		{
+			parent::permissionCheck();
+		}
+	}
+
 	/**
 	 * Personal Settings
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 		// Birthday Options
 		$birthday['days'] = array();
@@ -53,18 +63,18 @@ class Settings extends Profile {
 
 		$birthday['months'] = array(
 			''	 => lang('month'),
-			'01' => lang('january'),
-			'02' => lang('february'),
-			'03' => lang('march'),
-			'04' => lang('april'),
-			'05' => lang('mayl'),
-			'06' => lang('june'),
-			'07' => lang('july'),
-			'08' => lang('august'),
-			'09' => lang('september'),
-			'10' => lang('october'),
-			'11' => lang('november'),
-			'12' => lang('december')
+			'01' => lang('January'),
+			'02' => lang('February'),
+			'03' => lang('March'),
+			'04' => lang('April'),
+			'05' => lang('May_l'),
+			'06' => lang('June'),
+			'07' => lang('July'),
+			'08' => lang('August'),
+			'09' => lang('September'),
+			'10' => lang('October'),
+			'11' => lang('November'),
+			'12' => lang('December')
 		);
 
 		$birthday['days'][''] = lang('day');
@@ -95,18 +105,71 @@ class Settings extends Profile {
 		$this->load->helper('directory');
 
 		$path = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')
-						->filter('server_path', $path)
-						->first();
 
-		$fp = new FilePicker();
-		$fp->inject(ee()->view);
+		$directories = ee('Model')->get('UploadDestination')
+			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
+			->all()
+			->indexBy('name');
+
+		$default = $directories['Default Avatars'];
+
+		if ($this->member->avatar_filename)
+		{
+			foreach ($directories as $dir)
+			{
+				if ($dir->getFilesystem()->exists($this->member->avatar_filename))
+				{
+					$directory = $dir;
+					break;
+				}
+			}
+		}
+
+		if ( ! isset($directory))
+		{
+			$directory = $default;
+		}
+
+		$fp = ee('CP/FilePicker')->make($default->id);
+
 		$dirs = array();
-		$dirs[] = $fp->link('Avatars', $directory->id, array(
-			'image' => 'avatar',
-			'input' => 'avatar_filename',
-			'class' => 'avatarPicker'
-		));
+		$avatar_choices = array();
+
+		if ($directory)
+		{
+			$link = $fp->getLink('Default Avatars')
+				->withImage('avatar')
+				->withValueTarget('avatar_filename')
+				->disableFilters()
+				->disableUploads()
+				->asThumbs()
+				->setSelected($this->member->avatar_filename)
+				->setAttribute('class', 'avatarPicker');
+
+			$dirs[] = $link->render();
+
+			$avatar_choices = array(
+				'upload' => array(
+					'label' => 'upload_avatar',
+					'html' => form_upload('upload_avatar')
+				),
+				'choose' => array(
+					'label' => 'choose_avatar',
+					'html' => ul($dirs, array('class' => 'arrow-list'))
+				)
+			);
+		}
+
+		$avatar_choices['link'] = array(
+			'label' => 'link_avatar',
+			'html' => form_input('link_avatar', 'http://')
+		);
+
+		$avatar_choose_lang_desc = lang('change_avatar_desc');
+		if (count($avatar_choices) == 1)
+		{
+			$avatar_choose_lang_desc .= sprintf(lang('update_avatar_path'), ee('CP/URL', 'settings/avatars'));
+		}
 
 		$vars['has_file_input'] = TRUE;
 		$vars['sections'] = array(
@@ -188,76 +251,64 @@ class Settings extends Profile {
 						'avatar_filename' => array(
 							'type' => 'image',
 							'id' => 'avatar',
-							'image' => $directory->url . $this->member->avatar_filename
+							'edit' => FALSE,
+							'image' => ($directory) ? $directory->url . $this->member->avatar_filename : '',
+							'value' => $this->member->avatar_filename
 						)
 					)
 				),
 				array(
 					'title' => 'change_avatar',
-					'desc' => 'change_avatar_desc',
+					'desc' => $avatar_choose_lang_desc,
 					'fields' => array(
 						'avatar_picker' => array(
 							'type' => 'radio_block',
-							'choices' => array(
-								'upload' => array(
-									'label' => 'upload_avatar',
-									'html' => form_upload('upload_avatar')
-								),
-								'choose' => array(
-									'label' => 'choose_avatar',
-									'html' => ul($dirs, array('class' => 'arrow-list'))
-								),
-								'link' => array(
-									'label' => 'link_avatar',
-									'html' => form_input('link_avatar', 'http://')
-								)
-							),
-							'value' => 'choose'
+							'choices' => $avatar_choices,
+							'value' => (count($avatar_choices) == 1) ? 'link' : 'choose'
 						)
 					)
 				)
 			)
 		);
 
+		foreach ($this->member->getDisplay()->getFields() as $field)
+		{
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
+					)
+				)
+			);
+		}
+
 		if ($this->member->avatar_filename == "")
 		{
 			$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'url',
-				 'label'   => 'lang:timezone',
-				 'rules'   => 'valid_xss_check'
-			),
-			array(
-				 'field'   => 'location',
-				 'label'   => 'lang:location',
-				 'rules'   => 'valid_xss_check'
-			),
-			array(
-				 'field'   => 'bio',
-				 'label'   => 'lang:biography',
-				 'rules'   => 'valid_xss_check'
-			)
-		));
+		if ( ! empty($_POST))
+		{
+			$result = $this->saveSettings($vars['sections']);
 
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->saveSettings($vars['sections']))
+			if ( ! is_bool($result))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
-				ee()->functions->redirect($base_url);
+				return $result;
 			}
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+
+			if ($result)
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
+				ee()->functions->redirect($this->base_url);
+			}
 		}
 
 		ee()->cp->add_js_script(array(
@@ -291,14 +342,23 @@ class Settings extends Profile {
 				break;
 		}
 
-		parent::saveSettings($settings);
+		return parent::saveSettings($settings);
 	}
 
-	private function uploadAvatar()
+	protected function uploadAvatar()
 	{
+		$existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
+
+		if (file_exists($existing) && is_file($existing))
+		{
+			unlink($existing);
+		}
+
 		ee()->load->library('filemanager');
-		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'Avatars')
+			->first();
+
 		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
 
 		if (isset($upload_response['error']))
@@ -308,16 +368,53 @@ class Settings extends Profile {
 				->withTitle(lang('upload_filedata_error'))
 				->addToBody($upload_response['error'])
 				->now();
+
+			return;
 		}
 
-		return $upload_response->file_name;
+		$name = $_FILES['upload_avatar']['name'];
+		$file_path = ee()->filemanager->clean_filename(
+		        basename($name),
+		        $directory->id,
+		        array('ignore_dupes' => FALSE)
+		);
+		$filename = basename($file_path);
+
+		// Upload the file
+		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
+		ee()->upload->do_upload('file');
+		$original = ee()->upload->upload_path . ee()->upload->file_name;
+
+		if ( ! @copy($original, $file_path))
+		{
+		        if ( ! @move_uploaded_file($original, $file_path))
+		        {
+		                ee('CP/Alert')->makeInline('shared-form')
+		                        ->asIssue()
+		                        ->withTitle(lang('upload_filedata_error'))
+		                        ->now();
+
+		                return FALSE;
+		        }
+		}
+
+		unlink($original);
+		$result = (array) ee()->upload;
+
+		return $filename;
 	}
 
 	private function uploadRemoteAvatar()
 	{
 		$url = ee()->input->post('link_avatar');
-		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->first();
+		$directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'Avatars')
+			->first();
+
+		if ( ! $directory)
+		{
+			return FALSE;
+		}
 
     	$ch = curl_init($url);
     	curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -327,32 +424,21 @@ class Settings extends Profile {
     	curl_close($ch);
 
 		ee()->load->library('filemanager');
-		ee()->load->library('upload', $config);
 
 		$file_path = ee()->filemanager->clean_filename(
-			$filename,
-			$directory_id,
+			basename($url),
+			$directory->id,
 			array('ignore_dupes' => FALSE)
 		);
 		$filename = basename($file_path);
 
 		// Upload the file
-		$config = array('upload_path' => dirname($file_path));
+		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
 
 		if (ee()->upload->raw_upload($filename, $file) === FALSE)
 		{
 			return FALSE;
 		}
-
-		$result = ee()->filemanager->save_file(
-			$file_path,
-			$directory->id,
-			array(
-				'title'     => $filename,
-				'rel_path'  => dirname($file_path),
-				'file_name' => $filename
-			)
-		);
 
 		return $filename;
 	}

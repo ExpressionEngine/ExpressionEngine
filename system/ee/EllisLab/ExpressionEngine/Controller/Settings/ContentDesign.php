@@ -31,6 +31,16 @@ use CP_Controller;
  */
 class ContentDesign extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_admin_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */
@@ -131,7 +141,7 @@ class ContentDesign extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/content-design');
+		$base_url = ee('CP/URL')->make('settings/content-design');
 
 		if (AJAX_REQUEST)
 		{
@@ -158,7 +168,7 @@ class ContentDesign extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channel_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channel_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

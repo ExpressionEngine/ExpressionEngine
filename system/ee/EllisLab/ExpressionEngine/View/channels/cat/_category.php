@@ -1,6 +1,8 @@
 <li class="tbl-list-item" data-id="<?=$category->data->cat_id?>">
 	<div class="tbl-row<?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> selected<?php endif ?>">
+		<?php if ($can_edit_categories): ?>
 		<div class="reorder"></div>
+		<?php endif; ?>
 		<div class="txt">
 			<div class="main">
 				<b><?=$category->data->cat_name?></b>
@@ -9,10 +11,14 @@
 				<span class="faded">ID#</span> <?=$category->data->cat_id?> <span class="faded">/</span> <?=$category->data->cat_url_title?>
 			</div>
 		</div>
+		<?php if ($can_edit_categories): ?>
 		<ul class="toolbar">
-			<li class="edit"><a href="<?=ee('CP/URL', 'channels/cat/edit-cat/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
+			<li class="edit"><a href="<?=ee('CP/URL')->make('channels/cat/edit-cat/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
 		</ul>
-		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES) . '</b>'?>"></div>
+		<?php endif; ?>
+		<?php if ($can_delete_categories): ?>
+		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES, 'UTF-8') . '</b>'?>"></div>
+		<?php endif; ?>
 	</div>
 	<?php if (count($category->children())): ?>
 		<ul class="tbl-list">

@@ -2,10 +2,19 @@
 
 namespace EllisLab\ExpressionEngine\Library\Data;
 
+use Closure;
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
+use EllisLab\ExpressionEngine\Service\Event\Emitter;
+use EllisLab\ExpressionEngine\Service\Event\Publisher;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
-abstract class Entity extends MixableImpl {
+abstract class Entity extends MixableImpl implements Publisher {
+
+	/**
+	 * @var Event emitter
+	 */
+	protected $_event;
 
 	/**
 	 * @var Array Filter storage
@@ -22,6 +31,14 @@ abstract class Entity extends MixableImpl {
 	 */
 	public function __construct(array $data = array())
 	{
+		$this->_event = new Emitter();
+
+		// Subscribe to events on self if the class is also a subscriber
+		if ($this instanceOf Subscriber)
+		{
+			$this->_event->subscribe($this);
+		}
+
 		$this->initialize();
 
 		foreach ($data as $k => $v)
@@ -44,6 +61,14 @@ abstract class Entity extends MixableImpl {
 	public function __get($name)
 	{
 		return $this->getProperty($name);
+	}
+
+	/**
+	 * Isset implementation, also required for empty() to work
+	 */
+	function __isset($name)
+	{
+		return $this->hasGetterFor($name) OR ($this->hasProperty($name) && $this->getRawProperty($name) !== NULL);
 	}
 
 	/**
@@ -528,6 +553,65 @@ abstract class Entity extends MixableImpl {
 		return json_encode($this->toArray());
 	}
 
+	/**
+	 * Bind an event listener
+	 *
+	 * @param String $event Event name
+	 * @param Closure $listener The event listener callback
+	 * @return $this
+	 */
+	public function on($event, Closure $listener)
+	{
+		$this->_event->on($event, $listener);
+	}
+
+	/**
+	 * Bind an event listener that only fires once
+	 *
+	 * @param String $event Event name
+	 * @param Closure $listener The event listener callback
+	 * @return $this
+	 */
+	public function once($event, Closure $listener)
+	{
+		$this->_event->once($event, $listener);
+	}
+
+	/**
+	 * Subscribe an object to events on this entity. Any public method
+	 * called `on<EventName>` will be considered a listener on that event.
+	 *
+	 * @param Subscriber $subscriber Subscriber to add
+	 */
+	public function subscribe(Subscriber $subscriber)
+	{
+		$this->_event->subscribe($subscriber);
+	}
+
+	/**
+	 * Remove a subscription.
+	 *
+	 * @param Subscriber $subscriber Subscriber to remove
+	 */
+	public function unsubscribe(Subscriber $subscriber)
+	{
+		$this->_event->unsubscribe($subscriber);
+	}
+
+	/**
+	 * Emit an event
+	 *
+	 * @param String $event Event name
+	 * @param Any number of additional parameters to pass to the listeners
+	 * @return $this
+	 */
+	public function emit(/* $event, ...$args */)
+	{
+		call_user_func_array(
+			array($this->_event, 'emit'),
+			func_get_args()
+		);
+	}
 
 	/**
 	 * Track changes to properties so we can report which ones have been

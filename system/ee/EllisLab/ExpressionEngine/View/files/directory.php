@@ -2,14 +2,16 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
+		<?php if ($can_upload_files): ?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL', 'files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
 		</fieldset>
+		<?php endif; ?>
 		<h1>
 			<?=$cp_heading?>
-			<?php if ($can_admin_upload_prefs): ?>
+			<?php if ($can_sync_directory): ?>
 			<ul class="toolbar">
-				<li class="sync"><a href="<?=ee('CP/URL', 'files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
+				<li class="sync"><a href="<?=ee('CP/URL')->make('files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
 			</ul>
 			<?php endif; ?>
 		</h1>
@@ -21,7 +23,9 @@
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-file"><?=lang('remove')?></option>
+				<?php if (ee()->cp->allowed_group('can_delete_files')): ?>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-file"><?=lang('remove')?></option>
+				<?php endif ?>
 				<option value="download"><?=lang('download')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>

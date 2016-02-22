@@ -36,11 +36,20 @@ class Update extends Query {
 		{
 			$object = $this->store->make(
 				$builder->getFrom(),
-				$builder->getFrontend()
+				$builder->getFacade()
 			);
 		}
 
 		$backup = $object->getOriginal();
+		$this->prepObject($object);
+		
+		// Do not save if the object isn't dirty. We cannot do this in the model
+		// because the query builder can accept set() calls. Plus, we always want
+		// to cascade to children.
+		if ( ! $object->getDirty())
+		{
+			return;
+		}
 
 		$object->emit('beforeUpdate', $backup);
 		$object->emit('beforeSave');
@@ -51,7 +60,21 @@ class Update extends Query {
 		$object->emit('afterSave');
 		$object->emit('afterUpdate', $backup);
 	}
+	
+	/**
+	 * Add any set() calls that were on the query builder to the object.
+	 */
+	protected function prepObject($object)
+	{
+		foreach ($this->builder->getSet() as $field => $value)
+		{
+			$object->$field = $value;
+		}
+	}
 
+	/**
+	 * Distribute the data amongs the gateways and save it
+	 */
 	protected function doWork($object)
 	{
 		foreach ($this->builder->getSet() as $field => $value)
@@ -102,6 +125,11 @@ class Update extends Query {
 		if ( ! $object->isNew())
 		{
 			$query->where($gateway->getPrimaryKey(), $object->getId());
+
+			if ($object->getName() == 'ee:MemberGroup')
+			{
+				$query->where('site_id', $object->site_id);
+			}
 		}
 
 		$query->update($gateway->getTableName());

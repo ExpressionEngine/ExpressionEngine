@@ -13,6 +13,7 @@ class Association {
 
     protected $diff;
     protected $model;
+    protected $facade;
     protected $related;
     protected $relation;
 
@@ -69,12 +70,6 @@ class Association {
         if ( ! isset($this->inverse_name))
         {
             $inverse = $this->relation->getInverse();
-
-            if ( ! isset($inverse))
-            {
-                throw new \Exception('Cannot find inverse of the relationship '.$this->relation->getName().' in '.get_class($this->model));
-            }
-
             $this->inverse_name = $inverse->getName();
         }
 
@@ -160,7 +155,7 @@ class Association {
 	 */
 	public function reload()
 	{
-		$query = $this->frontend->get($this->relation->getTargetModel());
+		$query = $this->facade->get($this->relation->getTargetModel());
 		$query->setLazyConstraint($this->relation, $this->model);
 
 		$result = $query->all();
@@ -176,9 +171,9 @@ class Association {
 		$this->markAsLoaded();
 	}
 
-    public function setFrontend($frontend)
+    public function setFacade($facade)
     {
-        $this->frontend = $frontend;
+        $this->facade = $facade;
     }
 
     protected function addToRelated(Model $model)

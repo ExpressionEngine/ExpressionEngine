@@ -16,7 +16,6 @@ feature 'Debugging & Output Settings' do
   it 'should load current settings into form fields' do
     debug = ee_config(item: 'debug')
     show_profiler = ee_config(item: 'show_profiler')
-    template_debugging = ee_config(item: 'template_debugging')
     gzip_output = ee_config(item: 'gzip_output')
     force_query_string = ee_config(item: 'force_query_string')
     send_headers = ee_config(item: 'send_headers')
@@ -26,8 +25,6 @@ feature 'Debugging & Output Settings' do
     @page.debug_n.checked?.should == (debug == '0')
     @page.show_profiler_y.checked?.should == (show_profiler == 'y')
     @page.show_profiler_n.checked?.should == (show_profiler == 'n')
-    @page.template_debugging_y.checked?.should == (template_debugging == 'y')
-    @page.template_debugging_n.checked?.should == (template_debugging == 'n')
     @page.gzip_output_y.checked?.should == (gzip_output == 'y')
     @page.gzip_output_n.checked?.should == (gzip_output == 'n')
     @page.force_query_string_y.checked?.should == (force_query_string == 'y')
@@ -68,7 +65,6 @@ feature 'Debugging & Output Settings' do
   it 'should save and load the settings' do
     @page.debug_n.click
     @page.show_profiler_y.click
-    @page.template_debugging_y.click
     @page.gzip_output_y.click
     @page.force_query_string_y.click
     @page.send_headers_y.click
@@ -79,7 +75,6 @@ feature 'Debugging & Output Settings' do
     @page.should have_text 'Preferences updated'
     @page.debug_n.checked?.should == true
     @page.show_profiler_y.checked?.should == true
-    @page.template_debugging_y.checked?.should == true
     @page.gzip_output_y.checked?.should == true
     @page.force_query_string_y.checked?.should == true
     @page.send_headers_y.checked?.should == true

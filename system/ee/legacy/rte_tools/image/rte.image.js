@@ -217,8 +217,11 @@ Overlay.prototype = {
 	}
 };
 
+function ImageChooser($editor, $image_button) {
+	this.init($editor, $image_button);
+}
 
-var ImageChooser = {
+ImageChooser.prototype = {
 
 	init: function($editor, $image_button) {
 
@@ -264,6 +267,21 @@ var ImageChooser = {
 		var that = this,
 			$field = this.$editor.data('field');
 
+		this.$button.attr('rel', 'modal-file');
+		this.$button.attr('href', EE.rte.image.url);
+		this.$button.addClass('m-link');
+
+		this.$button.FilePicker({
+			callback: function(data, references) {
+				// Close the modal
+				references.modal.find('.m-close').click();
+
+				setTimeout(function() {
+					that._insert_image(data);
+				}, 500);
+			}
+		});
+
 		this.$button.click(function() {
 			// make sure we have a ref to the file browser
 			if ( ! that.$browser) {
@@ -273,14 +291,9 @@ var ImageChooser = {
 			// Keep the current range around until choosing a file
 			// is completed in case the browser's selection changes
 			// in the mean time
+			that.$editor.focus();
 			that.saved_ranges = that.Editor.Commands.getRanges();
 		});
-
-		$.ee_filebrowser.add_trigger(
-			this.$button,
-			'userfile_' + $field.attr('name'),
-			$.proxy(this, '_insert_image')
-		);
 	},
 
 	/**
@@ -294,7 +307,7 @@ var ImageChooser = {
 		$figure.append(
 			$('<img />', {
 				alt: "",
-				src: image_object.thumb.replace(/_thumbs\//, '')
+				src: image_object.path
 			})
 		);
 
@@ -356,7 +369,7 @@ WysiHat.addButton('image', {
 		var filedirs	= EE.rte.image.filedirs,
 			html		= $editor.html(),
 			that		= this,
-			path_re, path;
+			path_re, path, imageChooser;
 
 		// Firefox will return the left and right braces as entities,
 		// we need to switch those back for replacement below
@@ -372,7 +385,7 @@ WysiHat.addButton('image', {
 
 		// blargh
 		setTimeout(function() {
-			ImageChooser.init($editor, that.$element);
+			imageChooser = new ImageChooser($editor, that.$element);
 			new Overlay($editor);
 		}, 50);
 
@@ -380,7 +393,7 @@ WysiHat.addButton('image', {
 	},
 
 	handler: function(state, finalize) {
-		ImageChooser.set_finalizer(finalize);
+		imageChooser.set_finalizer(finalize);
 		return false;
 	}
 });

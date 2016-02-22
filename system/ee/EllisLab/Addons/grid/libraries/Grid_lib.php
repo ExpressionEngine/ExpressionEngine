@@ -74,24 +74,68 @@ class Grid_lib {
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
+		if (AJAX_REQUEST)
+		{
+			$column_id = ee()->input->post('column_id');
+			$row_id = ee()->input->post('row_id');
+
+			if ($column_id)
+			{
+				if ($row_id)
+				{
+					if ( ! array_key_exists($row_id, $rows))
+					{
+						$row_id = 'row_id_'.$row_id;
+					}
+
+					if (array_key_exists($row_id, $rows))
+					{
+						$html = $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
+					}
+				}
+				else
+				{
+					$html = $this->_publish_field_cell($columns[$column_id]);
+				}
+
+				return $grid->namespaceForGrid($html, $row_id);
+			}
+		}
+
 		$column_headings = array();
 		$blank_column = array();
 		foreach ($columns as $column)
 		{
-			$column_headings[$column['col_label']] = array('desc' => $column['col_instructions']);
+			$column_headings[] = array(
+				'label' => $column['col_label'],
+				'desc' => $column['col_instructions'],
+				'required' => ($column['col_required'] == 'y')
+			);
 
-			if ($column['col_type'] == 'rte')
-			{
-				$column_headings[$column['col_label']]['class'] = 'grid-rte';
+			switch ($column['col_type']) {
+				case 'rte':
+					$class = 'grid-rte';
+					break;
+				case 'textarea':
+					$class = 'grid-textarea';
+					break;
+				case 'relationship':
+					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+					break;
+				default:
+					$class = '';
+					break;
 			}
 
-			if ($column['col_type'] == 'relationship'
-				&& $column['col_settings']['allow_multiple'])
-			{
-				$column_headings[$column['col_label']]['class'] = 'grid-mr';
-			}
-
-			$blank_column[] = $this->_publish_field_cell($column);
+			$blank_column[] = array(
+				'html' => $this->_publish_field_cell($column),
+				'attrs' => array(
+					'class' => $class,
+					'data-fieldtype' => $column['col_type'],
+					'data-column-id' => $column['col_id'],
+					'width' => $column['col_width'].'%',
+				)
+			);
 		}
 		$grid->setColumns($column_headings);
 		$grid->setBlankRow($blank_column);
@@ -103,21 +147,38 @@ class Grid_lib {
 			if ( ! is_numeric($row_id))
 			{
 				$row['row_id'] = $row_id;
+
+				// We want to reserve the row-id data attribute for real row IDs, not
+				// the string placeholders, in case folks are relying on having a real
+				// number there or are using it to determine if a row is new or not
+				$data_row_id_attr = 'data-new-row-id';
+			}
+			else
+			{
+				$data_row_id_attr = 'data-row-id';
 			}
 
 			$field_columns = array();
 
 			foreach ($columns as $column)
 			{
-				$field_columns[] = array(
+				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
-						'data-row-id' => $row_id,
+						$data_row_id_attr => $row_id,
+						'width' => $column['col_width'].'%',
 					)
 				);
+
+				if ($column['col_required'] == 'y')
+				{
+					$col['attrs']['class'] = 'required';
+				}
+
+				$field_columns[] = $col;
 			}
 			$data[] = array(
 				'attrs' => array('row_id' => $row_id),
@@ -145,7 +206,8 @@ class Grid_lib {
 			$column,
 			NULL,
 			$this->field_id,
-			$this->entry_id
+			$this->entry_id,
+			$this->content_type
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
@@ -284,7 +346,8 @@ class Grid_lib {
 					$column,
 					$row_name,
 					$this->field_id,
-					$this->entry_id
+					$this->entry_id,
+					$this->content_type
 				);
 
 				if ( ! empty($rows[$i]['row_id']))
@@ -350,7 +413,7 @@ class Grid_lib {
 		// the row IDs
 		foreach ($columns as $column)
 		{
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 			ee()->grid_parser->call('delete', $row_ids);
 		}
 
@@ -433,7 +496,8 @@ class Grid_lib {
 					$column,
 					$row_id,
 					$this->field_id,
-					$this->entry_id
+					$this->entry_id,
+					$this->content_type
 				);
 
 				// Pass Grid row ID to fieldtype if it's an existing row
@@ -543,30 +607,53 @@ class Grid_lib {
 			return $this->_fieldtypes;
 		}
 
+		$fieldtypes = array();
+		$compatibility = array();
+
+		foreach (ee('Addon')->installed() as $addon)
+		{
+			if ($addon->hasFieldtype())
+			{
+				foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
+				{
+					if (isset($metadata['compatibility']))
+					{
+						$compatibility[$fieldtype] = $metadata['compatibility'];
+					}
+				}
+
+				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
+			}
+		}
+
+		unset($fieldtypes['grid'], $compatibility['grid']);
+
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
 
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;
 
-		$this->_fieldtypes = $ft_api->fetch_installed_fieldtypes();
-		unset($this->_fieldtypes['grid']);
-
-		foreach ($this->_fieldtypes as $field_name => $data)
+		foreach ($fieldtypes as $field_short_name => $field_name)
 		{
-			$fieldtype = $ft_api->setup_handler($field_name, TRUE);
+			$fieldtype = $ft_api->setup_handler($field_short_name, TRUE);
 
 			// Check to see if the fieldtype accepts Grid as a content type;
 			// also, temporarily exlcude Relationships for content types
 			// other than channel
 			if ( ! $fieldtype->accepts_content_type('grid') ||
-				($this->content_type != 'channel' && $field_name == 'relationship'))
+				($this->content_type != 'channel' && $field_short_name == 'relationship'))
 			{
-				unset($this->_fieldtypes[$field_name]);
+				unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);
 			}
 		}
 
-		asort($this->_fieldtypes);
+		asort($fieldtypes);
+
+		$this->_fieldtypes = array(
+			'fieldtypes' => $fieldtypes,
+			'compatibility' => $compatibility
+		);
 
 		return $this->_fieldtypes;
 	}
@@ -582,15 +669,18 @@ class Grid_lib {
 	public function validate_settings($settings)
 	{
 		$errors = array();
+		$col_labels = array();
 		$col_names = array();
 
-		// Create an array of column names for counting to see if there are
-		// duplicate column names; they should be unique
+		// Create an array of column names and labels for counting to see if
+		//  there are duplicates; they should be unique
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
+			$col_labels[] = $column['col_label'];
 			$col_names[] = $column['col_name'];
 		}
 
+		$col_label_count = array_count_values($col_labels);
 		$col_name_count = array_count_values($col_names);
 
 		ee()->load->library('grid_parser');
@@ -601,6 +691,11 @@ class Grid_lib {
 			if (empty($column['col_label']))
 			{
 				$errors[$col_field]['col_label'] = 'grid_col_label_required';
+			}
+			// There cannot be duplicate column labels
+			elseif ($col_label_count[$column['col_label']] > 1)
+			{
+				$errors[$col_field]['col_label'] = 'grid_duplicate_col_label';
 			}
 
 			// Column names are required
@@ -637,7 +732,7 @@ class Grid_lib {
 			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
 			$column['col_settings']['field_required'] = $column['col_required'];
 
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 			// Let fieldtypes validate their Grid column settings
 			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
@@ -757,7 +852,7 @@ class Grid_lib {
 			$column['col_settings'] = array();
 		}
 
-		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 		if ( ! ($settings = ee()->grid_parser->call('save_settings', $column['col_settings'])))
 		{
@@ -779,13 +874,35 @@ class Grid_lib {
 	 */
 	public function get_column_view($column = NULL, $error_fields = array())
 	{
-		$fieldtypes = $this->get_grid_fieldtypes();
+		$fieldtype_data = $this->get_grid_fieldtypes();
+		$fieldtypes = $fieldtype_data['fieldtypes'];
+		$compatibility = $fieldtype_data['compatibility'];
 
-		// Create a dropdown-frieldly array of available fieldtypes
-		$fieldtypes_dropdown = array();
-		foreach ($fieldtypes as $key => $value)
+		// Create a dropdown-frieldly array of available fieldtypes based on
+		// compatibility if this column already has a type.
+		if (isset($column['col_type']))
 		{
-			$fieldtypes_dropdown[$key] = $value['name'];
+			$type = $column['col_type'];
+
+			if ( ! isset($compatibility[$type]))
+			{
+				$fieldtypes_dropdown = array($type => $fieldtypes[$type]);
+			}
+			else
+			{
+				$my_type = $compatibility[$type];
+
+				$compatible = array_filter($compatibility, function($v) use($my_type)
+				{
+					return $v == $my_type;
+				});
+
+				$fieldtypes_dropdown = array_intersect_key($fieldtypes, $compatible);
+			}
+		}
+		else
+		{
+			$fieldtypes_dropdown = $fieldtypes;
 		}
 
 		// Column ID could be a string if we're coming back from a valdiation error
@@ -813,7 +930,8 @@ class Grid_lib {
 				'field_name'	=> $field_name,
 				'column'		=> $column,
 				'fieldtypes'	=> $fieldtypes_dropdown,
-				'error_fields'  => $error_fields
+				'error_fields'  => $error_fields,
+				'new_column'	=> empty($column['col_id'])
 			),
 			TRUE
 		);
@@ -847,7 +965,7 @@ class Grid_lib {
 			);
 		}
 
-		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
 		$settings = ee()->grid_parser->call('display_settings', $column['col_settings']);
 
@@ -868,6 +986,13 @@ class Grid_lib {
 	 */
 	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
 	{
+		// shared form does a set_value() by default, but since we're dealing with
+		// un-namespaced fields here and namespaced fields in POST that can lead
+		// to extremely unexpected behavior. So we'll kill $_POST and thus rely on
+		// the value in col_settings.
+		$post = $_POST;
+		$_POST = array();
+
 		$settings_view = ee('View')
 			->make('grid:col_settings_tmpl')
 			->render(
@@ -881,6 +1006,8 @@ class Grid_lib {
 		{
 			$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
 		}
+
+		$_POST = $post;
 
 		// Namespace form field names
 		return $this->_namespace_inputs(

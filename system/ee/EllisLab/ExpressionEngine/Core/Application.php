@@ -75,7 +75,12 @@ class Application {
 	 */
 	public function setupAddons($path)
 	{
-		$folders = new FilesystemIterator($path);
+		$standard_modules = array(
+			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
+			'simple_commerce', 'wiki'
+		);
+
+		$folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);
 
 		foreach ($folders as $item)
 		{
@@ -85,6 +90,11 @@ class Application {
 
 				// for now only setup those that define an addon.setup file
 				if ( ! file_exists($path.'/addon.setup.php'))
+				{
+					continue;
+				}
+
+				if (IS_CORE && in_array($item->getFileName(), $standard_modules))
 				{
 					continue;
 				}
@@ -100,6 +110,17 @@ class Application {
 	public function getDependencies()
 	{
 		return $this->dependencies;
+	}
+
+	/**
+	 * Check for a component provider
+	 *
+	 * @param String $prefix Component name/prefix
+	 * @return bool Exists?
+	 */
+	public function has($prefix)
+	{
+		return $this->registry->has($prefix);
 	}
 
 	/**
@@ -210,7 +231,7 @@ class Application {
 	 * @param String $method Method to forward to
 	 * @return Array Array of method results, nested arrays are flattened
 	 */
-	protected function forward($method)
+	public function forward($method)
 	{
 		$result = array();
 

@@ -668,6 +668,7 @@ CREATE TABLE `exp_global_variables` (
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `variable_name` varchar(50) NOT NULL,
   `variable_data` text NOT NULL,
+  `edit_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`variable_id`),
   KEY `variable_name` (`variable_name`),
   KEY `site_id` (`site_id`)
@@ -771,82 +772,111 @@ CREATE TABLE `exp_member_fields` (
 
 
 CREATE TABLE `exp_member_groups` (
-  `group_id` smallint(4) unsigned NOT NULL,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_title` varchar(100) NOT NULL,
-  `group_description` text NOT NULL,
-  `is_locked` char(1) NOT NULL DEFAULT 'y',
-  `can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
-  `can_view_online_system` char(1) NOT NULL DEFAULT 'y',
-  `can_access_cp` char(1) NOT NULL DEFAULT 'y',
-  `can_access_footer_report_bug` char(1) NOT NULL default 'n',
-  `can_access_footer_new_ticket` char(1) NOT NULL default 'n',
-  `can_access_footer_user_guide` char(1) NOT NULL default 'n',
-  `can_access_content` char(1) NOT NULL DEFAULT 'n',
-  `can_access_publish` char(1) NOT NULL DEFAULT 'n',
-  `can_access_edit` char(1) NOT NULL DEFAULT 'n',
-  `can_access_files` char(1) NOT NULL DEFAULT 'n',
-  `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n',
-  `can_access_design` char(1) NOT NULL DEFAULT 'n',
-  `can_access_addons` char(1) NOT NULL DEFAULT 'n',
-  `can_access_modules` char(1) NOT NULL DEFAULT 'n',
-  `can_access_extensions` char(1) NOT NULL DEFAULT 'n',
-  `can_access_accessories` char(1) NOT NULL DEFAULT 'n',
-  `can_access_plugins` char(1) NOT NULL DEFAULT 'n',
-  `can_access_members` char(1) NOT NULL DEFAULT 'n',
-  `can_access_admin` char(1) NOT NULL DEFAULT 'n',
-  `can_access_sys_prefs` char(1) NOT NULL DEFAULT 'n',
-  `can_access_content_prefs` char(1) NOT NULL DEFAULT 'n',
-  `can_access_tools` char(1) NOT NULL DEFAULT 'n',
-  `can_access_comm` char(1) NOT NULL DEFAULT 'n',
-  `can_access_utilities` char(1) NOT NULL DEFAULT 'n',
-  `can_access_data` char(1) NOT NULL DEFAULT 'n',
-  `can_access_logs` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_channels` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_upload_prefs` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_design` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_members` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_members` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
-  `can_ban_users` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_modules` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_templates` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_categories` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_categories` char(1) NOT NULL DEFAULT 'n',
-  `can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_other_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_assign_post_authors` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_self_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_all_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_view_other_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_own_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_own_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_send_email` char(1) NOT NULL DEFAULT 'n',
-  `can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
-  `can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
-  `can_view_profiles` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_html_buttons` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_self` char(1) NOT NULL DEFAULT 'n',
-  `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
-  `can_post_comments` char(1) NOT NULL DEFAULT 'n',
-  `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
-  `can_search` char(1) NOT NULL DEFAULT 'n',
-  `search_flood_control` mediumint(5) unsigned NOT NULL,
-  `can_send_private_messages` char(1) NOT NULL DEFAULT 'n',
-  `prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
-  `prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
-  `can_attach_in_private_messages` char(1) NOT NULL DEFAULT 'n',
-  `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
-  `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
-  `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
+    `group_id` smallint(4) unsigned NOT NULL,
+    `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+    `group_title` varchar(100) NOT NULL,
+    `group_description` text NOT NULL,
+    `is_locked` char(1) NOT NULL DEFAULT 'y',
+    `can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
+    `can_view_online_system` char(1) NOT NULL DEFAULT 'y',
+    `can_access_cp` char(1) NOT NULL DEFAULT 'y',
+    `can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
+    `can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
+    `can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
+    `can_access_files` char(1) NOT NULL DEFAULT 'n',
+    `can_access_design` char(1) NOT NULL DEFAULT 'n',
+    `can_access_addons` char(1) NOT NULL DEFAULT 'n',
+    `can_access_members` char(1) NOT NULL DEFAULT 'n',
+    `can_access_sys_prefs` char(1) NOT NULL DEFAULT 'n',
+    `can_access_comm` char(1) NOT NULL DEFAULT 'n',
+    `can_access_utilities` char(1) NOT NULL DEFAULT 'n',
+    `can_access_data` char(1) NOT NULL DEFAULT 'n',
+    `can_access_logs` char(1) NOT NULL DEFAULT 'n',
+    `can_admin_channels` char(1) NOT NULL DEFAULT 'n',
+    `can_admin_design` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_members` char(1) NOT NULL DEFAULT 'n',
+    `can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
+    `can_ban_users` char(1) NOT NULL DEFAULT 'n',
+    `can_admin_addons` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_categories` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_categories` char(1) NOT NULL DEFAULT 'n',
+    `can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_other_entries` char(1) NOT NULL DEFAULT 'n',
+    `can_assign_post_authors` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_self_entries` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_all_entries` char(1) NOT NULL DEFAULT 'n',
+    `can_view_other_comments` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_own_comments` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_own_comments` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
+    `can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
+    `can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
+    `can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
+    `can_view_profiles` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_html_buttons` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_self` char(1) NOT NULL DEFAULT 'n',
+    `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
+    `can_post_comments` char(1) NOT NULL DEFAULT 'n',
+    `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
+    `can_search` char(1) NOT NULL DEFAULT 'n',
+    `search_flood_control` mediumint(5) unsigned NOT NULL,
+    `can_send_private_messages` char(1) NOT NULL DEFAULT 'n',
+    `prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
+    `prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
+    `can_attach_in_private_messages` char(1) NOT NULL DEFAULT 'n',
+    `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
+    `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
+    `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
+    `cp_homepage` varchar(20) DEFAULT NULL,
+    `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
+    `cp_homepage_custom` varchar(100) DEFAULT NULL,
+    `can_create_entries` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
+    `can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_files` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_files` char(1) NOT NULL DEFAULT 'n',
+    `can_upload_new_toolsets` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_toolsets` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_toolsets` char(1) NOT NULL DEFAULT 'n',
+    `can_create_upload_directories` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_upload_directories` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_upload_directories` char(1) NOT NULL DEFAULT 'n',
+    `can_create_channels` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_channels` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_channels` char(1) NOT NULL DEFAULT 'n',
+    `can_create_channel_fields` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_channel_fields` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_channel_fields` char(1) NOT NULL DEFAULT 'n',
+    `can_create_statuses` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_statuses` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_statuses` char(1) NOT NULL DEFAULT 'n',
+    `can_create_categories` char(1) NOT NULL DEFAULT 'n',
+    `can_create_member_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_member_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_member_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_create_members` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_members` char(1) NOT NULL DEFAULT 'n',
+    `can_create_new_templates` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_templates` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_templates` char(1) NOT NULL DEFAULT 'n',
+    `can_create_template_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_template_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_template_groups` char(1) NOT NULL DEFAULT 'n',
+    `can_create_template_partials` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_template_partials` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_template_partials` char(1) NOT NULL DEFAULT 'n',
+    `can_create_template_variables` char(1) NOT NULL DEFAULT 'n',
+    `can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
+    `can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
+    `can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
+    `can_access_translate` char(1) NOT NULL DEFAULT 'n',
+    `can_access_import` char(1) NOT NULL DEFAULT 'n',
+    `can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`group_id`,`site_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `exp_member_homepage` (
   `member_id` int(10) unsigned NOT NULL,
@@ -948,7 +978,7 @@ CREATE TABLE `exp_members` (
   `language` varchar(50) NOT NULL,
   `timezone` varchar(50) NOT NULL,
   `time_format` char(2) NOT NULL DEFAULT '12',
-  `date_format` varchar(8) NOT NULL DEFAULT '%n/%j/%y',
+  `date_format` varchar(8) NOT NULL DEFAULT '%n/%j/%Y',
   `include_seconds` char(1) NOT NULL DEFAULT 'n',
   `cp_theme` varchar(32) DEFAULT NULL,
   `profile_theme` varchar(32) DEFAULT NULL,
@@ -964,6 +994,9 @@ CREATE TABLE `exp_members` (
   `pmember_id` int(10) NOT NULL DEFAULT '0',
   `rte_enabled` char(1) NOT NULL DEFAULT 'y',
   `rte_toolset_id` int(10) NOT NULL DEFAULT '0',
+  `cp_homepage` varchar(20) NULL DEFAULT NULL,
+  `cp_homepage_channel` varchar(255) NULL DEFAULT NULL,
+  `cp_homepage_custom` varchar(100) NULL DEFAULT NULL,
   PRIMARY KEY (`member_id`),
   KEY `group_id` (`group_id`),
   KEY `unique_id` (`unique_id`),
@@ -1257,6 +1290,7 @@ CREATE TABLE `exp_snippets` (
   `site_id` int(4) NOT NULL,
   `snippet_name` varchar(75) NOT NULL,
   `snippet_contents` text,
+  `edit_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`snippet_id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
@@ -1434,7 +1468,7 @@ CREATE TABLE `exp_upload_prefs` (
   `file_post_format` varchar(120) DEFAULT NULL,
   `cat_group` varchar(255) DEFAULT NULL,
   `batch_location` varchar(255) DEFAULT NULL,
-  `module_id` int(4) DEFAULT NULL,
+  `module_id` int(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -1738,11 +1772,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_html_buttons` WRITE;
 INSERT INTO `exp_html_buttons` (`id`, `site_id`, `member_id`, `tag_name`, `tag_open`, `tag_close`, `accesskey`, `tag_order`, `tag_row`, `classname`) VALUES
-	(1,1,0,'b','<strong>','</strong>','b',1,'1','btn_b'),
-	(2,1,0,'i','<em>','</em>','i',2,'1','btn_i'),
-	(3,1,0,'blockquote','<blockquote>','</blockquote>','q',3,'1','btn_blockquote'),
-	(4,1,0,'a','<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>','</a>','a',4,'1','btn_a'),
-	(5,1,0,'img','<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />','','',5,'1','btn_img');
+	(1,1,0,'Bold text','<strong>','</strong>','b',1,'1','html-bold'),
+	(2,1,0,'Italic text','<em>','</em>','i',2,'1','html-italic'),
+	(3,1,0,'Blockquote','<blockquote>','</blockquote>','q',3,'1','html-quote'),
+	(4,1,0,'Link','<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>','</a>','a',4,'1','html-link'),
+	(5,1,0,'Image','<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />','','',5,'1','html-upload');
 UNLOCK TABLES;
 
 
@@ -1765,12 +1799,26 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_groups` WRITE;
-INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_footer_report_bug`, `can_access_footer_new_ticket`, `can_access_footer_user_guide`, `can_access_content`, `can_access_publish`, `can_access_edit`, `can_access_files`, `can_access_fieldtypes`, `can_access_design`, `can_access_addons`, `can_access_modules`, `can_access_extensions`, `can_access_accessories`, `can_access_plugins`, `can_access_members`, `can_access_admin`, `can_access_sys_prefs`, `can_access_content_prefs`, `can_access_tools`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_upload_prefs`, `can_admin_design`, `can_admin_members`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_modules`, `can_admin_templates`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_email`, `can_send_cached_email`, `can_email_member_groups`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`) VALUES
-	(1,1,'Super Admins','','y','y','y','y', 'y', 'y', 'y', 'y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','','y','y','y',0,'y',20,60,'y','y','y','y'),
-	(2,1,'Banned','','y','n','n','n', 'n', 'n', 'n', 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','','n','n','n',60,'n',20,60,'n','n','n','n'),
-	(3,1,'Guests','','y','n','y','n','n', 'n', 'n', 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','','y','n','y',15,'n',20,60,'n','n','n','n'),
-	(4,1,'Pending','','y','n','y','n','n', 'n', 'n', 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','','y','n','y',15,'n',20,60,'n','n','n','n'),
-	(5,1,'Members','','y','n','y','n', 'n', 'n', 'n', 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','y','y','n','','y','n','y',10,'y',20,60,'y','n','n','y');
+
+  INSERT INTO exp_member_groups
+  			(group_description, group_title, group_id, can_view_offline_system, can_access_cp, can_access_footer_report_bug, can_access_footer_new_ticket, can_access_footer_user_guide, can_upload_new_files, can_edit_files, can_delete_files, can_upload_new_toolsets, can_edit_toolsets, can_delete_toolsets, can_create_upload_directories, can_edit_upload_directories, can_delete_upload_directories, can_access_files, can_access_design, can_access_addons, can_access_members, can_access_sys_prefs, can_access_comm, can_access_utilities, can_access_data, can_access_logs, can_admin_channels, can_create_channels, can_edit_channels, can_delete_channels, can_create_channel_fields, can_edit_channel_fields, can_delete_channel_fields, can_create_statuses, can_delete_statuses, can_edit_statuses, can_create_categories, can_create_member_groups, can_delete_member_groups, can_edit_member_groups, can_admin_design, can_create_members, can_edit_members, can_delete_members, can_admin_mbr_groups, can_admin_mbr_templates, can_ban_users, can_admin_addons, can_create_new_templates, can_edit_templates, can_delete_templates, can_create_template_groups, can_edit_template_groups, can_delete_template_groups, can_create_template_partials, can_edit_template_partials, can_delete_template_partials, can_create_template_variables, can_delete_template_variables, can_edit_template_variables, can_edit_categories, can_delete_categories, can_view_other_entries, can_edit_other_entries, can_assign_post_authors, can_delete_self_entries, can_delete_all_entries, can_view_other_comments, can_edit_own_comments, can_delete_own_comments, can_edit_all_comments, can_delete_all_comments, can_moderate_comments, can_send_cached_email, can_email_member_groups, can_email_from_profile, can_view_profiles, can_edit_html_buttons, can_delete_self, exclude_from_moderation, can_send_private_messages, can_attach_in_private_messages, can_send_bulletins, include_in_authorlist, search_flood_control)
+  			VALUES ('', 'Super Admin', 1, 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', '0');
+
+  INSERT INTO exp_member_groups
+  			(group_description, group_title, group_id, can_access_cp, can_view_online_system, can_search, can_post_comments, include_in_memberlist, search_flood_control)
+  			VALUES ('', 'Banned', 2, 'n', 'n', 'n', 'n', 'n', '60');
+
+  INSERT INTO exp_member_groups
+  			(group_description, group_title, group_id, can_access_cp, search_flood_control)
+  			VALUES ('', 'Guests', 3, 'n', '10');
+
+  INSERT INTO exp_member_groups
+  			(group_description, group_title, group_id, can_access_cp, search_flood_control)
+  			VALUES ('', 'Pending', 4, 'n', '10');
+
+  INSERT INTO exp_member_groups
+  			(group_description, group_title, group_id, can_access_cp, can_email_from_profile, can_view_profiles, can_edit_html_buttons, can_delete_self, can_send_private_messages, can_attach_in_private_messages, search_flood_control)
+  			VALUES ('', 'Members', 5, 'n', 'y', 'y', 'y', 'y', 'y', 'y', '10');
 UNLOCK TABLES;
 
 
@@ -1786,7 +1834,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_members` WRITE;
 INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`) VALUES
-	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%y','n',NULL,NULL,NULL,NULL,'28',NULL,'18','',NULL,'n',0,'y',0);
+	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18','',NULL,'n',0,'y',0);
 UNLOCK TABLES;
 
 
@@ -1893,7 +1941,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_sites` WRITE;
 INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_system_preferences`, `site_member_preferences`, `site_template_preferences`, `site_channel_preferences`, `site_bootstrap_checksums`, `site_pages`) VALUES
-	(1,'EE3','default_site',NULL,'YTo5MDp7czoxMDoic2l0ZV9pbmRleCI7czo5OiJpbmRleC5waHAiO3M6ODoic2l0ZV91cmwiO3M6MTE6Imh0dHA6Ly9lZTIvIjtzOjE2OiJ0aGVtZV9mb2xkZXJfdXJsIjtzOjE4OiJodHRwOi8vZWUyL3RoZW1lcy8iO3M6MTU6IndlYm1hc3Rlcl9lbWFpbCI7czoyMDoia2V2aW4uY3VwcEBnbWFpbC5jb20iO3M6MTQ6IndlYm1hc3Rlcl9uYW1lIjtzOjA6IiI7czoyMDoiY2hhbm5lbF9ub21lbmNsYXR1cmUiO3M6NzoiY2hhbm5lbCI7czoxMDoibWF4X2NhY2hlcyI7czozOiIxNTAiO3M6MTE6ImNhcHRjaGFfdXJsIjtzOjI3OiJodHRwOi8vZWUyL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfcGF0aCI7czo1MDoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfZm9udCI7czoxOiJ5IjtzOjEyOiJjYXB0Y2hhX3JhbmQiO3M6MToieSI7czoyMzoiY2FwdGNoYV9yZXF1aXJlX21lbWJlcnMiO3M6MToibiI7czoxNzoiZW5hYmxlX2RiX2NhY2hpbmciO3M6MToibiI7czoxODoiZW5hYmxlX3NxbF9jYWNoaW5nIjtzOjE6Im4iO3M6MTg6ImZvcmNlX3F1ZXJ5X3N0cmluZyI7czoxOiJuIjtzOjEzOiJzaG93X3Byb2ZpbGVyIjtzOjE6Im4iO3M6MTg6InRlbXBsYXRlX2RlYnVnZ2luZyI7czoxOiJuIjtzOjE1OiJpbmNsdWRlX3NlY29uZHMiO3M6MToibiI7czoxMzoiY29va2llX2RvbWFpbiI7czowOiIiO3M6MTE6ImNvb2tpZV9wYXRoIjtzOjA6IiI7czoyMDoid2Vic2l0ZV9zZXNzaW9uX3R5cGUiO3M6MToiYyI7czoxNToiY3Bfc2Vzc2lvbl90eXBlIjtzOjE6ImMiO3M6MjE6ImFsbG93X3VzZXJuYW1lX2NoYW5nZSI7czoxOiJ5IjtzOjE4OiJhbGxvd19tdWx0aV9sb2dpbnMiO3M6MToieSI7czoxNjoicGFzc3dvcmRfbG9ja291dCI7czoxOiJ5IjtzOjI1OiJwYXNzd29yZF9sb2Nrb3V0X2ludGVydmFsIjtzOjE6IjEiO3M6MjA6InJlcXVpcmVfaXBfZm9yX2xvZ2luIjtzOjE6InkiO3M6MjI6InJlcXVpcmVfaXBfZm9yX3Bvc3RpbmciO3M6MToieSI7czoyNDoicmVxdWlyZV9zZWN1cmVfcGFzc3dvcmRzIjtzOjE6Im4iO3M6MTk6ImFsbG93X2RpY3Rpb25hcnlfcHciO3M6MToieSI7czoyMzoibmFtZV9vZl9kaWN0aW9uYXJ5X2ZpbGUiO3M6MDoiIjtzOjE3OiJ4c3NfY2xlYW5fdXBsb2FkcyI7czoxOiJ5IjtzOjE1OiJyZWRpcmVjdF9tZXRob2QiO3M6ODoicmVkaXJlY3QiO3M6OToiZGVmdF9sYW5nIjtzOjc6ImVuZ2xpc2giO3M6ODoieG1sX2xhbmciO3M6MjoiZW4iO3M6MTI6InNlbmRfaGVhZGVycyI7czoxOiJ5IjtzOjExOiJnemlwX291dHB1dCI7czoxOiJuIjtzOjEzOiJsb2dfcmVmZXJyZXJzIjtzOjE6Im4iO3M6MTM6Im1heF9yZWZlcnJlcnMiO3M6MzoiNTAwIjtzOjExOiJkYXRlX2Zvcm1hdCI7czo4OiIlbi8lai8leSI7czoxMToidGltZV9mb3JtYXQiO3M6MjoiMTIiO3M6MTM6InNlcnZlcl9vZmZzZXQiO3M6MDoiIjtzOjIxOiJkZWZhdWx0X3NpdGVfdGltZXpvbmUiO3M6MTY6IkFtZXJpY2EvTmV3X1lvcmsiO3M6MTM6Im1haWxfcHJvdG9jb2wiO3M6NDoibWFpbCI7czoxMToic210cF9zZXJ2ZXIiO3M6MDoiIjtzOjEzOiJzbXRwX3VzZXJuYW1lIjtzOjA6IiI7czoxMzoic210cF9wYXNzd29yZCI7czowOiIiO3M6MTE6ImVtYWlsX2RlYnVnIjtzOjE6Im4iO3M6MTM6ImVtYWlsX2NoYXJzZXQiO3M6NToidXRmLTgiO3M6MTU6ImVtYWlsX2JhdGNobW9kZSI7czoxOiJuIjtzOjE2OiJlbWFpbF9iYXRjaF9zaXplIjtzOjA6IiI7czoxMToibWFpbF9mb3JtYXQiO3M6NToicGxhaW4iO3M6OToid29yZF93cmFwIjtzOjE6InkiO3M6MjI6ImVtYWlsX2NvbnNvbGVfdGltZWxvY2siO3M6MToiNSI7czoyMjoibG9nX2VtYWlsX2NvbnNvbGVfbXNncyI7czoxOiJ5IjtzOjg6ImNwX3RoZW1lIjtzOjc6ImRlZmF1bHQiO3M6MTY6ImxvZ19zZWFyY2hfdGVybXMiO3M6MToieSI7czoxOToiZGVueV9kdXBsaWNhdGVfZGF0YSI7czoxOiJ5IjtzOjI0OiJyZWRpcmVjdF9zdWJtaXR0ZWRfbGlua3MiO3M6MToibiI7czoxNjoiZW5hYmxlX2NlbnNvcmluZyI7czoxOiJuIjtzOjE0OiJjZW5zb3JlZF93b3JkcyI7czowOiIiO3M6MTg6ImNlbnNvcl9yZXBsYWNlbWVudCI7czowOiIiO3M6MTA6ImJhbm5lZF9pcHMiO3M6MDoiIjtzOjEzOiJiYW5uZWRfZW1haWxzIjtzOjA6IiI7czoxNjoiYmFubmVkX3VzZXJuYW1lcyI7czowOiIiO3M6MTk6ImJhbm5lZF9zY3JlZW5fbmFtZXMiO3M6MDoiIjtzOjEwOiJiYW5fYWN0aW9uIjtzOjg6InJlc3RyaWN0IjtzOjExOiJiYW5fbWVzc2FnZSI7czozNDoiVGhpcyBzaXRlIGlzIGN1cnJlbnRseSB1bmF2YWlsYWJsZSI7czoxNToiYmFuX2Rlc3RpbmF0aW9uIjtzOjIxOiJodHRwOi8vd3d3LnlhaG9vLmNvbS8iO3M6MTY6ImVuYWJsZV9lbW90aWNvbnMiO3M6MToieSI7czoxMjoiZW1vdGljb25fdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9zbWlsZXlzLyI7czoxOToicmVjb3VudF9iYXRjaF90b3RhbCI7czo0OiIxMDAwIjtzOjE3OiJuZXdfdmVyc2lvbl9jaGVjayI7czoxOiJ5IjtzOjE3OiJlbmFibGVfdGhyb3R0bGluZyI7czoxOiJuIjtzOjE3OiJiYW5pc2hfbWFza2VkX2lwcyI7czoxOiJ5IjtzOjE0OiJtYXhfcGFnZV9sb2FkcyI7czoyOiIxMCI7czoxMzoidGltZV9pbnRlcnZhbCI7czoxOiI4IjtzOjEyOiJsb2Nrb3V0X3RpbWUiO3M6MjoiMzAiO3M6MTU6ImJhbmlzaG1lbnRfdHlwZSI7czo3OiJtZXNzYWdlIjtzOjE0OiJiYW5pc2htZW50X3VybCI7czowOiIiO3M6MTg6ImJhbmlzaG1lbnRfbWVzc2FnZSI7czo1MDoiWW91IGhhdmUgZXhjZWVkZWQgdGhlIGFsbG93ZWQgcGFnZSBsb2FkIGZyZXF1ZW5jeS4iO3M6MTc6ImVuYWJsZV9zZWFyY2hfbG9nIjtzOjE6InkiO3M6MTk6Im1heF9sb2dnZWRfc2VhcmNoZXMiO3M6MzoiNTAwIjtzOjE3OiJ0aGVtZV9mb2xkZXJfcGF0aCI7czo0MToiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL3RoZW1lcy8iO3M6MTA6ImlzX3NpdGVfb24iO3M6MToieSI7czoxMToicnRlX2VuYWJsZWQiO3M6MToieSI7czoyMjoicnRlX2RlZmF1bHRfdG9vbHNldF9pZCI7czoxOiIxIjtzOjE1OiJjb29raWVfaHR0cG9ubHkiO3M6MToieSI7czoxMzoiY29va2llX3NlY3VyZSI7czoxOiJuIjtzOjE1OiJyZXF1aXJlX2NhcHRjaGEiO3M6MToibiI7fQ==','YTo0Mzp7czoxMDoidW5fbWluX2xlbiI7czoxOiI0IjtzOjEwOiJwd19taW5fbGVuIjtzOjE6IjUiO3M6MjU6ImFsbG93X21lbWJlcl9yZWdpc3RyYXRpb24iO3M6MToibiI7czoyNToiYWxsb3dfbWVtYmVyX2xvY2FsaXphdGlvbiI7czoxOiJ5IjtzOjE4OiJyZXFfbWJyX2FjdGl2YXRpb24iO3M6NToiZW1haWwiO3M6MjM6Im5ld19tZW1iZXJfbm90aWZpY2F0aW9uIjtzOjE6Im4iO3M6MjM6Im1icl9ub3RpZmljYXRpb25fZW1haWxzIjtzOjA6IiI7czoyNDoicmVxdWlyZV90ZXJtc19vZl9zZXJ2aWNlIjtzOjE6InkiO3M6MjA6ImRlZmF1bHRfbWVtYmVyX2dyb3VwIjtzOjE6IjUiO3M6MTU6InByb2ZpbGVfdHJpZ2dlciI7czo2OiJtZW1iZXIiO3M6MTI6Im1lbWJlcl90aGVtZSI7czoxMzoiYWdpbGVfcmVjb3JkcyI7czoxNDoiZW5hYmxlX2F2YXRhcnMiO3M6MToieSI7czoyMDoiYWxsb3dfYXZhdGFyX3VwbG9hZHMiO3M6MToibiI7czoxMDoiYXZhdGFyX3VybCI7czoyNjoiaHR0cDovL2VlMi9pbWFnZXMvYXZhdGFycy8iO3M6MTE6ImF2YXRhcl9wYXRoIjtzOjE4OiIuLi9pbWFnZXMvYXZhdGFycy8iO3M6MTY6ImF2YXRhcl9tYXhfd2lkdGgiO3M6MzoiMTAwIjtzOjE3OiJhdmF0YXJfbWF4X2hlaWdodCI7czozOiIxMDAiO3M6MTM6ImF2YXRhcl9tYXhfa2IiO3M6MjoiNTAiO3M6MTM6ImVuYWJsZV9waG90b3MiO3M6MToibiI7czo5OiJwaG90b191cmwiO3M6MzI6Imh0dHA6Ly9lZTIvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjEwOiJwaG90b19wYXRoIjtzOjU1OiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjE1OiJwaG90b19tYXhfd2lkdGgiO3M6MzoiMTAwIjtzOjE2OiJwaG90b19tYXhfaGVpZ2h0IjtzOjM6IjEwMCI7czoxMjoicGhvdG9fbWF4X2tiIjtzOjI6IjUwIjtzOjE2OiJhbGxvd19zaWduYXR1cmVzIjtzOjE6InkiO3M6MTM6InNpZ19tYXhsZW5ndGgiO3M6MzoiNTAwIjtzOjIxOiJzaWdfYWxsb3dfaW1nX2hvdGxpbmsiO3M6MToibiI7czoyMDoic2lnX2FsbG93X2ltZ191cGxvYWQiO3M6MToibiI7czoxMToic2lnX2ltZ191cmwiO3M6NDA6Imh0dHA6Ly9lZTIvaW1hZ2VzL3NpZ25hdHVyZV9hdHRhY2htZW50cy8iO3M6MTI6InNpZ19pbWdfcGF0aCI7czo2MzoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9zaWduYXR1cmVfYXR0YWNobWVudHMvIjtzOjE3OiJzaWdfaW1nX21heF93aWR0aCI7czozOiI0ODAiO3M6MTg6InNpZ19pbWdfbWF4X2hlaWdodCI7czoyOiI4MCI7czoxNDoic2lnX2ltZ19tYXhfa2IiO3M6MjoiMzAiO3M6MTk6InBydl9tc2dfdXBsb2FkX3BhdGgiO3M6MjU6Ii4uL2ltYWdlcy9wbV9hdHRhY2htZW50cy8iO3M6MjM6InBydl9tc2dfbWF4X2F0dGFjaG1lbnRzIjtzOjE6IjMiO3M6MjI6InBydl9tc2dfYXR0YWNoX21heHNpemUiO3M6MzoiMjUwIjtzOjIwOiJwcnZfbXNnX2F0dGFjaF90b3RhbCI7czozOiIxMDAiO3M6MTk6InBydl9tc2dfaHRtbF9mb3JtYXQiO3M6NDoic2FmZSI7czoxODoicHJ2X21zZ19hdXRvX2xpbmtzIjtzOjE6InkiO3M6MTc6InBydl9tc2dfbWF4X2NoYXJzIjtzOjQ6IjYwMDAiO3M6MTk6Im1lbWJlcmxpc3Rfb3JkZXJfYnkiO3M6MTE6InRvdGFsX3Bvc3RzIjtzOjIxOiJtZW1iZXJsaXN0X3NvcnRfb3JkZXIiO3M6NDoiZGVzYyI7czoyMDoibWVtYmVybGlzdF9yb3dfbGltaXQiO3M6MjoiMjAiO30=','YTo3OntzOjIyOiJlbmFibGVfdGVtcGxhdGVfcm91dGVzIjtzOjE6InkiO3M6MTE6InN0cmljdF91cmxzIjtzOjE6InkiO3M6ODoic2l0ZV80MDQiO3M6OToiYWJvdXQvNDA0IjtzOjE5OiJzYXZlX3RtcGxfcmV2aXNpb25zIjtzOjE6Im4iO3M6MTg6Im1heF90bXBsX3JldmlzaW9ucyI7czoxOiI1IjtzOjE1OiJzYXZlX3RtcGxfZmlsZXMiO3M6MToibiI7czoxODoidG1wbF9maWxlX2Jhc2VwYXRoIjtzOjE6Ii8iO30=','YToxMzp7czoyMToiaW1hZ2VfcmVzaXplX3Byb3RvY29sIjtzOjM6ImdkMiI7czoxODoiaW1hZ2VfbGlicmFyeV9wYXRoIjtzOjA6IiI7czoxNjoidGh1bWJuYWlsX3ByZWZpeCI7czo1OiJ0aHVtYiI7czoxNDoid29yZF9zZXBhcmF0b3IiO3M6NDoiZGFzaCI7czoxNzoidXNlX2NhdGVnb3J5X25hbWUiO3M6MToibiI7czoyMjoicmVzZXJ2ZWRfY2F0ZWdvcnlfd29yZCI7czo4OiJjYXRlZ29yeSI7czoyMzoiYXV0b19jb252ZXJ0X2hpZ2hfYXNjaWkiO3M6MToibiI7czoyMjoibmV3X3Bvc3RzX2NsZWFyX2NhY2hlcyI7czoxOiJ5IjtzOjIzOiJhdXRvX2Fzc2lnbl9jYXRfcGFyZW50cyI7czoxOiJ5IjtzOjE1OiJlbmFibGVfY29tbWVudHMiO3M6MToieSI7czoyMjoiY29tbWVudF93b3JkX2NlbnNvcmluZyI7czoxOiJuIjtzOjI3OiJjb21tZW50X21vZGVyYXRpb25fb3ZlcnJpZGUiO3M6MToibiI7czoyMzoiY29tbWVudF9lZGl0X3RpbWVfbGltaXQiO3M6MToiMCI7fQ==','YToxOntzOjU2OiIvaG9tZS9xdWlubmNoci9Qcm9qZWN0cy9hcmNoaXZlL0RvbnRGdWNrVGhpc1VwL2luZGV4LnBocCI7czozMjoiNjY4NGIxNzQ1YjNjZTRmMWQ2NDYyMzI4NDMwOWQwOGIiO30=','');
+	(1,'EE3','default_site',NULL,'YTo5MDp7czoxMDoic2l0ZV9pbmRleCI7czo5OiJpbmRleC5waHAiO3M6ODoic2l0ZV91cmwiO3M6MTE6Imh0dHA6Ly9lZTIvIjtzOjE2OiJ0aGVtZV9mb2xkZXJfdXJsIjtzOjE4OiJodHRwOi8vZWUyL3RoZW1lcy8iO3M6MTU6IndlYm1hc3Rlcl9lbWFpbCI7czoyMDoia2V2aW4uY3VwcEBnbWFpbC5jb20iO3M6MTQ6IndlYm1hc3Rlcl9uYW1lIjtzOjA6IiI7czoyMDoiY2hhbm5lbF9ub21lbmNsYXR1cmUiO3M6NzoiY2hhbm5lbCI7czoxMDoibWF4X2NhY2hlcyI7czozOiIxNTAiO3M6MTE6ImNhcHRjaGFfdXJsIjtzOjI3OiJodHRwOi8vZWUyL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfcGF0aCI7czo1MDoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfZm9udCI7czoxOiJ5IjtzOjEyOiJjYXB0Y2hhX3JhbmQiO3M6MToieSI7czoyMzoiY2FwdGNoYV9yZXF1aXJlX21lbWJlcnMiO3M6MToibiI7czoxNzoiZW5hYmxlX2RiX2NhY2hpbmciO3M6MToibiI7czoxODoiZW5hYmxlX3NxbF9jYWNoaW5nIjtzOjE6Im4iO3M6MTg6ImZvcmNlX3F1ZXJ5X3N0cmluZyI7czoxOiJuIjtzOjEzOiJzaG93X3Byb2ZpbGVyIjtzOjE6Im4iO3M6MTg6InRlbXBsYXRlX2RlYnVnZ2luZyI7czoxOiJuIjtzOjE1OiJpbmNsdWRlX3NlY29uZHMiO3M6MToibiI7czoxMzoiY29va2llX2RvbWFpbiI7czowOiIiO3M6MTE6ImNvb2tpZV9wYXRoIjtzOjA6IiI7czoyMDoid2Vic2l0ZV9zZXNzaW9uX3R5cGUiO3M6MToiYyI7czoxNToiY3Bfc2Vzc2lvbl90eXBlIjtzOjE6ImMiO3M6MjE6ImFsbG93X3VzZXJuYW1lX2NoYW5nZSI7czoxOiJ5IjtzOjE4OiJhbGxvd19tdWx0aV9sb2dpbnMiO3M6MToieSI7czoxNjoicGFzc3dvcmRfbG9ja291dCI7czoxOiJ5IjtzOjI1OiJwYXNzd29yZF9sb2Nrb3V0X2ludGVydmFsIjtzOjE6IjEiO3M6MjA6InJlcXVpcmVfaXBfZm9yX2xvZ2luIjtzOjE6InkiO3M6MjI6InJlcXVpcmVfaXBfZm9yX3Bvc3RpbmciO3M6MToieSI7czoyNDoicmVxdWlyZV9zZWN1cmVfcGFzc3dvcmRzIjtzOjE6Im4iO3M6MTk6ImFsbG93X2RpY3Rpb25hcnlfcHciO3M6MToieSI7czoyMzoibmFtZV9vZl9kaWN0aW9uYXJ5X2ZpbGUiO3M6MDoiIjtzOjE3OiJ4c3NfY2xlYW5fdXBsb2FkcyI7czoxOiJ5IjtzOjE1OiJyZWRpcmVjdF9tZXRob2QiO3M6ODoicmVkaXJlY3QiO3M6OToiZGVmdF9sYW5nIjtzOjc6ImVuZ2xpc2giO3M6ODoieG1sX2xhbmciO3M6MjoiZW4iO3M6MTI6InNlbmRfaGVhZGVycyI7czoxOiJ5IjtzOjExOiJnemlwX291dHB1dCI7czoxOiJuIjtzOjEzOiJsb2dfcmVmZXJyZXJzIjtzOjE6Im4iO3M6MTM6Im1heF9yZWZlcnJlcnMiO3M6MzoiNTAwIjtzOjExOiJkYXRlX2Zvcm1hdCI7czo4OiIlbi8lai8leSI7czoxMToidGltZV9mb3JtYXQiO3M6MjoiMTIiO3M6MTM6InNlcnZlcl9vZmZzZXQiO3M6MDoiIjtzOjIxOiJkZWZhdWx0X3NpdGVfdGltZXpvbmUiO3M6MTY6IkFtZXJpY2EvTmV3X1lvcmsiO3M6MTM6Im1haWxfcHJvdG9jb2wiO3M6NDoibWFpbCI7czoxMToic210cF9zZXJ2ZXIiO3M6MDoiIjtzOjEzOiJzbXRwX3VzZXJuYW1lIjtzOjA6IiI7czoxMzoic210cF9wYXNzd29yZCI7czowOiIiO3M6MTE6ImVtYWlsX2RlYnVnIjtzOjE6Im4iO3M6MTM6ImVtYWlsX2NoYXJzZXQiO3M6NToidXRmLTgiO3M6MTU6ImVtYWlsX2JhdGNobW9kZSI7czoxOiJuIjtzOjE2OiJlbWFpbF9iYXRjaF9zaXplIjtzOjA6IiI7czoxMToibWFpbF9mb3JtYXQiO3M6NToicGxhaW4iO3M6OToid29yZF93cmFwIjtzOjE6InkiO3M6MjI6ImVtYWlsX2NvbnNvbGVfdGltZWxvY2siO3M6MToiNSI7czoyMjoibG9nX2VtYWlsX2NvbnNvbGVfbXNncyI7czoxOiJ5IjtzOjg6ImNwX3RoZW1lIjtzOjc6ImRlZmF1bHQiO3M6MTY6ImxvZ19zZWFyY2hfdGVybXMiO3M6MToieSI7czoxOToiZGVueV9kdXBsaWNhdGVfZGF0YSI7czoxOiJ5IjtzOjI0OiJyZWRpcmVjdF9zdWJtaXR0ZWRfbGlua3MiO3M6MToibiI7czoxNjoiZW5hYmxlX2NlbnNvcmluZyI7czoxOiJuIjtzOjE0OiJjZW5zb3JlZF93b3JkcyI7czowOiIiO3M6MTg6ImNlbnNvcl9yZXBsYWNlbWVudCI7czowOiIiO3M6MTA6ImJhbm5lZF9pcHMiO3M6MDoiIjtzOjEzOiJiYW5uZWRfZW1haWxzIjtzOjA6IiI7czoxNjoiYmFubmVkX3VzZXJuYW1lcyI7czowOiIiO3M6MTk6ImJhbm5lZF9zY3JlZW5fbmFtZXMiO3M6MDoiIjtzOjEwOiJiYW5fYWN0aW9uIjtzOjg6InJlc3RyaWN0IjtzOjExOiJiYW5fbWVzc2FnZSI7czozNDoiVGhpcyBzaXRlIGlzIGN1cnJlbnRseSB1bmF2YWlsYWJsZSI7czoxNToiYmFuX2Rlc3RpbmF0aW9uIjtzOjIxOiJodHRwOi8vd3d3LnlhaG9vLmNvbS8iO3M6MTY6ImVuYWJsZV9lbW90aWNvbnMiO3M6MToieSI7czoxMjoiZW1vdGljb25fdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9zbWlsZXlzLyI7czoxOToicmVjb3VudF9iYXRjaF90b3RhbCI7czo0OiIxMDAwIjtzOjE3OiJuZXdfdmVyc2lvbl9jaGVjayI7czoxOiJ5IjtzOjE3OiJlbmFibGVfdGhyb3R0bGluZyI7czoxOiJuIjtzOjE3OiJiYW5pc2hfbWFza2VkX2lwcyI7czoxOiJ5IjtzOjE0OiJtYXhfcGFnZV9sb2FkcyI7czoyOiIxMCI7czoxMzoidGltZV9pbnRlcnZhbCI7czoxOiI4IjtzOjEyOiJsb2Nrb3V0X3RpbWUiO3M6MjoiMzAiO3M6MTU6ImJhbmlzaG1lbnRfdHlwZSI7czo3OiJtZXNzYWdlIjtzOjE0OiJiYW5pc2htZW50X3VybCI7czowOiIiO3M6MTg6ImJhbmlzaG1lbnRfbWVzc2FnZSI7czo1MDoiWW91IGhhdmUgZXhjZWVkZWQgdGhlIGFsbG93ZWQgcGFnZSBsb2FkIGZyZXF1ZW5jeS4iO3M6MTc6ImVuYWJsZV9zZWFyY2hfbG9nIjtzOjE6InkiO3M6MTk6Im1heF9sb2dnZWRfc2VhcmNoZXMiO3M6MzoiNTAwIjtzOjE3OiJ0aGVtZV9mb2xkZXJfcGF0aCI7czo0MToiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL3RoZW1lcy8iO3M6MTA6ImlzX3NpdGVfb24iO3M6MToieSI7czoxMToicnRlX2VuYWJsZWQiO3M6MToieSI7czoyMjoicnRlX2RlZmF1bHRfdG9vbHNldF9pZCI7czoxOiIxIjtzOjE1OiJjb29raWVfaHR0cG9ubHkiO3M6MToieSI7czoxMzoiY29va2llX3NlY3VyZSI7czoxOiJuIjtzOjE1OiJyZXF1aXJlX2NhcHRjaGEiO3M6MToibiI7fQ==','YTo0Mzp7czoxMDoidW5fbWluX2xlbiI7czoxOiI0IjtzOjEwOiJwd19taW5fbGVuIjtzOjE6IjUiO3M6MjU6ImFsbG93X21lbWJlcl9yZWdpc3RyYXRpb24iO3M6MToibiI7czoyNToiYWxsb3dfbWVtYmVyX2xvY2FsaXphdGlvbiI7czoxOiJ5IjtzOjE4OiJyZXFfbWJyX2FjdGl2YXRpb24iO3M6NToiZW1haWwiO3M6MjM6Im5ld19tZW1iZXJfbm90aWZpY2F0aW9uIjtzOjE6Im4iO3M6MjM6Im1icl9ub3RpZmljYXRpb25fZW1haWxzIjtzOjA6IiI7czoyNDoicmVxdWlyZV90ZXJtc19vZl9zZXJ2aWNlIjtzOjE6InkiO3M6MjA6ImRlZmF1bHRfbWVtYmVyX2dyb3VwIjtzOjE6IjUiO3M6MTU6InByb2ZpbGVfdHJpZ2dlciI7czo2OiJtZW1iZXIiO3M6MTI6Im1lbWJlcl90aGVtZSI7czoxMzoiYWdpbGVfcmVjb3JkcyI7czoxNDoiZW5hYmxlX2F2YXRhcnMiO3M6MToieSI7czoyMDoiYWxsb3dfYXZhdGFyX3VwbG9hZHMiO3M6MToibiI7czoxMDoiYXZhdGFyX3VybCI7czoyNjoiaHR0cDovL2VlMi9pbWFnZXMvYXZhdGFycy8iO3M6MTE6ImF2YXRhcl9wYXRoIjtzOjE4OiIuLi9pbWFnZXMvYXZhdGFycy8iO3M6MTY6ImF2YXRhcl9tYXhfd2lkdGgiO3M6MzoiMTAwIjtzOjE3OiJhdmF0YXJfbWF4X2hlaWdodCI7czozOiIxMDAiO3M6MTM6ImF2YXRhcl9tYXhfa2IiO3M6MjoiNTAiO3M6MTM6ImVuYWJsZV9waG90b3MiO3M6MToibiI7czo5OiJwaG90b191cmwiO3M6MzI6Imh0dHA6Ly9lZTIvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjEwOiJwaG90b19wYXRoIjtzOjU1OiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjE1OiJwaG90b19tYXhfd2lkdGgiO3M6MzoiMTAwIjtzOjE2OiJwaG90b19tYXhfaGVpZ2h0IjtzOjM6IjEwMCI7czoxMjoicGhvdG9fbWF4X2tiIjtzOjI6IjUwIjtzOjE2OiJhbGxvd19zaWduYXR1cmVzIjtzOjE6InkiO3M6MTM6InNpZ19tYXhsZW5ndGgiO3M6MzoiNTAwIjtzOjIxOiJzaWdfYWxsb3dfaW1nX2hvdGxpbmsiO3M6MToibiI7czoyMDoic2lnX2FsbG93X2ltZ191cGxvYWQiO3M6MToibiI7czoxMToic2lnX2ltZ191cmwiO3M6NDA6Imh0dHA6Ly9lZTIvaW1hZ2VzL3NpZ25hdHVyZV9hdHRhY2htZW50cy8iO3M6MTI6InNpZ19pbWdfcGF0aCI7czo2MzoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9zaWduYXR1cmVfYXR0YWNobWVudHMvIjtzOjE3OiJzaWdfaW1nX21heF93aWR0aCI7czozOiI0ODAiO3M6MTg6InNpZ19pbWdfbWF4X2hlaWdodCI7czoyOiI4MCI7czoxNDoic2lnX2ltZ19tYXhfa2IiO3M6MjoiMzAiO3M6MTk6InBydl9tc2dfdXBsb2FkX3BhdGgiO3M6MjU6Ii4uL2ltYWdlcy9wbV9hdHRhY2htZW50cy8iO3M6MjM6InBydl9tc2dfbWF4X2F0dGFjaG1lbnRzIjtzOjE6IjMiO3M6MjI6InBydl9tc2dfYXR0YWNoX21heHNpemUiO3M6MzoiMjUwIjtzOjIwOiJwcnZfbXNnX2F0dGFjaF90b3RhbCI7czozOiIxMDAiO3M6MTk6InBydl9tc2dfaHRtbF9mb3JtYXQiO3M6NDoic2FmZSI7czoxODoicHJ2X21zZ19hdXRvX2xpbmtzIjtzOjE6InkiO3M6MTc6InBydl9tc2dfbWF4X2NoYXJzIjtzOjQ6IjYwMDAiO3M6MTk6Im1lbWJlcmxpc3Rfb3JkZXJfYnkiO3M6OToibWVtYmVyX2lkIjtzOjIxOiJtZW1iZXJsaXN0X3NvcnRfb3JkZXIiO3M6NDoiZGVzYyI7czoyMDoibWVtYmVybGlzdF9yb3dfbGltaXQiO3M6MjoiMjAiO30=','YTo3OntzOjIyOiJlbmFibGVfdGVtcGxhdGVfcm91dGVzIjtzOjE6InkiO3M6MTE6InN0cmljdF91cmxzIjtzOjE6InkiO3M6ODoic2l0ZV80MDQiO3M6OToiYWJvdXQvNDA0IjtzOjE5OiJzYXZlX3RtcGxfcmV2aXNpb25zIjtzOjE6Im4iO3M6MTg6Im1heF90bXBsX3JldmlzaW9ucyI7czoxOiI1IjtzOjE1OiJzYXZlX3RtcGxfZmlsZXMiO3M6MToibiI7czoxODoidG1wbF9maWxlX2Jhc2VwYXRoIjtzOjE6Ii8iO30=','YToxMzp7czoyMToiaW1hZ2VfcmVzaXplX3Byb3RvY29sIjtzOjM6ImdkMiI7czoxODoiaW1hZ2VfbGlicmFyeV9wYXRoIjtzOjA6IiI7czoxNjoidGh1bWJuYWlsX3ByZWZpeCI7czo1OiJ0aHVtYiI7czoxNDoid29yZF9zZXBhcmF0b3IiO3M6NDoiZGFzaCI7czoxNzoidXNlX2NhdGVnb3J5X25hbWUiO3M6MToibiI7czoyMjoicmVzZXJ2ZWRfY2F0ZWdvcnlfd29yZCI7czo4OiJjYXRlZ29yeSI7czoyMzoiYXV0b19jb252ZXJ0X2hpZ2hfYXNjaWkiO3M6MToibiI7czoyMjoibmV3X3Bvc3RzX2NsZWFyX2NhY2hlcyI7czoxOiJ5IjtzOjIzOiJhdXRvX2Fzc2lnbl9jYXRfcGFyZW50cyI7czoxOiJ5IjtzOjE1OiJlbmFibGVfY29tbWVudHMiO3M6MToieSI7czoyMjoiY29tbWVudF93b3JkX2NlbnNvcmluZyI7czoxOiJuIjtzOjI3OiJjb21tZW50X21vZGVyYXRpb25fb3ZlcnJpZGUiO3M6MToibiI7czoyMzoiY29tbWVudF9lZGl0X3RpbWVfbGltaXQiO3M6MToiMCI7fQ==','YToxOntzOjU2OiIvaG9tZS9xdWlubmNoci9Qcm9qZWN0cy9hcmNoaXZlL0RvbnRGdWNrVGhpc1VwL2luZGV4LnBocCI7czozMjoiNjY4NGIxNzQ1YjNjZTRmMWQ2NDYyMzI4NDMwOWQwOGIiO30=','');
 UNLOCK TABLES;
 
 
@@ -2036,8 +2084,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_upload_prefs` WRITE;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
-	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,NULL),
-	(2,1,'About','../themes/ee/site/agile_records/images/uploads/','/themes/ee/site/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL,NULL),
+	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
+	(2,1,'About','../themes/ee/site/agile_records/images/uploads/','/themes/ee/site/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL,0),
 	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
 	(4,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
 	(5,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);

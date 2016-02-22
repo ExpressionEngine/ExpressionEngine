@@ -90,7 +90,7 @@ class File_field {
 		}
 
 		// Get the thumbnail
-		$thumb_info = ee()->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
+		$thumb_info = ee()->filemanager->get_thumb(rawurldecode($vars['filename']), $vars['upload_location_id']);
 		$vars['thumb'] = $thumb_info['thumb'];
 		$vars['alt'] = $vars['filename'];
 
@@ -165,7 +165,8 @@ class File_field {
 		$vars['existing_files'] = $existing_files;
 
 		ee()->load->add_package_path(PATH_THEMES . 'cp/default');
-		return ee()->load->view('_shared/file/field', $vars, TRUE);
+		//return ee()->load->view('_shared/file/field', $vars, TRUE);
+		return ee('View')->make('_shared/file/field')->render($vars);
 	}
 
 	// ------------------------------------------------------------------------

@@ -31,11 +31,24 @@ use CP_Controller;
  */
 class Messages extends Settings {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_members', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	/**
 	 * General Settings
 	 */
 	public function index()
 	{
+		$current = ee()->config->item('prv_msg_upload_path');
+		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -65,14 +78,30 @@ class Messages extends Settings {
 					)
 				),
 			),
-			'attachment_settings' => array(
+			'url_path_settings_title' => array(
+				array(
+					'title' => 'prv_msg_upload_url',
+					'desc' => 'prv_msg_upload_url_desc',
+					'fields' => array(
+						'prv_msg_upload_url' => array(
+							'type' => 'text',
+							'value' => ($directory) ? $directory->url : str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
+							'required' => TRUE
+						)
+					)
+				),
 				array(
 					'title' => 'prv_msg_upload_path',
 					'desc' => 'prv_msg_upload_path_desc',
 					'fields' => array(
-						'prv_msg_upload_path' => array('type' => 'text')
+						'prv_msg_upload_path' => array(
+							'type' => 'text',
+							'required' => TRUE
+						)
 					)
 				),
+			),
+			'attachment_settings' => array(
 				array(
 					'title' => 'prv_msg_max_attachments',
 					'fields' => array(
@@ -103,9 +132,14 @@ class Messages extends Settings {
 				'rules' => 'integer'
 			),
 			array(
+				'field' => 'prv_msg_upload_url',
+				'label' => 'lang:prv_msg_upload_url',
+				'rules' => 'required'
+			),
+			array(
 				'field' => 'prv_msg_upload_path',
 				'label' => 'lang:prv_msg_upload_path',
-				'rules' => 'strip_tags|valid_xss_check|file_exists|writable'
+				'rules' => 'required|strip_tags|valid_xss_check|file_exists|writable'
 			),
 			array(
 				'field' => 'prv_msg_max_attachments',
@@ -126,7 +160,7 @@ class Messages extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/messages');
+		$base_url = ee('CP/URL')->make('settings/messages');
 
 		if (AJAX_REQUEST)
 		{
@@ -139,6 +173,8 @@ class Messages extends Settings {
 				'prv_msg_upload_path' => ee()->input->post('prv_msg_upload_path'),
 				'prv_msg_attach_maxsize' => ee()->input->post('prv_msg_attach_maxsize'),
 			);
+
+			unset($vars['sections'][0]['url_path_settings_title'][0]);
 
 			if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings))
 			{
@@ -172,6 +208,13 @@ class Messages extends Settings {
 	{
 		$current = ee()->config->item('prv_msg_upload_path');
 		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		if ( ! $directory)
+		{
+			$directory = ee('Model')->make('UploadDestination');
+			$directory->name = 'PM Attachments';
+			$directory->Module = ee('Model')->get('Module')->filter('module_name', 'Member')->first();
+		}
+		$directory->url = ee()->input->post('prv_msg_upload_url');
 		$directory->server_path = $data['prv_msg_upload_path'];
 		$directory->max_size = $data['prv_msg_attach_maxsize'];
 		$directory->save();

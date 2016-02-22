@@ -48,14 +48,17 @@ class Channels extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $channels->count();
 
-		$table = $this->buildTableFromChannelQuery($channels);
+		$table = $this->buildTableFromChannelQuery($channels, array(), ee()->cp->allowed_group('can_delete_channels'));
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
+		$vars['show_new_channel_button'] = ee()->cp->allowed_group('can_create_channels');
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
 			->currentPage($vars['table']['page'])
 			->render($vars['table']['base_url']);
+
+		$vars['disable'] = $this->hasMaximumChannels() ? 'disable' : '';
 
 		ee()->view->cp_page_title = lang('manage_channels');
 
@@ -72,6 +75,11 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$channel_ids = ee()->input->post('channels');
 
 		if ( ! empty($channel_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -95,7 +103,7 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'channels', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('channels', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -103,6 +111,16 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ($this->hasMaximumChannels())
+		{
+			show_error(lang('maximum_channels_reached'));
+		}
+
 		$this->form();
 	}
 
@@ -111,6 +129,11 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function edit($channel_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form($channel_id);
 	}
 
@@ -123,6 +146,11 @@ class Channels extends AbstractChannelsController {
 	{
 		if (is_null($channel_id))
 		{
+			if ($this->hasMaximumChannels())
+			{
+				show_error(lang('maximum_channels_reached'));
+			}
+
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
@@ -133,7 +161,7 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_new_channel');
-			ee()->view->base_url = ee('CP/URL', 'channels/create');
+			ee()->view->base_url = ee('CP/URL')->make('channels/create');
 			$channel = ee('Model')->make('Channel');
 			$channel->title_field_label = lang('title');
 
@@ -159,7 +187,7 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
-			ee()->view->base_url = ee('CP/URL', 'channels/edit/'.$channel_id);
+			ee()->view->base_url = ee('CP/URL')->make('channels/edit/'.$channel_id);
 		}
 
 		// Channel duplicate preferences menu
@@ -213,7 +241,7 @@ class Channels extends AbstractChannelsController {
 			$alert = ee('CP/Alert')->makeInline('permissions-warn')
 				->asWarning()
 				->addToBody(lang('channel_publishing_options_warning'))
-				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields/groups')))
+				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL')->make('channels/fields/groups')))
 				->cannotClose()
 				->render();
 		}
@@ -273,7 +301,7 @@ class Channels extends AbstractChannelsController {
 						'no_results' => array(
 							'text' => 'status_groups_not_found',
 							'link_text' => 'create_new_status_group',
-							'link_href' => ee('CP/URL', 'channels/status/create')
+							'link_href' => ee('CP/URL')->make('channels/status/create')
 						)
 					)
 				)
@@ -299,7 +327,7 @@ class Channels extends AbstractChannelsController {
 						'no_results' => array(
 							'text' => 'custom_field_groups_not_found',
 							'link_text' => 'create_new_field_group',
-							'link_href' => ee('CP/URL', 'channels/groups/create')
+							'link_href' => ee('CP/URL')->make('channels/groups/create')
 						)
 					)
 				)
@@ -315,7 +343,7 @@ class Channels extends AbstractChannelsController {
 						'no_results' => array(
 							'text' => 'category_groups_not_found',
 							'link_text' => 'create_new_category_group',
-							'link_href' => ee('CP/URL', 'channels/cat/create')
+							'link_href' => ee('CP/URL')->make('channels/cat/create')
 						)
 					)
 				)
@@ -357,7 +385,7 @@ class Channels extends AbstractChannelsController {
 				->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -370,10 +398,10 @@ class Channels extends AbstractChannelsController {
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => ee('CP/URL', 'channels/search'),
+			'form_url' => ee('CP/URL')->make('channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/content-design'),
+					'href' => ee('CP/URL')->make('settings/content-design'),
 					'title' => lang('settings')
 				)
 			)
@@ -383,7 +411,7 @@ class Channels extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('channel'));
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -516,6 +544,16 @@ class Channels extends AbstractChannelsController {
 	}
 
 	/**
+	 * Maximum number of channels reached?
+	 *
+	 * @return bool
+	 **/
+	private function hasMaximumChannels()
+	{
+		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
+	}
+
+	/**
 	 * Channel settings
 	 */
 	public function settings($channel_id)
@@ -523,6 +561,11 @@ class Channels extends AbstractChannelsController {
 		$channel = ee('Model')->get('Channel', $channel_id)->first();
 
 		if ( ! $channel)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -608,11 +651,7 @@ class Channels extends AbstractChannelsController {
 		);
 
 		// Default comment text formatting
-		$comment_text_formatting_options = array(
-			'none'	=> lang('none'),
-			'xhtml'	=> lang('xhtml'),
-			'br'	=> lang('auto_br')
-		);
+		$comment_text_formatting_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		// Comment HTML formatting
 		$comment_html_formatting_options = array(
@@ -1138,7 +1177,7 @@ class Channels extends AbstractChannelsController {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'channels/settings/'.$channel_id);
+		$base_url = ee('CP/URL')->make('channels/settings/'.$channel_id);
 
 		if (AJAX_REQUEST)
 		{
@@ -1147,7 +1186,7 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$this->saveChannelSettings($channel_id, $vars['sections']);
+			$this->saveChannelSettings($channel, $vars['sections']);
 
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -1155,7 +1194,7 @@ class Channels extends AbstractChannelsController {
 				->addToBody(sprintf(lang('channel_settings_saved_desc'), $channel->channel_title))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -1172,7 +1211,7 @@ class Channels extends AbstractChannelsController {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -1197,7 +1236,7 @@ class Channels extends AbstractChannelsController {
 	 *
 	 * @param	int	$channel_id	ID of channel to save settings for
 	 */
-	private function saveChannelSettings($channel_id, $sections)
+	private function saveChannelSettings($channel, $sections)
 	{
 		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
 		{
@@ -1210,12 +1249,12 @@ class Channels extends AbstractChannelsController {
 		{
 			if (ee()->input->post('comment_expiration') == 0)
 			{
-				ee()->channel_model->update_comment_expiration($channel_id, 0, TRUE);
+				ee()->channel_model->update_comment_expiration($channel->getId(), 0, TRUE);
 			}
 			else
 			{
 				ee()->channel_model->update_comment_expiration(
-					$channel_id,
+					$channel->getId(),
 					ee()->input->post('comment_expiration') * 86400
 				);
 			}
@@ -1223,13 +1262,13 @@ class Channels extends AbstractChannelsController {
 
 		if (ee()->input->post('clear_versioning_data'))
 		{
-			ee()->channel_model->clear_versioning_data($channel_id);
+			ee()->channel_model->clear_versioning_data($channel->getId());
 		}
 
 		// Only one possible is revisions- enabled or disabled.
 		// We treat as installed/not and delete the whole tab.
 		ee()->load->library('layout');
-		ee()->layout->sync_layout($_POST, $channel_id);
+		ee()->layout->sync_layout($_POST, $channel->getId());
 
 		// Make sure we only got the fields we asked for
 		foreach ($sections as $settings)
@@ -1243,26 +1282,17 @@ class Channels extends AbstractChannelsController {
 			}
 		}
 
-		$channel = ee('Model')->get('Channel', $channel_id)->first();
+		$channel->set($fields);
 
-		foreach ($fields as $key => $value)
+		if ($channel->ChannelFormSettings === NULL)
 		{
-			if ($channel->hasProperty($key))
-			{
-				$channel->$key = $value;
-			}
+			$channel->ChannelFormSettings = ee('Model')->make('ChannelFormSettings');
+			$channel->ChannelFormSettings->site_id = $channel->site_id;
 		}
 
-		if ( ! $channel_form = $channel->getChannelFormSettings())
-		{
-			$channel_form = ee('Model')->make('ChannelFormSettings');
-			$channel_form->site_id = $channel->site_id;
-		}
-
-		$channel_form->default_status = $fields['default_status'];
-		$channel_form->allow_guest_posts = $fields['allow_guest_posts'];
-		$channel_form->default_author = $fields['default_author'];
-		$channel->setChannelFormSettings($channel_form);
+		$channel->ChannelFormSettings->default_status = $fields['default_status'];
+		$channel->ChannelFormSettings->allow_guest_posts = $fields['allow_guest_posts'];
+		$channel->ChannelFormSettings->default_author = $fields['default_author'];
 		$channel->save();
 	}
 }

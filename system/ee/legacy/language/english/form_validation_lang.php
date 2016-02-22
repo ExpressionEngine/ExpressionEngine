@@ -3,6 +3,7 @@
 $lang['alpha']				= "This field may only contain alphabetical characters.";
 $lang['alpha_dash']			= "This field may only contain alpha-numeric characters, underscores, and dashes.";
 $lang['alpha_dash_space']	= "This field may only contain alpha-numeric characters, underscores, dashes, and spaces.";
+$lang['alpha_dash_period']	= "This field may only contain alpha-numeric characters, underscores, dashes, and periods.";
 $lang['alpha_numeric']		= "This field may only contain alpha-numeric characters.";
 $lang['boolean']			= "This field must be a boolean value.";
 $lang['enum']				= "This field must be one of: %s.";
@@ -17,6 +18,8 @@ $lang['matches']			= "This field does not match the %s field.";
 $lang['max_length']			= "This field cannot exceed %s characters in length.";
 $lang['min_length']			= "This field must be at least %s characters in length.";
 $lang['numeric']			= "This field must contain only numbers.";
+$lang['greater_than']		= "This field must be greater than: %s";
+$lang['less_than']			= "This field must be less than: %s";
 $lang['regex']				= "This field must match the regular expression `%s`.";
 $lang['required']			= "This field is required.";
 $lang['unique']				= "This field must be unique.";

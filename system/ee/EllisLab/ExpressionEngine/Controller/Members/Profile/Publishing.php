@@ -38,7 +38,7 @@ class Publishing extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 
 		$vars['sections'] = array(
@@ -89,7 +89,11 @@ class Publishing extends Profile {
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 		}

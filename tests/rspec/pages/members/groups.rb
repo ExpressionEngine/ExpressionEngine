@@ -1,11 +1,12 @@
 class MemberGroups < ControlPanelPage
+  element :search, 'input[name=search]'
+  element :new_group, '.sidebar h2 a[href$="cp/members/groups/create"]'
 
-	element :member_search, 'input[name=search]'
-	element :member_actions, 'select[name=bulk_action]', visible: false
-	element :member_groups_table, 'table'
+  section :list, MemberGroupsList, 'body'
+  section :edit, MemberGroupsEdit, 'body'
 
-	def load
-		main_menu.members_btn.click
-		find('.sidebar h2 a[href$=cp/members/groups]').click
-	end
+  def load
+    main_menu.members_btn.click
+    find('.sidebar h2 a[href$="cp/members/groups"]').click
+  end
 end

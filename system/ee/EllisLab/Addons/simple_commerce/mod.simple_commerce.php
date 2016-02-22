@@ -43,7 +43,7 @@ class Simple_commerce {
 	/** ----------------------------------------
 	/**  Constructor
 	/** ----------------------------------------*/
-	function Simple_commerce()
+	function __construct()
 	{
 		$this->possible_post = array('business', 'receiver_email', 'receiver_id', 'item_name',
 									 'item_number', 'quantity', 'invoice', 'custom', 'memo',
@@ -1124,7 +1124,7 @@ class Simple_commerce {
 		ee()->load->helper('typography');
 
 		$str = str_replace('&amp;', '&', $str);
-		$str = urlencode(entity_decode($str, 'utf-8'));
+		$str = urlencode(ee('Security/XSS')->entity_decode($str, 'utf-8'));
 
 		return $str;
 	}

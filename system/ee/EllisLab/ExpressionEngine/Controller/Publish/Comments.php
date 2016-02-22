@@ -36,9 +36,13 @@ class Comments extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_moderate_comments')
-		  && ! ee()->cp->allowed_group('can_edit_all_comments')
-		  && ! ee()->cp->allowed_group('can_edit_own_comments'))
+		if ( ! ee()->cp->allowed_group_any(
+			'can_moderate_comments',
+			'can_edit_own_comments',
+			'can_delete_own_comments',
+			'can_edit_all_comments',
+			'can_delete_all_comments'
+			))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -54,17 +58,21 @@ class Comments extends AbstractPublishController {
 		if (ee()->input->post('bulk_action'))
 		{
 			$this->performBulkActions();
-			ee()->functions->redirect(ee('CP/URL', 'publish/comments', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL')->make('publish/comments', ee()->cp->get_url_state()));
 		}
 
-		$vars = array();
+		$vars = array(
+			'can_delete' => ee()->cp->allowed_group('can_delete_all_comments') && ee()->cp->allowed_group('can_delete_own_comments'),
+			'can_moderate' => ee()->cp->allowed_group('can_moderate_comments'),
+		);
+
 		$channel = NULL;
-		$base_url = ee('CP/URL', 'publish/comments');
+		$base_url = ee('CP/URL')->make('publish/comments');
 
 		$comments = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$channel_filter = ee('CP/EntryListing')->createChannelFilter();
+		$channel_filter = ee('CP/EntryListing', ee()->input->get_post('search'))->createChannelFilter();
 		if ($channel_filter->value())
 		{
 			$comments->filter('channel_id', $channel_filter->value());
@@ -140,13 +148,13 @@ class Comments extends AbstractPublishController {
 		if ($channel)
 		{
 			ee()->view->cp_breadcrumbs = array(
-				ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => sprintf(lang('all_channel_entries'), $channel->channel_title),
+				ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => sprintf(lang('all_channel_entries'), $channel->channel_title),
 			);
 		}
 		else
 		{
 			ee()->view->cp_breadcrumbs = array(
-				ee('CP/URL', 'publish/edit')->compile() => sprintf(lang('all_channel_entries'), $channel),
+				ee('CP/URL')->make('publish/edit')->compile() => sprintf(lang('all_channel_entries'), $channel),
 			);
 		}
 
@@ -155,7 +163,7 @@ class Comments extends AbstractPublishController {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 		}
 		else
 		{
@@ -176,11 +184,11 @@ class Comments extends AbstractPublishController {
 		if (ee()->input->post('bulk_action'))
 		{
 			$this->performBulkActions();
-			ee()->functions->redirect(ee('CP/URL', 'publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL')->make('publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
-		$base_url = ee('CP/URL', 'publish/comments/entry/' . $entry_id);
+		$base_url = ee('CP/URL')->make('publish/comments/entry/' . $entry_id);
 
 		$entry = ee('Model')->get('ChannelEntry', $entry_id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -261,7 +269,7 @@ class Comments extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
+			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
@@ -269,12 +277,18 @@ class Comments extends AbstractPublishController {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 		}
 		else
 		{
 			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), $entry->title);
 		}
+
+		$vars['can_delete'] = ee()->cp->allowed_group_any(
+			'can_delete_own_comments',
+			'can_delete_all_comments'
+		);
+		$vars['can_moderate'] = ee()->cp->allowed_group('can_moderate_comments');
 
 		ee()->cp->render('publish/comments/index', $vars);
 	}
@@ -315,7 +329,7 @@ class Comments extends AbstractPublishController {
 		if ($live_look_template)
 		{
 			$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $comment->getEntry()->entry_id);
-			$title = '<a href="' . ee()->cp->masked_url($view_url) . '">' . $title . '</a>';
+			$title = '<a href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . $title . '</a>';
 		}
 
 		$move_desc = sprintf(lang('move_comment_desc'),
@@ -325,7 +339,7 @@ class Comments extends AbstractPublishController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'publish/comments/edit/' . $comment_id),
+			'base_url' => ee('CP/URL')->make('publish/comments/edit/' . $comment_id),
 			'save_btn_text' => 'btn_edit_comment',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -423,7 +437,7 @@ class Comments extends AbstractPublishController {
 				->addToBody(lang('edit_comment_success_desc'))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'publish/comments/edit/' . $comment_id));
+			ee()->functions->redirect(ee('CP/URL')->make('publish/comments/edit/' . $comment_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -437,7 +451,7 @@ class Comments extends AbstractPublishController {
 		ee()->view->cp_page_title = lang('edit_comment');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'publish/comments')->compile() => lang('all_comments'),
+			ee('CP/URL')->make('publish/comments')->compile() => lang('all_comments'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -452,11 +466,16 @@ class Comments extends AbstractPublishController {
 	private function buildTableFromCommentQuery(Builder $comments)
 	{
 		ee()->load->helper('text');
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'sort_dir' => 'desc',
+			'sort_col' => 'column_comment_date',
+		));
 
 		$table->setColumns(
 			array(
-				'column_comment',
+				'column_comment' => array(
+					'encode' => FALSE
+				),
 				'column_comment_date',
 				'column_ip_address',
 				'column_status' => array(
@@ -505,7 +524,7 @@ class Comments extends AbstractPublishController {
 			{
 				$toolbar = array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'publish/comments/edit/' . $comment->comment_id),
+						'href' => ee('CP/URL')->make('publish/comments/edit/' . $comment->comment_id),
 						'title' => lang('edit')
 					)
 				);
@@ -521,7 +540,7 @@ class Comments extends AbstractPublishController {
 					'name' => 'selection[]',
 					'value' => $comment->comment_id,
 					'data' => array(
-						'confirm' => lang('comment') . ': <b>' . htmlentities(ellipsize($comment->comment, 50), ENT_QUOTES) . '</b>'
+						'confirm' => lang('comment') . ': <b>' . htmlentities(ellipsize($comment->comment, 50), ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);

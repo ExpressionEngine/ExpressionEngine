@@ -75,6 +75,8 @@ class MemberPreferences extends CustomType {
 	protected $memberlist_order_by;
 	protected $memberlist_sort_order;
 	protected $memberlist_row_limit;
+	protected $approved_member_notification;
+	protected $declined_member_notification;
 
 	/**
 	* Called when the column is fetched from db

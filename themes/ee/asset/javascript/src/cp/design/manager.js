@@ -24,18 +24,58 @@
 (function ($) {
 	$(document).ready(function () {
 		$('table .toolbar .settings a').click(function (e) {
-			var modal = $(this).attr('rel');
+			var settings_button = this;
+			var modal = $('.' + $(this).attr('rel'));
+
 			$.ajax({
 				type: "GET",
 				url: EE.template_settings_url.replace('###', $(this).data('template-id')),
 				dataType: 'html',
 				success: function (data) {
-					$("." + modal + " div.box").html(data);
-
-					// Bind validation
-					EE.cp.formValidation.init($("." + modal + " div.box form"));
+					loadSettingsModal(modal, data);
 				}
 			})
+		});
+
+		function loadSettingsModal(modal, data) {
+			$('div.box', modal).html(data);
+
+			// Bind validation
+			EE.cp.formValidation.init(modal);
+
+			$('form', modal).on('submit', function() {
+				$.ajax({
+					type: 'POST',
+					url: this.action,
+					data: $(this).serialize()+'&save_modal=yes',
+					dataType: 'json',
+
+					success: function(result) {
+						if (result.messageType == 'success') {
+							modal.trigger('modal:close');
+						} else {
+							loadSettingsModal(modal, result.body);
+						}
+					}
+				});
+
+				return false;
+			});
+		};
+
+		// Reorder template groups
+		EE.cp.folderList.onSort('template-group', function(list) {
+			// Create an array of template group names
+			var template_groups = $.map($('> li', list), function(list_item) {
+				return $(list_item).data('group_name');
+			});
+
+			$.ajax({
+				url: EE.templage_groups_reorder_url,
+				data: {'groups': template_groups },
+				type: 'POST',
+				dataType: 'json'
+			});
 		});
 	});
 })(jQuery);

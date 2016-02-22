@@ -4,7 +4,7 @@
 	<?=form_open($form_url)?>
 		<?php if($show_new_template_button): ?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL', 'design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_heading?></h1>
@@ -15,7 +15,9 @@
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
+				<?php if ($show_bulk_delete): ?>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
+				<?php endif; ?>
 				<option value="export"><?=lang('export_templates')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>

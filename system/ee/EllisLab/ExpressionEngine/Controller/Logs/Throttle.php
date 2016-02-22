@@ -42,7 +42,7 @@ class Throttle extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -52,7 +52,7 @@ class Throttle extends Logs {
 			$this->delete('Throttle', lang('throttle_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(ee('CP/URL', 'logs/throttle'));
+				return ee()->functions->redirect(ee('CP/URL')->make('logs/throttle'));
 			}
 		}
 
@@ -113,7 +113,7 @@ class Throttle extends Logs {
 			// Set the page heading
 			if ( ! empty(ee()->view->search_value))
 			{
-				ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+				ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 			}
 
 			$logs = $logs->order('last_activity', 'desc')

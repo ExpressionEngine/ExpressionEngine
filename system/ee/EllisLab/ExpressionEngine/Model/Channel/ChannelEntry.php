@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
@@ -23,6 +24,8 @@ class ChannelEntry extends ContentModel {
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
+	protected static $_hook_id = 'channel_entry';
+
 	protected static $_typed_columns = array(
 		'versioning_enabled'      => 'boolString',
 		'allow_comments'          => 'boolString',
@@ -30,6 +33,7 @@ class ChannelEntry extends ContentModel {
 		'entry_date'              => 'int',
 		'expiration_date'         => 'int',
 		'comment_expiration_date' => 'int',
+		'author_id'               => 'int',
 		'edit_date'               => 'timestamp',
 		'recent_comment_date'     => 'timestamp',
 	);
@@ -80,13 +84,18 @@ class ChannelEntry extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryVersion'
 		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
+		)
 	);
 
 	protected static $_validation_rules = array(
+		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|alphaDash',
+		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[site_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -96,8 +105,10 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
-		'afterSave',
+		'afterDelete',
+		'afterInsert',
 		'afterUpdate',
+		'afterSave',
 	);
 
 	// Properties
@@ -142,8 +153,14 @@ class ChannelEntry extends ContentModel {
 	{
 		$result = parent::validate();
 
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
+			ee()->load->add_package_path($info->getPath(), FALSE);
+
 			include_once($info->getPath() . '/tab.' . $name . '.php');
 			$class_name = ucfirst($name) . '_tab';
 			$OBJ = new $class_name();
@@ -172,9 +189,83 @@ class ChannelEntry extends ContentModel {
 					}
 				}
 			}
+
+			// restore our package and view paths
+			ee()->load->remove_package_path($info->getPath());
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Validate the author ID for permissions
+	 */
+	public function validateAuthorId($key, $value, $params, $rule)
+	{
+		if (ee()->session->userdata('member_id'))
+		{
+			if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+			{
+				return 'not_authorized';
+			}
+
+			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+				(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+			{
+				return 'not_authorized';
+			}
+		}
+		else
+		{
+			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
+				($this->Author->MemberGroup->can_edit_other_entries != 'y' OR $this->Author->MemberGroup->can_assign_post_authors != 'y'))
+			{
+				return 'not_authorized';
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validate the URL title for any disallowed characters; it's basically an alhpa-dash rule plus periods
+	 */
+	public function validateUrlTitle($key, $value)
+	{
+		if ( ! (bool) preg_match("/^([-a-z0-9_.-])+$/i", $value))
+		{
+			return 'alpha_dash_period';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validate that the url title is unique for this site and return a custom
+	 * error with the channel entry title if it is not.
+	 */
+	public function validateUniqueUrlTitle($key, $value, $params, $rule)
+	{
+		$site_id = $this->getProperty($params[0]);
+
+		$entry = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'title')
+			->filter('site_id', $site_id)
+			->filter('url_title', $value)
+			->first();
+
+		if ($entry)
+		{
+			if (defined('REQ') && REQ == 'CP')
+			{
+				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+				return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
+			}
+
+			return lang('url_title_not_unique_frontend');
+		}
+
+		return TRUE;
 	}
 
 	public function onAfterSave()
@@ -182,8 +273,14 @@ class ChannelEntry extends ContentModel {
 		parent::onAfterSave();
 		$this->Autosaves->delete();
 
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
+			ee()->load->add_package_path($info->getPath(), FALSE);
+
 			include_once($info->getPath() . '/tab.' . $name . '.php');
 			$class_name = ucfirst($name) . '_tab';
 			$OBJ = new $class_name();
@@ -201,12 +298,69 @@ class ChannelEntry extends ContentModel {
 
 				$OBJ->save($this, $values);
 			}
+
+			// restore our package and view paths
+			ee()->load->remove_package_path($info->getPath());
+		}
+
+		// clear caches
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
+		{
+			ee()->functions->clear_caching('all');
+		}
+		else
+		{
+			ee()->functions->clear_caching('sql');
 		}
 	}
 
-	public function onAfterUpdate()
+	public function onAfterInsert()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateEntryStats();
+	}
+
+	public function onAfterUpdate($changed)
 	{
 		$this->saveVersion();
+	}
+
+	public function onBeforeDelete()
+	{
+		parent::onBeforeDelete();
+
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			ee()->load->add_package_path($info->getPath(), FALSE);
+
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'delete') === TRUE)
+			{
+				$OBJ->delete(array($this->entry_id));
+			}
+
+			// restore our package and view paths
+			ee()->load->remove_package_path($info->getPath());
+		}
+	}
+
+	public function onAfterDelete()
+	{
+		// store the author and dissociate. otherwise saving the author will
+		// attempt to save this entry to ensure relationship integrity.
+		// TODO make sure everything is already dissociated when we hit this
+		$last_author = $this->Author;
+		$this->Author = NULL;
+
+		$last_author->updateAuthorStats();
+		$this->updateEntryStats();
 	}
 
 	public function saveVersion()
@@ -218,7 +372,7 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->Versions->count() == $this->Channel->max_revisions)
 		{
-			$this->Versions->order('version_date')->first()->delete();
+			$this->Versions->sortBy('version_date')->first()->delete();
 		}
 
 		$data = array(
@@ -232,19 +386,32 @@ class ChannelEntry extends ContentModel {
 		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
 	}
 
-	public function onBeforeDelete()
+	private function updateEntryStats()
 	{
-		foreach ($this->getModulesWithTabs() as $name => $info)
-		{
-			include_once($info->getPath() . '/tab.' . $name . '.php');
-			$class_name = ucfirst($name) . '_tab';
-			$OBJ = new $class_name();
+		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
+		$now = ee()->localize->now;
 
-			if (method_exists($OBJ, 'delete') === TRUE)
-			{
-				$OBJ->delete(array($this->entry_id));
-			}
-		}
+		$entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_date', 'channel_id')
+			->filter('site_id', $site_id)
+			->filter('entry_date', '<', $now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', $now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$total_entries = $entries->count();
+		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
+
+		$stats = $this->getFrontend()->get('Stats')
+			->filter('site_id', $site_id)
+			->first();
+
+		$stats->total_entries = $total_entries;
+		$stats->last_entry_date = $last_entry_date;
+		$stats->save();
 	}
 
 	/**
@@ -267,12 +434,31 @@ class ChannelEntry extends ContentModel {
 
 		$this->getCustomField('title')->setItem('field_label', $this->Channel->title_field_label);
 
-		return parent::getDisplay($layout);
+		$this->usesCustomFields();
+
+		$fields = $this->getCustomFields();
+
+		uasort($fields, function($a, $b) {
+			if ($a->getItem('field_order') == $b->getItem('field_order'))
+			{
+				return ($a->getId() < $b->getId()) ? -1 : 1;
+			}
+
+			return ($a->getItem('field_order') < $b->getItem('field_order')) ? -1 : 1;
+		});
+
+		$fields = array_map(
+			function($field) { return new FieldDisplay($field); },
+			$fields
+		);
+
+		$layout = $layout ?: new DefaultLayout();
+
+		return $layout->transform($fields);
 	}
 
 	protected function getModulesWithTabs()
 	{
-
 		$modules = array();
 		$providers = ee('App')->getProviders();
 		$installed_modules = $this->getFrontend()->get('Module')
@@ -304,10 +490,13 @@ class ChannelEntry extends ContentModel {
 		$module_tabs = array();
 
 		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
 
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
+			ee()->load->add_package_path($info->getPath(), FALSE);
+
 			include_once($info->getPath() . '/tab.' . $name . '.php');
 			$class_name = ucfirst($name) . '_tab';
 			$OBJ = new $class_name();
@@ -333,6 +522,9 @@ class ChannelEntry extends ContentModel {
 
 				$module_tabs[$name] = $fields;
 			}
+
+			// restore our package and view paths
+			ee()->load->remove_package_path($info->getPath());
 		}
 
 		return $module_tabs;
@@ -349,21 +541,9 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function set__categories($categories)
 	{
-		if (empty($categories))
-		{
-			$categories = array();
-		}
-
-		if ( ! is_array($categories))
-		{
-			$categories = array($categories);
-		}
-
-		// annoyingly needed to trigger validation on the field
-		$this->setRawProperty('categories', implode('|', $categories));
-
 		// Currently cannot get multiple category groups through relationships
 		$cat_groups = array();
+
 		if ($this->Channel->cat_group)
 		{
 			$cat_groups = explode('|', $this->Channel->cat_group);
@@ -373,29 +553,43 @@ class ChannelEntry extends ContentModel {
 		{
 			foreach ($cat_groups as $cat_group)
 			{
-				$this->getCustomField('cat_group_id_'.$cat_group)->setData('');
+				$this->setRawProperty('cat_group_id_'.$cat_group, '');
+				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
+
 			$this->Categories = NULL;
+
 			return;
 		}
 
-		$this->Categories = $this
-			->getFrontend()
-			->get('Category')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('cat_id', 'IN', $categories)
-			->all();
+		$set_cats = array();
 
 		// Set the data on the fields in case we come back from a validation error
 		foreach ($cat_groups as $cat_group)
 		{
-			$cats_in_group = $this->Categories->filter(function($category) use ($cat_group)
+			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
 			{
-				return $category->group_id == $cat_group;
-			});
+				$group_cats = $categories['cat_group_id_'.$cat_group];
 
-			$this->getCustomField('cat_group_id_'.$cat_group)->setData(implode('|', $this->Categories->pluck('cat_name')));
+				$cats = implode('|', $group_cats);
+
+				$this->setRawProperty('cat_group_id_'.$cat_group, $cats);
+				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData($cats);
+
+				$group_cat_objects = $this->getModelFacade()
+					->get('Category')
+					->filter('site_id', ee()->config->item('site_id'))
+					->filter('cat_id', 'IN', $group_cats)
+					->all();
+
+				foreach ($group_cat_objects as $cat)
+				{
+					$set_cats[] = $cat;
+				}
+			}
 		}
+
+		$this->Categories = $set_cats;
 	}
 
 	/**
@@ -416,7 +610,7 @@ class ChannelEntry extends ContentModel {
 					'field_instructions'	=> '',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',
-					'field_maxl'			=> 100
+					'field_maxl'			=> 200
 				),
 				'url_title' => array(
 					'field_id'				=> 'url_title',
@@ -427,7 +621,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',
-					'field_maxl'			=> 75
+					'field_maxl'			=> 200
 				),
 				'entry_date' => array(
 					'field_id'				=> 'entry_date',
@@ -523,7 +717,8 @@ class ChannelEntry extends ContentModel {
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'radio',
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
-					'field_maxl'			=> 100
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateAllowComments')
 				)
 			);
 
@@ -552,48 +747,89 @@ class ChannelEntry extends ContentModel {
 					'field_wide'            => TRUE
 				);
 			}
-			$cat_groups = ee('Model')->get('CategoryGroup')
-				->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
-				->all();
 
-			foreach ($cat_groups as $cat_group)
+			if ($this->Channel)
 			{
-				$default_fields['cat_group_id_'.$cat_group->getId()] = array(
-					'field_id'				=> 'categories',
-					'cat_group_id'			=> $cat_group->getId(),
-					'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
-					'field_required'		=> 'n',
-					'field_show_fmt'		=> 'n',
-					'field_instructions'	=> lang('categories_desc'),
-					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'checkboxes',
-					'string_override'		=> '',
-					'field_list_items'      => '',
-					'field_maxl'			=> 100,
-					'populateCallback'		=> array($this, 'populateCategories')
-				);
-			};
+				$cat_groups = ee('Model')->get('CategoryGroup')
+					->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
+					->all();
+
+				foreach ($cat_groups as $cat_group)
+				{
+					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
+						'field_id'				=> 'categories',
+						'group_id'				=> $cat_group->getId(),
+						'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
+						'field_required'		=> 'n',
+						'field_show_fmt'		=> 'n',
+						'field_instructions'	=> lang('categories_desc'),
+						'field_text_direction'	=> 'ltr',
+						'field_type'			=> 'checkboxes',
+						'field_list_items'      => '',
+						'field_maxl'			=> 100,
+						'editable'				=> ee()->session->userdata['can_edit_categories'],
+						'editing'				=> FALSE, // Not currently in editing state
+						'deletable'				=> ee()->session->userdata['can_delete_categories'],
+						'populateCallback'		=> array($this, 'populateCategories'),
+						'manage_toggle_label'	=> lang('manage_categories'),
+						'content_item_label'	=> lang('category')
+					);
+				};
+
+				if ( ! $this->Channel->comment_system_enabled)
+				{
+					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
+				}
+			}
 
 			$module_tabs = $this->getTabFields();
 
 			foreach ($module_tabs as $tab_id => $fields)
 			{
 				foreach ($fields as $key => $field)
+				{
 					$default_fields[$tab_id . '__' . $key] = $field;
+				}
 			}
 		}
 
 		return $default_fields;
 	}
 
+	/**
+	 * Populate the Allow Comments checkbox
+	 */
+	public function populateAllowComments($field)
+	{
+		// Validation error?
+		if (ee()->input->post('allow_comments'))
+		{
+			return $field->setItem('field_data', ee()->input->post('allow_comments'));
+		}
+		// New entry? Go off channel default
+		else if ($this->isNew())
+		{
+			return $field->setItem('field_data', $this->Channel->deft_comments ? 'y' : 'n');
+		}
+		// We're editing
+		else
+		{
+			return $field->setItem('field_data', $this->allow_comments ? 'y' : 'n');
+		}
+	}
+
 	public function populateChannels($field)
 	{
 		// Channels
-		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+				OR ee()->session->userdata('group_id') == 1
+				OR ! is_array(ee()->session->userdata('assigned_channels')))
+			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('field_group', $this->Channel->field_group)
+			->fields('channel_id', 'channel_title')
 			->all()
 			->getDictionary('channel_id', 'channel_title');
 
@@ -602,29 +838,36 @@ class ChannelEntry extends ContentModel {
 
 	public function populateAuthors($field)
 	{
-		// Authors
 		$author_options = array();
 
-		// Get all admins
-		$authors = ee('Model')->get('Member')
-			->filter('group_id', 1)
+		// First, get member groups who should be in the list
+		$member_groups = ee('Model')->get('MemberGroup')
+			->with('AssignedChannels')
+			->filterGroup()
+			->orFilter('include_in_authorlist', 'y')
+			->orFilter('AssignedChannels.channel_id', $this->channel_id)
+			->endFilterGroup()
+			->fields('group_id')
+			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		foreach ($authors as $author)
+		// Then authors who are individually selected to appear in author list
+		$authors = ee('Model')->get('Member')
+			->fields('username', 'screen_name')
+			->filter('in_authorlist', 'y');
+
+		// Then grab any members that are part of the member groups we found
+		if ($member_groups->count())
 		{
-			$author_options[$author->member_id] = $author->getMemberName();
+			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}
 
-		// Get all members assigned to this channel
-		foreach ($this->Channel->AssignedMemberGroups as $group)
+		$authors->order('screen_name');
+		$authors->order('username');
+
+		foreach ($authors->all() as $author)
 		{
-			if ($group->include_in_authorlist === TRUE)
-			{
-				foreach ($group->Members as $member)
-				{
-					$author_options[$member->member_id] = $member->getMemberName();
-				}
-			}
+			$author_options[$author->getId()] = $author->getMemberName();
 		}
 
 		$field->setItem('field_list_items', $author_options);
@@ -668,40 +911,47 @@ class ChannelEntry extends ContentModel {
 
 	public function populateCategories($field)
 	{
-		// Rename the field so that we get the proper field facade later
-		$field->setName('categories');
-
 		$categories = ee('Model')->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', $field->getItem('cat_group_id'))
+			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
 			->filter('Category.parent_id', 0)
-			->order('Category.cat_order')
 			->all();
 
-		$category_list = $this->buildCategoryList($categories);
+		// Sorting alphabetically or custom?
+		$sort_column = 'cat_order';
+		if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a')
+		{
+			$sort_column = 'cat_name';
+		}
+
+		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
 		$field->setItem('field_list_items', $category_list);
 
-		$set_categories = $this->Categories->pluck('cat_name');
+		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
 		$field->setData(implode('|', $set_categories));
 	}
 
 	/**
 	 * Turn the categories collection into a nested array of ids => names
+	 *
+	 * @param	Collection	$categories		Top level categories to construct tree out of
+	 * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
+	 *	categories by the given column
 	 */
-	protected function buildCategoryList($categories)
+	protected function buildCategoryList($categories, $sort_column)
 	{
 		$list = array();
 
 		foreach ($categories as $category)
 		{
-			$children = $category->Children;
+			$children = $category->Children->sortBy($sort_column);
 
 			if (count($children))
 			{
 				$list[$category->cat_id] = array(
 					'name' => $category->cat_name,
-					'children' => $this->buildCategoryList($children)
+					'children' => $this->buildCategoryList($children, $sort_column)
 				);
 
 				continue;

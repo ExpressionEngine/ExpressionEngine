@@ -43,7 +43,7 @@ Grid.Publish = function(field, settings) {
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
-	this.rowContainer = this.root.not($('tr', this.root).has('th'));
+	this.rowContainer = this.root.children('tbody');
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
@@ -77,11 +77,11 @@ Grid.Publish.prototype = {
 		this.root.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
 			beforeSort: function(row) {
-				that._fireEvent('beforeSort', row.item);
+				that._fireEvent('beforeSort', row);
 			},
 			// Fire 'afterSort' event on sort stop
 			afterSort: function(row) {
-				that._fireEvent('afterSort', row.item);
+				that._fireEvent('afterSort', row);
 			}
 		});
 	},
@@ -120,20 +120,28 @@ Grid.Publish.prototype = {
 
 		// Show add button below field when there are more than zero rows
 		addButton.toggle(rowCount > 0);
-		reorderCol.toggle(rowCount > 0);
-		gridRemove.toggle(rowCount > 0);
 
 		if (rowCount > 0) {
-			reorderCol.next().removeClass('first');
-			gridRemove.prev().removeClass('last');
+			// Only show reorder header if table is configured to be reorderable
+			if (reorderCol.size() == 0 && $('td.reorder-col', this.root).size() > 0) {
+				$('> thead tr', this.root).prepend(
+					$('<th/>', { class: 'first reorder-col' })
+				);
+			}
+			if (gridRemove.size() == 0) {
+				$('> thead tr', this.root).append(
+					$('<th/>', { class: 'last grid-remove' })
+				);
+			}
 		} else {
-			reorderCol.next().addClass('first');
-			gridRemove.prev().addClass('last');
+			reorderCol.remove();
+			gridRemove.remove();
 		}
 
 		if (this.settings.grid_max_rows !== '') {
-			// Show add button if row count is below the max rows setting
-			addButton.toggle(rowCount < this.settings.grid_max_rows);
+			// Show add button if row count is below the max rows setting,
+			// and only if there are already other rows present
+			addButton.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
 		}
 
 		if (this.settings.grid_min_rows !== '') {
@@ -156,7 +164,7 @@ Grid.Publish.prototype = {
 	 * @return	{int}	Number of rows
 	 */
 	_getRows: function() {
-		return $('tr', this.rowContainer).not(this.blankRow.add(this.emptyField).add($('tr', this.root).has('th')));
+		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField));
 	},
 
 	/**
@@ -197,6 +205,9 @@ Grid.Publish.prototype = {
 			)
 		);
 
+		// Add the new row ID to the field data
+		$('> td', el).attr('data-new-row-id', 'new_row_' + this.original_row_count);
+
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');
 
@@ -213,7 +224,7 @@ Grid.Publish.prototype = {
 		this._fireEvent('display', el);
 
 		// Bind the new row's inputs to AJAX form validation
-		if (EE.cp.formValidation !== undefined) {
+		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
 		}
 	},
@@ -224,7 +235,7 @@ Grid.Publish.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', '.toolbar .remove a', function(event) {
+		this.root.on('click', 'td:last-child .toolbar .remove a', function(event) {
 			event.preventDefault();
 
 			row = $(this).parents('tr');
@@ -366,6 +377,9 @@ Grid.Settings.prototype = {
 			items: '.grid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper	// Custom sort handler
 		});
+		this.settingsContainer.find('li.reorder a').on('click', function(e){
+			e.preventDefault();
+		});
 	},
 
 	/**
@@ -407,7 +421,7 @@ Grid.Settings.prototype = {
 	_bindCopyButton: function(context) {
 		var that = this;
 
-		context.on('click', '.grid-tools li.copy a', function(event) {
+		context.find('.grid-tools li.copy a').off('click').on('click', function(event) {
 			event.preventDefault();
 
 			var parentCol = $(this).parents('.grid-item');

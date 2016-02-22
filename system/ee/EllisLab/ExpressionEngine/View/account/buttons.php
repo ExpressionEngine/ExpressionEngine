@@ -8,7 +8,7 @@
 			 <h1>
 							 <ul class="toolbar">
 											 <li class="settings">
-															 <a href="<?=ee('CP/URL', 'settings/members')?>" title="<?=lang('member_settings')?>"></a>
+															 <a href="<?=ee('CP/URL')->make('settings/members')?>" title="<?=lang('member_settings')?>"></a>
 											 </li>
 							 </ul>
 							 <?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>

@@ -102,9 +102,10 @@ class VariableFinder {
 
 		foreach ($variables as &$variable)
 		{
-			$line = $variable[1] - $line;
+			$var_line = $variable[1] - 1;
+			$line_offset = $var_line - $line;
 
-			for ($i = 0; $i < $line - 1; $i++)
+			for ($i = 0; $i < $line_offset; $i++)
 			{
 				if ($offset >= strlen($str))
 				{
@@ -118,6 +119,8 @@ class VariableFinder {
 				{
 					$offset += strcspn($str, "\n", $offset) + 1;
 				}
+
+				$line++;
 			}
 
 			$variable[1] = strpos($str, $variable[0][0], $offset);

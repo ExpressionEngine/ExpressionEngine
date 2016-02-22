@@ -82,19 +82,11 @@ class EE_Menu {
 
 		if ($site_list)
 		{
-			$site_backlink = ee()->cp->get_safe_refresh();
-
-			if ($site_backlink)
-			{
-				$site_backlink = implode('|', explode(AMP, $site_backlink));
-				$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
-			}
-
 			foreach($site_list as $site_id => $site_name)
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL', 'msm/switch_to/' . $site_id, array('page' => $site_backlink));
+					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode()));
 				}
 			}
 		}
@@ -124,10 +116,10 @@ class EE_Menu {
 			foreach($channels->result() as $channel)
 			{
 				// Create link
-				$menu['create'][$channel->channel_title] = ee('CP/URL', 'publish/create/' . $channel->channel_id);
+				$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 			}
 		}
 
@@ -144,28 +136,96 @@ class EE_Menu {
 	 */
 	private function _develop_menu()
 	{
-		$menu = array(
-			'channel_manager'  => ee('CP/URL', 'channels'),
-			'template_manager' => ee('CP/URL', 'design'),
-			'msm_manager'      => ee('CP/URL', 'msm'),
-			'addon_manager'    => ee('CP/URL', 'addons'),
-			'utilities'        => ee('CP/URL', 'utilities'),
-			'logs'             => ee('CP/URL', 'logs')
-		);
+		$menu = array();
 
-		if (ee()->config->item('multiple_sites_enabled') !== 'y')
+		if (ee()->cp->allowed_group('can_admin_channels') &&
+			ee()->cp->allowed_group_any(
+			'can_create_channels',
+			'can_edit_channels',
+			'can_delete_channels',
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields',
+			'can_create_statuses',
+			'can_delete_statuses',
+			'can_edit_statuses',
+			'can_create_categories',
+			'can_edit_categories',
+			'can_delete_categories'
+		))
 		{
-			unset($menu['msm_manager']);
+			$sections = array(
+				'channels' => 'channels',
+				'channel_fields' => 'channels/fields/groups',
+				'statuses' => 'channels/status',
+				'categories' => 'channels/cat'
+			);
+
+			foreach ($sections as $name => $path)
+			{
+				if (ee()->cp->allowed_group_any(
+					"can_create_{$name}",
+					"can_edit_{$name}",
+					"can_delete_{$name}"
+				))
+				{
+					$menu['channel_manager'] = ee('CP/URL')->make($path);
+					break;
+				}
+			}
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		if (ee()->cp->allowed_group('can_access_design'))
 		{
-			unset($menu['addon_manager']);
+			$menu['template_manager'] = ee('CP/URL')->make('design');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_admin_sites'))
 		{
-			unset($menu['logs']);
+			$menu['msm_manager'] = ee('CP/URL')->make('msm');
+		}
+
+		if (ee()->cp->allowed_group('can_access_addons'))
+		{
+			$menu['addon_manager'] = ee('CP/URL')->make('addons');
+		}
+
+		if (ee()->cp->allowed_group('can_access_utilities'))
+		{
+
+			$utility_options = array(
+				'can_access_comm' => ee('CP/URL')->make('utilities'),
+				'can_access_translate' => ee('CP/URL')->make('utilities/translate'),
+				'can_access_import' => ee('CP/URL')->make('utilities/member-import'),
+				'can_access_sql_manager' => ee('CP/URL')->make('utilities/sql'),
+				'can_access_data' => ee('CP/URL')->make('utilities/cache')
+				);
+
+			foreach ($utility_options as $allow => $link)
+			{
+				if (ee()->cp->allowed_group($allow))
+				{
+					$menu['utilities'] = $link;
+					break;
+				}
+			}
+
+			// If none of the above are allowed, see if addon admin is
+			// If so, land on extension debug page
+
+			if ( ! isset($menu['utilities']))
+			{
+				if (ee()->cp->allowed_group('can_access_addons')
+					&& ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$menu['utilities'] = ee('CP/URL')->make('utilities/extensions');
+				}
+			}
+		}
+
+		if (ee()->cp->allowed_group('can_access_logs'))
+		{
+			$menu['logs'] = ee('CP/URL')->make('logs');
 		}
 
 		return $menu;
@@ -225,10 +285,10 @@ class EE_Menu {
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
 	 * array(
-	 *     'key_of_heading' => ee('CP/URL', 'optional/link'),
+	 *     'key_of_heading' => ee('CP/URL')->make('optional/link'),
 	 *     'heading_with_no_link',
 	 *     array(
-	 *         'item_in_subsection' => ee('CP/URL', 'sub/section')
+	 *         'item_in_subsection' => ee('CP/URL')->make('sub/section')
 	 *     )
 	 * )
 	 *

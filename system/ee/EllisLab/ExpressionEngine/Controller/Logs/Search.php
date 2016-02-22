@@ -47,7 +47,7 @@ class Search extends Logs {
 			show_404();
 		}
 
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -57,7 +57,7 @@ class Search extends Logs {
 			$this->delete('SearchLog', lang('search_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(ee('CP/URL', 'logs/search'));
+				return ee()->functions->redirect(ee('CP/URL')->make('logs/search'));
 			}
 		}
 
@@ -120,7 +120,7 @@ class Search extends Logs {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
 		}
 
 		ee()->view->header = array(

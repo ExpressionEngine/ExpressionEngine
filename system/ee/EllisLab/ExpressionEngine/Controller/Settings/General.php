@@ -42,6 +42,8 @@ class General extends Settings {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
+		$localization_fields = ee()->config->prep_view_vars('localization_cfg');
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -93,7 +95,8 @@ class General extends Settings {
 							'type' => 'action_button',
 							'text' => 'check_now',
 							'link' => ee('CP/URL', 'settings/general/version-check'),
-							'class' => 'version-check'
+							'class' => 'version-check',
+							'save_in_config' => FALSE
 						)
 					)
 				),
@@ -140,11 +143,7 @@ class General extends Settings {
 					'fields' => array(
 						'date_format' => array(
 							'type' => 'select',
-							'choices' => array(
-								'%n/%j/%y' => 'mm/dd/yy',
-								'%j-%n-%y' => 'dd-mm-yy',
-								'%Y-%m-%d' => 'yyyy-mm-dd'
-							)
+							'choices' => $localization_fields['fields']['date_format']['value']
 						),
 						'time_format' => array(
 							'type' => 'select',

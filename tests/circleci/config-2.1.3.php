@@ -14,7 +14,7 @@ $config['app_version'] = '213';
 $config['install_lock'] = "";
 $config['license_number'] = '1123-5813-2134-5589';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://ee.213/system/index.php';
+$config['cp_url'] = '/admin.php';
 $config['doc_url'] = 'http://expressionengine.com/user_guide/';
 $config['is_system_on'] = 'y';
 $config['site_label'] = 'ExpressionEngine 2.1.3';
@@ -195,17 +195,6 @@ $config['function_trigger'] = 'M';
 |
 */
 $config['log_threshold'] = 0;
-
-/*
-|--------------------------------------------------------------------------
-| Error Logging Directory Path
-|--------------------------------------------------------------------------
-|
-| Leave this BLANK unless you would like to set something other than the default
-| system/logs/ folder.  Use a full server path with trailing slash.
-|
-*/
-$config['log_path'] = '';
 
 /*
 |--------------------------------------------------------------------------

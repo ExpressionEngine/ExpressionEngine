@@ -57,7 +57,11 @@ class Attachment extends Model {
 		'Member' => array(
 			'type'  => 'belongsTo',
 			'model' => 'ee:Member',
-			'weak'  => TRUE
+			'weak'  => TRUE,
+			'inverse' => array(
+				'name' => 'Attachment',
+				'type' => 'hasMany'
+			)
 		),
 		'Post' => array(
 			'type' => 'belongsTo'

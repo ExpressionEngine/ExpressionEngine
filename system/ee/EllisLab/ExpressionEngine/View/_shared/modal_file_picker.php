@@ -2,14 +2,14 @@
 <?=form_open($table['base_url'])?>
 	<?php if (is_numeric($dir)): ?>
 	<fieldset class="tbl-search right">
-		<a class="btn tn action" href="<?=ee('CP/URL', "files/upload/$dir")?>">Upload New File</a>
+		<a class="btn tn action" href="<?=ee('CP/URL')->make("files/upload/$dir")?>">Upload New File</a>
 	</fieldset>
 	<?php endif ?>
 	<h1>
 		<?php if (is_numeric($dir)): ?>
 		<ul class="toolbar">
 			<li class="sync">
-				<a href="<?=ee('CP/URL', "settings/upload/sync/$dir")?>" title="<?=lang('sync_directories')?>"></a>
+				<a href="<?=ee('CP/URL')->make("settings/upload/sync/$dir")?>" title="<?=lang('sync_directories')?>"></a>
 			</li>
 		</ul>
 		<?php endif ?>
@@ -30,7 +30,7 @@
 			<option value="">-- <?=lang('with_selected')?> --</option>
 			<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 		</select>
-		<button class="btn submit" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL', '/members/confirm')?>"><?=lang('submit')?></button>
+		<button class="btn submit" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL')->make('/members/confirm')?>"><?=lang('submit')?></button>
 	</fieldset>
 	<?php endif; ?>
 <?=form_close()?>

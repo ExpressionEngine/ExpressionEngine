@@ -29,7 +29,7 @@ use CP_Controller;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Date extends Profile {
+class Date extends Settings {
 
 	private $base_url = 'members/profile/date';
 
@@ -38,7 +38,7 @@ class Date extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 		$fields = ee()->config->prep_view_vars('localization_cfg');
 		$fields = $fields['fields'];
 		$timezone = ee()->localize->timezone_menu($this->member->timezone, 'timezone');
@@ -119,13 +119,21 @@ class Date extends Profile {
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

@@ -11,7 +11,7 @@ $lang = array(
 
 'running_current'		=> 'ExpressionEngine is up to date (%v)',
 'version_update_available'	=> 'A newer version of ExpressionEngine is available!',
-'version_update_inst'		=> '<a class="update" href=\'%d\' title=\'Download Here\'>Download the latest version</a> and follow the <a class="update" href=\'%i\' title=\'Update Instructions\'>Update Instructions</a>.',
+'version_update_inst'		=> '<a class="update" href="%d" title="Download Here" rel="external">Download the latest version</a> and follow the <a class="update" href="%i" title="Update Instructions" rel="external">Update Instructions</a>.',
 
 /*
 'build_update_available'	=> 'A newer build of ExpressionEngine is available!',

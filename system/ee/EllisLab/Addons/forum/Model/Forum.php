@@ -88,7 +88,12 @@ class Forum extends Model {
 			'from_key' => 'forum_last_post_author_id',
 			'to_key'   => 'member_id',
 			'model'    => 'ee:Member',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Forum',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		),
 		'Moderators' => array(
 			'type'   => 'hasMany',
@@ -204,7 +209,9 @@ class Forum extends Model {
 			$last_forum->filter('forum_parent', $this->getProperty('forum_parent'));
 		}
 
-		$this->setProperty('forum_order', $last_forum->first()->forum_order + 1);
+		$order = ($last_forum->first()) ? $last_forum->first()->forum_order + 1 : 1;
+
+		$this->setProperty('forum_order', $order);
 	}
 
 }

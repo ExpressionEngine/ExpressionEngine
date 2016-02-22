@@ -35,10 +35,10 @@ class Fields extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group(
-			'can_access_admin',
-			'can_admin_channels',
-			'can_access_content_prefs'
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_channel_fields',
+			'can_edit_channel_fields',
+			'can_delete_channel_fields'
 		))
 		{
 			show_error(lang('unauthorized_access'));
@@ -55,27 +55,29 @@ class Fields extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/'.$group_id));
 		}
 
 		$group = ee('Model')->get('ChannelFieldGroup')
 			->filter('group_id', $group_id)
 			->first();
 
-		$base_url = ee('CP/URL', 'channels/fields');
+		$base_url = ee('CP/URL', 'channels/fields/'.$group_id);
 
 		$vars = array(
-			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id)
+			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id),
+			'group_id'   => $group->group_id
 		);
 
 		$fields = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $group_id);
 
-		$table = $this->buildTableFromChannelFieldsQuery($fields);
-		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL', 'channels/fields/create/' . $group_id));
+		$table = $this->buildTableFromChannelFieldsQuery($fields, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
+		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
 		$vars['table'] = $table->viewData($base_url);
+		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
@@ -89,7 +91,7 @@ class Fields extends AbstractChannelsController {
 			),
 		));
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/fields/groups'), lang('field_groups'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/fields/groups'), lang('field_groups'));
 		ee()->view->cp_page_title = sprintf(lang('custom_fields_for'), $group->group_name);
 
 		ee()->cp->render('channels/fields/index', $vars);
@@ -97,9 +99,14 @@ class Fields extends AbstractChannelsController {
 
 	public function create($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/' . $group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -128,7 +135,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/'.$group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/'.$group_id));
 			}
 			else
 			{
@@ -145,7 +152,7 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/create/' . $group_id),
+			'base_url' => ee('CP/URL')->make('channels/fields/create/' . $group_id),
 			'sections' => $this->form(),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',
@@ -171,6 +178,11 @@ class Fields extends AbstractChannelsController {
 
 	public function edit($id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$field = ee('Model')->get('ChannelField', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -181,8 +193,8 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/' . $field->group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -207,7 +219,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/' . $field->group_id));
 			}
 			else
 			{
@@ -224,7 +236,7 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',
@@ -243,12 +255,20 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
-		$field->field_type = $_POST['field_type'];
 		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 
 		$field->set($_POST);
+
+		if ($field->field_pre_populate)
+		{
+			list($channel_id, $field_id) = explode('_', $_POST['field_pre_populate_id']);
+
+			$field->field_pre_channel_id = $channel_id;
+			$field->field_pre_field_id = $field_id;
+		}
+
 		return $field;
 	}
 
@@ -259,17 +279,13 @@ class Fields extends AbstractChannelsController {
 			$field = ee('Model')->make('ChannelField');
 		}
 
+		$fieldtype_choices = $field->getCompatibleFieldtypes();
+
 		$fieldtypes = ee('Model')->get('Fieldtype')
+			->fields('name')
+			->filter('name', 'IN', array_keys($fieldtype_choices))
 			->order('name')
 			->all();
-
-		$fieldtype_choices = array();
-
-		foreach ($fieldtypes as $fieldtype)
-		{
-			$info = ee('App')->get($fieldtype->name);
-			$fieldtype_choices[$fieldtype->name] = $info->getName();
-		}
 
 		$field->field_type = ($field->field_type) ?: 'text';
 
@@ -376,7 +392,10 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group'),
+			'file' => array(
+				'cp/form_group',
+				'cp/channel/fields'
+			),
 		));
 
 		return $sections;
@@ -384,6 +403,11 @@ class Fields extends AbstractChannelsController {
 
 	private function remove($field_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($field_ids))
 		{
 			$field_ids = array($field_ids);

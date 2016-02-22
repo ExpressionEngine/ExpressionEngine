@@ -1,5 +1,28 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// --------------------------------------------------------------------
+
+/**
+ * ExpressionEngine File Picker Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
@@ -14,7 +37,7 @@ class Filepicker_mcp {
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
 
-		if (ee()->cp->allowed_group('can_access_content', 'can_access_files'))
+		if (ee()->cp->allowed_group('can_access_files'))
 		{
 			$this->access = TRUE;
 		}
@@ -22,12 +45,39 @@ class Filepicker_mcp {
 		ee()->lang->loadfile('filemanager');
 	}
 
+	protected function getUserUploadDirectories()
+	{
+		$dirs = ee()->api->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all();
+
+		$member_group = ee()->session->userdata['group_id'];
+
+		return $dirs->filter(function($dir) use ($member_group)
+		{
+			return $dir->memberGroupHasAccess($member_group);
+		});
+	}
+
+	protected function getSystemUploadDirectories()
+	{
+		$dirs = ee()->api->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', '!=', 0)
+			->all();
+
+		return $dirs;
+	}
+
 	public function index()
 	{
 		// check if we have a request for a specific file id
-		if ( ! empty(ee()->input->get('file')))
+		$file = ee()->input->get('file');
+
+		if ( ! empty($file))
 		{
-			$this->fileInfo(ee()->input->get('file'));
+			return $this->fileInfo($file);
 		}
 
 		if ($this->access === FALSE)
@@ -35,98 +85,169 @@ class Filepicker_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$dirs = ee()->api->get('UploadDestination')
-			->with('Files')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$dirs = $this->getUserUploadDirectories();
 
-		$directories = $dirs->indexBy('id');
+		// directories we were asked to list
+		$show = ee()->input->get('directories');
 
-		if ( ! empty(ee()->input->get('directory')))
+		// directory filter
+		$requested = ee()->input->get('directory') ?: 'all';
+
+		$show = (empty($show) && $requested == 'all') ? 'all' : $show;
+
+		if ($show != 'all')
 		{
-			$id = ee()->input->get('directory');
+			$dirs = $dirs->filter('id', (int) $show);
 		}
 
-		if (empty($id) || $id == 'all')
+		// only have one? use it
+		if ($dirs->count() == 1)
 		{
-			$id = 'all';
+			$requested = $dirs->first()->id;
+		}
+
+		$directories = $dirs->indexBy('id');
+		$files = NULL;
+
+		if ($requested == 'all')
+		{
 			$files = ee('Model')->get('File')
-				->filter('site_id', ee()->config->item('site_id'))->all();
+				->filter('upload_location_id', 'IN', $dirs->getIds())
+				->filter('site_id', ee()->config->item('site_id'));
+
+			$total_files = $files->count();
 
 			$type = ee()->input->get('type') ?: 'list';
 		}
 		else
 		{
-			if (empty($directories[$id]))
+			// selected something but we don't have that directory? check
+			// the system dirs, just in case
+			if (empty($directories[$requested]))
 			{
-				show_error(lang('invalid_upload_destination'));
+				$system_dirs = $this->getSystemUploadDirectories()->indexBy('id');
+
+				if (empty($system_dirs[$requested]))
+				{
+					show_error(lang('no_upload_destination'));
+				}
+
+				$dir = $system_dirs[$requested];
+				$files = $dir->getFilesystem()->all();
+				$total_files = iterator_count($files);
+			}
+			else
+			{
+				$dir = $directories[$requested];
+
+				$files = ee('Model')->get('File')
+					->filter('upload_location_id', $dir->getId())
+					->filter('site_id', ee()->config->item('site_id'));
+
+				$total_files = $files->count();
 			}
 
-			$dir = $directories[$id];
-			$files = $dir->Files;
 			$type = ee()->input->get('type') ?: $dir->default_modal_view;
 		}
 
-		// Filter out any files that are no longer on disk
-		$files->filter(function($file) { return $file->exists(); });
+		$has_filters = ee()->input->get('hasFilters');
 
 		$base_url = ee('CP/URL', $this->base_url);
-
-		$directories = array_map(function($dir) {return $dir->name;}, $directories);
-		$directories = array('all' => lang('all')) + $directories;
-		$vars['type'] = $type;
-
-		$filters = ee('CP/Filter')->add('Perpage', $files->count(), 'show_all_files');
-
-		$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
-			->disableCustomValue();
-
-		$filters = $filters->add($dirFilter);
-
-		$imgOptions = array(
-			'thumb' => 'thumbnails',
-			'list' => 'list'
-		);
-		$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
-			->disableCustomValue()
-			->setDefaultValue($type);
-		$filters = $filters->add($imgFilter);
-
-		$perpage = $filters->values()['perpage'];
-		$vars['filters'] = $filters->render($base_url);
-
-		$base_url->setQueryStringVariable('directory', $id);
+		$base_url->setQueryStringVariable('directories', $show);
+		$base_url->setQueryStringVariable('directory', $requested);
 		$base_url->setQueryStringVariable('type', $type);
+
+		if ($has_filters !== '0')
+		{
+			$vars['type'] = $type;
+			$filters = ee('CP/Filter');
+
+			if (count($directories) > 1)
+			{
+				$directories = array_map(function($dir) {return $dir->name;}, $directories);
+				$directories = array('all' => lang('all')) + $directories;
+
+				$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
+					->disableCustomValue()
+					->setDefaultValue($requested);
+
+				$filters = ee('CP/Filter')->add($dirFilter);
+			}
+
+			$filters = $filters->add('Perpage', $total_files, 'show_all_files', TRUE);
+
+			$imgOptions = array(
+				'thumb' => 'thumbnails',
+				'list' => 'list'
+			);
+
+			$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
+				->disableCustomValue()
+				->setDefaultValue($type);
+
+			$filters = $filters->add($imgFilter);
+
+			$perpage = $filters->values();
+			$perpage = $perpage['perpage'];
+
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
+
+			$vars['filters'] = $filters->render($base_url);
+		}
+		else
+		{
+			$base_url->setQueryStringVariable('hasFilters', $has_filters);
+
+			$perpage = 25;
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
+		}
+
+
+		if ( ! $files instanceOf \Iterator)
+		{
+			$files = $files->limit($perpage)->offset($offset)->all();
+			$files = $files->getIterator();
+		}
+		else
+		{
+			$files = new \LimitIterator($files, $offset, $perpage);
+		}
 
 		if ($this->images || $type == 'thumb')
 		{
 			$vars['type'] = 'thumb';
 			$vars['files'] = $files;
 			$vars['form_url'] = $base_url;
+			$vars['data_url_base'] = $this->base_url;
 		}
 		else
 		{
-			$table = $this->picker->buildTableFromFileCollection($files, $perpage);
+			$table = $this->picker->buildTableFromFileCollection($files, $perpage, ee()->input->get_post('selected'));
 
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
+			$vars['type'] = $type;
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
 
-		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload" ,array('directory' => $id));
-		$vars['dir'] = $id;
-		if ( ! empty($vars['table']['data']))
+		if (ee()->input->get('hasUpload') !== '0')
 		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
+			$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
+			$vars['upload']->setQueryStringVariable('directory', $requested);
 		}
 
-		$vars['cp_heading'] = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
+		$vars['dir'] = $requested;
+
+		$vars['pagination'] = ee('CP/Pagination', $total_files)
+			->perPage($perpage)
+			->currentPage($page)
+			->render($base_url);
+
+		$vars['cp_heading'] = $requested == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
 		return ee('View')->make('filepicker:ModalView')->render($vars);
 	}
@@ -229,14 +350,13 @@ class Filepicker_mcp {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
-			'base_url' => ee('CP/URL', $this->picker->base_url . 'upload', array('directory' => $dir_id)),
+			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'file',
-						'desc' => 'file_desc',
 						'fields' => array(
 							'file' => array(
 								'type' => 'file',
@@ -246,7 +366,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'title',
-						'desc' => 'title_desc',
 						'fields' => array(
 							'title' => array(
 								'type' => 'text',
@@ -255,7 +374,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'description',
-						'desc' => 'description_desc',
 						'fields' => array(
 							'description' => array(
 								'type' => 'textarea',
@@ -264,7 +382,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'credit',
-						'desc' => 'credit_desc',
 						'fields' => array(
 							'credit' => array(
 								'type' => 'text',
@@ -273,7 +390,6 @@ class Filepicker_mcp {
 					),
 					array(
 						'title' => 'location',
-						'desc' => 'location_desc',
 						'fields' => array(
 							'location' => array(
 								'type' => 'text',
@@ -345,13 +461,7 @@ class Filepicker_mcp {
 				$file->save();
 				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
 
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('upload_filedata_success'))
-					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
-					->defer();
-
-				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $dir_id));
+				return $this->fileInfo($file->getId());
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -364,11 +474,29 @@ class Filepicker_mcp {
 		}
 
 		$vars['cp_page_title'] = lang('file_upload');
-
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
+		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
 		ee()->output->_display($out);
 		exit();
 	}
 
+	protected function ajaxValidation(ValidationResult $result)
+	{
+		if (ee()->input->is_ajax_request())
+		{
+			$field = ee()->input->post('ee_fv_field');
+
+			if ($result->hasErrors($field))
+			{
+				return array('error' => $result->renderError($field));
+			}
+			else
+			{
+				return array('success');
+			}
+		}
+
+		return NULL;
+	}
 }
 ?>

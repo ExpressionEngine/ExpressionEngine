@@ -47,7 +47,11 @@ class Search extends Model {
 		'Member' => array(
 			'type'  => 'belongsto',
 			'model' => 'ee:Member',
-			'weak'  => TRUE
+			'weak'  => TRUE,
+			'inverse' => array(
+				'name' => 'Search',
+				'type' => 'hasMany'
+			)
 		),
 	);
 

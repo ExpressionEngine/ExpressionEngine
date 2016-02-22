@@ -47,7 +47,7 @@ $(document).ready(function(){
 
 		// listen for clicks on anchor tags
 		// that include rel="external" attributes
-		$('a[rel="external"]').on('click',function(e){
+		$('body').on('click', 'a[rel="external"]', function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
 			window.open(this.href);
@@ -224,19 +224,33 @@ $(document).ready(function(){
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('fast').css('height',heightIs);
+			$('.overlay').fadeIn('fast').css('height', heightIs);
 			// fade in modal
-			$(this).fadeIn('fast');
+			$(this).fadeIn('slow');
 
-			// scroll up, if needed
-			$('#top').animate({ scrollTop: 0 }, 100);
+			// remember the scroll location on open
+			$(this).data('scroll', $(document).scrollTop());
+
+			// scroll up, if needed, but only do so after a significant
+			// portion of the overlay is show so as not to disorient the user
+			setTimeout(function() {
+				$(document).scrollTop(0);
+			}, 100);
+
+			$(document).one('keydown', function(e) {
+				if (e.keyCode === 27) {
+					$('.modal-wrap').trigger('modal:close');
+				}
+			});
 		});
 
 		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
-			$('.overlay').fadeOut('fast');
+			$('.overlay').fadeOut('slow');
 			// fade out the modal
 			$('.modal-wrap').fadeOut('fast');
+
+			$(document).scrollTop($(this).data('scroll'));
 		});
 
 		// listen for clicks to elements with a class of m-link
@@ -262,35 +276,31 @@ $(document).ready(function(){
 			$('.modal-wrap').trigger('modal:close');
 		});
 
-		$(document).on('keypress', function(e) {
-			if (e.keyCode === 27) {
-				$('.modal-wrap').trigger('modal:close');
-			}
-		});
-
 	// ==================================
 	// highlight checks and radios -> WIP
 	// ==================================
 
 		// listen for clicks on inputs within a choice classed label
-		$('body').on('click', '.choice input', function() {
+		$('body').on('click change', '.choice input', function() {
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});
 		});
 
 		// Highlight table rows when checked
-		$('table').on('click', 'tr', function() {
-			$(this).children('td:last-child').children('input[type=checkbox]').click();
+		$('body').on('click', 'table tr', function(event) {
+			if (event.target.nodeName != 'A') {
+       			$(this).children('td:last-child').children('input[type=checkbox]').click();
+			}
 		});
 
 		// Prevent clicks on checkboxes from bubbling to the table row
-		$('table tr td:last-child input[type=checkbox]').on('click', function(e) {
+		$('body').on('click', 'table tr td:last-child input[type=checkbox]', function(e) {
 			e.stopPropagation();
 		});
 
-		// Changing a checkbox needs to apply the highlight style
-		$('table tr td:last-child input[type=checkbox]').on('change',function() {
+		// Toggle the bulk actions
+		$('body').on('change', 'table tr td:last-child input[type=checkbox]', function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 			if ($(this).parents('table').find('input:checked').length == 0) {
 				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
@@ -299,17 +309,28 @@ $(document).ready(function(){
 			}
 		});
 
-		// Highlight selected row for table lists
-		$('.tbl-list .check-ctrl input').on('click change',function() {
+		// "Table" lists
+		$('body').on('click change', '.tbl-list .check-ctrl input', function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
+			var tableList = $(this).parents('.tbl-list');
+
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = ! $(this).parents('.tbl-list-wrap .tbl-list .check-ctrl input:checked').length();
+			var allSelected = (tableList.find('.check-ctrl input:checked').length == tableList.find('.check-ctrl input').length);
 			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+
+			// Toggle the bulk actions
+			if (tableList.find('.check-ctrl input:checked').length == 0)
+			{
+				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').hide();
+			} else
+			{
+				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').show();
+			}
 		});
 
-		// Select all for table lists
-		$('.tbl-list-ctrl input').on('click', function(){
+		// Select all for "table" lists
+		$('body').on('click', '.tbl-list-ctrl input', function(){
 			$(this).parents('.tbl-list-wrap')
 				.find('.tbl-list .check-ctrl input')
 				.prop('checked', $(this).is(':checked'))
@@ -352,6 +373,20 @@ $(document).ready(function(){
 			$(this).parents('h3').siblings('em').toggle();
 			// toggle a class of .field-closed on the h3
 			$(this).parents('h3').toggleClass('field-closed');
+		});
+
+	// ===================
+	// input range sliders
+	// ===================
+
+		// listen for input on a range input
+		$('input[type="range"]').on('input',function(){
+			// set the newVal var
+			var newVal = $(this).val();
+			// set the rangeIS
+			var rangeIs = $(this).attr('id');
+			// change the value on the fly
+			$('output[for="' + rangeIs + '"]').html(newVal);
 		});
 
 	// ===============================

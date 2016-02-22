@@ -8,9 +8,19 @@ return array(
 	'version'     => '2.2',
 	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
 	'settings_exist' => TRUE,
+
 	'models' => array(
 		'EmailTemplate' => 'Model\EmailTemplate',
 		'Item'          => 'Model\Item',
 		'Purchase'      => 'Model\Purchase'
+	),
+
+	'models.dependencies' => array(
+		'Item' => array(
+			'ee:ChannelEntry'
+		),
+		'Purchase' => array(
+			'ee:Member'
+		)
 	)
 );

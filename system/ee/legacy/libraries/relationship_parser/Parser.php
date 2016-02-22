@@ -123,6 +123,12 @@ class EE_Relationship_data_parser {
 		{
 			if ($node->in_cond)
 			{
+				// no results is special, let the parent handle it
+				if ($node->shortcut == 'no_results')
+				{
+					return $tagdata;
+				}
+
 				return ee()->functions->prep_conditionals($tagdata, array(
 					$node->open_tag => FALSE
 				));

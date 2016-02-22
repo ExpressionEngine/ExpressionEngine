@@ -197,11 +197,21 @@ class Provider extends InjectionBindingDecorator {
 		{
 			if ($element instanceOf Closure)
 			{
-				return $this->forceCurry($element, $scope);
+				return $this->partial($element, $scope);
 			}
 
 			return $ns.'\\'.$element;
 		});
+	}
+
+	/**
+	 * Get the 'models.dependencies' key
+	 *
+	 * @return Array [model => [ee:foo, ee:bar]]
+	 */
+	public function getModelDependencies()
+	{
+		return $this->get('models.dependencies', array());
 	}
 
 	/**
@@ -244,14 +254,28 @@ class Provider extends InjectionBindingDecorator {
 	 */
 	protected function registerServices($prefix)
 	{
+		$self = $this;
+
 		foreach ($this->getServices() as $name => $closure)
 		{
+			if (is_string($closure))
+			{
+				$closure = function() use ($closure, $self)
+				{
+					$args = func_get_args();
+					array_shift($args);
+					$class = $self->getNamespace() . '\\' . $closure;
+					$object = new \ReflectionClass($class);
+					return $object->newInstanceArgs($args);
+				};
+			}
+
 			if (strpos($name, ':') !== FALSE)
 			{
 				throw new \Exception("Service names cannot contain ':'. ({$name})");
 			}
 
-			$this->register("{$prefix}:{$name}", $this->forceCurry($closure, $this));
+			$this->register("{$prefix}:{$name}", $this->partial($closure, $this));
 		}
 
 		foreach ($this->getSingletons() as $name => $closure)
@@ -261,18 +285,18 @@ class Provider extends InjectionBindingDecorator {
 				throw new \Exception("Service names cannot contain ':'. ({$name})");
 			}
 
-			$this->registerSingleton("{$prefix}:{$name}", $this->forceCurry($closure, $this));
+			$this->registerSingleton("{$prefix}:{$name}", $this->partial($closure, $this));
 		}
 	}
 
 	/**
 	 * Forcably override the first parameter on a given closure
 	 *
-	 * @param Closure $closure Function to curry
-	 * @param Mixed $scope Curried parameter
-	 * @return Closure Curried function
+	 * @param Closure $closure Function to partially apply
+	 * @param Mixed $scope First parameter
+	 * @return Closure New function
 	 */
-	protected function forceCurry(Closure $closure, $scope)
+	protected function partial(Closure $closure, $scope)
 	{
 		return function() use ($scope, $closure)
 		{

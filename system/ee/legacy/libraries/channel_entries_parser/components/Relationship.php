@@ -49,20 +49,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		$rfields = $pre->channel()->rfields;
-		$process_fields = array();
-
-		foreach ($pre->site_ids() as $site_id)
-		{
-			if ( ! isset($rfields[$site_id]) OR empty($rfields[$site_id]))
-			{
-				continue;
-			}
-
-			$process_fields[$site_id] = $rfields[$site_id];
-		}
-
-		if (empty($process_fields))
+		if (empty($pre->channel()->rfields))
 		{
 			return NULL;
 		}
@@ -72,7 +59,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		try
 		{
 			return ee()->relationships_parser->create(
-				$process_fields,
+				$pre->channel()->rfields,
 				$pre->entry_ids()
 			);
 		}

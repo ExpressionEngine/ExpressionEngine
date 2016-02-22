@@ -41,7 +41,7 @@ class Variables extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -57,7 +57,7 @@ class Variables extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'design/variables', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL')->make('design/variables', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
@@ -89,11 +89,9 @@ class Variables extends AbstractDesignController {
 		$table->setColumns($columns);
 
 		$data = array();
-		$variables = ee('Model')->get('GlobalVariable')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$variables = ee('Model')->make('GlobalVariable')->loadAll();
 
-		$base_url = ee('CP/URL', 'design/variables');
+		$base_url = ee('CP/URL')->make('design/variables');
 
 		foreach($variables as $variable)
 		{
@@ -105,16 +103,20 @@ class Variables extends AbstractDesignController {
 			{
 				$all_sites = '<b class="no">' . lang('no') . '</b>';
 			}
+			$edit_url = ee('CP/URL')->make('design/variables/edit/' . $variable->variable_id);
 			$column = array(
-				$variable->variable_name,
+				array(
+					'content' => $variable->variable_name,
+					'href' => $edit_url
+				),
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/variables/edit/' . $variable->variable_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => ee('CP/URL', 'design/template/search', array('search' => '{' . $variable->variable_name . '}')),
+						'href' => ee('CP/URL')->make('design/template/search', array('search' => '{' . $variable->variable_name . '}')),
 						'title' => lang('find')
 					),
 				)),
@@ -122,7 +124,7 @@ class Variables extends AbstractDesignController {
 					'name' => 'selection[]',
 					'value' => $variable->variable_id,
 					'data'	=> array(
-						'confirm' => lang('template_variable') . ': <b>' . htmlentities($variable->variable_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('template_variable') . ': <b>' . htmlentities($variable->variable_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 
@@ -173,9 +175,14 @@ class Variables extends AbstractDesignController {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_template_variables'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/variables/create'),
+			'base_url' => ee('CP/URL')->make('design/variables/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_variable')),
 			'save_btn_text_working' => 'btn_create_template_variable_working',
 			'sections' => array(
@@ -261,7 +268,7 @@ class Variables extends AbstractDesignController {
 				->addToBody(sprintf(lang('create_template_variable_success_desc'), $variable->variable_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/variables'));
+			ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -276,7 +283,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_template_variable');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/variables')->compile() => lang('template_variables'),
+			ee('CP/URL')->make('design/variables')->compile() => lang('template_variables'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -284,9 +291,17 @@ class Variables extends AbstractDesignController {
 
 	public function edit($variable_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_template_variables'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$variable = ee('Model')->get('GlobalVariable')
 			->filter('variable_id', $variable_id)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->first();
 
 		if ( ! $variable)
@@ -296,7 +311,7 @@ class Variables extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/variables/edit/' . $variable_id),
+			'base_url' => ee('CP/URL')->make('design/variables/edit/' . $variable_id),
 			'form_hidden' => array(
 				'old_name' => $variable->variable_name
 			),
@@ -384,7 +399,7 @@ class Variables extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_variable_success_desc'), $variable->variable_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/variables'));
+			ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -399,7 +414,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_template_variable');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/variables')->compile() => lang('template_variables'),
+			ee('CP/URL')->make('design/variables')->compile() => lang('template_variables'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -413,13 +428,21 @@ class Variables extends AbstractDesignController {
 	 */
 	private function remove($variable_ids)
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_template_variables'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($variable_ids))
 		{
 			$variable_ids = array($variable_ids);
 		}
 
 		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup()
 			->all();
 
 		$names = $variables->pluck('variable_name');

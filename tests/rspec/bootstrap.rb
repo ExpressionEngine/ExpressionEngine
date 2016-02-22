@@ -34,6 +34,29 @@ Capybara.javascript_driver = :webkit
 Capybara.app_host = $test_config[:app_host]
 Capybara.run_server = false
 
+def sanitize_filename(filename)
+   name = filename.strip
+
+   name.gsub!(/^.*(\\|\/)/, '')
+
+   name.gsub!(/\s/, '-')
+
+   # Strip out the non-ascii character
+   name.gsub!(/[^0-9A-Za-z.\-]/, '_')
+
+   return name
+end
+
+Capybara::Webkit.configure do |config|
+  # Whitelist URLs
+  config.block_unknown_urls
+  config.allow_url $test_config[:app_host]
+  config.allow_url 'ee'
+  config.allow_url 'ee.*'
+  config.allow_url 'ellislab.com'
+  config.allow_url 'google-analytics.com'
+end
+
 # Configure hook to run after each example
 RSpec.configure do |config|
   # Keep using 'should' syntax in RSpec 3
@@ -43,11 +66,6 @@ RSpec.configure do |config|
 
   # Before each example...
   config.before(:each) do
-    # Whitelist URLs
-    page.driver.allow_url $test_config[:app_host]
-    page.driver.allow_url 'ellislab.com'
-    page.driver.allow_url 'google-analytics.com'
-
     # Re-import clean database
     file = RSpec.current_example.metadata[:file_path].match(
       /.*\/.*?\/test_(.*?).rb/
@@ -60,7 +78,7 @@ RSpec.configure do |config|
     example = RSpec.current_example
     # If the example failed, take a screenshot to help us spot the problem
     unless example.exception.nil?
-      page.save_screenshot('screenshots/' + example.description + '.png')
+      page.save_screenshot('screenshots/' + sanitize_filename(example.full_description) + '.png')
     end
 
     # Check for PHP or Javascript errors on the page
@@ -68,8 +86,8 @@ RSpec.configure do |config|
       no_php_js_errors
     rescue => error
       # Raise another exception so that RSpec sees the example as a failure
-      page.save_screenshot('screenshots/' + example.description + '.png')
-      puts 'Screenshot taken: ' + example.description + '.png'
+      page.save_screenshot('screenshots/' + sanitize_filename(example.full_description) + '.png')
+      puts 'Screenshot taken: ' + sanitize_filename(example.full_description) + '.png'
       raise StandardError, error.message
     end
   end

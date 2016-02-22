@@ -72,7 +72,7 @@ feature 'General Settings' do
       should_have_no_error_text(@page.site_name)
       @page.is_system_on_y.checked?.should == true
       @page.new_version_check_y.checked?.should == true
-      @page.date_format.value.should == '%n/%j/%y'
+      @page.date_format.value.should == '%n/%j/%Y'
       @page.time_format.value.should == '12'
       @page.include_seconds_n.checked?.should == true
 

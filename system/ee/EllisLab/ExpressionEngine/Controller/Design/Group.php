@@ -36,7 +36,7 @@ class Group extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -46,6 +46,11 @@ class Group extends AbstractDesignController {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_template_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$groups = array(
 			'false' => '-- ' . strtolower(lang('none')) . ' --'
 		);
@@ -61,7 +66,7 @@ class Group extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/group/create'),
+			'base_url' => ee('CP/URL')->make('design/group/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -92,7 +97,10 @@ class Group extends AbstractDesignController {
 						'fields' => array(
 							'make_default_group' => array(
 								'type' => 'yes_no',
-								'value' => 'n'
+								'value' => ee('Model')->get('TemplateGroup')
+									->filter('site_id', ee()->config->item('site_id'))
+									->filter('is_site_default', 'y')
+									->count() ? 'n' : 'y'
 							)
 						)
 					),
@@ -169,6 +177,8 @@ class Group extends AbstractDesignController {
 					$new_template->group_id = $group->group_id;
 					$new_template->edit_date = ee()->localize->now;
 					$new_template->site_id = ee()->config->item('site_id');
+					$new_template->hits = 0; // Reset hits
+					$new_template->NoAccess = $master_template->NoAccess;
 					if (ee()->session->userdata['group_id'] != 1)
 					{
 						$new_template->allow_php = FALSE;
@@ -183,7 +193,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -202,6 +212,11 @@ class Group extends AbstractDesignController {
 
 	public function edit($group_name)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -219,7 +234,7 @@ class Group extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/group/edit/' . $group->group_name),
+			'base_url' => ee('CP/URL')->make('design/group/edit/' . $group->group_name),
 			'form_hidden' => array(
 				'old_name' => $group->group_name
 			),
@@ -276,13 +291,6 @@ class Group extends AbstractDesignController {
 			$group->group_name = ee()->input->post('group_name');
 			$group->is_site_default = ee()->input->post('make_default_group');
 
-			if ($group->is_site_default)
-			{
-				ee('Model')->get('TemplateGroup')
-					->set('is_site_default', 'n')
-					->update();
-			}
-
 			$group->save();
 
 			ee('CP/Alert')->makeInline('shared-form')
@@ -291,7 +299,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -310,6 +318,11 @@ class Group extends AbstractDesignController {
 
 	public function remove()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', ee()->input->post('group_name'))
 			->filter('site_id', ee()->config->item('site_id'))
@@ -327,9 +340,9 @@ class Group extends AbstractDesignController {
 			}
 
 			// Delete the group folder if it exists
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
-				$basepath = ee()->config->slash_item('tmpl_file_basepath');
+				$basepath = PATH_TMPL;
 				$basepath .= ee()->config->item('site_short_name') . '/' . $group->group_name . '.group/';
 
 				ee()->load->helper('file');
@@ -345,7 +358,7 @@ class Group extends AbstractDesignController {
 				->defer();
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'design'));
+		ee()->functions->redirect(ee('CP/URL')->make('design'));
 	}
 
 	/**

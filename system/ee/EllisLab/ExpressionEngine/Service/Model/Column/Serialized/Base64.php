@@ -34,7 +34,7 @@ class Base64 extends SerializedType {
 	 */
 	public static function unserialize($db_data)
 	{
-		return strlen($db_data) ? base64_decode($db_data) : array();
+		return strlen($db_data) ? base64_decode($db_data) : '';
 	}
 
 	/**

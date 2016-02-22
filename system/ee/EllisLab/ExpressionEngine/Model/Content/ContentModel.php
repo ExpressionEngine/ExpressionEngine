@@ -18,11 +18,12 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'afterSave'
+		'afterSave',
+		'beforeDelete'
 	);
 
 	protected $_field_facades;
-	protected $_field_was_saved;
+	protected $_field_was_saved = array();
 	protected $_custom_fields_loaded = FALSE;
 
 	/**
@@ -65,7 +66,20 @@ abstract class ContentModel extends VariableColumnModel {
 			$field->setContentId($this->getId());
 			$field->postSave();
 		}
+
+		$this->_field_was_saved = array();
 	}
+
+	/**
+	 * Cascade the delete to the fieldtypes
+	 */
+	 public function onBeforeDelete()
+	 {
+		 foreach ($this->getCustomFields() as $field)
+		 {
+			 $field->delete();
+		 }
+	 }
 
 	/**
 	 * Check if a custom field of $name exists
@@ -137,6 +151,21 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
+	 * Batch update properties
+	 *
+	 * Safely updates any properties that might exist,
+	 * passing them through the getters along the way.
+	 *
+	 * @param array $data Data to update
+	 * @return $this
+	 */
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
+	}
+
+	/**
 	 * Make sure that calls to fill() also apply to custom fields
 	 */
 	public function fill(array $data = array())
@@ -157,8 +186,6 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		$this->_field_was_saved = array();
-
 		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
@@ -213,7 +240,14 @@ abstract class ContentModel extends VariableColumnModel {
 
 		foreach ($facades as $name => $facade)
 		{
-			$rules[$name] = '';
+			if ( ! isset($rules[$name]))
+			{
+				$rules[$name] = '';
+			}
+			else
+			{
+				$rules[$name] .= '|';
+			}
 
 			if ($facade->isRequired())
 			{
@@ -262,7 +296,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		foreach ($data as $name => $value)
 		{
-			if (strpos($name, 'field_ft_') === 0)
+			if (strpos($name, 'field_ft_') !== FALSE)
 			{
 				$name = str_replace('field_ft_', 'field_id_', $name);
 
@@ -294,6 +328,15 @@ abstract class ContentModel extends VariableColumnModel {
 			$this->addFacade($id, $field);
 		}
 
+		$structure = $this->getStructure();
+
+		// no structure yet? defer
+		if ( ! $structure)
+		{
+			$this->_field_facades = NULL;
+			return;
+		}
+
 		$native_fields = $this->getStructure()->getCustomFields();
 		$native_prefix = $this->getCustomFieldPrefix();
 
@@ -314,6 +357,8 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			$facade->setContentType($this->getStructure()->getContentType());
 		}
+
+		$this->_custom_fields_loaded = TRUE;
 	}
 
 	/**
@@ -322,14 +367,26 @@ abstract class ContentModel extends VariableColumnModel {
 	protected function addFacade($id, $info, $name_prefix = '')
 	{
 		$name = $name_prefix.$id;
+		$format = NULL;
+
+		if (array_key_exists('field_fmt', $info))
+		{
+			$format = $info['field_fmt'];
+		}
+
+		if ($this->hasProperty('field_ft_'.$id))
+		{
+			$format = $this->getProperty('field_ft_'.$id) ?: $format;
+			$this->setProperty('field_ft_'.$id, $format);
+		}
 
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
 		$facade->setContentId($this->getId());
 
-		if ($this->hasProperty('field_ft_'.$id))
+		if (isset($format))
 		{
-			$facade->setFormat($this->getProperty('field_ft_'.$id));
+			$facade->setFormat($format);
 		}
 
 		$this->_field_facades[$name] = $facade;

@@ -313,7 +313,7 @@ class Api_channel_fields extends Api {
 		{
 			$this->include_handler($field_type);
 
-			$this->field_types[$field_type] =& $this->_instantiate_handler($field_type);
+			$this->field_types[$field_type] = $this->_instantiate_handler($field_type);
 		}
 
 		// If we started with a field_id, but we're not on the frontend
@@ -1251,7 +1251,7 @@ class Api_channel_fields extends Api {
 			OR $field_data['field_instructions'] != ee('Security/XSS')->clean($field_data['field_instructions']))
 		{
 			ee()->lang->loadfile('admin');
-			$this->errors[] = sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'));
+			$this->errors[] = sprintf(lang('invalid_xss_check'), ee('CP/URL')->make('homepage'));
 		}
 
 		// Truncated field name to test against duplicates

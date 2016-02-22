@@ -54,13 +54,15 @@ $lang = array(
 
 'status_groups' => 'Status Groups',
 
-'no_channels' => 'No Channels',
+'no_channels' => 'No <b>Channels</b> found.',
 
 'create_channel' => 'Create Channel',
 
 'channels_removed' => 'Channels removed',
 
 'channels_removed_desc' => '%d channels were removed.',
+
+'maximum_channels_reached' => 'You have reached the maximum number of Channels allowed.',
 
 'edit' => 'edit',
 
@@ -86,8 +88,6 @@ $lang = array(
 
 'member_group(s)_desc' => 'Choose the member group(s) to apply this layout to.',
 
-'btn_create_layout' => 'Create Layout',
-
 'create_layout_success' => 'Form Layout Created',
 
 'create_layout_success_desc' => 'The form layout <b>%s</b> has been created.',
@@ -95,8 +95,6 @@ $lang = array(
 'create_layout_error' => 'Cannot Create Form Layout',
 
 'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
-
-'btn_edit_layout' => 'Edit Layout',
 
 'btn_preview_layout' => 'Preview Layout',
 
@@ -111,8 +109,6 @@ $lang = array(
 'edit_layout_error' => 'Cannot Update Form Layout',
 
 'edit_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
-
-'success' => 'Success',
 
 'layouts_removed_desc' => 'The following form layouts were removed',
 
@@ -162,7 +158,7 @@ $lang = array(
 
 'default_status_group' => 'Default Statuses',
 
-'status_groups_not_found' => 'Zero <b>status groups</b> found',
+'status_groups_not_found' => 'No <b>status groups</b> found',
 
 'create_new_status_group' => 'Create New Status Group',
 
@@ -170,7 +166,7 @@ $lang = array(
 
 'custom_field_group_desc' => '',
 
-'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
+'custom_field_groups_not_found' => 'No <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
 
@@ -178,7 +174,7 @@ $lang = array(
 
 'category_groups_desc' => '',
 
-'category_groups_not_found' => 'Zero <b>category groups</b> found',
+'category_groups_not_found' => 'No <b>category groups</b> found',
 
 'create_new_category_group' => 'Create New Category Group',
 
@@ -243,15 +239,15 @@ $lang = array(
 
 'default_title' => 'Generated title',
 
-'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
+'default_title_desc' => 'Title assigned to all <b>new</b> entries in this channel.',
 
 'url_title_prefix' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix',
 
-'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entires in this channel.',
+'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entries in this channel.',
 
 'default_status' => 'Status',
 
-'default_status_desc' => 'Status assigned to all <b>new</b> entires in this channel.',
+'default_status_desc' => 'Status assigned to all <b>new</b> entries in this channel.',
 
 'default_category' => 'Category',
 
@@ -329,7 +325,7 @@ $lang = array(
 
 'require_membership' => 'Require membership?',
 
-'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entires.',
+'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entries.',
 
 'require_email' => 'Require Email?',
 
@@ -416,7 +412,7 @@ $lang = array(
 
 'group_name' => 'Group Name',
 
-'no_category_groups' => 'No Category Groups',
+'no_category_groups' => 'No <b>Category Groups</b> found.',
 
 'create_category_group' => 'Create Category Group',
 
@@ -430,7 +426,7 @@ $lang = array(
 
 'categories_removed_desc' => '%d categories were removed.',
 
-'no_fields' => 'No fields found',
+'no_fields' => 'No <b>Fields</b> found.',
 
 'fields' => 'Fields',
 
@@ -438,7 +434,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'Zero <b>categories</b> found',
+'categories_not_found' => 'No <b>Categories</b> found.',
 
 'create_category' => 'Create Category',
 
@@ -470,7 +466,7 @@ $lang = array(
 
 'delete_categories_desc' => 'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'cat_group_no_member_groups_found' => 'Zero <b>member groups</b> with permissions found',
+'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions found',
 
 'edit_member_groups' => 'Edit Member Groups',
 
@@ -522,7 +518,7 @@ $lang = array(
 
 'category_fields' => 'Category Fields',
 
-'no_category_fields' => 'No Category Fields',
+'no_category_fields' => 'No <b>Category Fields</b> found.',
 
 'create_category_field' => 'Create Category Field',
 
@@ -550,9 +546,7 @@ $lang = array(
 
 'select_dropdown' => 'Select Dropdown',
 
-'btn_create_field' => 'Create Field',
-
-'btn_edit_field' => 'Edit Field',
+'field' => 'Field',
 
 'category_field_created' => 'Category Field Created',
 

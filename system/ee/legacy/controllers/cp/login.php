@@ -52,7 +52,10 @@ class Login extends CP_Controller {
 		if ($this->session->userdata('member_id') !== 0 &&
 			ee()->session->userdata('admin_sess') == 1)
 		{
-			return $this->functions->redirect(BASE);
+			$member = ee('Model')->get('Member')
+				->filter('member_id', ee()->session->userdata('member_id'))
+				->first();
+			return $this->functions->redirect($member->getCPHomepageURL());
 		}
 
 		// If an ajax request ends up here the user is probably logged out
@@ -115,11 +118,13 @@ class Login extends CP_Controller {
 		}
 
 		// Show the site label
-		$this->view->site_label = ee()->api
-			->get('Site')
+		$site_label = ee('Model')->get('Site')
+			->fields('site_label')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first()
 			->site_label;
+
+		$this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
 		if ($this->input->get('BK'))
 		{
@@ -209,7 +214,14 @@ class Login extends CP_Controller {
 			$base = preg_replace('/S=[a-zA-Z0-9]+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}
 
-		$return_path = $base.AMP.'C=homepage';
+		if (AJAX_REQUEST)
+		{
+			$this->output->send_ajax_response(array(
+				'base'			=> $base,
+				'messageType'	=> 'success',
+				'message'		=> lang('logged_back_in')
+			));
+		}
 
 		if ($this->input->post('return_path'))
 		{
@@ -218,21 +230,17 @@ class Login extends CP_Controller {
 			if (strpos($return_path, '{') === 0)
 			{
 				$uri_elements = json_decode($return_path, TRUE);
-				$return_path = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+				$return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
 			}
 			else
 			{
 				$return_path = ee()->uri->reformat($base.AMP.$return_path, $base);
 			}
 		}
-
-		if (AJAX_REQUEST)
+		else
 		{
-			$this->output->send_ajax_response(array(
-				'base'			=> $base,
-				'messageType'	=> 'success',
-				'message'		=> lang('logged_back_in')
-			));
+			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$return_path = $member->getCPHomepageURL();
 		}
 
 		$this->functions->redirect($return_path);

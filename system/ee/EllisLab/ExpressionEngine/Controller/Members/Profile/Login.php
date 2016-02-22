@@ -48,7 +48,7 @@ class Login extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 		$vars['sections'] = array(
 			array(
@@ -116,7 +116,11 @@ class Login extends Profile {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;
@@ -164,6 +168,8 @@ class Login extends Profile {
 			}
 		}
 
+		$redirect = ee()->input->post('redirect');
+
 		// Set cookie expiration to one year if the "remember me" button is clicked
 
 		$expire = 0;
@@ -184,7 +190,7 @@ class Login extends Profile {
 		// Redirect the user to the return page
 
 		$return_path = ee()->functions->fetch_site_index();
-		$redirect = ee()->input->post('redirect');
+		$url = ee()->input->post('other');
 
 		if ( ! empty($redirect))
 		{
@@ -192,7 +198,7 @@ class Login extends Profile {
 			{
 				$return_path = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id();
 			}
-			elseif ($redirect == 'other' && ! empty($url = ee()->input->post('other')))
+			elseif ($redirect == 'other' && ! empty($url))
 			{
 				$return_path = ee('Security/XSS')->clean(strip_tags($url));
 			}

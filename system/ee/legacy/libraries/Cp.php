@@ -76,14 +76,12 @@ class Cp {
 	 */
 	public function set_default_view_variables()
 	{
-		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 
 		// Javascript Path Constants
-
-		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/');
-		define('JS_FOLDER', $js_folder);
+		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/');
+		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
+		define('JS_FOLDER', PATH_JS);
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
@@ -105,19 +103,18 @@ class Cp {
 			'table_open' => '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">'
 		);
 
-		$user_q = ee()->member_model->get_member_data(
-			ee()->session->userdata('member_id'),
-			array(
-				'screen_name', 'notepad', 'quick_links',
-				'avatar_filename', 'avatar_width', 'avatar_height'
-			)
-		);
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
-		$notepad_content = ($user_q->row('notepad')) ? $user_q->row('notepad') : '';
+		if ( ! $member)
+		{
+			$member = ee('Model')->make('Member');
+		}
+
+		$notepad_content = ($member->notepad) ?: '';
 
 		// Global view variables
-
 		$vars =	array(
+			'cp_homepage_url'       => $member->getCPHomepageURL(),
 			'cp_page_onload'		=> '',
 			'cp_page_title'			=> '',
 			'cp_breadcrumbs'		=> array(),
@@ -128,16 +125,15 @@ class Cp {
 			'cp_pad_table_template'	=> $cp_pad_table_template,
 			'cp_theme_url'			=> $this->cp_theme_url,
 			'cp_current_site_label'	=> ee()->config->item('site_name'),
-			'cp_screen_name'		=> $user_q->row('screen_name'),
-			'cp_avatar_path'		=> $user_q->row('avatar_filename') ? ee()->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
-			'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
-			'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
-			'cp_quicklinks'			=> $this->_get_quicklinks($user_q->row('quick_links')),
+			'cp_screen_name'		=> $member->screen_name,
+			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : '',
+			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
+			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
+			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
 
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> (ee()->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
 		);
-
 
 		// global table data
 		ee()->session->set_cache('table', 'cp_template', $cp_table_template);
@@ -166,9 +162,6 @@ class Cp {
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
 		);
 
-		require_once(APPPATH.'libraries/El_pings.php');
-		$pings = new El_pings();
-
 		ee()->javascript->set_global(array(
 			'BASE'             => str_replace(AMP, '&', BASE),
 			'XID'              => CSRF_TOKEN,
@@ -176,7 +169,6 @@ class Cp {
 			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
 			'username'         => ee()->session->userdata('username'),
-			'registered'       => $pings->is_registered(),
 			'router_class'     => ee()->router->class, // advanced css
 			'lang'             => $js_lang_keys,
 			'THEME_URL'        => $this->cp_theme_url,
@@ -188,7 +180,7 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation')
+			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters')
 		);
 
 		$js_scripts['plugin'][] = 'ee_navigation';
@@ -237,7 +229,10 @@ class Cp {
 		$this->add_js_script('file', 'cp/global_end');
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+		ee()->view->version_identifier = APP_VER_ID;
 
+		$license = $this->validateLicense();
+		ee()->view->ee_license = $license;
 		$sidebar = ee('CP/Sidebar')->render();
 
 		if ( ! empty($sidebar))
@@ -246,6 +241,39 @@ class Cp {
 		}
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	protected function validateLicense()
+	{
+		$license = ee('License')->getEELicense();
+
+		require_once(APPPATH.'libraries/El_pings.php');
+		$pings = new El_pings();
+		$registered = $pings->is_registered($license);
+
+		if ( ! $license->isValid())
+		{
+			$alert = ee('CP/Alert')->makeBanner('invalid-license')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('software_unregistered'));
+
+			foreach ($license->getErrors() as $key => $value)
+			{
+				if ($key == 'missing_pubkey')
+				{
+					$alert->addToBody(sprintf(lang($key), 'https://store.ellislab.com/manage'));
+				}
+				else
+				{
+					$alert->addToBody(sprintf(lang($key), ee('CP/URL')->make('settings/license')));
+				}
+			}
+
+			$alert->now();
+		}
+
+		return $license;
 	}
 
 	/**
@@ -284,13 +312,6 @@ class Cp {
 	public function formatted_version($version)
 	{
 		$version = explode('.', $version);
-
-		// Drop the last zero if the version number is 3 digits (there might
-		// be regex to do this as well)
-		if (count($version == 3) && $version[2] == '0')
-		{
-			unset($version[2]);
-		}
 
 		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
 	}
@@ -348,6 +369,11 @@ class Cp {
 		if (APP_VER !== ee()->config->item('app_version'))
 		{
 			$notices[] = sprintf(lang('version_mismatch'), ee()->config->item('app_version'), APP_VER);
+		}
+
+		if ( ! is_dir(PATH_THEMES))
+		{
+			$notices[] = sprintf(lang('theme_folder_wrong'), ee('CP/URL', '/cp/settings/urls'));
 		}
 
 		if ( ! empty($notices))
@@ -409,7 +435,14 @@ class Cp {
 					->addToBody(lang('checksum_changed_warning'))
 					->addToBody($changed);
 
-				$button = form_open(ee('CP/URL', 'homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button = form_open(
+					ee('CP/URL')->make('homepage/accept_checksums'),
+					'',
+					array(
+						'return' => ee('CP/URL')->getCurrentUrl()->encode()
+					)
+				);
+
 				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
@@ -421,7 +454,6 @@ class Cp {
 
 		return NULL;
 	}
-
 
 	/**
 	 * EE Version Check function
@@ -622,17 +654,25 @@ class Cp {
 			return max($mtimes);
 		}
 
-		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
-			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
 				break;
-			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
+			case 'package':
+				if (strpos($name, ':') !== FALSE)
+				{
+					list($package, $name) = explode(':', $name);
+				}
+				else
+				{
+					$package = $name;
+				}
+
+				$file = PATH_THIRD.$package.'/javascript/'.$name.'.js';
 				break;
 			case 'fp_module':	$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
@@ -675,7 +715,7 @@ class Cp {
 			//   1. index.php?/cp/path/to/controller/with/arugments
 			//   2. index.php?D=cp&C=cp&M=homepage
 			//
-			// In the case of #1 we likely built it with ee('CP/URL', ) thus
+			// In the case of #1 we likely built it with ee('CP/URL')->make() thus
 			// we will store the needed parts to rebuild it.
 			//
 			// In the case of #2 we will build out a string to return
@@ -781,25 +821,11 @@ class Cp {
 
 		foreach ($quick_links as $ql)
 		{
-			if (strncmp($ql['link'], ee()->config->item('cp_url'), $len) == 0)
-			{
-				$l = str_replace(ee()->config->item('cp_url'), '', $ql['link']);
-				$l = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $l);
-
-				$link[$count] = array(
-					'link'		=> BASE.AMP.$l,
-					'title'		=> $ql['title'],
-					'external'	=> FALSE
-				);
-			}
-			else
-			{
-				$link[$count] = array(
-					'link'		=> $ql['link'],
-					'title'		=> $ql['title'],
-					'external'	=> TRUE
-				);
-			}
+			$link[$count] = array(
+				'link'		=> ee('CP/URL')->makeFromString($ql['link']),
+				'title'		=> $ql['title'],
+				'external'	=> TRUE
+			);
 
 			$count++;
 		}
@@ -841,7 +867,8 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
+
+		$this->add_js_script(array('package' => $package.':'.$file));
 	}
 
 	// --------------------------------------------------------------------
@@ -858,7 +885,15 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+
+		if (REQ == 'CP')
+		{
+			$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		}
+		else
+		{
+			$url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').AMP.'type=css'.AMP.'package='.$package.AMP.'file='.$file;
+		}
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
@@ -923,6 +958,46 @@ class Cp {
 	public function get_foot()
 	{
 		return $this->footer_item;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Allowed Group
+	 *
+	 * Member access validation
+	 *
+	 * @param	string  any number of permission names
+	 * @return	bool    TRUE if member has any permissions in the set
+	 */
+	public function allowed_group_any()
+	{
+		$which = func_get_args();
+
+		if ( ! count($which))
+		{
+			return FALSE;
+		}
+
+		// Super Admins always have access
+		if (ee()->session->userdata('group_id') == 1)
+		{
+			return TRUE;
+		}
+
+		$result = FALSE;
+
+		foreach ($which as $w)
+		{
+			$k = ee()->session->userdata($w);
+
+			if ($k === TRUE OR $k == 'y')
+			{
+				$result = TRUE;
+			}
+		}
+
+		return $result;
 	}
 
 	// --------------------------------------------------------------------
@@ -1121,7 +1196,7 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$redirect = ee('CP/URL', 'homepage');
+			$redirect = ee('CP/URL')->make('homepage');
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings

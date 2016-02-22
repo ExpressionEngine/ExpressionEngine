@@ -33,18 +33,39 @@ class Group extends Profile {
 
 	private $base_url = 'members/profile/group';
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ($this->member->member_id == ee()->session->userdata['member_id']
+		    && $this->member->group_id == 1)
+		{
+			show_error(lang('cannot_change_your_group'));
+		}
+	}
+
 	/**
 	 * Member Group assignment
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
+
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$groups = $groups->filter('is_locked', FALSE);
+		}
 
 		foreach ($groups as $group)
 		{
 			$choices[$group->group_id] = $group->group_title;
+		}
+
+		if ( ! array_key_exists($this->member->group_id, $choices))
+		{
+			show_error(lang('unauthorized_access'));
 		}
 
 		$vars['sections'] = array(
@@ -107,18 +128,24 @@ class Group extends Profile {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Don't try to save the password confirm
-			array_pop($vars['sections'][0]);
-
-			if ($this->saveSettings($vars['sections']))
+			if ($this->saveSettings(array_slice($vars['sections'], 0, 1)))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;
@@ -131,9 +158,16 @@ class Group extends Profile {
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->count();
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group);
 
-		if ($groups == 0)
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$groups->filter('is_locked', 'n');
+		}
+
+		$num_groups = $groups->count();
+
+		if ($num_groups == 0)
 		{
 			return FALSE;
 		}

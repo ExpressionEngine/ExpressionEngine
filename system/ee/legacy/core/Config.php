@@ -27,7 +27,7 @@ class EE_Config {
 
 	public $config = array();
 	public $is_loaded = array();
-	public $_config_paths = array(SYSPATH, APPPATH);
+	public $_config_paths = array();
 
 	public $config_path         = ''; // Set in the constructor below
 	public $default_ini         = array();
@@ -46,7 +46,7 @@ class EE_Config {
 	{
 		$this->config =& get_config();
 
-		// Change this path before release.
+		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
 		$this->config_path = SYSPATH.'user/config/config.php';
 
 		$this->_initialize();
@@ -63,7 +63,7 @@ class EE_Config {
 	function _initialize()
 	{
 		// Fetch the config file
-		$config = get_config();
+		$config =& get_config();
 
 		// Is the config file blank?  If so it means that ExpressionEngine has not been installed yet
 		if ( ! isset($config) OR count($config) == 0)
@@ -82,8 +82,9 @@ class EE_Config {
 
 		// Set any config overrides.  These are the items that used to be in
 		// the path.php file, which are now located in the main index file
-		//global $assign_to_config;
-		$assign_to_config = array();
+		// @todo - rewrite the feature of 'global_vars' to be out of the index.php
+		// file and properly live somewhere in system/user
+		global $assign_to_config;
 
 		// Override enable_query_strings to always be false on the frontend
 		// and true on the backend. We need this to get the pagination library
@@ -115,11 +116,7 @@ class EE_Config {
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
 
-
 		$this->_set_overrides($assign_to_config);
-
-		// Freelancer version?
-		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member.php')) ? 'TRUE' : 'FALSE';
 
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;
@@ -420,19 +417,17 @@ class EE_Config {
 	 */
 	public function site_pages($site_id = NULL, $data = NULL)
 	{
-		$EE =& get_instance();
-
 		$sites = array();
 
 		// If no site ID is specified, get ALL sites data
 		if (empty($site_id))
 		{
-			$sites = $EE->db->get('sites')->result_array();
+			$sites = ee()->db->get('sites')->result_array();
 		}
 		// If the site ID is set but no data passed in to decode, get it from the database
 		else if (empty($data))
 		{
-			$sites = $EE->db->get_where('sites', array('site_id' => $site_id))->result_array();
+			$sites = ee()->db->get_where('sites', array('site_id' => $site_id))->result_array();
 		}
 		// Otherwise, we have both parameters, create an array for processing
 		else
@@ -529,7 +524,6 @@ class EE_Config {
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
-			'template_debugging',
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
@@ -644,7 +638,9 @@ class EE_Config {
 			'prv_msg_max_chars',
 			'memberlist_order_by',
 			'memberlist_sort_order',
-			'memberlist_row_limit'
+			'memberlist_row_limit',
+			'approved_member_notification',
+			'declined_member_notification'
 		);
 
 		$template_default = array(
@@ -652,7 +648,6 @@ class EE_Config {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'save_tmpl_files',
-			'tmpl_file_basepath',
 			'strict_urls',
 			'enable_template_routes'
 		);
@@ -723,7 +718,9 @@ class EE_Config {
 		unset($new_values['submit']);
 
 		// Safety check for member profile trigger
-		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
+		if (isset($new_values['profile_trigger'])
+			&& $new_values['profile_trigger'] == ''
+			&& $new_values['members_frontend'] == 'y')
 		{
 			ee()->lang->loadfile('admin');
 			show_error(lang('empty_profile_trigger'));
@@ -1199,6 +1196,7 @@ class EE_Config {
 			'database' => 'string',
 			'pconnect' => 'bool',
 			'dbprefix' => 'string',
+			'dbcollat' => 'string',
 			'db_debug' => 'bool'
 		);
 		$dbconfig = array_intersect_key($dbconfig, $allowed_properties);
@@ -1258,7 +1256,7 @@ class EE_Config {
 
 		if (function_exists('apc_delete_file'))
 		{
-			apc_delete_file($path);
+			@apc_delete_file($path) || apc_clear_cache();
 		}
 	}
 
@@ -1315,8 +1313,7 @@ class EE_Config {
 				'force_query_string' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'redirect_method'    => array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
 				'debug'              => array('s', $debug_options),
-				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'template_debugging' => array('r', array('y' => 'yes', 'n' => 'no'))
+				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
 			'channel_cfg'		=>	array(
@@ -1351,11 +1348,6 @@ class EE_Config {
 				'name_of_dictionary_file'   => array('i', ''),
 				'un_min_len'                => array('i', ''),
 				'pw_min_len'                => array('i', '')
-			),
-
-			'software_registration'	=> array(
-				'license_contact' => array('i', '', 'required|valid_email'),
-				'license_number'  => array('i', '', 'callback__valid_license_pattern')
 			),
 
 			'throttling_cfg'	=>	array(
@@ -1426,7 +1418,6 @@ class EE_Config {
 				'save_tmpl_revisions'    => array('r', array('y' => 'yes', 'n' => 'no')),
 				'max_tmpl_revisions'     => array('i', ''),
 				'save_tmpl_files'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'tmpl_file_basepath'     => array('i', '')
 			),
 
 			'censoring_cfg'		=>	array(
@@ -1682,7 +1673,6 @@ class EE_Config {
 			'is_system_on'				=> array('is_system_on_explanation'),
 			'debug'						=> array('debug_explanation'),
 			'show_profiler'				=> array('show_profiler_explanation'),
-			'template_debugging'		=> array('template_debugging_explanation'),
 			'max_caches'				=> array('max_caches_explanation'),
 			'use_newrelic'				=> array('use_newrelic_explanation'),
 			'newrelic_app_name'			=> array('newrelic_app_name_explanation'),
@@ -1710,8 +1700,6 @@ class EE_Config {
 			'require_ip_for_login'		=> array('require_ip_explanation'),
 			'allow_multi_logins'		=> array('allow_multi_logins_explanation'),
 			'name_of_dictionary_file'	=> array('dictionary_explanation'),
-			'license_contact'			=> array('license_contact_explanation'),
-			'license_number'			=> array('license_number_explanation'),
 			'force_query_string'		=> array('force_query_string_explanation'),
 			'image_resize_protocol'		=> array('image_resize_protocol_exp'),
 			'image_library_path'		=> array('image_library_path_exp'),
@@ -1725,7 +1713,6 @@ class EE_Config {
 			'enable_template_routes'	=> array('enable_template_routes_exp'),
 			'tmpl_display_mode'			=> array('tmpl_display_mode_exp'),
 			'save_tmpl_files'			=> array('save_tmpl_files_exp'),
-			'tmpl_file_basepath'		=> array('tmpl_file_basepath_exp'),
 			'site_404'					=> array('site_404_exp'),
 			'channel_nomenclature'		=> array('channel_nomenclature_exp'),
 			'enable_sql_caching'		=> array('enable_sql_caching_exp'),

@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 <h1><?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-<?=form_open_multipart(ee('CP/URL', 'utilities/communicate/send'), 'class="settings"')?>
+<?=form_open_multipart(ee('CP/URL')->make('utilities/communicate/send'), 'class="settings"')?>
 	<?=ee('CP/Alert')->getAllInlines()?>
 	<fieldset class="col-group required <?=form_error_class('subject')?>">
 		<div class="setting-txt col w-16">

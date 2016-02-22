@@ -144,7 +144,7 @@ class HasAndBelongsToMany extends Relation {
 
 	public function set(Model $source, $targets)
 	{
-		$this->drop($source, $targets);
+		$this->drop($source, NULL);
 		$this->insert($source, $targets);
 	}
 

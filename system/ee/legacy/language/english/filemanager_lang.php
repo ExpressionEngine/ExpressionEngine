@@ -24,6 +24,8 @@ $lang = array(
 
 'upload_new_file' => 'Upload New File',
 
+'filter_upload_directories' => 'filter upload directories',
+
 'title_or_name' => 'Title/Name',
 
 'file_type' => 'File Type',
@@ -58,7 +60,7 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
-'zero_directories_found' => 'Zero <b>Directories</b> found',
+'zero_directories_found' => 'No <b>Directories</b> found',
 
 'files_in_directory' => 'Files in <b>%s</b>',
 
@@ -196,6 +198,8 @@ $lang = array(
 
 'create_upload_directory' => 'Create Upload Directory',
 
+'new_upload_directory' => 'New Upload Directory',
+
 'edit_upload_directory' => 'Edit Upload Directory',
 
 'upload_url' => 'Upload directory',
@@ -263,6 +267,8 @@ $lang = array(
 
 'no_watermark' => 'No watermark',
 
+'image_manip_dimension_required' => 'A height or width must be entered if no watermark is selected.',
+
 'no_manipulations' => 'No manipulations created',
 
 'add_manipulation' => 'Add New Manipulation',
@@ -329,8 +335,6 @@ $lang = array(
 'watermark' => 'Watermark',
 
 'watermarks' => 'Watermarks',
-
-'no_watermarks' => 'No Watermarks',
 
 'create_watermark' => 'Create Watermark',
 
@@ -414,13 +418,22 @@ $lang = array(
 
 'y_axis' => 'y-axis',
 
-'watermark_saved' => 'Watermark saved',
+'watermark_created' => 'Watermark Created',
 
-'watermark_saved_desc' => 'Your watermark has been saved successfully.',
+'watermark_created_desc' => 'The watermark <b>%s</b> has been created.',
 
-'watermark_not_saved' => 'Attention: Watermark not saved',
+'watermark_not_created' => 'Cannot Create Watermark',
 
-'watermark_not_saved_desc' => 'We were unable to save your watermark, please review and fix errors below.',
+'watermark_not_created_desc' => 'We were unable to create this watermark, please review and fix errors below.',
+
+'watermark_updated' => 'Watermark Updated',
+
+'watermark_updated_desc' => 'The watermark <b>%s</b> has been updated.',
+
+'watermark_not_updated' => 'Cannot Update Watermark',
+
+'watermark_not_updated_desc' => 'We were unable to update this watermark, please review and fix errors below.',
+
 
 // 2.x
 
@@ -528,7 +541,7 @@ $lang = array(
 
 'no_upload_prefs' => 'There are currently no file upload preferences',
 
-'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external" target="_blank">add one or more upload directories</a> to use the File field type.',
+'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external">add one or more upload directories</a> to use the File field type.',
 
 'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
 
@@ -601,7 +614,6 @@ $lang = array(
 'please_select'				=> 'Please Select&hellip',
 'directory'					=> 'Directory',
 'no_sync_title'				=> 'No Results', // @todo, this phrase should change, just not sure what to put  -ga
-'no_file_sync_needed'		=> 'There are no files in your batch upload directories to sync.',
 'file_count'				=> 'Number of Files',
 'file_types'				=> 'Types of Files',
 'files_processed'			=> 'Number of Files Processed',

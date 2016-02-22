@@ -32,7 +32,8 @@ class Channel extends StructureModel {
 			'type' => 'belongsTo',
 			'model' => 'ChannelFieldGroup',
 			'from_key' => 'field_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE,
 		),
 		'StatusGroup' => array(
 			'type' => 'belongsTo',
@@ -44,11 +45,16 @@ class Channel extends StructureModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelField',
 			'from_key' => 'field_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE
 		),
 		'Entries' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntry'
+		),
+		'Comments' => array(
+			'type' => 'hasMany',
+			'model' => 'Comment'
 		),
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
@@ -57,7 +63,8 @@ class Channel extends StructureModel {
 			'type' => 'hasOne',
 			'model' => 'Template',
 			'from_key' => 'live_look_template',
-			'to_key' => 'template_id'
+			'to_key' => 'template_id',
+			'weak' => TRUE,
 		),
 		'AssignedMemberGroups' => array(
 			'type' => 'hasAndBelongsToMany',
@@ -78,6 +85,12 @@ class Channel extends StructureModel {
 			'model' => 'CategoryGroup',
 			'from_key' => 'cat_group',
 			'to_key' => 'group_id'
+		),
+		'ChannelEntryAutosaves' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryAutosave',
+			'key' => 'channel_id',
+			'to_key' => 'channel_id'
 		),
 	);
 
@@ -101,6 +114,7 @@ class Channel extends StructureModel {
 
 	protected static $_events = array(
 		'beforeSave',
+		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -265,6 +279,74 @@ class Channel extends StructureModel {
 		}
 	}
 
+	public function onAfterUpdate($previous)
+	{
+		// Only scnchronize if the category groups changed and we have a layout
+		if (isset($previous['cat_group']) && count($this->ChannelLayouts))
+		{
+			$this->syncCatGroupsWithLayouts();
+		}
+	}
+
+	/**
+	 * We offer a discrete field per category group. Layouts save the the field
+	 * order and tab location of all fields. When a category group is added to,
+	 * or removed from a Channel, we need to update all of its Layouts, either
+	 * adding a field or removing one.
+	 */
+	private function syncCatGroupsWithLayouts()
+	{
+		$cat_groups = array();
+
+		foreach (explode('|', $this->cat_group) as $group_id)
+		{
+			$cat_groups['categories[cat_group_id_'.$group_id.']'] = TRUE;
+		}
+
+		foreach ($this->ChannelLayouts as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+
+			foreach ($field_layout as $i => $section)
+			{
+				foreach ($section['fields'] as $j => $field_info)
+				{
+					// All category fields begin with "categories"
+					if (strpos($field_info['field'], 'categories') === 0)
+					{
+						$field_name = $field_info['field'];
+
+						// Is it already accounted for?
+						if (in_array($field_name, array_keys($cat_groups)))
+						{
+							unset($cat_groups[$field_name]);
+						}
+
+						// If not, it was removed and needs to be deleted
+						else
+						{
+							unset($field_layout[$i]['fields'][$j]);
+						}
+					}
+				}
+			}
+
+			// Add the new category groups
+			foreach (array_keys($cat_groups) as $cat_group)
+			{
+				$field_info = array(
+					'field' => $cat_group,
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				);
+				$field_layout[2]['fields'][] = $field_info;
+			}
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
 	public function onBeforeDelete()
 	{
 		// Delete Pages URIs for this Channel
@@ -292,60 +374,5 @@ class Channel extends StructureModel {
 				$this->Site->save();
 			}
 		}
-
-		// Update author stats
-		foreach ($entries->pluck('author_id') as $author_id)
-		{
-			$total_entries = $this->getFrontend()->get('ChannelEntry')
-				->filter('author_id', $author_id)
-				->count();
-
-			$total_comments = $this->getFrontend()->get('Comment')
-				->filter('author_id', $author_id)
-				->count();
-
-			$author = $this->getFrontend()->get('Member', $author_id)->first();
-			$author->total_entries = $entries;
-			$author->total_comments = $total_comments;
-			$author->save();
-		}
-
-		// Reset stats
-		$now = ee()->localize->now;
-		$entries = $this->getFrontend()->get('ChannelEntry')
-			->fields('entry_date', 'channel_id')
-			->filter('site_id', $site_id)
-			->filter('entry_date', '<', $now)
-			->filter('status', '!=', 'closed')
-			->filterGroup()
-				->filter('expiration_date', 0)
-				->orFilter('expiration_date', '>', $now)
-			->endFilterGroup()
-			->order('entry_date', 'desc');
-
-		$total_entries = $entries->count();
-		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
-
-		$comments = $this->getFrontend()->get('Comment')
-			->filter('site_id', $site_id);
-
-		$total_comments = $comments->count();
-
-		$comments->filter('status', 'o')
-			->fields('comment_date')
-			->order('comment_date', 'desc')
-			->first();
-
-		$last_comment_date = ($comments) ? $comments->comment_date : 0;
-
-		$stats = $this->getFrontend()->get('Stats')
-			->filter('site_id', $site_id)
-			->first();
-
-		$stats->total_entries = $total_entries;
-		$stats->last_entry_date = $last_entry_date;
-		$stats->total_comments = $total_comments;
-		$stats->last_comment_date = $last_comment_date;
-		$stats->save();
 	}
 }

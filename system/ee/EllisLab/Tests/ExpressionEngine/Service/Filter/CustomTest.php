@@ -83,10 +83,13 @@ class CustomTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider validityDataProvider
 	 */
-	public function testValdity($submitted, $valid)
+	public function testValidity($submitted, $valid)
 	{
+		// check with $_POST
 		$_POST['filter_by_custom'] = $submitted;
 		$filter = new Custom('filter_by_custom', 'custom', $this->options);
+		$filter->disableCustomValue();
+
 		$this->assertEquals($submitted, $filter->value());
 		if ($valid)
 		{
@@ -97,9 +100,12 @@ class CustomTest extends \PHPUnit_Framework_TestCase {
 			$this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid');
 		}
 
+		// check with $_GET
 		unset($_POST['filter_by_custom']);
 		$_GET['filter_by_custom'] = $submitted;
 		$filter = new Custom('filter_by_custom', 'custom', $this->options);
+		$filter->disableCustomValue();
+
 		$this->assertEquals($submitted, $filter->value());
 		if ($valid)
 		{
@@ -109,6 +115,13 @@ class CustomTest extends \PHPUnit_Framework_TestCase {
 		{
 			$this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid');
 		}
+
+		// if custom values are allowed then everything is valid
+		$_GET['filter_by_custom'] = $submitted;
+		$filter = new Custom('filter_by_custom', 'custom', $this->options);
+
+		$this->assertEquals($submitted, $filter->value());
+		$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid');
 	}
 
 	public function validityDataProvider()

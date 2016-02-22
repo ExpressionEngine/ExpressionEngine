@@ -645,7 +645,7 @@ class Member_auth extends Member {
  	 *
 	 * @param 	string 	pages to return back to
 	 */
-	public function forgot_password()
+	public function forgot_password($ret = '-3')
 	{
 		// If the user is logged in already, then send them away.  They have no
 		// business here.
@@ -1034,8 +1034,11 @@ class Member_auth extends Member {
 		/*  - Additional processing after user resets password
 		/*  - Added EE 2.9.3
 		*/
-			$data = ee()->extensions->call('member_process_reset_password', $data);
-			if (ee()->extensions->end_script === TRUE) return;
+			if (ee()->extensions->active_hook('member_process_reset_password') === TRUE)
+			{
+				$data = ee()->extensions->call('member_process_reset_password', $data);
+				if (ee()->extensions->end_script === TRUE) return;
+			}
 		/*
 		/* -------------------------------------------*/
 

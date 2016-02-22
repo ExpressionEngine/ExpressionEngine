@@ -37,10 +37,10 @@ $lang = array(
 
 'date_logged'			=> 'Date logged',
 
-'no_control_panel_logs_found' => 'No <b>Control Panel Logs</b> found',
+'no_control_panel_logs_found' => 'No <b>Control panel logs</b> found.',
 
 /* Developer Log */
-'no_developer_logs_found' => 'No <b>Developer Logs</b> found',
+'no_developer_logs_found' => 'No <b>Developer logs</b> found.',
 'clear_developer_logs'	=> 'Remove all Developer Logs',
 'log_id'				=> 'Log ID',
 'log_message'			=> 'Message',
@@ -68,18 +68,18 @@ $lang = array(
 </ul>',
 
 /* Email Log */
-'no_email_logs_found'	=> 'No <b>Email Logs</b> found',
+'no_email_logs_found'	=> 'No <b>Email logs</b> found.',
 'sent_to'				=> 'Sent Email to',
 'subject'				=> 'Subject',
 'clear_email_logs'		=> 'Remove all Email Logs',
 
 /* Search Log */
-'no_search_logs_found'	=> 'No <b>Search Logs</b> found',
+'no_search_logs_found'	=> 'No <b>Search logs</b> found.',
 'clear_search_logs'		=> 'Remove all Search Logs',
 'searched_for'			=> 'Searched for',
 
 /* Throttle Log */
-'no_throttling_logs_found'	=> 'No <b>Throttling Logs</b> found',
+'no_throttling_logs_found'	=> 'No <b>Throttling logs</b> found.',
 'enable_throttling'		=> 'Turn Throttling On',
 'throttling_disabled'	=> '<b>Throttling</b> Disabled',
 'front_end_requests'	=> 'Front End Requests',

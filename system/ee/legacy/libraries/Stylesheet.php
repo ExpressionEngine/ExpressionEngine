@@ -88,10 +88,10 @@ class EE_Stylesheet {
 			/**  Retreive template file if necessary
 			/** -----------------------------------------*/
 
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+			if (ee()->config->item('save_tmpl_files') == 'y')
 			{
 				ee()->load->helper('file');
-				$basepath = ee()->config->slash_item('tmpl_file_basepath').'/'.ee()->config->item('site_short_name').'/';
+				$basepath = PATH_TMPL.ee()->config->item('site_short_name').'/';
 				$basepath .= $ex['0'].'.group/'.$row['template_name'].'.css';
 
 				$str = read_file($basepath);
@@ -115,7 +115,6 @@ class EE_Stylesheet {
 	 */
 	private function _ee_channel_form_css()
 	{
-		$files[] = PATH_THEMES.'cp/default/css/jquery-ui-1.8.16.custom.css';
 		$files[] = PATH_THEMES.'cp/default/css/channel_form.css';
 
 		$out = '';
@@ -125,13 +124,6 @@ class EE_Stylesheet {
 			if (file_exists($file))
 			{
 				$out .= file_get_contents($file);
-
-				if ($file == PATH_THEMES.'cp/default/css/jquery-ui-1.8.16.custom.css')
-				{
-					$theme_url = URL_THEMES.'cp/'.ee()->config->item('cp_theme');
-
-					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
-				}
 			}
 		}
 

@@ -1251,6 +1251,12 @@ class Filemanager {
 
 		foreach ($dimensions as $size_id => $size)
 		{
+			// May be FileDimension object
+			if ( ! is_array($size))
+			{
+				$size = $size->toArray();
+			}
+
 			ee()->image_lib->clear();
 			$force_master_dim = FALSE;
 
@@ -1509,7 +1515,7 @@ class Filemanager {
 	public function get_thumb($file, $directory_id, $ignore_site_id = FALSE)
 	{
 		$thumb_info = array(
-			'thumb' => PATH_CP_GBL_IMG.'default.png',
+			'thumb' => PATH_CP_GBL_IMG.'missing.jpg',
 			'thumb_path' => '',
 			'thumb_class' => 'no_image',
 		);

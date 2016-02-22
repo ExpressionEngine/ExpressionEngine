@@ -35,7 +35,6 @@ class Delete extends Query {
 	{
 		$builder  = $this->builder;
 		$from     = $this->builder->getFrom();
-		$frontend = $builder->getFrontend();
 		$from_pk  = $this->store->getMetaDataReader($from)->getPrimaryKey();
 
 		$parent_ids = $this->getParentIds($from, $from_pk);
@@ -45,10 +44,15 @@ class Delete extends Query {
 			return;
 		}
 
-		$delete_list = $this->getDeleteList($from);
+		$from_alias = 'CurrentlyDeleting';
 
-		foreach ($delete_list as $model => $withs)
+		$delete_list = $this->getDeleteList($from, $from_alias);
+
+		foreach ($delete_list as $delete_item)
 		{
+			list($get, $withs) = $delete_item;
+			list($model, $alias) = $this->splitAlias($get);
+
 			$offset		= 0;
 			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model?
 
@@ -59,14 +63,15 @@ class Delete extends Query {
 			$events = $to_meta->getEvents();
 
 			$has_delete_event = (
+				$to_meta->publishesHooks() ||
 				in_array('beforeDelete', $events) ||
 				in_array('afterDelete', $events)
 			 );
 
 			 $basic_query = $builder
-				 ->getFrontend()
-				 ->get($model)
-				 ->filter("{$from}.{$from_pk}", 'IN', $parent_ids);
+				 ->getFacade()
+				 ->get($get)
+				 ->filter("{$from_alias}.{$from_pk}", 'IN', $parent_ids);
 
 			 // expensive recursion fallback
 			 if ($withs instanceOf \Closure)
@@ -75,7 +80,6 @@ class Delete extends Query {
 				 $this->deleteCollection($delete_collection, $to_meta);
 				 continue;
 			 }
-
 
 			// TODO optimize further for on-db deletes
 			do {
@@ -88,14 +92,20 @@ class Delete extends Query {
 
 				if ($has_delete_event)
 				{
-					$fetch_query->fields("{$model}.*");
+					$fetch_query->fields("{$alias}.*");
 				}
 				else
 				{
-					$fetch_query->fields("{$model}.{$to_pk}");
+					$fetch_query->fields("{$alias}.{$to_pk}");
+				}
+
+				if ($model == 'MemberGroup' || $model == 'ee:MemberGroup')
+				{
+					$fetch_query->fields("{$alias}.site_id");
 				}
 
 				$delete_models = $fetch_query->all();
+
 				$delete_ids = $this->deleteCollection($delete_models, $to_meta);
 
 				$offset += $batch_size;
@@ -110,16 +120,22 @@ class Delete extends Query {
 	 */
 	protected function deleteCollection($collection, $to_meta)
 	{
-		$delete_ids = $collection->getIds();
-
-		$collection->emit('beforeDelete');
-
-		if ( ! count($delete_ids))
+		if ( ! count($collection))
 		{
 			return array();
 		}
 
-		$this->deleteAsLeaf($to_meta, $delete_ids);
+		$delete_ids = $collection->getIds();
+		$extra_where = array();
+
+		if (array_key_exists('member_groups', $to_meta->getTables()))
+		{
+			$extra_where['site_id'] = array_unique($collection->pluck('site_id'));
+		}
+
+		$collection->emit('beforeDelete');
+
+		$this->deleteAsLeaf($to_meta, $delete_ids, $extra_where);
 
 		$collection->emit('afterDelete');
 
@@ -134,13 +150,19 @@ class Delete extends Query {
 	 * @param String $model       Model name to delete from
 	 * @param Int[]  $delete_ids  Array of primary key ids to remove
 	 */
-	protected function deleteAsLeaf($reader, $delete_ids)
+	protected function deleteAsLeaf($reader, $delete_ids, $extra_where = array())
 	{
-		$tables = array_keys($reader->getTables());
+		$tables = array_keys($reader->getTables(FALSE));
 		$key = $reader->getPrimaryKey();
 
-		$this->store->rawQuery()
-			->where_in($key, $delete_ids)
+		$query = $this->store->rawQuery();
+
+		foreach ($extra_where as $field => $value)
+		{
+			$query->where_in($field, $value);
+		}
+
+		$query->where_in($key, $delete_ids)
 			->delete($tables);
 	}
 
@@ -177,71 +199,105 @@ class Delete extends Query {
 	 *    'Site'          => array()
 	 * );
 	 *
-	 * @param String  $from  Model to delete from
+	 * @param String  $model  Model to delete from
 	 * @return Array  [name => withs, ...] as described above
 	 */
-	protected function getDeleteList($from)
+	protected function getDeleteList($model, $delete_alias)
 	{
 		$this->delete_list = array();
-		$this->deleteListRecursive($from);
+		$this->recursivePath($model, array());
+
+		usort($this->delete_list, function($a, $b) {
+
+			if ($a[1] instanceOf \Closure)
+			{
+				return 5e10;
+			}
+
+			if ($b[1] instanceOf \Closure)
+			{
+				return -5e10;
+			}
+
+			return count($a[1]) - count($b[1]);
+		});
+
+		foreach ($this->delete_list as &$final)
+		{
+			if (is_array($final[1]))
+			{
+				if (count($final[1]))
+				{
+					$last = array_pop($final[1]);
+					$final[1][] = $last.' AS '.$delete_alias;
+				}
+				else
+				{
+					$final[0] .= ' AS '.$delete_alias;
+				}
+
+				$final[1] = $this->nest($final[1]);
+			}
+		}
+
 		return array_reverse($this->delete_list);
 	}
 
-	/**
-	 * Helper to build a delete list. See the `getDeleteList()` method
-	 * for details.
-	 *
-	 * @param String  $parent  Model we're processing
-	 * @return Array  [name => withs, ...]
-	 */
-	protected function deleteListRecursive($parent)
-	{
-		$results = array();
-		$relations = $this->store->getAllRelations($parent);
 
-		if ( ! isset($this->delete_list[$parent]))
-		{
-			$this->delete_list[$parent] = array();
-		}
+	protected function recursivePath($model, $path = array())
+	{
+		$this->delete_list[] = array($model, array_reverse($path));
+
+		$relations = $this->store->getAllRelations($model);
 
 		foreach ($relations as $name => $relation)
 		{
+			$inverse = $relation->getInverse();
+
 			if ($relation->isWeak())
 			{
-				$to_model = $relation->getSourceModel();
+				$to_model = $relation->getTargetModel();
+				$to_name = $inverse->getName();
 
-				$inherit = $this->delete_list[$parent];
-				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
+				$subpath = $path;
+				$subpath[] = $to_name;
+
+				$this->delete_list[] = array($to_model, $this->weak($inverse, $subpath));
 				continue;
 			}
 
-			$inverse = $relation->getInverse();
-
 			if ($inverse instanceOf BelongsTo)
 			{
-				$to_name = $inverse->getName();
 				$to_model = $relation->getTargetModel();
+				$to_name = $inverse->getName();
 
-				if ( ! isset($this->delete_list[$to_model]))
+				// check for recursion
+				if ($to_model == $model && $to_name == end($path))
 				{
-					$this->delete_list[$to_model] = array();
-				}
-
-				$inherit = $this->delete_list[$parent];
-
-				if (isset($this->delete_list[$to_model][$to_name]))
-				{
-					$this->delete_list[$to_model] = $this->recursive($relation, $inherit);
+					$this->delete_list[] = array($to_model, $this->recursive($relation, $path));
 					continue;
 				}
 
-				$this->delete_list[$to_model][$to_name] = $inherit;
+				$subpath = $path;
+				$subpath[] = $to_name;
 
-				$this->deleteListRecursive($to_model);
+				$this->recursivePath($to_model, $subpath);
 			}
 		}
+	}
 
-		return $results;
+	/**
+	 *
+	 */
+	protected function nest($array)
+	{
+		if (empty($array))
+		{
+			return array();
+		}
+
+		$key = array_shift($array);
+		return array($key => $this->nest($array));
 	}
 
 	/**
@@ -254,6 +310,15 @@ class Delete extends Query {
 	 */
 	private function recursive($relation, $withs)
 	{
+		$withs = array_reverse($withs);
+
+		if (count($withs))
+		{
+			$withs[count($withs) - 1] .= ' AS CurrentlyDeleting';
+		}
+
+		$withs = $this->nest($withs);
+
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
@@ -267,9 +332,10 @@ class Delete extends Query {
 			// PHP just won't let us have nice things.
 			foreach ($models as $model)
 			{
-				$model->$name->delete();
+				$model->getAssociation($name)->get()->delete();
 			}
 
+			// continue deleting
 			return $models;
 		};
 	}
@@ -279,17 +345,46 @@ class Delete extends Query {
 	 */
 	private function weak($relation, $withs)
 	{
+		$withs = array_reverse($withs);
+
+		if (count($withs))
+		{
+			$withs[count($withs) - 1] .= ' AS CurrentlyDeleting';
+		}
+
+		$withs = $this->nest($withs);
+
 		return function($query) use ($relation, $withs)
 		{
+			if (($relation->getSourceModel() == 'MemberGroup' || $relation->getSourceModel() == 'ee:MemberGroup') &&
+				($relation->getTargetModel() == 'Member' || $relation->getTargetModel() == 'ee:Member'))
+			{
+				return array();
+			}
+
 			$name = $relation->getName();
 			$models = $query->with($withs)->all();
 
 			foreach ($models as $model)
 			{
-				$relation->drop($model, $model->$name);
+				$relation->drop($model, $model->getAssociation($name)->get());
 			}
 
-			return $models;
+			// do not continue deleting
+			return array();
 		};
+	}
+
+	protected function splitAlias($string)
+	{
+		$string = trim($string);
+		$parts = preg_split('/\s+AS\s+/i', $string);
+
+		if ( ! isset($parts[1]))
+		{
+			return array($string, $string);
+		}
+
+		return $parts;
 	}
 }

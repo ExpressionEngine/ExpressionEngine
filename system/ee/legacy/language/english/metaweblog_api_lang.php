@@ -27,7 +27,7 @@ $lang = array(
 
 'metaweblog_entry_status' => 'Status',
 
-'metaweblog_entry_status_desc' => 'Default status to use for entires from this MetaWeblog.',
+'metaweblog_entry_status_desc' => 'Default status to use for entries from this MetaWeblog.',
 
 'metaweblog_channel' => 'Channel',
 
@@ -111,6 +111,10 @@ password for a member account with permissions to post to at least one channel.'
 'configurations_removed' => 'Configurations removed',
 
 'configurations_removed_desc' => '%d configurations were removed.',
+
+'no_configurations' => 'No Configurations',
+
+'metaweblog_create' => 'Create Configuration',
 
 'metaweblog_create_new' => 'Create New Configuration',
 

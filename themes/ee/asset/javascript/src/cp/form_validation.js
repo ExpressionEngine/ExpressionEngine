@@ -13,21 +13,45 @@
 (function($) {
 
 $(document).ready(function() {
-
 	EE.cp.formValidation.init();
 });
 
 EE.cp.formValidation = {
+
+	paused: false,
+
+	pause: function(noTimer) {
+		this.paused = true;
+		if (noTimer === undefined)
+		{
+			var that = this;
+			setTimeout(function(){
+				that.resume();
+			}, 3000);
+		}
+	},
+
+	resume: function() {
+		this.paused = false;
+	},
 
 	/**
 	 * @param	{jQuery object}	form	Optional jQuery object of form
 	 */
 	init: function(form) {
 
-		var form = form || $('form');
+		var form = form || $('form'),
+			that = this;
 
-		this._bindButtonStateChange(form);
-		this._bindForms(form);
+		// These are the text input selectors we listen to for activity
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+
+		form.each(function(index, el) {
+
+			that._bindButtonStateChange($(el));
+			that._bindForms($(el));
+		});
+
 		this._focusFirstError();
 		this._scrollGrid();
 	},
@@ -42,17 +66,22 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$('input[type=text], input[type=password], textarea', container).blur(function() {
-
+		$(this._textInputSelectors, container).blur(function() {
 			// Unbind keydown validation when the invalid field loses focus
 			$(this).unbind('keydown');
+			var element = $(this);
 
-			that._sendAjaxRequest($(this));
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
 		});
 
 		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+			var element = $(this);
 
-			that._sendAjaxRequest($(this));
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
 		});
 
 		// Upon loading the page with invalid fields, bind the text field
@@ -73,9 +102,9 @@ EE.cp.formValidation = {
 		// Get the first container that has a text input inside it, then get
 		// the first text input
 		var textInput = $('.invalid')
-			.has('input[type=text], textarea')
+			.has(this._textInputSelectors)
 			.first()
-			.find('input[type=text], textarea')
+			.find(this._textInputSelectors)
 			.first();
 
 		// Bail if no field to focus
@@ -117,25 +146,44 @@ EE.cp.formValidation = {
 	 */
 	_bindButtonStateChange: function(form) {
 
-		var form = form || $('form');
+		var $button = $('.form-ctrls input.btn, .form-ctrls button.btn', form);
 
 		// Bind form submission to update button text
-		$('form').submit(function(event) {
-
-			var $button = $('.form-ctrls input.btn', this);
+		form.submit(function(event) {
 
 			if ($button.size() > 0)
 			{
 				// Add "work" class to make the buttons pulsate
 				$button.addClass('work');
 
-				// Update the button text to the value of its "work-text"
-				// data attribute
+				// If the submit was trigger by a button click, disable it to prevent futher clicks
+				$button.each(function(index, el) {
+					if (event.target == el) {
+
+						el.prop('disabled', true);
+
+						// Some controllers rely on the presence of the submit button in POST, but it won't
+						// make it to the controller if it's disabled, so add it back as a hidden input
+						form.append($('<input/>', { type: 'hidden', name: el.name, value: el.value }));
+
+						// Our work here is done
+						return false;
+					}
+				});
+
+				// Update the button text to the value of its "work-text" data attribute
 				if ($button.data('work-text') != '')
 				{
-					$button.attr('value', $button.data('work-text'));
+					// Replace button text with working text and disable the button to prevent further clicks
+					if ($button.is('input')) {
+						$button.attr('value', $button.data('work-text'));
+					} else if ($button.is('button')) {
+						$button.text($button.data('work-text'));
+					}
 				}
 			}
+
+			return true;
 		});
 	},
 
@@ -147,8 +195,7 @@ EE.cp.formValidation = {
 	 */
 	_bindForms: function(form) {
 
-		var that = this,
-			form = form || $('form');
+		var that = this;
 
 		form.has('.form-ctrls .btn').each(function(index, el) {
 
@@ -167,7 +214,7 @@ EE.cp.formValidation = {
 	_dismissSuccessAlert: function(form) {
 
 		$('input, select, textarea', form).change(function(event) {
-			var success = $('div.alert.success');
+			var success = form.find('div.alert.success');
 
 			if (success.size() > 0)
 			{
@@ -194,6 +241,9 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
+		if (this.paused) {
+			return;
+		}
 
 		var form = field.parents('form');
 
@@ -239,7 +289,7 @@ EE.cp.formValidation = {
 			// See if this tab has its own submit button
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-ctrls input.btn').size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find('.form-ctrls input.btn') : form.find('.form-ctrls input.btn');
+			button = (tab_has_own_button) ? tab_container.find('.form-ctrls .btn') : form.find('.form-ctrls .btn');
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
@@ -278,9 +328,16 @@ EE.cp.formValidation = {
 			// Re-enable submit button only if all errors are gone
 			if ( ! this._errorsExist(form) || ( ! this._errorsExist(tab_container) && tab_has_own_button))
 			{
-				button.removeClass('disable')
-					.attr('value', button.data('submit-text'))
-					.removeAttr('disabled');
+				button.removeClass('disable').removeAttr('disabled');
+
+				button.each(function(index, thisButton) {
+					thisButton = $(thisButton);
+					if (thisButton.is('input')) {
+						thisButton.attr('value', thisButton.data('submit-text'));
+					} else if (thisButton.is('button')) {
+						thisButton.text(thisButton.data('submit-text'));
+					}
+				});
 			}
 
 		// Validation error
@@ -314,10 +371,13 @@ EE.cp.formValidation = {
 			}
 
 			// Disable submit button
-			button.addClass('disable').attr({
-				value: EE.lang.btn_fix_errors,
-				disabled: 'disabled'
-			});
+			button.addClass('disable').attr('disabled', 'disabled');
+
+			if (button.is('input')) {
+				button.attr('value', EE.lang.btn_fix_errors);
+			} else if (button.is('button')) {
+				button.text(EE.lang.btn_fix_errors);
+			}
 		}
 	},
 

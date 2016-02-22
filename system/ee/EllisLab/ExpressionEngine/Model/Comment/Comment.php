@@ -34,6 +34,8 @@ class Comment extends Model {
 	protected static $_primary_key = 'comment_id';
 	protected static $_table_name = 'comments';
 
+	protected static $_hook_id = 'comment';
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'
@@ -47,7 +49,9 @@ class Comment extends Model {
 		),
 		'Author' => array(
 			'type' => 'BelongsTo',
-			'model' => 'Member'
+			'model' => 'Member',
+			'from_key' => 'author_id',
+			'to_key' => 'member_id'
 		)
 	);
 
@@ -59,6 +63,12 @@ class Comment extends Model {
 		'status'     => 'enum[o,c,p,s]',
 		'ip_address' => 'ip_address',
 		'comment'    => 'required',
+	);
+
+	protected static $_events = array(
+		'afterInsert',
+		'afterDelete',
+		'afterSave',
 	);
 
 	protected $comment_id;
@@ -75,5 +85,66 @@ class Comment extends Model {
 	protected $comment_date;
 	protected $edit_date;
 	protected $comment;
+
+	public function onAfterInsert()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateCommentStats();
+	}
+
+	public function onAfterDelete()
+	{
+		if ( ! $this->Author)
+		{
+			return;
+		}
+
+		// store the author and dissociate. otherwise saving the author will
+		// attempt to save this entry to ensure relationship integrity.
+		// TODO make sure everything is already dissociated when we hit this
+		$last_author = $this->Author;
+		$this->Author = NULL;
+
+		$last_author->updateAuthorStats();
+		$this->updateCommentStats();
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
+	}
+
+	private function updateCommentStats()
+	{
+		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
+		$now = ee()->localize->now;
+
+		$comments = $this->getFrontend()->get('Comment')
+			->filter('site_id', $site_id);
+
+		$total_comments = $comments->count();
+
+		$last_comment = $comments->filter('status', 'o')
+			->fields('comment_date')
+			->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($last_comment) ? $last_comment->comment_date : 0;
+
+		$stats = $this->getFrontend()->get('Stats')
+			->filter('site_id', $site_id)
+			->first();
+
+		$stats->total_comments = $total_comments;
+		$stats->last_comment_date = $last_comment_date;
+		$stats->save();
+
+		// Update comment count for the entry
+		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
+
+		$this->Entry->comment_total = $total_entry_comments;
+		$this->Entry->save();
+	}
 
 }

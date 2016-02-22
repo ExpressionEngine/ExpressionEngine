@@ -29,7 +29,7 @@ use CP_Controller;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Email extends Profile {
+class Email extends Settings {
 
 	private $base_url = 'members/profile/email';
 
@@ -38,7 +38,7 @@ class Email extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 		$settings = array();
 
@@ -137,17 +137,25 @@ class Email extends Profile {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Don't save the password check to the model
-			unset($vars['sections'][0][count($vars['sections'][0]) - 1]);
+			unset($vars['sections']['secure_form_ctrls']);
 
 			if ($this->saveSettings($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

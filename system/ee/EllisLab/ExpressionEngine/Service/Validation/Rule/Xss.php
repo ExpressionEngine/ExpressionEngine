@@ -36,7 +36,7 @@ class Xss extends ValidationRule {
 
 	public function getLanguageKey()
 	{
-		return sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'));
+		return sprintf(lang('invalid_xss_check'), ee('CP/URL')->make('homepage'));
 	}
 
 }

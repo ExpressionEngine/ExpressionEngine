@@ -15,7 +15,7 @@ if ($wrap): ?>
 		</tr>
 	</table>
 <?php else: ?>
-	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> class="<?=$class?>">
+	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 		<thead>
 			<tr>
 				<?php
@@ -27,7 +27,8 @@ if ($wrap): ?>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
-				<?php foreach ($columns as $label => $settings): ?>
+				<?php foreach ($columns as $settings):
+					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
 							<?php if ( ! empty($data)): // Hide checkbox if no data ?>
@@ -51,7 +52,9 @@ if ($wrap): ?>
 						}
 						?>
 						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
+							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
+							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
 							<?php endif ?>
@@ -77,7 +80,7 @@ if ($wrap): ?>
 			<?php
 			// Output this if Grid input so we can dynamically show it via JS
 			if (empty($data) OR $grid_input): ?>
-				<tr class="no-results<?php if ($grid_input): ?> hidden<?php endif?>">
+				<tr class="no-results<?php if ($grid_input): ?> hidden<?php endif?><?php if ( ! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?>">
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
@@ -118,13 +121,15 @@ if ($wrap): ?>
 						<?php foreach ($row['columns'] as $column): ?>
 							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
-								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES)?></a></td>
+								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
-								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
+								<td><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
-									<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+									<div class="toolbar-wrap">
+										<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+									</div>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td>
@@ -136,7 +141,7 @@ if ($wrap): ?>
 												data-<?=$key?>="<?=$value?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
-										<?php if (isset($column['disabled'])):?>
+										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>
 											disabled="disabled"
 										<?php endif; ?>
 										type="checkbox"
@@ -186,6 +191,6 @@ if ($wrap): ?>
 
 <?php if ($grid_input && ! empty($data)): ?>
 	<ul class="toolbar">
-		<li class="add"><a href="#" title="add new row"></a></li>
+		<li class="add"><a href="#" title="<?=lang('add_new_row')?>"></a></li>
 	</ul>
 <?php endif ?>

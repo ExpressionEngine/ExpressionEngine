@@ -99,7 +99,7 @@ class Autoloader {
 
 				if (file_exists($class_path))
 				{
-					require $class_path;
+					require_once $class_path;
 					return;
 				}
 			}

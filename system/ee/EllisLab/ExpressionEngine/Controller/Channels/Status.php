@@ -36,6 +36,15 @@ class Status extends AbstractChannelsController {
 	{
 		parent::__construct();
 
+		if ( ! ee()->cp->allowed_group_any(
+			'can_create_statuses',
+			'can_edit_statuses',
+			'can_delete_statuses'
+		))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->generateSidebar('status');
 	}
 
@@ -48,14 +57,17 @@ class Status extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $status_groups->count();
 
-		$table = $this->buildTableFromStatusGroupsQuery($status_groups);
+		$table = $this->buildTableFromStatusGroupsQuery($status_groups, array(), ee()->cp->allowed_group('can_delete_statuses'));
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/status'));
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
 			->currentPage($vars['table']['page'])
 			->render($vars['table']['base_url']);
+
+		$vars['can_create_statuses'] = ee()->cp->allowed_group('can_create_statuses');
+		$vars['can_delete_statuses'] = ee()->cp->allowed_group('can_delete_statuses');
 
 		ee()->view->cp_page_title = lang('status_groups');
 
@@ -72,6 +84,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group_ids = ee()->input->post('status_groups');
 
 		if ( ! empty($group_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -81,7 +98,6 @@ class Status extends AbstractChannelsController {
 
 			if ( ! empty($group_ids))
 			{
-				// TODO: unassign status group from any channels using it
 				ee('Model')->get('StatusGroup')
 					->filter('group_id', 'IN', $group_ids)
 					->delete();
@@ -98,7 +114,7 @@ class Status extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'channels/status', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('channels/status', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -106,6 +122,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_create_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form();
 	}
 
@@ -114,6 +135,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function edit($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->form($group_id);
 	}
 
@@ -128,7 +154,7 @@ class Status extends AbstractChannelsController {
 		{
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_status_group');
-			ee()->view->base_url = ee('CP/URL', 'channels/status/create');
+			ee()->view->base_url = ee('CP/URL')->make('channels/status/create');
 			$status_group = ee('Model')->make('StatusGroup');
 		}
 		else
@@ -144,7 +170,7 @@ class Status extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_status_group');
-			ee()->view->base_url = ee('CP/URL', 'channels/status/edit/'.$group_id);
+			ee()->view->base_url = ee('CP/URL')->make('channels/status/edit/'.$group_id);
 		}
 
 		$vars['sections'] = array(
@@ -191,7 +217,7 @@ class Status extends AbstractChannelsController {
 				->addToBody(sprintf(lang('status_group_'.$alert_key.'_desc'), $status_group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/status'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels/status'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -206,7 +232,7 @@ class Status extends AbstractChannelsController {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('status_group'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/status'), lang('status_groups'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -277,48 +303,71 @@ class Status extends AbstractChannelsController {
 		}
 
 		$table = ee('CP/Table', array(
-			'reorder' => TRUE,
+			'reorder' => ee()->cp->allowed_group('can_edit_statuses'),
 			'sortable' => FALSE
 		));
-		$table->setColumns(
-			array(
-				'col_id' => array(
-					'encode' => FALSE
-				),
-				'status_name',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
+
+		$columns = array(
+			'col_id' => array(
+				'encode' => FALSE
+			),
+			'status_name'
 		);
+
+		if (ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			$columns['manage'] = array(
+				'type'	=> CP\Table::COL_TOOLBAR
+			);
+		}
+
+		if (ee()->cp->allowed_group('can_delete_statuses'))
+		{
+			$columns[] = array(
+				'type'	=> CP\Table::COL_CHECKBOX
+			);
+		}
+
+		$table->setColumns($columns);
 
 		$statuses = $status_group->getStatuses()->sortBy('status_order');
 
 		$data = array();
 		foreach ($statuses as $status)
 		{
+			$edit_url = ee('CP/URL')->make('channels/status/edit-status/'.$group_id.'/'.$status->getId());
 			$columns = array(
 				$status->getId().form_hidden('order[]', $status->getId()),
-				$status->status,
+				array(
+					'content' => $status->status,
+					'href' => $edit_url,
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
-				)),
-				array(
+				))
+			);
+
+			if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+			{
+				unset($columns[1]['href']);
+				unset($columns[2]);
+			}
+
+			if (ee()->cp->allowed_group('can_delete_statuses'))
+			{
+				$columns[] = array(
 					'name' => 'statuses[]',
 					'value' => $status->getId(),
 					'data'	=> array(
-						'confirm' => lang('status') . ': <b>' . htmlentities($status->status, ENT_QUOTES) . '</b>'
+						'confirm' => lang('status') . ': <b>' . htmlentities($status->status, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
 					// Cannot delete default statuses
 					'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
-				)
-			);
+				);
+			}
 
 			$attrs = array();
 			if (ee()->session->flashdata('highlight_id') == $status->getId())
@@ -334,16 +383,16 @@ class Status extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status/status-list/'.$group_id));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/status/status-list/'.$group_id));
+		$vars['can_create_statuses'] = ee()->cp->allowed_group('can_create_statuses');
 
 		ee()->view->group_id = $group_id;
 
 		ee()->view->cp_page_title = $status_group->group_name . ' &mdash; ' . lang('statuses');
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/status'), lang('status_groups'));
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
-		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 		ee()->cp->add_js_script('file', 'cp/channel/status_reorder');
 
@@ -353,7 +402,7 @@ class Status extends AbstractChannelsController {
 			->withTitle(lang('status_ajax_reorder_fail'))
 			->addToBody(lang('status_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('statuses.reorder_url', ee('CP/URL', 'channels/status/status-reorder/'.$group_id)->compile());
+		ee()->javascript->set_global('statuses.reorder_url', ee('CP/URL')->make('channels/status/status-reorder/'.$group_id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->render('channels/status/list', $vars);
@@ -364,6 +413,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function statusReorder($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$status_group = ee('Model')->get('StatusGroup')
 			->filter('group_id', $group_id)
 			->first();
@@ -401,6 +455,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function removeStatus()
 	{
+		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$status_ids = ee()->input->post('statuses');
 
 		if ( ! empty($status_ids) && ee()->input->post('bulk_action') == 'remove')
@@ -427,7 +486,7 @@ class Status extends AbstractChannelsController {
 		}
 
 		ee()->functions->redirect(
-			ee('CP/URL', 'channels/status/status-list/'.ee()->input->post('status_group_id'), ee()->cp->get_url_state())
+			ee('CP/URL')->make('channels/status/status-list/'.ee()->input->post('status_group_id'), ee()->cp->get_url_state())
 		);
 	}
 
@@ -436,6 +495,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function createStatus($group_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_create_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->statusForm($group_id);
 	}
 
@@ -444,6 +508,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function editStatus($group_id, $status_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->statusForm($group_id, $status_id);
 	}
 
@@ -467,7 +536,7 @@ class Status extends AbstractChannelsController {
 		{
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_status');
-			ee()->view->base_url = ee('CP/URL', 'channels/status/create-status/'.$group_id);
+			ee()->view->base_url = ee('CP/URL')->make('channels/status/create-status/'.$group_id);
 			$status = ee('Model')->make('Status');
 		}
 		else
@@ -483,7 +552,7 @@ class Status extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_status');
-			ee()->view->base_url = ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status_id);
+			ee()->view->base_url = ee('CP/URL')->make('channels/status/edit-status/'.$group_id.'/'.$status_id);
 		}
 
 		// Member IDs NOT in $no_access have access...
@@ -582,7 +651,7 @@ class Status extends AbstractChannelsController {
 				->addToBody(sprintf(lang('status_'.$alert_key.'_desc'), $status->status))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/status/status-list/'.$group_id));
+			ee()->functions->redirect(ee('CP/URL')->make('channels/status/status-list/'.$group_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -597,9 +666,9 @@ class Status extends AbstractChannelsController {
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('status'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/status'), lang('status_groups'));
 		ee()->cp->set_breadcrumb(
-			ee('CP/URL', 'channels/status/status-list/'.$group_id),
+			ee('CP/URL')->make('channels/status/status-list/'.$group_id),
 			$status_group->group_name . ' &mdash; ' . lang('statuses')
 		);
 

@@ -3,8 +3,8 @@
 namespace EllisLab\ExpressionEngine\Controller\Msm;
 
 use CP_Controller;
-
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,20 +51,12 @@ class Msm extends CP_Controller {
 
 	protected function sidebarMenu($active = NULL)
 	{
-		$site_backlink = ee()->cp->get_safe_refresh();
-
-		if ($site_backlink)
-		{
-			$site_backlink = implode('|', explode(AMP, $site_backlink));
-			$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
-		}
-
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
-			->withButton(lang('new'), ee('CP/URL', 'msm/create'))
+		$sidebar->addHeader(lang('sites'), ee('CP/URL')->make('msm'))
+			->withButton(lang('new'), ee('CP/URL')->make('msm/create'))
 			->isActive();
 
 		$sites = $sidebar->addHeader(lang('switch_to'))
@@ -72,7 +64,7 @@ class Msm extends CP_Controller {
 
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites->addItem($site->site_label, ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
+			$sites->addItem($site->site_label, ee('CP/URL')->make('msm/switch_to/' . $site->site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode())));
 		}
 	}
 
@@ -80,10 +72,10 @@ class Msm extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('msm_manager'),
-			'form_url' => ee('CP/URL', 'msm'),
+			'form_url' => ee('CP/URL')->make('msm'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/general'),
+					'href' => ee('CP/URL')->make('settings/general'),
 					'title' => lang('settings')
 				)
 			),
@@ -101,12 +93,12 @@ class Msm extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'msm'));
+			ee()->functions->redirect(ee('CP/URL')->make('msm'));
 		}
 
-		$base_url = ee('CP/URL', 'msm');
+		$base_url = ee('CP/URL')->make('msm');
 
-		$vars['create_url'] = ee('CP/URL', 'msm/create');
+		$vars['create_url'] = ee('CP/URL')->make('msm/create');
 
 		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
 
@@ -150,14 +142,18 @@ class Msm extends CP_Controller {
 					'content' => lang('offline')
 				);
 			}
+			$edit_url = ee('CP/URL')->make('msm/edit/' . $site->site_id);
 			$column = array(
 				$site->site_id,
-				$site->site_label,
+				array(
+					'content' => $site->site_label,
+					'href' => $edit_url
+				),
 				'<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
 				$status,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'msm/edit/' . $site->site_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -165,7 +161,7 @@ class Msm extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $site->site_id,
 					'data' => array(
-						'confirm' => lang('site') . ': <b>' . htmlentities($site->site_label, ENT_QUOTES) . '</b>'
+						'confirm' => lang('site') . ': <b>' . htmlentities($site->site_label, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -211,26 +207,33 @@ class Msm extends CP_Controller {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_sites'))
+		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$license = ee('License')->getEELicense();
+		$can_add = $license->canAddSites(ee('Model')->get('Site')->count());
+
+		if ( ! $can_add && ! empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
+			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
 
-		if ( ! empty($_POST))
-		{
-			$site = ee('Model')->make('Site', $_POST);
-			$site->site_bootstrap_checksums = array();
-			$site->site_pages = array();
-			$result = $site->validate();
+		$errors = NULL;
+		$site = ee('Model')->make('Site');
+		$site->site_bootstrap_checksums = array();
+		$site->site_pages = array();
 
-			if ($response = $this->ajaxValidation($result))
-			{
-			    return $response;
-			}
+		$result = $this->validateSite($site);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
 
 			if ($result->isValid())
 			{
@@ -330,7 +333,7 @@ class Msm extends CP_Controller {
 					->addToBody(sprintf(lang('create_site_success_desc'), $site->site_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'msm'));
+				ee()->functions->redirect(ee('CP/URL')->make('msm'));
 			}
 			else
 			{
@@ -344,10 +347,26 @@ class Msm extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'msm/create'),
+			'base_url' => ee('CP/URL')->make('msm/create'),
+			'errors' => $errors,
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->getForm($site, $can_add),
 		);
+
+		if ( ! $can_add)
+		{
+			$vars['buttons'] = array(
+				array(
+					'text' => 'btn_site_limit_reached',
+					'working' => 'btn_site_limit_reached',
+					'value' => 'btn_site_limit_reached',
+					'class' => 'disable',
+					'name' => 'submit',
+					'type' => 'submit'
+				)
+			);
+		}
 
 		$vars['sections'] = array(
 			array(
@@ -410,19 +429,15 @@ class Msm extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
+			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
 
-		if ( ! empty($_POST))
-		{
-			$site->set($_POST);
-			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
-			$result = $site->validate();
+		$errors = NULL;
+		$result = $this->validateSite($site);
 
-			if ($response = $this->ajaxValidation($result))
-			{
-			    return $response;
-			}
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
 
 			if ($result->isValid())
 			{
@@ -436,7 +451,7 @@ class Msm extends CP_Controller {
 
 				ee()->logger->log_action(lang('site_updated') . ': ' . $site->site_label);
 
-				ee()->functions->redirect(ee('CP/URL', 'msm/edit/' . $site_id));
+				ee()->functions->redirect(ee('CP/URL')->make('msm/edit/' . $site_id));
 			}
 			else
 			{
@@ -450,65 +465,146 @@ class Msm extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
+			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
+			'errors' => $errors,
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
-		);
-
-		$vars['sections'] = array(
-			array(
-				array(
-					'title' => 'name',
-					'desc' => 'name_desc',
-					'fields' => array(
-						'site_label' => array(
-							'type' => 'text',
-							'value' => $site->site_label,
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'short_name',
-					'desc' => 'alphadash_desc',
-					'fields' => array(
-						'site_name' => array(
-							'type' => 'text',
-							'value' => $site->site_name,
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'site_online',
-					'desc' => 'site_online_desc',
-					'fields' => array(
-						'is_site_on' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'online',
-								'n' => 'offline'
-							),
-							'value' => $site->site_system_preferences->is_site_on
-						)
-					)
-				),
-				array(
-					'title' => 'description',
-					'desc' => 'description_desc',
-					'fields' => array(
-						'site_description' => array(
-							'type' => 'textarea',
-							'value' => $site->site_description,
-						)
-					)
-				),
-			)
+			'sections' => $this->getForm($site, TRUE),
 		);
 
 		ee()->view->cp_page_title = lang('edit_site');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Prepares and returns an array for the 'sections' view variable of the
+	 * shared/form view.
+	 *
+	 * @param Site $site A Site entity for populating the values of this form
+	 * @param bool $can_add Have they reached their site limit?
+	 */
+	private function getForm($site, $can_add = FALSE)
+	{
+		$sections = array(array());
+
+		$disabled = ! $can_add;
+
+		if ( ! $can_add)
+		{
+			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
+				->asIssue()
+				->withTitle(lang('site_limit_reached'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->cannotClose()
+				->render();
+			$sections[0][] = $alert;
+		}
+
+		$name = array(
+			'title' => 'name',
+			'desc' => 'name_desc',
+			'fields' => array(
+				'site_label' => array(
+					'type' => 'text',
+					'value' => $site->site_label,
+					'required' => TRUE,
+					'disabled' => $disabled
+				)
+			)
+		);
+		$sections[0][] = $name;
+
+		$short_name = array(
+			'title' => 'short_name',
+			'desc' => 'short_name_desc',
+			'fields' => array(
+				'site_name' => array(
+					'type' => 'text',
+					'value' => $site->site_name,
+					'required' => TRUE,
+					'disabled' => $disabled
+				)
+			)
+		);
+		$sections[0][] = $short_name;
+
+		if ( ! $site->isNew())
+		{
+			$site_online = array(
+				'title' => 'site_online',
+				'desc' => 'site_online_desc',
+				'fields' => array(
+					'is_site_on' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'y' => 'online',
+							'n' => 'offline'
+						),
+						'value' => $site->site_system_preferences->is_site_on
+					)
+				)
+			);
+			$sections[0][] = $site_online;
+		}
+
+		$description = array(
+			'title' => 'description',
+			'desc' => 'description_desc',
+			'fields' => array(
+				'site_description' => array(
+					'type' => 'textarea',
+					'value' => $site->site_description,
+					'disabled' => $disabled
+				)
+			)
+		);
+		$sections[0][] = $description;
+
+		return $sections;
+	}
+
+	/**
+	 * Validates the Site entity returning JSON if it was an AJAX request, or
+	 * sets an appropriate alert and returns the validation result.
+	 *
+	 * @param Site $site A Site entity to validate
+	 * @return Mixed If nothing was posted: FALSE; if AJAX: void; otherwise a
+	 *   Result object
+	 */
+	private function validateSite($site)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($site->isNew()) ? 'create' : 'edit';
+
+		$site->set($_POST);
+
+		if ($action == 'edit')
+		{
+			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
+		}
+
+		$result = $site->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_site_error'))
+				->addToBody(lang($action . '_site_error_desc'))
+				->now();
+		}
+
+		return $result;
 	}
 
 	public function switchTo($site_id)
@@ -523,9 +619,7 @@ class Msm extends CP_Controller {
 		$page = ee()->input->get_post('page');
 		if ($page)
 		{
-			$return_path = base64_decode($page);
-			$uri_elements = json_decode($return_path, TRUE);
-			$redirect = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$redirect = ee('CP/URL')->decodeUrl($page);
 		}
 
 		ee()->cp->switch_site($site_id, $redirect);

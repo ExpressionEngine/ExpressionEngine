@@ -13,6 +13,10 @@ class ChannelLayout extends Model implements LayoutInterface {
 	protected static $_primary_key = 'layout_id';
 	protected static $_table_name = 'layout_publish';
 
+	protected static $_typed_columns = array(
+		'field_layout' => 'serialized',
+	);
+
 	protected static $_relationships = array(
 		'Channel' => array(
 			'type' => 'belongsTo',
@@ -40,17 +44,6 @@ class ChannelLayout extends Model implements LayoutInterface {
 	protected $layout_name;
 	protected $field_layout;
 
-	// @TODO Make this a typed/composite column
-	public function set__field_layout($field_layout)
-	{
-		$this->setRawProperty('field_layout', serialize($field_layout));
-	}
-
-	public function get__field_layout()
-	{
-		return unserialize($this->field_layout);
-	}
-
 	public function transform(array $fields)
 	{
 		$display = new LayoutDisplay();
@@ -59,25 +52,54 @@ class ChannelLayout extends Model implements LayoutInterface {
 		$layout = $this->getProperty('field_layout');
 		foreach ($layout as $section)
 		{
+			// Tabs have 4 pieces of data: an id, a name, a list of fields,
+			// and a visibility flag. If any of them are missing this is not
+			// a tab (but visiblity is non-essential so...) we'll skip it. This
+			// is better than a PHP error.
+			if ( ! (isset($section['id'])
+					&& isset($section['name'])
+					&& isset($section['fields']))
+				)
+			{
+				continue;
+			}
+
 			$tab = new LayoutTab($section['id'], $section['name']);
 
-			if ( ! $section['visible'])
+			// If they don't havea 'visible' key we'll assume it is visible
+			// and just move on.
+			if (isset($section['visible']) && ! $section['visible'])
 			{
 				$tab->hide();
 			}
 
 			foreach ($section['fields'] as $field_info)
 			{
+				// If the field_info does'nt have a 'field' key, this isn't
+				// really a field: skip it.
+				if (empty($field_info) || ! isset($field_info['field']))
+				{
+					continue;
+				}
+
 				$field_id = $field_info['field'];
+
+				// Looking for a field that is not there...skip it for now
+				if ( ! array_key_exists($field_id, $fields))
+				{
+					continue;
+				}
 
 				$field = $fields[$field_id];
 
-				if ($field_info['collapsed'])
+				// Collapsed is "optional" and defaults to "not collapsed"
+				if (isset($field_info['collapsed']) && $field_info['collapsed'])
 				{
 					$field->collapse();
 				}
 
-				if ( ! $field_info['visible'])
+				// Visible is "optional" and defaults to "I can see you!"
+				if (isset($field_info['visible']) && ! $field_info['visible'])
 				{
 					$field->hide();
 				}
@@ -91,10 +113,15 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 		// "New" (unknown) fields
 		$publish_tab = $display->getTab('publish');
+		$categories_tab = $display->getTab('categories');
 
 		foreach ($fields as $field_id => $field)
 		{
-			if (strpos($field_id, '__') === FALSE)
+			if (strpos($field_id, 'categories[') == 0)
+			{
+				$tab = $categories_tab;
+			}
+			elseif (strpos($field_id, '__') === FALSE)
 			{
 				$tab = $publish_tab;
 			}

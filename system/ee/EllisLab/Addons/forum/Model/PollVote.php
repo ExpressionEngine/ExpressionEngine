@@ -44,13 +44,20 @@ class PollVote extends Model {
 	protected static $_relationships = array(
 		'Member' => array(
 			'type' => 'belongsTo',
-			'model' => 'ee:Member'
+			'model' => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'PollVote',
+				'type' => 'hasMany',
+			)
 		),
 		'Poll' => array(
 			'type' => 'belongsTo',
+			'weak' => TRUE
 		),
 		'Topic' => array(
 			'type' => 'belongsTo',
+			'weak' => TRUE
 		),
 	);
 

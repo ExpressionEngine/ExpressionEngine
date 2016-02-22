@@ -49,7 +49,7 @@ class SyntheticGateway extends Gateway {
 		return $this->table_name;
 	}
 
-	public function getFieldList()
+	public function getFieldList($cached = TRUE)
 	{
 		return $this->fields;
 	}

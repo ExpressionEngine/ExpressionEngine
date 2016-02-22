@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.0.0';	// The version being installed
+	public $version           = '3.1.3';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -41,6 +41,7 @@ class Wizard extends CI_Controller {
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
+	public $header            = '';
 	public $subtitle          = '';
 
 	private $current_step = 1;
@@ -64,7 +65,9 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker'
+		'file',
+		'filepicker',
+		'search'
 	);
 
 	public $theme_required_modules = array();
@@ -131,9 +134,7 @@ class Wizard extends CI_Controller {
 		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
-		'log_path'           => '',
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'cache_path'         => '',
 		'encryption_key'     => '',
 
 		// Enabled for cleaner view files and compatibility
@@ -152,12 +153,13 @@ class Wizard extends CI_Controller {
 
 		define('IS_CORE', FALSE);
 		define('PASSWORD_MAX_LENGTH', 72);
+		define('PATH_CACHE',  SYSPATH.'user/cache/');
+		define('PATH_TMPL',   SYSPATH.'user/templates/');
 
 		// Third party constants
-		$addon_path = (ee()->config->item('addons_path'))
-			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'user/addons/';
-		define('PATH_THIRD', $addon_path);
+		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
+		define('PATH_THIRD',  SYSPATH.'user/addons/');
+		define('PATH_RTE',    EE_APPPATH . 'rte_tools/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -328,6 +330,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for finfo_open
+		if ( ! function_exists('finfo_open'))
+		{
+			$this->set_output('error', array('error' => lang('fileinfo_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -335,13 +344,8 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Attempt to grab cache_path config if it's set
-		$cache_path = (ee()->config->item('cache_path'))
-			? ee()->config->item('cache_path')
-			: SYSPATH.'user/cache';
-
 		// Is the cache folder writable?
-		if ( ! is_really_writable($cache_path))
+		if ( ! is_really_writable(PATH_CACHE))
 		{
 			$this->set_output('error', array('error' => lang('unwritable_cache_folder')));
 			return FALSE;
@@ -417,6 +421,16 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Make sure the Member module is installed in the case the user is
+		// upgrading from Core to Standard
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		if ( ! IS_CORE
+			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(array('member'));
+		}
+
 		// If this is FALSE it means the user is running the most current
 		// version. We will show the "you are running the most current version"
 		// template
@@ -455,6 +469,7 @@ class Wizard extends CI_Controller {
 				->count_all_results('members');
 			$type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
 
+			$this->is_installed = TRUE;
 			$this->show_success($type, $vars);
 			return FALSE;
 		}
@@ -494,7 +509,9 @@ class Wizard extends CI_Controller {
 		// Assign the _POST array values
 		$this->assign_install_values();
 
-		$vars = array();
+		$vars = array(
+			'action' => $this->set_qstr('do_install')
+		);
 
 		// Are there any errors to display? When the user submits the
 		// installation form, the $this->do_install() function is called. In
@@ -502,11 +519,11 @@ class Wizard extends CI_Controller {
 		// message
 		$vars['errors'] = $errors;
 
-		$vars['action'] = $this->set_qstr('do_install');
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
-		$this->title = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
+		$this->title = sprintf(lang('install_title'), '');
+		$this->header = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
@@ -629,6 +646,22 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	public function license_agreement($value)
+	{
+		if ($value !== 'y')
+		{
+			ee()->form_validation->set_message(
+				'license_agreement',
+				lang('license_agreement_not_accepted')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Perform the installation
 	 * @return void
@@ -691,6 +724,11 @@ class Wizard extends CI_Controller {
 				'label' => 'lang:email_address',
 				'rules' => 'required|valid_email'
 			),
+			array(
+				'field' => 'license_agreement',
+				'label' => 'lang:license_agreement',
+				'rules' => 'callback_license_agreement'
+			)
 		));
 
 		// Bounce if anything failed
@@ -721,11 +759,11 @@ class Wizard extends CI_Controller {
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
 			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_general_ci'
+			'dbcollat' => 'utf8_unicode_ci'
 		);
 
 		$this->db_connect_attempt = $this->db_connect($db);
-		if ($this->db_connect_attempt === 1045)
+		if ($this->db_connect_attempt === 1044 OR $this->db_connect_attempt === 1045)
 		{
 			$errors[] = lang('database_invalid_user');
 		}
@@ -934,19 +972,19 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
-		// Try to rename automatically
-		if ($this->rename_installer())
+		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
+
+		// Try to rename automatically if there are no errors
+		if ($this->rename_installer()
+			&& empty($template_variables['errors'])
+			&& empty($template_variables['error_messages']))
 		{
 			ee()->load->helper('url');
-			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+			redirect($cp_login_url);
 		}
 
 		// Are we back here from a input?
-		if (ee()->input->get('login'))
-		{
-			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
-		}
-		else if (ee()->input->get('download'))
+		if (ee()->input->get('download'))
 		{
 			ee()->load->helper('download');
 			force_download(
@@ -967,6 +1005,7 @@ class Wizard extends CI_Controller {
 		// Send them to their CP via the form
 		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
+		$template_variables['cp_login_url'] = $cp_login_url;
 
 		// Only show download button if mailing list export exists
 		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
@@ -993,10 +1032,6 @@ class Wizard extends CI_Controller {
 		$self = htmlspecialchars($self, ENT_QUOTES);
 
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
-
-		// license number
-		$this->userdata['license_contact'] = '';
-		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
@@ -1092,6 +1127,9 @@ class Wizard extends CI_Controller {
 		$this->load->library('javascript');
 
 		$this->load->library('progress');
+		// if any of the underlying code uses caching, make sure we do nothing
+
+		ee()->config->set_item('cache_driver', 'dummy');
 
 		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
@@ -1198,7 +1236,8 @@ class Wizard extends CI_Controller {
 
 			if ( ! empty($UD->errors))
 			{
-				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+				ee()->load->helper('html');
+				$error_msg .= "</p>".ul($UD->errors)."<p>";
 			}
 
 			$this->set_output('error', array('error' => $error_msg));
@@ -1406,16 +1445,21 @@ class Wizard extends CI_Controller {
 				: ' <span class="faded">|</span> '.$suffix;
 		}
 
+		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
+		$javascript_dir = (is_dir($javascript_basepath.'src/'))
+			? 'src/'
+			: 'compressed/';
+
 		$version = explode('.', $this->version, 2);
 		$data = array(
 			'title'             => $this->title,
+			'header'            => $this->header,
 			'subtitle'          => $this->subtitle,
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
-
-			// TODO-WB: Change src to compressed before launch
-			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/src/'),
+			'image_path'        => $this->image_path,
+			'javascript_path'   => $javascript_basepath.$javascript_dir,
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
@@ -1430,6 +1474,18 @@ class Wizard extends CI_Controller {
 			'action'            => '',
 			'method'            => 'post'
 		);
+
+		if ($this->is_installed)
+		{
+			// for some reason 'charset' is not set in this context and will
+			// throw a PHP warning
+			$msm_config = new MSM_Config();
+			$msm_config->default_ini['charset'] = 'UTF-8';
+			$msm_config->site_prefs('');
+			$msm_config->load(); // Must come after site_prefs() so config.php can override
+			$data['theme_url'] = $msm_config->item('theme_folder_url');
+			$data['javascript_path'] = $data['theme_url'].'ee/asset/javascript/'.$javascript_dir;
+		}
 
 		$data = array_merge($data, $template_variables);
 
@@ -1809,8 +1865,6 @@ class Wizard extends CI_Controller {
 			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
-			'license_contact'           => $this->userdata['license_contact'],
-			'license_number'            => trim($this->userdata['license_number']),
 			'debug'                     => '1',
 			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
@@ -1832,7 +1886,6 @@ class Wizard extends CI_Controller {
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
 			'show_profiler'             => 'n',
-			'template_debugging'        => 'n',
 			'include_seconds'           => 'n',
 			'cookie_domain'             => '',
 			'cookie_path'               => '',
@@ -1857,7 +1910,7 @@ class Wizard extends CI_Controller {
 			'gzip_output'               => 'n',
 			'is_system_on'              => 'y',
 			'allow_extensions'          => 'y',
-			'date_format'               => '%n/%j/%y',
+			'date_format'               => '%n/%j/%Y',
 			'time_format'               => '12',
 			'include_seconds'           => 'n',
 			'server_offset'             => '',
@@ -1923,7 +1976,6 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
 			'save_tmpl_files'           => 'n',
-			'tmpl_file_basepath'        => realpath('./user/templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -1984,7 +2036,6 @@ class Wizard extends CI_Controller {
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
-			'template_debugging',
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
@@ -2130,7 +2181,6 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'save_tmpl_files',
-			'tmpl_file_basepath'
 		);
 		$site_prefs = array();
 
@@ -2216,13 +2266,6 @@ class Wizard extends CI_Controller {
 		{
 			$config['index_page'] = $config['site_index'];
 		}
-
-		// We also add a few other items
-		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
-
-		// BUILD_REMOVE_CJS_START
-		$config['use_compressed_js'] = 'n';
-		// BUILD_REMOVE_CJS_END
 
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
@@ -2369,7 +2412,8 @@ class Wizard extends CI_Controller {
 	 */
 	public function canRenameAutomatically()
 	{
-		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		if (version_compare($this->version, '3.0.0', '=')
+			&& file_exists(SYSPATH.'user/cache/mailing_list.zip'))
 		{
 			return FALSE;
 		}
@@ -2396,7 +2440,7 @@ class Wizard extends CI_Controller {
 		// Generate the new path by suffixing a dotless version number
 		$new_path = str_replace(
 			'installer',
-			'installer_'.str_replace('.', '', $this->version),
+			'installer_'.$this->version,
 			APPPATH
 		);
 

@@ -37,7 +37,7 @@ class Sandr extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_data'))
+		if ( ! ee()->cp->allowed_group('can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -80,7 +80,7 @@ class Sandr extends Utilities {
 			);
 
 			ee()->view->set_message('success', lang('cp_message_success'), sprintf(lang('rows_replaced'), (int)$replaced), TRUE);
-			ee()->functions->redirect(ee('CP/URL', 'utilities/sandr'));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/sandr'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

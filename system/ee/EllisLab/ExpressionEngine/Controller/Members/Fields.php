@@ -44,8 +44,13 @@ class Fields extends Members\Members {
 	{
 		parent::__construct();
 
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->lang->loadfile('channel');
-		$this->base_url = ee('CP/URL', 'members/fields');
+		$this->base_url = ee('CP/URL')->make('members/fields');
 		$this->generateSidebar('fields');
 	}
 
@@ -57,7 +62,7 @@ class Fields extends Members\Members {
 		$table = ee('CP/Table', array(
 			'sortable' => FALSE,
 			'reorder' => TRUE,
-			'save' => ee('CP/URL', "members/fields/order")
+			'save' => ee('CP/URL')->make("members/fields/order")
 		));
 
 		$table->setColumns(
@@ -80,9 +85,9 @@ class Fields extends Members\Members {
 		);
 
 		$table->setNoResultsText(
-			'no_fields',
+			sprintf(lang('no_found'), lang('custom_member_fields')),
 			'create_new',
-			ee('CP/URL', 'members/fields/create')
+			ee('CP/URL')->make('members/fields/create')
 		);
 
 		$data = array();
@@ -97,16 +102,20 @@ class Fields extends Members\Members {
 
 		foreach ($fields as $field)
 		{
+			$edit_url = ee('CP/URL')->make('members/fields/edit/' . $field->m_field_id);
 			$toolbar = array('toolbar_items' => array(
-				'edit' => array(
-					'href' => ee('CP/URL', 'members/fields/edit/' . $field->m_field_id),
+			'edit' => array(
+					'href' => $edit_url,
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
 			$columns = array(
 				'id' => $field->getId().form_hidden('order[]', $field->getId()),
-				'm_field_label' => $field->m_field_label,
+				'm_field_label' => array(
+						'content' => $field->m_field_label,
+						'href' => $edit_url
+						),
 				'm_field_name' => "<var>{{$field->m_field_name}}</var>",
 				'm_field_type' => $type_map[$field->m_field_type],
 				$toolbar,
@@ -114,7 +123,7 @@ class Fields extends Members\Members {
 					'name' => 'selection[]',
 					'value' => $field->m_field_id,
 					'data'	=> array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
 				)
 			);
@@ -134,14 +143,13 @@ class Fields extends Members\Members {
 
 		$table->setData($fieldData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'members/fields/delete');
-		$data['new'] = ee('CP/URL', 'members/fields/create');
+		$data['form_url'] = ee('CP/URL')->make('members/fields/delete');
+		$data['new'] = ee('CP/URL')->make('members/fields/create');
 		$base_url = $data['table']['base_url'];
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/members/member_field_reorder');
-		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 
 		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
@@ -150,7 +158,7 @@ class Fields extends Members\Members {
 			->withTitle(lang('member_field_ajax_reorder_fail'))
 			->addToBody(lang('member_field_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL', 'members/fields/order/')->compile());
+		ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL')->make('members/fields/order/')->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
@@ -227,9 +235,9 @@ class Fields extends Members\Members {
 		{
 			$field = ee('Model')->get('MemberField', array($field_id))->first();
 
-			ee()->view->save_btn_text = 'btn_edit_field';
+			ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
 			ee()->view->cp_page_title = lang('edit_member_field');
-			ee()->view->base_url = ee('CP/URL', 'members/fields/edit/' . $field_id);
+			ee()->view->base_url = ee('CP/URL')->make('members/fields/edit/' . $field_id);
 		}
 		else
 		{
@@ -244,9 +252,9 @@ class Fields extends Members\Members {
 			$field = ee('Model')->make('MemberField');
 			$field->field_type = 'text';
 
-			ee()->view->save_btn_text = 'btn_create_field';
+			ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
 			ee()->view->cp_page_title = lang('create_member_field');
-			ee()->view->base_url = ee('CP/URL', 'members/fields/create');
+			ee()->view->base_url = ee('CP/URL')->make('members/fields/create');
 		}
 
 		if ( ! $field)
@@ -319,50 +327,66 @@ class Fields extends Members\Members {
 						)
 					)
 				)
-			)
-		);
-
-		$visibility['visibility'] = array(
-			array(
-				'title' => 'is_field_reg',
-				'desc' => 'is_field_reg_cont',
-				'fields' => array(
-					'm_field_reg' => array(
-						'type' => 'yes_no',
-						'value' => $field->field_reg
-					)
-				)
 			),
-			array(
-				'title' => 'is_field_public',
-				'desc' => 'is_field_public_cont',
-				'fields' => array(
-					'm_field_public' => array(
-						'type' => 'yes_no',
-						'value' => $field->field_public
+			'visibility' => array(
+				array(
+					'title' => 'is_field_reg',
+					'desc' => 'is_field_reg_cont',
+					'fields' => array(
+						'm_field_reg' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_reg
+						)
+					)
+				),
+				array(
+					'title' => 'is_field_public',
+					'desc' => 'is_field_public_cont',
+					'fields' => array(
+						'm_field_public' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_public
+						)
 					)
 				)
 			)
 		);
 
+		$vars['sections'] = array_merge($vars['sections'], $field->getSettingsForm());
 
-		$settingsForm = $field->getSettingsForm();
-
-		$vars['sections'] += $visibility;
-		$vars['sections'] += $settingsForm;
-		$settingsFields = array_pop($settingsForm);
-		$settingsFields = $settingsFields['settings'];
+		// These are currently the only fieldtypes we allow; get their settings forms
+		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		{
+			if ($field->field_type != $fieldtype)
+			{
+				$dummy_field = ee('Model')->make('MemberField');
+				$dummy_field->field_type = $fieldtype;
+				$vars['sections'] = array_merge($vars['sections'], $dummy_field->getSettingsForm());
+			}
+		}
 
 		if ( ! empty($_POST))
 		{
-			foreach (array_merge($vars['sections'][0], $vars['sections']['visibility'], $settingsFields) as $section)
+			// We have to do this dance of explicitly setting each property
+			// so that the MemberField model's magic set method will prefix
+			// the properties for us
+			foreach ($vars['sections'] as $section)
 			{
-				// We have to do this dance of explicitly setting each property
-				// so that the MemberField model's magic set method will prefix
-				// the properties for us
-				foreach ($section['fields'] as $key => $val)
+				if ( ! isset($section[0]['fields']))
 				{
-					$field->$key = ee()->input->post($key);
+					$section = array_pop($section);
+				}
+				foreach ($section as $setting)
+				{
+					if (is_string($setting))
+					{
+						continue;
+					}
+
+					foreach ($setting['fields'] as $field_name => $field_settings)
+					{
+						$field->$field_name = ee()->input->post($field_name);
+					}
 				}
 			}
 
@@ -394,7 +418,7 @@ class Fields extends Members\Members {
 					->addToBody(lang('member_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', '/members/fields'));
+				ee()->functions->redirect(ee('CP/URL')->make('/members/fields'));
 			}
 			else
 			{
@@ -408,23 +432,12 @@ class Fields extends Members\Members {
 			}
 		}
 
-		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
-		{
-			if ($field->field_type != $fieldtype)
-			{
-				$dummy_field = ee('Model')->make('MemberField');
-				$dummy_field->field_type = $fieldtype;
-				$vars['sections'] += $dummy_field->getSettingsForm();
-			}
-		}
-
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('custom_profile_fields'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group'),
+			'file' => array('cp/form_group', 'cp/members/fields')
 		));
 
 		ee()->cp->render('settings/form', $vars);

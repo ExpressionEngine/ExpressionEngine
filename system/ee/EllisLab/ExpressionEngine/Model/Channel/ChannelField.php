@@ -43,25 +43,27 @@ class ChannelField extends FieldModel {
 		'field_is_hidden'      => 'boolString',
 		'field_show_fmt'       => 'boolString',
 		'field_order'          => 'int',
+		'field_settings'       => 'base64Serialized',
 	);
 
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
-			'weak' => TRUE,
 			'type' => 'belongsTo'
 		),
 		'Channel' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'group_id',
-			'to_key' => 'field_group'
+			'to_key' => 'field_group',
+			'weak' => TRUE
 		),
 	);
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
 		'group_id'             => 'required|integer',
-		'field_name'           => 'required|unique[site_id]',
+		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved',
 		'field_label'          => 'required',
+		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
 		'field_pre_populate'   => 'enum[y,n]',
 		'field_pre_channel_id' => 'integer',
@@ -73,6 +75,12 @@ class ChannelField extends FieldModel {
 		'field_is_hidden'      => 'enum[y,n]',
 		'field_show_fmt'       => 'enum[y,n]',
 		'field_order'          => 'integer',
+	);
+
+	protected static $_events = array(
+		'beforeInsert',
+		'afterInsert',
+		'beforeDelete',
 	);
 
 	protected $field_id;
@@ -132,15 +140,149 @@ class ChannelField extends FieldModel {
 		return $this;
 	}
 
-
-	public function set__field_settings($settings)
+	public function onBeforeInsert()
 	{
-		$this->setRawProperty('field_settings', base64_encode(serialize($settings)));
+		if ($this->field_order)
+		{
+			return;
+		}
+
+		$this->field_order = $this->getFrontend()->get('ChannelField')
+			->filter('group_id', $this->group_id)
+			->filter('site_id', $this->site_id)
+			->count() + 1;
 	}
 
-	public function get__field_settings()
+	public function onAfterInsert()
 	{
-		return unserialize(base64_decode($this->field_settings));
+		parent::onAfterInsert();
+
+		foreach ($this->ChannelFieldGroup->Channels as $channel)
+		{
+			foreach ($channel->ChannelLayouts as $channel_layout)
+			{
+				$field_layout = $channel_layout->field_layout;
+				$field_info = array(
+					'field'     => 'field_id_' . $this->field_id,
+					'visible'   => TRUE,
+					'collapsed' => FALSE
+				);
+				$field_layout[0]['fields'][] = $field_info;
+
+				$channel_layout->field_layout = $field_layout;
+				$channel_layout->save();
+			}
+		}
+	}
+
+	public function onBeforeDelete()
+	{
+		foreach ($this->ChannelFieldGroup->Channels as $channel)
+		{
+			foreach ($channel->ChannelLayouts as $channel_layout)
+			{
+				$field_layout = $channel_layout->field_layout;
+
+				foreach ($field_layout as $i => $section)
+				{
+					foreach ($section['fields'] as $j => $field_info)
+					{
+						if ($field_info['field'] == 'field_id_' . $this->field_id)
+						{
+							unset($field_layout[$i]['fields'][$j]);
+							break 2;
+						}
+					}
+				}
+
+				$channel_layout->field_layout = $field_layout;
+				$channel_layout->save();
+			}
+		}
+	}
+
+	public function getCompatibleFieldtypes()
+	{
+		$fieldtypes = array();
+		$compatibility = array();
+
+		foreach (ee('Addon')->installed() as $addon)
+		{
+			if ($addon->hasFieldtype())
+			{
+				foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
+				{
+					if (isset($metadata['compatibility']))
+					{
+						$compatibility[$fieldtype] = $metadata['compatibility'];
+					}
+				}
+
+				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
+			}
+		}
+
+		if ($this->field_type)
+		{
+			if ( ! isset($compatibility[$this->field_type]))
+			{
+				return array($this->field_type => $fieldtypes[$this->field_type]);
+			}
+
+			$my_type = $compatibility[$this->field_type];
+
+			$compatible = array_filter($compatibility, function($v) use($my_type)
+			{
+				return $v == $my_type;
+			});
+
+			$fieldtypes = array_intersect_key($fieldtypes, $compatible);
+		}
+
+		asort($fieldtypes);
+
+		return $fieldtypes;
+	}
+
+	/**
+	 * Validate the field name to avoid variable name collisions
+	 */
+	public function validateNameIsNotReserved($key, $value, $params, $rule)
+	{
+		if (in_array($value, ee()->cp->invalid_custom_field_names()))
+		{
+			return lang('reserved_word');
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * If this entity is not new (an edit) then we cannot change this entity's
+	 * type to something incompatible with its initial type.
+	 */
+	public function validateIsCompatibleWithPreviousValue($key, $value, $params, $rule)
+	{
+		if ( ! $this->isNew() )
+		{
+			$previous_value = $this->getBackup('field_type');
+
+			if ($previous_value)
+			{
+				$compatibility = $this->getCompatibleFieldtypes();
+
+				// If what we are set to now is not compatible to what we were
+				// set to before the change, then we are invalid.
+				if ( ! isset($compatibility[$previous_value]))
+				{
+					// Reset it and return an error.
+					$this->field_type = $previous_value;
+					return lang('inavlid_field_type');
+				}
+			}
+		}
+
+		return TRUE;
 	}
 
 }

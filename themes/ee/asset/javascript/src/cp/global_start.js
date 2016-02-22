@@ -145,7 +145,21 @@ $(document).ready(function () {
 	EE.cp.cleanUrls();
 	EE.cp.bindCpMessageClose();
 	EE.cp.channelMenuFilter();
+	EE.cp.bindSortableFolderLists();
+	EE.cp.addLastToChecklists();
 });
+
+/**
+ * For nested checklists, the very last item that APPEARS in the list
+ * needs a class of "last".
+ */
+EE.cp.addLastToChecklists = function() {
+	$('ul.nested-list li').removeClass('last');
+
+	$('ul.nested-list').each(function(){
+		$('li:last-child', this).not('ul.toolbar li').last().addClass('last');
+	});
+}
 
 // Binds the channel filter text boxes in Create and Edit menus
 EE.cp.channelMenuFilter = function() {
@@ -183,13 +197,56 @@ EE.cp.channelMenuFilter = function() {
 
 // Close alert modal when close button is clicked
 EE.cp.bindCpMessageClose = function() {
-	$('div.alert a.close').click(function(event)
-	{
+	$('body').on('click', 'div.alert a.close', function(event) {
 		event.preventDefault();
 		$(this).parent().hide();
 	});
 }
 
+// Binds jQuery UI sortable to reorderable folder lists
+EE.cp.bindSortableFolderLists = function() {
+	$('.sidebar .folder-list.reorderable').sortable({
+		axis: 'y',						// Only allow vertical dragging
+		containment: 'parent',			// Contain to parent
+		handle: 'a',					// Set drag handle
+		cancel: 'ul.toolbar',			// Do not allow sort on this handle
+		items: '> li',					// Only allow these to be sortable
+		sort: EE.sortable_sort_helper,	// Custom sort handler
+		// After sort finishes
+		stop: function(event, ui)
+		{
+			var name = $(this).data('name'), i;
+
+			if (EE.cp.folderList.eventHandlers[name] === undefined) {
+				return;
+			}
+
+			// A list may have multiple callbacks, call them all
+			for (i = 0; i < EE.cp.folderList.eventHandlers[name].length; i++) {
+				EE.cp.folderList.eventHandlers[name][i]($(this));
+			}
+		}
+	});
+}
+
+EE.cp.folderList = {
+
+	eventHandlers: [],
+
+	/**
+	 * Binds a callback to the sort event of a folder list
+	 *
+	 * @param	{string}	listName	Unique name of folder list
+	 * @param	{func}		func		Callback function for event
+	 */
+	onSort: function(listName, func) {
+		if (this.eventHandlers[listName] == undefined) {
+			this.eventHandlers[listName] = [];
+		}
+
+		this.eventHandlers[listName].push(func);
+	}
+};
 
 // Simple function to deal with csrf tokens
 EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
@@ -207,7 +264,6 @@ EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
 $(window).bind('broadcast.setCsrfToken', function(event, data) {
 	EE.cp.setCsrfToken(data, true);
 });
-
 
 // Simple function to deal with base paths tokens
 var sessionIdRegex = /[&?](S=[A-Za-z0-9]+)/;

@@ -96,6 +96,17 @@ class MetaDataReader {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function publishesHooks()
+	{
+		$class = $this->class;
+		$name = $class::getMetaData('hook_id');
+
+		return ($name != '');
+	}
+
+	/**
 	 *
 	 */
 	public function getGateways()
@@ -139,9 +150,9 @@ class MetaDataReader {
 	/**
 	 *
 	 */
-	public function getTables()
+	public function getTables($cached = TRUE)
 	{
-		if (isset($this->tables))
+		if (isset($this->tables) && $cached)
 		{
 			return $this->tables;
 		}
@@ -153,7 +164,7 @@ class MetaDataReader {
 		foreach ($gateways as $name => $object)
 		{
 			$table = $object->getTableName();
-			$fields = $object->getFieldList();
+			$fields = $object->getFieldList($cached);
 
 			$tables[$table] = $fields;
 		}
@@ -165,25 +176,16 @@ class MetaDataReader {
 	/**
 	 *
 	 */
-	public function getTableNamesByGateway()
-	{
-		$gateways = $this->getGateways();
-
-		$table_names = array();
-
-		foreach ($gateways as $name => $object)
-		{
-			$table_names[$name] = $object->getTableName();
-		}
-
-		return $table_names;
-	}
-
-	/**
-	 *
-	 */
 	public function getTableForField($field)
 	{
+		$class = $this->class;
+		$table = $class::getMetaData('table_name');
+
+		if ($table)
+		{
+			return $table;
+		}
+
 		foreach ($this->getTables() as $table => $fields)
 		{
 			if (in_array($field, $fields))

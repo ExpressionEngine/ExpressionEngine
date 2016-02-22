@@ -133,9 +133,18 @@ class EntryListing {
 	 */
 	private function setupFilters()
 	{
+		$channel = NULL;
+
 		$this->channel_filter = $this->createChannelFilter();
-		$this->category_filter = $this->createCategoryFilter();
-		$this->status_filter = $this->createStatusFilter();
+
+		if ($this->channel_filter->value())
+		{
+			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
+				->first();
+		}
+
+		$this->category_filter = $this->createCategoryFilter($channel);
+		$this->status_filter = $this->createStatusFilter($channel);
 
 		$this->filters = ee('CP/Filter')
 			->add($this->channel_filter)
@@ -217,11 +226,11 @@ class EntryListing {
 			}
 			else
 			{
-				$entries->filter('entry_date', '>=', $this->localize->now - $filter_values['filter_by_date']);
+				$entries->filter('entry_date', '>=', $this->now - $filter_values['filter_by_date']);
 			}
 		}
 
-		$entries->with('Autosaves', 'Categories', 'Author', 'Channel');
+		$entries->with('Autosaves', 'Author', 'Channel');
 
 		$this->entries = $entries;
 	}
@@ -231,7 +240,7 @@ class EntryListing {
 	 */
 	public function createChannelFilter()
 	{
-		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->assigned_channel_ids;
+		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
 			->fields('channel_id', 'channel_title')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -244,7 +253,8 @@ class EntryListing {
 			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
 		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
-		$channel_filter->disableCustomValue(); // This may have to go
+		$channel_filter->setPlaceholder(lang('filter_channels'));
+		$channel_filter->useListFilter(); // disables custom values
 		return $channel_filter;
 	}
 
@@ -271,7 +281,8 @@ class EntryListing {
 		}
 
 		$categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
-		$categories->disableCustomValue();
+		$categories->setPlaceholder(lang('filter_categories'));
+		$categories->useListFilter(); // disables custom values
 		return $categories;
 	}
 

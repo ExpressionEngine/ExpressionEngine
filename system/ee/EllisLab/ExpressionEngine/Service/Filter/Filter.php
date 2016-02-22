@@ -78,6 +78,12 @@ abstract class Filter {
 	protected $has_custom_value = TRUE;
 
 	/**
+	 * @var bool Whether or not the list should be filterable. Cannot be used
+	 * together with has_custom_value.
+	 */
+	 protected $has_list_filter = FALSE;
+
+	/**
 	 * @var string The name of the view to use when rendering
 	 */
 	protected $view = 'filter';
@@ -158,6 +164,7 @@ abstract class Filter {
 		}
 
 		$value = $this->display_value;
+
 		if (is_null($value))
 		{
 			$value = (array_key_exists($this->value(), $this->options)) ?
@@ -165,13 +172,19 @@ abstract class Filter {
 				$this->value();
 		}
 
+		if ( ! $this->isValid())
+		{
+			$value = $this->default_value;
+		}
+
 		$filter = array(
 			'label'            => $this->label,
 			'name'             => $this->name,
-			'value'            => $value,
+			'value'            => htmlspecialchars($value, ENT_QUOTES),
+			'has_list_filter'  => $this->has_list_filter,
 			'has_custom_value' => $this->has_custom_value,
 			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
-			'placeholder'      => $this->placeholder,
+			'placeholder'      => htmlspecialchars($this->placeholder, ENT_QUOTES),
 			'options'          => $options,
 		);
 		return $view->make('_shared/filters/filter')->render($filter);

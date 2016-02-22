@@ -94,14 +94,14 @@ class Rte_lib {
 		// new toolset?
 		if ($toolset_id == 0)
 		{
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/new_toolset');
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/rte/new_toolset');
 			$vars['cp_page_title_alt'] = lang('create_tool_set_header');
 			$toolset['tools'] = array();
 			$toolset_name = '';
 		}
 		else
 		{
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$vars['cp_page_title_alt'] = lang('edit_tool_set_header');
 
 			// make sure user can access the existing toolset
@@ -185,13 +185,13 @@ class Rte_lib {
 
 		if ($toolset_id)
 		{
-			$error_url = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$error_url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$success_url = $error_url;
 		}
 		else
 		{
-			$error_url = ee('CP/URL', 'addons/settings/rte/new_toolset');
-			$success_url = ee('CP/URL', 'addons/settings/rte');
+			$error_url = ee('CP/URL')->make('addons/settings/rte/new_toolset');
+			$success_url = ee('CP/URL')->make('addons/settings/rte');
 		}
 
 		$toolset = array(
@@ -304,7 +304,7 @@ class Rte_lib {
 		}
 
 		// get the tools
-		if ( ! $tools = ee()->rte_tool_model->get_tools($toolset['tools']))
+		if ( ! $tools = ee()->rte_tool_model->get_tools($toolset['tools'], $cp_only))
 		{
 			return;
 		}
@@ -381,9 +381,7 @@ class Rte_lib {
 		}
 
 		// potentially required assets
-		$jquery = URL_THEMES . 'javascript/' .
-				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
-				  '/jquery/jquery.js';
+		$jquery = URL_THEMES.'javascript/'.PATH_JS.'/jquery/jquery.js';
 
 		ee()->load->library('javascript');
 
@@ -651,17 +649,15 @@ class Rte_lib {
 	 */
 	private function _load_js_files($load = array())
 	{
-		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-
 		if ( ! defined('PATH_JQUERY'))
 		{
-			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$folder.'/jquery/');
+			define('PATH_JQUERY', PATH_THEMES.'asset/javascript/'.PATH_JS.'/jquery/');
 		}
 
 		$types	= array(
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
-			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
+			'file'		=> PATH_THEMES.'asset/javascript/'.PATH_JS.'/',
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_ADDONS
 		);

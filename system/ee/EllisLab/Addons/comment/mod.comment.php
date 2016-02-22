@@ -50,7 +50,7 @@ class Comment {
 	 *
 	 * @access	public
 	 */
-	function Comment()
+	function __construct()
 	{
 		$fields = array('name', 'email', 'url', 'location', 'comment');
 
@@ -505,6 +505,19 @@ class Comment {
 			}
 		}
 
+		// -------------------------------------------
+		// 'comment_entries_comment_ids_query' hook.
+		//  - Manipulate the database object performing the query to gather IDs of comments to display
+		//  - Added 3.1.0
+		//
+			if (ee()->extensions->active_hook('comment_entries_comment_ids_query') === TRUE)
+			{
+				ee()->extensions->call('comment_entries_comment_ids_query', ee()->db);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+			}
+		//
+		// -------------------------------------------
+
 		if ($enabled['pagination'])
 		{
 			if ($pagination->paginate === TRUE)
@@ -595,6 +608,19 @@ class Comment {
 
 			// Potentially a lot of information
 			$query->free_result();
+
+			// -------------------------------------------
+			// 'comment_entries_query_result' hook.
+			//  - Take the whole query result array, do what you wish
+			//  - Added 3.1.0
+			//
+				if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
+				{
+					$results = ee()->extensions->call('comment_entries_query_result', $results);
+					if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+				}
+			//
+			// -------------------------------------------
 		}
 
 		/** ----------------------------------------
@@ -661,8 +687,6 @@ class Comment {
 			$absolute_count = 0;
 		}
 
-		$comment_moderation_override = ee()->config->item('comment_moderation_override');
-
 		foreach ($results as $id => $row)
 		{
 			if ( ! is_array($row))
@@ -680,17 +704,6 @@ class Comment {
 			// If we do not paginate, then the total comments ARE the comments
 			// on the page
 			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
-
-			if ($comment_moderation_override !== 'y')
-			{
-				$row['comments_expired'] = ($row['comment_expiration_date'] != 0 && $row['comment_expiration_date']< ee()->localize->now);
-			}
-			else
-			{
-				$row['comments_expired'] = FALSE;
-			}
-
-			$row['comments_disabled'] = ($row['allow_comments'] == 'n' OR $row['comment_system_enabled'] == 'n');
 
 			// This lets the {if location} variable work
 
@@ -732,10 +745,8 @@ class Comment {
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
 
-			if (ee()->session->userdata['group_id'] == 1
-				OR ee()->session->userdata['can_edit_all_comments'] == 'y'
-				OR (ee()->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == ee()->session->userdata['member_id'])
-				)
+			if (ee('Permission')->has('can_edit_all_comments')
+				OR (ee('Permission')->has('can_edit_own_comments') && $row['entry_author_id'] == ee()->session->userdata['member_id']))
 			{
 				$cond['editable'] = TRUE;
 				$cond['can_moderate_comment'] = TRUE;
@@ -2078,7 +2089,7 @@ class Comment {
 		/**  Can the user post comments?
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['can_post_comments'] == 'n')
+		if ( ! ee('Permission')->has('can_post_comments'))
 		{
 			$error[] = ee()->lang->line('cmt_no_authorized_for_comments');
 
@@ -2295,6 +2306,16 @@ class Comment {
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
 
 
+		// Force comment moderation if spam
+		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
+		$is_spam = ee('Spam')->isSpam($comment_string);
+
+		if ($is_spam === TRUE)
+		{
+			$comment_moderate = 'y';
+		}
+
+
 		/** ----------------------------------------
 		/**  Start error trapping
 		/** ----------------------------------------*/
@@ -2468,6 +2489,11 @@ class Comment {
 			'site_id'		=> $comment_site_id
 		);
 
+		if ($is_spam == TRUE)
+		{
+			$data['status'] = 's';
+		}
+
 		// -------------------------------------------
 		// 'insert_comment_insert_array' hook.
 		//  - Modify any of the soon to be inserted values
@@ -2483,9 +2509,13 @@ class Comment {
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		//  Insert data
-		$sql = ee()->db->insert_string('exp_comments', $data);
-		ee()->db->query($sql);
-		$comment_id = ee()->db->insert_id();
+		$comment_id = ee('Model')->make('Comment', $data)->save()->getId();
+
+		if ($is_spam == TRUE)
+		{
+			$spam_data = array($comment_id, 'o');
+			ee('Spam')->moderate(__FILE__, 'Comment', 'moderate_comment', 'remove_comment', $spam_data, $comment_string);
+		}
 
 		if ($notify == 'y')
 		{
@@ -2842,6 +2872,38 @@ class Comment {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+     * remove_comment is used by the spam module to delete comments that are
+	 * flagged as spam from the spam trap
+	 *
+	 * @param integer $comment_id  The ID of the comment
+	 * @access public
+	 * @return void
+	 */
+	function remove_comment($id)
+	{
+		ee()->db->delete('comments', array('comment_id' => $id));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+     * moderate_comment simply sets a particular status given a comment id.
+     * This is used by the Spam Module for showing comments after they are
+     * flagged as a false positive in the spam trap.
+	 *
+	 * @param integer $comment_id  The ID of the comment
+	 * @param string  $status  The status to set
+	 * @access public
+	 * @return void
+	 */
+	function moderate_comment($comment_id, $status)
+	{
+		ee()->db->where('comment_id', $comment_id);
+		ee()->db->update('comments', array('status' => $status));
+	}
 
 	// --------------------------------------------------------------------
 
@@ -3087,10 +3149,10 @@ class Comment {
 		if ($query->num_rows() > 0)
 		{
 			// User is logged in and in a member group that can edit this comment.
-			if (ee()->session->userdata['group_id'] == 1
-				OR ee()->session->userdata['can_edit_all_comments'] == 'y'
-				OR (ee()->session->userdata['can_edit_own_comments'] == 'y'
+			if (ee('Permission')->has('can_edit_all_comments')
+            OR (ee('Permission')->has('can_edit_own_comments')
 					&& $query->row('entry_author_id') == ee()->session->userdata['member_id']))
+
 			{
 				$can_edit = TRUE;
 				$can_moderate = TRUE;

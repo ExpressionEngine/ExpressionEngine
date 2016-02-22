@@ -72,7 +72,7 @@ class Pages_upd {
 				`site_id` INT( 8 ) UNSIGNED NOT NULL DEFAULT '1',
 				`configuration_name` VARCHAR( 60 ) NOT NULL ,
 				`configuration_value` VARCHAR( 100 ) NOT NULL
-				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		foreach ($sql as $query)
 		{
@@ -102,7 +102,6 @@ class Pages_upd {
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Pages'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Pages'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Pages_mcp'";
-		$sql[] = "ALTER TABLE `exp_sites` DROP `site_pages`";
 		$sql[] = "DROP TABLE `exp_pages_configuration`";
 
 		foreach ($sql as $query)

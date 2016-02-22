@@ -39,15 +39,18 @@ class Profile extends CP_Controller {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
+		ee()->lang->loadfile('settings');
 		ee()->lang->loadfile('myaccount');
 
-		if ( ! $this->cp->allowed_group('can_access_members'))
+		// check permissions everywhere except for this landing page controller,
+		// which redirects in its index function
+		if (ee()->uri->segments != array(1 => 'cp', 2 => 'members', 3 => 'profile'))
 		{
-			show_error(lang('unauthorized_access'));
+			$this->permissionCheck();
 		}
 
 		$id = ee()->input->get('id');
@@ -59,7 +62,7 @@ class Profile extends CP_Controller {
 
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
-		$this->base_url = ee('CP/URL', 'members/profile/settings');
+		$this->base_url = ee('CP/URL')->make('members/profile/settings');
 		$this->base_url->setQueryStringVariable('id', $id);
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 
@@ -75,18 +78,26 @@ class Profile extends CP_Controller {
 
 		$this->generateSidebar();
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'members'), lang('members'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('members'));
 
 		ee()->view->header = array(
 			'title' => sprintf(lang('profile_header'), $this->member->username)
 		);
 	}
 
+	protected function permissionCheck()
+	{
+		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
+
 	protected function generateSidebar($active = NULL)
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL', 'members/profile', $this->query_string));
+		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL')->make('members/profile', $this->query_string));
 
 		if (ee()->uri->uri_string == 'cp/members/profile/settings')
 		{
@@ -95,44 +106,101 @@ class Profile extends CP_Controller {
 
 		$list = $header->addBasicList();
 
-		$list->addItem(lang('email_settings'), ee('CP/URL', 'members/profile/email', $this->query_string));
-		$list->addItem(lang('auth_settings'), ee('CP/URL', 'members/profile/auth', $this->query_string));
-		$list->addItem(lang('date_settings'), ee('CP/URL', 'members/profile/date', $this->query_string));
+		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
+		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
 
-		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL', 'members/profile/publishing', $this->query_string))
+		if (ee()->config->item('allow_member_localization') == 'y' OR ee()->session->userdata('group_id') == 1)
+		{
+			$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
+		}
+
+		$publishing_link = NULL;
+
+		if ($this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		{
+			$publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
+		}
+
+		$list = $sidebar->addHeader(lang('publishing_settings'), $publishing_link)
 			->addBasicList();
 
-		$list->addItem(lang('html_buttons'), ee('CP/URL', 'members/profile/buttons', $this->query_string));
-		$list->addItem(lang('quick_links'), ee('CP/URL', 'members/profile/quicklinks', $this->query_string));
-		$list->addItem(lang('bookmarklets'), ee('CP/URL', 'members/profile/bookmarks', $this->query_string));
-		$list->addItem(lang('subscriptions'), ee('CP/URL', 'members/profile/subscriptions', $this->query_string));
+		if ($this->cp->allowed_group('can_edit_html_buttons'))
+		{
+			$url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
+			$item = $list->addItem(lang('html_buttons'), $url);
+			if ($url->matchesTheRequestedURI())
+			{
+				$item->isActive();
+			}
+		}
 
-		$list = $sidebar->addHeader(lang('administration'))
-			->addBasicList();
 
-		$list->addItem(lang('blocked_members'), ee('CP/URL', 'members/profile/ignore', $this->query_string));
-		$list->addItem(lang('member_group'), ee('CP/URL', 'members/profile/group', $this->query_string));
-		$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id));
-		$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL', 'members/profile/login', $this->query_string));
-		$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL', 'members/delete', $this->query_string))
-			->asDeleteAction('modal-confirm-remove-member');
+		$url = ee('CP/URL')->make('members/profile/quicklinks', $this->query_string);
+		$item = $list->addItem(lang('quick_links'), $url);
+		if ($url->matchesTheRequestedURI())
+		{
+			$item->isActive();
+		}
 
-		$modal_vars = array(
-			'name'		=> 'modal-confirm-remove-member',
-			'form_url'	=> ee('CP/URL', 'members/delete'),
-			'checklist' => array(
-				array(
-					'kind' => lang('members'),
-					'desc' => $this->member->username,
-				)
-			),
-			'hidden' => array(
-				'bulk_action' => 'remove',
-				'selection'   => $this->member->member_id
-			)
-		);
+		$url = ee('CP/URL')->make('members/profile/bookmarks', $this->query_string);
+		$item = $list->addItem(lang('bookmarklets'), $url);
+		if ($url->matchesTheRequestedURI())
+		{
+			$item->isActive();
+		}
 
-		ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));
+		$list->addItem(lang('subscriptions'), ee('CP/URL')->make('members/profile/subscriptions', $this->query_string));
+
+		if (ee()->cp->allowed_group('can_edit_members'))
+		{
+			$list = $sidebar->addHeader(lang('administration'))
+				->addBasicList();
+
+			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
+
+			$sa_editing_self = ($this->member->group_id == 1 && $this->member->member_id == ee()->session->userdata['member_id']);
+			$group_locked = (ee()->session->userdata['member_id'] != 1 && $this->member->MemberGroup->is_locked);
+
+			if ( ! $sa_editing_self && ! $group_locked)
+			{
+				$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
+			}
+
+			$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
+
+			if ($this->member->member_id != ee()->session->userdata['member_id'])
+			{
+				$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL')->make('utilities/communicate/member/' . $this->member->member_id));
+
+				if (ee()->session->userdata('group_id') == 1)
+				{
+					$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
+				}
+
+				if (ee()->cp->allowed_group('can_delete_members'))
+				{
+					$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL')->make('members/delete', $this->query_string))
+						->asDeleteAction('modal-confirm-remove-member');
+
+					$modal_vars = array(
+						'name'		=> 'modal-confirm-remove-member',
+						'form_url'	=> ee('CP/URL')->make('members/delete'),
+						'checklist' => array(
+							array(
+								'kind' => lang('members'),
+								'desc' => $this->member->username,
+							)
+						),
+						'hidden' => array(
+							'bulk_action' => 'remove',
+							'selection'   => $this->member->member_id
+						)
+					);
+
+					ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));
+				}
+			}
+		}
 	}
 
 	public function index()
@@ -162,6 +230,12 @@ class Profile extends CP_Controller {
 					{
 						$post = ee()->input->post($field_name);
 
+						// birthday fields must be NULL if blank
+						if (in_array($field_name, array('bday_d', 'bday_m', 'bday_y')))
+						{
+							$post = ($post == '') ? NULL : $post;
+						}
+
 						// Handle arrays of checkboxes as a special case;
 						if ($field['type'] == 'checkbox' && is_array($post))
 						{
@@ -177,6 +251,14 @@ class Profile extends CP_Controller {
 								$this->member->$field_name = $post;
 							}
 						}
+
+						$name = str_replace('m_field_id_', 'field_ft_', $field_name);
+
+						// Set custom field format override if available, too
+						if (strpos($name, 'field_ft_') !== FALSE && ee()->input->post($name))
+						{
+							$this->member->{"m_$name"} = ee()->input->post($name);
+						}
 					}
 				}
 			}
@@ -184,10 +266,21 @@ class Profile extends CP_Controller {
 
 		$validated = $this->member->validate();
 
+		if ($response = $this->ajaxValidation($validated))
+		{
+			return $response;
+		}
+
 		if ($validated->isNotValid())
 		{
-			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated->getAllErrors()), TRUE);
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('member_not_updated'))
+				->addToBody(lang('member_not_updated_desc'))
+				->now();
+
+			ee()->lang->load('content');
+			ee()->view->errors = $validated;
 
 			return FALSE;
 		}

@@ -21,8 +21,8 @@ $lang = array(
 	'db_hostname_note'  => 'Commonly <b>localhost</b>, but your host may require something else.',
 	'db_name'               => 'Name',
 	'db_name_note'          => 'Make sure the database exists, the installer will <b>not</b> create it.',
-	'db_username'           => 'Server Username',
-	'db_password'           => 'Server Password',
+	'db_username'           => 'Username',
+	'db_password'           => 'Password',
 	'db_prefix'             => 'Table Prefix',
 	'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
 
@@ -36,6 +36,9 @@ $lang = array(
 	'default_theme'              => 'Default theme',
 	'install_default_theme'      => 'Install default theme?',
 	'install_default_theme_info' => 'When set to <b>yes</b>, ExpressionEngine will install a default theme.',
+
+	// License Agreement
+	'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',
 
 	'start_installation'         => 'Start Installation',
 
@@ -57,6 +60,7 @@ $lang = array(
 'unreadable_config'                  => 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: system/user/config/config.php',
 'unwritable_config'                  => 'Your config.php file does not appear to have the proper file permissions. Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: system/user/config/config.php',
 'json_parser_missing'                => 'Your instance of PHP does not support the <code>json_encode</code> and <code>json_decode</code> methods.',
+'fileinfo_missing'                => 'The required Fileinfo PHP extension is not currently enabled.',
 'unwritable_cache_folder'            => 'Your cache folder does not appear to have proper permissions. Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: system/user/cache',
 'database_invalid_host'              => 'The database host you submitted is invalid.',
 'database_invalid_database'          => 'The database name you submitted is invalid.',
@@ -68,21 +72,14 @@ $lang = array(
 'database_prefix_invalid_characters' => 'There are invalid characters in the database prefix. Only 0-9, a-z, A-Z, $, and _ are allowed.',
 'database_prefix_contains_exp_'      => 'The database prefix cannot contain the string "exp_".',
 'database_prefix_too_long'           => 'The database prefix cannot be longer than 30 characters.',
-'unreadable_update'                  => 'Unable to read the contents of your /expressionengine/installer/updates directory. Please check the file permissions and re-run this installation wizard.',
+'license_agreement_not_accepted'     => 'You must accept the terms and conditions of the license agreement.',
+'unreadable_update'                  => 'Unable to read the contents of your /expressionengine/installer/updates folder. Please check the file permissions and re-run this installation wizard.',
 'unreadable_files'                   => 'One of your update files is unreadable. Please make sure all of the files located in this folder are readable: system/ee/installer/updates/',
 'unreadable_language'                => 'The language files needed for your current language selection (%x) are unavailable. Please put the language pack in this folder: system/user/language/',
 'unreadable_email'                   => 'Unable to locate the file containing your email templates (email_data.php). Make sure you have uploaded all components of this software.',
 'unreadable_schema'                  => 'Unable to locate the following folder: system/ee/installer/schema/ Please upload all components before proceeding.',
 'unreadable_dbdriver'                => 'Unable to locate the database schema file in the following folder: sytem/ee/installer/schema/ Please upload all components before proceeding.',
 'improper_grants'                    => 'Error: Unable to perform the SQL queries. Please make sure your SQL account has the proper GRANT privileges: CREATE, DROP, ALTER, INSERT, and DELETE',
-'empty_fields'                       => 'You must fill out all form fields',
-'email_invalid'                      => 'The email address you submitted is not valid',
-'username_short'                     => 'Your username must be at least 4 characters in length',
-'username_invalid'                   => "Username is invalid. Must be less than 50 characters and cannot include the following characters: %s",
-'password_short'                     => 'Your password must be at least 5 characters in length',
-'password_no_match'                  => 'Your passwords and password confirmation do not match',
-'password_not_unique'                => 'Your password can not be based on the username',
-'password_no_dollar'                 => 'Your MySQL password can not contain a dollar sign',
 'update_error'                       => 'An unexpected error occurred while performing the update',
 'update_step_error'                  => 'An unexpected error occured while performing the update. Could not find update step: %x',
 'install_detected_msg'               => 'ExpressionEngine appears to already be installed on your database, even though your config file is blank. If you are attempting to <b><i>update</i></b> ExpressionEngine from a previous version restore your config file first, then run this installation wizard again.',
@@ -95,7 +92,7 @@ $lang = array(
 'install_success_note'  => '<b>Yay!</b> ExpressionEngine %s is now installed.',
 'update_success'        => "ExpressionEngine Updated to %s",
 'update_success_note'   => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
-'success_delete'        => 'Please delete the installer folder/directory from your server before proceeding.',
+'success_delete'        => 'Please delete the <kbd>system/ee/installer</kbd> folder from your server before proceeding.',
 'success_moved'         => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
 'cp_login'              => 'Control Panel login',
 'download_mailing_list' => 'Download Mailing List',
@@ -112,7 +109,7 @@ $lang = array(
 		<li>MySQL version, server operating system</li>
 		<li>Server software name</li>
 		<li>Whether or not you are using forced query strings on your server</li>
-		<li>A list of the add-ons in your third party directory</li>
+		<li>A list of the add-ons in your third party folder</li>
 		<li>Whether or not you have Discussion Forums installed</li>
 		<li>Whether or not you have Multiple Site Manager installed</li>
 	</ul>

@@ -71,7 +71,10 @@ $lang = array(
 'preference' => 'Preference',
 
 'pag_first_link' => '&lsaquo; First',
+
 'pag_last_link' => 'Last &rsaquo;',
+
+'site_homepage' => 'Site Homepage',
 
 //----------------------------
 // Errors
@@ -102,10 +105,10 @@ $lang = array(
 'nonexistent_page' => 'The page you requested was not found',
 
 'unable_to_load_field_type' => 'Unable to load requested field type file:  %s.<br />
-Confirm the fieldtype file is located in the system/addons/ directory',
+Confirm the fieldtype file is located in the /system/user/addons/ directory',
 
 'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br>
-To fix: Set the cache folder (/system/cache/) permissions to 777 (or equivalent for your server).',
+To fix: Set the cache folder (/system/user/cache/) permissions to 777 (or equivalent for your server).',
 
 'unwritable_config_file' => 'Your configuration file does not have the proper permissions.<br>
 To fix: Set the config file (/system/user/config/config.php) permissions to 666 (or equivalent for your server).',
@@ -116,7 +119,9 @@ and email %s to report the link that generated this message.',
 
 'missing_mime_config' => 'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
 
-'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
+
+'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
 
 'checksum_changed_warning' => 'One or more core files have been altered:',
 
@@ -132,7 +137,7 @@ The following files are affected:
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
 https://support.ellislab.com/',
 
-'new_version_error' => 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+'new_version_error' => 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href="%s" title="download account" rel="external">Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
 
 'file_not_found' => 'File %s does not exist.',
 
@@ -383,6 +388,8 @@ https://support.ellislab.com/',
 "select_timezone" => "Select Timezone",
 
 "no_timezones" => "No Timezones",
+
+'curl_not_installed' => 'cURL is not installed on your server',
 
 // IGNORE
 ''=>'');

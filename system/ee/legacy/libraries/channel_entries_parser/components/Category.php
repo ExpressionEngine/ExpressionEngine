@@ -281,7 +281,18 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		}
 		else
 		{
-			$tagdata = preg_replace('/{'.$tagname.'[^}]*}(.+?){\/'.$tagname.'[^}]*}/is', '', $tagdata);
+			$replacement = '';
+
+			if (strpos($tagdata, 'if no_results') !== FALSE
+				&& preg_match('/'.LD.'if no_results'.RD.'(.*?)'.LD.'\/if'.RD.'/s', $tagdata, $match)) {
+				$replacement = $match[1];
+			}
+
+			$tagdata = preg_replace(
+				'/{'.$tagname.'[^}]*}(.+?){\/'.$tagname.'[^}]*}/is',
+				$replacement,
+				$tagdata
+			);
 		}
 
 		return $tagdata;

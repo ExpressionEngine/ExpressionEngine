@@ -91,7 +91,7 @@ class EE_Route {
 
 		foreach($this->segments as $segment)
 		{
-			if ($segment->isset)
+			if ($segment->hasValue())
 			{
 				$url[] =  urlencode($segment->value());
 			}
@@ -114,17 +114,22 @@ class EE_Route {
 		foreach($this->segments as $segment)
 		{
 			$regex = $segment->regex();
-			$delimiter = '\/';
 
-			if ( ! $this->required)
+			$add_question_mark = ( ! $this->required);
+
+			if (is_object($segment) && empty($segment->parts))
 			{
-				$regex .= '?';
-				$delimiter = '\/?';
+			    $add_question_mark = FALSE;
 			}
 
 			if ($index < count($this->segments) - 1)
 			{
-				$regex .= $delimiter;
+			    $regex .= '\/';
+			}
+
+			if ($add_question_mark)
+			{
+			    $regex .= '?';
 			}
 
 			$url[] = $regex;
@@ -155,7 +160,7 @@ class EE_Route {
 		{
 			$comparison = $route->segments[$index];
 
-			if ($segment->static !== $segment->static)
+			if ($comparison->static !== $segment->static)
 			{
 				return FALSE;
 			}
@@ -192,7 +197,7 @@ class EE_Route {
 		$route = $route . '/';
 
 		// Check for xss
-		if ($route !== ee()->security->xss_clean($route))
+		if ($route !== ee('Security/XSS')->clean($route))
 		{
 			throw new Exception(lang('invalid_route'));
 		}
@@ -263,7 +268,7 @@ class EE_Route {
 
 				if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
 				{
-					// Subpattern names must be alpha numeric, start with a 
+					// Subpattern names must be alpha numeric, start with a
 					// non-digit and be less than 32 character long.
 					// SHA1 in base36 = 31 characters + 1 character prefix
 					$hash = 'e' . base_convert(sha1($variable), 16, 36);

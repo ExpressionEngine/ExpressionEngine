@@ -6,12 +6,11 @@ use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
-use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
-use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -36,7 +35,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements EventPublisher, EventSubscriber, ValidationAware {
+class Model extends Entity implements Subscriber, ValidationAware {
 
 
 	/**
@@ -50,14 +49,19 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected $_new = TRUE;
 
 	/**
-	 * @var Query frontend object
+	 * @var Model facade object
 	 */
-	protected $_frontend = NULL;
+	protected $_facade = NULL;
 
 	/**
 	 * @var Validator object
 	 */
 	protected $_validator = NULL;
+
+	/**
+	 * @var Hook recursion prevention
+	 */
+	protected $_in_hook = array();
 
 	/**
 	 * @var Associated models
@@ -76,13 +80,13 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		'bool' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
 		'boolean' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
 
-		'float' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
-		'double' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+		'float' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\FloatNumber',
+		'double' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\FloatNumber',
 
 		'int' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
 		'integer' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
 
-		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\String',
+		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\StringLiteral',
 
 		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
@@ -90,9 +94,12 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\Object\Timestamp',
 
 		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
+		'base64Array' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Array',
 		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
-		'commaDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
+
 		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+
+		'commaDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
 		'pipeDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\PipeDelimited',
 		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
 	);
@@ -111,7 +118,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
-		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
@@ -125,6 +131,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		$this->addFilter('set', array($this, 'typedSet'));
 		$this->addFilter('fill', array($this, 'typedLoad'));
 		$this->addFilter('store', array($this, 'typedStore'));
+
+		if ($publish_as = $this->getMetaData('hook_id'))
+		{
+			$this->forwardEventsToHooks($publish_as);
+		}
 	}
 
 	/**
@@ -379,7 +390,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		{
 			if (isset($assoc))
 			{
-				$this->$name = NULL;
+				$assoc->set(NULL);
 			}
 		}
 
@@ -400,29 +411,37 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
-	 * Set the frontend
+	 * Set the facade
 	 *
-	 * @param Frontend $frontend The frontend to use
+	 * @param Facade $facade The model facade to use
 	 * @return $this
 	 */
-	public function setFrontend(Frontend $frontend)
+	public function setFacade(Facade $facade)
 	{
-		if (isset($this->_frontend))
+		if (isset($this->_facade))
 		{
-			throw new OverflowException('Cannot override existing frontend.');
+			throw new OverflowException('Cannot override existing model facade.');
 		}
 
-		$this->_frontend = $frontend;
+		$this->_facade = $facade;
 
 		return $this;
 	}
 
 	/**
+	 * Get the model facade
 	 *
+	 * @return Facade The model facade object
 	 */
+	public function getModelFacade()
+	{
+		return $this->_facade;
+	}
+
+	// alias
 	public function getFrontend()
 	{
-		return $this->_frontend;
+		return $this->getModelFacade();
 	}
 
 	/**
@@ -508,7 +527,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function validateUnique($key, $value, array $params = array())
 	{
-		$unique = $this->getFrontend()
+		$unique = $this->getModelFacade()
 			->get($this->getName())
 			->filter($key, $value);
 
@@ -529,6 +548,72 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Forwards lifecycle events to consistently named hooks
+	 *
+	 * This is fired automatically from initialize() if `hook_id` is
+	 * given in the model metadata.
+	 *
+	 * @param String $hook_basename The name that identifies the subject of the hook
+	 */
+	protected function forwardEventsToHooks($hook_basename)
+	{
+		$trigger = $this->getHookTrigger();
+
+		$forwarded = array(
+			'beforeInsert' => 'before_'.$hook_basename.'_insert',
+			'afterInsert' => 'after_'.$hook_basename.'_insert',
+			'beforeUpdate' => 'before_'.$hook_basename.'_update',
+			'afterUpdate' => 'after_'.$hook_basename.'_update',
+			'beforeSave' => 'before_'.$hook_basename.'_save',
+			'afterSave' => 'after_'.$hook_basename.'_save',
+			'beforeDelete' => 'before_'.$hook_basename.'_delete',
+			'afterDelete' => 'after_'.$hook_basename.'_delete'
+		);
+
+		$that = $this;
+
+		foreach ($forwarded as $event => $hook)
+		{
+			$this->on($event, function() use ($trigger, $hook, $that)
+			{
+				$addtl_args = func_get_args();
+				$args = array($hook, $that, $that->getValues());
+
+				call_user_func_array($trigger, array_merge($args, $addtl_args));
+			});
+		}
+	}
+
+	/**
+	 * Returns a function that can be used to trigger a hook outside the current
+	 * object scope. Thank you PHP 5.3, you hunk of garbage.
+	 *
+	 * @return Closure Function that takes hookname and parameters and calls the hook
+	 */
+	protected function getHookTrigger()
+	{
+		$in_hook =& $this->_in_hook;
+
+		return function($name) use ($in_hook)
+		{
+			if (in_array($name, $in_hook))
+			{
+				return;
+			}
+
+			$in_hook[] = $name;
+
+			if (isset(ee()->extensions) && ee()->extensions->active_hook($name) === TRUE)
+			{
+				$args = func_get_args();
+				call_user_func_array(array(ee()->extensions, 'call'), $args);
+			}
+
+			array_pop($in_hook);
+		};
 	}
 
 	/**
@@ -639,13 +724,17 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		foreach ($this->_property_types as $name => $type)
 		{
 			$set = $this->getRawProperty($name);
+			$type = $this->getTypeFor($name);
 
-			$value = $this->getBackup($name, $set);
-			$new_value = $this->typedStore($set, $name);
-
-			if ($new_value !== $value)
+			if ($this->isDirty($name) || $type instanceOf Entity)
 			{
-				$changed[$name] = $set;
+				$value = $this->getBackup($name, $set);
+				$new_value = $this->typedStore($set, $name);
+
+				if ($new_value !== $value)
+				{
+					$changed[$name] = $set;
+				}
 			}
 		}
 
@@ -659,30 +748,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	{
 		return $this->getMetaData('events') ?: array();
 	}
-
-	/**
-	 * Interface method to implement Event\Publisher so that others can
-	 * subscribe to events on this object.
-	 *
-	 * Technically this works automatically since the method exists on the
-	 * mixin, but doing this lets us enforce an interface, which will be
-	 * useful when hopefully replacing mixins with traits in future.
-	 */
-	public function subscribe(EventSubscriber $subscriber)
-	{
-		return $this->getMixin('Event')->subscribe($subscriber);
-	}
-
-	/**
-	 * Interface method to implement Event\Publisher
-	 *
-	 * @see Model::subscribe()
-	 */
-	public function unsubscribe(EventSubscriber $subscriber)
-	{
-		return $this->getMixin('Event')->unsubscribe($subscriber);
-	}
-
 
 	/**
 	* Get all associations
@@ -725,12 +790,29 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	*/
 	public function setAssociation($name, Association $association)
 	{
-		$association->setFrontend($this->getFrontend());
+		$association->setFacade($this->getModelFacade());
 
 		$this->_associations[$name] = $association;
 
 		return $this;
 	}
+
+	/**
+	 * Alias an association
+	 *
+	 * @param String Associaton name to create an alias for
+	 * @param String Alias name
+	 */
+	public function alias($association, $as)
+	{
+		if (strpos($association, ':') === FALSE)
+		{
+			throw new \Exception('Cannot alias relationship.');
+		}
+
+		return $this->setAssociation($as, $this->getAssociation($association));
+	}
+
 
 	/**
 	 * Create a new query tied to this object
@@ -739,7 +821,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	protected function newSelfReferentialQuery()
 	{
-		return $this->_frontend->get($this);
+		return $this->_facade->get($this);
 	}
 
 	public function __toString()
