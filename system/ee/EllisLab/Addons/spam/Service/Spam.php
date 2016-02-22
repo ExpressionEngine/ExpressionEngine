@@ -44,11 +44,7 @@ class Spam {
 		ee()->load->library('addons');
 		$installed = ee()->addons->get_installed();
 
-		if (empty($installed['spam']))
-		{
-			$this->installed = FALSE;
-		}
-		else
+		if ( ! empty($installed['spam']))
 		{
 			$this->installed = TRUE;
 			$this->classifier = $this->loadDefaultClassifier();
