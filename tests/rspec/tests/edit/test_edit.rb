@@ -29,4 +29,31 @@ feature 'Entry Manager' do
     row['count'].should == 110
     @page.should have(100).entry_rows
   end
+
+  it 'deletes a single entry' do
+    @page.should have(10).entry_rows
+
+    @page.entry_checkboxes[0].click
+    @page.bulk_action.select 'Remove'
+    @page.action_submit_button.click
+    @page.wait_for_modal_submit_button
+    @page.modal_submit_button.click
+
+    @page.should have(9).entry_rows
+    @page.alert.text.should include 'The following entries were removed'
+  end
+
+  it 'deletes all entries' do
+    @page.should have(10).entry_rows
+    @page.entry_checkboxes.each(&:click)
+
+    @page.bulk_action.select 'Remove'
+    @page.action_submit_button.click
+    @page.wait_for_modal_submit_button
+    @page.modal_submit_button.click
+
+    @page.should have(1).entry_rows
+    @page.entry_rows[0].text.should include 'No Entries found.'
+    @page.alert.text.should include 'The following entries were removed'
+  end
 end

@@ -2,6 +2,7 @@ class Edit < ControlPanelPage
   set_url '/system/index.php?/cp/publish/edit{&perpage}'
 
   elements :entry_rows, '.w-16 .tbl-ctrls form table tbody tr'
+  elements :entry_checkboxes, '.w-16 .tbl-ctrls form table tbody tr input[type="checkbox"]'
 
   # Create a number of entries
   #
