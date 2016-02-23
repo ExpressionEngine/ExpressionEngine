@@ -100,7 +100,6 @@ $lang = array(
 'enable_rte_myaccount' => 'Enable Rich Text Editor',
 'enable_rte_for_field' => 'Enable Rich Text Editor',
 'rte_image_caption'	=> 'Image Caption:',
-'rte_center_error' => 'You can’t center an element that is being wrapped',
 'rte_url' => 'URL',
 'rte_title' => 'Title',
 'rte_relationship' => 'Relationship',

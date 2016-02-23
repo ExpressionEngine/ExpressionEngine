@@ -59,7 +59,6 @@ class Image_rte {
 				'in_text'		=> lang('img_in_text'),
 				'center'		=> lang('img_center'),
 				'caption_text'	=> lang('rte_image_caption'),
-				'center_error'	=> lang('rte_center_error'),
 				'folders'		=> $this->folders,
 				'filedirs'		=> $this->filedirs,
 				'title'			=> lang('img_title'),

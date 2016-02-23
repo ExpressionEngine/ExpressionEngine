@@ -170,11 +170,11 @@ Overlay.prototype = {
 
 			align_center: function() {
 				if (that.$current.data('floating')) {
-					alert(that.lang.center_error);
+					that.$current
+						.css('float', '')
+						.data('floating', false);
 				}
-				else {
-					that.$current.css('text-align', 'center');
-				}
+				that.$current.css('text-align', 'center');
 			},
 
 			wrap_left: function() {
