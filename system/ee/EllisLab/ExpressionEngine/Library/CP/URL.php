@@ -154,7 +154,11 @@ class URL implements \Serializable {
 
 		$path = trim($this->path, '/');
 		$path = preg_replace('#^cp(/|$)#', '', $path);
-		$path = rtrim('?/cp/'.$path, '/');
+
+		if ($path)
+		{
+			$path = rtrim('?/cp/'.$path, '/');
+		}
 
 		$qs = $this->qs;
 

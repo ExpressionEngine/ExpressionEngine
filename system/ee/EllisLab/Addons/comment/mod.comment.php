@@ -1122,7 +1122,17 @@ class Comment {
 					}
 					else
 					{
-						$tagdata = ee()->TMPL->swap_var_single($key, ee()->config->slash_item('avatar_url').$row['avatar_filename'], $tagdata);
+						$avatar_url = ee()->config->slash_item('avatar_url');
+			            $avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			            if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
+			            {
+			                $avatar_url .= 'default/';
+			            }
+
+			            $cur_avatar_url = $avatar_url.$row['avatar_filename'];
+
+						$tagdata = ee()->TMPL->swap_var_single($key, $cur_avatar_url, $tagdata);
 						$tagdata = ee()->TMPL->swap_var_single('avatar_image_width', $row['avatar_width'], $tagdata);
 						$tagdata = ee()->TMPL->swap_var_single('avatar_image_height', $row['avatar_height'], $tagdata);
 					}
