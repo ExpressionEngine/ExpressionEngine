@@ -180,7 +180,8 @@ abstract class Core {
 		// set the legacy facade before instantiating
 		$class::_setFacade($this->legacy->getFacade());
 
-		$this->legacy->markBenchmark('controller_execution_time_( '.$class.' / '.$method.' )_start');
+		$controller_name = substr($class, strpos($class, 'Controller\\') + 11);
+		$this->legacy->markBenchmark('controller_('.$controller_name.' :: '.$method.')_start');
 
 		// here we go!
 		// Catch anything that might bubble up from inside our app
@@ -211,7 +212,7 @@ abstract class Core {
 			ee('Response')->setBody($result);
 		}
 
-		$this->legacy->markBenchmark('controller_execution_time_( '.$class.' / '.$method.' )_end');
+		$this->legacy->markBenchmark('controller_('.$controller_name.' :: '.$method.')_end');
 	}
 
 	/**

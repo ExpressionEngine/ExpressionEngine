@@ -308,6 +308,10 @@ class ChannelEntry extends ContentModel {
 		{
 			ee()->functions->clear_caching('all');
 		}
+		else
+		{
+			ee()->functions->clear_caching('sql');
+		}
 	}
 
 	public function onAfterInsert()
@@ -763,9 +767,9 @@ class ChannelEntry extends ContentModel {
 						'field_type'			=> 'checkboxes',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
-						'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
+						'editable'				=> ee()->session->userdata['can_edit_categories'],
 						'editing'				=> FALSE, // Not currently in editing state
-						'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
+						'deletable'				=> ee()->session->userdata['can_delete_categories'],
 						'populateCallback'		=> array($this, 'populateCategories'),
 						'manage_toggle_label'	=> lang('manage_categories'),
 						'content_item_label'	=> lang('category')
@@ -853,7 +857,7 @@ class ChannelEntry extends ContentModel {
 			->filter('in_authorlist', 'y');
 
 		// Then grab any members that are part of the member groups we found
-		if ($member_groups)
+		if ($member_groups->count())
 		{
 			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}

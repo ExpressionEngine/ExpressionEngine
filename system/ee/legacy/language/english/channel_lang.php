@@ -239,15 +239,15 @@ $lang = array(
 
 'default_title' => 'Generated title',
 
-'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
+'default_title_desc' => 'Title assigned to all <b>new</b> entries in this channel.',
 
 'url_title_prefix' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix',
 
-'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entires in this channel.',
+'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entries in this channel.',
 
 'default_status' => 'Status',
 
-'default_status_desc' => 'Status assigned to all <b>new</b> entires in this channel.',
+'default_status_desc' => 'Status assigned to all <b>new</b> entries in this channel.',
 
 'default_category' => 'Category',
 
@@ -325,7 +325,7 @@ $lang = array(
 
 'require_membership' => 'Require membership?',
 
-'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entires.',
+'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entries.',
 
 'require_email' => 'Require Email?',
 

@@ -60,7 +60,7 @@ class Forums extends AbstractDesignController {
 			$theme = $this->getDefaultTheme();
 		}
 
-		$base_path = PATH_THIRD_THEMES . 'forum/' . ee()->security->sanitize_filename($theme);
+		$base_path = ee('Theme')->getPath('forum/' . ee()->security->sanitize_filename($theme));
 
 		if ( ! is_dir($base_path))
 		{
@@ -126,12 +126,9 @@ class Forums extends AbstractDesignController {
 		ee()->load->model('member_model');
 
 		$themes = array();
-		foreach (directory_map(PATH_THIRD_THEMES . '/forum/', TRUE) as $dir)
+		foreach (ee('Theme')->listThemes('forum') as $dir => $name)
 		{
-			if (is_dir(PATH_THIRD_THEMES . '/forum/' . $dir))
-			{
-				$themes[ee('CP/URL')->make('design/forums/index/' . $dir)->compile()] = ucfirst(str_replace("_", " ", $dir));
-			}
+			$themes[ee('CP/URL')->make('design/forums/index/' . $dir)->compile()] = $name;
 		}
 
 		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/forums/index/' . $theme));
@@ -151,24 +148,20 @@ class Forums extends AbstractDesignController {
 
 	private function getDefaultTheme()
 	{
-		$theme_path = PATH_THIRD_THEMES . 'forum/';
+		$files = ee('Theme')->listThemes('forum');
 
-		ee()->load->helper('directory');
-		$files = directory_map($theme_path, 1);
-
-		if ($files === FALSE)
+		if (empty($files))
 		{
 			show_error(lang('unable_to_find_templates'));
 		}
 
-		if (in_array('default', $files))
+		if (isset($files['default']))
 		{
 			return 'default';
 		}
 		else
 		{
-			sort($files);
-			foreach ($files as $file)
+			foreach (array_keys($files) as $file)
 			{
 				$dir = array_shift($files);
 
@@ -184,12 +177,12 @@ class Forums extends AbstractDesignController {
 
 	public function edit($theme, $dir, $file)
 	{
-		$path = PATH_THIRD_THEMES . '/forum/'
+		$path = ee('Theme')->getPath('forum/'
 			.ee()->security->sanitize_filename($theme)
 			.'/'
 			.ee()->security->sanitize_filename($dir)
 			.'/'
-			.ee()->security->sanitize_filename($file . '.html');
+			.ee()->security->sanitize_filename($file . '.html'));
 
 		if ( ! file_exists($path))
 		{

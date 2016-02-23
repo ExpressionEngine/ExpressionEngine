@@ -34,7 +34,7 @@ $lang = array(
 	'spam_word_limit_desc' => 'Number of specific words to store, for training.
 	Higher numbers can reduce performance speeds.',
 	'spam_content_limit' => 'Content Limit',
-	'spam_content_limit_desc' => 'Number of content entires to use, for training.<br>Higher numbers can reduce performance speeds.',
+	'spam_content_limit_desc' => 'Number of content entries to use, for training.<br>Higher numbers can reduce performance speeds.',
 	'spam_content' => 'Content',
 	'spam_type' => 'Type',
 	'content_type' => 'content type',
@@ -60,4 +60,5 @@ $lang = array(
 	'updating_vocabulary' => 'Updating Vocabulary',
 	'updating_parameters' => 'Updating Parameters',
 	'training_finished' => 'Training Finished',
+	'training_update_failed' => 'Could not update training data'
 );

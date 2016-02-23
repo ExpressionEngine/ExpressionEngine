@@ -133,7 +133,7 @@ class Members extends AbstractDesignController {
 
 	public function index($theme = 'default')
 	{
-		$path = PATH_MBR_THEMES . ee()->security->sanitize_filename($theme);
+		$path = ee('Theme')->getPath('member/' . ee()->security->sanitize_filename($theme));
 
 		if ( ! is_dir($path))
 		{
@@ -208,10 +208,10 @@ class Members extends AbstractDesignController {
 
 	public function edit($theme, $file)
 	{
-		$path = PATH_MBR_THEMES
+		$path = ee('Theme')->getPath('member/'
 			.ee()->security->sanitize_filename($theme)
 			.'/'
-			.ee()->security->sanitize_filename($file . '.html');
+			.ee()->security->sanitize_filename($file . '.html'));
 
 		if ( ! file_exists($path))
 		{
