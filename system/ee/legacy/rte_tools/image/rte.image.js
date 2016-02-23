@@ -33,7 +33,7 @@ Overlay.prototype = {
 	 * Add buttons to the overlay.
 	 */
 	_add_buttons: function() {
-		this.$toolbar = $('<ul/>', { class: 'toolbar' })
+		this.$toolbar = $('<ul/>', { class: 'toolbar', contenteditable: 'false' })
 			.append(this._create_button('wrap_left', 'align-txt-left', 'in_text'))
 			.append(this._create_button('align_left', 'align-left'))
 			.append(this._create_button('align_center', 'txt-only', 'center'))
