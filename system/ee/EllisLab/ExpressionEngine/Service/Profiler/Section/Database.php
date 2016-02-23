@@ -182,41 +182,6 @@ class Database extends ProfilerSection {
 	}
 
 	/**
-	 * Format the memory to a sane byte format
-	 *
-	 * @param  string  $memory  the memory in bytes
-	 * @return string  the formatted memory string
-	 **/
-	private function formatMemoryString($memory)
-	{
-		$precision = 0;
-
-		if ($memory >= 1000000000)
-		{
-			$precision = 2;
-			$memory = round($memory / 1073741824, $precision);
-			$unit = lang('profiler_gigabytes');
-		}
-		elseif ($memory >= 1000000)
-		{
-			$precision = 1;
-			$memory = round($memory / 1048576, $precision);
-			$unit = lang('profiler_megabytes');
-		}
-		elseif ($memory >= 1000)
-		{
-			$memory = round($memory / 1024);
-			$unit = lang('profiler_kilobytes');
-		}
-		else
-		{
-			$unit = lang('profiler_bytes');
-		}
-
-		return number_format($memory, $precision).' '.$unit;
-	}
-
-	/**
 	 * Syntax highlight the SQL
 	 *
 	 * @param string	$sql	the query and location

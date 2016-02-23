@@ -2533,6 +2533,15 @@ class Member {
 		// Is there an avatar?
 		if (ee()->config->item('enable_avatars') == 'y' AND $query->row('avatar_filename') != '')
 		{
+			$avatar_url = ee()->config->slash_item('avatar_url');
+			$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			{
+				$avatar_url .= 'default/';
+			}
+
+			$avatar_path	= $avatar_url.$query->row('avatar_filename');
 			$avatar_path	= ee()->config->item('avatar_url').$query->row('avatar_filename');
 			$avatar_width	= $query->row('avatar_width');
 			$avatar_height	= $query->row('avatar_height');
