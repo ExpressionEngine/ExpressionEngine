@@ -47,8 +47,8 @@ Overlay.prototype = {
 	_create_button: function(action, className, extraText) {
 		var that = this,
 			listItem = $('<li/>', { class: className }),
-			extraText = extraText || '';
-			button = $('<a/>', { href: '', title: this.lang[action] }).html(this.lang[extraText]);
+			extraText = extraText || '',
+			button = $('<a/>', { href: '#', title: this.lang[action] }).html(this.lang[extraText]);
 
 		button.click(function(e) {
 			e.preventDefault();
