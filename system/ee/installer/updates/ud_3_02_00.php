@@ -25,7 +25,8 @@
  */
 class Updater {
 
-	var $version_suffix = '';
+	public $version_suffix = '';
+	public $errors = array();
 
 	/**
 	 * Do Update
@@ -39,15 +40,52 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'drop_cp_search_table',
+				'add_url_field',
+				'add_email_address_field'
 			)
 		);
 
 		foreach ($steps as $k => $v)
 		{
-			$this->$v();
+			try
+			{
+				$this->$v();
+			}
+			catch (Exception $e)
+			{
+				$this->errors[] = $e->getMessage();
+			}
 		}
 
-		return TRUE;
+		return empty($this->errors);
+	}
+
+	/**
+	 * New "URL" Field Type in 3.2.0
+	 */
+	private function add_url_field()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'url',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+	}
+
+	/**
+	 * New "Email Address" Field Type in 3.2.0
+	 */
+	private function add_email_address_field()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'email_address',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
 	}
 
 	/**
@@ -59,6 +97,3 @@ class Updater {
 		ee()->smartforge->drop_table('cp_search_index');
 	}
 }
-/* END CLASS */
-
-// EOF

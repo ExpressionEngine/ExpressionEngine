@@ -87,24 +87,29 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->Author->updateAuthorStats();
+		$author = $this->Author;
+
+		if ($author)
+		{
+			$author->updateAuthorStats();
+		}
+
 		$this->updateCommentStats();
 	}
 
 	public function onAfterDelete()
 	{
-		if ( ! $this->Author)
+		if ($this->Author)
 		{
-			return;
+			// store the author and dissociate. otherwise saving the author will
+			// attempt to save this entry to ensure relationship integrity.
+			// TODO make sure everything is already dissociated when we hit this
+			$last_author = $this->Author;
+			$this->Author = NULL;
+
+			$last_author->updateAuthorStats();
 		}
 
-		// store the author and dissociate. otherwise saving the author will
-		// attempt to save this entry to ensure relationship integrity.
-		// TODO make sure everything is already dissociated when we hit this
-		$last_author = $this->Author;
-		$this->Author = NULL;
-
-		$last_author->updateAuthorStats();
 		$this->updateCommentStats();
 	}
 
