@@ -838,6 +838,12 @@ $lang = array(
  * 3.0
  */
 
+'default_value' => 'Default value',
+
+'toggle_default_value_desc' => 'The default position of the toggle switch for this field when publishing new entries.',
+
+'toggle_default_value_desc_cont' => '<b>Note</b>: If assigned to a channel with existing entries, those entries will be assigned this value.',
+
 'field_max_length' => 'Maximum characters',
 
 'field_fmt' => 'Text formatting',

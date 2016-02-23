@@ -35,26 +35,22 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		ee()->load->dbforge();
+
 		$steps = new ProgressIterator(
 			array(
 				'add_url_field',
-				'add_email_address_field'
+				'add_email_address_field',
+				'add_toggle_field',
 			)
 		);
 
 		foreach ($steps as $k => $v)
 		{
-			try
-			{
-				$this->$v();
-			}
-			catch (Exception $e)
-			{
-				$this->errors[] = $e->getMessage();
-			}
+			$this->$v();
 		}
 
-		return empty($this->errors);
+		return TRUE;
 	}
 
 	/**
@@ -81,6 +77,22 @@ class Updater {
 				'version' => '1.0.0',
 				'settings' => base64_encode(serialize(array())),
 				'has_global_settings' => 'n'
+			)
+		);
+	}
+
+	/**
+	 * Installs the new toggle fieldtype
+	 * @return void
+	 */
+	public function add_toggle_field()
+	{
+		ee()->db->insert('fieldtypes',
+			array(
+				'name'					=> 'toggle',
+				'version'				=> '1.0.0',
+				'settings'				=> base64_encode(serialize(array())),
+				'has_global_settings'	=> 'n',
 			)
 		);
 	}
