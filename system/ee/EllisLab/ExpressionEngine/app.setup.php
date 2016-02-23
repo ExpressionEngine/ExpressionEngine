@@ -172,7 +172,7 @@ return array(
 		'CP/Alert' => function($ee)
 		{
 			$view = $ee->make('View')->make('_shared/alert');
-			return new Alert\AlertCollection(ee()->session, $view);
+			return new Alert\AlertCollection(ee()->session, $view, ee()->lang);
 		},
 
 		'CP/FilePicker' => function($ee)
