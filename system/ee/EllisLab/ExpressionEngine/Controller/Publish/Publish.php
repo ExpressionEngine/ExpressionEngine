@@ -46,12 +46,11 @@ class Publish extends AbstractPublishController {
 	 *
 	 * @param int $channel_id The Channel ID
 	 * @param int $entry_id The Entry ID
-	 * @param string $field_name The name of the field to render
 	 * @return array An associative array (for JSON) containing the rendered HTML
 	 */
-	public function field($channel_id, $entry_id, $field_name)
+	public function field($channel_id, $entry_id)
 	{
-		if ($entry_id)
+		if (is_numeric($entry_id) && $entry_id != 0)
 		{
 			$entry = ee('Model')->get('ChannelEntry', $entry_id)
 				->filter('site_id', ee()->config->item('site_id'))
@@ -65,7 +64,7 @@ class Publish extends AbstractPublishController {
 
 		$entry->set($_POST);
 
-		return array('html' => $entry->getCustomField($field_name)->getForm());
+		return array('html' => $entry->getCustomField(ee()->input->get('field_name'))->getForm());
 	}
 
 	/**
