@@ -56,4 +56,20 @@ feature 'Entry Manager' do
     @page.entry_rows[0].text.should include 'No Entries found.'
     @page.alert.text.should include 'The following entries were removed'
   end
+
+  it 'deletes 100 entries' do
+    @page.create_entries(100)
+    @page.load(perpage: 100)
+
+    # ... leaves the last item out of the range
+    @page.entry_checkboxes.each(&:click)
+    @page.bulk_action.select 'Remove'
+    @page.action_submit_button.click
+    @page.wait_for_modal_submit_button
+    @page.modal_submit_button.click
+
+    @page.should have(10).entry_rows
+    @page.alert.text.should include 'The following entries were removed'
+    @page.alert.text.should include 'and 96 others...'
+  end
 end
