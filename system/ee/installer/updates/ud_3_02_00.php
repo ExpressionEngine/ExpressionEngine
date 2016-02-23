@@ -25,7 +25,8 @@
  */
 class Updater {
 
-	var $version_suffix = '';
+	public $version_suffix = '';
+	public $errors = array();
 
 	/**
 	 * Do Update
@@ -38,7 +39,9 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'install_toggle_fieldtype',
+				'add_url_field',
+				'add_email_address_field',
+				'add_toggle_field',
 			)
 		);
 
@@ -51,10 +54,38 @@ class Updater {
 	}
 
 	/**
+	 * New "URL" Field Type in 3.2.0
+	 */
+	private function add_url_field()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'url',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+	}
+
+	/**
+	 * New "Email Address" Field Type in 3.2.0
+	 */
+	private function add_email_address_field()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'email_address',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+	}
+
+	/**
 	 * Installs the new toggle fieldtype
 	 * @return void
 	 */
-	public function install_toggle_fieldtype()
+	public function add_toggle_field()
 	{
 		ee()->db->insert('fieldtypes',
 			array(
@@ -66,6 +97,6 @@ class Updater {
 		);
 	}
 }
-/* END CLASS */
+// END CLASS
 
 // EOF

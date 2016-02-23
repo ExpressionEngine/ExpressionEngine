@@ -10,7 +10,7 @@
 </label>
 <?php endif; ?>
 <?php
-$params = array('value' => $value, 'name' => $field_name);
+$params = array('value' => $value, 'name' => $field_name, 'rel' => 'date-picker');
 
 if ($value)
 {

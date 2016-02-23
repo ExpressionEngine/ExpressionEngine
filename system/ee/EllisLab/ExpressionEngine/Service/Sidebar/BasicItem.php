@@ -40,7 +40,7 @@ class BasicItem extends ListItem {
 	 */
 	public function asDeleteAction($modal_name = '')
 	{
-		$this->class .= 'remove ';
+		$this->addClass('remove ');
 		$this->rel = $modal_name;
 
 		return $this;
@@ -56,7 +56,7 @@ class BasicItem extends ListItem {
 	 */
 	public function render(ViewFactory $view)
 	{
-		$class = trim($this->class);
+		$class = $this->getClass();
 
 		if ($class)
 		{
