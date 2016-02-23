@@ -81,8 +81,14 @@ Overlay.prototype = {
 			that.$toolbar.data('image', $this);
 		});
 
+		this.$editor.on('mousemove', function(event) {
+			if ($(event.toElement).closest('figure').size() == 0) {
+				that._hide_toolbar();
+			}
+		});
+
 		this.$editor.on('mouseleave', 'figure img', function(event) {
-			if ($(event.toElement).parents('figure').size() == 0) {
+			if ($(event.toElement).closest('figure').size() == 0) {
 				that._hide_toolbar();
 			}
 		});
