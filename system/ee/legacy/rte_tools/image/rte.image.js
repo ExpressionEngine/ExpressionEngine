@@ -134,7 +134,7 @@ Overlay.prototype = {
 	 * Hide the overlay
 	 */
 	_hide_toolbar: function() {
-		this.$toolbar.remove();
+		this.$toolbar.detach();
 		this.$current = null;
 	},
 
