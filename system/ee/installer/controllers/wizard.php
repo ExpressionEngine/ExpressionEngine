@@ -1779,12 +1779,12 @@ class Wizard extends CI_Controller {
 			// read and create snippets and global variables, if they exist
 			//
 
-			foreach(array('snippets', 'global_variables') as $type)
+			foreach(array('_partials' => 'snippets', '_variables' => 'global_variables') as $dir => $type)
 			{
-				if (is_dir($this->theme_path.$this->userdata['theme'].'/template_partials/'.$type))
+				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$dir))
 				{
 					$this->load->helper('file');
-					$dir = rtrim(realpath($this->theme_path.$this->userdata['theme'].'/template_partials/'.$type), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+					$dir = rtrim(realpath($this->theme_path.$this->userdata['theme'].'/'.$dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 					$vars = array();
 
 					// can't use get_filenames() since it doesn't read hidden files
@@ -1801,14 +1801,20 @@ class Wizard extends CI_Controller {
 
 					foreach ($vars as $name => $contents)
 					{
-						if ($type == 'snippets')
+						$data = array('site_id' => 1);
+
+						if ($type == 'partials')
 						{
-							ee()->db->insert('snippets', array('snippet_name' => $name, 'snippet_contents' => $contents, 'site_id' => 1));
+							$data['snippet_name'] = $name;
+							$data['snippet_contents'] = $contents;
 						}
 						else
 						{
-							ee()->db->insert('global_variables', array('variable_name' => $name, 'variable_data' => $contents, 'site_id' => 1));
+							$data['variable_name'] = $name;
+							$data['variable_data'] = $contents;
 						}
+
+						ee()->db->insert($type, $data);
 					}
 				}
 			}
