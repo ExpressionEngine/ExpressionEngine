@@ -50,6 +50,8 @@ $lang = array(
 
 'id' => 'ID',
 
+'and_n_others' => 'and %d others...',
+
 'encoded_email' => '(JavaScript must be enabled to view this email address)',
 
 'search' => 'Search',
