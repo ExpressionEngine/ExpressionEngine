@@ -112,25 +112,10 @@ class Grid_lib {
 				'required' => ($column['col_required'] == 'y')
 			);
 
-			switch ($column['col_type']) {
-				case 'rte':
-					$class = 'grid-rte';
-					break;
-				case 'textarea':
-					$class = 'grid-textarea';
-					break;
-				case 'relationship':
-					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
-					break;
-				default:
-					$class = '';
-					break;
-			}
-
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
 				'attrs' => array(
-					'class' => $class,
+					'class' => $this->get_class_for_column($column),
 					'data-fieldtype' => $column['col_type'],
 					'data-column-id' => $column['col_id'],
 					'width' => $column['col_width'].'%',
@@ -166,6 +151,7 @@ class Grid_lib {
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
+						'class' => $this->get_class_for_column($column),
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
 						$data_row_id_attr => $row_id,
@@ -189,6 +175,29 @@ class Grid_lib {
 		$grid->setData($data);
 
 		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
+	}
+
+	protected function get_class_for_column($column)
+	{
+		switch ($column['col_type']) {
+			case 'rte':
+				$class = 'grid-rte';
+				break;
+			case 'relationship':
+				$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+				break;
+			case 'textarea':
+				$class = 'grid-textarea';
+				break;
+			case 'toggle':
+				$class = 'grid-toggle';
+				break;
+			default:
+				$class = '';
+				break;
+		}
+
+		return $class;
 	}
 
 	// ------------------------------------------------------------------------
@@ -607,18 +616,36 @@ class Grid_lib {
 			return $this->_fieldtypes;
 		}
 
+		$fieldtypes = array();
+		$compatibility = array();
+
+		foreach (ee('Addon')->installed() as $addon)
+		{
+			if ($addon->hasFieldtype())
+			{
+				foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
+				{
+					if (isset($metadata['compatibility']))
+					{
+						$compatibility[$fieldtype] = $metadata['compatibility'];
+					}
+				}
+
+				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
+			}
+		}
+
+		unset($fieldtypes['grid'], $compatibility['grid']);
+
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
 
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;
 
-		$this->_fieldtypes = $ft_api->fetch_installed_fieldtypes();
-		unset($this->_fieldtypes['grid']);
-
-		foreach ($this->_fieldtypes as $field_name => $data)
+		foreach ($fieldtypes as $field_short_name => $field_name)
 		{
-			$fieldtype = $ft_api->setup_handler($field_name, TRUE);
+			$fieldtype = $ft_api->setup_handler($field_short_name, TRUE);
 
 			// Check to see if the fieldtype accepts Grid as a content type;
 			// also, temporarily exlcude Relationships for content types
@@ -626,11 +653,16 @@ class Grid_lib {
 			if ( ! $fieldtype->accepts_content_type('grid') ||
 				($this->content_type != 'channel' && $field_name == 'relationship'))
 			{
-				unset($this->_fieldtypes[$field_name]);
+				unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);
 			}
 		}
 
-		asort($this->_fieldtypes);
+		asort($fieldtypes);
+
+		$this->_fieldtypes = array(
+			'fieldtypes' => $fieldtypes,
+			'compatibility' => $compatibility
+		);
 
 		return $this->_fieldtypes;
 	}
@@ -851,13 +883,35 @@ class Grid_lib {
 	 */
 	public function get_column_view($column = NULL, $error_fields = array())
 	{
-		$fieldtypes = $this->get_grid_fieldtypes();
+		$fieldtype_data = $this->get_grid_fieldtypes();
+		$fieldtypes = $fieldtype_data['fieldtypes'];
+		$compatibility = $fieldtype_data['compatibility'];
 
-		// Create a dropdown-frieldly array of available fieldtypes
-		$fieldtypes_dropdown = array();
-		foreach ($fieldtypes as $key => $value)
+		// Create a dropdown-frieldly array of available fieldtypes based on
+		// compatibility if this column already has a type.
+		if (isset($column['col_type']))
 		{
-			$fieldtypes_dropdown[$key] = $value['name'];
+			$type = $column['col_type'];
+
+			if ( ! isset($compatibility[$type]))
+			{
+				$fieldtypes_dropdown = array($type => $fieldtypes[$type]);
+			}
+			else
+			{
+				$my_type = $compatibility[$type];
+
+				$compatible = array_filter($compatibility, function($v) use($my_type)
+				{
+					return $v == $my_type;
+				});
+
+				$fieldtypes_dropdown = array_intersect_key($fieldtypes, $compatible);
+			}
+		}
+		else
+		{
+			$fieldtypes_dropdown = $fieldtypes;
 		}
 
 		// Column ID could be a string if we're coming back from a valdiation error
