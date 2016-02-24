@@ -157,9 +157,7 @@ class Wizard extends CI_Controller {
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
 
 		// Third party constants
-		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
-		define('PATH_RTE',    EE_APPPATH . 'rte_tools/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -1458,7 +1456,6 @@ class Wizard extends CI_Controller {
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
-			'image_path'        => $this->image_path,
 			'javascript_path'   => $javascript_basepath.$javascript_dir,
 
 			'version'           => $this->version,
@@ -1570,6 +1567,12 @@ class Wizard extends CI_Controller {
 		{
 			require $this->theme_path.$this->userdata['theme'].'/theme_preferences.php';
 		}
+
+		// --------------------------------------------------------------------
+
+		// Set the site_short_name as default_site since that's used when
+		// creating and saving template files
+		ee()->config->set_item('site_short_name', 'default_site');
 
 		// --------------------------------------------------------------------
 
@@ -1775,55 +1778,31 @@ class Wizard extends CI_Controller {
 
 			closedir($fp);
 
-			//
-			// read and create snippets and global variables, if they exist
-			//
-
-			foreach(array('_partials' => 'snippets', '_variables' => 'global_variables') as $dir => $type)
+			// Copy over snippets and global variables
+			ee()->set('functions', new WizardFunctions());
+			foreach(array('_partials' => 'Snippet', '_variables' => 'GlobalVariable') as $dir => $type)
 			{
-				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$dir))
+				$from_dir = $this->theme_path.$this->userdata['theme'].'/'.$dir.'/';
+				if (is_dir($from_dir))
 				{
-					$this->load->helper('file');
-					$dir = rtrim(realpath($this->theme_path.$this->userdata['theme'].'/'.$dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-					$vars = array();
+					$to_dir = SYSPATH.'user/templates/default_site/'.$dir.'/';
+					mkdir($to_dir, DIR_WRITE_MODE);
 
-					// can't use get_filenames() since it doesn't read hidden files
-					if ($fp = opendir($dir))
+					foreach (directory_map($from_dir) as $filename)
 					{
-						while (FALSE !== ($file = readdir($fp)))
-						{
-							if (is_file($dir.$file) && $file != '.DS_Store')
-							{
-								$vars[$file] = read_file($dir.$file);
-							}
-						}
-					}
-
-					foreach ($vars as $name => $contents)
-					{
-						$data = array('site_id' => 1);
-
-						if ($type == 'partials')
-						{
-							$data['snippet_name'] = $name;
-							$data['snippet_contents'] = $contents;
-						}
-						else
-						{
-							$data['variable_name'] = $name;
-							$data['variable_data'] = $contents;
-						}
-
-						ee()->db->insert($type, $data);
+						copy($from_dir.$filename, $to_dir.$filename);
 					}
 				}
+
+				// Load all of the snippets/global variables to save them to the db
+				ee('Model')->make($type)->loadAll();
 			}
 
 			// Install any default structure and content that the theme may have
 			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content.php'))
 			{
 				require $this->theme_path.$this->userdata['theme'].'/default_content.php';
-				$defaultContent = new DefaultContent($this->userdata);
+				$defaultContent = new DefaultContent($this->root_theme_path, $this->theme_path, $this->userdata);
 				$defaultContent->install();
 			}
 		}
@@ -2457,5 +2436,12 @@ class Wizard extends CI_Controller {
 	}
 }
 
-/* End of file wizard.php */
-/* Location: ./system/expressionengine/installer/controllers/wizard.php */
+class WizardFunctions
+{
+	public function clear_caching($type)
+	{
+		return TRUE;
+	}
+}
+
+// EOF
