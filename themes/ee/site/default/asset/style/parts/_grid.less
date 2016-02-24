@@ -1,0 +1,76 @@
+/*
+	_grid.less
+	----------
+	part for defining the baseline grid
+	----------
+		max/min width variables
+		gutter variables
+		view-port control
+		----------
+		.row
+		.col-width
+*/
+
+// vars for responsible design
+@max-width: 1200px;
+@min-width: 750px;
+
+// vars for spacing.
+@v-gutter: 20px;
+@h-gutter: @v-gutter / 2;
+
+// future view-port control
+@viewport{ width: extend-to-zoom; zoom: 1.0; }
+
+// group columns together
+.row{
+	margin: @v-gutter auto;
+	max-width: @max-width;
+		// columns.
+		// only affects section tags that are
+		// direct children of .row
+		> section{
+			margin-bottom: @v-gutter;
+			padding: 0 @v-gutter;
+			.boxsize;
+				&:last-child{ margin-bottom: 0; }
+		}
+		// knock the v-gutter off .row(s) inside of .row(s)
+		.row{ margin: 0 -@v-gutter; }
+		// fix side by side columns inside a form
+		form .row{
+			margin: 0;
+				> section{
+					&:first-child{ padding: 0; }
+					&:last-child{ padding: 0; }
+				}
+		}
+}
+
+// math for column widths
+.col-width(@span, @columns: 16){ width: 100/@columns * @span * 1%; }
+
+// box use if you need to apply
+// decorative properties to a column
+// place on a div inside the w-(n) column
+// as a parent of the content
+.box{
+	p{ margin-bottom: 10px; &:last-child{ margin-bottom: 0; } }
+}
+
+/*
+	// HTML for grid.
+	// direct section children of .row are considered columns.
+
+	<section class="row">
+		<section class="w-8">
+			... content of this column ...
+		</section>
+		<section class="w-8">
+			<div class="box">
+			... content of this column ...
+			</div>
+		</section>
+	</section>
+
+*/

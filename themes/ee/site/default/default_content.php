@@ -5,26 +5,37 @@
  */
 class DefaultContent
 {
+	private $userdata;
+	private $root_theme_path;
+	private $theme_path;
+
 	private $theme_base_url;
 	private $theme_base_path;
 	private $template_folder;
 	private $asset_url;
 	private $asset_path;
 
+	private $structure_data;
+
 	/**
 	 * Create the DefaultContent Generator
 	 *
+	 * @param string $root_theme_path The root of the theme directory blah
+	 *   (e.g. themes/, not themes/ee/ or themes/user/)
 	 * @param array $userdata The userdata array
 	 */
-	public function __construct(array $userdata)
+	public function __construct($root_theme_path, $theme_path, array $userdata)
 	{
 		ee()->load->library('api');
 		ee()->load->library('extensions');
 
+		$this->root_theme_path = $root_theme_path;
+		$this->theme_path = $theme_path;
 		$this->userdata = $userdata;
-		$this->theme_base_url = $this->userdata['site_url'].'themes/user/site/default/';
-		$this->theme_base_path = $this->root_theme_path.'user/site/default/';
-		$this->template_folder = SYSPATH.'user/templates/default/';
+
+		$this->theme_base_url = $this->userdata['site_url'].'themes/ee/site/default/';
+		$this->theme_base_path = $root_theme_path.'ee/site/default/';
+		$this->template_folder = SYSPATH.'ee/templates/default/';
 		$this->asset_url = $this->theme_base_url.'asset/';
 		$this->asset_path = $this->theme_base_path.'asset/';
 	}
@@ -47,7 +58,7 @@ class DefaultContent
 		$status_group->group_name = 'about';
 		$status_group->save();
 
-		$status_group_ids[$status_group->group_name] = $status_group->group_id;
+		$this->structure_data['status_group_ids'][$status_group->group_name] = $status_group->group_id;
 
 		// "about" Status Group statuses
 		$status = ee('Model')->make('Status');
@@ -103,7 +114,7 @@ class DefaultContent
 			$cat_group->group_name = $group_name;
 			$cat_group->save();
 
-			$cat_group_ids[$cat_group->group_name] = $cat_group->group_id;
+			$this->structure_data['cat_group_ids'][$cat_group->group_name] = $cat_group->group_id;
 
 			foreach ($categories as $category_name)
 			{
@@ -120,8 +131,8 @@ class DefaultContent
 
 	private function createUploadLocations()
 	{
-		$img_url = $asset_url.'img/';
-		$img_path = $asset_path.'img/';
+		$img_url = $this->asset_url.'img/';
+		$img_path = $this->asset_path.'img/';
 
 		foreach (array('blog', 'common', 'home') as $upload_name)
 		{
@@ -169,7 +180,7 @@ class DefaultContent
 			$field_group->group_name = $group_name;
 			$field_group->save();
 
-			$field_group_ids[$field_group->group_name] = $field_group->group_id;
+			$this->structure_data['field_group_ids'][$field_group->group_name] = $field_group->group_id;
 
 			foreach ($fields as $file_name)
 			{
@@ -246,11 +257,11 @@ class DefaultContent
 
 					foreach ($columns as $column)
 					{
-						$gf_id[$field->field_id][$column['col_name']] = $column['col_id'];
+						$this->structure_data['gf_id'][$field->field_id][$column['col_name']] = $column['col_id'];
 					}
 				}
 
-				$cf_id[$field->field_name] = $field->field_id;
+				$this->structure_data['cf_id'][$field->field_name] = $field->field_id;
 			}
 		}
 	}
@@ -259,18 +270,18 @@ class DefaultContent
 	{
 		$channels = array(
 			'About' => array(
-				'status_group' => $status_group_ids['about'],
-				'field_group' => $field_group_ids['common']
+				'status_group' => $this->structure_data['status_group_ids']['about'],
+				'field_group' => $this->structure_data['field_group_ids']['common']
 			),
 			'Blog' => array(
 				'status_group' => 1,
-				'cat_group' => $cat_group_ids['blog'],
-				'field_group' => $field_group_ids['blog'],
+				'cat_group' => $this->structure_data['cat_group_ids']['blog'],
+				'field_group' => $this->structure_data['field_group_ids']['blog'],
 				'channel_url' => "{path='blog/entry'}"
 			),
 			'Contact' => array(
 				'status_group' => 1,
-				'field_group' => $field_group_ids['common']
+				'field_group' => $this->structure_data['field_group_ids']['common']
 			)
 		);
 
@@ -288,7 +299,7 @@ class DefaultContent
 			}
 
 			$channel->save();
-			$channel_objs[$channel->channel_name] = $channel;
+			$this->structure_data['channel_objs'][$channel->channel_name] = $channel;
 		}
 	}
 
@@ -297,7 +308,11 @@ class DefaultContent
 		// add entries
 		// ChannelEntry::populateChannels() is reaching into the legacy superobject
 		// @todo - address this dependency
-		//ee()->set('session', (object) array());
+		// ee()->set('session', (object) array());
+
+		// Override Functions::clear_caching()
+		// ee()->set('functions', new Functions);
+
 		ee()->load->library('session');
 		ee()->session->userdata['group_id'] = 1;
 
@@ -312,11 +327,11 @@ class DefaultContent
 				$entry_data = json_decode(file_get_contents($dir.$filename));
 
 				$entry = ee('Model')->make('ChannelEntry');
-				$entry->setChannel($channel_objs[$channel_name]);
+				$entry->setChannel($this->structure_data['channel_objs'][$channel_name]);
 				$entry->site_id =  1;
 				$entry->author_id = 1;
 				$entry->ip_address = ee()->input->ip_address();
-				$entry->versioning_enabled = $channel_objs[$channel_name]->enable_versioning;
+				$entry->versioning_enabled = $this->structure_data['channel_objs'][$channel_name]->enable_versioning;
 				$entry->sticky = FALSE;
 				$entry->allow_comments = TRUE;
 
@@ -336,7 +351,7 @@ class DefaultContent
 				{
 					if (is_string($val))
 					{
-						$field_col_name = "field_id_{$cf_id[$key]}";
+						$field_col_name = "field_id_{$this->structure_data['cf_id'][$key]}";
 						$post_mock[$field_col_name] = $val;
 					}
 					else
@@ -346,8 +361,8 @@ class DefaultContent
 							$row_index = $row_index + 1;
 							foreach ($grid_row as $col_name => $col_value)
 							{
-								$column_id = 'col_id_'.$gf_id[$cf_id[$key]][$col_name];
-								$post_mock["field_id_{$cf_id[$key]}"]
+								$column_id = 'col_id_'.$this->structure_data['gf_id'][$this->structure_data['cf_id'][$key]][$col_name];
+								$post_mock["field_id_{$this->structure_data['cf_id'][$key]}"]
 										["rows"]
 										["new_row_{$row_index}"]
 										[$column_id]
@@ -362,6 +377,23 @@ class DefaultContent
 			}
 		}
 	}
+
+	private function setTemplatePreferences()
+	{
+		// set site_404 and strict_urls, save templates as files
+	}
 }
 
-// set site_404 and strict_urls, etc.
+/**
+ * Stub Functions class
+ *
+ * The ChannelEntry model calls Functions::clear_caching() onAfterSave, but we
+ * don't have a cache yet.
+ */
+class Functions
+{
+	public function clear_caching($type)
+	{
+		return TRUE;
+	}
+}

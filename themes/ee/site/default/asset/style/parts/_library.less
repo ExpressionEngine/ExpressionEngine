@@ -1,0 +1,279 @@
+/*
+	_library.less
+	----------
+	part for general classes, that will be commonly used
+	----------
+		.left (floats elements left)
+		.right (float elements right)
+		.hide (hides elements for jquery stuffs)
+		.clear (clears floated elements)
+		.snap (creates a universal max-width)
+		.full (creates a full screen bleed wrapper)
+		.vid-wrap (responsible videos)
+		.menu (resets for a menu list)
+		.list (common list bullets)
+		.syn-(n) (syntax highlighting)
+		.code-block (code blocks with highlighting)
+		.ph-txt (sets the color of the attribute placeholder)
+*/
+
+// float things around.
+.left,
+.right{ display: inline; }
+
+	.left{ float: left; }
+	.right{ float: right; }
+
+// hide
+.hide{ display: none; }
+
+// clears floated elements
+// I prefer this method, it always works
+// .parent-class:after{ .clear; }
+.clear{
+	clear: both;
+	content: '.';
+	display: block;
+	font-size: 0;
+	visibility: hidden;
+}
+
+// used to keep content "snapped" to the center
+// of the view-port and sets max width for such content
+.snap{
+	margin: 0 auto;
+	max-width: @max-width;
+	position: relative;
+	.boxsize;
+		&:after{ .clear; }
+}
+
+// full screen BG bleed wrap
+// used on a section wrapper on the default column structure
+.full{ background-color: @light-gray; overflow: auto; }
+
+// responsive video wrap
+// allows videos to resize with the browser view-port
+.video-wrap{
+	height: 0;
+	overflow: hidden;
+	padding-bottom: 56.25%; /* 16/9 ratio */
+	padding-top: 30px; /* IE6 workaround */
+	position: relative;
+		// set dimensions and position of elements inside .video-wrap
+		embed, iframe, img, object, video{
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			.corners;
+		}
+}
+
+// menu reset (:extend ul)
+// removes list bullets, and margins
+.menu{ list-style-type: none; margin: 0; }
+
+// unordered list options
+// can be applied to all list items ul.list.class
+// or to 1 list item li.class, or any combo
+.list{
+	list-style-type: none;
+		li{
+			&:before{
+				color: @medium-gray;
+				// glyph 'chevron-right'
+				content: '\E224';
+				font-family: @fam-ico;
+				font-size: @font-base - 2;
+				margin-right: 5px;
+				position: relative;
+				top: 1px;
+			}
+			a.act{ font-weight: bold; }
+		}
+		li.fav,
+		&.fav li{
+			&:before{
+				color: lighten(@red,35%);
+				// glyph 'heart'
+				content: '\E013';
+			}
+		}
+		li.star,
+		&.star li{
+			&:before{
+				color: darken(@yellow,25%);
+				// glyph 'star'
+				content: '\E050';
+				top: 0;
+			}
+		}
+		li.yes,
+		&.yes li{
+			&:before{
+				color: @green;
+				// glyph 'ok_2'
+				content: '\E207';
+			}
+		}
+		li.no,
+		&.no li{
+			&:before{
+				color: @red;
+				// glyph 'remove_2'
+				content: '\E208';
+			}
+		}
+		li.rss,
+		&.rss li{
+			&:before{
+				color: darken(@yellow,25%);
+				// glyph 'social-rss'
+				content: '\E038';
+				font-family: @fam-social;
+			}
+		}
+}
+
+// syntax highlighting
+.syn-comment{ color: @syn-comment; }
+.syn-brackets{ color: @syn-bracket; }
+.syn-element{ color: @syn-element; }
+.syn-value{ color: @syn-value; }
+.syn-attr{ color: @syn-attr; }
+.syn-alias{ color: @syn-alias; }
+.syn-class{ color: @syn-class; }
+.syn-pseudo{ color: @syn-pseudo; }
+.syn-id{ color: @syn-id; }
+.syn-var{ color: @syn-var; }
+.syn-func{ color: @syn-func; }
+
+// code-block
+.code-block{
+	background-color: @off-white;
+	border: 1px solid darken(@light-gray,5%);
+	color: darken(@gray,5%);
+	margin: 20px 0;
+	padding: 20px;
+	position: relative;
+		&:hover{ border-color: @medium-gray; }
+		a{ border-bottom: 0; }
+		pre{ tab-size: 4; white-space: pre-wrap; }
+		.options{
+			background-color: @light-gray;
+			border-top: 1px solid darken(@light-gray,5%);
+			margin: 20px -20px -20px;
+			padding: 10px 10px 8px;
+				.info{
+					position: relative;
+					top: 2px;
+					.right;
+				}
+		}
+		// dark version
+		&.dark{
+			background-color: lighten(@black,5%);
+				&:hover{ border-color: @black; }
+				code{ background-color: lighten(@black,5%); color: @white; }
+				.syn-comment{ color: lighten(@black,25%); }
+				.syn-attr{ color: lighten(@syn-attr,15%); }
+				.options{
+					background-color: lighten(@black,10%);
+					border-top: 1px solid darken(@black,5%);
+						a{ color: @white; &:hover{ color: darken(@yellow,25%); } }
+				}
+		}
+		&:last-child{ margin-bottom: 0; }
+}
+
+// buttons
+.btn{
+	margin-right: 5px;
+	text-decoration: none;
+		&:before{ font-family: @fam-ico; }
+		&.contrast{
+			&:before{
+				// glyph 'brightness_increase'
+				content: '\E190';
+			}
+		}
+		&.copy{
+			&:before{
+				// glyph 'notes_2'
+				content: '\E030';
+			}
+		}
+		.ctrls &{
+			background-color: lighten(@green,30%);
+			border: 1px solid lighten(@green,20%);
+			color: darken(@green,20%);
+			font-weight: bold;
+			padding: 10px 15px 8px;
+			.shadow(0 4px 0 0 lighten(@green,20%));
+				&:hover{
+					background-color: lighten(@green,25%);
+					color: darken(@green,20%);
+					.shadow(0 3px 0 0 lighten(@green,20%));
+				}
+				&.disable,
+				&.disable:hover{
+					background-color: lighten(@gray,45%);
+					border: 1px solid lighten(@gray,35%);
+					color: @medium-gray;
+					cursor: not-allowed;
+					.shadow(0 4px 0 0 lighten(@gray,35%));
+				}
+				&.remove,
+				&.remove:hover{
+					background-color: lighten(@red,45%);
+					border: 1px solid lighten(@red,35%);
+					color: @red;
+					.shadow(0 4px 0 0 lighten(@red,35%));
+				}
+				&.work,
+				&.work:hover{
+					background-color: @white;
+					border: 1px dashed darken(@light-gray,5%);
+					.breathe;
+					.shadow(0 4px 0 0 lighten(@medium-gray,20%));
+				}
+		}
+		h1 &{
+			background-color: @light-gray;
+			border: 0;
+			color: @primary;
+			font-size: @font-base;
+			margin: 0;
+			padding: 5px 10px;
+			position: absolute;
+			right: 0;
+			top: 0;
+				&:hover{
+					background-color: @primary;
+					color: @white;
+				}
+		}
+}
+
+// placeholder text styling.
+.ph-txt(@color: lighten(@medium-gray,10%)){
+	input::-webkit-input-placeholder{ color: @color; }
+	textarea::-webkit-input-placeholder{ color: @color; }
+	input:-moz-placeholder{ color: @color; }
+	textarea:-moz-placeholder{ color: @color; }
+	input::-moz-placeholder{ color: @color; }
+	textarea::-moz-placeholder{ color: @color; }
+	input:-ms-input-placeholder{ color: @color; }
+	textarea:-ms-input-placeholder{ color: @color; }
+}
+
+// webkit anti-alias font fix
+// best used for light text on dark backgrounds
+.font-wk{ -webkit-font-smoothing: antialiased; }
+
+// browser selection
+// cannot combine the rules
+::selection{ background-color: @primary; color: fade(@white,80%); }
+::-moz-selection{ background-color: @primary; color: fade(@white,80%); }

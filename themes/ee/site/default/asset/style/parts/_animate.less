@@ -1,0 +1,33 @@
+/*
+	_animate.less
+	----------
+	part for special animation effects
+	----------
+		breathing effect
+		----------
+		.breathe
+*/
+
+// breathing effect (use very rarely)
+// webkit version
+@-webkit-keyframes waiting{
+	from{ color: darken(@black,50%); opacity: 1.0; }
+	to{ color: lighten(@gray,10%); opacity: 0.5; }
+}
+
+// everything else
+@keyframes waiting{
+	from{ color: darken(@black,50%); opacity: 1.0; }
+	to{ color: lighten(@gray,10%); opacity: 0.5; }
+}
+
+	// breathing
+	// subtle breathing effect for working buttons
+	.breathe{
+		-webkit-animation: waiting .8s ease-in-out 0 infinite alternate;
+		animation-name: waiting;
+		animation-duration: .8s;
+		animation-iteration-count: infinite;
+		animation-direction: alternate;
+		animation-timing-function: ease-in-out;
+	}

@@ -1,0 +1,190 @@
+/*
+	_form.less
+	----------
+	part for defining forms
+	----------
+		label
+		fieldset
+		input
+		textarea
+		select
+		alerts
+		required
+		errors
+*/
+
+label{
+	display: block;
+	font-weight: bold;
+		// exception for checkboxes and radios inside labels
+		input{
+			margin-right: 5px;
+			position: relative;
+			top: -1px;
+		}
+		// exceptions for labels containing checkboxes and radios
+		.radios &{ &:first-child{ margin-right: @h-gutter; } }
+		.checks &{
+			display: block;
+			margin-bottom: @v-gutter / 2;
+				&:last-child{ margin-bottom: 0; }
+		}
+}
+
+fieldset{
+	border-bottom: 1px solid darken(@light-gray,10%);
+	padding: 10px 0;
+		h3{
+			color: @black;
+			font-size: @font-base;
+			font-weight: bold;
+			margin-bottom: 0;
+		}
+		em{
+			color: @gray;
+			font-size: @font-base - 2;
+			font-style: normal;
+		}
+		section:first-child{ margin-bottom: 5px; }
+		&.ctrls{
+			border-bottom: 0;
+			text-align: center;
+			.fadend(@no-color,@no-color);
+				&:last-child{ padding-bottom: 0; }
+				.password-req{
+					border-bottom: 1px dotted lighten(@medium-gray,20%);
+					margin: -10px 0 10px;
+					padding: 10px 0;
+					.fadend(@no-color,lighten(@yellow,35%));
+						.w-8{ text-align: left; }
+						&:after{ .clear; }
+				}
+		}
+		// styles placeholder attribute text
+		.ph-txt;
+}
+
+textarea,
+select[multiple='multiple'],
+input:not([type='submit']){
+	background-color: @white;
+	border: 1px solid @medium-gray;
+	padding: 5px;
+	width: 100%;
+	.boxsize;
+		&:focus{
+			background-color: lighten(@yellow,35%);
+			border-color: lighten(@blue,20%);
+			.shadow(~'0 1px 3px 0 rgba(0,0,0,0.1) inset, 0 0 5px 0 rgba(32,226,255,0.5)');
+		}
+}
+
+	select[multiple='multiple']{ width: auto; }
+
+	input[type='radio'],
+	input[type='checkbox']{
+		border: 0;
+		padding: 0;
+		width: auto;
+	}
+
+	input[type='submit']{
+		background-color: @primary;
+		border: 0;
+		color: @white;
+		cursor: pointer;
+		padding: 5px 10px;
+		.corners;
+			&:hover{ background-color: @secondary; }
+	}
+
+	textarea{ height: 150px; resize: vertical; }
+
+// alerts
+// user feedback for form submissions and other actions
+.alert{
+	background-color: @off-white;
+	border: 1px solid @gray;
+	margin-bottom: @v-gutter - 10;
+	padding: 10px;
+	position: relative;
+		h3{
+			font-size: @font-base + 2;
+			font-weight: bold;
+			margin-bottom: 0;
+				&:before{
+					// glyph 'warning_sign'
+					content: '\E079';
+					font-family: @fam-ico;
+					font-size: @font-base - 2;
+					font-weight: normal;
+					margin-right: 5px;
+				}
+		}
+		p, ul, ol{
+			margin: 0 0 @h-gutter;
+			&:last-child,
+			&:nth-last-child(2){ margin-bottom: 0; }
+		}
+		ul, ol{ margin-left: @v-gutter; }
+		ol{ list-style-position: inside; }
+		&.issue{
+			background-color: lighten(@red,57%);
+			border-color: lighten(@red,40%);
+				h3, p, li, a{ color: @red; }
+		}
+		&.warn{
+			background-color: lighten(@yellow,35%);
+			border-color: lighten(@yellow,5%);
+				h3, p, li, a{ color: darken(@yellow,30%); }
+		}
+		&.success{
+			background-color: lighten(@green,45%);
+			border-color: lighten(@green,20%);
+				h3, p, li, a{ color: darken(@green,20%); }
+		}
+		a:hover{ color: @black; }
+		.close{
+			position: absolute;
+			top: 10px;
+			right: 10px;
+		}
+}
+
+// required
+.required{
+	color: @orange;
+	font-weight: normal;
+		h1 &, h2 &{
+			display: block;
+			font-size: @font-base;
+			margin-top: 5px;
+		}
+}
+
+// errors
+// placed on fieldset.row to indicate an issue
+.invalid{
+	h3{ color: @red; }
+	textarea,
+	select[multiple='multiple'],
+	input:not([type='submit']){ background-color: lighten(@red,57%); border-color: @red; }
+	.field{
+		em{
+			color: @red;
+			display: block;
+			font-size: @font-base;
+			font-style: italic;
+			margin: 5px 0 0;
+				&:before{
+					// glyph 'e_minus'
+					content: '\E192';
+					font-family: @fam-ico;
+					font-size: @font-base - 2;
+					font-style: normal;
+					margin-right: 5px;
+				}
+		}
+		label{ color: @red; }
+	}
+}
