@@ -1823,6 +1823,8 @@ class Wizard extends CI_Controller {
 			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content.php'))
 			{
 				require $this->theme_path.$this->userdata['theme'].'/default_content.php';
+				$defaultContent = new DefaultContent($this->userdata);
+				$defaultContent->install();
 			}
 		}
 
