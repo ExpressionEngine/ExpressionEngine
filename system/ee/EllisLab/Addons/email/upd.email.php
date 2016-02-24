@@ -45,7 +45,7 @@ class Email_upd {
 		sender_username varchar(50) NOT NULL ,
 		number_recipients int(4) unsigned default '1' NOT NULL,
 		PRIMARY KEY `email_id` (`email_id`)
-		) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+	) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		foreach ($sql as $query)
 		{

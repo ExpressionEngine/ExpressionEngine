@@ -39,6 +39,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'drop_cp_search_table',
 				'add_url_field',
 				'add_email_address_field',
 				'add_toggle_field',
@@ -96,7 +97,13 @@ class Updater {
 			)
 		);
 	}
-}
-// END CLASS
 
-// EOF
+	/**
+	 * Drop the unused cp_search_index. This table was never public, and
+	 * completely unused in v3, so no third parties should be accessing it.
+	 */
+	protected function drop_cp_search_table()
+	{
+		ee()->smartforge->drop_table('cp_search_index');
+	}
+}
