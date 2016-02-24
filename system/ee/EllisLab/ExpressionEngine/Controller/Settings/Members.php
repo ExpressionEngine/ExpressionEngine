@@ -55,7 +55,7 @@ class Members extends Settings {
 		}
 
 		ee()->load->model('member_model');
-		$themes = $this->member_model->get_theme_list(PATH_MBR_THEMES);
+		$themes = ee('Theme')->listThemes('member');
 
 		$member_themes = array();
 		foreach ($themes as $file => $name)
@@ -142,11 +142,10 @@ class Members extends Settings {
 						'memberlist_order_by' => array(
 							'type' => 'select',
 							'choices' => array(
-								'total_posts' => lang('memberlist_order_by_opt_posts'),
-								'screen_name' => lang('memberlist_order_by_opt_screenname'),
-								'total_entries' => lang('memberlist_order_by_opt_entries'),
-								'join_date' => lang('memberlist_order_by_reg_date'),
-								'total_comments' => lang('memberlist_order_by_opt_comments')
+								'member_id'    => lang('id'),
+								'username'     => lang('username'),
+								'dates'        => lang('join_date'),
+								'member_group' => lang('member_group')
 							)
 						)
 					)

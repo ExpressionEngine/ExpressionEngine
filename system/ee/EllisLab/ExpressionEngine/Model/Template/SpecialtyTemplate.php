@@ -56,6 +56,10 @@ class SpecialtyTemplate extends Model {
 		'template_data'    => 'required',
 	);
 
+	protected static $_events = array(
+		'afterSave',
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $enable_template;
@@ -93,6 +97,10 @@ class SpecialtyTemplate extends Model {
 		return (isset($vars[$this->template_name])) ? $vars[$this->template_name] : array();
 	}
 
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
+	}
 }
 
 // EOF

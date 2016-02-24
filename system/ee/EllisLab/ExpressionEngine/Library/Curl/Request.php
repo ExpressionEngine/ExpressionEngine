@@ -6,6 +6,11 @@ abstract class Request {
 
 	public function __construct($url, $data, $callback = NULL)
 	{
+		if ( ! function_exists('curl_version'))
+		{
+			throw new \Exception(lang('curl_not_installed'));
+		}
+
 		$this->config = array(
 			CURLOPT_URL => $url,
     		CURLOPT_RETURNTRANSFER => 1,

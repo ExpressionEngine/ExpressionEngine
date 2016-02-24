@@ -322,9 +322,9 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 * @param	string
 	 * @return	string
 	 */
-	function count_all($table = '')
+	function count_all($table)
 	{
-		if ($table == '')
+		if (empty($table))
 		{
 			return 0;
 		}

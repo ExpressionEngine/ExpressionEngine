@@ -322,7 +322,7 @@ EOT;
 			->filter('in_authorlist', 'y');
 
 		// Then grab any members that are part of the member groups we found
-		if ($member_groups)
+		if ($member_groups->count())
 		{
 			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}

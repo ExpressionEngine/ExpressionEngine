@@ -63,7 +63,7 @@ class HitTracking extends Settings {
 					'title' => 'dynamic_tracking_disabling',
 					'desc' => sprintf(
 						lang('dynamic_tracking_disabling_desc'),
-						'https://ellislab.com/expressionengine/user-guide/cp/admin/tracking_preferences.html#suspend-tracking-label'
+						'https://docs.expressionengine.com/v3/cp/settings/hit-tracking.html#suspend-threshold'
 					),
 					'fields' => array(
 						'dynamic_tracking_disabling' => array('type' => 'text')

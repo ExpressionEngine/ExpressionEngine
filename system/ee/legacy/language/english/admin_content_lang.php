@@ -637,6 +637,8 @@ $lang = array(
 
 'field_type' => 'Type',
 
+'inavlid_field_type' => 'Invalid field type',
+
 'field_max_length' => 'Maxlength',
 
 'field_max_length_cont' => 'If you are using a \'text\' field type',
@@ -776,7 +778,6 @@ $lang = array(
 'delete_status' => 'Delete Status',
 
 'delete_status_confirmation' => 'Are you sure you want to delete the following status?',
-
 
 'url_title_prefix' => 'URL Title Prefix',
 

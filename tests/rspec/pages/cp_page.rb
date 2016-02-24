@@ -11,7 +11,7 @@ class ControlPanelPage < SitePrism::Page
   element :sort_col, 'table th.highlight'
   elements :sort_links, 'table a.sort'
   element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
-  element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
+  element :action_submit_button, 'form fieldset.tbl-bulk-act .submit'
 
   # Pagination
   element :pagination, 'div.paginate'

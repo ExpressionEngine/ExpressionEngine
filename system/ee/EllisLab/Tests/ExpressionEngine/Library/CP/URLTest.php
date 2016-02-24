@@ -112,8 +112,8 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 			array('Path as integer',	new URL(42),	'index.php?/cp/42'),
 			array('Path as float',		new URL(42.5),	'index.php?/cp/42.5'),
 			array('Path as TRUE',		new URL(TRUE),	'index.php?/cp/1'),
-			array('Path as FALSE',		new URL(FALSE),	'index.php?/cp'),
-			array('Path as NULL',		new URL(NULL),	'index.php?/cp'),
+			array('Path as FALSE',		new URL(FALSE),	'index.php'),
+			array('Path as NULL',		new URL(NULL),	'index.php'),
 
 			array('Session Id as integer',	new URL('foo/bar', 42),		'index.php?/cp/foo/bar&S=42'),
 			array('Session Id as float',	new URL('foo/bar', 42.5),	'index.php?/cp/foo/bar&S=42.5'),

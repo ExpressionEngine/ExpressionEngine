@@ -651,7 +651,7 @@ class Grid_lib {
 			// also, temporarily exlcude Relationships for content types
 			// other than channel
 			if ( ! $fieldtype->accepts_content_type('grid') ||
-				($this->content_type != 'channel' && $field_name == 'relationship'))
+				($this->content_type != 'channel' && $field_short_name == 'relationship'))
 			{
 				unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);
 			}

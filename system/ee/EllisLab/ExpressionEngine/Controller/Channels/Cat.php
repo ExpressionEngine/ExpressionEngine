@@ -665,6 +665,7 @@ class Cat extends AbstractChannelsController {
 
 			$category = ee('Model')->make('Category');
 			$category->setCategoryGroup($cat_group);
+			$category->site_id = ee()->config->item('site_id');
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');

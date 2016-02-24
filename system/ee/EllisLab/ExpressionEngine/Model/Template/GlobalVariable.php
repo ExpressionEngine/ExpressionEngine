@@ -40,12 +40,15 @@ class GlobalVariable extends FileSyncedModel {
 		)
 	);
 
+	protected static $_events = array(
+		'afterSave',
+	);
+
 	protected $variable_id;
 	protected $site_id;
 	protected $variable_name;
 	protected $variable_data;
 	protected $edit_date;
-
 
 	/**
 	 * Get the full filesystem path to the variable file
@@ -232,6 +235,11 @@ class GlobalVariable extends FileSyncedModel {
 		}
 
 		return $variables;
+	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
 	}
 }
 

@@ -426,7 +426,7 @@ class Addon {
 	 */
     protected function getFilesMatching($glob)
     {
-		return glob($this->getPath()."/{$glob}");
+		return glob($this->getPath()."/{$glob}") ?: array();
     }
 
 	/**

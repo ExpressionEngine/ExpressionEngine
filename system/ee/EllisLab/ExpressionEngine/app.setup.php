@@ -14,8 +14,10 @@ use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
+use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
 use EllisLab\ExpressionEngine\Service\Sidebar;
+use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
@@ -133,6 +135,11 @@ return array(
 			return new Spam();
 		},
 
+		'Theme' => function($ee)
+		{
+			return new Theme\Theme(PATH_THEMES, URL_THEMES, PATH_THIRD_THEMES, URL_THIRD_THEMES);
+		},
+
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
@@ -140,9 +147,14 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'));
-		}
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
+		},
 
+		'Permission' => function($ee)
+		{
+			$userdata = ee()->session->userdata;
+			return new Permission\Permission($userdata);
+		}
 	),
 
 	'services.singletons' => array(
@@ -160,7 +172,7 @@ return array(
 		'CP/Alert' => function($ee)
 		{
 			$view = $ee->make('View')->make('_shared/alert');
-			return new Alert\AlertCollection(ee()->session, $view);
+			return new Alert\AlertCollection(ee()->session, $view, ee()->lang);
 		},
 
 		'CP/FilePicker' => function($ee)

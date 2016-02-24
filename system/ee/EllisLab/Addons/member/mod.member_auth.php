@@ -645,7 +645,7 @@ class Member_auth extends Member {
  	 *
 	 * @param 	string 	pages to return back to
 	 */
-	public function forgot_password()
+	public function forgot_password($ret = '-3')
 	{
 		// If the user is logged in already, then send them away.  They have no
 		// business here.

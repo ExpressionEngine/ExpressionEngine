@@ -362,6 +362,14 @@ class Spam_mcp {
 		$vars['save_btn_text'] = 'btn_save_settings';
 		$vars['save_btn_text_working'] = 'btn_saving';
 
+		$download_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('training_update_failed'))
+			->addToBody('%s');
+
+		ee()->javascript->set_global('alert.download_ajax_fail', $download_ajax_fail->render());
+
 		return array(
 			'body'       => ee('View')->make('spam:form')->render(array('data' => $vars)),
 			'breadcrumb' => array(

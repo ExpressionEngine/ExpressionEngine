@@ -18,7 +18,7 @@ To use this plugin, wrap anything you want to be processed.
 {/exp:xml_encode}
 ```
 
-#### Availalbe Parameters
+#### Available Parameters
 
 ##### protect_entities
 

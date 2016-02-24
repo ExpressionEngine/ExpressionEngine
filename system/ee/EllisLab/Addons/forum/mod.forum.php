@@ -629,8 +629,9 @@ class Forum {
 		}
 
 		$path = $this->theme.'/'.$classname.'/'.$which.'.html';
+		$full_path = ee('Theme')->getPath('forum/'.$path);
 
-		if ( ! is_file($this->fetch_pref('board_theme_path').$path))
+		if ( ! is_file($full_path))
 		{
 			return ee()->output->fatal_error('Unable to locate the following forum theme file: '.$path);
 		}
@@ -638,11 +639,11 @@ class Forum {
 		if ($this->fetch_pref('board_allow_php') == 'y' AND $this->fetch_pref('board_php_stage') == 'i')
 		{
 			return $this->parse_template_php($this->_prep_element(
-				trim(file_get_contents($this->fetch_pref('board_theme_path').$path))
+				trim(file_get_contents($full_path))
 			));
 		}
 
-		return $this->_prep_element(trim(file_get_contents($this->fetch_pref('board_theme_path').$path)));
+		return $this->_prep_element(trim(file_get_contents($full_path)));
 	}
 
 	// --------------------------------------------------------------------
@@ -771,9 +772,6 @@ class Forum {
 		{
 			$this->preferences['member_profile_path'] 	= $this->forum_path(ee()->config->item('profile_trigger').'/');
 		}
-
-		$this->preferences['board_theme_path'] = PATH_THIRD_THEMES.'forum/';
-		$this->preferences['board_theme_url']  = URL_THIRD_THEMES.'forum/';
 	}
 
 	// --------------------------------------------------------------------
@@ -803,8 +801,8 @@ class Forum {
 						'basepath'			=> $this->forum_path(ee()->config->item('profile_trigger')),
 						'forum_path'		=> $this->forum_path(),
 						'image_url'			=> $this->image_url,
-						'theme_path'		=> $this->fetch_pref('board_theme_path').$this->theme.'/forum_member/',
-						'css_file_path'		=> $this->fetch_pref('board_theme_url').$this->theme.'/theme.css',
+						'theme_path'		=> ee('Theme')->getPath('forum/'.$this->theme.'/forum_member/'),
+						'css_file_path'		=> ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
 						'board_id'			=> $this->fetch_pref('board_id')
 					)
 			);
@@ -847,12 +845,6 @@ class Forum {
 	 */
 	protected function _check_theme_path()
 	{
-		// Check path to master folder containing all the themes
-		if ( ! is_dir($this->fetch_pref('board_theme_path')))
-		{
-			return ee()->output->fatal_error('Unable to locate the forum theme folder.');
-		}
-
 		// Grab theme.  Can be from a cookie or user pref
 		$forum_theme = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('forum_theme') : '';
 
@@ -883,15 +875,15 @@ class Forum {
 
 		// Check path to folder containing the requested theme
 		$this->theme = ($forum_theme != '' &&
-		@is_dir($this->fetch_pref('board_theme_path').$forum_theme)) ? $forum_theme : $this->fetch_pref('board_default_theme');
+		@is_dir(ee('Theme')->getPath('forum/'.$forum_theme))) ? $forum_theme : $this->fetch_pref('board_default_theme');
 
-		if ( ! @is_dir($this->fetch_pref('board_theme_path').$this->theme))
+		if ( ! @is_dir(ee('Theme')->getPath('forum/'.$this->theme)))
 		{
 			return ee()->output->fatal_error('Unable to locate the forum theme folder.');
 		}
 
 		// Set path to the image folder for the particular theme
-		$this->image_url = $this->fetch_pref('board_theme_url').$this->theme.'/images/';
+		$this->image_url = ee('Theme')->getUrl('forum/'.$this->theme.'/images/');
 	}
 
 	// --------------------------------------------------------------------
@@ -1257,8 +1249,8 @@ class Forum {
 				'module_version'           => $this->version,
 				'forum_build'              => $this->build,
 				'error_message'            => $this->error_message,
-				'path:theme_css'           => $this->fetch_pref('board_theme_url').$this->theme.'/theme.css',
-				'path:theme_js'            => $this->fetch_pref('board_theme_url').$this->theme.'/theme/javascript/',
+				'path:theme_css'           => ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
+				'path:theme_js'            => ee('Theme')->getUrl('forum/'.$this->theme.'/theme/javascript/'),
 				'site_url'                 => ee()->config->item('site_url'),
 				'password_max_length'      => PASSWORD_MAX_LENGTH
 			)
@@ -2084,22 +2076,7 @@ class Forum {
 	 */
 	public function fetch_theme_list()
 	{
-		$filelist = array();
-
-		if ($fp = @opendir($this->fetch_pref('board_theme_path')))
-		{
-			while (false !== ($file = readdir($fp)))
-			{
-				if (is_dir($this->fetch_pref('board_theme_path').$file) AND substr($file, 0, 1) != '.' AND substr($file, 0, 1) != '_')
-				{
-					$filelist[] = $file;
-				}
-			}
-
-			closedir($fp);
-		}
-
-		return $filelist;
+		return ee('ee:Theme')->listThemes('forum');
 	}
 
 	// --------------------------------------------------------------------

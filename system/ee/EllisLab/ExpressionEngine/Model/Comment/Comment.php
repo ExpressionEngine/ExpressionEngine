@@ -68,6 +68,7 @@ class Comment extends Model {
 	protected static $_events = array(
 		'afterInsert',
 		'afterDelete',
+		'afterSave',
 	);
 
 	protected $comment_id;
@@ -111,6 +112,12 @@ class Comment extends Model {
 		}
 
 		$this->updateCommentStats();
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
 	}
 
 	private function updateCommentStats()
@@ -137,6 +144,12 @@ class Comment extends Model {
 		$stats->total_comments = $total_comments;
 		$stats->last_comment_date = $last_comment_date;
 		$stats->save();
+
+		// Update comment count for the entry
+		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
+
+		$this->Entry->comment_total = $total_entry_comments;
+		$this->Entry->save();
 	}
 
 }

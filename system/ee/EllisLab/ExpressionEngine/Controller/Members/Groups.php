@@ -642,7 +642,7 @@ class Groups extends Members\Members {
 									'include_in_authorlist' => lang('include_in_authorlist'),
 									'include_in_memberlist' => lang('include_in_memberlist'),
 								),
-								'value' => element('include_member_in', $values)
+								'value' => element('include_members_in', $values)
 							),
 						)
 					)
@@ -651,6 +651,7 @@ class Groups extends Members\Members {
 		}
 		else
 		{
+
 			$template_groups = ee('Model')->get('TemplateGroup')
 				->filter('site_id', ee()->config->item('site_id'))
 				->all()
