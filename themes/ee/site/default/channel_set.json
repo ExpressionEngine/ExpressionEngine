@@ -66,18 +66,18 @@
 			"categories": ["Not Shown"]
 		}
 	],
-	"upload_locations": [
+	"upload_destinations": [
 		{
 			"name": "Blog",
-			"path": "/images/blog/"
+			"path": "asset/img/blog/"
 		},
 		{
 			"name": "Common",
-			"path": "/images/common/"
+			"path": "asset/img/common/"
 		},
 		{
 			"name": "Home",
-			"path": "/images/home/"
+			"path": "asset/img/home/"
 		}
 	]
 }

@@ -86,7 +86,7 @@ class ThemeInstaller {
 
 		$this->createStatusGroups($channel_set->status_groups);
 		$this->createCategoryGroups($channel_set->category_groups);
-		// $this->createUploadLocations();
+		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
 		// $this->createFieldGroups();
 		// $this->createChannels();
 		// $this->createEntries();
@@ -165,27 +165,35 @@ class ThemeInstaller {
 		}
 	}
 
-	private function createUploadLocations()
+	/**
+	 * Create the upload locations
+	 * @param string $theme_name The name of the theme, used for pulling in
+	 * 	images and files
+	 * @param array $upload_locations Array of objects representing the upload
+	 * 	locations supplied by loadChannelSet
+	 * @return void
+	 */
+	private function createUploadDestinations($theme_name, $upload_locations)
 	{
-		$img_url = $this->asset_url.'img/';
-		$img_path = $this->asset_path.'img/';
+		$img_url = $this->site_url."themes/ee/site/{$theme_name}/";
+		$img_path = $this->theme_path."ee/site/{$theme_name}/";
 
-		foreach (array('blog', 'common', 'home') as $upload_name)
+		foreach ($upload_locations as $upload_location_data)
 		{
+			$path = $img_path.$upload_location_data->path;
+
 			$upload_destination = ee('Model')->make('UploadDestination');
 			$upload_destination->site_id = 1;
-			$upload_destination->name = $upload_name;
-			$upload_destination->url = $img_url.$upload_name.'/';
-			$upload_destination->server_path = $img_path.$upload_name.'/';
+			$upload_destination->name = $upload_location_data->name;
+			$upload_destination->url = $img_url.$upload_location_data->path;
+			$upload_destination->server_path = $path;
 			$upload_destination->save();
 
-			$dir = $img_path.$upload_name;
-
-			foreach (directory_map($dir) as $filename)
+			foreach (directory_map($path) as $filename)
 			{
-				if (! is_array($filename) && is_file($dir.'/'.$filename))
+				if ( ! is_array($filename) && is_file($path.'/'.$filename))
 				{
-					$filepath = $dir.'/'.$filename;
+					$filepath = $path.'/'.$filename;
 					$time = time();
 					$file = ee('Model')->make('File');
 					$file->site_id = 1;
