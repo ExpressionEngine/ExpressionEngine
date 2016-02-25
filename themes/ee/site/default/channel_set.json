@@ -1,0 +1,83 @@
+{
+	"channels": [
+		{
+			"name": "About",
+			"status_group": "about",
+			"field_group": "common"
+		},
+		{
+			"name": "Blog",
+			"field_group": "blog",
+			"channel_url": "{path='blog/entry'}"
+		},
+		{
+			"name": "Contact",
+			"field_group": "common"
+		}
+	],
+	"status_groups": [
+		{
+			"name": "About",
+			"statuses": [
+				{
+					"status": "Default Page",
+					"highlight": "2051B3"
+				}
+			]
+		}
+	],
+	"category_groups": [
+		{
+			"group_name": "blog",
+			"categories": [
+				"News",
+				"Personal",
+				"Photos",
+				"Videos",
+				"Music"
+			]
+		},
+		{
+			"group_name": "collection",
+			"categories": [
+				"Rock and Roll",
+				"Rhythm and Blues",
+				"Country",
+				"Punk Rock",
+				"Jazz",
+				"Techno",
+				"Classical",
+				"Pop",
+				"Holiday",
+				"Soundtrack",
+				"Funk",
+				"Folk",
+				"Heavy Metal",
+				"New Age",
+				"Blue Grass",
+				"Reggae",
+				"Hip Hop",
+				"Christian and Gospel",
+				"Dance"
+			]
+		},
+		{
+			"group_name": "slideshow",
+			"categories": ["Not Shown"]
+		}
+	],
+	"upload_locations": [
+		{
+			"name": "Blog",
+			"path": "/images/blog/"
+		},
+		{
+			"name": "Common",
+			"path": "/images/common/"
+		},
+		{
+			"name": "Home",
+			"path": "/images/home/"
+		}
+	]
+}

@@ -108,7 +108,7 @@ class Wizard extends CI_Controller {
 		'email_address'         => '',
 		'webmaster_email'       => '',
 		'deft_lang'             => 'english',
-		'theme'                 => '01',
+		'theme'                 => 'default',
 		'default_site_timezone' => '',
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
@@ -1534,9 +1534,6 @@ class Wizard extends CI_Controller {
 	 */
 	function install_site_theme()
 	{
-		// There can only be one. For now.
-		$this->userdata['theme'] = 'default';
-
 		$default_group = 'home';
 
 		$default_template_preferences = array(
@@ -1799,11 +1796,17 @@ class Wizard extends CI_Controller {
 			}
 
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content.php'))
+			if (file_exists($this->theme_path.$this->userdata['theme'].'/channel_set.json'))
 			{
-				require $this->theme_path.$this->userdata['theme'].'/default_content.php';
-				$defaultContent = new DefaultContent($this->root_theme_path, $this->theme_path, $this->userdata);
-				$defaultContent->install();
+				$theme = ee('ThemeInstaller');
+				$theme->setSiteURL($this->userdata['site_url']);
+				var_dump($this->root_theme_path, $this->set_path('themes'));
+				$theme->setThemePath($this->root_theme_path);
+				$theme->setThemeURL($this->set_path('themes'));
+				$theme->install($this->userdata['theme']);
+				// require $this->theme_path.$this->userdata['theme'].'/default_content.php';
+				// $defaultContent = new DefaultContent($this->root_theme_path, $this->theme_path, $this->userdata);
+				// $defaultContent->install();
 			}
 		}
 

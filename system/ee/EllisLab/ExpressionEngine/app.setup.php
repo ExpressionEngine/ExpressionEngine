@@ -140,6 +140,11 @@ return array(
 			return new Theme\Theme(PATH_THEMES, URL_THEMES, PATH_THIRD_THEMES, URL_THIRD_THEMES);
 		},
 
+		'ThemeInstaller' => function($ee)
+		{
+			return new Theme\ThemeInstaller();
+		},
+
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();

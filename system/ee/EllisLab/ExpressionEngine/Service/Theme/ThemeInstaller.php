@@ -1,10 +1,12 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Service\Theme;
 
 /**
  * Install the Default Content
  */
-class DefaultContent
-{
+class ThemeInstaller {
+
 	private $userdata;
 	private $root_theme_path;
 	private $theme_path;
@@ -18,56 +20,130 @@ class DefaultContent
 	private $structure_data;
 
 	/**
-	 * Create the DefaultContent Generator
+	 * Constructor: sets the site_url and theme paths
 	 *
 	 * @param string $root_theme_path The root of the theme directory blah
 	 *   (e.g. themes/, not themes/ee/ or themes/user/)
 	 * @param array $userdata The userdata array
 	 */
-	public function __construct($root_theme_path, $theme_path, array $userdata)
+	public function __construct()
 	{
-		ee()->load->library('api');
-		ee()->load->library('extensions');
+		// ee()->load->library('api');
+		// ee()->load->library('extensions');
 
-		$this->root_theme_path = $root_theme_path;
-		$this->theme_path = $theme_path;
-		$this->userdata = $userdata;
+		// $this->root_theme_path = $root_theme_path;
+		// $this->theme_path = $theme_path;
+		// $this->userdata = $userdata;
 
-		$this->theme_base_url = $this->userdata['site_url'].'themes/ee/site/default/';
-		$this->theme_base_path = $root_theme_path.'ee/site/default/';
+		// $this->theme_base_url = $this->userdata['site_url'].'themes/ee/site/default/';
+		// $this->theme_base_path = $root_theme_path.'ee/site/default/';
+		// $this->asset_url = $this->theme_base_url.'asset/';
+		// $this->asset_path = $this->theme_base_path.'asset/';
+
 		$this->template_folder = SYSPATH.'ee/templates/default/';
-		$this->asset_url = $this->theme_base_url.'asset/';
-		$this->asset_path = $this->theme_base_path.'asset/';
 	}
 
-	public function install()
+	/**
+	 * Set the site URL
+	 * @param string $site_url The site URL
+	 */
+	public function setSiteURL($site_url)
 	{
-		$this->createStatusGroups();
-		$this->createCategoryGroups();
-		$this->createUploadLocations();
-		$this->createFieldGroups();
-		$this->createChannels();
-		$this->createEntries();
+		$this->site_url = rtrim($site_url, '/').'/';
 	}
 
-	private function createStatusGroups()
+	/**
+	 * Set the theme path, most likely from a constant
+	 * @param string $theme_path The theme path
+	 */
+	public function setThemePath($theme_path)
 	{
-		// "about" Status Group
-		$status_group = ee('Model')->make('StatusGroup');
-		$status_group->site_id = 1;
-		$status_group->group_name = 'about';
-		$status_group->save();
+		$this->theme_path = rtrim($theme_path, '/').'/';
+	}
 
-		$this->structure_data['status_group_ids'][$status_group->group_name] = $status_group->group_id;
+	/**
+	 * Set the theme URL, most likely from a constant
+	 * @param string $theme_url The theme URL
+	 */
+	public function setThemeURL($theme_url)
+	{
+		$this->theme_url = rtrim($theme_url, '/').'/';
+	}
 
-		// "about" Status Group statuses
-		$status = ee('Model')->make('Status');
-		$status->site_id = 1;
-		$status->group_id = $status_group->group_id;
-		$status->status = 'Default Page';
-		$status->highlight = '2051B3';
-		$status->NoAccess = NULL;
-		$status->save();
+	/**
+	 * Install a site theme
+	 * @param string $theme_name The name of the site theme to install
+	 * @return void
+	 */
+	public function install($theme_name = 'default')
+	{
+		if (empty($theme_name))
+		{
+			$theme_name = 'default';
+		}
+
+		$channel_set = $this->loadChannelSet($theme_name);
+
+		$this->createStatusGroups($channel_set->status_groups);
+		// $this->createCategoryGroups();
+		// $this->createUploadLocations();
+		// $this->createFieldGroups();
+		// $this->createChannels();
+		// $this->createEntries();
+	}
+
+	/**
+	 * Load the Channel Set data from the theme
+	 * @param string $theme_name The theme name
+	 * @return Object json_decoded()'ed object
+	 */
+	private function loadChannelSet($theme_name)
+	{
+		return json_decode(file_get_contents($this->theme_path.'ee/site/'.$theme_name.'/channel_set.json'));
+	}
+
+	private function createStatusGroups($status_groups)
+	{
+		foreach ($status_groups as $status_group_data)
+		{
+			$status_group = ee('Model')->make('StatusGroup');
+			$status_group->site_id = 1;
+			$status_group->group_name = $status_group_data->name;
+			$status_group->save();
+
+			foreach ($status_group_data->statuses as $status_data)
+			{
+				var_dump('here?');
+				$status = ee('Model')->make('Status');
+				$status->site_id = 1;
+				$status->group_id = $status_group->group_id;
+				$status->status = $status_data->status;
+
+				if ( ! empty($status_data->highlight))
+				{
+					$status->highlight = $status_data->highlight;
+				}
+
+				$status->save();
+			}
+		}
+
+		// // "about" Status Group
+		// $status_group = ee('Model')->make('StatusGroup');
+		// $status_group->site_id = 1;
+		// $status_group->group_name = 'about';
+		// $status_group->save();
+
+		// $this->structure_data['status_group_ids'][$status_group->group_name] = $status_group->group_id;
+
+		// // "about" Status Group statuses
+		// $status = ee('Model')->make('Status');
+		// $status->site_id = 1;
+		// $status->group_id = $status_group->group_id;
+		// $status->status = 'Default Page';
+		// $status->highlight = '2051B3';
+		// $status->NoAccess = NULL;
+		// $status->save();
 	}
 
 	private function createCategoryGroups()
@@ -390,7 +466,7 @@ class DefaultContent
  * The ChannelEntry model calls Functions::clear_caching() onAfterSave, but we
  * don't have a cache yet.
  */
-class Functions
+class FunctionsStub
 {
 	public function clear_caching($type)
 	{
