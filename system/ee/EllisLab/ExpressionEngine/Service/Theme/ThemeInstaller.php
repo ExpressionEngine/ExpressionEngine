@@ -17,7 +17,7 @@ class ThemeInstaller {
 	private $asset_url;
 	private $asset_path;
 
-	private $structure_data;
+	private $model_data;
 
 	/**
 	 * Constructor: sets the site_url and theme paths
@@ -28,18 +28,8 @@ class ThemeInstaller {
 	 */
 	public function __construct()
 	{
-		// ee()->load->library('api');
-		// ee()->load->library('extensions');
-
-		// $this->root_theme_path = $root_theme_path;
-		// $this->theme_path = $theme_path;
-		// $this->userdata = $userdata;
-
-		// $this->theme_base_url = $this->userdata['site_url'].'themes/ee/site/default/';
-		// $this->theme_base_path = $root_theme_path.'ee/site/default/';
-		// $this->asset_url = $this->theme_base_url.'asset/';
-		// $this->asset_path = $this->theme_base_path.'asset/';
-
+		ee()->load->library('api');
+		ee()->load->library('extensions');
 		$this->template_folder = SYSPATH.'ee/templates/default/';
 	}
 
@@ -87,7 +77,7 @@ class ThemeInstaller {
 		$this->createStatusGroups($channel_set->status_groups);
 		$this->createCategoryGroups($channel_set->category_groups);
 		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
-		// $this->createFieldGroups();
+		$this->createFieldGroups($theme_name);
 		// $this->createChannels();
 		// $this->createEntries();
 	}
@@ -116,6 +106,8 @@ class ThemeInstaller {
 			$status_group->site_id = 1;
 			$status_group->group_name = $status_group_data->name;
 			$status_group->save();
+
+			$this->model_data['status_groups'][$status_group->group_name] = $status_group;
 
 			foreach ($status_group_data->statuses as $status_data)
 			{
@@ -151,6 +143,8 @@ class ThemeInstaller {
 				: 'a';
 			$cat_group->group_name = $category_group_data->name;
 			$cat_group->save();
+
+			$this->model_data['category_groups'][$cat_group->group_name] = $cat_group;
 
 			foreach ($category_group_data->categories as $category_name)
 			{
@@ -189,6 +183,8 @@ class ThemeInstaller {
 			$upload_destination->server_path = $path;
 			$upload_destination->save();
 
+			$this->model_data['upload_destinations'][$upload_destination->name] = $upload_destination;
+
 			foreach (directory_map($path) as $filename)
 			{
 				if ( ! is_array($filename) && is_file($path.'/'.$filename))
@@ -212,11 +208,16 @@ class ThemeInstaller {
 		}
 	}
 
-	private function createFieldGroups()
+	/**
+	 * Create the field groups and fields
+	 * @param string $theme_name The name of the theme, used for pulling in
+	 * 	custom fields
+	 * @return void
+	 */
+	private function createFieldGroups($theme_name)
 	{
-		$field_group_path = $this->theme_path.$this->userdata['theme'].'/custom_fields/';
+		$field_group_path = $this->theme_path."ee/site/{$theme_name}/custom_fields/";
 		$field_groups = directory_map($field_group_path);
-		ee()->load->model('grid_model');
 
 		foreach ($field_groups as $group_name => $fields)
 		{
@@ -224,7 +225,7 @@ class ThemeInstaller {
 			$field_group->group_name = $group_name;
 			$field_group->save();
 
-			$this->structure_data['field_group_ids'][$field_group->group_name] = $field_group->group_id;
+			$this->model_data['field_group_ids'][$field_group->group_name] = $field_group;
 
 			foreach ($fields as $file_name)
 			{
@@ -297,15 +298,16 @@ class ThemeInstaller {
 				// cache our grid field column names and id's
 				if (isset($_POST['grid']))
 				{
+					ee()->load->model('grid_model');
 					$columns = ee()->grid_model->get_columns_for_field($field->field_id, 'channel');
 
 					foreach ($columns as $column)
 					{
-						$this->structure_data['gf_id'][$field->field_id][$column['col_name']] = $column['col_id'];
+						$this->model_data['grid_fields'][$field->field_id][$column['col_name']] = $column['col_id'];
 					}
 				}
 
-				$this->structure_data['cf_id'][$field->field_name] = $field->field_id;
+				$this->model_data['custom_fields'][$field->field_name] = $field->field_id;
 			}
 		}
 	}
@@ -356,7 +358,7 @@ class ThemeInstaller {
 
 		// Override Functions::clear_caching()
 		// ee()->set('functions', new Functions);
-
+		//
 		ee()->load->library('session');
 		ee()->session->userdata['group_id'] = 1;
 
@@ -379,17 +381,17 @@ class ThemeInstaller {
 				$entry->sticky = FALSE;
 				$entry->allow_comments = TRUE;
 
+				$entry->title = $entry_data->title;
+				$entry->url_title = $entry_data->url_title;
+				$entry->status = $entry_data->status;
+
 				// can't use localize here because it's expecting session class methods
 				// to be available on the legacy superobject
 				$entry->year = date('Y');
 				$entry->month = date('m');
 				$entry->day = date('d');
 
-				$post_mock = array(
-					'title' => $entry_data->title,
-					'url_title' => $entry_data->url_title,
-					'status' => $entry_data->status
-				);
+				$post_mock = array();
 
 				foreach ($entry_data->custom_fields as $key => $val)
 				{

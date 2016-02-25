@@ -17,7 +17,7 @@
 	],
 	"status_groups": [
 		{
-			"name": "About",
+			"name": "about",
 			"statuses": [
 				{
 					"status": "Default Page",
