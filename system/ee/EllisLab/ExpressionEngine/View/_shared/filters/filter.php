@@ -5,13 +5,17 @@
 	<?php endif; ?>
 </a>
 <div class="sub-menu">
-	<?php if ($has_custom_value): ?>
+	<?php if ($has_custom_value || $has_list_filter): ?>
 	<fieldset class="filter-search">
 		<input
 			type="text"
 			name="<?=$name?>"
 			value="<?=$custom_value?>"
 			placeholder="<?=$placeholder?>"
+			<?php if ($has_list_filter): ?>
+			autofocus="autofocus"
+			data-fuzzy-filter="true"
+			<?php endif; ?>
 		>
 	</fieldset>
 	<?php endif; ?>

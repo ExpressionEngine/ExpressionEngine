@@ -82,6 +82,19 @@ class Custom extends Filter {
 	}
 
 	/**
+	 * Use a list filter for long lists. This cannot be used in conjunction
+	 * with custom values, so it will disable them.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function useListFilter()
+	{
+		$this->has_list_filter = count($this->options) > 10;
+		$this->has_custom_value = FALSE;
+		return $this;
+	}
+
+	/**
 	 * Checks if the selection is valid
 	 *
 	 * @see Filter::has_custom_value

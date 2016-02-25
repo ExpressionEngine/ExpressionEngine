@@ -867,8 +867,6 @@ You can drag and drop to rearrange the order.',
 
 'control_panel' => 'Control Panel',
 
-'site_homepage' => 'Site Homepage',
-
 'login_as_member_description' => 'When you click submit, you will be logged in as the member \'%screen_name%\' and redirected to the page below.',
 
 'other' => 'Other',

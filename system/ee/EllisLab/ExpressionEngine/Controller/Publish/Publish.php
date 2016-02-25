@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
@@ -45,12 +46,11 @@ class Publish extends AbstractPublishController {
 	 *
 	 * @param int $channel_id The Channel ID
 	 * @param int $entry_id The Entry ID
-	 * @param string $field_name The name of the field to render
 	 * @return array An associative array (for JSON) containing the rendered HTML
 	 */
-	public function field($channel_id, $entry_id, $field_name)
+	public function field($channel_id, $entry_id)
 	{
-		if ($entry_id)
+		if (is_numeric($entry_id) && $entry_id != 0)
 		{
 			$entry = ee('Model')->get('ChannelEntry', $entry_id)
 				->filter('site_id', ee()->config->item('site_id'))
@@ -64,7 +64,7 @@ class Publish extends AbstractPublishController {
 
 		$entry->set($_POST);
 
-		return array('html' => $entry->getCustomField($field_name)->getForm());
+		return array('html' => $entry->getCustomField(ee()->input->get('field_name'))->getForm());
 	}
 
 	/**
@@ -216,89 +216,31 @@ class Publish extends AbstractPublishController {
 			}
 		}
 
-		if (count($_POST))
-		{
-			if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
-			{
-				unset($_POST['author_id']);
-			}
-
-			$entry->set($_POST);
-			$entry->edit_date = ee()->localize->now;
-			$result = $entry->validate();
-
-			if (AJAX_REQUEST)
-			{
-				$field = ee()->input->post('ee_fv_field');
-				// Remove any namespacing to run validation for the parent field
-				$field = preg_replace('/\[.+?\]/', '', $field);
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
-			}
-
-			if ($result->isValid())
-			{
-				$entry->save();
-
-				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
-				{
-					$entry->saveVersion();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('revision_saved'))
-						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
-				}
-				else
-				{
-					ee()->session->set_flashdata('entry_id', $entry->entry_id);
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('create_entry_success'))
-						->addToBody(sprintf(lang('create_entry_success_desc'), $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
-				}
-			}
-			else
-			{
-				$vars['errors'] = $result;
-
-				ee('CP/Alert')->makeInline('entry-form')
-					->asIssue()
-					->withTitle(lang('create_entry_error'))
-					->addToBody(lang('create_entry_error_desc'))
-					->now();
-			}
-		}
-
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_id', $channel_id)
+			->filter('channel_id', $entry->channel_id)
 			->with('MemberGroups')
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
 
+		$vars['layout'] = $entry->getDisplay($channel_layout);
+
+		$result = $this->validateEntry($entry, $vars['layout']);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$vars['errors'] = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveEntryAndRedirect($entry);
+			}
+		}
+
 		// Auto-saving needs an entry_id...
 		$entry->entry_id = 0;
 
-		$vars = array_merge($vars, array(
-			'entry' => $entry,
-			'layout' => $entry->getDisplay($channel_layout),
-		));
+		$vars['entry'] = $entry;
 
 		$this->setGlobalJs($entry, TRUE);
 

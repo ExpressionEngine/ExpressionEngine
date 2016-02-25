@@ -131,39 +131,18 @@ class Moblog {
 			return $this->return_data;
 		}
 
-		// Check Cache
-
-		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
-		{
-			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
-			{
-				$this->return_data = ($this->silent == 'yes') ? '' : lang('no_cache');
-				return $this->return_data;
-			}
-		}
-
-		@chmod(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE);
-
-		//ee()->functions->delete_expired_files(APPPATH.'cache/'.$this->cache_name);
-
 		$expired = array();
+
+		ee()->load->driver('cache');
 
 		foreach($query->result_array() as $row)
 		{
-			$cache_file = APPPATH.'cache/'.$this->cache_name.'/t_moblog_'.$row['moblog_id'];
+			$data = ee()->cache->get('/moblog/' . $row['moblog_id'], Cache::GLOBAL_SCOPE);
 
-			if ( ! file_exists($cache_file) OR (time() > (filemtime($cache_file) + ($row['moblog_time_interval'] * 60))))
+			if ($data === FALSE)
 			{
-				$this->set_cache($row['moblog_id']);
+				ee()->cache->save('/moblog/' . $row['moblog_id'], 'hi', $row['moblog_time_interval'] * 60, Cache::GLOBAL_SCOPE);
 				$expired[] = $row['moblog_id'];
-			}
-			elseif ( ! $fp = @fopen($cache_file, FOPEN_READ_WRITE))
-			{
-				if ($this->silent == 'no')
-				{
-					$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'.
-									lang('no_cache')."\n</p>";
-				}
 			}
 		}
 
@@ -220,28 +199,6 @@ class Moblog {
 
 		return $this->return_data ;
 	}
-
-
-
-	/** -------------------------------------
-	/**  Set cache
-	/** -------------------------------------*/
-	function set_cache($moblog_id)
-	{
-		$cache_file = APPPATH.'cache/'.$this->cache_name.'/t_moblog_'.$moblog_id;
-
-		if ($fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			flock($fp, LOCK_EX);
-			fwrite($fp, 'hi');
-			flock($fp, LOCK_UN);
-			fclose($fp);
-		}
-
-		@chmod($cache_file, FILE_WRITE_MODE);
-
-	}
-
 
 	/** -------------------------------------
 	/**  Return errors

@@ -255,13 +255,6 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
-
-		if ($field->isNew())
-		{
-			// This field is disabled and not present in POST when editing and existing field
-			$field->field_type = $_POST['field_type'];
-		}
-
 		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
@@ -279,67 +272,20 @@ class Fields extends AbstractChannelsController {
 		return $field;
 	}
 
-	private function getFieldtypes(ChannelField $field = NULL)
-	{
-		$fieldtypes = array();
-		$compatibility = array();
-
-		foreach (ee('Addon')->installed() as $addon)
-		{
-			if ($addon->hasFieldtype())
-			{
-				if ($field)
-				{
-					foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
-					{
-						if (isset($metadata['compatibility']))
-						{
-							$compatibility[$fieldtype] = $metadata['compatibility'];
-						}
-					}
-				}
-
-				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
-			}
-		}
-
-		if ($field)
-		{
-			if ( ! isset($compatibility[$field->field_type]))
-			{
-				return array($field->field_type => $fieldtypes[$field->field_type]);
-			}
-
-			$my_type = $compatibility[$field->field_type];
-
-			$compatible = array_filter($compatibility, function($v) use($my_type)
-			{
-				return $v == $my_type;
-			});
-
-			$fieldtypes = array_intersect_key($fieldtypes, $compatible);
-		}
-
-		asort($fieldtypes);
-
-		return $fieldtypes;
-	}
-
 	private function form(ChannelField $field = NULL)
 	{
-		$fieldtype_choices = $this->getFieldtypes($field);
+		if ( ! $field)
+		{
+			$field = ee('Model')->make('ChannelField');
+		}
+
+		$fieldtype_choices = $field->getCompatibleFieldtypes();
 
 		$fieldtypes = ee('Model')->get('Fieldtype')
 			->fields('name')
 			->filter('name', 'IN', array_keys($fieldtype_choices))
 			->order('name')
 			->all();
-
-
-		if ( ! $field)
-		{
-			$field = ee('Model')->make('ChannelField');
-		}
 
 		$field->field_type = ($field->field_type) ?: 'text';
 

@@ -44,7 +44,7 @@ class EE_Config {
 	 */
 	public function __construct()
 	{
-		$this->config = get_config();
+		$this->config =& get_config();
 
 		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
 		$this->config_path = SYSPATH.'user/config/config.php';

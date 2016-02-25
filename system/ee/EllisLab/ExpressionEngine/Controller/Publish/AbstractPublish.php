@@ -163,10 +163,16 @@ abstract class AbstractPublish extends CP_Controller {
 		$table->setNoResultsText(lang('no_revisions'));
 
 		$data = array();
+		$authors = array();
 		$i = 1;
 
 		foreach ($entry->Versions as $version)
 		{
+			if ( ! isset($authors[$version->author_id]))
+			{
+				$authors[$version->author_id] = $version->Author->getMemberName();
+			}
+
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
 				'toolbar_items' => array(
 						'txt-only' => array(
@@ -185,7 +191,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->version_date->format('U')),
-					$version->Author->getMemberName(),
+					$authors[$version->author_id],
 					$toolbar
 				)
 			);
@@ -199,6 +205,11 @@ abstract class AbstractPublish extends CP_Controller {
 				$attrs = array('class' => 'selected');
 			}
 
+			if ( ! isset($authors[$entry->author_id]))
+			{
+				$authors[$entry->author_id] = $entry->Author->getMemberName();
+			}
+
 			// Current
 			$edit_date = ($entry->edit_date)
 				? ee()->localize->human_time($entry->edit_date->format('U'))
@@ -209,7 +220,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					$edit_date,
-					$entry->Author->getMemberName(),
+					$authors[$version->author_id],
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
@@ -250,6 +261,108 @@ abstract class AbstractPublish extends CP_Controller {
 			)
 		));
 		ee('CP/Modal')->addModal('modal-checkboxes-confirm-remove', $cat_remove_modal);
+	}
+
+	protected function validateEntry(ChannelEntry $entry, $layout)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($entry->isNew()) ? 'create' : 'edit';
+
+		// Get all the fields that should be in the DOM. Any that were not
+		// POSTed will be set to NULL. This addresses a bug where browsers
+		// do not POST unchecked checkboxes.
+		foreach ($layout->getTabs() as $tab)
+		{
+			// Invisible tabs were not rendered
+			if ($tab->isVisible())
+			{
+				foreach ($tab->getFields() as $field)
+				{
+					// Fields that were not required and not visible were not rendered
+					if ( ! $field->isRequired() && ! $field->isVisible())
+					{
+						continue;
+					}
+
+					if ( ! array_key_exists($field->getName(), $_POST))
+					{
+						$_POST[$field->getName()] = NULL;
+					}
+				}
+			}
+		}
+
+		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+		{
+			unset($_POST['author_id']);
+		}
+
+		$entry->set($_POST);
+
+		// if categories are not in POST, then they've unchecked everything
+		// and we need to clear them out
+		if ( ! isset($_POST['categories']))
+		{
+			$entry->categories = array();
+		}
+
+		$result = $entry->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_entry_error'))
+				->addToBody(lang($action . '_entry_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	protected function saveEntryAndRedirect($entry)
+	{
+		$action = ($entry->isNew()) ? 'create' : 'edit';
+
+		if ($entry->versioning_enabled && ee()->input->post('save_revision'))
+		{
+			$entry->saveVersion();
+
+			ee('CP/Alert')->makeInline('entry-form')
+				->asSuccess()
+				->withTitle(lang('revision_saved'))
+				->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
+		}
+		else
+		{
+			$entry->edit_date = ee()->localize->now;
+			$entry->save();
+
+			if ($action == 'create')
+			{
+				ee()->session->set_flashdata('entry_id', $entry->entry_id);
+			}
+
+			ee('CP/Alert')->makeInline('entry-form')
+				->asSuccess()
+				->withTitle(lang($action . '_entry_success'))
+				->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+		}
 	}
 
 }

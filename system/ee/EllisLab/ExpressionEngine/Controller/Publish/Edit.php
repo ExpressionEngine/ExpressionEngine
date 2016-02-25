@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controller\Publish;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -377,81 +378,6 @@ class Edit extends AbstractPublishController {
 			}
 		}
 
-		if (count($_POST))
-		{
-			if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
-			{
-				unset($_POST['author_id']);
-			}
-
-			$entry->set($_POST);
-
-			// if categories are not in POST, then they've unchecked everything
-			// and we need to clear them out
-			if ( ! isset($_POST['categories']))
-			{
-				$entry->categories = array();
-			}
-
-			$result = $entry->validate();
-
-			if (AJAX_REQUEST)
-			{
-				$field = ee()->input->post('ee_fv_field');
-				// Remove any namespacing to run validation for the parent field
-				$field = preg_replace('/\[.+?\]/', '', $field);
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
-			}
-
-			if ($result->isValid())
-			{
-				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
-				{
-					$entry->saveVersion();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('revision_saved'))
-						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
-				}
-				else
-				{
-					$entry->edit_date = ee()->localize->now;
-					$entry->save();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('edit_entry_success'))
-						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
-				}
-			}
-			else
-			{
-				$vars['errors'] = $result;
-
-				ee('CP/Alert')->makeInline('entry-form')
-					->asIssue()
-					->withTitle(lang('edit_entry_error'))
-					->addToBody(lang('edit_entry_error_desc'))
-					->now();
-			}
-		}
-
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $entry->channel_id)
@@ -459,10 +385,21 @@ class Edit extends AbstractPublishController {
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
 
-		$vars = array_merge($vars, array(
-			'entry' => $entry,
-			'layout' => $entry->getDisplay($channel_layout),
-		));
+		$vars['layout'] = $entry->getDisplay($channel_layout);
+
+		$result = $this->validateEntry($entry, $vars['layout']);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$vars['errors'] = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveEntryAndRedirect($entry);
+			}
+		}
+
+		$vars['entry'] = $entry;
 
 		$this->setGlobalJs($entry, TRUE);
 

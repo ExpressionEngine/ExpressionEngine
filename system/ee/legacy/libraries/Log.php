@@ -37,7 +37,7 @@ class EE_Log {
 	 */
 	public function __construct()
 	{
-		$config = get_config();
+		$config =& get_config();
 
 		$this->_log_path = SYSPATH . 'user/logs/';
 

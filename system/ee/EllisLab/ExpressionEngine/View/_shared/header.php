@@ -71,7 +71,7 @@
 							<div class="sub-menu">
 								<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
 									<form class="filter">
-										<input type="text" class="autofocus" value="" placeholder="filter channels">
+										<input type="text" class="autofocus" value="" placeholder="<?=lang('filter_channels')?>">
 									</form>
 									<div class="scroll-wrap">
 								<?php endif ?>
@@ -95,7 +95,7 @@
 							<div class="sub-menu">
 								<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
 									<form class="filter">
-										<input type="text" class="autofocus" value="" placeholder="filter channels">
+										<input type="text" class="autofocus" value="" placeholder="<?=lang('filter_channels')?>">
 									</form>
 									<div class="scroll-wrap">
 								<?php endif ?>

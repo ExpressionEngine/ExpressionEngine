@@ -124,12 +124,12 @@ Grid.Publish.prototype = {
 		if (rowCount > 0) {
 			// Only show reorder header if table is configured to be reorderable
 			if (reorderCol.size() == 0 && $('td.reorder-col', this.root).size() > 0) {
-				$('thead tr', this.root).prepend(
+				$('> thead tr', this.root).prepend(
 					$('<th/>', { class: 'first reorder-col' })
 				);
 			}
 			if (gridRemove.size() == 0) {
-				$('thead tr', this.root).append(
+				$('> thead tr', this.root).append(
 					$('<th/>', { class: 'last grid-remove' })
 				);
 			}

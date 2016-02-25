@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
-use \EE_Lang;
+use EE_Lang;
+use EE_URI;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
@@ -41,15 +42,21 @@ class Profiler {
 	private $view_factory;
 
 	/**
+	 * @var EE_URI $uri The EE_URI object
+	 */
+	private $uri;
+
+	/**
 	 * Constructor
 	 * Inject:
 	 *   EE_Lang $lang for loadfile()
 	 *   ViewFactory $view_factory A ViewFactory object for making and rendering views
 	 */
-	public function __construct(EE_Lang $lang, ViewFactory $view_factory)
+	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri)
 	{
 		$lang->loadfile('profiler');
 		$this->view_factory = $view_factory;
+		$this->uri = $uri;
 	}
 
 	/**
@@ -105,6 +112,12 @@ class Profiler {
 		}
 
 		$view = $this->view_factory->make('profiler/container');
-		return $view->render(array('sections' => $this->sections, 'rendered_sections' => $rendered_sections));
+		return $view->render(array(
+			'uri'               => ($this->uri->uri_string)
+				? '/'.$this->uri->uri_string
+				: lang('site_homepage'),
+			'sections'          => $this->sections,
+			'rendered_sections' => $rendered_sections
+		));
 	}
 }

@@ -11,7 +11,7 @@
 			$value = $value['name'];
 		}
 
-		$checked = (in_array($value, $values) OR in_array(form_prep($value), $values));
+		$checked = (in_array($key, $values) OR in_array(form_prep($key), $values));
 
 		$class = 'choice block';
 
