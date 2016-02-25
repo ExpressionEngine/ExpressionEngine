@@ -28,7 +28,7 @@
 	],
 	"category_groups": [
 		{
-			"group_name": "blog",
+			"name": "Blog",
 			"categories": [
 				"News",
 				"Personal",
@@ -38,7 +38,7 @@
 			]
 		},
 		{
-			"group_name": "collection",
+			"name": "Collection",
 			"categories": [
 				"Rock and Roll",
 				"Rhythm and Blues",
@@ -62,7 +62,7 @@
 			]
 		},
 		{
-			"group_name": "slideshow",
+			"name": "Slideshow",
 			"categories": ["Not Shown"]
 		}
 	],

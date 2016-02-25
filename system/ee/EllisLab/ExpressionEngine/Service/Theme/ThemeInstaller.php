@@ -85,7 +85,7 @@ class ThemeInstaller {
 		$channel_set = $this->loadChannelSet($theme_name);
 
 		$this->createStatusGroups($channel_set->status_groups);
-		// $this->createCategoryGroups();
+		$this->createCategoryGroups($channel_set->category_groups);
 		// $this->createUploadLocations();
 		// $this->createFieldGroups();
 		// $this->createChannels();
@@ -134,53 +134,25 @@ class ThemeInstaller {
 		}
 	}
 
-	private function createCategoryGroups()
+	/**
+	 * Create the category groups
+	 * @param array $category_groups Array of objects representing the category
+	 * 	groups supplied by loadChannelSet
+	 * @return void
+	 */
+	private function createCategoryGroups($category_groups)
 	{
-		$category_list = array(
-			'blog' => array(
-				'News',
-				'Personal',
-				'Photos',
-				'Videos',
-				'Music'
-			),
-			'collection' => array(
-				'Rock and Roll',
-				'Rhythm and Blues',
-				'Country',
-				'Punk Rock',
-				'Jazz',
-				'Techno',
-				'Classical',
-				'Pop',
-				'Holiday',
-				'Soundtrack',
-				'Funk',
-				'Folk',
-				'Heavy Metal',
-				'New Age',
-				'Blue Grass',
-				'Reggae',
-				'Hip Hop',
-				'Christian and Gospel',
-				'Dance'
-			),
-			'slideshow' => array(
-				'Not Shown'
-			)
-		);
-
-		foreach ($category_list as $group_name => $categories)
+		foreach ($category_groups as $category_group_data)
 		{
 			$cat_group = ee('Model')->make('CategoryGroup');
 			$cat_group->site_id = 1;
-			$cat_group->sort_order = 'a';
-			$cat_group->group_name = $group_name;
+			$cat_group->sort_order = (isset($category_group_data->sort_order))
+				? $category_group_data->sort_order
+				: 'a';
+			$cat_group->group_name = $category_group_data->name;
 			$cat_group->save();
 
-			$this->structure_data['cat_group_ids'][$cat_group->group_name] = $cat_group->group_id;
-
-			foreach ($categories as $category_name)
+			foreach ($category_group_data->categories as $category_name)
 			{
 				$category = ee('Model')->make('Category');
 				$category->group_id = $cat_group->group_id;
