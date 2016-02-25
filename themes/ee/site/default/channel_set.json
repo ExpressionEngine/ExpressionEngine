@@ -1,23 +1,24 @@
 {
 	"channels": [
 		{
-			"name": "About",
-			"status_group": "about",
+			"channel_title": "About",
+			"status_group": "About",
 			"field_group": "common"
 		},
 		{
-			"name": "Blog",
+			"channel_title": "Blog",
 			"field_group": "blog",
+			"cat_group": "Blog",
 			"channel_url": "{path='blog/entry'}"
 		},
 		{
-			"name": "Contact",
+			"channel_title": "Contact",
 			"field_group": "common"
 		}
 	],
 	"status_groups": [
 		{
-			"name": "about",
+			"name": "About",
 			"statuses": [
 				{
 					"status": "Default Page",

@@ -7,16 +7,9 @@ namespace EllisLab\ExpressionEngine\Service\Theme;
  */
 class ThemeInstaller {
 
-	private $userdata;
-	private $root_theme_path;
+	private $site_url;
 	private $theme_path;
-
-	private $theme_base_url;
-	private $theme_base_path;
-	private $template_folder;
-	private $asset_url;
-	private $asset_path;
-
+	private $theme_url;
 	private $model_data;
 
 	/**
@@ -78,7 +71,7 @@ class ThemeInstaller {
 		$this->createCategoryGroups($channel_set->category_groups);
 		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
 		$this->createFieldGroups($theme_name);
-		// $this->createChannels();
+		$this->createChannels($channel_set->channels);
 		// $this->createEntries();
 	}
 
@@ -107,7 +100,7 @@ class ThemeInstaller {
 			$status_group->group_name = $status_group_data->name;
 			$status_group->save();
 
-			$this->model_data['status_groups'][$status_group->group_name] = $status_group;
+			$this->model_data['status_group'][$status_group->group_name] = $status_group;
 
 			foreach ($status_group_data->statuses as $status_data)
 			{
@@ -144,7 +137,7 @@ class ThemeInstaller {
 			$cat_group->group_name = $category_group_data->name;
 			$cat_group->save();
 
-			$this->model_data['category_groups'][$cat_group->group_name] = $cat_group;
+			$this->model_data['cat_group'][$cat_group->group_name] = $cat_group;
 
 			foreach ($category_group_data->categories as $category_name)
 			{
@@ -225,7 +218,7 @@ class ThemeInstaller {
 			$field_group->group_name = $group_name;
 			$field_group->save();
 
-			$this->model_data['field_group_ids'][$field_group->group_name] = $field_group;
+			$this->model_data['field_group'][$field_group->group_name] = $field_group;
 
 			foreach ($fields as $file_name)
 			{
@@ -312,40 +305,40 @@ class ThemeInstaller {
 		}
 	}
 
-	private function createChannels()
+	/**
+	 * Create the channels
+	 * @param array $channels Array of objects representing the channels
+	 * 	supplied by loadChannelSet
+	 * @return void
+	 */
+	private function createChannels($channels)
 	{
-		$channels = array(
-			'About' => array(
-				'status_group' => $this->structure_data['status_group_ids']['about'],
-				'field_group' => $this->structure_data['field_group_ids']['common']
-			),
-			'Blog' => array(
-				'status_group' => 1,
-				'cat_group' => $this->structure_data['cat_group_ids']['blog'],
-				'field_group' => $this->structure_data['field_group_ids']['blog'],
-				'channel_url' => "{path='blog/entry'}"
-			),
-			'Contact' => array(
-				'status_group' => 1,
-				'field_group' => $this->structure_data['field_group_ids']['common']
-			)
-		);
-
-		foreach ($channels as $channel_label => $channel_prefs)
+		foreach ($channels as $channel_data)
 		{
 			$channel = ee('Model')->make('Channel');
 			$channel->title_field_label = lang('title');
-			$channel->channel_name = strtolower($channel_label);
-			$channel->channel_title = $channel_label;
+			$channel->channel_name = strtolower($channel_data->channel_title);
+			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
+			unset($channel_data->channel_title);
 
-			foreach ($channel_prefs as $pref_key => $pref_value)
+			foreach (array('field_group', 'status_group', 'cat_group') as $group_type)
+			{
+				if (isset($channel_data->$group_type))
+				{
+					$channel->$group_type = $this->model_data[$group_type][$channel_data->$group_type]->group_id;
+					unset($channel_data->$group_type);
+				}
+			}
+
+			foreach ($channel_data as $pref_key => $pref_value)
 			{
 				$channel->$pref_key = $pref_value;
 			}
 
 			$channel->save();
-			$this->structure_data['channel_objs'][$channel->channel_name] = $channel;
+
+			$this->model_data['channels'][$channel->channel_name] = $channel;
 		}
 	}
 
