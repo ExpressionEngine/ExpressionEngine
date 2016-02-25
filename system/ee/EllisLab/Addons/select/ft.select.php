@@ -236,9 +236,7 @@ class Select_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ( ! isset($this->settings['field_pre_populate'])
-			OR $this->settings['field_pre_populate'] == 'n'
-				OR $this->settings['field_pre_populate'] == FALSE)
+		if ($this->get_setting('field_pre_populate') === FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
