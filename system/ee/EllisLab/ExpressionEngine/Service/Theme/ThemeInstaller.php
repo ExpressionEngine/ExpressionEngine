@@ -72,7 +72,7 @@ class ThemeInstaller {
 		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
 		$this->createFieldGroups($theme_name);
 		$this->createChannels($channel_set->channels);
-		// $this->createEntries();
+		$this->createEntries($theme_name);
 	}
 
 	/**
@@ -176,7 +176,7 @@ class ThemeInstaller {
 			$upload_destination->server_path = $path;
 			$upload_destination->save();
 
-			$this->model_data['upload_destinations'][$upload_destination->name] = $upload_destination;
+			$this->model_data['upload_destination'][strtolower($upload_destination->name)] = $upload_destination;
 
 			foreach (directory_map($path) as $filename)
 			{
@@ -296,11 +296,11 @@ class ThemeInstaller {
 
 					foreach ($columns as $column)
 					{
-						$this->model_data['grid_fields'][$field->field_id][$column['col_name']] = $column['col_id'];
+						$this->model_data['grid_field'][$field->field_id][$column['col_name']] = $column['col_id'];
 					}
 				}
 
-				$this->model_data['custom_fields'][$field->field_name] = $field->field_id;
+				$this->model_data['custom_field'][$field->field_name] = $field->field_id;
 			}
 		}
 	}
@@ -338,39 +338,35 @@ class ThemeInstaller {
 
 			$channel->save();
 
-			$this->model_data['channels'][$channel->channel_name] = $channel;
+			$this->model_data['channel'][$channel->channel_name] = $channel;
 		}
 	}
 
-	public function createEntries()
+	/**
+	 * Create the channel entries
+	 * @param string $theme_name The name of the theme, used for pulling in
+	 * 	channel entries
+	 * @return void
+	 */
+	public function createEntries($theme_name)
 	{
-		// add entries
-		// ChannelEntry::populateChannels() is reaching into the legacy superobject
-		// @todo - address this dependency
-		// ee()->set('session', (object) array());
-
-		// Override Functions::clear_caching()
-		// ee()->set('functions', new Functions);
-		//
 		ee()->load->library('session');
 		ee()->session->userdata['group_id'] = 1;
 
-		$entry_data_path = $this->theme_path.$this->userdata['theme'].'/channel_entries/';
+		$entry_data_path = $this->theme_path."ee/site/{$theme_name}/channel_entries/";
 
-		foreach (array('about', 'blog', 'contact') as $channel_name)
+		foreach (directory_map($entry_data_path) as $channel_name => $channel_entries)
 		{
-			$dir = $entry_data_path.$channel_name.'/';
-
-			foreach (directory_map($dir) as $filename)
+			foreach ($channel_entries as $filename)
 			{
-				$entry_data = json_decode(file_get_contents($dir.$filename));
+				$entry_data = json_decode(file_get_contents($entry_data_path.$channel_name.'/'.$filename));
 
 				$entry = ee('Model')->make('ChannelEntry');
-				$entry->setChannel($this->structure_data['channel_objs'][$channel_name]);
+				$entry->setChannel($this->model_data['channel'][$channel_name]);
 				$entry->site_id =  1;
 				$entry->author_id = 1;
 				$entry->ip_address = ee()->input->ip_address();
-				$entry->versioning_enabled = $this->structure_data['channel_objs'][$channel_name]->enable_versioning;
+				$entry->versioning_enabled = $this->model_data['channel'][$channel_name]->enable_versioning;
 				$entry->sticky = FALSE;
 				$entry->allow_comments = TRUE;
 
@@ -390,8 +386,8 @@ class ThemeInstaller {
 				{
 					if (is_string($val))
 					{
-						$field_col_name = "field_id_{$this->structure_data['cf_id'][$key]}";
-						$post_mock[$field_col_name] = $val;
+						$field_col_name = "field_id_{$this->model_data['custom_field'][$key]}";
+						$post_mock[$field_col_name] = $this->replaceUploadDestination($val);
 					}
 					else
 					{
@@ -400,12 +396,12 @@ class ThemeInstaller {
 							$row_index = $row_index + 1;
 							foreach ($grid_row as $col_name => $col_value)
 							{
-								$column_id = 'col_id_'.$this->structure_data['gf_id'][$this->structure_data['cf_id'][$key]][$col_name];
-								$post_mock["field_id_{$this->structure_data['cf_id'][$key]}"]
+								$column_id = 'col_id_'.$this->model_data['grid_field'][$this->model_data['custom_field'][$key]][$col_name];
+								$post_mock["field_id_{$this->model_data['custom_field'][$key]}"]
 										["rows"]
 										["new_row_{$row_index}"]
 										[$column_id]
-									= $col_value;
+									= $this->replaceUploadDestination($col_value);
 							}
 						}
 					}
@@ -417,22 +413,32 @@ class ThemeInstaller {
 		}
 	}
 
+	/**
+	 * Replace occurences of {filedir_<destination name>} with the correct ID
+	 * @param string $str The string to look through for {filedir_<dest>}
+	 * @return string The string with the correct filedir ID
+	 */
+	private function replaceUploadDestination($str)
+	{
+		if (stristr($str, '{filedir_') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				'/\{filedir_(.*?)\}/',
+				function($matches) {
+					$id = $this->model_data['upload_destination'][$matches[1]]->id;
+					return "{filedir_{$id}}";
+				},
+				$str
+			);
+		}
+
+		return $str;
+	}
+
 	private function setTemplatePreferences()
 	{
 		// set site_404 and strict_urls, save templates as files
 	}
 }
 
-/**
- * Stub Functions class
- *
- * The ChannelEntry model calls Functions::clear_caching() onAfterSave, but we
- * don't have a cache yet.
- */
-class FunctionsStub
-{
-	public function clear_caching($type)
-	{
-		return TRUE;
-	}
-}
+// EOF
