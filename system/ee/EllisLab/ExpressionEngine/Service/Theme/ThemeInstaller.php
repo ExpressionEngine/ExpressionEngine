@@ -102,6 +102,12 @@ class ThemeInstaller {
 		return json_decode(file_get_contents($this->theme_path.'ee/site/'.$theme_name.'/channel_set.json'));
 	}
 
+	/**
+	 * Create the status groups
+	 * @param array $status_groups Array of objects representing the status
+	 * 	groups supplied by loadChannelSet
+	 * @return void
+	 */
 	private function createStatusGroups($status_groups)
 	{
 		foreach ($status_groups as $status_group_data)
@@ -113,7 +119,6 @@ class ThemeInstaller {
 
 			foreach ($status_group_data->statuses as $status_data)
 			{
-				var_dump('here?');
 				$status = ee('Model')->make('Status');
 				$status->site_id = 1;
 				$status->group_id = $status_group->group_id;
@@ -127,23 +132,6 @@ class ThemeInstaller {
 				$status->save();
 			}
 		}
-
-		// // "about" Status Group
-		// $status_group = ee('Model')->make('StatusGroup');
-		// $status_group->site_id = 1;
-		// $status_group->group_name = 'about';
-		// $status_group->save();
-
-		// $this->structure_data['status_group_ids'][$status_group->group_name] = $status_group->group_id;
-
-		// // "about" Status Group statuses
-		// $status = ee('Model')->make('Status');
-		// $status->site_id = 1;
-		// $status->group_id = $status_group->group_id;
-		// $status->status = 'Default Page';
-		// $status->highlight = '2051B3';
-		// $status->NoAccess = NULL;
-		// $status->save();
 	}
 
 	private function createCategoryGroups()
