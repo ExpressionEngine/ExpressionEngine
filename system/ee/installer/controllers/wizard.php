@@ -1800,13 +1800,9 @@ class Wizard extends CI_Controller {
 			{
 				$theme = ee('ThemeInstaller');
 				$theme->setSiteURL($this->userdata['site_url']);
-				var_dump($this->root_theme_path, $this->set_path('themes'));
 				$theme->setThemePath($this->root_theme_path);
 				$theme->setThemeURL($this->set_path('themes'));
 				$theme->install($this->userdata['theme']);
-				// require $this->theme_path.$this->userdata['theme'].'/default_content.php';
-				// $defaultContent = new DefaultContent($this->root_theme_path, $this->theme_path, $this->userdata);
-				// $defaultContent->install();
 			}
 		}
 
