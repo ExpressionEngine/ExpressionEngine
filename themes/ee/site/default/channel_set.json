@@ -80,5 +80,11 @@
 			"name": "Home",
 			"path": "asset/img/home/"
 		}
-	]
+	],
+	"config": {
+		"site_404": "home/404",
+		"strict_urls": "y",
+		"save_tmpl_files": "y",
+		"site_name": "Default Site"
+	}
 }

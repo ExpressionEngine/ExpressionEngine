@@ -117,6 +117,7 @@ class ThemeInstaller {
 		$this->createFieldGroups($theme_name);
 		$this->createChannels($channel_set->channels);
 		$this->createEntries($theme_name);
+		$this->setConfigItems($channel_set->config);
 	}
 
 	/**
@@ -479,9 +480,14 @@ class ThemeInstaller {
 		return $str;
 	}
 
-	private function setTemplatePreferences()
+	/**
+	 * Set the config items
+	 * @param array $config Associative array of config items
+	 * @return void
+	 */
+	private function setConfigItems($config)
 	{
-		// set site_404 and strict_urls, save templates as files
+		ee()->config->update_site_prefs((array) $config, array(1));
 	}
 }
 
