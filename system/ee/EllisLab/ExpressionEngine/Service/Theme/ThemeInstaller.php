@@ -147,10 +147,7 @@ class ThemeInstaller {
 			$to_dir = SYSPATH."user/templates/default_site/{$directory}/";
 			mkdir($to_dir, DIR_WRITE_MODE);
 
-			// Copy the contents of the directory to
-			// $this->template_folder = SYSPATH.'ee/templates/default/';
-			// If it's _partials or _variables, create Snippets and GlobalVariables
-			// If it's not we need to great groups and templates
+			// Copy partials over and force saving them to the database
 			$partials = array('_partials' => 'Snippet', '_variables' => 'GlobalVariable');
 			if (in_array($directory, array_keys($partials)))
 			{
@@ -162,6 +159,7 @@ class ThemeInstaller {
 				// Load all of the partials to save them to the db
 				ee('Model')->make($partials[$directory])->loadAll();
 			}
+			// Copy over templates and create them as well
 			else
 			{
 				$group = ee('Model')->make('TemplateGroup');
