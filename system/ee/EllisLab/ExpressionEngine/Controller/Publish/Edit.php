@@ -312,7 +312,7 @@ class Edit extends AbstractPublishController {
 	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
-			->with('Channel', 'Versions')
+			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
