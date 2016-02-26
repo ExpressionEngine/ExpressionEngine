@@ -8,19 +8,3 @@ $no_access = array(
 );
 
 $template_access['layout']['index'] = $no_access;
-
-// {
-// 	"template_access":
-// 	{
-// 		"layout":
-// 		{
-// 			"index":
-// 			{
-// 				'Banned': 'n',
-// 				'Guests': 'n',
-// 				'Members': 'n',
-// 				'Pending': 'n',
-// 			}
-// 		}
-// 	}
-// }

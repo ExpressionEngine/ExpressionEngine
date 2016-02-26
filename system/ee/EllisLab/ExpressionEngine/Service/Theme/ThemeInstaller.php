@@ -67,7 +67,7 @@ class ThemeInstaller {
 	{
 		ee()->load->library('api');
 		ee()->load->library('extensions');
-		$this->template_folder = SYSPATH.'ee/templates/default/';
+		ee()->set('functions', new FunctionsStub());
 	}
 
 	/**
@@ -111,6 +111,7 @@ class ThemeInstaller {
 
 		$channel_set = $this->loadChannelSet($theme_name);
 
+		$this->createTemplates($theme_name, $channel_set->template_preferences);
 		$this->createStatusGroups($channel_set->status_groups);
 		$this->createCategoryGroups($channel_set->category_groups);
 		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
@@ -128,6 +129,65 @@ class ThemeInstaller {
 	private function loadChannelSet($theme_name)
 	{
 		return json_decode(file_get_contents($this->theme_path.'ee/site/'.$theme_name.'/channel_set.json'));
+	}
+
+	/**
+	 * Create the templates from the site theme
+	 * @param string $theme_name The theme name
+	 * @param array $template_preferences Array of objects representing the
+	 * 	template preferences supplied by loadChannelSet
+	 * @return void
+	 */
+	private function createTemplates($theme_name, $template_preferences)
+	{
+		$template_dir = $this->theme_path."ee/site/{$theme_name}/templates/";
+		foreach (directory_map($template_dir) as $directory => $contents)
+		{
+			$from_dir = $template_dir.$directory.'/';
+			$to_dir = SYSPATH."user/templates/default_site/{$directory}/";
+			mkdir($to_dir, DIR_WRITE_MODE);
+
+			// Copy the contents of the directory to
+			// $this->template_folder = SYSPATH.'ee/templates/default/';
+			// If it's _partials or _variables, create Snippets and GlobalVariables
+			// If it's not we need to great groups and templates
+			$partials = array('_partials' => 'Snippet', '_variables' => 'GlobalVariable');
+			if (in_array($directory, array_keys($partials)))
+			{
+				foreach ($contents as $filename)
+				{
+					copy($from_dir.$filename, $to_dir.$filename);
+				}
+
+				// Load all of the partials to save them to the db
+				ee('Model')->make($partials[$directory])->loadAll();
+			}
+			else
+			{
+				$group = ee('Model')->make('TemplateGroup');
+				$group->site_id = 1;
+				$group->group_name = str_replace('.group', '', $directory);
+				$group->is_site_default = ($template_preferences->is_site_default == $group->group_name) ? 'y' : 'n';
+				$group->save();
+
+				foreach ($contents as $filename)
+				{
+					copy($from_dir.$filename, $to_dir.$filename);
+
+					$file = new \SplFileInfo($to_dir.$filename);
+
+					$template = ee('Model')->make('Template');
+					$template->group_id = $group->group_id;
+					$template->template_name = $file->getBasename('.'.$file->getExtension());
+					$template->template_data = file_get_contents($file->getRealPath());
+					$template->template_type = ($file->getExtension() != 'html') ? $file->getExtension() : 'webpage';
+					$template->last_author_id = 0;
+					$template->edit_date = time();
+					$template->site_id = 1;
+					$template->save();
+				}
+			}
+		}
 	}
 
 	/**
@@ -490,5 +550,14 @@ class ThemeInstaller {
 		ee()->config->update_site_prefs((array) $config, array(1));
 	}
 }
+
+class FunctionsStub
+{
+	public function clear_caching($type)
+	{
+		return TRUE;
+	}
+}
+
 
 // EOF

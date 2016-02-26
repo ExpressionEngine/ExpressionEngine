@@ -86,5 +86,22 @@
 		"strict_urls": "y",
 		"save_tmpl_files": "y",
 		"site_name": "Default Site"
+	},
+	"template_preferences":
+	{
+		"is_site_default": "home",
+		"template_access":
+		{
+			"layout":
+			{
+				"index":
+				{
+					"Banned": "n",
+					"Guests": "n",
+					"Members": "n",
+					"Pending": "n"
+				}
+			}
+		}
 	}
 }
