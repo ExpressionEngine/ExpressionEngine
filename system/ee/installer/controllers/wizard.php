@@ -2339,6 +2339,17 @@ class Wizard extends CI_Controller {
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
+		// Clear any caches of the config file
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($this->config->config_path);
+		}
+
+		if (function_exists('apc_delete_file'))
+		{
+			@apc_delete_file($this->config->config_path) || apc_clear_cache();
+		}
+
 		return TRUE;
 	}
 
