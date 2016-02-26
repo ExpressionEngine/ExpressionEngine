@@ -3,13 +3,57 @@
 namespace EllisLab\ExpressionEngine\Service\Theme;
 
 /**
- * Install the Default Content
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.2.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine ThemeInstaller Class
+ *
+ * @package		ExpressionEngine
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ * @internal    This Class is not ready for third-party usage and will mostly
+ * 				likely change quickly
  */
 class ThemeInstaller {
 
+	/**
+	 * @var string The site URL
+	 */
 	private $site_url;
+
+	/**
+	 * @var string The absolute theme path
+	 */
 	private $theme_path;
+
+	/**
+	 * @var string The theme URL
+	 */
 	private $theme_url;
+
+	/**
+	 * @var array Multidimensional associative array containing model data for
+	 * 	- status_group
+	 * 	- cat_group
+	 * 	- upload_destination
+	 * 	- field_group
+	 * 	- channel
+	 * 	Also contains field and column ids for:
+	 * 	- custom_field
+	 * 	- grid_field
+	 */
 	private $model_data;
 
 	/**
