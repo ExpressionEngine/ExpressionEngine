@@ -611,6 +611,7 @@ class ThemeInstaller {
 					'author_id'    => 0,
 					'status'       => 'o',
 					'url'          => '',
+					'location'     => '',
 					'ip_address'   => '127.0.0.1',
 					'comment_date' => time()
 				),
