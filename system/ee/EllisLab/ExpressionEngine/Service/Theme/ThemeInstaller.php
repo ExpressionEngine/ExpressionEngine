@@ -547,6 +547,7 @@ class ThemeInstaller {
 				$entry->year = date('Y');
 				$entry->month = date('m');
 				$entry->day = date('d');
+				$entry->entry_date = time();
 
 				$post_mock = array();
 
