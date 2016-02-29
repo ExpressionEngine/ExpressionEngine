@@ -34,6 +34,20 @@
 				"field_maxl": "256",
 				"field_required": "n"
 			}
+		},
+		{
+			"type": "select",
+			"label": "Alignment?",
+			"name": "align",
+			"instructions": "Align this image ot the left or right?",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_list_items": "none\\nleft\\nright",
+				"field_required": "n"
+			}
 		}
 	]
 }
