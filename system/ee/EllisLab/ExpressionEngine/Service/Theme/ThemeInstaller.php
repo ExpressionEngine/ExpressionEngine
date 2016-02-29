@@ -119,6 +119,7 @@ class ThemeInstaller {
 		$this->createChannels($channel_set->channels);
 		$this->createEntries($theme_name);
 		$this->setConfigItems($channel_set->config);
+		$this->setMemberTheme($theme_name);
 	}
 
 	/**
@@ -669,6 +670,54 @@ class ThemeInstaller {
 	private function setConfigItems($config)
 	{
 		ee()->config->update_site_prefs((array) $config, array(1));
+	}
+
+	/**
+	 * Copy over the member theme and set it up
+	 * @param string $theme_name The name of the theme, used for pulling in
+	 * 	channel entries
+	 */
+	private function setMemberTheme($theme_name)
+	{
+		$to_dir = $this->theme_path."ee/member/{$theme_name}/";
+		$from_dir = $this->theme_path."ee/site/{$theme_name}/members/";
+
+		if ( ! is_dir($from_dir))
+		{
+			return;
+		}
+
+		if (is_dir($to_dir))
+		{
+			foreach (directory_map($to_dir) as $directory => $filename)
+			{
+				if (is_string($directory))
+				{
+					foreach ($filename as $filename)
+					{
+						unlink($to_dir.$directory.'/'.$filename);
+					}
+
+					@rmdir($to_dir.$directory);
+				}
+				else
+				{
+					unlink($to_dir.$filename);
+				}
+				// var_dump($directory, $filename);
+			}
+		}
+		else
+		{
+			mkdir($to_dir);
+		}
+
+		foreach (directory_map($from_dir) as $filename)
+		{
+			copy($from_dir.$filename, $to_dir.$filename);
+		}
+
+		ee()->config->update_site_prefs(array('member_theme' => $theme_name), array(1));
 	}
 }
 
