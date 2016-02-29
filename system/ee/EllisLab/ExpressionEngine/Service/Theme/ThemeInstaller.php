@@ -536,7 +536,9 @@ class ThemeInstaller {
 				$entry->ip_address = ee()->input->ip_address();
 				$entry->versioning_enabled = $this->model_data['channel'][$channel_name]->enable_versioning;
 				$entry->sticky = FALSE;
-				$entry->allow_comments = TRUE;
+				$entry->allow_comments = (isset($entry_data->allow_comments))
+					? $entry_data->allow_comments
+					: 'y';
 
 				$entry->title = $entry_data->title;
 				$entry->url_title = $entry_data->url_title;
@@ -578,8 +580,62 @@ class ThemeInstaller {
 
 				$entry->set($post_mock);
 				$entry->save();
+
+				if (isset($entry_data->comments))
+				{
+					$this->createComments($entry, $entry_data->comments);
+				}
 			}
 		}
+	}
+
+	/**
+	 * Create comments for a given entry
+	 * @param ChannelEntry $entry The ChannelEntry model representing the
+	 * channel entry
+	 * @param array $channels Array of objects representing the comments
+	 * 	supplied by loadChannelSet
+	 * @return ChannelEntry The modified $entry object
+	 */
+	private function createComments($entry, $comments)
+	{
+		$author = ee('Model')->get('Member', 1)->first();
+
+		foreach ($comments as $comment_data)
+		{
+			$comment_data = array_merge(
+				array(
+					'site_id'      => 1,
+					'entry_id'     => $entry->entry_id,
+					'channel_id'   => $entry->channel_id,
+					'author_id'    => 0,
+					'status'       => 'o',
+					'url'          => '',
+					'ip_address'   => '127.0.0.1',
+					'comment_date' => time()
+				),
+				(array) $comment_data
+			);
+
+			if ($comment_data['author_id'] == 1)
+			{
+				$comment_data['name']     = $author->screen_name;
+				$comment_data['email']    = $author->email;
+				$comment_data['url']      = $this->site_url;
+				$comment_data['location'] = $author->location;
+			}
+
+			$comment = ee('Model')->make('Comment', $comment_data);
+
+			if ($comment_data['author_id'] == 1)
+			{
+				$comment->Author = $author;
+			}
+
+			$comment->save();
+		}
+
+		return $entry;
 	}
 
 	/**
