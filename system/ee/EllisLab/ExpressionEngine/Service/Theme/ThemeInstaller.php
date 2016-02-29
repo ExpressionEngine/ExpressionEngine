@@ -163,9 +163,16 @@ class ThemeInstaller {
 			else
 			{
 				$group = ee('Model')->make('TemplateGroup');
+				$group_name = str_replace('.group', '', $directory);
 				$group->site_id = 1;
-				$group->group_name = str_replace('.group', '', $directory);
-				$group->is_site_default = ($template_preferences->is_site_default == $group->group_name) ? 'y' : 'n';
+				$group->group_name = $group_name;
+
+				if (isset($template_preferences->$group_name->preferences->is_site_default)
+					&& $template_preferences->$group_name->preferences->is_site_default == TRUE)
+				{
+					$group->is_site_default = 'y';
+				}
+
 				$group->save();
 
 				foreach ($contents as $filename)
@@ -173,19 +180,77 @@ class ThemeInstaller {
 					copy($from_dir.$filename, $to_dir.$filename);
 
 					$file = new \SplFileInfo($to_dir.$filename);
+					$template_name = $file->getBasename('.'.$file->getExtension());
 
 					$template = ee('Model')->make('Template');
 					$template->group_id = $group->group_id;
-					$template->template_name = $file->getBasename('.'.$file->getExtension());
+					$template->template_name = $template_name;
 					$template->template_data = file_get_contents($file->getRealPath());
 					$template->template_type = ($file->getExtension() != 'html') ? $file->getExtension() : 'webpage';
 					$template->last_author_id = 0;
 					$template->edit_date = time();
 					$template->site_id = 1;
+					$template = $this->setTemplatePreferences(
+						$template,
+						(isset($template_preferences->$group_name->$template_name))
+							? $template_preferences->$group_name->$template_name
+							: new \stdClass()
+					);
 					$template->save();
 				}
 			}
 		}
+	}
+
+	/**
+	 * Set a template's preferences
+	 * @param Template $template The template object representing the
+	 * 	not-yet-saved template
+	 * @param Object $template_preferences Just this template's preferences,
+	 * 	pulled from the loadChannelSet object
+	 * @return Template The modified template object with preferences in place
+	 */
+	private function setTemplatePreferences($template, $template_preferences)
+	{
+		// Set caching
+		if (isset($template_preferences->preferences->cache)
+			&& isset($template_preferences->preferences->refresh))
+		{
+			$template->cache = ($template_preferences->preferences->cache == 'y')
+				? 'y'
+				: 'n';
+
+			$refresh = $template_preferences->preferences->refresh;
+			$template->refresh = (is_int($refresh) || ctype_digit($refresh))
+				? $refresh
+				: 60;
+		}
+
+		// Set PHP
+		if (isset($template_preferences->preferences->allow_php)
+			&& $template_preferences->preferences->allow_php == 'y'
+			&& isset($template_preferences->preferences->php_parse_location)
+			&& in_array($template_preferences->preferences->php_parse_location, array('input', 'output')))
+		{
+			$template->allow_php = 'y';
+			$template->php_parse_location = $template_preferences->preferences->php_parse_location;
+		}
+
+		// Set template access
+		if (isset($template_preferences->access))
+		{
+			$member_groups = ee('Model')->get('MemberGroup')
+				->filter('site_id', 1)
+				->filter('group_id', '!=', 1)
+				->all();
+
+			$access = $template_preferences->access;
+			$template->NoAccess = $member_groups->filter(function($group) use ($access) {
+				return ($access->{$group->group_title} == 'n');
+			});
+		}
+
+		return $template;
 	}
 
 	/**

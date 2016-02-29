@@ -89,13 +89,16 @@
 	},
 	"template_preferences":
 	{
-		"is_site_default": "home",
-		"template_access":
+		"home": {
+			"preferences": {
+				"is_site_default": true
+			}
+		},
+		"layout":
 		{
-			"layout":
+			"index":
 			{
-				"index":
-				{
+				"access": {
 					"Banned": "n",
 					"Guests": "n",
 					"Members": "n",
