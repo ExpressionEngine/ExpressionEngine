@@ -88,7 +88,10 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->Author->updateAuthorStats();
+		if ($this->Author)
+		{
+			$this->Author->updateAuthorStats();
+		}
 		$this->updateCommentStats();
 	}
 
