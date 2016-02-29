@@ -16,5 +16,61 @@
 				}
 			]
 		}
-	}
+	},
+	"comments": [
+		{
+			"author_id": 1,
+			"comment": "This is a great video! Thanks for sharing!"
+		},
+		{
+			"author_id": 1,
+			"comment": "Woot, love it!"
+		},
+		{
+			"name": "Guest one",
+			"email": "example@example.com",
+			"url": "http://example.com/",
+			"location": "Everywhere",
+			"comment": "This is a comment by a guest to the site, unregistered, with a url and a location."
+		},
+		{
+			"name": "Guest two",
+			"email": "example@example.com",
+			"comment": "This is a comment by an unregistered guest without a url, or a location."
+		},
+		{
+			"author_id": 1,
+			"comment": "I really can't get enough of this kind of appraisal."
+		},
+		{
+			"name": "Mr. Meanie",
+			"email": "example@example.com",
+			"comment": "I'm a bad person, and people should not like me, and I say troll things all the time."
+		},
+		{
+			"author_id": 1,
+			"comment": "Ugh, what a troll."
+		},
+		{
+			"name": "Peter Winkle",
+			"email": "peter@example.com",
+			"comment": "This is a guest comment, from one Mr. Peter Winkle."
+		},
+		{
+			"name": "Fancy Falls",
+			"email": "fancy@example.com",
+			"url": "http://example.com",
+			"location": "Fancy Factory",
+			"comment": "Fancy, I do say!"
+		},
+		{
+			"name": "Pauline Paxton",
+			"email": "pauline@example.com",
+			"comment": "Hello my name is Pauline Paxton, and I lurve Jackie Chan."
+		},
+		{
+			"author_id": 1,
+			"comment": "Test"
+		}
+	]
 }
