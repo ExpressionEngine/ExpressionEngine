@@ -939,8 +939,7 @@ class Grid_lib {
 				'field_name'	=> $field_name,
 				'column'		=> $column,
 				'fieldtypes'	=> $fieldtypes_dropdown,
-				'error_fields'  => $error_fields,
-				'new_column'	=> empty($column['col_id'])
+				'error_fields'  => $error_fields
 			),
 			TRUE
 		);

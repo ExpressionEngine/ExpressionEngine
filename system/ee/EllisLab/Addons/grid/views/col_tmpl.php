@@ -6,17 +6,11 @@
 				<em></em>
 			</div>
 			<div class="setting-field col w-16 last">
-				<?php
-				$select_attrs = 'class="grid_col_select"';
-				if ($new_column)
-				{
-					$select_attrs .= ' disabled="disabled"';
-				}
-				echo form_dropdown(
+				<?=form_dropdown(
 					'grid[cols]['.$field_name.'][col_type]',
 					$fieldtypes,
 					isset($column['col_type']) ? $column['col_type'] : 'text',
-					$select_attrs)?>
+					'class="grid_col_select"')?>
 			</div>
 		</fieldset>
 		<fieldset class="col-group<?php if (in_array('grid[cols]['.$field_name.'][col_label]', $error_fields)): ?> invalid<?php endif ?>">
