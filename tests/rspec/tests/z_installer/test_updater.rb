@@ -28,23 +28,23 @@ feature 'Updater' do
     @installer.revert_config
     @installer.revert_database_config
 
-    if File.exist?('../../system/user/templates/default_site.old/')
-      FileUtils.rm_rf '../../system/user/templates/default_site.old/'
+    if File.exist?('../../system/user/templates/default_site.old')
+      FileUtils.rm_rf '../../system/user/templates/default_site.old'
     end
 
-    if File.exist?('../../system/user/templates/default_site/')
+    if File.exist?('../../system/user/templates/default_site')
       FileUtils.mv(
-        '../../system/user/templates/default_site/',
-        '../../system/user/templates/default_site.old/'
+        '../../system/user/templates/default_site',
+        '../../system/user/templates/default_site.old'
       )
     end
   end
 
   after :all do
-    if File.exist?('../../system/user/templates/default_site.old/')
+    if File.exist?('../../system/user/templates/default_site.old')
       FileUtils.mv(
-        '../../system/user/templates/default_site.old/',
-        '../../system/user/templates/default_site/'
+        '../../system/user/templates/default_site.old',
+        '../../system/user/templates/default_site'
       )
     end
 
