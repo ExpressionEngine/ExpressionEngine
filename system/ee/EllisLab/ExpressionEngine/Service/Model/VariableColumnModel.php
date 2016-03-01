@@ -25,7 +25,7 @@ namespace EllisLab\ExpressionEngine\Service\Model;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class VariableColumnModel extends Model {
+abstract class VariableColumnModel extends Model {
 
 	/**
 	 * @var Array Dictionary of values that have been set that were not explicitly
