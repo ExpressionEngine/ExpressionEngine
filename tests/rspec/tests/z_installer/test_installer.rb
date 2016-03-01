@@ -64,9 +64,9 @@ feature 'Installer' do
       @page.install_success.all_there?.should == true
     end
 
-    it 'installs successfull with the default theme' do
+    it 'installs successfully with the default theme' do
       # Clear out themes directory
-      FileUtils.rm_rf Dir.glob(File.expand_path('../../system/user/templates/default_site/*'))
+      FileUtils.rm_rf Dir.glob(File.expand_path('../../system/user/templates/default_site/'))
 
       @page.install_form.db_hostname.set 'localhost'
       @page.install_form.db_name.set $test_config[:db_name]
