@@ -699,7 +699,7 @@ $lang = array(
 
 'name_of_dictionary_file' => 'Dictionary file',
 
-'name_of_dictionary_file_desc' => 'URL location of your <mark>dictionary</mark> file.',
+'name_of_dictionary_file_desc' => 'Name of your <mark>dictionary</mark> file in your config folder.',
 
 'form_security_settings' => 'Form Security Settings',
 

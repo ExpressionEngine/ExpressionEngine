@@ -77,6 +77,7 @@ class EE_Core {
 		define('PATH_CACHE',  SYSPATH . 'user/cache/');
 		define('PATH_TMPL',   SYSPATH . 'user/templates/');
 		define('PATH_JS',     'src');
+		define('PATH_DICT',   SYSPATH . 'user/config/');
 
 		// application constants
 		define('IS_CORE',		FALSE);
@@ -91,7 +92,6 @@ class EE_Core {
 		define('NBS', 			'&nbsp;');
 		define('BR', 			'<br />');
 		define('NL',			"\n");
-		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 		define('PASSWORD_MAX_LENGTH', 72);
 
