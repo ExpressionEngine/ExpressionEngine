@@ -445,7 +445,8 @@ class Wizard extends CI_Controller {
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
 			// Set the path to the site and CP
-			$host = 'http://';
+			$host = ($this->isSecure()) ? 'https://' : 'http://';
+
 			if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
 			{
 				$host .= $_SERVER['HTTP_HOST'].'/';
@@ -1026,7 +1027,8 @@ class Wizard extends CI_Controller {
 	private function assign_install_values()
 	{
 		// Set the path to the site and CP
-		$host = 'http://';
+		$host = ($this->isSecure()) ? 'https://' : 'http://';
+
 		if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
 		{
 			$host .= $_SERVER['HTTP_HOST'].'/';
@@ -2462,6 +2464,22 @@ class Wizard extends CI_Controller {
 
 		// Move the directory
 		return @rename(APPPATH, $new_path);
+	}
+
+	/**
+	 * Is this an https:// connection?
+	 *
+	 * @return bool Is it https?
+	 */
+	private function isSecure()
+	{
+		if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+			|| $_SERVER['SERVER_PORT'] == '443')
+		{
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 }
 
