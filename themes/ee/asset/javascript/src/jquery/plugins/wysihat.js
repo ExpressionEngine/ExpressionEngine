@@ -2174,14 +2174,14 @@ $.extend(WysiHat.Commands, {
 		if ($editor.is(':visible'))
 		{
 			$btn.find('b').text($btn.data('toggle-text'));
-			$tools.hide();
+			$tools.parents('ul.toolbar').addClass('disabled');
 			$editor.hide();
 			$field.show();
 		}
 		else
 		{
 			$btn.find('b').text(text);
-			$tools.show();
+			$tools.parents('ul.toolbar').removeClass('disabled');
 			$field.hide();
 			$editor.show();
 		}
