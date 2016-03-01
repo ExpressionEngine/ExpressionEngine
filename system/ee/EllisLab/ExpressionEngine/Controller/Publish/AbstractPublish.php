@@ -288,9 +288,11 @@ abstract class AbstractPublish extends CP_Controller {
 						continue;
 					}
 
-					if ( ! array_key_exists($field->getName(), $_POST))
+					$field_name = strstr($field->getName(), '[', TRUE) ?: $field->getName();
+
+					if ( ! array_key_exists($field_name, $_POST))
 					{
-						$_POST[$field->getName()] = NULL;
+						$_POST[$field_name] = NULL;
 					}
 				}
 			}
