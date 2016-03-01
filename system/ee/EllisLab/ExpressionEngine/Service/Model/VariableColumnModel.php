@@ -34,6 +34,31 @@ abstract class VariableColumnModel extends Model {
 	protected $_variable_values = array();
 
 	/**
+	 * Fill a value without passing through a getter
+	 *
+	 * We override this to bypass an internal __get call on unknown properties.
+	 *
+	 * @param String $k Key to fill
+	 * @param Mixed  $v Value of fill
+	 * @return $this
+	 */
+	public function fillProperty($k, $v)
+	{
+		if (parent::hasProperty($k))
+		{
+			return parent::fillProperty($k, $v);
+		}
+
+		if ($this->hasProperty($k))
+		{
+			$v = $this->filter('fill', $v, $k);
+			$this->_variable_values[$k] = $v;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Check if a property exists. By default, variable name properties are any
 	 * that don't start with an underscore.
 	 *
