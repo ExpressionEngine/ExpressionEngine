@@ -126,7 +126,7 @@ $lang = array(
 
 'fmt_has_changed' => 'Note: You have selected a different field formatting choice than what was previously saved.',
 
-'update_existing_fields' => 'Update all existing channel entries with your new formatting choice?',
+'update_existing_fields' => 'Update all existing entries?',
 
 'display_criteria' => 'Select display criteria for PUBLISH page',
 

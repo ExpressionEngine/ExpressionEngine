@@ -213,10 +213,20 @@ class Text_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[1]['fields']['field_fmt']['note']);
+		}
 
 		if ($this->content_type() != 'grid')
 		{
