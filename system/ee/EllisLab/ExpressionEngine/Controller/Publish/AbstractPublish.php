@@ -220,7 +220,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					$edit_date,
-					$authors[$version->author_id],
+					$authors[$entry->author_id],
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
