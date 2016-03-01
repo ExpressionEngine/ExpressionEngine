@@ -146,7 +146,7 @@ class ThemeInstaller {
 		{
 			$from_dir = $template_dir.$directory.'/';
 			$to_dir = SYSPATH."user/templates/default_site/{$directory}/";
-			mkdir($to_dir, DIR_WRITE_MODE);
+			mkdir($to_dir, DIR_WRITE_MODE, TRUE);
 
 			// Copy partials over and force saving them to the database
 			$partials = array('_partials' => 'Snippet', '_variables' => 'GlobalVariable');
@@ -704,7 +704,6 @@ class ThemeInstaller {
 				{
 					unlink($to_dir.$filename);
 				}
-				// var_dump($directory, $filename);
 			}
 		}
 		else
