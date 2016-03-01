@@ -408,7 +408,7 @@ class Template extends AbstractDesignController {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->item_date),
-					$version->Author->getMemberName(),
+					$version->getAuthorName(),
 					$toolbar
 				)
 			);
