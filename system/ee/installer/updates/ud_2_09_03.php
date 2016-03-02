@@ -133,9 +133,6 @@ class Updater {
 		{
 			ee()->load->model('template_model');
 			ee()->lang->loadfile('template_router');
-			require_once EE_APPPATH . 'libraries/template_router/Part.php';
-			require_once EE_APPPATH . 'libraries/template_router/Segment.php';
-			require_once EE_APPPATH . 'libraries/template_router/Converters.php';
 			require_once EE_APPPATH . 'libraries/template_router/Route.php';
 
 			ee()->db->select('template_routes.template_id, route_required, route');
