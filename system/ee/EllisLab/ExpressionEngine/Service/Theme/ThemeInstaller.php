@@ -650,10 +650,11 @@ class ThemeInstaller {
 	{
 		if (stristr($str, '{filedir_') !== FALSE)
 		{
+			$model_data = $this->model_data;
 			$str = preg_replace_callback(
 				'/\{filedir_(.*?)\}/',
-				function($matches) {
-					$id = $this->model_data['upload_destination'][$matches[1]]->id;
+				function($matches) use ($model_data) {
+					$id = $model_data['upload_destination'][$matches[1]]->id;
 					return "{filedir_{$id}}";
 				},
 				$str
@@ -732,7 +733,7 @@ class ThemeInstaller {
 		$from_file = $this->theme_path."ee/site/{$theme_name}/.htaccess";
 		if (file_exists($from_file))
 		{
-			copy($from_file, realpath($this->theme_path.'../.htaccess'));
+			copy($from_file, realpath(SYSPATH.'../.htaccess'));
 		}
 	}
 }

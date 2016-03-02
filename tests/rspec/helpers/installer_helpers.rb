@@ -4,11 +4,13 @@ module Installer
     attr_reader :boot, :wizard
 
     def initialize
-      system = '../../system/'
-      @boot     = File.expand_path('ee/EllisLab/ExpressionEngine/Boot/boot.php', system)
-      @config   = File.expand_path('user/config/config.php', system)
-      @database = File.expand_path('user/config/database.php', system)
-      @wizard   = File.expand_path('ee/installer/controllers/wizard.php', system)
+      system             = '../../system/'
+      @boot              = File.expand_path('ee/EllisLab/ExpressionEngine/Boot/boot.php', system)
+      @config            = File.expand_path('user/config/config.php', system)
+      @database          = File.expand_path('user/config/database.php', system)
+      @wizard            = File.expand_path('ee/installer/controllers/wizard.php', system)
+      @old_templates     = File.expand_path('user/templates/default_site.old', system)
+      @current_templates = File.expand_path('user/templates/default_site', system)
     end
 
     # Enables installer by removing `FALSE &&` from boot.php
@@ -129,6 +131,34 @@ module Installer
         /\$config\['app_version'\] = '.*?';/i,
         "$config['app_version'] = '#{version}';"
       )
+    end
+
+    # Backup any templates for restoration later
+    #
+    # @return [void]
+    def backup_templates
+      FileUtils.rm_rf @old_templates if File.exist? @old_templates
+
+      if File.exist? @current_templates
+        FileUtils.mv(
+          @current_templates,
+          @old_templates
+        )
+      end
+    end
+
+    # Restore templates if they've previously been backed up
+    #
+    # @return [void]
+    def restore_templates
+      FileUtils.rm_rf @current_templates if File.exist? @current_templates
+
+      if File.exist? @old_templates
+        FileUtils.mv(
+          @old_templates,
+          @current_templates
+        )
+      end
     end
 
     private

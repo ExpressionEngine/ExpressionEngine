@@ -65,8 +65,7 @@ feature 'Installer' do
     end
 
     it 'installs successfully with the default theme' do
-      # Clear out themes directory
-      FileUtils.rm_rf Dir.glob(File.expand_path('../../system/user/templates/default_site/'))
+      @installer.backup_templates
 
       @page.install_form.db_hostname.set 'localhost'
       @page.install_form.db_name.set $test_config[:db_name]
@@ -83,6 +82,8 @@ feature 'Installer' do
       @page.req_title.text.should eq 'Completed'
       @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
       @page.install_success.all_there?.should == true
+
+      @installer.restore_templates
     end
 
     it 'has all require modules installed after installation' do

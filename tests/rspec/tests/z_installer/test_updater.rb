@@ -27,27 +27,11 @@ feature 'Updater' do
   after :each do
     @installer.revert_config
     @installer.revert_database_config
-
-    if File.exist?('../../system/user/templates/default_site.old')
-      FileUtils.rm_rf '../../system/user/templates/default_site.old'
-    end
-
-    if File.exist?('../../system/user/templates/default_site')
-      FileUtils.mv(
-        '../../system/user/templates/default_site',
-        '../../system/user/templates/default_site.old'
-      )
-    end
+    @installer.backup_templates
   end
 
   after :all do
-    if File.exist?('../../system/user/templates/default_site.old')
-      FileUtils.mv(
-        '../../system/user/templates/default_site.old',
-        '../../system/user/templates/default_site'
-      )
-    end
-
+    @installer.restore_templates
     @installer.disable_installer
     @installer.delete_database_config
   end
