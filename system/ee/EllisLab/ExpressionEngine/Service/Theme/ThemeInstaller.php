@@ -120,7 +120,6 @@ class ThemeInstaller {
 		$this->createEntries($theme_name);
 		$this->setConfigItems($channel_set->config);
 		$this->setMemberTheme($theme_name);
-		$this->createHtaccess($theme_name);
 	}
 
 	/**
@@ -720,21 +719,6 @@ class ThemeInstaller {
 		}
 
 		ee()->config->update_site_prefs(array('member_theme' => $theme_name), array(1));
-	}
-
-	/**
-	 * Create the htaccess if it exists as part of the theme
-	 * @param string $theme_name The name of the theme, used for pulling in
-	 * 	channel entries
-	 * @return void
-	 */
-	private function createHtaccess($theme_name)
-	{
-		$from_file = $this->theme_path."ee/site/{$theme_name}/.htaccess";
-		if (file_exists($from_file))
-		{
-			copy($from_file, realpath($this->theme_path.'/../').'/.htaccess');
-		}
 	}
 }
 
