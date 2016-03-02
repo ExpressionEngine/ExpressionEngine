@@ -733,7 +733,7 @@ class ThemeInstaller {
 		$from_file = $this->theme_path."ee/site/{$theme_name}/.htaccess";
 		if (file_exists($from_file))
 		{
-			copy($from_file, realpath(SYSPATH.'/../.htaccess'));
+			copy($from_file, realpath($this->theme_path.'/../').'/.htaccess');
 		}
 	}
 }
