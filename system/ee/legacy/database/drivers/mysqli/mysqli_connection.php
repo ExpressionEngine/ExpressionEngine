@@ -76,8 +76,7 @@ class CI_DB_mysqli_connection {
 			PDO::ATTR_PERSISTENT => $pconnect,
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_CASE => PDO::CASE_NATURAL,
-			PDO::ATTR_STRINGIFY_FETCHES => FALSE,
-			PDO::ATTR_EMULATE_PREPARES => FALSE
+			PDO::ATTR_STRINGIFY_FETCHES => FALSE
 		);
 
 		$this->connection = @new PDO(
