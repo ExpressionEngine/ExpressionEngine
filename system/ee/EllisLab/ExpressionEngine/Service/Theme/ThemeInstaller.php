@@ -148,6 +148,11 @@ class ThemeInstaller {
 			$to_dir = SYSPATH."user/templates/default_site/{$directory}/";
 			mkdir($to_dir, DIR_WRITE_MODE, TRUE);
 
+			// Since we're creating directories recursively above, ensure
+			// default_site directory is writable, too; some LAMP stacks
+			// will create it with 755
+			chmod(SYSPATH.'user/templates/default_site', DIR_WRITE_MODE);
+
 			// Copy partials over and force saving them to the database
 			$partials = array('_partials' => 'Snippet', '_variables' => 'GlobalVariable');
 			if (in_array($directory, array_keys($partials)))
