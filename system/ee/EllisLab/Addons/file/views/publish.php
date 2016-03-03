@@ -17,7 +17,7 @@ if ( ! $is_image)
 <figure class="file-chosen <?=implode(' ', $classes);?>">
 	<img <?php if ( ! $is_image) echo 'class="hidden"' ?> id="<?=$field_name?>" src="<?=$thumbnail?>" alt="<?=($file) ? $file->title : ''?>">
 	<ul class="toolbar">
-	<?php if ( ! $is_image): ?>
+	<?php if ( $file && ! $is_image): ?>
 		<li class="txt-only"><a href="#"><b><?=$file->title?></b></a></li>
 	<?php endif; ?>
 		<li class="edit"><?=$fp_edit?></li>

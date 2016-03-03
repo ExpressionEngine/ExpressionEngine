@@ -637,7 +637,7 @@ $lang = array(
 
 'field_type' => 'Type',
 
-'inavlid_field_type' => 'Invalid field type',
+'invalid_field_type' => 'Invalid field type',
 
 'field_max_length' => 'Maxlength',
 

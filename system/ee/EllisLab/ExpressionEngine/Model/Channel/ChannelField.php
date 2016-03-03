@@ -277,7 +277,7 @@ class ChannelField extends FieldModel {
 				{
 					// Reset it and return an error.
 					$this->field_type = $previous_value;
-					return lang('inavlid_field_type');
+					return lang('invalid_field_type');
 				}
 			}
 		}
