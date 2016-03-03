@@ -1265,11 +1265,6 @@ class Channels extends AbstractChannelsController {
 			ee()->channel_model->clear_versioning_data($channel->getId());
 		}
 
-		// Only one possible is revisions- enabled or disabled.
-		// We treat as installed/not and delete the whole tab.
-		ee()->load->library('layout');
-		ee()->layout->sync_layout($_POST, $channel->getId());
-
 		// Make sure we only got the fields we asked for
 		foreach ($sections as $settings)
 		{
