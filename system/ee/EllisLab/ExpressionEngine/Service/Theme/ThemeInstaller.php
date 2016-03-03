@@ -141,17 +141,24 @@ class ThemeInstaller {
 	 */
 	private function createTemplates($theme_name, $template_preferences)
 	{
-		$template_dir = $this->theme_path."ee/site/{$theme_name}/templates/";
-		foreach (directory_map($template_dir) as $directory => $contents)
-		{
-			$from_dir = $template_dir.$directory.'/';
-			$to_dir = SYSPATH."user/templates/default_site/{$directory}/";
-			mkdir($to_dir, DIR_WRITE_MODE, TRUE);
+		$path_tmpl = SYSPATH.'user/templates/';
 
-			// Since we're creating directories recursively above, ensure
-			// default_site directory is writable, too; some LAMP stacks
-			// will create it with 755
-			chmod(SYSPATH.'user/templates/default_site', DIR_WRITE_MODE);
+		// Create the default_site directory if it doesn't exist
+		if ( ! is_dir($path_tmpl.'default_site'))
+		{
+			mkdir($path_tmpl.'default_site', DIR_WRITE_MODE);
+		}
+		else
+		{
+			chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
+		}
+
+		$theme_template_dir = $this->theme_path."ee/site/{$theme_name}/templates/";
+		foreach (directory_map($theme_template_dir) as $directory => $contents)
+		{
+			$from_dir = $theme_template_dir.$directory.'/';
+			$to_dir = $path_tmpl."default_site/{$directory}/";
+			mkdir($to_dir, DIR_WRITE_MODE);
 
 			// Copy partials over and force saving them to the database
 			$partials = array('_partials' => 'Snippet', '_variables' => 'GlobalVariable');
@@ -715,7 +722,7 @@ class ThemeInstaller {
 		}
 		else
 		{
-			mkdir($to_dir);
+			mkdir($to_dir, DIR_WRITE_MODE);
 		}
 
 		foreach (directory_map($from_dir) as $filename)
