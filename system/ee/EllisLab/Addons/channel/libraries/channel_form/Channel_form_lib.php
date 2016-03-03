@@ -2108,7 +2108,8 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$query = ee('Model')->get('Channel');
+		$query = ee('Model')->get('Channel')
+			->with('ChannelFormSettings');
 
 		if ($channel_id)
 		{
@@ -2188,6 +2189,25 @@ GRID_FALLBACK;
 		{
 			$this->entry = ee('Model')->make('ChannelEntry');
 			$this->entry->Channel = $this->channel;
+
+			$this->entry->ip_address = ee()->session->userdata['ip_address'];
+
+			// Assign defaults based on the channel
+			$this->entry->title = $this->channel->default_entry_title;
+			$this->entry->versioning_enabled = $this->channel->enable_versioning;
+
+			if (isset($this->channel->deft_category))
+			{
+				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+				if ($cat)
+				{
+					$this->entry->Categories[] = $cat;
+				}
+			}
+
+			// Assign defaults based on the ChannelFormSettings
+			$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
+			$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
 			return;
 		}
 

@@ -69,6 +69,11 @@ class Grid_ft extends EE_Fieldtype {
 	// Actual saving takes place in post_save so we have an entry_id
 	public function save($data)
 	{
+		if (is_null($data))
+		{
+			$data = array();
+		}
+
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
 		return ' ';

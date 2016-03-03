@@ -485,7 +485,7 @@ class Rte_lib {
 		// so it behaves as expected with conditional tags
 		if ($this->is_empty(trim($data)))
 		{
-			return NULL;
+			return '';
 		}
 
 		return $this->clean_data($data);

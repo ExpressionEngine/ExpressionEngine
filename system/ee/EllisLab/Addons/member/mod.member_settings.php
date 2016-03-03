@@ -1350,25 +1350,18 @@ class Member_settings extends Member {
 
 		$query = ee()->db->query("SELECT email, password FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
-		$VAL = new EE_Validate(
-								array(
-										'member_id'		=> ee()->session->userdata('member_id'),
-										'val_type'		=> 'update', // new or update
-										'fetch_lang' 	=> TRUE,
-										'require_cpw' 	=> FALSE,
-										'enable_log'	=> FALSE,
-										'email'			=> $_POST['email'],
-										'cur_email'		=> $query->row('email'),
-										'cur_password'	=> $_POST['password']
-									 )
-							);
+		$VAL = new EE_Validate(array(
+			'member_id'    => ee()->session->userdata('member_id'),
+			'val_type'     => 'update', // new or update
+			'fetch_lang'   => TRUE,
+			'require_cpw'  => TRUE,
+			'enable_log'   => FALSE,
+			'email'        => $_POST['email'],
+			'cur_email'    => $query->row('email'),
+			'cur_password' => $_POST['password']
+		));
 
 		$VAL->validate_email();
-
-		if ($_POST['email'] != $query->row('email') )
-		{
-			$VAL->password_safety_check();
-		}
 
 		if (count($VAL->errors) > 0)
 		{

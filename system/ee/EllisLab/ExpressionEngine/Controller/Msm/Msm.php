@@ -100,6 +100,19 @@ class Msm extends CP_Controller {
 
 		$vars['create_url'] = ee('CP/URL')->make('msm/create');
 
+		$license = ee('License')->getEELicense();
+		$vars['can_add'] = $license->canAddSites(ee('Model')->get('Site')->count());
+
+		if ( ! $vars['can_add'])
+		{
+			ee('CP/Alert')->makeInline('site-limit-reached')
+				->asIssue()
+				->withTitle(lang('site_limit_reached'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->cannotClose()
+				->now();
+		}
+
 		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
@@ -368,48 +381,17 @@ class Msm extends CP_Controller {
 			);
 		}
 
-		$vars['sections'] = array(
-			array(
-				array(
-					'title' => 'name',
-					'fields' => array(
-						'site_label' => array(
-							'type' => 'text',
-							'value' => '',
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'short_name',
-					'desc' => 'alphadash_desc',
-					'fields' => array(
-						'site_name' => array(
-							'type' => 'text',
-							'value' => '',
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'description',
-					'fields' => array(
-						'site_description' => array(
-							'type' => 'textarea',
-						)
-					)
-				),
-			)
-		);
-
 		ee()->view->cp_page_title = lang('create_site');
 
-		ee()->cp->add_js_script('plugin', 'ee_url_title');
-		ee()->javascript->output('
-			$("input[name=site_label]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=site_name]");
-			});
-		');
+		if ($can_add)
+		{
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=site_label]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=site_name]");
+				});
+			');
+		}
 
 		ee()->cp->render('settings/form', $vars);
 	}

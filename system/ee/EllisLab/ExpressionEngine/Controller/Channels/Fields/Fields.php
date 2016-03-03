@@ -213,6 +213,15 @@ class Fields extends AbstractChannelsController {
 			{
 				$field->save();
 
+				if (ee()->input->post('update_formatting') == 'y')
+				{
+					ee()->db->where('field_ft_'.$field->field_id. ' IS NOT NULL', NULL, FALSE);
+					ee()->db->update(
+						'channel_data',
+						array('field_ft_'.$field->field_id => $field->field_fmt)
+					);
+				}
+
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_field_success'))
