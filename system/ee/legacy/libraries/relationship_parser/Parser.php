@@ -221,13 +221,18 @@ class EE_Relationship_data_parser {
 			{
 				return $this->clear_node_tagdata($node, $tagdata);
 			}
+
+			$matches = array($match);
 		}
 
-		$tagdata = str_replace(
-			$match[0],
-			$this->replace($node, $match[1], $data),
-			$tagdata
-		);
+		foreach ($matches as $match)
+		{
+			$tagdata = str_replace(
+				$match[0],
+				$this->replace($node, $match[1], $data),
+				$tagdata
+			);
+		}
 
 		return $tagdata;
 	}
