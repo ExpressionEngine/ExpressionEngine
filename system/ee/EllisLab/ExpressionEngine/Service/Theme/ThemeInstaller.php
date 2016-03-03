@@ -146,12 +146,12 @@ class ThemeInstaller {
 		// Create the default_site directory if it doesn't exist
 		if ( ! is_dir($path_tmpl.'default_site'))
 		{
+			$old_umask = umask(0);
 			mkdir($path_tmpl.'default_site', DIR_WRITE_MODE);
+			umask($old_umask);
 		}
-		else
-		{
-			chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
-		}
+
+		chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
 
 		$theme_template_dir = $this->theme_path."ee/site/{$theme_name}/templates/";
 		foreach (directory_map($theme_template_dir) as $directory => $contents)
