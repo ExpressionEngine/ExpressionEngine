@@ -65,43 +65,23 @@ class Textarea_ft extends EE_Fieldtype {
 
 			ee()->javascript->set_global('markitup.settings', $markItUp);
 			ee()->cp->add_js_script(array('plugin' => array('markitup')));
-			ee()->javascript->output('$("textarea[data-markitup]").markItUp(EE.markitup.settings);');
+			ee()->javascript->output('
+				$("textarea[data-markitup]")
+					.not(".grid-textarea textarea")
+					.markItUp(EE.markitup.settings);
+
+				Grid.bind("textarea", "display", function(cell)
+				{
+					$("textarea[data-markitup]", cell).markItUp(EE.markitup.settings);
+				});
+			');
 
 			ee()->session->set_cache(__CLASS__, 'markitup_initialized', TRUE);
 		}
 
-		// Set a boolean telling if we're in Grid AND this textarea has
-		// markItUp enabled
-		$grid_markitup = ($this->content_type() == 'grid' &&
-			isset($this->settings['show_formatting_buttons']) &&
-			$this->settings['show_formatting_buttons'] == 1);
-
-		if ($grid_markitup)
-		{
-			// Load the Grid cell display binding only once
-			if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
-			{
-				ee()->javascript->output('
-					Grid.bind("textarea", "display", function(cell)
-					{
-						var textarea = $("textarea.markItUp", cell);
-
-						// Only apply file browser trigger if a field was found
-						if (textarea.size())
-						{
-							textarea.markItUp(EE.markitup.settings);
-							EE.publish.file_browser.textarea(cell);
-						}
-					});
-				');
-
-				ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
-			}
-		}
-
 		if (REQ == 'CP')
 		{
-			$class = ($grid_markitup) ? 'markItUp' : '';
+			$class = '';
 
 			$toolbar = FALSE;
 
@@ -177,8 +157,7 @@ class Textarea_ft extends EE_Fieldtype {
 			'name'	=> $this->name(),
 			'value'	=> $data,
 			'rows'	=> $this->settings['field_ta_rows'],
-			'dir'	=> $this->settings['field_text_direction'],
-			'class' => ($grid_markitup) ? 'markItUp' : ''
+			'dir'	=> $this->settings['field_text_direction']
 		));
 	}
 
