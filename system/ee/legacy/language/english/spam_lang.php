@@ -60,4 +60,5 @@ $lang = array(
 	'updating_vocabulary' => 'Updating Vocabulary',
 	'updating_parameters' => 'Updating Parameters',
 	'training_finished' => 'Training Finished',
+	'training_update_failed' => 'Could not update training data'
 );

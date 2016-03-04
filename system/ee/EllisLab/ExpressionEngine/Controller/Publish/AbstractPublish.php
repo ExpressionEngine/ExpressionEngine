@@ -163,10 +163,16 @@ abstract class AbstractPublish extends CP_Controller {
 		$table->setNoResultsText(lang('no_revisions'));
 
 		$data = array();
+		$authors = array();
 		$i = 1;
 
 		foreach ($entry->Versions as $version)
 		{
+			if ( ! isset($authors[$version->author_id]))
+			{
+				$authors[$version->author_id] = $version->Author->getMemberName();
+			}
+
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
 				'toolbar_items' => array(
 						'txt-only' => array(
@@ -185,7 +191,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->version_date->format('U')),
-					$version->Author->getMemberName(),
+					$authors[$version->author_id],
 					$toolbar
 				)
 			);
@@ -199,6 +205,11 @@ abstract class AbstractPublish extends CP_Controller {
 				$attrs = array('class' => 'selected');
 			}
 
+			if ( ! isset($authors[$entry->author_id]))
+			{
+				$authors[$entry->author_id] = $entry->Author->getMemberName();
+			}
+
 			// Current
 			$edit_date = ($entry->edit_date)
 				? ee()->localize->human_time($entry->edit_date->format('U'))
@@ -209,7 +220,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					$edit_date,
-					$entry->Author->getMemberName(),
+					$authors[$entry->author_id],
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
@@ -261,11 +272,6 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$action = ($entry->isNew()) ? 'create' : 'edit';
 
-		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
-		{
-			unset($_POST['author_id']);
-		}
-
 		// Get all the fields that should be in the DOM. Any that were not
 		// POSTed will be set to NULL. This addresses a bug where browsers
 		// do not POST unchecked checkboxes.
@@ -282,12 +288,19 @@ abstract class AbstractPublish extends CP_Controller {
 						continue;
 					}
 
-					if ( ! array_key_exists($field->getName(), $_POST))
+					$field_name = strstr($field->getName(), '[', TRUE) ?: $field->getName();
+
+					if ( ! array_key_exists($field_name, $_POST))
 					{
-						$_POST[$field->getName()] = NULL;
+						$_POST[$field_name] = NULL;
 					}
 				}
 			}
+		}
+
+		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+		{
+			unset($_POST['author_id']);
 		}
 
 		$entry->set($_POST);

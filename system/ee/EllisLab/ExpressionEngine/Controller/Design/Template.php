@@ -374,7 +374,7 @@ class Template extends AbstractDesignController {
 		$data = array();
 		$i = 1;
 
-		foreach ($template->Versions as $version)
+		foreach ($template->Versions->sortBy('item_date') as $version)
 		{
 			$attrs = array();
 
@@ -408,7 +408,7 @@ class Template extends AbstractDesignController {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->item_date),
-					$version->Author->getMemberName(),
+					$version->getAuthorName(),
 					$toolbar
 				)
 			);

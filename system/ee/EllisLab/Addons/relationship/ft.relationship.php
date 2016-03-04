@@ -667,6 +667,10 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->load->library('Relationships_ft_cp');
 		$util = ee()->relationships_ft_cp;
 
+		ee()->cp->add_js_script(array(
+			'file' => 'fields/relationship/settings',
+		));
+
 		$form = $this->_form();
 		$form->populate($data);
 		$values = $form->values();
@@ -678,6 +682,8 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_channels' => array(
 						'type' => 'checkbox',
+						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'wrap' => TRUE,
 						'choices' => $util->all_channels(),
 						'value' => ($values['channels']) ?: '--'
@@ -713,6 +719,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_categories' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'choices' => $util->all_categories(),
 						'value' => ($values['categories']) ?: '--'
 					)
@@ -725,6 +732,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_authors' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'choices' => $util->all_authors(),
 						'value' => ($values['authors']) ?: '--'
 					)
@@ -736,6 +744,8 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_statuses' => array(
 						'type' => 'checkbox',
+						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'wrap' => TRUE,
 						'choices' => $util->all_statuses(),
 						'value' => ($values['statuses']) ?: '--'

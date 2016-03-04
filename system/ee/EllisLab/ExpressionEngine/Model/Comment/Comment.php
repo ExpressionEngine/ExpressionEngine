@@ -88,7 +88,10 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->Author->updateAuthorStats();
+		if ($this->Author)
+		{
+			$this->Author->updateAuthorStats();
+		}
 		$this->updateCommentStats();
 	}
 
@@ -139,6 +142,14 @@ class Comment extends Model {
 		$stats->total_comments = $total_comments;
 		$stats->last_comment_date = $last_comment_date;
 		$stats->save();
+
+		// Update comment count for the entry
+		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
+
+		// Query builder while a Model bug gets sorted
+		ee()->db->set('comment_total', $total_entry_comments)
+			->where('entry_id',  $this->entry_id)
+			->update('channel_titles');
 	}
 
 }

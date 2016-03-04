@@ -50,6 +50,8 @@ $lang = array(
 
 'id' => 'ID',
 
+'and_n_others' => 'and %d others...',
+
 'encoded_email' => '(JavaScript must be enabled to view this email address)',
 
 'search' => 'Search',
@@ -388,6 +390,8 @@ https://support.ellislab.com/',
 "select_timezone" => "Select Timezone",
 
 "no_timezones" => "No Timezones",
+
+'curl_not_installed' => 'cURL is not installed on your server',
 
 // IGNORE
 ''=>'');

@@ -112,7 +112,8 @@ class Grid_model extends CI_Model {
 	public function uninstall()
 	{
 		// Get field IDs to drop corresponding field table
-		$grid_fields = ee()->db->distinct('field_id')
+		$grid_fields = ee()->db->select('field_id')
+			->distinct()
 			->get($this->_table)
 			->result_array();
 

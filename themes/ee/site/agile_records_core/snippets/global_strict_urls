@@ -1,4 +1,0 @@
-<!-- Strict URLS: https://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->
-{if segment_2 != ''}
-  {redirect="404"}
-{/if}
