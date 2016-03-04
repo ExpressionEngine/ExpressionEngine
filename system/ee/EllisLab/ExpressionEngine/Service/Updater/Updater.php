@@ -212,10 +212,14 @@ class Updater {
 	{
 		$this->filesystem->mkDir($this->getExtractedArchivePath());
 
-		if ($this->zip_archive->open($this->getArchiveFilePath()) === TRUE)
+		if (($response = $this->zip_archive->open($this->getArchiveFilePath())) === TRUE)
 		{
 			$this->zip_archive->extractTo($this->getExtractedArchivePath());
 			$this->zip_archive->close();
+		}
+		else
+		{
+			throw new UpdaterException('Could not unzip update archive. ZipArchive error code: ' . $response, 8);
 		}
 	}
 
