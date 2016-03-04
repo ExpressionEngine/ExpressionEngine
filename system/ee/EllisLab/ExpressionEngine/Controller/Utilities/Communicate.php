@@ -251,7 +251,16 @@ class Communicate extends Utilities {
 				break;
 
 			case 'html':
-				$text_fmt = 'xhtml';
+				// If we strip tags and it matches the message, then there was
+				// not any HTML in it and we'll format for them.
+				if ($message == strip_tags($message))
+				{
+					$text_fmt = 'xhtml';
+				}
+				else
+				{
+					$text_fmt = 'none';
+				}
 				break;
 		}
 
