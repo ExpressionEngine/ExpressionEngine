@@ -228,4 +228,188 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			$this->assertEquals(3, $e->getCode());
 		}
 	}
+
+	public function testDownloadPackage()
+	{
+		$request = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\PostRequest');
+
+		$this->curl->shouldReceive('post')->with(
+				$this->payload_url,
+				array('license' => $this->license_number)
+			)
+			->once()
+			->andReturn($request);
+
+		$request->shouldReceive('exec')
+			->once()
+			->andReturn('some data');
+
+		$request->shouldReceive('getHeader')
+			->with('http_code')
+			->once()
+			->andReturn('200');
+
+		$request->shouldReceive('getHeader')
+			->with('Content-Type')
+			->once()
+			->andReturn('application/zip');
+
+		$request->shouldReceive('getHeader')
+			->with('MD5-Hash')
+			->once()
+			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+
+		$this->config->shouldReceive('get')
+			->with('cache_path')
+			->andReturn('cache/path/');
+		$this->filesystem->shouldReceive('mkDir');
+
+		$this->filesystem->shouldReceive('write')
+			->with('cache/path/ee_update/ExpressionEngine.zip', 'some data', TRUE)
+			->once();
+
+		$this->filesystem->shouldReceive('md5File')
+			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->once()
+			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+
+		$request->shouldReceive('getHeader')
+			->with('MD5-Hash')
+			->once()
+			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+
+		$this->updater->downloadPackage();
+	}
+
+	public function testDownloadPackageExceptions()
+	{
+		$request = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\PostRequest');
+
+		$this->curl->shouldReceive('post')->with(
+				$this->payload_url,
+				array('license' => $this->license_number)
+			)
+			->andReturn($request);
+
+		$request->shouldReceive('exec')
+			->andReturn('some data');
+
+		$request->shouldReceive('getHeader')
+			->with('http_code')
+			->twice()
+			->andReturn('403');
+
+		try
+		{
+			$this->updater->downloadPackage();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(4, $e->getCode());
+		}
+
+		$request->shouldReceive('getHeader')
+			->with('http_code')
+			->andReturn('200');
+
+		$request->shouldReceive('getHeader')
+			->with('Content-Type')
+			->twice()
+			->andReturn('application/pdf');
+
+		try
+		{
+			$this->updater->downloadPackage();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(5, $e->getCode());
+		}
+
+		$request->shouldReceive('getHeader')
+			->with('Content-Type')
+			->andReturn('"application/zip"');
+
+		$request->shouldReceive('getHeader')
+			->with('MD5-Hash')
+			->once()
+			->andReturn(FALSE);
+
+		try
+		{
+			$this->updater->downloadPackage();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(6, $e->getCode());
+		}
+
+		$request->shouldReceive('getHeader')
+			->with('MD5-Hash')
+			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+
+		$this->config->shouldReceive('set')->with('is_site_on', 'n');
+		$this->config->shouldReceive('get')
+			->with('cache_path')
+			->andReturn('cache/path/');
+		$this->filesystem->shouldReceive('mkDir');
+
+		$this->filesystem->shouldReceive('write')
+			->with('cache/path/ee_update/ExpressionEngine.zip', 'some data', TRUE);
+
+		$this->filesystem->shouldReceive('md5File')
+			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->once()
+			->andReturn('bad hash');
+
+		try
+		{
+			$this->updater->downloadPackage();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(7, $e->getCode());
+		}
+	}
+
+	public function testUnzipPackage()
+	{
+		$this->config->shouldReceive('get')
+			->with('cache_path')
+			->andReturn('cache/path/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
+
+		$this->zip_archive->shouldReceive('open')
+			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->once()
+			->andReturn(TRUE);
+
+		$this->zip_archive->shouldReceive('extractTo')
+			->with('cache/path/ee_update/ExpressionEngine')
+			->once();
+
+		$this->zip_archive->shouldReceive('close')->once();
+
+		$this->updater->unzipPackage();
+
+		$this->zip_archive->shouldReceive('open')
+			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->once()
+			->andReturn(2);
+
+		try
+		{
+			$this->updater->unzipPackage();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(8, $e->getCode());
+		}
+	}
 }
