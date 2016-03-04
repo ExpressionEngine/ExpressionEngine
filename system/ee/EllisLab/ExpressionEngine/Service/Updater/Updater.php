@@ -195,10 +195,13 @@ class Updater {
 		// Write the file
 		$this->filesystem->write($this->getArchiveFilePath(), $data, TRUE);
 
+		// Grab the zip's MD5 hash to verify integrity
+		$hash = $this->filesystem->md5File($this->getArchiveFilePath());
+
 		// Make sure the file's MD5 matches what we were given in the header
-		if (trim($curl->getHeader('MD5-Hash'), '"') != md5_file($this->getArchiveFilePath()))
+		if (trim($curl->getHeader('MD5-Hash'), '"') != $hash)
 		{
-			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('MD5-Hash') . ' does not match ' . md5_file($this->getArchiveFilePath()), 7);
+			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('MD5-Hash') . ' does not match ' . $hash, 7);
 		}
 	}
 
