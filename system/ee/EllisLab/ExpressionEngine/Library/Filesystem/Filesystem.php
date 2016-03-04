@@ -63,7 +63,7 @@ class Filesystem {
 	public function write($path, $data, $overwrite = FALSE)
 	{
 		$path = $this->normalize($path);
-		
+
 		if ($this->isDir($path))
 		{
 			throw new FilesystemException("Cannot write file, path is a directory: {$path}");
@@ -433,6 +433,22 @@ class Filesystem {
 
 		fclose($fp);
 		return TRUE;
+	}
+
+	/**
+	 * Returns the MD5 hash for a file
+	 *
+	 * @param String $path Path to check
+	 * @return String MD5 hash of file
+	 */
+	public function md5File($filename)
+	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException("File does not exist: {$path}");
+		}
+
+		return md5_file($filename);
 	}
 
 	/**
