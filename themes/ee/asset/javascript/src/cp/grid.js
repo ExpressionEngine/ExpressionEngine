@@ -573,7 +573,7 @@ Grid.Settings.prototype = {
 
 		el.html(
 			el.html().replace(
-				new RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
+				RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
 				'name="grid[cols][' + new_namespace + ']'
 			)
 		);
@@ -606,11 +606,14 @@ Grid.Settings.prototype = {
 				.parents('.grid-item')
 				.find('.grid-col-settings-custom');
 
+			var new_namespace = customSettingsContainer.parents('.grid-item').attr('data-field-name');
+			var old_namespace = '(new_)?[0-9]{1,}';
+
 			// Namespace fieldnames for the current column
 			settings.html(
 				settings.html().replace(
-					RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-					customSettingsContainer.parents('.grid-item').data('fieldName')
+					RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
+					'name="grid[cols][' + new_namespace + ']'
 				)
 			);
 
