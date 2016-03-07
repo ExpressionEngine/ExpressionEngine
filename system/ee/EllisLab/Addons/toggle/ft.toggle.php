@@ -221,12 +221,13 @@ class Toggle_ft extends EE_Fieldtype {
 	protected function get_column_type($data, $grid = FALSE)
 	{
 		$id = ($grid) ? 'col_id' : 'field_id';
+		$default_value = ($grid) ? $data['field_default_value'] : $data['field_settings']['field_default_value'];
 
 		return array(
 			$id.'_'.$data[$id] => array(
 				'type'		=> 'TINYINT',
 				'null'      => FALSE,
-				'default'   => $data['field_settings']['field_default_value']
+				'default'   => $default_value
 			)
 		);
 	}
