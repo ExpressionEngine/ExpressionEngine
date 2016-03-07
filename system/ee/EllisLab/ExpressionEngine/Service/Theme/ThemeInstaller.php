@@ -120,6 +120,7 @@ class ThemeInstaller {
 		$this->createEntries($theme_name);
 		$this->setConfigItems($channel_set->config);
 		$this->setMemberTheme($theme_name);
+		$this->installModules($channel_set->modules);
 	}
 
 	/**
@@ -737,6 +738,17 @@ class ThemeInstaller {
 		}
 
 		ee()->config->update_site_prefs(array('member_theme' => $theme_name), array(1));
+	}
+
+	/**
+	 * Install required modules
+	 * @param array $modules Array of required modules
+	 * @return void
+	 */
+	private function installModules($modules)
+	{
+		ee()->load->library('addons');
+		ee()->addons->install_modules($modules);
 	}
 }
 
