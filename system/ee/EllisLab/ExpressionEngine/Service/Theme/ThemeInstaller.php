@@ -158,7 +158,13 @@ class ThemeInstaller {
 		{
 			$from_dir = $theme_template_dir.$directory.'/';
 			$to_dir = $path_tmpl."default_site/{$directory}/";
-			mkdir($to_dir, DIR_WRITE_MODE);
+
+			if ( ! is_dir($to_dir))
+			{
+				$old_umask = umask(0);
+				mkdir($to_dir, DIR_WRITE_MODE);
+				umask($old_umask);
+			}
 
 			// Copy partials over and force saving them to the database
 			$partials = array('_partials' => 'Snippet', '_variables' => 'GlobalVariable');
