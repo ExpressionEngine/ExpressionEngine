@@ -210,7 +210,7 @@ class EE_Relationship_data_parser {
 		}
 		else
 		{
-			if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			if ( ! preg_match('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $match))
 			{
 				return $tagdata;
 			}
@@ -221,6 +221,8 @@ class EE_Relationship_data_parser {
 			{
 				return $this->clear_node_tagdata($node, $tagdata);
 			}
+
+			$matches = array($match);
 		}
 
 		foreach ($matches as $match)
@@ -318,7 +320,7 @@ class EE_Relationship_data_parser {
 				return $match[0];
 			}
 
-			return substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
+			return substr($match[0], strlen(LD."if {$node->name()}:no_results".RD), -strlen(LD.'/'."if".RD));
 		}
 
 		return '';

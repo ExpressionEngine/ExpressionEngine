@@ -198,6 +198,10 @@ class Radio_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			),
@@ -233,6 +237,12 @@ class Radio_ft extends EE_Fieldtype {
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[0]['fields']['field_fmt']['note']);
+		}
 
 		return array('field_options_radio' => array(
 			'label' => 'field_options',

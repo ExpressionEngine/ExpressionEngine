@@ -60,9 +60,10 @@ class EE_Core {
 
 		// If someone's trying to access the CP but EE_APPPATH is defined, it likely
 		// means the installer is still active; redirect to clean path
-		if (defined('EE_APPPATH') && ee()->uri->segment(1) == 'cp')
+		if (ee()->config->item('subclass_prefix') != 'EE_' && ee()->uri->segment(1) == 'cp')
 		{
 			header('Location: '.SELF);
+			exit;
 		}
 
 		// some path constants to simplify things
@@ -76,12 +77,13 @@ class EE_Core {
 		define('PATH_CACHE',  SYSPATH . 'user/cache/');
 		define('PATH_TMPL',   SYSPATH . 'user/templates/');
 		define('PATH_JS',     'src');
+		define('PATH_DICT',   SYSPATH . 'user/config/');
 
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160215');
-		define('APP_VER',		'3.1.3');
+		define('APP_BUILD',		'20160302');
+		define('APP_VER',		'3.1.4');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -90,7 +92,6 @@ class EE_Core {
 		define('NBS', 			'&nbsp;');
 		define('BR', 			'<br />');
 		define('NL',			"\n");
-		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 		define('PASSWORD_MAX_LENGTH', 72);
 

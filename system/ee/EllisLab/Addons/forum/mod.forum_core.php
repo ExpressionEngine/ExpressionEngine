@@ -3599,7 +3599,15 @@ class Forum_Core extends Forum {
 				$row['avatar_filename'] != '' &&
 				ee()->session->userdata('display_avatars') == 'y' )
 			{
-				$avatar_path	= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
+				$avatar_url = ee()->config->slash_item('avatar_url');
+				$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+				if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
+				{
+					$avatar_url .= 'default/';
+				}
+
+				$avatar_path	= $avatar_url.$row['avatar_filename'];
 				$avatar_width	= $row['avatar_width'];
 				$avatar_height	= $row['avatar_height'];
 

@@ -658,7 +658,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_default_theme' => array(
 							'type' => 'select',
-							'choices' => $this->getForumThemes(),
+							'choices' => ee('ee:Theme')->listThemes('forum'),
 							'value' => $board->board_default_theme,
 						)
 					)
@@ -3267,35 +3267,6 @@ class Forum_mcp extends CP_Controller {
 
 		$UPD = new Forum_upd();
 		return $UPD->forum_set_base_permissions();
-	}
-
-	/**
-	 * Gets a list of the forum themes available
-	 *
-	 * @return array An associateive array of theme directories
-	 */
-	private function getForumThemes()
-	{
-		$themes = array();
-		$path = PATH_THIRD_THEMES.'forum/';
-
-		if ( ! $fp = @opendir($path))
-		{
-			return $themes;
-		}
-
-		while (FALSE !== ($folder = readdir($fp)))
-		{
-			if (@is_dir($path . $folder) && substr($folder, 0, 1) != '.')
-			{
-				$themes[$folder] = ucwords(str_replace("_", " ", $folder));
-			}
-		}
-
-		closedir($fp);
-		ksort($themes);
-
-		return $themes;
 	}
 
 }

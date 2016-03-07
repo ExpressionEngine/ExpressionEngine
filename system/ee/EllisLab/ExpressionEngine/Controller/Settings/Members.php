@@ -55,7 +55,7 @@ class Members extends Settings {
 		}
 
 		ee()->load->model('member_model');
-		$themes = $this->member_model->get_theme_list(PATH_MBR_THEMES);
+		$themes = ee('Theme')->listThemes('member');
 
 		$member_themes = array();
 		foreach ($themes as $file => $name)

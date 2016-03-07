@@ -4,14 +4,13 @@
 <?=form_open(ee('CP/URL')->make('utilities/translate/' . $language . '/save/' . $file), 'class="settings"')?>
 <?=ee('CP/Alert')->getAllInlines()?>
 <?php foreach ($keys as $key => $value):?>
-	<fieldset class="col-group required <?=form_error_class($key)?>">
+	<fieldset class="col-group">
 		<div class="setting-txt col w-8">
 			<h3><?=$value['original']?></h3>
 			<em></em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<input type="text" name="<?=$key?>" value="<?=set_value($key, $value['trans'])?>">
-			<?=form_error($key)?>
+			<input type="text" name="<?=$key?>" value='<?=set_value($key, $value['trans'])?>'>
 		</div>
 	</fieldset>
 

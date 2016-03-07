@@ -132,7 +132,7 @@ class Updater {
 		if ( ! IS_CORE)
 		{
 			ee()->load->model('template_model');
-			ee()->lang->load('template_router', ee()->lang->user_lang, FALSE, TRUE, EE_APPPATH);
+			ee()->lang->loadfile('template_router');
 			require_once EE_APPPATH . 'libraries/template_router/Route.php';
 
 			ee()->db->select('template_routes.template_id, route_required, route');

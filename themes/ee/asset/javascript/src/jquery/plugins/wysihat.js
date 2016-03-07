@@ -214,11 +214,11 @@ WysiHat.Editor.prototype = {
 				{
 					if (that.$field.is(':visible'))
 					{
-						that.$editor.height(that.$field.outerHeight());
+						that.$editor.outerHeight(that.$field.outerHeight());
 					}
 					else if (that.$editor.is(':visible'))
 					{
-						that.$field.height(that.$editor.outerHeight());
+						that.$field.outerHeight(that.$editor.outerHeight());
 					}
 				}
 			})
@@ -2174,14 +2174,14 @@ $.extend(WysiHat.Commands, {
 		if ($editor.is(':visible'))
 		{
 			$btn.find('b').text($btn.data('toggle-text'));
-			$tools.hide();
+			$tools.parents('ul.toolbar').addClass('disabled');
 			$editor.hide();
 			$field.show();
 		}
 		else
 		{
 			$btn.find('b').text(text);
-			$tools.show();
+			$tools.parents('ul.toolbar').removeClass('disabled');
 			$field.hide();
 			$editor.show();
 		}

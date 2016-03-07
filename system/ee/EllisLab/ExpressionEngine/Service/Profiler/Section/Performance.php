@@ -66,12 +66,13 @@ class Performance extends ProfilerSection {
 		$data = array();
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
 		{
-			$data[lang('profiler_memory')] = number_format($usage).' '.lang('bytes').' of '.ini_get('memory_limit');
+			$data[lang('profiler_memory')] = $this->formatMemoryString($usage).' of '.ini_get('memory_limit');
 		}
 		else
 		{
 			$data[lang('profiler_memory')] = lang('profiler_no_memory_usage');
 		}
+
 		$data = $data + $benchmarks;
 		$this->data = array('performance' => $data);
 	}
