@@ -840,7 +840,7 @@ class ChannelEntry extends ContentModel {
  	/**
 	 * Populate the Authors dropdown
 	 *
-	 * @param	object
+	 * @param   object  $field  ChannelEntry object
 	 * @return	void    Sets author field metaddata
 	 *
 	 * The following are included in the author list regardless of
