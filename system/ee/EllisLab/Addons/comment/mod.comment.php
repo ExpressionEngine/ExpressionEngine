@@ -1696,7 +1696,7 @@ class Comment {
 		// -------------------------------------------
 
 		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
-		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
+		$url = ee()->functions->fetch_site_index().$uri_string;
 
 		$data = array(
 			'action'		=> reduce_double_slashes($url),

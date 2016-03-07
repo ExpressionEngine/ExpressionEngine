@@ -286,6 +286,18 @@ class Channel extends StructureModel {
 		{
 			$this->syncCatGroupsWithLayouts();
 		}
+
+		if (isset($previous['enable_versioning']) && count($this->ChannelLayouts))
+		{
+			if ($this->getProperty('enable_versioning'))
+			{
+				$this->addRevisionTab();
+			}
+			else
+			{
+				$this->removeRevisionTab();
+			}
+		}
 	}
 
 	/**
@@ -340,6 +352,53 @@ class Channel extends StructureModel {
 					'collapsed' => FALSE
 				);
 				$field_layout[2]['fields'][] = $field_info;
+			}
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
+	private function addRevisionTab()
+	{
+		foreach ($this->ChannelLayouts as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+			$field_layout[] = array(
+				'id' => 'revisions',
+				'name' => 'revisions',
+				'visible' => TRUE,
+				'fields' => array(
+					array(
+						'field' => 'versioning_enabled',
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					),
+					array(
+						'field' => 'revisions',
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					)
+				)
+			);
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
+	private function removeRevisionTab()
+	{
+		foreach ($this->ChannelLayouts as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+
+			foreach ($field_layout as $i => $section)
+			{
+				if ($section['name'] == 'revisions')
+				{
+					array_splice($field_layout, $i, 1);
+					break;
+				}
 			}
 
 			$channel_layout->field_layout = $field_layout;

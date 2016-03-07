@@ -2708,7 +2708,7 @@ GRID_FALLBACK;
 						continue;
 					}
 
-					$field_data = (is_array($this->entry($field_name))) ? $this->entry($field_name) : explode('|', $this->entry($field_name));
+					$field_data = (is_array($this->entry('field_id_' . $field->field_id))) ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
 
 					$options[] = array(
 						'option_value' => $row,
@@ -2727,7 +2727,7 @@ GRID_FALLBACK;
 				{
 					foreach ($field_settings['options'] as $option_value => $option_name)
 					{
-						$field_data = (is_array($this->entry($field_name))) ? $this->entry($field_name) : preg_split('/[\r\n]+/', $this->entry($field_name));
+						$field_data = (is_array($this->entry('field_id_' . $field->field_id))) ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
 
 						$options[] = array(
 							'option_value' => $option_value,

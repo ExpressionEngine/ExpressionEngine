@@ -320,7 +320,7 @@ class EE_Relationship_data_parser {
 				return $match[0];
 			}
 
-			return substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
+			return substr($match[0], strlen(LD."if {$node->name()}:no_results".RD), -strlen(LD.'/'."if".RD));
 		}
 
 		return '';

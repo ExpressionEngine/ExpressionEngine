@@ -572,7 +572,7 @@ class Addons extends CP_Controller {
 
 				$model = ee('Model')->get('Extension')
 					->filter('class', $class_name)
-					->first();
+					->all();
 
 				$model->version = $addon_info->getVersion();
 				$model->save();
@@ -1842,7 +1842,7 @@ class Addons extends CP_Controller {
 		$extension_model = ee('Model')->get('Extension')
 			->filter('enabled', 'y')
 			->filter('class', $extension['class'])
-			->first();
+			->all();
 
 		$extension_model->settings = $settings;
 		$extension_model->save();

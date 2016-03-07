@@ -157,7 +157,7 @@ module GridSettings
   # returns a new GridSettingsColumn object representing the column
   def self.add_column
     find('.grid-wrap .grid-item:last-child li.add a').click
-    sleep 0.1 # Wait for DOM
+    sleep 0.2 # Wait for DOM
     node = find('.grid-wrap .grid-item:last-child')
     GridSettingsColumn.new(node)
   end
