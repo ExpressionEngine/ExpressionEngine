@@ -565,15 +565,16 @@ Grid.Settings.prototype = {
 		}
 
 		// Clear out column name field in new column because it has to be unique
-		el.find('input[name$="\\[name\\]"]').attr('value', '');
+		el.find('input[name$="\\[col_name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
 		var new_namespace = 'new_' + $('.grid-item', this.root).size();
+		var old_namespace = el.data('field-name');
 
 		el.html(
 			el.html().replace(
-				RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-				new_namespace
+				new RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
+				'name="grid[cols][' + new_namespace + ']'
 			)
 		);
 
