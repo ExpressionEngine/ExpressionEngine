@@ -821,7 +821,7 @@ class ChannelEntry extends ContentModel {
 
 	public function populateChannels($field)
 	{
-		$allowed_channel_ids =  (ee()->session->userdata('member_id') == 0
+		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
 			OR ee()->session->userdata('group_id') == 1
 			OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
@@ -840,6 +840,9 @@ class ChannelEntry extends ContentModel {
  	/**
 	 * Populate the Authors dropdown
 	 *
+	 * @param	object
+	 * @return	void    Sets author field metaddata
+	 *
 	 * The following are included in the author list regardless of
 	 * their channel posting permissions:
 	 *	  The current user
@@ -857,7 +860,8 @@ class ChannelEntry extends ContentModel {
 
 		if ( ! $author)
 		{
-			return $author_options;
+			$field->setItem('field_list_items', $author_options);
+			return;
 		}
 
 		$author_options[$author->getId()] = $author->getMemberName();
