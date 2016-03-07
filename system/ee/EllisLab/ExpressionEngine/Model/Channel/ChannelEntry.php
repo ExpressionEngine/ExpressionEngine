@@ -854,6 +854,12 @@ class ChannelEntry extends ContentModel {
 
 		// Default author
 		$author = $this->Author;
+
+		if ( ! $author)
+		{
+			return $author_options;
+		}
+
 		$author_options[$author->getId()] = $author->getMemberName();
 
 		if ($author->getId() != ee()->session->userdata('member_id'))
