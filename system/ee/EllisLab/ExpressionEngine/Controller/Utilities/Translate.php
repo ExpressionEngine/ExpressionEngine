@@ -341,11 +341,6 @@ class Translate extends Utilities {
 			$val = str_replace('<iframe', '', $val);
 			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
-			if (empty($val))
-			{
-				$val = lang($key);
-			}
-
 			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
 		}
 
