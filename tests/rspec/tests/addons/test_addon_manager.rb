@@ -361,7 +361,8 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should have_first_party_alert
       @page.first_party_alert.text.should include "Add-Ons Uninstalled"
-      @page.first_party_alert.text.should include addons.join(' ')
+      @page.first_party_alert.text.should include addons[0...4].join(' ')
+      @page.first_party_alert.text.should include "and #{addons[4..-1].count} others..."
     end
 
     # The settings buttons "work" (200 response)
