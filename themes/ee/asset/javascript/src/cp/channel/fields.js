@@ -16,7 +16,7 @@ $(document).ready(function () {
 	$('fieldset:visible input[type=hidden]').attr('disabled', false);
 
 	$('select[name="field_type"]').on('change', function() {
-		$('fieldset:visible input:hidden, select:hidden, textarea:hidden').attr('disabled', true);
+		$('fieldset input:hidden, select:hidden, textarea:hidden').attr('disabled', true);
 		$('fieldset:visible input[type=hidden], input:visible, select:visible, textarea:visible').attr('disabled', false);
 	});
 
