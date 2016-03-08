@@ -6,6 +6,7 @@ feature 'SQL Manager' do
     tables = []
     $db.query('SHOW TABLES').each(:as => :array) do |row|
       tables << row[0]
+      #
     end
     clear_db_result
 
