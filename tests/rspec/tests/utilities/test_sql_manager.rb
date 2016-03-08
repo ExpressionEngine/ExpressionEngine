@@ -6,11 +6,10 @@ feature 'SQL Manager' do
     tables = []
     $db.query('SHOW TABLES').each(:as => :array) do |row|
       tables << row[0]
-      #
     end
     clear_db_result
 
-    return tables
+    tables
   end
 
   before(:each) do
@@ -116,18 +115,23 @@ feature 'SQL Manager' do
 
     tables = get_tables
 
-    @page.tables.map {|source| source.text}.should == tables
+    # This checks that the list of tables (@pages.table) _includes_ the list of
+    # tables we retrieved earlier. The `*` in front of `tables` is a splat
+    # operator that takes the array and returns the values as agruments
+    # https://endofline.wordpress.com/2011/01/21/the-strange-ruby-splat/
+
+    @page.tables.map(&:text).should include(*tables)
 
     # Go ahead and test sorting
     @page.sort_links[0].click
     no_php_js_errors
-    @page.tables.map {|source| source.text}.should == tables.reverse
+    @page.tables.map(&:text).should include(*tables.reverse)
 
     # And search
     @page.search_field.set 'category'
     @page.search_btn.click
 
-    @page.tables.map {|source| source.text}.should == ['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse
+    @page.tables.map(&:text).should include(*['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse)
   end
 
   it 'should allow viewing of table contents' do
