@@ -436,19 +436,19 @@ class Filesystem {
 	}
 
 	/**
-	 * Returns the MD5 hash for a file
+	 * Returns the SHA1 hash for a file
 	 *
 	 * @param String $path Path to check
-	 * @return String MD5 hash of file
+	 * @return String SHA1 hash of file
 	 */
-	public function md5File($filename)
+	public function sha1File($filename)
 	{
-		if ( ! $this->exists($path))
+		if ( ! $this->exists($filename))
 		{
-			throw new FilesystemException("File does not exist: {$path}");
+			throw new FilesystemException("File does not exist: {$filename}");
 		}
 
-		return md5_file($filename);
+		return sha1_file($filename);
 	}
 
 	/**
