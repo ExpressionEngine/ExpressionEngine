@@ -109,6 +109,7 @@ class Updater {
 	 */
 	public function preflight()
 	{
+		// TODO: Also check for available disk space
 		$this->checkPermissions();
 		$this->takeSiteOffline();
 		$this->cleanUpOldUpgrades();
@@ -187,7 +188,7 @@ class Updater {
 			throw new UpdaterException('Could not download update. Unexpected MIME type response: ' . $curl->getHeader('Content-Type'), 5);
 		}
 
-		if ( ! $curl->getHeader('MD5-Hash'))
+		if ( ! $curl->getHeader('Package-Hash'))
 		{
 			throw new UpdaterException('Could not find hash header to verify zip archive integrity.', 6);
 		}
@@ -195,13 +196,13 @@ class Updater {
 		// Write the file
 		$this->filesystem->write($this->getArchiveFilePath(), $data, TRUE);
 
-		// Grab the zip's MD5 hash to verify integrity
-		$hash = $this->filesystem->md5File($this->getArchiveFilePath());
+		// Grab the zip's SHA1 hash to verify integrity
+		$hash = $this->filesystem->sha1File($this->getArchiveFilePath());
 
-		// Make sure the file's MD5 matches what we were given in the header
-		if (trim($curl->getHeader('MD5-Hash'), '"') != $hash)
+		// Make sure the file's SHA1 matches what we were given in the header
+		if (trim($curl->getHeader('Package-Hash'), '"') != $hash)
 		{
-			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('MD5-Hash') . ' does not match ' . $hash, 7);
+			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('Package-Hash') . ' does not match ' . $hash, 7);
 		}
 	}
 
@@ -228,7 +229,7 @@ class Updater {
 	 */
 	public function verifyZipContents()
 	{
-		// TODO: Need a manifest inside the zip that contains MD5s of every file,
+		// TODO: Need a manifest inside the zip that contains SHA1s of every file,
 		// then use it to verify each file
 	}
 

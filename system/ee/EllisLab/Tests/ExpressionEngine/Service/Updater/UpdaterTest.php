@@ -255,9 +255,9 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('application/zip');
 
 		$request->shouldReceive('getHeader')
-			->with('MD5-Hash')
+			->with('Package-Hash')
 			->once()
-			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
 		$this->config->shouldReceive('get')
 			->with('cache_path')
@@ -268,15 +268,15 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->with('cache/path/ee_update/ExpressionEngine.zip', 'some data', TRUE)
 			->once();
 
-		$this->filesystem->shouldReceive('md5File')
+		$this->filesystem->shouldReceive('sha1File')
 			->with('cache/path/ee_update/ExpressionEngine.zip')
 			->once()
-			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
 		$request->shouldReceive('getHeader')
-			->with('MD5-Hash')
+			->with('Package-Hash')
 			->once()
-			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
 		$this->updater->downloadPackage();
 	}
@@ -333,7 +333,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('"application/zip"');
 
 		$request->shouldReceive('getHeader')
-			->with('MD5-Hash')
+			->with('Package-Hash')
 			->once()
 			->andReturn(FALSE);
 
@@ -348,8 +348,8 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$request->shouldReceive('getHeader')
-			->with('MD5-Hash')
-			->andReturn('b6fd4bd51286ff9552b299e87b1c8dff');
+			->with('Package-Hash')
+			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
 		$this->config->shouldReceive('set')->with('is_site_on', 'n');
 		$this->config->shouldReceive('get')
@@ -360,7 +360,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('write')
 			->with('cache/path/ee_update/ExpressionEngine.zip', 'some data', TRUE);
 
-		$this->filesystem->shouldReceive('md5File')
+		$this->filesystem->shouldReceive('sha1File')
 			->with('cache/path/ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn('bad hash');
