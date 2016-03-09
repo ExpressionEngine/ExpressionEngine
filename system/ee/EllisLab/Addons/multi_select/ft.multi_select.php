@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Multi_select_ft extends EE_Fieldtype {
 
@@ -38,19 +38,26 @@ class Multi_select_ft extends EE_Fieldtype {
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
 
-		$text_direction = (isset($this->settings['field_text_direction']))
-			? $this->settings['field_text_direction'] : 'ltr';
+		$extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		if (REQ == 'CP')
 		{
 			return ee('View')->make('multi_select:publish')->render(array(
 				'field_name' => $this->field_name,
-				'values' => $values,
-				'options' => $field_options
+				'values'     => $values,
+				'options'    => $field_options,
+				'extra'      => $extra
 			));
 		}
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input"');
+		$extra .= ' dir="'.$this->get_setting('field_text_direction', 'ltr').'" class="multiselect_input"';
+
+		return form_multiselect(
+			$this->field_name.'[]',
+			$field_options,
+			$values,
+			$extra
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -217,6 +224,10 @@ class Multi_select_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			),
@@ -252,6 +263,12 @@ class Multi_select_ft extends EE_Fieldtype {
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[0]['fields']['field_fmt']['note']);
+		}
 
 		return array('field_options_multi_select' => array(
 			'label' => 'field_options',
@@ -365,5 +382,4 @@ class Multi_select_ft extends EE_Fieldtype {
 
 // END Multi_select_ft class
 
-/* End of file ft.multi_select.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.multi_select.php */
+// EOF

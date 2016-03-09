@@ -14,9 +14,9 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Layouts extends AbstractChannelsController {
 
@@ -277,6 +277,8 @@ class Layouts extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->removeStaleFields($channel_layout);
+
 		$channel = $channel_layout->Channel;
 
 		$entry = ee('Model')->make('ChannelEntry');
@@ -348,7 +350,6 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
 			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
-
 
 		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
 
@@ -475,5 +476,36 @@ class Layouts extends AbstractChannelsController {
 			->defer();
 	}
 
+	/**
+	 * Loops through the layout field data and removes any fields that are no
+	 * longer part of the channel.
+	 *
+	 * @param obj $channel_layout A ChannelLayout object
+	 * @return void
+	 */
+	private function removeStaleFields($channel_layout)
+	{
+		$field_layout = $channel_layout->field_layout;
+
+		$fields = $channel_layout->Channel->CustomFields->map(function($field) {
+			return "field_id_" . $field->field_id;
+		});
+
+		foreach ($field_layout as $i => $section)
+		{
+			foreach ($section['fields'] as $j => $field_info)
+			{
+				// Remove any fields that have since been deleted.
+				if (strpos($field_info['field'], 'field_id_') === 0
+					&& ! in_array($field_info['field'], $fields))
+				{
+					array_splice($field_layout[$i]['fields'], $j, 1);
+				}
+			}
+		}
+
+		$channel_layout->field_layout = $field_layout;
+	}
 }
+
 // EOF

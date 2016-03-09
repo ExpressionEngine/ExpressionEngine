@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class AbstractPublish extends CP_Controller {
 
@@ -220,7 +220,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					$edit_date,
-					$authors[$version->author_id],
+					$authors[$entry->author_id],
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
@@ -288,9 +288,11 @@ abstract class AbstractPublish extends CP_Controller {
 						continue;
 					}
 
-					if ( ! array_key_exists($field->getName(), $_POST))
+					$field_name = strstr($field->getName(), '[', TRUE) ?: $field->getName();
+
+					if ( ! array_key_exists($field_name, $_POST))
 					{
-						$_POST[$field->getName()] = NULL;
+						$_POST[$field_name] = NULL;
 					}
 				}
 			}
@@ -366,4 +368,5 @@ abstract class AbstractPublish extends CP_Controller {
 	}
 
 }
+
 // EOF

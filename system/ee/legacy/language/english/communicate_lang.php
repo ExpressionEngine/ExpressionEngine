@@ -79,5 +79,5 @@ $lang = array(
 
 ''=>''
 );
-/* End of file communicate_lang.php */
-/* Location: ./system/expressionengine/language/english/communicate_lang.php */
+
+// EOF

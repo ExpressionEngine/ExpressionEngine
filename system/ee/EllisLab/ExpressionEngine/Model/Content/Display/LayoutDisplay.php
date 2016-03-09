@@ -80,3 +80,5 @@ class LayoutDisplay {
 		return $fields;
 	}
 }
+
+// EOF

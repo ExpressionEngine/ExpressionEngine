@@ -40,5 +40,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file sites_lang.php */
-/* Location: ./system/expressionengine/language/english/sites_lang.php */
+// EOF

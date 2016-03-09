@@ -1,5 +1,25 @@
 <?php if ($has_localize_option): ?>
-<label class="choice mr<?php if ($localized == 'y') echo " chosen"; ?>"><input type="radio" name="<?=$localize_option_name?>" value="y"<?php if ($localized == 'y') echo ' checked="checked"'; ?>> <?=lang('localized_date')?></label>
-<label class="choice<?php if ($localized == 'n') echo " chosen"; ?>"><input type="radio" name="<?=$localize_option_name?>" value="n"<?php if ($localized == 'n') echo ' checked="checked"'; ?>> <?=lang('fixed_date')?></label>
+	<?php $extra = ($disabled) ? 'disabled' : '' ?>
+<label class="choice mr<?php if ($localized == 'y') echo " chosen"; ?>">
+	<?= form_radio($localize_option_name, 'y', ($localized == 'y'), $extra) ?>
+	<?=lang('localized_date')?>
+</label>
+<label class="choice<?php if ($localized == 'n') echo " chosen"; ?>">
+	<?= form_radio($localize_option_name, 'n', ($localized == 'n'), $extra) ?>
+	<?=lang('fixed_date')?>
+</label>
 <?php endif; ?>
-<input type="text" value="<?=$value?>" name="<?=$field_name?>" rel="date-picker"<?php if ($value): ?> data-timestamp="<?=ee()->localize->string_to_timestamp($value)?>"<?php endif; ?>>
+<?php
+$params = array('value' => $value, 'name' => $field_name, 'rel' => 'date-picker');
+
+if ($value)
+{
+	$params['data-timestamp'] = ee()->localize->string_to_timestamp($value);
+}
+
+if ($disabled)
+{
+	$params['disabled']	= 'disabled';
+}
+
+echo form_input($params);

@@ -31,6 +31,4 @@ $lang = array(
 	'valid_date' => 'The %s you submitted was not formatted correctly (year-month-day hour:minute)',
 );
 
-
-/* End of file channel_form_lang.php */
-/* Location: ./system/expressionengine/language/english/channel_form_lang.php */
+// EOF

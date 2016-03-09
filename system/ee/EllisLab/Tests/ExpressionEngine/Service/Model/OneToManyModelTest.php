@@ -544,3 +544,5 @@ class OneToManyChild extends Model {
     protected $parent_id;
 
 }
+
+// EOF

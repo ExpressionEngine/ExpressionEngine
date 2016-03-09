@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.8
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Libraries
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_SimplePie_Cache_Driver implements SimplePie_Cache_Base
 {
@@ -122,3 +122,5 @@ class EE_SimplePie_Cache_Driver implements SimplePie_Cache_Base
 		return ee()->cache->delete('/rss_parser/'.$this->name, Cache::GLOBAL_SCOPE);
 	}
 }
+
+// EOF

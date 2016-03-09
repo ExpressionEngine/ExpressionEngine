@@ -490,5 +490,5 @@ $lang = array(
 	"can_access_addon_settings" => "Add-ons",
 	"member_settings" => "Member Settings"
 );
-/* End of file members_lang.php */
-/* Location: ./system/expressionengine/language/english/members_lang.php */
+
+// EOF

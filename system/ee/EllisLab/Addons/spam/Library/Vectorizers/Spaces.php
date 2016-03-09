@@ -9,9 +9,9 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,15 +25,15 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Spaces implements Vectorizer {
 
 	/**
-	 * Calculates the ratio of whitespace to non-whitespace 
-	 * 
-	 * @param string $source The source text 
+	 * Calculates the ratio of whitespace to non-whitespace
+	 *
+	 * @param string $source The source text
 	 * @access public
 	 * @return float The calculated ratio
 	 */
@@ -54,5 +54,4 @@ class Spaces implements Vectorizer {
 
 }
 
-/* End of file Spaces.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Spaces.php */
+// EOF

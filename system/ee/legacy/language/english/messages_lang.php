@@ -254,5 +254,4 @@ you must remove them from your Recipients or CC fields: %overflow_names%',
 ''=>''
 );
 
-/* End of file messages_lang.php */
-/* Location: ./system/expressionengine/language/english/messages_lang.php */
+// EOF

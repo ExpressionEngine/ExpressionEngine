@@ -6,9 +6,9 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -24,7 +24,7 @@ require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.
  * @subpackage	Libraries
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Channel_form_lib
 {
@@ -2108,7 +2108,8 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$query = ee('Model')->get('Channel');
+		$query = ee('Model')->get('Channel')
+			->with('ChannelFormSettings');
 
 		if ($channel_id)
 		{
@@ -2188,6 +2189,25 @@ GRID_FALLBACK;
 		{
 			$this->entry = ee('Model')->make('ChannelEntry');
 			$this->entry->Channel = $this->channel;
+
+			$this->entry->ip_address = ee()->session->userdata['ip_address'];
+
+			// Assign defaults based on the channel
+			$this->entry->title = $this->channel->default_entry_title;
+			$this->entry->versioning_enabled = $this->channel->enable_versioning;
+
+			if (isset($this->channel->deft_category))
+			{
+				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+				if ($cat)
+				{
+					$this->entry->Categories[] = $cat;
+				}
+			}
+
+			// Assign defaults based on the ChannelFormSettings
+			$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
+			$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
 			return;
 		}
 
@@ -2688,7 +2708,7 @@ GRID_FALLBACK;
 						continue;
 					}
 
-					$field_data = (is_array($this->entry($field_name))) ? $this->entry($field_name) : explode('|', $this->entry($field_name));
+					$field_data = (is_array($this->entry('field_id_' . $field->field_id))) ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
 
 					$options[] = array(
 						'option_value' => $row,
@@ -2707,7 +2727,7 @@ GRID_FALLBACK;
 				{
 					foreach ($field_settings['options'] as $option_value => $option_name)
 					{
-						$field_data = (is_array($this->entry($field_name))) ? $this->entry($field_name) : preg_split('/[\r\n]+/', $this->entry($field_name));
+						$field_data = (is_array($this->entry('field_id_' . $field->field_id))) ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
 
 						$options[] = array(
 							'option_value' => $option_value,
@@ -3418,5 +3438,4 @@ SCRIPT;
 	}
 }
 
-/* End of file Channel_form_lib.php */
-/* Location: ./system/expressionengine/modules/channel/libraries/Channel_form_lib.php */
+// EOF

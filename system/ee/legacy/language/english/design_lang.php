@@ -1000,5 +1000,4 @@ You can drag and drop to rearrange the order.',
 ''=>''
 );
 
-/* End of file design_lang.php */
-/* Location: ./system/expressionengine/language/english/design_lang.php */
+// EOF

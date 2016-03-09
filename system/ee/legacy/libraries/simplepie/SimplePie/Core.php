@@ -2574,3 +2574,5 @@ class SimplePie_Core
 		}
 	}
 }
+
+// EOF

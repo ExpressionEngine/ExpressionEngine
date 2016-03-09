@@ -699,7 +699,7 @@ $lang = array(
 
 'name_of_dictionary_file' => 'Dictionary file',
 
-'name_of_dictionary_file_desc' => 'URL location of your <mark>dictionary</mark> file.',
+'name_of_dictionary_file_desc' => 'Name of your <mark>dictionary</mark> file in your config folder.',
 
 'form_security_settings' => 'Form Security Settings',
 
@@ -775,5 +775,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file settings_lang.php */
-/* Location: ./system/expressionengine/language/english/settings_lang.php */
+// EOF

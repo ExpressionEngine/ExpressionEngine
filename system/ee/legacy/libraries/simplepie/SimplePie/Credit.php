@@ -153,3 +153,4 @@ class SimplePie_Credit
 	}
 }
 
+// EOF

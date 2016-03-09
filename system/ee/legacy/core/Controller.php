@@ -8,9 +8,9 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -76,7 +76,7 @@ class_alias('Controller', 'CI_Controller');
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Controller extends CI_Controller {
 
@@ -99,7 +99,7 @@ class EE_Controller extends CI_Controller {
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class CP_Controller extends EE_Controller {
 
@@ -139,6 +139,4 @@ class CP_Controller extends EE_Controller {
 
 }
 
-
-/* End of file  */
-/* Location: system/expressionengine/libraries/core/EE_Controller.php */
+// EOF

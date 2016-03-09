@@ -13,9 +13,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Translate extends Utilities {
 
@@ -333,7 +333,8 @@ class Translate extends Utilities {
 
 		$str = '<?php'."\n".'$lang = array('."\n\n\n";
 
-		ee()->load->library('form_validation');
+		ee()->lang->loadfile($file);
+
 		foreach ($_POST as $key => $val)
 		{
 			$val = str_replace('<script', '', $val);
@@ -341,15 +342,6 @@ class Translate extends Utilities {
 			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
 			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
-
-			ee()->form_validation->set_rules($key, 'lang:' . $key, 'required');
-		}
-
-		if (ee()->form_validation->run() === FALSE)
-		{
-			ee()->view->set_message('issue', lang('translate_error'), lang('translate_error_desc'));
-
-			return $this->edit($language, $file);
 		}
 
 		$str .= "''=>''\n);\n\n";
@@ -383,5 +375,4 @@ class Translate extends Utilities {
 }
 // END CLASS
 
-/* End of file Translate.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Translate.php */
+// EOF

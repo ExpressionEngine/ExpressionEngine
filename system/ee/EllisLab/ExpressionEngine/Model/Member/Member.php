@@ -461,3 +461,5 @@ class Member extends ContentModel {
 		return 'm_field_id_';
 	}
 }
+
+// EOF

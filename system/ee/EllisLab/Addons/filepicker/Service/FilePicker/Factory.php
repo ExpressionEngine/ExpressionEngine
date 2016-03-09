@@ -62,3 +62,5 @@ class Factory {
 		return new Endpoint($request);
 	}
 }
+
+// EOF

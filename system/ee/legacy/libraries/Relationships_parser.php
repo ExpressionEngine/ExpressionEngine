@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -100,7 +100,7 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Relationships_parser {
 
@@ -145,6 +145,4 @@ class EE_Relationships_parser {
 	}
 }
 
-
-/* End of file Relationships.php */
-/* Location: ./system/expressionengine/libraries/Relationships.php */
+// EOF

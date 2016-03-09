@@ -395,3 +395,5 @@ class MemberGroup extends StructureModel {
 		return 'member';
 	}
 }
+
+// EOF

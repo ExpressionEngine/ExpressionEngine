@@ -368,3 +368,5 @@ class SimplePie_gzdecode
 		}
 	}
 }
+
+// EOF

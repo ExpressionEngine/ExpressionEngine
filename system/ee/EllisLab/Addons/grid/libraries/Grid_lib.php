@@ -7,9 +7,9 @@ use EllisLab\ExpressionEngine\Service\Validation\Result;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.7
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result;
  * @subpackage	Libraries
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Grid_lib {
@@ -112,25 +112,10 @@ class Grid_lib {
 				'required' => ($column['col_required'] == 'y')
 			);
 
-			switch ($column['col_type']) {
-				case 'rte':
-					$class = 'grid-rte';
-					break;
-				case 'textarea':
-					$class = 'grid-textarea';
-					break;
-				case 'relationship':
-					$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
-					break;
-				default:
-					$class = '';
-					break;
-			}
-
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
 				'attrs' => array(
-					'class' => $class,
+					'class' => $this->get_class_for_column($column),
 					'data-fieldtype' => $column['col_type'],
 					'data-column-id' => $column['col_id'],
 					'width' => $column['col_width'].'%',
@@ -166,6 +151,7 @@ class Grid_lib {
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
 					'attrs' => array(
+						'class' => $this->get_class_for_column($column),
 						'data-fieldtype' => $column['col_type'],
 						'data-column-id' => $column['col_id'],
 						$data_row_id_attr => $row_id,
@@ -189,6 +175,29 @@ class Grid_lib {
 		$grid->setData($data);
 
 		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
+	}
+
+	protected function get_class_for_column($column)
+	{
+		switch ($column['col_type']) {
+			case 'rte':
+				$class = 'grid-rte';
+				break;
+			case 'relationship':
+				$class = $column['col_settings']['allow_multiple'] ? 'grid-multi-relate' : 'grid-relate';
+				break;
+			case 'textarea':
+				$class = 'grid-textarea';
+				break;
+			case 'toggle':
+				$class = 'grid-toggle';
+				break;
+			default:
+				$class = '';
+				break;
+		}
+
+		return $class;
 	}
 
 	// ------------------------------------------------------------------------
@@ -930,8 +939,7 @@ class Grid_lib {
 				'field_name'	=> $field_name,
 				'column'		=> $column,
 				'fieldtypes'	=> $fieldtypes_dropdown,
-				'error_fields'  => $error_fields,
-				'new_column'	=> empty($column['col_id'])
+				'error_fields'  => $error_fields
 			),
 			TRUE
 		);
@@ -1036,5 +1044,4 @@ class Grid_lib {
 	}
 }
 
-/* End of file Grid_lib.php */
-/* Location: ./system/expressionengine/modules/grid/libraries/Grid_lib.php */
+// EOF

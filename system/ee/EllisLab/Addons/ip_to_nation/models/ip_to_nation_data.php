@@ -13,7 +13,7 @@ class Ip_to_nation_data extends CI_Model {
 	function find($ip)
 	{
 		$BIN = $this->to_binary($ip);
-		
+
 		// If IP contains 39 or 92, we end up with ASCII quote or backslash
 		// Let's be sure to escape!
 		$BIN = $this->db->escape_str($BIN);
@@ -189,6 +189,4 @@ class Ip_to_nation_data extends CI_Model {
 	}
 }
 
-/* End of file Iptonation_math.php */
-/* Location: system/expressionengine/modules/ip_to_nation/libraries/Iptonation_math.php
- */
+// EOF

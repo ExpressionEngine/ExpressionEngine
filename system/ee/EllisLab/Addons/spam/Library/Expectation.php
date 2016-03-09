@@ -7,9 +7,9 @@ namespace EllisLab\Addons\Spam\Library;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -23,7 +23,7 @@ namespace EllisLab\Addons\Spam\Library;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Expectation {
@@ -35,8 +35,8 @@ class Expectation {
 
 	/**
 	 * Load the initial data and set the current mean/variance
-	 * 
-	 * @param array An array of floats 
+	 *
+	 * @param array An array of floats
 	 * @access public
 	 * @return void
 	 */
@@ -50,7 +50,7 @@ class Expectation {
 
 	/**
 	 * Calculates and returns the sample mean
-	 * 
+	 *
 	 * @access public
 	 * @return Return the sample mean.
 	 */
@@ -62,7 +62,7 @@ class Expectation {
 	/**
      * Calculates and returns the variance
      * Note: sqrt(variance) == std deviation
-	 * 
+	 *
 	 * @access public
 	 * @return Return the sample variance.
 	 */
@@ -78,5 +78,4 @@ class Expectation {
 
 }
 
-/* End of file Expectation.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Expectation.php */
+// EOF

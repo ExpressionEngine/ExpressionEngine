@@ -1924,5 +1924,4 @@ class Api_channel_fields extends Api {
 
 // END Api_channel_fields class
 
-/* End of file Api_channel_fields.php */
-/* Location: ./system/expressionengine/libraries/api/Api_channel_fields.php */
+// EOF

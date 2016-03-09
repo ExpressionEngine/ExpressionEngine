@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.7
@@ -20,8 +20,8 @@
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2015, EllisLab, Inc.
- * @link			http://ellislab.com
+ * @copyright		Copyright (c) 2004 - 2016, EllisLab, Inc.
+ * @link			https://ellislab.com
  */
 
 class Markdown {
@@ -48,6 +48,4 @@ class Markdown {
 
 }
 
-
-/* End of file pi.markdown.php */
-/* Location: /system/expressionengine/third_party/markdown/pi.markdown.php */
+// EOF

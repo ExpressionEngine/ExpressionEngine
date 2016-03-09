@@ -632,5 +632,4 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 ''=>''
 );
 
-/* End of file member_lang.php */
-/* Location: ./system/expressionengine/language/english/member_lang.php */
+// EOF

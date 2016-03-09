@@ -140,3 +140,5 @@ class CustomTest extends \PHPUnit_Framework_TestCase {
 	}
 
 }
+
+// EOF

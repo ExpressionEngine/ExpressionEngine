@@ -50,5 +50,4 @@ if (defined('REQ') && REQ == 'CP')
 	$route['404_override'] = "cp/error/file_not_found";
 }
 
-/* End of file routes.php */
-/* Location: ./system/expressionengine/config/routes.php */
+// EOF

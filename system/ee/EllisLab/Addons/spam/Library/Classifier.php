@@ -7,9 +7,9 @@ namespace EllisLab\Addons\Spam\Library;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -23,7 +23,7 @@ namespace EllisLab\Addons\Spam\Library;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Classifier {
@@ -38,7 +38,7 @@ class Classifier {
 
 	/**
 	 * Train the classifier on the provided training corpus
-	 * 
+	 *
 	 * @param array $training  An array of feature vectors using classes as keys
 	 * @param Collection  $vocabulary An instantiatied Collection
 	 * @access public
@@ -55,7 +55,7 @@ class Classifier {
 	/**
 	 * Returns the probability that a given text belongs to the specified class.
 	 * This uses a gaussian naive bayes classifier.
-	 * 
+	 *
 	 * @param string $source  The text to be classified.
 	 * @param string $class   The class to test for.
 	 * @access public
@@ -64,7 +64,7 @@ class Classifier {
 	public function classify($source, $class)
 	{
 		$orig = $source;
-		$source = $this->corpus->transform($source); 
+		$source = $this->corpus->transform($source);
 		$other = array_diff($this->classes, array($class));
 		$other = array_shift($other);
 		$class = $this->training[$class];
@@ -115,5 +115,4 @@ class Classifier {
 
 }
 
-/* End of file Classifier.php */
-/* Location: ./system/expressionengine/modules/spam/Library/Classifier.php */
+// EOF

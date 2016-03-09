@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.4
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	File_field
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class File_field {
@@ -430,7 +430,7 @@ class File_field {
 		// Query for files based on file names and directory ID
 		if ( ! empty($file_names))
 		{
-			$file_names = ee()->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
+			$file_names = $this->get_files_by_name($file_names, $dir_ids);
 		}
 
 		$file_ids = array_diff($file_ids, $this->_file_ids);
@@ -448,6 +448,49 @@ class File_field {
 			$file_names,
 			$file_ids
 		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Queries for files based on file name using the Models and returns a
+	 * File_field library-compatible array of file information
+	 *
+	 * @param	array	$file_names	Array of file names to search for
+	 * @param	int 	$dir_ids	Array of directory IDs to search in
+	 * @return 	array	File data as array, with model object accessible on 'model_object' key
+	 */
+	private function get_files_by_name($file_names, $dir_ids)
+	{
+		if (empty($file_names) OR empty($dir_ids))
+		{
+			return FALSE;
+		}
+
+		if ( ! is_array($file_names))
+		{
+			$file_names = array($file_names);
+		}
+
+		if ( ! is_array($dir_ids))
+		{
+			$dir_ids = array($dir_ids);
+		}
+
+		$files = ee('Model')->get('File')
+			->with('UploadDestination')
+			->filter('file_name', 'IN', $file_names)
+			->filter('upload_location_id', 'IN', $dir_ids)
+			->all();
+
+		$files_as_array = array();
+
+		foreach ($files as $file)
+		{
+			$files_as_array[] = array_merge($file->toArray(), array('model_object' => $file));
+		}
+
+		return $files_as_array;
 	}
 
 	// ------------------------------------------------------------------------
@@ -601,11 +644,22 @@ class File_field {
 
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
-		foreach($manipulations as $m)
+		if ( ! empty($manipulations))
 		{
-			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
+			foreach($manipulations as $manipulation)
+			{
+				$file['url:'.$manipulation->short_name] = $file['path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
 
+				$dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
+
+				if ($dimensions)
+				{
+					$file['width:'.$manipulation->short_name]  = $dimensions['width'];
+					$file['height:'.$manipulation->short_name] = $dimensions['height'];
+				}
+			}
 		}
+
 		return $file;
 	}
 
@@ -667,26 +721,6 @@ class File_field {
 		}
 
 		return $this->_upload_prefs;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Gets dimensions for an upload directory and caches them
-	 *
-	 * @param int $dir_id	ID of upload directory
-	 * @return array		Array of image manipulation settings
- 	 */
-	private function _get_dimensions_by_dir_id($dir_id)
-	{
-		if ( ! isset($this->_manipulations[$dir_id]))
-		{
-			ee()->load->model('file_model');
-
-			$this->_manipulations[$dir_id] = ee()->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
-		}
-
-		return $this->_manipulations[$dir_id];
 	}
 
 	// ------------------------------------------------------------------------
@@ -769,9 +803,26 @@ class File_field {
 		));
 	}
 
+	/**
+	 * Gets dimensions for an upload directory and caches them
+	 *
+	 * @param int $dir_id	ID of upload directory
+	 * @return array		Array of image manipulation settings
+	 */
+	private function _get_dimensions_by_dir_id($dir_id)
+	{
+		if ( ! isset($this->_manipulations[$dir_id]))
+		{
+			$this->_manipulations[$dir_id] = ee('Model')->get('FileDimension')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('upload_location_id', $dir_id)
+			->all();
+		}
+
+		return $this->_manipulations[$dir_id];
+	}
 }
 
 // END File_field class
 
-/* End of file File_field.php */
-/* Location: ./system/expressionengine/libraries/File_field.php */
+// EOF

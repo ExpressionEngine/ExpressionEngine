@@ -11,5 +11,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file jquery_lang.php */
-/* Location: ./system/expressionengine/language/english/jquery_lang.php */
+// EOF

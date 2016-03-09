@@ -36,3 +36,5 @@ class Index {
 		return isset($this->index[$key]);
 	}
 }
+
+// EOF

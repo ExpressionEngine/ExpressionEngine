@@ -12,9 +12,9 @@ use EllisLab\ExpressionEngine\Library\CP;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Logs extends CP_Controller {
 
@@ -149,5 +149,4 @@ class Logs extends CP_Controller {
 }
 // END CLASS
 
-/* End of file Logs.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Logs.php */
+// EOF

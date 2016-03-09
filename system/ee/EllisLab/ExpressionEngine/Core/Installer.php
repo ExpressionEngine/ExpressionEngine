@@ -16,3 +16,5 @@ class Installer extends Core {
 		parent::boot();
 	}
 }
+
+// EOF

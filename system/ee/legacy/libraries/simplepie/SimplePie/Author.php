@@ -154,3 +154,4 @@ class SimplePie_Author
 	}
 }
 
+// EOF

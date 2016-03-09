@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class El_pings {
@@ -60,7 +60,7 @@ class El_pings {
 					'php_version'		=> PHP_VERSION
 				);
 
-				if ( ! $registration = $this->_do_ping('http://ping.ellislab.com/register.php', $payload))
+				if ( ! $registration = $this->_do_ping('https://ping.ellislab.com/register.php', $payload))
 				{
 					// save the failed request for a day only
 					ee()->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
@@ -109,7 +109,7 @@ class El_pings {
 		{
 			$version_file = array();
 
-			if ( ! $version_info = $this->_do_ping('http://versions.ellislab.com/versions_ee3.txt'))
+			if ( ! $version_info = $this->_do_ping('https://versions.ellislab.com/versions_ee3.txt'))
 			{
 				$version_file['error'] = TRUE;
 			}
@@ -263,5 +263,4 @@ class El_pings {
 }
 // END CLASS
 
-/* End of file El_pings.php */
-/* Location: ./system/expressionengine/libraries/El_pings.php */
+// EOF

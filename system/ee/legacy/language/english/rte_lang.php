@@ -189,5 +189,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file rte_lang.php */
-/* Location: ./system/expressionengine/language/english/rte_lang.php */
+// EOF

@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  * @subpackage	Category
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class ChannelField extends FieldModel {
 
@@ -189,7 +189,7 @@ class ChannelField extends FieldModel {
 					{
 						if ($field_info['field'] == 'field_id_' . $this->field_id)
 						{
-							unset($field_layout[$i]['fields'][$j]);
+							array_splice($field_layout[$i]['fields'], $j, 1);
 							break 2;
 						}
 					}
@@ -277,7 +277,7 @@ class ChannelField extends FieldModel {
 				{
 					// Reset it and return an error.
 					$this->field_type = $previous_value;
-					return lang('inavlid_field_type');
+					return lang('invalid_field_type');
 				}
 			}
 		}
@@ -286,3 +286,5 @@ class ChannelField extends FieldModel {
 	}
 
 }
+
+// EOF

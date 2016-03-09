@@ -110,5 +110,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file blacklist_lang.php */
-/* Location: ./system/expressionengine/language/english/blacklist_lang.php */
+// EOF

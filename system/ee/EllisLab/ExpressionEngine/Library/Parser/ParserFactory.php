@@ -7,9 +7,9 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.9.0
  * @filesource
  */
@@ -23,7 +23,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class ParserFactory {
 
@@ -33,3 +33,4 @@ class ParserFactory {
 	}
 }
 
+// EOF

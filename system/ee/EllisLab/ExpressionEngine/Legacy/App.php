@@ -239,3 +239,5 @@ class App {
 		class_alias('EE_Security', 'CI_Security');
 	}
 }
+
+// EOF

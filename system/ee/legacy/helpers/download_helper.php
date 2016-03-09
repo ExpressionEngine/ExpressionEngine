@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -76,6 +76,4 @@ if ( ! function_exists('force_download'))
 	}
 }
 
-
-/* End of file download_helper.php */
-/* Location: ./system/helpers/download_helper.php */
+// EOF

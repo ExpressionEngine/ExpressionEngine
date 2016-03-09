@@ -22,7 +22,7 @@
  * @subpackage	Helpers
  * @category	Helpers
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 // ------------------------------------------------------------------------
@@ -623,5 +623,4 @@ if ( ! function_exists('_parse_attributes'))
 
 // --------------------------------------------------------------------
 
-/* End of file EE_url_helper.php */
-/* Location: ./system/expressionengine/helpers/EE_url_helper.php */
+// EOF

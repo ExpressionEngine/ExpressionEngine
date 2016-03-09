@@ -127,11 +127,11 @@ $lang = array(
 
 'error_cannot_hide_tab' => 'Cannot Hide Tab',
 
-'error_tab_has_required_fields' => '<b>%s</b> contains at least one required field and cannot be hidden. Plese move the required field(s) to another tab.',
+'error_tab_has_required_fields' => '<b>%s</b> contains at least one required field and cannot be hidden. Please move the required field(s) to another tab.',
 
 'error_cannot_remove_tab' => 'Cannot Remove Tab',
 
-'error_tab_has_fields' => '<b>%s</b> contains at least one field and cannot be removed. Plese move all fields to another tab.',
+'error_tab_has_fields' => '<b>%s</b> contains at least one field and cannot be removed. Please move all fields to another tab.',
 
 'assigned_to' => 'assigned to',
 
@@ -657,5 +657,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file channel_lang.php */
-/* Location: ./system/expressionengine/language/english/channel_lang.php */
+// EOF

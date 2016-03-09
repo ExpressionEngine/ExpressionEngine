@@ -6,8 +6,8 @@
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2015, EllisLab, Inc.
- * @link			http://ellislab.com
+ * @copyright		Copyright (c) 2004 - 2016, EllisLab, Inc.
+ * @link			https://ellislab.com
  */
 
 
@@ -42,5 +42,4 @@ class Xml_encode {
 }
 // END CLASS
 
-/* End of file pi.xml_encode.php */
-/* Location: ./system/expressionengine/plugins/pi.xml_encode.php */
+// EOF

@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @subpackage	File
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class File extends Model {
 
@@ -75,6 +75,33 @@ class File extends Model {
 	protected $modified_by_member_id;
 	protected $modified_date;
 	protected $file_hw_original;
+
+	public function get__width()
+	{
+		$dimensions = explode(" ", $this->getProperty('file_hw_original'));
+		return $dimensions[1];
+	}
+
+	public function get__height()
+	{
+		$dimensions = explode(" ", $this->getProperty('file_hw_original'));
+		return $dimensions[0];
+	}
+
+	public function get__file_hw_original()
+	{
+		if (empty($this->file_hw_original))
+		{
+			ee()->load->library('filemanager');
+			$image_dimensions = ee()->filemanager->get_image_dimensions($this->getAbsolutePath());
+			if ($image_dimensions !== FALSE)
+			{
+				$this->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
+			}
+		}
+
+		return $this->file_hw_original;
+	}
 
 	/**
 	 * Uses the file's mime-type to determine if the file is an image or not.
@@ -207,3 +234,5 @@ class File extends Model {
 	}
 
 }
+
+// EOF

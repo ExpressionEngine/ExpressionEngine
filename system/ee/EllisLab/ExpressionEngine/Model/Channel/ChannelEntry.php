@@ -963,3 +963,5 @@ class ChannelEntry extends ContentModel {
 		return $list;
 	}
 }
+
+// EOF

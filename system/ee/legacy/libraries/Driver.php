@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Libraries
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Driver_Library {
 
@@ -319,5 +319,4 @@ class EE_Driver {
 class_alias('EE_Driver_Library', 'CI_Driver_Library');
 class_alias('EE_Driver', 'CI_Driver');
 
-/* End of file Driver.php */
-/* Location: ./system/libraries/Driver.php */
+// EOF

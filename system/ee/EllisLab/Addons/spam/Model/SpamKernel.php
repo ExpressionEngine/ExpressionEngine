@@ -32,3 +32,5 @@ class SpamKernel extends Model {
 	protected $count;
 
 }
+
+// EOF

@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Output {
 
@@ -541,7 +541,21 @@ class EE_Output {
 			$row['template_data']  = str_replace('{'.$key.'}', $val, $row['template_data'] );
 		}
 
-		echo  stripslashes($row['template_data'] );
+		$output = stripslashes($row['template_data']);
+
+		// -------------------------------------------
+		// 'output_show_message' hook.
+		//  - Modify the HTML output of the message
+		//  - added 3.2.0
+		//
+			if (ee()->extensions->active_hook('output_show_message') === TRUE)
+			{
+				$output = ee()->extensions->call('output_show_message', $data, $output);
+			}
+		//
+		// -------------------------------------------
+
+		echo $output;
 		exit;
 	}
 
@@ -710,5 +724,4 @@ class EE_Output {
 }
 // END CLASS
 
-/* End of file EE_Output.php */
-/* Location: ./system/expressionengine/libraries/EE_Output.php */
+// EOF

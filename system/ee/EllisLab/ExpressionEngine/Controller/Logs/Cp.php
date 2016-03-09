@@ -10,9 +10,9 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -26,7 +26,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Cp extends Logs {
 
@@ -137,5 +137,4 @@ class Cp extends Logs {
 }
 // END CLASS
 
-/* End of file CP.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Cp.php */
+// EOF

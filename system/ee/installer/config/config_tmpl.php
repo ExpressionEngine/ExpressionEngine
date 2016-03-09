@@ -133,6 +133,4 @@ $config['encryption_key'] = '{encryption_key}';
 */
 $config['rewrite_short_tags'] = {rewrite_short_tags};
 
-
-/* End of file config.php */
-/* Location: ./system/expressionengine/config/config.php */
+// EOF

@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @subpackage	Comment Module
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Comment extends Model {
 
@@ -88,24 +88,27 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->Author->updateAuthorStats();
+		if ($this->Author)
+		{
+			$this->Author->updateAuthorStats();
+		}
+
 		$this->updateCommentStats();
 	}
 
 	public function onAfterDelete()
 	{
-		if ( ! $this->Author)
+		if ($this->Author)
 		{
-			return;
+			// store the author and dissociate. otherwise saving the author will
+			// attempt to save this entry to ensure relationship integrity.
+			// TODO make sure everything is already dissociated when we hit this
+			$last_author = $this->Author;
+			$this->Author = NULL;
+
+			$last_author->updateAuthorStats();
 		}
 
-		// store the author and dissociate. otherwise saving the author will
-		// attempt to save this entry to ensure relationship integrity.
-		// TODO make sure everything is already dissociated when we hit this
-		$last_author = $this->Author;
-		$this->Author = NULL;
-
-		$last_author->updateAuthorStats();
 		$this->updateCommentStats();
 		ee()->functions->clear_caching('all');
 	}
@@ -150,3 +153,5 @@ class Comment extends Model {
 	}
 
 }
+
+// EOF

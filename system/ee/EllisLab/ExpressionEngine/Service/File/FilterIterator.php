@@ -39,3 +39,5 @@ class FilterIterator extends \FilterIterator {
 	}
 
 }
+
+// EOF

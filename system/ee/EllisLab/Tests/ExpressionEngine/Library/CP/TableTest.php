@@ -1497,3 +1497,5 @@ class Localize
 		return strtotime($human_string);
 	}
 }
+
+// EOF

@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -406,6 +406,4 @@ class CI_DB_utility extends CI_DB_forge {
 
 }
 
-
-/* End of file DB_utility.php */
-/* Location: ./system/database/DB_utility.php */
+// EOF

@@ -522,3 +522,5 @@ class OneToOneChild extends Model {
     protected $parent_id;
 
 }
+
+// EOF

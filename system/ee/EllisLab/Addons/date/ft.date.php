@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Date_ft extends EE_Fieldtype {
 
@@ -148,22 +148,23 @@ class Date_ft extends EE_Fieldtype {
 		{
 			// primarily handles default expiration, comment expiration, etc.
 			// in this context 'offset' is unrelated to localization.
-			$offset = isset($this->settings['default_offset']) ? $this->settings['default_offset'] : 0;
+			$offset = $this->get_setting('default_offset', 0);
 
 			if ( ! $field_data && ! $offset)
 			{
 				$field_data = $date;
 
-				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
+				if ($this->get_setting('always_show_date'))
 				{
 					$custom_date = ee()->localize->human_time();
 				}
 			}
 			else	// Everything else
 			{
-				if (isset($this->settings['field_dt']) AND $this->settings['field_dt'] != '')
+				$field_dt = $this->get_setting('field_dt');
+				if ( ! empty($field_dt))
 				{
-					$localize = $this->settings['field_dt'];
+					$localize = $field_dt;
 				}
 
 				if ( ! $field_data && $offset)
@@ -235,6 +236,7 @@ class Date_ft extends EE_Fieldtype {
 			'value' => $custom_date,
 			'localize_option_name' => $date_local,
 			'localized' => $localized,
+			'disabled' => $this->get_setting('field_disabled')
 		));
 	}
 
@@ -374,5 +376,4 @@ class Date_ft extends EE_Fieldtype {
 
 // END Date_ft class
 
-/* End of file ft.date.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.date.php */
+// EOF

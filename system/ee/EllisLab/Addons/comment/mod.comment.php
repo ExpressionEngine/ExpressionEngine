@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Comment {
 
@@ -1696,7 +1696,7 @@ class Comment {
 		// -------------------------------------------
 
 		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
-		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
+		$url = ee()->functions->fetch_site_index(TRUE).$uri_string;
 
 		$data = array(
 			'action'		=> reduce_double_slashes($url),
@@ -3439,5 +3439,4 @@ CMT_EDIT_SCR;
 }
 // END CLASS
 
-/* End of file mod.comment.php */
-/* Location: ./system/expressionengine/modules/comment/mod.comment.php */
+// EOF

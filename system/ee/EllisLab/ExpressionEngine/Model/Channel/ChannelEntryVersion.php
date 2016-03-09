@@ -44,3 +44,5 @@ class ChannelEntryVersion extends Model {
 	protected $version_data;
 
 }
+
+// EOF
