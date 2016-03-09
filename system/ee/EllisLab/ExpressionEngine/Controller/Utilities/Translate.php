@@ -306,7 +306,7 @@ class Translate extends Utilities {
 			{
 				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
 				$keys[$key]['original'] = $val;
-				$keys[$key]['trans'] = $trans;
+				$keys[$key]['trans'] = str_replace("'", "&#39;", $trans);
 			}
 		}
 
