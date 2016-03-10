@@ -237,7 +237,6 @@ ImageChooser.prototype = {
 
 		this._add_hidden_field();
 		this._bind_button();
-		this._bind_form_submission();
 	},
 
 	/**
@@ -328,34 +327,6 @@ ImageChooser.prototype = {
 
 		this.finalize();
 		this.finalize = $.noop;
-	},
-
-	/**
-	 * On form submission, convert file upload paths back to our
-	 * {filedir_n} format for storage in the database.
-	 */
-	_bind_form_submission: function() {
-		this.$editor.parents('form').submit($.proxy(this, '_replace_paths'));
-	},
-
-	/**
-	 * Go through the field and replace all known paths with their
-	 * {filedir_n} equivalents
-	 */
-	_replace_paths: function() {
-		var folders = this.settings.folders;
-
-		$('.WysiHat-field').each(function() {
-			var value = this.value,
-				path_re;
-
-			for (path in folders) {
-				path_re = new RegExp(path, 'g');
-				value = value.replace(path_re, folders[path]);
-			}
-
-			this.value = value;
-		});
 	}
 };
 
