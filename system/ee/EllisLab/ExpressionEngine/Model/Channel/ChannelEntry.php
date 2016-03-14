@@ -989,6 +989,11 @@ class ChannelEntry extends ContentModel {
 
 		return $list;
 	}
+
+	public function getAuthorName()
+	{
+		return ($this->author_id) ? $this->Author->getMemberName() : '';
+	}
 }
 
 // EOF
