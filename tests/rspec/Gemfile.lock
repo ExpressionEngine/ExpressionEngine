@@ -36,7 +36,7 @@ GEM
     mime-types (2.99)
     mini_portile2 (2.0.0)
     minitest (5.8.0)
-    mysql2 (0.3.17)
+    mysql2 (0.4.3)
     nokogiri (1.6.7)
       mini_portile2 (~> 2.0.0.rc2)
     rack (1.6.4)
