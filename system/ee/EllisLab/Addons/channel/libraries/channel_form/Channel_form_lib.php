@@ -2206,8 +2206,11 @@ GRID_FALLBACK;
 			}
 
 			// Assign defaults based on the ChannelFormSettings
-			$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
-			$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+			if ($this->channel->ChannelFormSettings)
+			{
+				$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
+				$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+			}
 			return;
 		}
 
