@@ -4219,7 +4219,8 @@ class Channel {
 				// contain a '/'.  So we'll try to get the category the correct way first, and if
 				// it fails, we'll try the whole $qstring
 
-				$cut_qstring = array_shift($temp = explode('/', $qstring));
+				$temp = explode('/', $qstring);
+				$cut_qstring = array_shift($temp);
 
 				$result = ee()->db->query("SELECT cat_id FROM exp_categories
 									  WHERE cat_url_title='".ee()->db->escape_str($cut_qstring)."'
