@@ -256,6 +256,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	{
 		if ( ! is_bool($val))
 		{
+			ee()->load->library('logger');
 			ee()->logger->deprecated('3.2.0', 'Use CI_DB_active_rec::distinct() with a boolean parameter only.');
 		}
 
