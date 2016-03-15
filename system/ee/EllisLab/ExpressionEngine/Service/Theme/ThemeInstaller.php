@@ -604,6 +604,21 @@ class ThemeInstaller {
 					}
 				}
 
+				if (isset($entry_data->categories))
+				{
+					$categories = array();
+					$cat_groups = $this->model_data['channel'][$channel_name]
+						->CategoryGroups
+						->pluck('group_id');
+
+					$categories = ee('Model')->get('Category')
+						->filter('cat_name', 'IN', $entry_data->categories)
+						->filter('group_id', 'IN', $cat_groups)
+						->all();
+
+					$entry->Categories = $categories;
+				}
+
 				$entry->set($post_mock);
 				$entry->save();
 
