@@ -30,6 +30,7 @@
 	"category_groups": [
 		{
 			"name": "Blog",
+			"sort_order": "c",
 			"categories": [
 				"News",
 				"Personal",
@@ -40,6 +41,7 @@
 		},
 		{
 			"name": "Collection",
+			"sort_order": "c",
 			"categories": [
 				"Rock and Roll",
 				"Rhythm and Blues",

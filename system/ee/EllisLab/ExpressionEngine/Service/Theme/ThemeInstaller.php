@@ -327,7 +327,7 @@ class ThemeInstaller {
 
 			$this->model_data['cat_group'][$cat_group->group_name] = $cat_group;
 
-			foreach ($category_group_data->categories as $category_name)
+			foreach ($category_group_data->categories as $index => $category_name)
 			{
 				$category = ee('Model')->make('Category');
 				$category->group_id = $cat_group->group_id;
@@ -335,6 +335,12 @@ class ThemeInstaller {
 				$category->cat_name = $category_name;
 				$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
 				$category->parent_id = 0;
+
+				if ($cat_group->sort_order == 'c')
+				{
+					$category->cat_order = $index + 1;
+				}
+
 				$category->save();
 			}
 		}
