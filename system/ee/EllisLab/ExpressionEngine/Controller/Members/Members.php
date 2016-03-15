@@ -820,7 +820,7 @@ class Members extends CP_Controller {
 		/*  - Additional processing when member(s) are validated in the CP
 		/*  - Added 1.5.2, 2006-12-28
 		*/
-			ee()->extensions->call('cp_members_validate_members');
+			ee()->extensions->call('cp_members_validate_members', $ids);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -887,7 +887,7 @@ class Members extends CP_Controller {
 		/*  - Additional processing when member(s) are validated in the CP
 		/*  - Added 1.5.2, 2006-12-28
 		*/
-			ee()->extensions->call('cp_members_validate_members');
+			ee()->extensions->call('cp_members_validate_members', $ids);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
