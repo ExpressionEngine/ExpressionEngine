@@ -27,3 +27,5 @@ class DesignTest extends \PHPUnit_Framework_TestCase {
 	}
 
 }
+
+// EOF

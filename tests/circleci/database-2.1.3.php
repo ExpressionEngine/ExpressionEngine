@@ -18,5 +18,4 @@ $db['expressionengine']['char_set'] = 'utf8';
 $db['expressionengine']['dbcollat'] = 'utf8_unicode_ci';
 $db['expressionengine']['cachedir'] = '';
 
-/* End of file database.php */
-/* Location: ./system/expressionengine/config/database.php */
+// EOF

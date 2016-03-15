@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.7
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Grid_ft extends EE_Fieldtype {
 
@@ -69,6 +69,11 @@ class Grid_ft extends EE_Fieldtype {
 	// Actual saving takes place in post_save so we have an entry_id
 	public function save($data)
 	{
+		if (is_null($data))
+		{
+			$data = array();
+		}
+
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
 		return ' ';
@@ -676,6 +681,8 @@ class Grid_ft extends EE_Fieldtype {
 
 			ee()->grid_model->delete_field($data['field_id'], $this->content_type());
 		}
+
+		return array();
 	}
 
 	// --------------------------------------------------------------------
@@ -698,5 +705,4 @@ class Grid_ft extends EE_Fieldtype {
 	}
 }
 
-/* End of file ft.grid.php */
-/* Location: ./system/expressionengine/modules/ft.grid.php */
+// EOF

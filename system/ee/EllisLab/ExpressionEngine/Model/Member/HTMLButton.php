@@ -71,3 +71,5 @@ class HTMLButton extends Model {
 	}
 
 }
+
+// EOF

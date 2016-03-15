@@ -12,9 +12,9 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Edit extends AbstractPublishController {
 
@@ -174,7 +174,7 @@ class Edit extends AbstractPublishController {
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			if ($entry->comment_total > 0)
 			{
@@ -470,4 +470,5 @@ class Edit extends AbstractPublishController {
 	}
 
 }
+
 // EOF

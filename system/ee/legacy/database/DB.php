@@ -7,7 +7,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -48,7 +48,4 @@ function DB($params = NULL)
 	return $database->newQuery();
 }
 
-
-
-/* End of file DB.php */
-/* Location: ./system/database/DB.php */
+// EOF

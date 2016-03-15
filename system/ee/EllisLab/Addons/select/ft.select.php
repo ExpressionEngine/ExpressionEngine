@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Select_ft extends EE_Fieldtype {
 
@@ -71,11 +71,19 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
-		$text_direction = (isset($this->settings['field_text_direction']))
-			? $this->settings['field_text_direction'] : 'ltr';
-		$field_options = $this->_get_field_options($data);
+		$extra = 'dir="'.$this->get_setting('field_text_direction', 'ltr').'"';
 
-		$field = form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'"');
+		if ($this->get_setting('field_disabled'))
+		{
+			$extra .= ' disabled';
+		}
+
+		$field = form_dropdown(
+			$this->field_name,
+			$this->_get_field_options($data),
+			$data,
+			$extra
+		);
 
 		return $field;
 	}
@@ -140,6 +148,10 @@ class Select_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			),
@@ -149,6 +161,12 @@ class Select_ft extends EE_Fieldtype {
 				'fields' => array()
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[0]['fields']['field_fmt']['note']);
+		}
 
 		if ($this->content_type() == 'channel')
 		{
@@ -228,9 +246,7 @@ class Select_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ( ! isset($this->settings['field_pre_populate'])
-			OR $this->settings['field_pre_populate'] == 'n'
-				OR $this->settings['field_pre_populate'] == FALSE)
+		if ($this->get_setting('field_pre_populate') === FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
@@ -288,5 +304,4 @@ class Select_ft extends EE_Fieldtype {
 
 // END Select_ft class
 
-/* End of file ft.select.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.select.php */
+// EOF

@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Libraries
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Rte_lib {
@@ -485,7 +485,7 @@ class Rte_lib {
 		// so it behaves as expected with conditional tags
 		if ($this->is_empty(trim($data)))
 		{
-			return NULL;
+			return '';
 		}
 
 		return $this->clean_data($data);
@@ -523,6 +523,17 @@ class Rte_lib {
 				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
 				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
 			}
+		}
+
+		// Swap  the real URL with {filedir_x}
+		ee()->load->model('file_upload_preferences_model');
+		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata('group_id'));
+
+		foreach($dirs as $d)
+		{
+			// tag to swap
+			$filedir = "{filedir_{$d['id']}}";
+			$data = str_replace($d['url'], $filedir, $data);
 		}
 
 		return $data;
@@ -817,5 +828,4 @@ class Rte_lib {
 	}
 }
 
-/* End of file rte_lib.php */
-/* Location: ./system/expressionengine/modules/rte/libraries/rte_lib.php */
+// EOF

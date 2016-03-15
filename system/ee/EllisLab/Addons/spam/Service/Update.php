@@ -7,10 +7,10 @@ namespace EllisLab\Addons\Spam\Service;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0 
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
+ * @since		Version 3.0
  * @filesource
  */
 
@@ -23,7 +23,7 @@ namespace EllisLab\Addons\Spam\Service;
  * @subpackage	Extensions
  * @category	Extensions
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Update {
@@ -125,3 +125,5 @@ class Update {
 	}
 
 }
+
+// EOF

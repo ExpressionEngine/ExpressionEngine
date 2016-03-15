@@ -7,9 +7,9 @@ use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Loader {
 
@@ -1153,5 +1153,4 @@ class EE_Loader {
 	}
 }
 
-/* End of file EE_Loader.php */
-/* Location: ./system/expressionengine/core/EE_Loader.php */
+// EOF

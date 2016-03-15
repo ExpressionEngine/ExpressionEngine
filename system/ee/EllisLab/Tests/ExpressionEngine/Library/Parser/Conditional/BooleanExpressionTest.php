@@ -125,3 +125,5 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 }
+
+// EOF

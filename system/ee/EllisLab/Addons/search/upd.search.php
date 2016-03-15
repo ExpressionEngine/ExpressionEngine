@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 1.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Search_upd {
@@ -52,7 +52,7 @@ class Search_upd {
 					 result_page varchar(70) NOT NULL,
 					 PRIMARY KEY `search_id` (`search_id`),
 					 KEY `site_id` (`site_id`)
-					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+					) CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search_log (
 					id int(10) NOT NULL auto_increment,
@@ -65,7 +65,7 @@ class Search_upd {
 					search_terms varchar(200) NOT NULL,
 					PRIMARY KEY `id` (`id`),
 					KEY `site_id` (`site_id`)
-					) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+					) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 
 		foreach ($sql as $query)
 		{
@@ -183,5 +183,4 @@ class Search_upd {
 }
 // END CLASS
 
-/* End of file upd.search.php */
-/* Location: ./system/expressionengine/modules/search/upd.search.php */
+// EOF

@@ -7,7 +7,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://www.codeigniter.com/user_guide/license.html
  * @link		http://www.codeigniter.com
  * @since		Version 1.0
@@ -1066,5 +1066,4 @@ class EE_Jquery extends EE_Javascript {
 
 }
 
-/* End of file Jquery.php */
-/* Location: ./system/libraries/Jquery.php */
+// EOF

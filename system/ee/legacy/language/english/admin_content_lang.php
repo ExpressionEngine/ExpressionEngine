@@ -126,7 +126,7 @@ $lang = array(
 
 'fmt_has_changed' => 'Note: You have selected a different field formatting choice than what was previously saved.',
 
-'update_existing_fields' => 'Update all existing channel entries with your new formatting choice?',
+'update_existing_fields' => 'Update all existing entries?',
 
 'display_criteria' => 'Select display criteria for PUBLISH page',
 
@@ -637,7 +637,7 @@ $lang = array(
 
 'field_type' => 'Type',
 
-'inavlid_field_type' => 'Invalid field type',
+'invalid_field_type' => 'Invalid field type',
 
 'field_max_length' => 'Maxlength',
 
@@ -839,6 +839,12 @@ $lang = array(
  * 3.0
  */
 
+'default_value' => 'Default value',
+
+'toggle_default_value_desc' => 'The default position of the toggle switch for this field when publishing new entries.',
+
+'toggle_default_value_desc_cont' => '<b>Note</b>: If assigned to a channel with existing entries, those entries will be assigned this value.',
+
 'field_max_length' => 'Maximum characters',
 
 'field_fmt' => 'Text formatting',
@@ -864,5 +870,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file admin_content_lang.php */
-/* Location: ./system/expressionengine/language/english/admin_content_lang.php */
+// EOF

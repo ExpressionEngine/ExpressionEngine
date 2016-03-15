@@ -608,3 +608,4 @@ class SimplePie_Source
 	}
 }
 
+// EOF

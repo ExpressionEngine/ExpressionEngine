@@ -20,6 +20,4 @@ $lang['ut_resource']		= 'Resource';
 $lang['ut_null']			= 'Null';
 $lang['ut_notes']			= 'Notes';
 
-
-/* End of file unit_test_lang.php */
-/* Location: ./system/language/english/unit_test_lang.php */
+// EOF

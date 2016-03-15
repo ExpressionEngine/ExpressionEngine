@@ -32,3 +32,5 @@ interface MarkdownInterface {
   public function transform($text);
 
 }
+
+// EOF

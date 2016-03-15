@@ -206,3 +206,5 @@ class ModelStub extends Model {
 		$this->setRawProperty('surname', $surname);
 	}
 }
+
+// EOF

@@ -15,3 +15,5 @@ class EmailTracker extends Model
 	protected $sender_email;
 	protected $sender_username;
 }
+
+// EOF

@@ -395,5 +395,5 @@ https://support.ellislab.com/',
 
 // IGNORE
 ''=>'');
-/* End of file core_lang.php */
-/* Location: ./system/expressionengine/language/english/core_lang.php */
+
+// EOF

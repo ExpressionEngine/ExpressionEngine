@@ -14,9 +14,9 @@ use EllisLab\ExpressionEngine\Controller\Members;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Controller\Members;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Groups extends Members\Members {
 
@@ -251,9 +251,15 @@ class Groups extends Members\Members {
 
 		$vars = $this->group->getValues();
 		$vars['cp_page_title'] = sprintf(lang('copy_member_group'), $this->group->group_title);
+
+		unset($vars['group_id'], $vars['group_title']);
 		$sections = $this->buildForm($vars);
+
 		$current = $this->groupData($this->group, $sections);
+
+		unset($current['group_id'], $current['group_title']);
 		$vars['sections'] = $this->buildForm(array_merge($vars, $current));
+
 		$this->group = NULL;
 		$this->form($vars, $master);
 	}
@@ -1459,5 +1465,4 @@ class Groups extends Members\Members {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Members/Members.php */
+// EOF

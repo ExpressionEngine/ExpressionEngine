@@ -100,5 +100,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file logs_lang.php */
-/* Location: ./system/expressionengine/language/english/logs_lang.php */
+// EOF

@@ -14,9 +14,9 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Cat extends AbstractChannelsController {
 
@@ -1348,4 +1348,5 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->render('settings/form', $vars);
 	}
 }
+
 // EOF

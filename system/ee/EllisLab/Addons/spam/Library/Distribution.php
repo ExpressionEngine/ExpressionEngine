@@ -7,9 +7,9 @@ namespace EllisLab\Addons\Spam\Library;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -23,7 +23,7 @@ namespace EllisLab\Addons\Spam\Library;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Distribution {
@@ -47,8 +47,8 @@ class Distribution {
 
 	/**
 	 * This is the PDF for the standard normal distribution
-	 * 
-	 * @param float $x 
+	 *
+	 * @param float $x
 	 * @access public
 	 * @return float
 	 */
@@ -73,5 +73,4 @@ class Distribution {
 
 }
 
-/* End of file Distribution.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Distribution.php */
+// EOF

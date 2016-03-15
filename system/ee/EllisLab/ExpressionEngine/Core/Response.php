@@ -148,3 +148,5 @@ class Response {
 		return $zlib_enabled == FALSE && extension_loaded('zlib');
 	}
 }
+
+// EOF

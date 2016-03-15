@@ -170,3 +170,5 @@ class Collection extends CoreCollection {
         }
     }
 }
+
+// EOF

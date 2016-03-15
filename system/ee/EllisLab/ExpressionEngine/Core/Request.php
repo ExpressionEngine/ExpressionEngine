@@ -213,3 +213,5 @@ class Request {
 		return $default;
 	}
 }
+
+// EOF

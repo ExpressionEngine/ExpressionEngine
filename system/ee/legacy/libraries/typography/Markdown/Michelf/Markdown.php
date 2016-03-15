@@ -1607,3 +1607,5 @@ class Markdown implements MarkdownInterface {
 	}
 
 }
+
+// EOF

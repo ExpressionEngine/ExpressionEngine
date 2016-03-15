@@ -6,12 +6,12 @@ $lang = array(
 
 'view' => 'View',
 
-'path_does_not_exist' => 
+'path_does_not_exist' =>
 'The specified path does not exist',
 
 'file_viewing_error' => 'An error of an unknown type was encountered.',
 
-'fp_no_files' => 
+'fp_no_files' =>
 'No files available in directory.',
 
 'fb_view_images' => 'View Images',
@@ -39,5 +39,5 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file filebrowser_lang.php */
-/* Location: ./system/expressionengine/language/english/filebrowser_lang.php */
+
+// EOF

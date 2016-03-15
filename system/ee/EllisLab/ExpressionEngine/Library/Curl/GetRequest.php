@@ -15,3 +15,5 @@ class GetRequest extends Request {
 	}
 
 }
+
+// EOF

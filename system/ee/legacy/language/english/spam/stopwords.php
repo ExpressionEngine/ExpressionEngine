@@ -96,7 +96,7 @@ or
 other
 ought
 our
-ours 
+ours
 ourselves
 out
 over
@@ -174,4 +174,5 @@ yours
 yourself
 yourselves
 EOF;
-?>
+
+// EOF

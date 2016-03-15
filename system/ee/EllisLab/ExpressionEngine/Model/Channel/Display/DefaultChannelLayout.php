@@ -203,3 +203,5 @@ class DefaultChannelLayout extends DefaultLayout {
 		return $layout;
 	}
 }
+
+// EOF

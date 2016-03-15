@@ -66,3 +66,5 @@ class FilePicker {
 		return $link;
 	}
 }
+
+// EOF

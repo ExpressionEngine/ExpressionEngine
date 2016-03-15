@@ -13,9 +13,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Addons extends CP_Controller {
 
@@ -572,7 +572,7 @@ class Addons extends CP_Controller {
 
 				$model = ee('Model')->get('Extension')
 					->filter('class', $class_name)
-					->first();
+					->all();
 
 				$model->version = $addon_info->getVersion();
 				$model->save();
@@ -1842,7 +1842,7 @@ class Addons extends CP_Controller {
 		$extension_model = ee('Model')->get('Extension')
 			->filter('enabled', 'y')
 			->filter('class', $extension['class'])
-			->first();
+			->all();
 
 		$extension_model->settings = $settings;
 		$extension_model->save();
@@ -1963,4 +1963,5 @@ class Addons extends CP_Controller {
 		}
 	}
 }
+
 // EOF

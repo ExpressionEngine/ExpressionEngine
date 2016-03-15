@@ -53,3 +53,5 @@ class Variable extends Token {
 		return $this->lexeme;
 	}
 }
+
+// EOF

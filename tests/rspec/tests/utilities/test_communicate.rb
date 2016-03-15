@@ -218,8 +218,8 @@ feature 'Communicate' do
 #
 #  it "can send markdown email" do
 #    my_subject = @test_subject + ' markdown email'
-#    my_body = "#This is Markdown\n\n[This](http://ellislab.com) is a link.\n**Nice huh?**"
-#    html_body = "<h1>This is Markdown</h1>\n\n<p><a href=\"http://ellislab.com\">This</a> is a link.\n<strong>Nice huh?</strong></p>\n"
+#    my_body = "#This is Markdown\n\n[This](https://ellislab.com) is a link.\n**Nice huh?**"
+#    html_body = "<h1>This is Markdown</h1>\n\n<p><a href=\"https://ellislab.com\">This</a> is a link.\n<strong>Nice huh?</strong></p>\n"
 #
 #    @page.subject.set my_subject
 #    @page.from_email.set @test_from

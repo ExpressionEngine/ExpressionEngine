@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Relationship_data_parser {
 
@@ -210,7 +210,7 @@ class EE_Relationship_data_parser {
 		}
 		else
 		{
-			if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			if ( ! preg_match('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $match))
 			{
 				return $tagdata;
 			}
@@ -221,6 +221,8 @@ class EE_Relationship_data_parser {
 			{
 				return $this->clear_node_tagdata($node, $tagdata);
 			}
+
+			$matches = array($match);
 		}
 
 		foreach ($matches as $match)
@@ -318,7 +320,7 @@ class EE_Relationship_data_parser {
 				return $match[0];
 			}
 
-			return substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
+			return substr($match[0], strlen(LD."if {$node->name()}:no_results".RD), -strlen(LD.'/'."if".RD));
 		}
 
 		return '';
@@ -710,5 +712,4 @@ class EE_Relationship_data_parser {
 	}
 }
 
-/* End of file Parser.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Parser.php */
+// EOF

@@ -13,9 +13,9 @@ use EllisLab\ExpressionEngine\Model\Email\EmailCache;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Model\Email\EmailCache;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Communicate extends Utilities {
 	private $attachments = array();
@@ -251,7 +251,16 @@ class Communicate extends Utilities {
 				break;
 
 			case 'html':
-				$text_fmt = 'xhtml';
+				// If we strip tags and it matches the message, then there was
+				// not any HTML in it and we'll format for them.
+				if ($message == strip_tags($message))
+				{
+					$text_fmt = 'xhtml';
+				}
+				else
+				{
+					$text_fmt = 'none';
+				}
 				break;
 		}
 
@@ -902,5 +911,4 @@ class Communicate extends Utilities {
 }
 // END CLASS
 
-/* End of file Communicate.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Communicate.php */
+// EOF

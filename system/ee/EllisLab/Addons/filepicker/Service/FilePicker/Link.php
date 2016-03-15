@@ -246,3 +246,5 @@ class Link {
 		return $this;
 	}
 }
+
+// EOF

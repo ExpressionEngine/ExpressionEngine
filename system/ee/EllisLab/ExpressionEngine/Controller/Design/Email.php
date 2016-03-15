@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Email extends AbstractDesignController {
 
@@ -142,7 +142,7 @@ class Email extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
-			'base_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
+			'base_url' => ee('CP/URL', 'design/email/edit/' . $template_id),
 			'tabs' => array(
 				'edit' => $this->renderEditPartial($template, $errors),
 				'notes' => $this->renderNotesPartial($template, $errors),
@@ -343,4 +343,5 @@ class Email extends AbstractDesignController {
 	}
 
 }
+
 // EOF

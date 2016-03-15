@@ -994,3 +994,5 @@ class SimplePie_IRI
 		return $this->fragment;
 	}
 }
+
+// EOF

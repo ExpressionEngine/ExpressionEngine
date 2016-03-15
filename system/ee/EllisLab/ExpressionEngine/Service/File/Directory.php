@@ -69,3 +69,5 @@ class Directory extends Filesystem {
 		return new FilterIterator($it);
 	}
 }
+
+// EOF

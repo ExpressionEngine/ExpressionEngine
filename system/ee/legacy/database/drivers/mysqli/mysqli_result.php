@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -196,6 +196,4 @@ class CI_DB_mysqli_result extends CI_DB_result {
 
 }
 
-
-/* End of file mysqli_result.php */
-/* Location: ./system/database/drivers/mysqli/mysqli_result.php */
+// EOF

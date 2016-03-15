@@ -174,6 +174,9 @@ feature 'Updater' do
     )
     File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
 
+    # Attempt to work around potential asynchronicity
+    sleep 1
+
     @page.load
 
     @page.should have(0).inline_errors

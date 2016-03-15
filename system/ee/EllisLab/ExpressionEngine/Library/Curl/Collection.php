@@ -159,3 +159,5 @@ class RequestCollection extends Collection {
 	}
 
 }
+
+// EOF

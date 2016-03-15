@@ -49,3 +49,5 @@ class ChannelFieldGroup extends Model {
 	}
 
 }
+
+// EOF

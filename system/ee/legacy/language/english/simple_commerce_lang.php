@@ -454,5 +454,4 @@ and provide them with the URL below.',
 ''=>''
 );
 
-/* End of file simple_commerce_lang.php */
-/* Location: ./system/expressionengine/language/english/simple_commerce_lang.php */
+// EOF

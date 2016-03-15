@@ -15,3 +15,5 @@ class RequestFactory {
 	}
 
 }
+
+// EOF

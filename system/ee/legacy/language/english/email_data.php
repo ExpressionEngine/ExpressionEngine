@@ -733,5 +733,4 @@ EOF;
 	}
 }
 
-/* End of file email_data.php */
-/* Location: ./system/expressionengine/language/english/email_data.php */
+// EOF

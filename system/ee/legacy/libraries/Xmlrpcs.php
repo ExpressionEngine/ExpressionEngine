@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -538,6 +538,4 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 }
 // END XML_RPC_Server class
 
-
-/* End of file Xmlrpcs.php */
-/* Location: ./system/libraries/Xmlrpcs.php */
+// EOF

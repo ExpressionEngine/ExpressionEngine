@@ -1377,3 +1377,4 @@ class SimplePie_Enclosure
 	}
 }
 
+// EOF

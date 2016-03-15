@@ -2,5 +2,4 @@
 
 require_once(APPPATH.'schema/mysql_schema.php');
 
-/* End of file mysqli_schema.php */
-/* Location: ./system/installer/schema/mysqli_schema.php */
+// EOF

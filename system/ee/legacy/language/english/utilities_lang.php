@@ -448,5 +448,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file utilities_lang.php */
-/* Location: ./system/expressionengine/language/english/utilities_lang.php */
+// EOF

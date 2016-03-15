@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\BelongsTo;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\BelongsTo;
  * @subpackage	Model
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Delete extends Query {
 
@@ -211,12 +211,12 @@ class Delete extends Query {
 
 			if ($a[1] instanceOf \Closure)
 			{
-				return 5e10;
+				return -5e10;
 			}
 
 			if ($b[1] instanceOf \Closure)
 			{
-				return -5e10;
+				return 5e10;
 			}
 
 			return count($a[1]) - count($b[1]);
@@ -388,3 +388,5 @@ class Delete extends Query {
 		return $parts;
 	}
 }
+
+// EOF

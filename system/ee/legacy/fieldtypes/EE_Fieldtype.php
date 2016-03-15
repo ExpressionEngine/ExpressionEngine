@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class EE_Fieldtype {
 
@@ -410,6 +410,45 @@ abstract class EE_Fieldtype {
 	public function delete($ids)
 	{
 		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get a given setting for the Fieldtype. Returns TRUE/FALSE for values that
+	 * use 'y' and 'n'. Returns `FALSE` if no setting is set.
+	 *
+	 * @param  string $key The key of the setting
+	 * @return mixed       The value of the setting
+	 */
+	public function get_setting($key, $default = FALSE)
+	{
+		if ( ! isset($this->settings[$key]))
+		{
+			return $default;
+		}
+
+		$boolean_fields = array(
+			'field_disabled',
+			'field_is_hidden',
+			'field_pre_populate',
+			'field_required',
+			'field_search',
+			'field_show_file_selector',
+			'field_show_fmt',
+			'field_show_formatting_btns',
+			'field_show_glossary',
+			'field_show_smileys',
+			'field_show_spellcheck',
+			'field_show_writemode',
+		);
+
+		if (in_array($key, $boolean_fields))
+		{
+			return get_bool_from_string($this->settings[$key]);
+		}
+
+		return $this->settings[$key];
 	}
 
 	// --------------------------------------------------------------------
@@ -1105,6 +1144,4 @@ abstract class EE_Fieldtype {
 }
 // END EE_Fieldtype class
 
-
-/* End of file EE_Fieldtype.php */
-/* Location: ./system/expressionengine/fieldtypes/EE_Fieldtype.php */
+// EOF

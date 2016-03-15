@@ -24,3 +24,5 @@ return array(
 		)
 	)
 );
+
+// EOF

@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -97,5 +97,4 @@ if ( ! function_exists('get_bytes'))
 	}
 }
 
-/* End of file number_helper.php */
-/* Location: ./system/helpers/number_helper.php */
+// EOF

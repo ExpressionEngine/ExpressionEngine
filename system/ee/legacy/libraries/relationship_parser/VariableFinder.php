@@ -138,3 +138,5 @@ class VariableFinder {
 		return $this->delimiter.$before.$this->regex.$after.$this->delimiter.$this->flags;
 	}
 }
+
+// EOF

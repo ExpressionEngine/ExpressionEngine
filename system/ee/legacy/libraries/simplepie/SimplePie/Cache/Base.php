@@ -111,3 +111,5 @@ interface SimplePie_Cache_Base
 	 */
 	public function unlink();
 }
+
+// EOF

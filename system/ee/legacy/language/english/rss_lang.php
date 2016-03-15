@@ -18,5 +18,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file rss_lang.php */
-/* Location: ./system/expressionengine/language/english/rss_lang.php */
+// EOF

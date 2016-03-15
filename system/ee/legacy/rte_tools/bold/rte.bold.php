@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	RTE
  * @category	RTE
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Bold_rte {
 
@@ -74,5 +74,4 @@ class Bold_rte {
 
 } // END Bold_rte
 
-/* End of file rte.bold.php */
-/* Location: ./system/expressionengine/rte_tools/bold/rte.bold.php */
+// EOF

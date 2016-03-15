@@ -60,6 +60,4 @@ $foreign_characters = array(
 	'381'	=>	"zh",
 );
 
-
-/* End of file foreign_chars.php */
-/* Location: ./system/expressionengine/config/foreign_chars.php */
+// EOF

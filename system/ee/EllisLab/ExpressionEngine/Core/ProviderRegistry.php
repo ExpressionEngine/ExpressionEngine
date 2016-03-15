@@ -71,3 +71,5 @@ class ProviderRegistry {
 		return $this->providers;
 	}
 }
+
+// EOF

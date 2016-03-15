@@ -19,13 +19,15 @@
 		{
 			$class .= ' chosen';
 		}
+
+		$extra = trim(implode(' ', array($editing, $disabled)));
 ?>
 	<li<?php if ($editable): ?> class="nestable-item" data-id="<?=$key?>"<?php endif ?> style="overflow:hidden">
 		<label class="<?=$class?>">
 			<?php if ($editable): ?>
 				<span class="list-reorder" <?php if ( ! $editing): ?>style="margin-left:-50px"<?php endif ?>></span>
 			<?php endif ?>
-			<?=form_checkbox($field_name.'[]', $key, $checked, $editing ? 'disabled="disabled"' : '')?> <?=$value?>
+			<?=form_checkbox($field_name.'[]', $key, $checked, $extra ? 'disabled="disabled"' : '')?> <?=$value?>
 			<?php if ($editable OR $deletable): ?>
 				<ul class="toolbar<?php if ( ! $editing): ?> hidden<?php endif ?>">
 					<?php if ($editable): ?>

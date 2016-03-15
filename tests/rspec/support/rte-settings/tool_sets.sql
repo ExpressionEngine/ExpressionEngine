@@ -9,7 +9,7 @@ CREATE TABLE `exp_rte_toolsets` (
   PRIMARY KEY (`toolset_id`),
   KEY `member_id` (`member_id`),
   KEY `enabled` (`enabled`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 LOCK TABLES `exp_rte_toolsets` WRITE;
 /*!40000 ALTER TABLE `exp_rte_toolsets` DISABLE KEYS */;

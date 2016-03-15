@@ -62,3 +62,5 @@ class EmailCache extends Model
 	protected $attachments;
 
 }
+
+// EOF

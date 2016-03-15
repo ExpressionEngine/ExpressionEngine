@@ -367,3 +367,5 @@ return array(
 			'RevisionTracker' => 'Model\Revision\RevisionTracker'
 	)
 );
+
+// EOF

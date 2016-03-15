@@ -96,7 +96,16 @@ $lang = array(
 'grid_copy_field'			=> 'copy field',
 'grid_remove_field'			=> 'remove field',
 
+// URL
+'url_ft_allowed_url_schemes'         => 'Allowed URL Schemes',
+'url_ft_url_scheme_placeholder'      => 'URL Scheme Placeholder',
+'url_ft_url_scheme_placeholder_desc' => 'Displayed as placeholder text when no URL has been submitted.',
+'url_ft_protocol_relative_url'       => 'Protocol Relative URL',
+'url_ft_invalid_url'                 => 'Invalid URL',
+'url_ft_invalid_url_scheme'          => 'Your URL must begin with a valid scheme: %s',
+
+
 // IGNORE
 ''=>'');
-/* End of file fieldtypes_lang.php */
-/* Location: ./system/expressionengine/language/english/fieldtypes_lang.php */
+
+// EOF

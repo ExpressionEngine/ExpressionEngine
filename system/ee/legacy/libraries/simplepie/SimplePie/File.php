@@ -281,3 +281,5 @@ class SimplePie_File
 		}
 	}
 }
+
+// EOF

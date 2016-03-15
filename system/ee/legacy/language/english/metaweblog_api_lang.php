@@ -125,5 +125,4 @@ password for a member account with permissions to post to at least one channel.'
 ''=>''
 );
 
-/* End of file metaweblog_api_lang.php */
-/* Location: ./system/expressionengine/language/english/metaweblog_api_lang.php */
+// EOF

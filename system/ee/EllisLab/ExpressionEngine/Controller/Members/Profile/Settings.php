@@ -12,9 +12,9 @@ use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -28,7 +28,7 @@ use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Settings extends Profile {
 
@@ -108,6 +108,7 @@ class Settings extends Profile {
 
 		$directories = ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
+			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->indexBy('name');
 
@@ -357,6 +358,7 @@ class Settings extends Profile {
 		ee()->load->library('filemanager');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
@@ -372,7 +374,13 @@ class Settings extends Profile {
 			return;
 		}
 
+		// We don't have the suffix, so
+
+		$suffix = array_pop(explode('.', $_FILES['upload_avatar']['name']));
+
 		$name = $_FILES['upload_avatar']['name'];
+		$name = 'avatar_'.$this->member->member_id.'.'.$suffix;
+
 		$file_path = ee()->filemanager->clean_filename(
 		        basename($name),
 		        $directory->id,
@@ -409,6 +417,7 @@ class Settings extends Profile {
 		$url = ee()->input->post('link_avatar');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $directory)
@@ -445,5 +454,4 @@ class Settings extends Profile {
 }
 // END CLASS
 
-/* End of file Settings.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Settings.php */
+// EOF

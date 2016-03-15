@@ -10,3 +10,5 @@ return array(
 	'settings_exist' => FALSE,
 	'plugin.typography' => TRUE
 );
+
+// EOF

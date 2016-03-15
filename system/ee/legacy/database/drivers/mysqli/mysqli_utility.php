@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -83,5 +83,4 @@ class CI_DB_mysqli_utility extends CI_DB_utility {
 	}
 }
 
-/* End of file mysqli_utility.php */
-/* Location: ./system/database/drivers/mysqli/mysqli_utility.php */
+// EOF

@@ -2,9 +2,9 @@
 <head><title>Email Test</title><head>
 <style type="text/css">
 
-body { 
-background-color:	#ffffff; 
-margin:				20px; 
+body {
+background-color:	#ffffff;
+margin:				20px;
 font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
 font-size:			12px;
 color:				#000;
@@ -54,7 +54,7 @@ color:  #339900;
 
 <?php
 	error_reporting(0);
-	
+
 	if ( ! isset($_POST['sendit']))
 	{
 		email_form();
@@ -62,7 +62,7 @@ color:  #339900;
 	else
 	{
 		$required = array('recipient', 'subject', 'message');
-	
+
 		foreach ($required as $val)
 		{
 			if ( ! isset($_POST[$val]) OR $_POST[$val] == '')
@@ -73,21 +73,21 @@ color:  #339900;
 				exit;
 			}
 		}
-	
+
 		sendit();
 	}
-	
+
 	footer();
-	
-	
+
+
 	function email_form()
 	{
-		$action 	= ( ! isset($_SERVER['PHP_SELF']))	? 'email_test.php' : htmlentities($_SERVER['PHP_SELF']); 
-		$recipient	= ( ! isset($_POST['recipient']))	? '' : $_POST['recipient']; 
-		$subject 	= ( ! isset($_POST['subject']))		? '' : $_POST['subject']; 
-		$message 	= ( ! isset($_POST['message']))		? '' : $_POST['message']; 
-	
-	?>	
+		$action 	= ( ! isset($_SERVER['PHP_SELF']))	? 'email_test.php' : htmlentities($_SERVER['PHP_SELF']);
+		$recipient	= ( ! isset($_POST['recipient']))	? '' : $_POST['recipient'];
+		$subject 	= ( ! isset($_POST['subject']))		? '' : $_POST['subject'];
+		$message 	= ( ! isset($_POST['message']))		? '' : $_POST['message'];
+
+	?>
 		<form method="post" action="<?php echo $action; ?>">
 		<input type="hidden" name="sendit" value="true" />
 		<p>Email Address<br /><input type="text" name="recipient" value="<?php echo htmlentities($recipient); ?>" size="32" /></p>
@@ -97,7 +97,7 @@ color:  #339900;
 		</form>
 	<?php
 	}
-	
+
 	function sendit()
 	{
 		if ( ! mail($_POST['recipient'], $_POST['subject'], $_POST['message']))
@@ -117,12 +117,11 @@ color:  #339900;
 				  ";
 		}
 	}
-	
-	
+
+
 	function footer()
 	{
 		echo "</body></html>";
 	}
 
-/* End of file email_test.php */
-/* Location: ./system/expressionengine/utilities/email_test.php */
+// EOF
