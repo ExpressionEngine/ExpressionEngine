@@ -240,6 +240,11 @@ abstract class ContentModel extends VariableColumnModel {
 
 		foreach ($facades as $name => $facade)
 		{
+			if ( ! $this->isNew() && ! $this->isDirty($name))
+			{
+				continue;
+			}
+
 			if ( ! isset($rules[$name]))
 			{
 				$rules[$name] = '';

@@ -170,7 +170,7 @@ abstract class AbstractPublish extends CP_Controller {
 		{
 			if ( ! isset($authors[$version->author_id]))
 			{
-				$authors[$version->author_id] = $version->Author->getMemberName();
+				$authors[$version->author_id] = $version->getAuthorName();
 			}
 
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
@@ -207,7 +207,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 			if ( ! isset($authors[$entry->author_id]))
 			{
-				$authors[$entry->author_id] = $entry->Author->getMemberName();
+				$authors[$entry->author_id] = $entry->getAuthorName();
 			}
 
 			// Current

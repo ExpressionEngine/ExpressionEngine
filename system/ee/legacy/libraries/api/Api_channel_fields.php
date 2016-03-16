@@ -1094,22 +1094,19 @@ class Api_channel_fields extends Api {
 
 
 		// comment expiry here.
-		if (isset(ee()->cp->installed_modules['comment']))
-		{
-			$deft_fields['comment_expiration_date'] = array(
-				'field_id'				=> 'comment_expiration_date',
-				'field_label'			=> lang('comment_expiration_date'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_data'			=> (isset($entry_data['comment_expiration_date'])) ? $entry_data['comment_expiration_date'] : '',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> '',
-				'field_show_fmt'		=> 'n',
-				'default_offset'		=> $channel_data['comment_expiration'] * 86400,
-				'selected'				=> 'y',
-			);
-		}
+		$deft_fields['comment_expiration_date'] = array(
+			'field_id'				=> 'comment_expiration_date',
+			'field_label'			=> lang('comment_expiration_date'),
+			'field_required'		=> 'n',
+			'field_type'			=> 'date',
+			'field_text_direction'	=> 'ltr',
+			'field_data'			=> (isset($entry_data['comment_expiration_date'])) ? $entry_data['comment_expiration_date'] : '',
+			'field_fmt'				=> 'text',
+			'field_instructions'	=> '',
+			'field_show_fmt'		=> 'n',
+			'default_offset'		=> $channel_data['comment_expiration'] * 86400,
+			'selected'				=> 'y',
+		);
 
 		foreach ($deft_fields as $field_name => $f_data)
 		{

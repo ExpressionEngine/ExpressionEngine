@@ -276,7 +276,7 @@ class Simple_commerce_mcp {
 		foreach ($entries->all() as $entry)
 		{
 			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			$data[] = array(
 				$entry->entry_id,

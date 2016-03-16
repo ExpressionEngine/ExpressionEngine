@@ -115,7 +115,7 @@ class Members {
 
 				ee()->member_model->update_member($id, array('avatar_filename' => ''));
 
-				if (strncmp($query->row('avatar_filename'), 'uploads/', 8) == 0)
+				if (strncmp($query->row('avatar_filename'), 'default/', 8) !== 0)
 				{
 					@unlink(ee()->config->slash_item('avatar_path').$query->row('avatar_filename') );
 				}
@@ -233,7 +233,7 @@ class Members {
 
 		if ($type == 'avatar')
 		{
-			$upload_path = ee()->config->slash_item('avatar_path').'uploads/';
+			$upload_path = ee()->config->slash_item('avatar_path');
 		}
 		elseif ($type == 'photo')
 		{
@@ -384,7 +384,7 @@ class Members {
 		// Update DB
 		if ($type == 'avatar')
 		{
-			$avatar = 'uploads/'.$new_filename;
+			$avatar = $new_filename;
 			$data = array(
 							'avatar_filename' 	=> $avatar,
 							'avatar_width' 		=> $width,
@@ -432,7 +432,7 @@ class Members {
 		{
 			$max_width	= ($this->config->item('avatar_max_width') == '' OR $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
 			$max_height = ($this->config->item('avatar_max_height') == '' OR $this->config->item('avatar_max_height') == 0) ? 100 : $this->config->item('avatar_max_height');
-			$image_path = $this->config->slash_item('avatar_path').'uploads/';
+			$image_path = $this->config->slash_item('avatar_path');
 		}
 		else
 		{

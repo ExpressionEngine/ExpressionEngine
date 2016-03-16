@@ -108,6 +108,7 @@ class Settings extends Profile {
 
 		$directories = ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
+			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->indexBy('name');
 
@@ -357,6 +358,7 @@ class Settings extends Profile {
 		ee()->load->library('filemanager');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
@@ -372,7 +374,13 @@ class Settings extends Profile {
 			return;
 		}
 
+		// We don't have the suffix, so
+
+		$suffix = array_pop(explode('.', $_FILES['upload_avatar']['name']));
+
 		$name = $_FILES['upload_avatar']['name'];
+		$name = 'avatar_'.$this->member->member_id.'.'.$suffix;
+
 		$file_path = ee()->filemanager->clean_filename(
 		        basename($name),
 		        $directory->id,
@@ -409,6 +417,7 @@ class Settings extends Profile {
 		$url = ee()->input->post('link_avatar');
 		$directory = ee('Model')->get('UploadDestination')
 			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $directory)
