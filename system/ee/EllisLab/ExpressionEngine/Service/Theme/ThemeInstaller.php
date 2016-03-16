@@ -642,7 +642,7 @@ class ThemeInstaller {
 	{
 		$author = ee('Model')->get('Member', 1)->first();
 
-		foreach ($comments as $comment_data)
+		foreach ($comments as $index => $comment_data)
 		{
 			$comment_data = array_merge(
 				array(
@@ -654,7 +654,7 @@ class ThemeInstaller {
 					'url'          => '',
 					'location'     => '',
 					'ip_address'   => '127.0.0.1',
-					'comment_date' => time()
+					'comment_date' => time() + $index
 				),
 				(array) $comment_data
 			);
