@@ -311,16 +311,14 @@ class Multi_select_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		$pre_populate = isset($this->settings['field_pre_populate']) ? get_bool_from_string($this->settings['field_pre_populate']) : FALSE;
-
-		if ( ! $pre_populate)
+		if ($this->get_setting('field_pre_populate') === FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
 				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
 				{
 					$v = trim($v);
-					$field_options[form_prep($v)] = form_prep($v);
+					$field_options[$v] = $v;
 				}
 			}
 			else
@@ -336,18 +334,21 @@ class Multi_select_ft extends EE_Fieldtype {
 			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
 			$pop_query = ee()->db->get('channel_data');
 
-			$field_options[''] = '--';
-
 			if ($pop_query->num_rows() > 0)
 			{
 				foreach ($pop_query->result_array() as $prow)
 				{
+					if (trim($prow['field_id_'.$this->settings['field_pre_field_id']]) == '')
+					{
+					 	continue;
+					}
+
 					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
 					$pretitle = form_prep($pretitle);
 
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
+					$field_options[form_prep(trim($prow['field_id_'.$this->settings['field_pre_field_id']]))] = $pretitle;
 				}
 			}
 		}
