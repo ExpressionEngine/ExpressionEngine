@@ -1,4 +1,4 @@
-{layout='layout/_about-layout'}
+{layout='layouts/_about-layout'}
 
 {!--
 	404 redirect
@@ -41,7 +41,7 @@
 			{!-- about_image is a grid field first we check to see if it exists then we output it's contents. --}
 			{if about_image}
 				{about_image}
-					<figure {if about_image:align != 'none'}class="w-6 {about_image:align}"{/if}>
+					<figure {if about_image:align != 'none'}class="{about_image:align}"{/if}>
 						<img src="{about_image:image}" alt="{about_image:caption}">
 						<figcaption>{about_image:caption}</figcaption>
 					</figure>

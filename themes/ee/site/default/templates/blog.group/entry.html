@@ -1,4 +1,4 @@
-{layout='layout/_blog-layout'}
+{layout='layouts/_blog-layout'}
 
 {!--
 	Redirect
@@ -50,13 +50,17 @@
 			{if blog_video}
 				{blog_video}
 					{if blog_video:type == 'youtube'}
-						<figure class="video-wrap">
-							<iframe width="940" height="529" src="http://www.youtube.com/embed/{blog_video:id}?rel=0&controls=2&color=white&autohide=1" frameborder="0" allowfullscreen></iframe>
+						<figure class="video">
+							<div class="player">
+								<iframe width="940" height="529" src="http://www.youtube.com/embed/{blog_video:id}?rel=0&controls=2&color=white&autohide=1" frameborder="0" allowfullscreen></iframe>
+							</div>
 						</figure>
 					{/if}
 					{if blog_video:type == 'vimeo'}
-						<figure class="video-wrap">
-							<iframe src="//player.vimeo.com/video/{blog_video:id}?color=f0a400" width="940" height="529" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+						<figure class="video">
+							<div class="player">
+								<iframe src="//player.vimeo.com/video/{blog_video:id}?color=f0a400" width="940" height="529" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+							</div>
 						</figure>
 					{/if}
 				{/blog_video}

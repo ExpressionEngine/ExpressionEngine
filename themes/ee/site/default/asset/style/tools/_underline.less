@@ -1,0 +1,36 @@
+/*
+	_underline.less
+	-------------
+	define underline mixin
+*/
+
+/*
+	applies an animated underline
+	-------------
+	arguments
+		color, speed, height, pos
+	example
+		.underline(@gray);
+*/
+
+.underline(@color: @white, @speed: 0.2s, @height: 1px, @pos: relative){
+	position: @pos;
+	text-decoration: none;
+	.ts(color @speed linear);
+		&:after{
+			background-color: @color;
+			bottom: 0;
+			content: '';
+			display: block;
+			height: @height;
+			left: 0;
+			margin: 0 auto;
+			position: absolute;
+			right: 0;
+			width: 0;
+			.ts(width @speed linear);
+		}
+		&:hover{
+			&:after{ width: 100%; }
+		}
+}

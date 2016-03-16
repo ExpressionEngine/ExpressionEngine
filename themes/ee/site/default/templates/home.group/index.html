@@ -1,4 +1,4 @@
-{layout='layout/_html-wrapper'}
+{layout='layouts/_html-wrapper'}
 
 {!-- page vars (prefix p_) --}
 {preload_replace:p_url='blog'}
@@ -7,11 +7,9 @@
 {preload_replace:ch='blog'}
 {preload_replace:ch_disable='category_fields|member_data'}
 
-{layout:set name='scripts'}
-	<script src="{theme_folder_url}site/default/asset/js/plugins/cycle2.min.js"></script>
-{/layout:set}
+{layout:set name='scripts'}{/layout:set}
 
-<section class="row home">
+<section class="row content home pad">
 	<section class="w-16">
 		<figure class="cycle-slideshow"
 			data-cycle-fx="scrollHorz"
