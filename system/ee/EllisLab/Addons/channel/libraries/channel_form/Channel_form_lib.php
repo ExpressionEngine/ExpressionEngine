@@ -474,7 +474,7 @@ class Channel_form_lib
 
 				elseif (preg_match('/^label:(.*)$/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_label'] : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_label : '';
 				}
 
 				elseif (preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) && ($field_type_match = $this->get_field_type($match[1])) &&
@@ -504,7 +504,7 @@ class Channel_form_lib
 
 				elseif (preg_match('/^instructions:(.*)$/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_instructions'] : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
 				}
 
 				elseif (preg_match('/^error:(.*)$/', $key, $match))
