@@ -1,0 +1,32 @@
+/*
+	_paginate.less
+	-------------
+	define paginate
+*/
+
+.paginate{
+	ul:extend(.menu){ &:after{ .clear; } }
+	li{ margin-right: 5px; .left; }
+	a{
+		background-color: @light-gray;
+		border: 0;
+		display: block;
+		padding: 3px 10px;
+		text-decoration: none;
+			&.act{ background-color: @primary; color: @white; }
+	}
+	&.single{
+		margin-bottom: 20px;
+			a{
+				padding: 5px 10px;
+					.left;
+					&.page-next{ .right; }
+			}
+			&:after{ .clear; }
+	}
+}
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.paginate{ li{ margin-right: 10px; } }
+}

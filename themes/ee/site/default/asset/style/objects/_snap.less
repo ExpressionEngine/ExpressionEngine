@@ -1,0 +1,15 @@
+/*
+	_snap.less
+	-------------
+	define snap
+*/
+
+// used to keep content "snapped" to the center
+// of the view-port and sets max width for such content
+.snap{
+	margin: 0 auto;
+	max-width: @max-width;
+	position: relative;
+	.boxsize;
+		&:after{ .clear; }
+}
