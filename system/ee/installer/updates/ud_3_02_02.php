@@ -58,6 +58,8 @@ class Updater {
 		ee()->load->library('addons/addons_installer');
 		ee()->load->library('extensions');
 
+		require_once EE_APPPATH.'fieldtypes/EE_Fieldtype.php';
+
 		$installed_fieldtypes = ee()->addons->get_installed('fieldtypes');
 		$installed_fieldtypes = array_keys($installed_fieldtypes);
 
