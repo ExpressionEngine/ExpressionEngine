@@ -226,7 +226,7 @@ class Api_channel_fields extends Api {
 	{
 		if ( ! $this->ee_base_ft)
 		{
-			require_once APPPATH.'fieldtypes/EE_Fieldtype.php';
+			require_once EE_APPPATH.'fieldtypes/EE_Fieldtype.php';
 			$this->ee_base_ft = TRUE;
 		}
 
