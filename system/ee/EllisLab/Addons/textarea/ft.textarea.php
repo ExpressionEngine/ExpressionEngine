@@ -60,6 +60,11 @@ class Textarea_ft extends EE_Fieldtype {
 
 			foreach ($buttons as $button)
 			{
+				// Don't let markItUp handle this button
+				if ($button->classname == 'html-upload')
+				{
+					$button->tag_open = ' ';
+				}
 				$markItUp['markupSet'][] = $button->prepForJSON();
 			}
 
@@ -70,9 +75,19 @@ class Textarea_ft extends EE_Fieldtype {
 					.not(".grid-textarea textarea")
 					.markItUp(EE.markitup.settings);
 
+				$("li.html-upload").addClass("m-link").attr({
+					rel: "modal-file",
+					href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+				});
+
 				Grid.bind("textarea", "display", function(cell)
 				{
 					$("textarea[data-markitup]", cell).markItUp(EE.markitup.settings);
+
+					$("li.html-upload", cell).addClass("m-link").attr({
+						rel: "modal-file",
+						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+					});
 				});
 			');
 
