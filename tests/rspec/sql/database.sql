@@ -1684,7 +1684,9 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(8,'checkboxes','1.0.0','YTowOnt9','n'),
 	(9,'radio','1.0.0','YTowOnt9','n'),
 	(10,'relationship','1.0.0','YTowOnt9','n'),
-  (11,'rte','1.0.1','YTowOnt9','n'),
+  # Leave RTE at 1.0.0 or change test_addon_manager's "can filter by status" so
+  # it properly checks the correct number of add-ons that need updates
+  (11,'rte','1.0.0','YTowOnt9','n'),
   (12,'url','1.0.0','YTowOnt9','n'),
   (13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n');
