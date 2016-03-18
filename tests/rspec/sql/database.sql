@@ -1850,14 +1850,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_modules` WRITE;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
-	(1,'Emoticon','2.0','n','n'),
-	(2,'Jquery','1.0','n','n'),
+	(1,'Emoticon','2.0.0','n','n'),
+	(2,'Jquery','1.0.0','n','n'),
 	(3,'Channel','2.0.1','n','n'),
-	(4,'Member','2.1','n','n'),
-	(5,'Stats','2.0','n','n'),
+	(4,'Member','2.1.0','n','n'),
+	(5,'Stats','2.0.0','n','n'),
 	(6,'Rte','1.0.1','y','n'),
-	(7,'Email','2.0','n','n'),
-	(8,'Rss','2.0','n','n'),
+	(7,'Email','2.0.0','n','n'),
+	(8,'Rss','2.0.0','n','n'),
 	(9,'Comment','2.3.2','y','n'),
 	(10,'Search','2.2.2','n','n'),
 	(11,'FilePicker','1.0.0','y','n');
