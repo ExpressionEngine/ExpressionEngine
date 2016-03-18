@@ -24,7 +24,8 @@
 					modal: modal,
 					input_value: options.input_value,
 					input_name: options.input_name,
-					input_img: options.input_img
+					input_img: options.input_img,
+					source: options.source
 				};
 				options.callback(data, picker);
 			};
