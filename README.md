@@ -25,13 +25,13 @@ When code for a release is frozen, a branch prefixed with `release/` should be c
 
 Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
-```
+```php
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
 to
 
-```
+```php
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
@@ -49,7 +49,7 @@ $config['database']['expressionengine']['stricton'] = TRUE;
 
 Turn debug on:
 
-```
+```php
 $debug = 1;
 $config['debug'] = '2';
 ```
@@ -58,25 +58,25 @@ $config['debug'] = '2';
 
 Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
-```
+```php
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
 to
 
-```
+```php
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
 Modify config version variable in `system/user/config/config.php` around line 14 from:
 
-```
+```php
 $config['app_version'] = '3.0.0';
 ```
 
 to
 
-```
+```php
 $config['app_version'] = '2.9.0';
 ```
 
@@ -87,7 +87,7 @@ Run updater, login.
 
 In order to run unit tests you will need Composer and PHPUnit. In the system/Tests directory run:
 
-```
+```shell
 composer install
 ```
 
@@ -95,7 +95,7 @@ This will install the versions listed in the composer.lock file. If you wish to 
 
 From there you can run the ExpressionEngine tests with:
 
-```
+```shell
 phpunit ExpressionEngine/
 ```
 
