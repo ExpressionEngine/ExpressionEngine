@@ -25,7 +25,7 @@
  */
 class Pages_upd {
 
-	var $version		= '2.2';
+	var $version		= '2.2.0';
 
 	function tabs()
 	{
