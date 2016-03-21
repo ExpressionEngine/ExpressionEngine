@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.20';
+	var $version			= '3.1.21';
 
 	function tabs()
 	{

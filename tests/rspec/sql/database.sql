@@ -1684,7 +1684,9 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(8,'checkboxes','1.0.0','YTowOnt9','n'),
 	(9,'radio','1.0.0','YTowOnt9','n'),
 	(10,'relationship','1.0.0','YTowOnt9','n'),
-  (11,'rte','1.0.1','YTowOnt9','n'),
+  # Leave RTE at 1.0.0 or change test_addon_manager's "can filter by status" so
+  # it properly checks the correct number of add-ons that need updates
+  (11,'rte','1.0.0','YTowOnt9','n'),
   (12,'url','1.0.0','YTowOnt9','n'),
   (13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n');
@@ -1850,14 +1852,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_modules` WRITE;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
-	(1,'Emoticon','2.0','n','n'),
-	(2,'Jquery','1.0','n','n'),
+	(1,'Emoticon','2.0.0','n','n'),
+	(2,'Jquery','1.0.0','n','n'),
 	(3,'Channel','2.0.1','n','n'),
-	(4,'Member','2.1','n','n'),
-	(5,'Stats','2.0','n','n'),
+	(4,'Member','2.1.0','n','n'),
+	(5,'Stats','2.0.0','n','n'),
 	(6,'Rte','1.0.1','y','n'),
-	(7,'Email','2.0','n','n'),
-	(8,'Rss','2.0','n','n'),
+	(7,'Email','2.0.0','n','n'),
+	(8,'Rss','2.0.0','n','n'),
 	(9,'Comment','2.3.2','y','n'),
 	(10,'Search','2.2.2','n','n'),
 	(11,'FilePicker','1.0.0','y','n');

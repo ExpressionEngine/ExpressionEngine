@@ -1639,7 +1639,7 @@ class EE_Typography {
 		{
 			foreach ($this->code_chunks as $key => $val)
 			{
-				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
+				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock"><pre>{'.$key.'yH45k02wsSdrp}</pre></div>', $str);
 			}
 		}
 

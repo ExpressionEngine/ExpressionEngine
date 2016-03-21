@@ -25,7 +25,7 @@
 
 class Ip_to_nation_upd {
 
-	var $version = '3.0';
+	var $version = '3.0.0';
 
 	/**
 	  * Constructor

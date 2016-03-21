@@ -89,8 +89,9 @@ class FilePicker {
 	public function buildTableFromFileCollection($files, $limit = 20, $selected = NULL)
 	{
 		$table = ee('CP/Table', array(
-			'limit' => $limit,
-			'class' => 'file-list'
+			'limit'    => $limit,
+			'class'    => 'file-list',
+			'autosort' => TRUE
 		));
 
 		$table->setColumns(
