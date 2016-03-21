@@ -896,7 +896,7 @@ abstract class EE_Fieldtype {
 	 * @param   string  optional content to show for a no selection/empty option
 	 * @return	array   array of field options
 	 */
-	function _get_field_options($data, $show_empty='')
+	protected function _get_field_options($data, $show_empty='')
 	{
 		$field_options = array();
 
