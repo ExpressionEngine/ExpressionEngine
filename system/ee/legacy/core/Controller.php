@@ -124,6 +124,9 @@ class CP_Controller extends EE_Controller {
 		{
 			$field = ee()->input->post('ee_fv_field');
 
+			// Get the parent field name
+			$field = preg_replace('/\[.+?\]/', '', $field);
+
 			if ($result->hasErrors($field))
 			{
 				return array('error' => $result->renderError($field));
