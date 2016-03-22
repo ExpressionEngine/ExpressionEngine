@@ -1489,14 +1489,7 @@ GRID_FALLBACK;
 				isset($_POST[$field->field_name.'_hidden_file'])
 			);
 
-			if ($this->edit || ! $isset)
-			{
-				if ($field->field_type == 'date')
-				{
-					$_POST['field_id_'.$field->field_id] = $_POST[$field->field_name] = ee()->localize->human_time($this->entry($field->field_name));
-				}
-			}
-			else
+			if ($isset)
 			{
 				$field_rules = array();
 
@@ -2197,7 +2190,7 @@ GRID_FALLBACK;
 			$this->entry->versioning_enabled = $this->channel->enable_versioning;
 			$this->entry->status = $this->channel->deft_status;
 			$this->entry->author_id = ee()->session->userdata('member_id');
-			
+
 			if (isset($this->channel->deft_category))
 			{
 				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
@@ -2213,6 +2206,7 @@ GRID_FALLBACK;
 				$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
 				$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
 			}
+
 			return;
 		}
 
