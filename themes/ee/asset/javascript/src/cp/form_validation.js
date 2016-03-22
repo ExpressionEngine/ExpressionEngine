@@ -68,7 +68,7 @@ EE.cp.formValidation = {
 
 		$(this._textInputSelectors, container).blur(function() {
 			// Unbind keydown validation when the invalid field loses focus
-			$(this).unbind('keydown');
+			$(this).off('keydown');
 			var element = $(this);
 
 			setTimeout(function() {
@@ -397,7 +397,7 @@ EE.cp.formValidation = {
 			timer;
 
 		// Only bind to text fields
-		$('input[type=text], input[type=password], textarea', container).unbind('keydown').keydown(function() {
+		$('input[type=text], input[type=password], textarea', container).off('keydown change').on('keydown change', function() {
 
 			// Reset the timer, no need to validate if user is still typing
 			if (timer !== undefined)
