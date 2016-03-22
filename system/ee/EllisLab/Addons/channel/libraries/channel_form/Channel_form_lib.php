@@ -1827,8 +1827,14 @@ GRID_FALLBACK;
 
 			foreach ($this->field_errors as $field => $error)
 			{
-				$field = lang($field);
-				$field_errors[] = "<b>{$field}: </b>{$error}";
+				$label = lang($field);
+
+				if ($this->entry->hasCustomField($field))
+				{
+					$label = $this->entry->getCustomField($field)->getItem('field_label');
+				}
+
+				$field_errors[] = "<b>{$label}: </b>{$error}";
 			}
 
 			throw new Channel_form_exception(
