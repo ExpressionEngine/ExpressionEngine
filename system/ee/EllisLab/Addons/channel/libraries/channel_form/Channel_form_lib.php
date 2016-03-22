@@ -2195,7 +2195,9 @@ GRID_FALLBACK;
 			// Assign defaults based on the channel
 			$this->entry->title = $this->channel->default_entry_title;
 			$this->entry->versioning_enabled = $this->channel->enable_versioning;
-
+			$this->entry->status = $this->channel->deft_status;
+			$this->entry->author_id = ee()->session->userdata('member_id');
+			
 			if (isset($this->channel->deft_category))
 			{
 				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
