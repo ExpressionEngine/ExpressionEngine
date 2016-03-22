@@ -1495,12 +1495,6 @@ GRID_FALLBACK;
 				{
 					$_POST['field_id_'.$field->field_id] = $_POST[$field->field_name] = ee()->localize->human_time($this->entry($field->field_name));
 				}
-				elseif ($field->field_required == 'y')
-				{
-					//add a dummy value to be removed later
-					//to get around _check_data_for_errors, a redundant check
-					$_POST['field_id_'.$field->field_id] = '1';
-				}
 			}
 			else
 			{
