@@ -29,7 +29,7 @@ class File_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'File',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -808,6 +808,19 @@ STYLIO;
 	 * @return bool   Accepts all content types
 	 */
 	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
 	{
 		return TRUE;
 	}

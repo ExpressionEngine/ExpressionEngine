@@ -194,7 +194,7 @@ feature 'File Manager' do
 	it 'can view an image', :all_files => true do
 		@page.manage_actions[0].find('li.view a').click
 		@page.wait_until_view_modal_visible
-		@page.wait_for_view_modal_header
+		@page.wait_for_view_modal_header(5)
 		@page.view_modal.text.should include @page.title_names[0].find('em').text
 	end
 

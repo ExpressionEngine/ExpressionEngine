@@ -113,7 +113,15 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 		// "New" (unknown) fields
 		$publish_tab = $display->getTab('publish');
-		$categories_tab = $display->getTab('categories');
+		try
+		{
+			$categories_tab = $display->getTab('categories');
+		}
+		catch (InvalidArgumentException $e)
+		{
+			$categories_tab = new LayoutTab('categories', 'categories');
+			$display->addTab($categories_tab);
+		}
 
 		foreach ($fields as $field_id => $field)
 		{

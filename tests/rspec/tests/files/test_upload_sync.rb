@@ -251,7 +251,7 @@ feature 'Upload Directory Sync' do
     @page.should have_text file_count.to_s + ' files'
 
     @page.submit
-    @page.wait_for_alert
+    @page.wait_for_alert(10)
     @page.alert.should have_text 'Upload directory synchronized'
 
     FileUtils.rm_rf Dir.glob(@upload_path + '**/*.mp3')
