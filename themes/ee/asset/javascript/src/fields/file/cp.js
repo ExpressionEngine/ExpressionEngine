@@ -23,7 +23,7 @@
 					references.modal.find('.m-close').click();
 
 					// Assign the value {filedir_#}filename.ext
-					input.val('{filedir_' + data.upload_location_id + '}' + data.file_name);
+					input.val('{filedir_' + data.upload_location_id + '}' + data.file_name).trigger('change');
 
 					if (data.isImage) {
 						// Set the thumbnail
@@ -56,7 +56,7 @@
 				var figure = $(this).closest('figure');
 				figure.hide();
 				figure.siblings('em').hide(); // Hide the "missing file" erorr
-				figure.siblings('input[type="hidden"]').val('');
+				figure.siblings('input[type="hidden"]').val('').trigger('change');
 				figure.siblings('p.solo-btn').show();
 				e.preventDefault();
 			});
