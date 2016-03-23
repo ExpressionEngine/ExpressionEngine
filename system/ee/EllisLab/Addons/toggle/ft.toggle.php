@@ -242,6 +242,17 @@ class Toggle_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // EOF

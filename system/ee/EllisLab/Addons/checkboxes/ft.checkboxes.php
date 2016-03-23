@@ -26,7 +26,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Checkboxes',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -513,6 +513,19 @@ class Checkboxes_ft extends EE_Fieldtype {
 		}
 
 		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

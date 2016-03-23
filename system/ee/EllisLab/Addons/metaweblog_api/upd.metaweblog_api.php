@@ -24,7 +24,7 @@
  */
 class Metaweblog_api_upd {
 
-	var $version = '2.2';
+	var $version = '2.2.0';
 
 	function __construct()
 	{

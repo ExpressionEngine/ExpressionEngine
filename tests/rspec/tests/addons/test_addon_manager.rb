@@ -157,7 +157,7 @@ feature 'Add-On Manager' do
 
       @page.first_party_version_header[:class].should eq 'highlight'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
-      sorted_versions[-1].should == '1.0'
+      sorted_versions[-1].should == '1.0.0'
     end
 
     it 'retains filters on searching' do
