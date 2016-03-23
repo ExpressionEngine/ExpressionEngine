@@ -511,11 +511,19 @@ class Grid_ft extends EE_Fieldtype {
 		$grid_alert = '';
 		if ( ! empty($this->error_string))
 		{
-			$grid_alert = ee('CP/Alert')->makeInline('permissions-warn')
+			$grid_alert = ee('CP/Alert')->makeInline('grid-error')
 				->asIssue()
 				->addToBody($this->error_string)
 				->render();
 		}
+
+		// Create a template of the banner we generally use for alerts
+		// so we can manipulate it for AJAX validation
+		$alert_template = ee('CP/Alert')->makeInline('grid-error')
+			->asIssue()
+			->render();
+
+		ee()->javascript->set_global('alert.grid_error', $alert_template);
 
 		$settings = array(
 			'field_options_grid' => array(
@@ -583,7 +591,8 @@ class Grid_ft extends EE_Fieldtype {
 	/**
 	 * Callback for validation service
 	 *
-	 * @return	boolean	Wheather or not the settings passed validation
+	 * @return	mixed	Boolean, whether or not the settings passed validation,
+	 *   or string of errors
 	 */
 	public function _validate_grid($key, $value, $params, $rule)
 	{
@@ -592,6 +601,15 @@ class Grid_ft extends EE_Fieldtype {
 		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
 
 		$this->error_fields = array();
+
+		// Workaround: don't validate via AJAX when changing the column type
+		if ($ajax_field = ee()->input->post('ee_fv_field'))
+		{
+			if (strpos($ajax_field, '[col_type]'))
+			{
+				return TRUE;
+			}
+		}
 
 		if ($validate !== TRUE)
 		{
