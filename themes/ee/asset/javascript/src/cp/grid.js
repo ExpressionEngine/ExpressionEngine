@@ -316,6 +316,7 @@ Grid.Settings.prototype = {
 		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
 		this._bindColTypeChange();
+		this._bindValidationCallback();
 
 		// If this is a new field, bind the automatic column title plugin
 		// to the first column
@@ -327,6 +328,37 @@ Grid.Settings.prototype = {
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.colTemplateContainer.find(':input').attr('disabled', 'disabled');
+	},
+
+	/**
+	 * Since the Grid settings form is laid out differently than most forms, we
+	 * need to do some extra DOM handling when a Grid settings field is validated
+	 */
+	_bindValidationCallback: function() {
+		EE.cp.formValidation.bindCallbackForField('grid', function(result, error, field) {
+			var alert = $('div.grid-wrap').prev();
+
+			// On validation failure
+			if (result === false) {
+				field.parents('fieldset').find('em.ee-form-error-message').remove();
+
+				// Isolate the error text from the <em>
+				var errorText = $('<div/>').html(error).contents().html();
+
+				// Add alert messages to the alert banner generally used for
+				// form validation messages
+				if ( ! alert.hasClass('alert')) {
+					var alert = $('<div/>').html(EE.alert.grid_error).contents();
+					alert.html('<p>'+errorText+'</p>');
+					alert.insertBefore($('div.grid-wrap'));
+				} else {
+					alert.html('<p>'+errorText+'</p>');
+				}
+			// Validation succeeded? Sweet, remove the banner
+		} else if (alert.hasClass('alert')) {
+				alert.remove();
+			}
+		});
 	},
 
 	/**
@@ -529,6 +561,9 @@ Grid.Settings.prototype = {
 
 		// Bind column manipulation buttons
 		this._bindActionButtons(column);
+
+		// Bind AJAX form validation
+		EE.cp.formValidation.bindInputs(column);
 
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
