@@ -29,7 +29,7 @@ class Text_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Text Input',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	// Parser Flag (preparse pairs?)
@@ -471,6 +471,19 @@ class Text_ft extends EE_Fieldtype {
 		}
 
 		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

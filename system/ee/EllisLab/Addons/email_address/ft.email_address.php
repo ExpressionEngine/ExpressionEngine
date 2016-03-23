@@ -149,6 +149,17 @@ class Email_address_Ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 // END CLASS
 

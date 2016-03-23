@@ -26,7 +26,7 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Grid',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -702,6 +702,19 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->field_id = $this->id();
 		ee()->grid_lib->field_name = $this->name();
 		ee()->grid_lib->content_type = $this->content_type();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

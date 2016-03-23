@@ -29,7 +29,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Textarea',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = FALSE;
@@ -368,6 +368,19 @@ class Textarea_ft extends EE_Fieldtype {
 		$all = array_merge($defaults, $data);
 
 		return array_intersect_key($all, $defaults);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 
