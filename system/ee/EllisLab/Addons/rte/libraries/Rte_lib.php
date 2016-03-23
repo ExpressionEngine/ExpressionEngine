@@ -526,10 +526,6 @@ class Rte_lib {
 			'class' => 'has-rte'
 		);
 
-		// form prepped nonsense
-		$code_marker = unique_marker('code');
-		$code_chunks = array();
-
 		$data = trim($data);
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
@@ -539,13 +535,6 @@ class Rte_lib {
 		{
 			$field['class']	.= ' WysiHat-field';
 
-			foreach ($code_chunks as $i => $chunk)
-			{
-				$chunk = htmlentities($chunk, ENT_QUOTES, 'UTF-8');
-				$chunk = str_replace("\n", '<br>', $chunk);
-				$code_chunks[$i] = $chunk;
-			}
-
 			// xhtml vs br
 			ee()->load->library('typography');
 			$data = ee()->typography->auto_typography($data, TRUE);
@@ -553,12 +542,6 @@ class Rte_lib {
 			// remove non breaking spaces. typography likes to throw those
 			// in when a list is indented.
 			$data = str_replace('&nbsp;', ' ', $data);
-		}
-
-		// put code chunks back
-		foreach ($code_chunks as $i => $chunk)
-		{
-			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
 		}
 
 		// Swap {filedir_x} with the real URL. It will be converted back
