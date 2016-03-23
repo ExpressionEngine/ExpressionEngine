@@ -53,6 +53,7 @@
 			});
 
 			$('li.remove a').click(function (e) {
+				$(this).parents('li').siblings('.txt-only').remove();
 				var figure = $(this).closest('figure');
 				figure.hide();
 				figure.siblings('em').hide(); // Hide the "missing file" erorr
