@@ -488,54 +488,6 @@ class Rte_lib {
 			return '';
 		}
 
-		return $this->clean_data($data);
-	}
-
-	/**
-	 * The rte tries to create pretty html for its source view, but we want
-	 * to store our data with minimal html, allowing EE's auto typography to
-	 * do the bulk work and letting us switch back and forth. We strip extra
-	 * newlines, <br>s, and <p> tags.
-	 *
-	 * @param string $data The data for the RTE field
-	 * @return string The clean data
-	 */
-	private function clean_data($data)
-	{
-		$data = preg_replace("#\n?(<br>|<br />)\n?#i", "\n", $data);
-
-		// Strip <br>s
-		$data = preg_replace("#<br>|<br />#i", "\n", $data);
-
-		// Strip paragraph tags
-		$data = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", $data);
-		$data = preg_replace("#<p>|<p(?!re)[^>]*?".">|</p>#i", "",  preg_replace("#<\/p><p(?!re)[^>]*?".">#i", "\n", $data));
-
-		// Reduce newlines
-		$data = preg_replace('/\n\n+/', "\n\n", $data);
-
-		// decode double encoded code chunks
-		if (preg_match_all("#\[code\](.+?)\[/code\]#si", $data, $matches))
-		{
-			foreach ($matches[1] as $i => $chunk)
-			{
-				$chunk = trim($chunk);
-				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
-				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
-			}
-		}
-
-		// Swap  the real URL with {filedir_x}
-		ee()->load->model('file_upload_preferences_model');
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata('group_id'));
-
-		foreach($dirs as $d)
-		{
-			// tag to swap
-			$filedir = "{filedir_{$d['id']}}";
-			$data = str_replace($d['url'], $filedir, $data);
-		}
-
 		return $data;
 	}
 
@@ -574,15 +526,12 @@ class Rte_lib {
 			'class' => 'has-rte'
 		);
 
-
 		// form prepped nonsense
 		$code_marker = unique_marker('code');
 		$code_chunks = array();
 
 		$data = trim($data);
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
-
-		$data = $this->clean_data($data);
 
 		// Check the RTE module and user's preferences
 		if (ee()->session->userdata('rte_enabled') == 'y'
@@ -599,7 +548,6 @@ class Rte_lib {
 
 			// xhtml vs br
 			ee()->load->library('typography');
-
 			$data = ee()->typography->auto_typography($data, TRUE);
 
 			// remove non breaking spaces. typography likes to throw those
@@ -616,13 +564,14 @@ class Rte_lib {
 		// Swap {filedir_x} with the real URL. It will be converted back
 		// upon submit by the RTE Image tool.
 		ee()->load->model('file_upload_preferences_model');
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata('group_id'));
+		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
+			ee()->session->userdata('group_id')
+		);
 
 		foreach($dirs as $d)
 		{
 			// tag to replace
 			$filedir = "{filedir_{$d['id']}}";
-
 			$data = str_replace($filedir, $d['url'], $data);
 		}
 
