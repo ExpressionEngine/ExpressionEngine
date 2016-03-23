@@ -301,6 +301,7 @@ class EE_Functions {
 				$str = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $str);
 				$str = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $str);
 				$str = str_replace(array('{if', '{/if'), array('&#123;if', '&#123;/if'), $str);
+				$str = preg_replace("/\{layout:(.+?)\}/", "&#123;layout:\\1&#125;", $str);
 			}
 		}
 
