@@ -602,14 +602,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->error_fields = array();
 
-		// Workaround: don't validate via AJAX when changing the column type
-		if ($ajax_field = ee()->input->post('ee_fv_field'))
-		{
-			if (strpos($ajax_field, '[col_type]'))
-			{
-				return TRUE;
-			}
-		}
+		$ajax_field = ee()->input->post('ee_fv_field');
 
 		if ($validate !== TRUE)
 		{
@@ -622,17 +615,52 @@ class Grid_ft extends EE_Fieldtype {
 			{
 				foreach ($fields as $field => $error)
 				{
-					$errors[] = $error;
-					$this->error_fields[] = 'grid[cols]['.$column.']['.$field.']';
+					$field_name = 'grid[cols]['.$column.']['.$field.']';
+
+					if (AJAX_REQUEST && $ajax_field && $ajax_field == $field_name)
+					{
+						$rule->stop();
+						return lang($error);
+					}
+
+					if (is_numeric($column))
+					{
+						$column = 'col_id_'.$column;
+					}
+
+					if ( ! isset($errors[$field]))
+					{
+						$errors[$field] = array(
+							'message' => $error,
+							'columns' => array('['.$column.']')
+						);
+					}
+					else
+					{
+						$errors[$field]['columns'][] = '['.$column.']';
+					}
+
+					$this->error_fields[] = $field_name;
 				}
+			}
+
+			// If we got here on AJAX validation, return that we passed, because the
+			// single field we're validating must be valid
+			if (AJAX_REQUEST && $ajax_field)
+			{
+				return TRUE;
 			}
 
 			// Make error messages unique and convert to a string to pass
 			// to form validaiton library
 			$this->error_string = '';
-			foreach (array_unique($errors) as $error)
+			foreach ($errors as $field => $error)
 			{
-				$this->error_string .= lang($error).'<br>';
+				// Custom span for use with Grid settings validation callbacks
+				$this->error_string .= '<span
+					style="display: block"
+					data-field="['.$field.']"
+					data-columns="'.implode('', $error['columns']).'">'.lang($error['message']).'</span>';
 			}
 
 			$rule->stop();

@@ -336,27 +336,82 @@ Grid.Settings.prototype = {
 	 */
 	_bindValidationCallback: function() {
 		EE.cp.formValidation.bindCallbackForField('grid', function(result, error, field) {
-			var alert = $('div.grid-wrap').prev();
+			var alert = $('div.grid-wrap').prev(),
+				fieldName = field.attr('name'),
+				columnId = '['+field.parents('.grid-item').attr('data-field-name')+']';
+
+			// Get the last segment of the fieldname so we don't show duplicate errors
+			// if multiple columns have the same error; instead we'll keep track of
+			// the columns that have the error and keep it persisting while those errors
+			// still exist
+			if (fieldName.indexOf('[') > -1) {
+				fieldName = fieldName.substr(-(fieldName.length - fieldName.lastIndexOf('[')));
+			}
+
+			// Isolate the error text from the <em>
+			var errorText = $('<div/>').html(error).contents().html(),
+				existingError;
+
+			// If validation failed, get the error element based on current error text
+			if (error !== undefined) {
+				existingError = $('span[data-field="'+fieldName+'"]:contains("'+errorText+'")', alert);
+			// If validation passed, get the error element associated with our column and field
+			} else {
+				existingError = $('span[data-field="'+fieldName+'"][data-columns*="'+columnId+'"]', alert);
+			}
+
+			// Get the error element for this field and error if we've already created it
+			var existingErrorColumns = existingError.attr('data-columns');
 
 			// On validation failure
 			if (result === false) {
+				// Remove the inline error set by the form validation JS library,
+				// it doesn't work with the design here
 				field.parents('fieldset').find('em.ee-form-error-message').remove();
 
-				// Isolate the error text from the <em>
-				var errorText = $('<div/>').html(error).contents().html();
+				// Create a span for the error message with some data attributes
+				// that we'll use later to see if we need to remove the message
+				// or make sure there are no duplicate error messages
+				var errorSpan = $('<span/>').attr({
+							'data-field': fieldName,
+							'data-columns': columnId,
+							'style': 'display: block'
+						}).text(errorText);
 
-				// Add alert messages to the alert banner generally used for
-				// form validation messages
+				// Alert not already there? Add it and add our error message
 				if ( ! alert.hasClass('alert')) {
 					var alert = $('<div/>').html(EE.alert.grid_error).contents();
-					alert.html('<p>'+errorText+'</p>');
+					alert.html('<p>'+errorSpan.prop('outerHTML')+'</p>');
 					alert.insertBefore($('div.grid-wrap'));
+				// Alert already exists
 				} else {
-					alert.html('<p>'+errorText+'</p>');
+					// There isn't an error span for this error yet, add it anew
+					if (existingError.size() == 0) {
+						$('p', alert).append(errorSpan);
+					// Otherwise, there's already an error for this, keep track of
+					// which columns have this error
+					} else {
+						if (existingErrorColumns.indexOf(columnId) == -1) {
+							existingError.attr('data-columns', existingErrorColumns + columnId);
+						}
+					}
 				}
-			// Validation succeeded? Sweet, remove the banner
-		} else if (alert.hasClass('alert')) {
-				alert.remove();
+			// Validation succeeded? Sweet, remove the error
+			} else if (alert.hasClass('alert')) {
+
+				// If the error exists, we need to remove the column ID of the column
+				// that validated successfully for this field, and if the error doesn't
+				// exist for any more columns, remove the error entirely
+				if (existingError.size() > 0) {
+					existingError.attr('data-columns', existingErrorColumns.replace(columnId, ''));
+					if (existingError.attr('data-columns') == '') {
+						existingError.remove();
+					}
+				}
+				// No more errors? Get rid of the alert
+				if ($('span', alert).size() == 0) {
+					alert.remove();
+				}
 			}
 		});
 	},
