@@ -110,15 +110,6 @@ class Files extends AbstractFilesController {
 		$vars['dir_id'] = $id;
 		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
 
-		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
-		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/confirm_remove',
-				'cp/files/manager'
-			),
-		));
-
 		$this->generateSidebar($id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
