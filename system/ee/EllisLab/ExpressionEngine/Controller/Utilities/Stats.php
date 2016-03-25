@@ -146,7 +146,7 @@ class Stats extends Utilities {
 				}
 			}
 
-			if (ee()->cp->installed_modules['comment'])
+			if (ee()->config->item('enable_comments') == 'y')
 			{
 				if ($member_comments_count->num_rows() > 0)
 				{
