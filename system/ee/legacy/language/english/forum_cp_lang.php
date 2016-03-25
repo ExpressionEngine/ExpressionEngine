@@ -93,7 +93,6 @@ $lang = array(
 'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
 
 'default_theme' => 'Default theme',
-'default_theme_desc' => '',
 
 'php_parsing' => '<abbr title="PHP: Hypertext Preprocessor">PHP</abbr> Parsing',
 
@@ -115,7 +114,6 @@ $lang = array(
 'upload_directory_desc' => 'Full path location of this <mark>upload</mark> directory.',
 
 'allowed_file_types' => 'Allowed file types?',
-'allowed_file_types_desc' => '',
 
 'images_only' => 'Images only',
 'all_files' => 'All file types',
