@@ -185,7 +185,6 @@ $lang = array(
 'xhtml' => 'XHTML',
 
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
-'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
 'html_all' => 'Allow all HTML',
 'html_safe' => 'Allow only safe HTML',
