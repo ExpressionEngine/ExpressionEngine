@@ -126,7 +126,7 @@ class Translate extends Utilities {
 
 		foreach ($language_files as $file)
 		{
-			if ($file == 'email_data.php')
+			if ($file == 'email_data.php' OR $file == 'stopwords.php')
 			{
 				continue;
 			}
