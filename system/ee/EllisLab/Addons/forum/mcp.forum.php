@@ -986,7 +986,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'board_html_formatting' => array(
 							'type' => 'select',
@@ -2184,7 +2183,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'forum_html_formatting' => array(
 							'type' => 'select',
