@@ -64,6 +64,19 @@ $lang = array(
 
 'maximum_channels_reached' => 'You have reached the maximum number of Channels allowed.',
 
+'import' => 'Import',
+'btn_import' => 'Import',
+'import_channel' => 'Import Channel',
+
+'channel_set_upload_error' => 'Cannot Import Channel',
+'channel_set_upload_error_desc' => 'We were unable to import the channel, please review and fix errors below.',
+
+'channel_set_duplicates_error' => 'Import Creates Duplicates',
+'channel_set_duplicates_error_desc' => 'This channel uses names that already exist on your site. Please rename the following items.',
+
+'channel_set_imported' => 'Channel Imported',
+'channel_set_imported_desc' => 'The channel was sucessfully imported.',
+
 'edit' => 'edit',
 
 'settings' => 'settings',
