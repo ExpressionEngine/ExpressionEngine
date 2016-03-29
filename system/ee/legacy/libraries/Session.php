@@ -358,7 +358,7 @@ class EE_Session {
 	 * @param 	boolean		admin session or not
 	 * @return 	string 		Session ID
 	 */
-	public function create_new_session($member_id, $admin_session = FALSE)
+	public function create_new_session($member_id, $admin_session = FALSE, $masquerader_id = NULL)
 	{
 		$member = ee('Model')->get('Member', $member_id)->first();
 
@@ -391,6 +391,11 @@ class EE_Session {
 		$this->sdata['last_activity']	= ee()->localize->now;
 		$this->sdata['sess_start']		= $this->sdata['last_activity'];
 		$this->sdata['fingerprint']		= $this->_create_fingerprint((string) $crypt_key);
+
+		if ($masquerader_id)
+		{
+			$this->sdata['masquerader_id'] = $masquerader_id;
+		}
 
 		$this->userdata['member_id']	= (int) $member_id;
 		$this->userdata['group_id']		= $member->MemberGroup->getId();
@@ -703,7 +708,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
+		ee()->db->select('member_id, masquerader_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
 		ee()->db->where('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions
@@ -723,6 +728,9 @@ class EE_Session {
 
 		// Assign member ID to session array
 		$this->sdata['member_id'] = (int) $query->row('member_id');
+
+		// Assign masquerader ID to session array
+		$this->sdata['masquerader_id'] = $query->row('masquerader_id') ?: NULL;
 
 		// Is this an admin session?
 		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;

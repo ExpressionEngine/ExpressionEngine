@@ -56,6 +56,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_sessions (
 			session_id varchar(40) default '0' NOT NULL,
 			member_id int(10) default '0' NOT NULL,
+			masquerader_id int(10) NULL DEFAULT NULL,
 			admin_sess tinyint(1) default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			user_agent varchar(120) NOT NULL,
