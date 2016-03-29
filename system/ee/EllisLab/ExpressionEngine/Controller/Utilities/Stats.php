@@ -123,7 +123,7 @@ class Stats extends Utilities {
 
 			$member_entries_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_channel_titles GROUP BY author_id ORDER BY count DESC');
 
-			if (isset(ee()->cp->installed_modules['comment']))
+			if (ee()->config->item('enable_comments') == 'y')
 			{
 				$member_comments_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');
 			}
