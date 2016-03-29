@@ -356,6 +356,7 @@ class EE_Session {
 	 *
 	 * @param 	int 		member_id
 	 * @param 	boolean		admin session or not
+	 * @param 	int 		member_id of the user logging in as $member_id
 	 * @return 	string 		Session ID
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE, $masquerader_id = NULL)
