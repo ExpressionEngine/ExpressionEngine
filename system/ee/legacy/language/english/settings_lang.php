@@ -251,7 +251,7 @@ $lang = array(
 
 'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
