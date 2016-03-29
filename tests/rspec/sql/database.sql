@@ -2075,8 +2075,9 @@ INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `
 	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
 	(2,1,'About','../images/about/','/images/about/','img','','','','','','','','','',NULL,NULL,0),
 	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(4,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(5,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
+	(4,1,'Default Avatars','../images/avatars/default/','/images/avatars/default/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(5,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(6,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
 UNLOCK TABLES;
 
 
