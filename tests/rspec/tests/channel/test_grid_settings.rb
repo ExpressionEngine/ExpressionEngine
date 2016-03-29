@@ -71,22 +71,20 @@ feature 'Grid Field Settings' do
     no_php_js_errors
 
     # No column label and duplicate column label
-    GridSettings::column(1).label.trigger 'blur' # Get rid of errors so we can submit again
     column = GridSettings::add_column
     column.label.set 'Test column'
     column.name.value.should eq 'test_column'
-    @page.submit
+    column.name.trigger 'blur'
+    sleep 2
     @page.should have_text('There are one or more columns without a column label.')
     @page.should have_text('Column field names must be unique.')
 
     # No column name, duplicate column label, and no column name
-    GridSettings::column(1).label.trigger 'blur'
-    GridSettings::column(1).name.trigger 'blur'
-    GridSettings::column(2).name.trigger 'blur'
     column = GridSettings::add_column
     column.label.set 'Test column no name'
     column.name.set ''
-    @page.submit
+    column.name.trigger 'blur'
+    sleep 2
     @page.should have_text('There are one or more columns without a column label.')
     @page.should have_text('Column field names must be unique.')
     @page.should have_text('There are one or more columns without a column name.')

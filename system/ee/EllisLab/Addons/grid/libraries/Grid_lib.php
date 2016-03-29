@@ -566,6 +566,16 @@ class Grid_lib {
 						$error = lang('grid_field_required');
 					}
 
+					// Is this AJAX validation? If so, just return the result for the field
+					// we're validating
+					if (ee()->input->is_ajax_request() && $field = ee()->input->post('ee_fv_field'))
+					{
+						if ($field == 'field_id_'.$this->field_id.'[rows]['.$row_id.']['.$col_id.']')
+						{
+							return $error;
+						}
+					}
+
 					// If there's an error, assign the old row data back so the
 					// user can see the error, and set the error message
 					if (is_string($error) && ! empty($error))
