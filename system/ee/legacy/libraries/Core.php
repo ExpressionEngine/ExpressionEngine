@@ -316,14 +316,14 @@ class EE_Core {
 		// Now that we have a session we'll enable debugging if the user is a super admin
 		if (ee()->config->item('debug') == 1
 			&& (ee()->session->userdata('group_id') == 1
-				|| ee()->session->userdata('masquerader_id')
+				|| ee()->session->userdata('can_debug') == 'y'
 				)
 			)
 		{
 			$this->_enable_debugging();
 		}
 
-		if ((ee()->session->userdata('group_id') == 1 || ee()->session->userdata('masquerader_id'))
+		if ((ee()->session->userdata('group_id') == 1 || ee()->session->userdata('can_debug') == 'y')
 			&& ee()->config->item('show_profiler') == 'y')
 		{
 			ee()->output->enable_profiler(TRUE);

@@ -36,7 +36,7 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'add_masquerader_id_column',
+				'add_can_debug_column',
 			)
 		);
 
@@ -49,19 +49,21 @@ class Updater {
 	}
 
 	/**
-	 * Adds the "masquerader_id" column to the sessions table
+	 * Adds the "can_debug" column to the sessions table
 	 * @return void
 	 */
-	private function add_masquerader_id_column()
+	private function add_can_debug_column()
 	{
-		if ( ! ee()->db->field_exists('masquerader_id', 'sessions'))
+		if ( ! ee()->db->field_exists('can_debug', 'sessions'))
 		{
 			ee()->smartforge->add_column(
 				'sessions',
 				array(
-					'masquerader_id' => array(
-						'type'       => 'int',
-						'constraint' => 10
+					'can_debug' => array(
+						'type'       => 'char',
+						'constraint' => 1,
+						'default'    => 'n',
+						'null'       => FALSE
 					)
 				)
 			);

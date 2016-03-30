@@ -1250,6 +1250,7 @@ CREATE TABLE `exp_sessions` (
   `login_state` varchar(32) NULL DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
+	`can_debug` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`session_id`),
   KEY `member_id` (`member_id`),
   KEY `last_activity_idx` (`last_activity`)
