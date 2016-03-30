@@ -1,3 +1,10 @@
+<style type="text/css">
+a.sort {
+	display: inline-block;
+	width: 1px;
+}
+</style>
+
 <?php use EllisLab\ExpressionEngine\Library\CP\Table;
 if ($wrap): ?>
 	<div class="tbl-wrap<?php if ($grid_input): ?> pb<?php endif?>">
@@ -66,7 +73,7 @@ if ($wrap): ?>
 								$url->setQueryStringVariable($sort_col_qs_var, $label);
 								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
 								?>
-								<a href="<?=$url?>" class="sort <?=$arrow_dir?>">&nbsp;</a>
+								<a href="<?=$url?>" class="sort <?=$arrow_dir?>"></a>
 							<?php endif ?>
 						</th>
 					<?php endif ?>
