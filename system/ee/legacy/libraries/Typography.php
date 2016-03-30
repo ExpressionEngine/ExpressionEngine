@@ -52,7 +52,6 @@ class EE_Typography {
 	public $auto_links       = 'y';
 	public $allow_img_url    = 'n';
 	public $bbencode_links   = TRUE;
-	public $separate_parser  = FALSE;
 	public $parse_images     = TRUE;
 	public $allow_headings   = TRUE;
 	public $encode_email     = TRUE;
@@ -133,7 +132,6 @@ class EE_Typography {
 		$this->auto_links       = 'y';
 		$this->allow_img_url    = 'n';
 		$this->bbencode_links   = TRUE;
-		$this->separate_parser  = FALSE;
 		$this->parse_images     = TRUE;
 		$this->allow_headings   = TRUE;
 		$this->encode_email     = TRUE;
@@ -657,13 +655,6 @@ class EE_Typography {
 		// Set up preferences
 		$this->_set_preferences($prefs);
 
-		// Parser-specific pre_process
-		if ($this->separate_parser
-			&& method_exists($this, $this->text_format.'_pre_process'))
-		{
-			$str = $this->{$this->text_format.'_pre_process'}($str);
-		}
-
 		// Handle single line paragraphs
 		if ($this->single_line_pgfs != TRUE)
 		{
@@ -675,7 +666,6 @@ class EE_Typography {
 
 		//  Fix emoticon bug
 		$str = str_replace(array('>:-(', '>:('), array(':angry:', ':mad:'), $str);
-
 
 		//  Highlight text within [code] tags
 		// If highlighting is enabled, we'll highlight <pre> tags as well.
@@ -698,7 +688,7 @@ class EE_Typography {
 		$str = $this->format_html($str);
 
 		//  Auto-link URLs and email addresses
-		if ($this->auto_links == 'y' && ! $this->separate_parser)
+		if ($this->auto_links == 'y')
 		{
 			$str = $this->auto_linker($str);
 		}
@@ -841,7 +831,7 @@ class EE_Typography {
 		}
 
 		// If we're dealing with a separate parser (e.g. Markdown)
-		$this->separate_parser = ($this->text_format == 'markdown') ? TRUE : FALSE;
+		$this->auto_links = ($this->text_format == 'markdown') ? 'n' : 'y';
 	}
 
 	// -------------------------------------------------------------------------
@@ -1085,102 +1075,6 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Run the Mardown code through a pre processor so we can convert all code
-	 * blocks (not inline) to bbcode blocks for highlighting
-	 * @param  String $str The string to pre-process
-	 * @return String      The pre-processed string
-	 */
-	protected function markdown_pre_process($str)
-	{
-		// Must use a named group of codeblock for this to work properly
-		$hashes = array();
-		$codeblocks = array();
-		$extract_callback = function ($matches) use (&$hashes, &$codeblocks) {
-			$hash = random_string('md5');
-			$hashes[] = $hash;
-			$codeblocks[] = "[code]\n".trim($matches['codeblock'])."\n[/code]\n\n";
-			return $hash;
-		};
-
-		// First, get the fenced code blocks. Fenced code blocks consist of
-		// three tildes or backticks in a row on their own line, followed by
-		// some code, followed by a matching set of three or more tildes or
-		// backticks on their own line again
-		if (strpos($str, '```') !== FALSE
-			OR strpos($str, '~~~') !== FALSE)
-		{
-			$str = preg_replace_callback(
-				"/
-				# We only care about fences that are the beginning of their line
-				(^
-
-				# Must start with ~~~ or ``` and only contain that character
-				(?:`{3,}|~{3,}))
-
-				# Capture the codeblock AND name it
-				(?P<codeblock>.*?)
-
-				# Find the matching bunch of ~ or `
-				\\1
-				/ixsm",
-				$extract_callback,
-				$str
-			);
-		}
-
-		// Second, extract actual code blocks
-		if (strpos($str, '[code]') !== FALSE
-			&& strpos($str, '[/code]') !== FALSE)
-		{
-			$str = preg_replace_callback(
-				"/\\[code\\](?P<codeblock>.*?)\\[\\/code\\]/s",
-				$extract_callback,
-				$str
-			);
-		}
-
-		// Replace tabs with spaces
-		if (strpos($str, "\t") !== FALSE)
-		{
-			$str = preg_replace("/^\t/m", "    ", $str);
-		}
-
-		// Now process tab indented code blocks
-		if (strpos($str, '    ') !== FALSE)
-		{
-			$str = preg_replace_callback(
-				'/
-				# Must be beginning of line OR file
-				(?:\n\n|\A\n?)
-
-				# Lines must start with four spaces, using atomic groups here so
-				# the regular expression parser can not backtrack. Capture all
-				# lines like this in a row.
-				((?>[ ]{4}.*\n*)+)
-
-				# Lookahead for non space at the start or end of string
-				((?=^[ ]{0,4}\S)|\Z)
-				/xm',
-				function ($matches) {
-					$codeblock = $matches[1];
-
-					// Outdent these code blocks
-					$codeblock = preg_replace("/^[ ]{4}(.*)$/m", "$1", $codeblock);
-
-					// Trim the whole string and wrap it in [code]
-					return "[code]\n".trim($codeblock)."\n[/code]\n\n";
-				},
-				$str
-			);
-		}
-
-		// Put everything back in to place
-		return str_replace($hashes, $codeblocks, $str);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Parse content to Markdown
 	 * @param  string $str     String to parse
 	 * @param  array  $options Associative array containing options
@@ -1192,16 +1086,6 @@ class EE_Typography {
 	 */
 	public function markdown($str, $options = array())
 	{
-		// Ignore [code]
-		$code_blocks = array();
-		preg_match_all('/\<div class="codeblock">(.*?)\<\/div>/uis', $str, $matches);
-		foreach ($matches[0] as $match)
-		{
-			$hash = random_string('md5');
-			$code_blocks[$hash] = $match;
-			$str = str_replace($match, $hash, $str);
-		}
-
 		// and since XSS protection changed any %20's to actual spaces,
 		// let's restore the ones that are in Markdown formatted links
 		$nested_url_paren_regex =
@@ -1245,12 +1129,6 @@ class EE_Typography {
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
-
-		// Replace <div class="codeblock"> ([code]) blocks.
-		foreach ($code_blocks as $hash => $code_block)
-		{
-			$str = str_replace($hash, $code_block, $str);
-		}
 
 		return $str;
 	}
@@ -2132,6 +2010,19 @@ while (--j >= 0)
 			}
 			else
 			{
+				// Protect HTML in [code]
+				$str = preg_replace_callback(
+					'#\[code\].*?\[/code\]#s',
+					function ($matches) {
+						return str_replace(
+							array('<', '>'),
+							array('&lt;', '&gt;'),
+							$matches[0]
+						);
+					},
+					$str
+				);
+
 				$str = str_replace(
 					array('[code]', '[/code]'),
 					array('<pre><code>', '</code></pre>'),
@@ -2164,10 +2055,12 @@ while (--j >= 0)
 			{
 				if ($this->text_format == 'legacy_typography')
 				{
-					// First line takes care of the line break that might be there, which should
-					// be a line break because it is just a simple break from the [code] tag.
+					// First line takes care of the line break that might be
+					// there, which should be a line break because it is just a
+					// simple break from the [code] tag.
 
-					// Note: [div class="codeblock"] has been converted to <div class="codeblock"> at this pont
+					// Note: [div class="codeblock"] has been converted to <div
+					// class="codeblock"> at this pont
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>'."\n<br />", '</p><div class="codeblock">'.$val.'</div><p>', $str);
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', '</p><div class="codeblock">'.$val.'</div><p>', $str);
 				}
