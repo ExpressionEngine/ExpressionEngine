@@ -83,6 +83,8 @@ $lang = array(
 
 'date_time_settings' => 'Date &amp; Time Settings',
 
+'system_default' => 'Use system default',
+
 'timezone' => 'Timezone',
 
 'date_time_fmt' => 'Date &amp; time format',
