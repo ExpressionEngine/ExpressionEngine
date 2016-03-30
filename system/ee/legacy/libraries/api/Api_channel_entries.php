@@ -1192,7 +1192,7 @@ class Api_channel_entries extends Api {
 			}
 			else
 			{
-				$data['field_dt_'.$row['field_id']] = ee()->session->userdata('timezone');
+				$data['field_dt_'.$row['field_id']] = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));
 			}
 		}
 	}

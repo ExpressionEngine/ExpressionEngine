@@ -299,7 +299,7 @@ class EE_Core {
 		ee()->load->library('user_agent');
 
 		// Get timezone to set as PHP timezone
-		$timezone = ee()->session->userdata('timezone');
+		$timezone = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));
 
 		// In case this is a timezone stored in the old format...
 		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))

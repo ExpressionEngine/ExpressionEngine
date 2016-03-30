@@ -76,7 +76,7 @@ class Date_ft extends EE_Fieldtype {
 
 		if ( ! empty($data) && $this->settings['localize'] !== TRUE)
 		{
-			$data = array($data, ee()->session->userdata('timezone'));
+			$data = array($data, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')));
 		}
 
 		return $data;
