@@ -1,4 +1,5 @@
 <style type="text/css">
+/* Hack for capybara-webkit, leave in place for now */
 a.sort {
 	display: inline-block;
 	width: 1px;
