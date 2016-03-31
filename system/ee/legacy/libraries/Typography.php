@@ -192,8 +192,7 @@ class EE_Typography {
 			'ins'        => 'ins',
 			'strong'     => 'strong',
 			'pre'        => 'pre',
-			'code'       => 'code',
-			'abbr'       => array('tag' => 'abbr', 'property' => 'title'),
+			'abbr'       => array('tag' => 'abbr', 'properties' => 'title'),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
 			'QUOTE'      => 'blockquote'
@@ -678,7 +677,7 @@ class EE_Typography {
 
 		// We don't want BBCode parsed if it's within code examples so we'll
 		// convert the brackets
-		$str = $this->_protect_bbcode($str);
+		$str = $this->_parse_code_blocks($str);
 
 		//  Strip IMG tags if not allowed
 		if ($this->allow_img_url == 'n')
@@ -1248,21 +1247,15 @@ class EE_Typography {
 	 */
 	public function decode_bbcode($str)
 	{
-		/** -------------------------------------
-		/**  Remap some deprecated tags with valid counterparts
-		/** -------------------------------------*/
-
+		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 
-		/** -------------------------------------
-		/**  Decode BBCode array map
-		/** -------------------------------------*/
-
+		// Decode BBCode array map
 		foreach($this->safe_decode as $key => $val)
 		{
 			if (is_array($val)
-				&& isset($val['property'])
-				&& preg_match_all('/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is', $str, $matches, PREG_SET_ORDER))
+				&& isset($val['properties'])
+				&& preg_match_all('/\['.$key.'=[\'"]?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $tag_match)
 				{
@@ -1277,14 +1270,17 @@ class EE_Typography {
 						$str = str_replace($tag_match[0], '', $str);
 					}
 					else
-			{
-						$str = str_replace(
-							$tag_match[0],
-							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
-					$str
-				);
+					{
+						$tag = "<{$val['tag']}";
+						foreach ($val['properties'] as $property)
+						{
+							$tag .= " {$property}='{$tag_match[1]}'";
+						}
+						$tag .= ">";
+
+						$str = str_replace($tag_match[0], $tag, $str);
 					}
-			}
+				}
 			}
 			else
 			{
@@ -1988,13 +1984,12 @@ while (--j >= 0)
 	// --------------------------------------------------------------------
 
 	/**
-	 * Protect BBCOde
+	 * Parse [code] blocks
 	 *
-	 * We don't want BBCode parsed if it's within code examples so we'll
-	 * convert the brackets
-	 *
+	 * @param string $str the String to parse [code] blocks in
+	 * @return string The string now with parsed [code] blocks
 	 */
-	private function _protect_bbcode($str)
+	private function _parse_code_blocks($str)
 	{
 		if (strpos($str, '[code]') !== FALSE)
 		{
@@ -2029,6 +2024,13 @@ while (--j >= 0)
 				$str = str_replace(
 					array('[code]', '[/code]'),
 					array('<pre><code>', '</code></pre>'),
+					$str
+				);
+
+				// Handle `[code]` tags with a property
+				$str = preg_replace(
+					"/\[code=(['\"])?(.*?)\\1?]/s",
+					"<pre><code class=\"$2 language-$2\" data-language=\"$2\">",
 					$str
 				);
 			}
