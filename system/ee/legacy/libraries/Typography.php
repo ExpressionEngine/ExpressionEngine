@@ -1187,7 +1187,6 @@ class EE_Typography {
 	 */
 	protected function markdown_post_process($str)
 	{
-		// We need to accomodate for doubly encoded entities
 		return str_replace(
 			array('&amp;#91;', '&amp;#93;'),
 			array('&#91;', '&#93;'),
