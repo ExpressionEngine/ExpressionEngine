@@ -305,7 +305,7 @@ class Translate extends Utilities {
 			if ($key != '')
 			{
 				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
-				$keys[$key]['original'] = $val;
+				$keys[$key]['original'] = htmlentities($val);
 				$keys[$key]['trans'] = str_replace("'", "&#39;", $trans);
 				$keys[$key]['type'] = (strlen($val) > 100) ? 'textarea' : 'text';
 			}
