@@ -36,6 +36,8 @@ class Template extends FileSyncedModel {
 	protected static $_primary_key = 'template_id';
 	protected static $_table_name = 'templates';
 
+	protected static $_hook_id = 'template';
+
 	protected static $_typed_columns = array(
 		'cache'              => 'boolString',
 		'enable_http_auth'   => 'boolString',
