@@ -1648,21 +1648,18 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		$data['language']        = ee()->security->sanitize_filename($_POST['language']);
+		$data['language'] = ee()->security->sanitize_filename($_POST['language']);
 
-		if ($_POST['site_default'] == 'y')
+		foreach (array('timezone', 'date_format', 'time_format', 'include_seconts') as $key)
 		{
-			$data['timezone']        = NULL;
-			$data['date_format']     = NULL;
-			$data['time_format']     = NULL;
-			$data['include_seconds'] = NULL;
-		}
-		else
-		{
-			$data['timezone']        = $_POST['timezone'];
-			$data['date_format']     = $_POST['date_format'];
-			$data['time_format']     = $_POST['time_format'];
-			$data['include_seconds'] = $_POST['include_seconds'];
+			if ($_POST['site_default'] == 'y')
+			{
+				$data[$key] = NULL;
+			}
+			else
+			{
+				$data[$key] = ee()->input->post($key, TRUE); // XSS Clean it!
+			}
 		}
 
 		$language_pack_names = array_keys(ee()->lang->language_pack_names());
