@@ -84,9 +84,9 @@ $lang = array(
 
 'name_desc' => '',
 
-'member_group(s)' => 'Member group(s)?',
+'member_groups' => 'Member group(s)?',
 
-'member_group(s)_desc' => 'Choose the member group(s) to apply this layout to.',
+'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
 'create_layout_success' => 'Form Layout Created',
 

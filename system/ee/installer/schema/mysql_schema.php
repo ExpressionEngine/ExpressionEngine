@@ -63,6 +63,7 @@ class EE_Schema {
 			fingerprint varchar(40) NOT NULL,
 			sess_start int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
+			can_debug char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
 			KEY `last_activity_idx` (`last_activity`)

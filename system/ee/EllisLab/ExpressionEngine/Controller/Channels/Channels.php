@@ -511,13 +511,6 @@ class Channels extends AbstractChannelsController {
 
 			$channel->save();
 
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
-			{
-				// Duplicate layouts
-				ee()->load->library('layout');
-				ee()->layout->duplicate_layout($dupe_id, $channel->channel_id);
-			}
-
 			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
 			// able to access it as well
