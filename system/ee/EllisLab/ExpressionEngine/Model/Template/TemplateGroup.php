@@ -34,6 +34,8 @@ class TemplateGroup extends Model {
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'template_groups';
 
+	protected static $_hook_id = 'template_group';
+
 	protected static $_typed_columns = array(
 		'is_site_default' => 'boolString'
 	);

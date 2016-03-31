@@ -32,6 +32,8 @@ class MemberField extends FieldModel {
 	protected static $_primary_key = 'm_field_id';
 	protected static $_table_name = 'member_fields';
 
+	protected static $_hook_id = 'member_field';
+
 	protected static $_events = array(
 		'beforeInsert'
 	);
