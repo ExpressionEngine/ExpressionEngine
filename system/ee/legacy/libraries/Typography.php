@@ -656,6 +656,13 @@ class EE_Typography {
 		// Set up preferences
 		$this->_set_preferences($prefs);
 
+		// Parser-specific pre_process
+		if ($this->separate_parser
+			&& method_exists($this, $this->text_format.'_pre_process'))
+		{
+			$str = $this->{$this->text_format.'_pre_process'}($str);
+		}
+
 		// Handle single line paragraphs
 		if ($this->single_line_pgfs != TRUE)
 		{
@@ -677,6 +684,9 @@ class EE_Typography {
 
 		// We don't want BBCode parsed if it's within code examples so we'll
 		// convert the brackets
+		$str = $this->_protect_bbcode($str);
+
+		// Parse [code] blocks
 		$str = $this->_parse_code_blocks($str);
 
 		//  Strip IMG tags if not allowed
@@ -733,6 +743,13 @@ class EE_Typography {
 				// Plugin of some sort
 				$str = $this->parse_plugin($str);
 				break;
+		}
+
+		// Parser-specific post_process
+		if ($this->separate_parser
+			&& method_exists($this, $this->text_format.'_post_process'))
+		{
+			$str = $this->{$this->text_format.'_post_process'}($str);
 		}
 
 		// Clean code tags
@@ -1075,6 +1092,107 @@ class EE_Typography {
 		}
 
 		return $this->encode_tags($str);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean bbcode from Markdown style code blocks
+	 *
+	 * @param  String $str The string to pre-process
+	 * @return String      The pre-processed string
+	 */
+	protected function markdown_pre_process($str)
+	{
+		$protect_bbcode = function($matches) {
+			$code = str_replace(
+				array('[', ']'),
+				array('&#91;', '&#93;'),
+				$matches[2]
+			);
+			return $matches[1].$code.$matches[1];
+		};
+
+		// Codefences
+		if (strpos($str, '```') !== FALSE
+			OR strpos($str, '~~~') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/
+				# We only care about fences that are the beginning of their line
+				(^
+
+				# Must start with ~~~ or ``` and only contain that character
+				(?:`{3,}|~{3,}))
+
+				# Capture the codeblock AND name it
+				(.*?)
+
+				# Find the matching bunch of ~ or `
+				\\1
+				/ixsm",
+				$protect_bbcode,
+				$str
+			);
+		}
+
+		// Replace tabs with spaces
+		if (strpos($str, "\t") !== FALSE)
+		{
+			$str = preg_replace("/^\t/m", "    ", $str);
+		}
+
+		// Now process tab indented code blocks
+		if (strpos($str, '    ') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				'/
+				# Must be beginning of line OR file
+				(?:\n\n|\A\n?)
+
+				# Lines must start with four spaces, using atomic groups here so
+				# the regular expression parser can not backtrack. Capture all
+				# lines like this in a row.
+				((?>[ ]{4}.*\n*)+)
+
+				# Lookahead for non space at the start or end of string
+				((?=^[ ]{0,4}\S)|\Z)
+				/xm',
+				function ($matches) {
+					return str_replace(
+						array('[', ']'),
+						array('&#91;', '&#93;'),
+						$matches[0]
+					);
+				},
+				$str
+			);
+		}
+
+		// Put everything back in to place
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Markdown Post Process
+	 *
+	 * The markdown library tries to be clever and encodes & to &amp;, but we've
+	 * sent it some &#91; to prevent bbcode from running. We need to undo _some_
+	 * of Markdown's encoding
+	 *
+	 * @param  string $str The string post Markdown processing
+	 * @return string The string after post processing
+	 */
+	protected function markdown_post_process($str)
+	{
+		// We need to accomodate for doubly encoded entities
+		return str_replace(
+			array('&amp;#91;', '&amp;#93;'),
+			array('&#91;', '&#93;'),
+			$str
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -1987,6 +2105,32 @@ while (--j >= 0)
 	// --------------------------------------------------------------------
 
 	/**
+	 * Protect BBCode within code blocks
+	 * @param  string $str The string to protect
+	 * @return string The protected string
+	 */
+	private function _protect_bbcode($str)
+	{
+		if (preg_match_all("/(\[code.*?\])(.*?)\[\/code\]/si", $str, $matches, PREG_SET_ORDER))
+		{
+			foreach ($matches as $match)
+			{
+				$temp = str_replace(
+					array('[', ']'),
+					array('&#91;', '&#93;'),
+					$match[2]
+				);
+
+				$str = str_replace($match[0], $match[1].$temp.'[/code]', $str);
+			}
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Parse [code] blocks
 	 *
 	 * @param string $str the String to parse [code] blocks in
@@ -1996,15 +2140,6 @@ while (--j >= 0)
 	{
 		if (strpos($str, '[code') !== FALSE)
 		{
-			if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
-			{
-				for ($i = 0; $i < count($matches['1']); $i++)
-				{
-					$temp = str_replace(array('[', ']'), array('&#91;', '&#93;'), $matches['1'][$i]);
-					$str  = str_replace($matches['0'][$i], '[code]'.$temp.'[/code]', $str);
-				}
-			}
-
 			if ($this->highlight_code == TRUE)
 			{
 				$str = $this->text_highlight($str);
@@ -2047,7 +2182,6 @@ while (--j >= 0)
 		return preg_replace_callback(
 			"/(\<pre\>\<code.*?\>)(.*?)(\<\/code\>\<\/pre\>)/is",
 			function ($matches) {
-				var_dump($matches);
 				$code = $matches[2];
 				$code = ee()->functions->encode_ee_tags($code, TRUE);
 				return $matches[1].$this->encode_tags($code).$matches[3];
