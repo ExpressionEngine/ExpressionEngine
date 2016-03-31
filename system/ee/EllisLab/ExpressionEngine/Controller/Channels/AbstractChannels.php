@@ -416,20 +416,20 @@ abstract class AbstractChannels extends CP_Controller {
 
 		foreach ($groups->all() as $group)
 		{
-			$edit_url = ee('CP/URL')->make('channels/fields/groups/edit/' . $group->group_id);
+			$view_url = ee('CP/URL')->make('channels/fields/' . $group->group_id);
 
 			$column = array(
 				array(
 					'content' => $group->group_name,
-					'href' => $edit_url
+					'href' => $view_url
 				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => $edit_url,
+						'href' => ee('CP/URL')->make('channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/fields/' . $group->group_id),
+						'href' => $view_url,
 						'title' => lang('custom_fields'),
 						'content' => strtolower(lang('fields'))
 					)
@@ -518,21 +518,21 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$edit_url = ee('CP/URL')->make('channels/cat/edit/'.$group->getId());
+			$view_url = ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId());
 
 			$columns = array(
 				$group->getId(),
 				array(
 					'content' => $group->group_name . ' ('.count($group->getCategories()).')',
-					'href' => $edit_url
+					'href' => $view_url
 				),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
+						'href' => $view_url,
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => $edit_url,
+						'href' => ee('CP/URL')->make('channels/cat/edit/'.$group->getId()),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
