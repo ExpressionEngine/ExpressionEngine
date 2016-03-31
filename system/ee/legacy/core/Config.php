@@ -1362,6 +1362,7 @@ class EE_Config {
 			),
 
 			'localization_cfg'	=>	array(
+				'site_default'       => array('r', array('y' => 'yes', 'n' => 'no')),
 				'default_site_timezone' => array('f', 'timezone'),
 				'date_format'           => array('s', array(
 					'%n/%j/%Y' => 'mm/dd/yyyy',
