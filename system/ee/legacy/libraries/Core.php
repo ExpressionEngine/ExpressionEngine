@@ -83,7 +83,7 @@ class EE_Core {
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
 		define('APP_BUILD',		'20160318');
-		define('APP_VER',		'3.2.2');
+		define('APP_VER',		'3.3.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -314,12 +314,17 @@ class EE_Core {
 		ee()->lang->loadfile('core');
 
 		// Now that we have a session we'll enable debugging if the user is a super admin
-		if (ee()->config->item('debug') == 1 AND ee()->session->userdata('group_id') == 1)
+		if (ee()->config->item('debug') == 1
+			&& (ee()->session->userdata('group_id') == 1
+				|| ee()->session->userdata('can_debug') == 'y'
+				)
+			)
 		{
 			$this->_enable_debugging();
 		}
 
-		if (ee()->session->userdata('group_id') == 1 && ee()->config->item('show_profiler') == 'y')
+		if ((ee()->session->userdata('group_id') == 1 || ee()->session->userdata('can_debug') == 'y')
+			&& ee()->config->item('show_profiler') == 'y')
 		{
 			ee()->output->enable_profiler(TRUE);
 		}

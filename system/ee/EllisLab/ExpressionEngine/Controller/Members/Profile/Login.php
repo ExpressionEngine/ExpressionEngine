@@ -182,7 +182,7 @@ class Login extends Profile {
 		}
 
 		// Create a new session
-		$session_id = ee()->session->create_new_session($this->member->member_id , TRUE);
+		$session_id = ee()->session->create_new_session($this->member->member_id , TRUE, TRUE);
 
 		// Delete old password lockouts
 		ee()->session->delete_password_lockout();
