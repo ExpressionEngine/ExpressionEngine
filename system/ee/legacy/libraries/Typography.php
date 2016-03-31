@@ -52,6 +52,7 @@ class EE_Typography {
 	public $auto_links       = 'y';
 	public $allow_img_url    = 'n';
 	public $bbencode_links   = TRUE;
+	public $separate_parser  = FALSE;
 	public $parse_images     = TRUE;
 	public $allow_headings   = TRUE;
 	public $encode_email     = TRUE;
@@ -132,6 +133,7 @@ class EE_Typography {
 		$this->auto_links       = 'y';
 		$this->allow_img_url    = 'n';
 		$this->bbencode_links   = TRUE;
+		$this->separate_parser  = FALSE;
 		$this->parse_images     = TRUE;
 		$this->allow_headings   = TRUE;
 		$this->encode_email     = TRUE;
@@ -688,7 +690,7 @@ class EE_Typography {
 		$str = $this->format_html($str);
 
 		//  Auto-link URLs and email addresses
-		if ($this->auto_links == 'y')
+		if ($this->auto_links == 'y' && ! $this->separate_parser)
 		{
 			$str = $this->auto_linker($str);
 		}
@@ -831,7 +833,8 @@ class EE_Typography {
 		}
 
 		// If we're dealing with a separate parser (e.g. Markdown)
-		$this->auto_links = ($this->text_format == 'markdown') ? 'n' : 'y';
+		$this->auto_links      = ($this->text_format == 'markdown') ? 'n' : 'y';
+		$this->separate_parser = ($this->text_format == 'markdown');
 	}
 
 	// -------------------------------------------------------------------------
