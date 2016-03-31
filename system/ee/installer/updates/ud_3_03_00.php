@@ -121,7 +121,7 @@ class Updater {
 		$site_1 = array_shift($sites);
 		$msm_config = new MSM_Config();
 
-		$msm_config->site_prefs('', $site_1['site_id']);
+		$msm_config->site_prefs('', 1);
 		$same = TRUE;
 
 		$defaults = array(
