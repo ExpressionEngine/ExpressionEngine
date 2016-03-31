@@ -2119,6 +2119,7 @@ while (--j >= 0)
 					array('&#91;', '&#93;'),
 					$match[2]
 				);
+				$temp = trim(temp);
 
 				$str = str_replace($match[0], $match[1].$temp.'[/code]', $str);
 			}
