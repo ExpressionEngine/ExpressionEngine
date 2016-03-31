@@ -1991,7 +1991,7 @@ while (--j >= 0)
 	 */
 	private function _parse_code_blocks($str)
 	{
-		if (strpos($str, '[code]') !== FALSE)
+		if (strpos($str, '[code') !== FALSE)
 		{
 			if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
 			{
@@ -2010,13 +2010,11 @@ while (--j >= 0)
 			{
 				// Protect HTML in [code]
 				$str = preg_replace_callback(
-					'#\[code\].*?\[/code\]#s',
+					"/(\[code.*?\])(.*?)(\[\/code\])/is",
 					function ($matches) {
-						return str_replace(
-							array('<', '>'),
-							array('&lt;', '&gt;'),
-							$matches[0]
-						);
+						$code = $matches[2];
+						$code = ee()->functions->encode_ee_tags($code, TRUE);
+						return $matches[1].$this->encode_tags($code).$matches[3];
 					},
 					$str
 				);
