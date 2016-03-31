@@ -1,3 +1,11 @@
+<style type="text/css">
+/* Hack for capybara-webkit, leave in place for now */
+a.sort {
+	display: inline-block;
+	width: 1px;
+}
+</style>
+
 <?php use EllisLab\ExpressionEngine\Library\CP\Table;
 if ($wrap): ?>
 	<div class="tbl-wrap<?php if ($grid_input): ?> pb<?php endif?>">
