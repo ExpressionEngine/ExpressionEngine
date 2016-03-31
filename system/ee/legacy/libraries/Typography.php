@@ -2062,8 +2062,8 @@ while (--j >= 0)
 					// there, which should be a line break because it is just a
 					// simple break from the [code] tag.
 
-					// Note: [div class="codeblock"] has been converted to <div
-					// class="codeblock"> at this pont
+					// Note: [div class="codeblock"] has been converted to
+					// <div class="codeblock"> at this point
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>'."\n<br />", '</p><div class="codeblock">'.$val.'</div><p>', $str);
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', '</p><div class="codeblock">'.$val.'</div><p>', $str);
 				}
