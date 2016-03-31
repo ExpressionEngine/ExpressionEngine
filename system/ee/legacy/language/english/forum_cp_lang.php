@@ -93,7 +93,6 @@ $lang = array(
 'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
 
 'default_theme' => 'Default theme',
-'default_theme_desc' => '',
 
 'php_parsing' => '<abbr title="PHP: Hypertext Preprocessor">PHP</abbr> Parsing',
 
@@ -115,7 +114,6 @@ $lang = array(
 'upload_directory_desc' => 'Full path location of this <mark>upload</mark> directory.',
 
 'allowed_file_types' => 'Allowed file types?',
-'allowed_file_types_desc' => '',
 
 'images_only' => 'Images only',
 'all_files' => 'All file types',
@@ -187,7 +185,6 @@ $lang = array(
 'xhtml' => 'XHTML',
 
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
-'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
 'html_all' => 'Allow all HTML',
 'html_safe' => 'Allow only safe HTML',

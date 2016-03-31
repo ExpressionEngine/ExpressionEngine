@@ -678,7 +678,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'default_theme',
-					'desc' => 'default_theme_desc',
 					'fields' => array(
 						'board_default_theme' => array(
 							'type' => 'select',
@@ -747,7 +746,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'allowed_file_types',
-					'desc' => 'allowed_file_types_desc',
 					'fields' => array(
 						'board_attach_types' => array(
 							'type' => 'select',
@@ -988,7 +986,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'board_html_formatting' => array(
 							'type' => 'select',
@@ -2186,7 +2183,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'forum_html_formatting' => array(
 							'type' => 'select',
