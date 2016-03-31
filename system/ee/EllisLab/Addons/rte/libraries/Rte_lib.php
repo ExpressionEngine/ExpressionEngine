@@ -488,6 +488,17 @@ class Rte_lib {
 			return '';
 		}
 
+		// Swap the real URL with {filedir_x}
+		ee()->load->model('file_upload_preferences_model');
+		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
+			ee()->session->userdata('group_id')
+		);
+
+		foreach($dirs as $d)
+		{
+			$data = str_replace($d['url'], "{filedir_{$d['id']}}", $data);
+		}
+
 		return $data;
 	}
 
