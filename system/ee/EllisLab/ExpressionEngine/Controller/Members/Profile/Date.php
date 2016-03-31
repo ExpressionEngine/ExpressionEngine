@@ -46,9 +46,9 @@ class Date extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'system_default',
+					'title' => 'site_default',
 					'fields' => array(
-						'system_default' => array(
+						'site_default' => array(
 							'type' => 'yes_no',
 							'value' => (empty($this->member->timezone)) ? 'y' : 'n',
 							'group_toggle' => array(
@@ -100,8 +100,8 @@ class Date extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'system_default',
-				 'label'   => 'lang:system_default',
+				 'field'   => 'site_default',
+				 'label'   => 'lang:site_default',
 				 'rules'   => 'required'
 			)
 		));
@@ -114,7 +114,7 @@ class Date extends Settings {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$success = FALSE;
-			if (ee()->input->post('system_default') == 'y')
+			if (ee()->input->post('site_default') == 'y')
 			{
 				/* @TODO Use models when models can set NULL
 				$this->member->timezone = NULL;

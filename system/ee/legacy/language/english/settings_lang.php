@@ -83,7 +83,7 @@ $lang = array(
 
 'date_time_settings' => 'Date &amp; Time Settings',
 
-'system_default' => 'Use system default',
+'site_default' => 'Use site default',
 
 'timezone' => 'Timezone',
 

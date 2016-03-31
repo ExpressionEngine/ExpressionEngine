@@ -37,7 +37,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'add_can_debug_column',
-				'use_system_default_localization_settings'
+				'use_site_default_localization_settings'
 			)
 		);
 
@@ -80,7 +80,7 @@ class Updater {
 	 *
 	 * @return void
 	 */
-	private function use_system_default_localization_settings()
+	private function use_site_default_localization_settings()
 	{
 		// Allow NULL and make that the default
 		ee()->smartforge->modify_column(
