@@ -192,7 +192,7 @@ class EE_Typography {
 			'ins'        => 'ins',
 			'strong'     => 'strong',
 			'pre'        => 'pre',
-			'abbr'       => array('tag' => 'abbr', 'properties' => 'title'),
+			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
 			'QUOTE'      => 'blockquote'
