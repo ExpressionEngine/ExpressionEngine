@@ -248,7 +248,7 @@ class EE_relationship_tree_builder {
 		else
 		{
 			$force_parent = implode('|', $this->grid_relationship_names);
-			$regex = '\/?('.$force_parent.'(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
+			$regex = '\/?((?:'.$force_parent.')(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
 		}
 
 		require_once __DIR__.'/VariableFinder.php';

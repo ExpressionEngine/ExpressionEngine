@@ -56,7 +56,7 @@ class Cat extends AbstractChannelsController {
 	}
 
 	/**
-	 * Categpry Groups Manager
+	 * Category Groups Manager
 	 */
 	public function index()
 	{

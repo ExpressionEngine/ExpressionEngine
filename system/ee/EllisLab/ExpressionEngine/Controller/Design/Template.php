@@ -72,10 +72,10 @@ class Template extends AbstractDesignController {
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
 
-		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
+		foreach (ee('Model')->get('TemplateGroup')->order('group_name')->all() as $template_group)
 		{
 			$templates = array();
-			foreach ($template_group->getTemplates() as $template)
+			foreach ($template_group->Templates->sortBy('template_name') as $template)
 			{
 				$templates[$template->template_id] = $template->template_name;
 			}
