@@ -735,6 +735,9 @@ class EE_Typography {
 				break;
 		}
 
+		// Clean code tags
+		$str = $this->_clean_code_blocks($str);
+
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
 
@@ -2008,17 +2011,6 @@ while (--j >= 0)
 			}
 			else
 			{
-				// Protect HTML in [code]
-				$str = preg_replace_callback(
-					"/(\[code.*?\])(.*?)(\[\/code\])/is",
-					function ($matches) {
-						$code = $matches[2];
-						$code = ee()->functions->encode_ee_tags($code, TRUE);
-						return $matches[1].$this->encode_tags($code).$matches[3];
-					},
-					$str
-				);
-
 				$str = str_replace(
 					array('[code]', '[/code]'),
 					array('<pre><code>', '</code></pre>'),
@@ -2035,6 +2027,33 @@ while (--j >= 0)
 		}
 
 		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean up code blocks after everything has been rendered
+	 *
+	 * @param  string $str The string to check for code blocks
+	 * @return string The cleaned up output
+	 */
+	private function _clean_code_blocks($str)
+	{
+		if (strpos($str, '<code') === FALSE)
+		{
+			return $str;
+		}
+
+		return preg_replace_callback(
+			"/(\<pre\>\<code.*?\>)(.*?)(\<\/code\>\<\/pre\>)/is",
+			function ($matches) {
+				var_dump($matches);
+				$code = $matches[2];
+				$code = ee()->functions->encode_ee_tags($code, TRUE);
+				return $matches[1].$this->encode_tags($code).$matches[3];
+			},
+			$str
+		);
 	}
 
 	// --------------------------------------------------------------------
