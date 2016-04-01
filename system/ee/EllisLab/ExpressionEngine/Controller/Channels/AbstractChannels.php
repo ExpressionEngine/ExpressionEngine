@@ -240,12 +240,16 @@ abstract class AbstractChannels extends CP_Controller {
 					'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
 					'title' => (lang('layouts')),
 					'content' => strtolower(lang('layouts'))
-				)
+				),
+				'download' => array(
+					'href' => ee('CP/URL')->make('channels/sets/export/'.$channel->getId()),
+					'title' => strtolower(lang('export_set'))
+				),
 			);
 
 			if ( ! ee()->cp->allowed_group('can_edit_channels'))
 			{
-				$toolbar = array();
+				unset($toolbar['edit'], $toolbar['settings'], $toolbar['txt-only']);
 			}
 
 			$columns = array(
