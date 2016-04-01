@@ -11,6 +11,14 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 		$this->files = directory_map(BASEPATH.'language/english/', 1);
 	}
 
+	/**
+	 * Recurses over a set of language files provided by directory_map
+	 * @param  array $files Array from directory_map()
+	 * @param  string $path Path where files are located
+	 * @param  Callable $callback Method to call with the list of files,
+	 *  expectes a callable with ($filename, $language_array)
+	 * @return void
+	 */
 	private function recurseLanguageFiles($files, $path, $callback)
 	{
 		foreach ($files as $dir => $filename)
@@ -21,17 +29,32 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 			}
 			else if (strpos($filename, '.php') !== FALSE)
 			{
-				$lang = array();
-				require $path.$filename;
-
-				if (isset($lang['']))
-				{
-					unset($lang['']);
-				}
-
-				$callback($path.$filename, $lang);
+				$callback($path.$filename);
 			}
 		}
+	}
+
+	/**
+	 * Get language keys given a filename
+	 * @param  string $filename Path to a language file
+	 * @return array Array of language keys found in file, duplicates included
+	 */
+	private function getLanguageKeysFromFile($filename)
+	{
+		$lang_file = file_get_contents($filename);
+		$lang_file = preg_replace('/[\'"]{2,2}\s*=\>\s*[\'"]{2,2}/i', '', $lang_file);
+		$lang_file = str_replace('$lang = array(', 'array(', $lang_file);
+
+		if (strpos($lang_file, '=>') !== FALSE)
+		{
+			preg_match_all("/^[ \t]*['\"](.*?)['\"]\s*=>/im", $lang_file, $keys);
+		}
+		else
+		{
+			preg_match_all('/\[[\'"](.*)[\'"]\]/i', $lang_file, $keys);
+		}
+
+		return $keys[1];
 	}
 
 	/**
@@ -42,22 +65,11 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 		$this->recurseLanguageFiles(
 			$this->files,
 			BASEPATH.'language/english/',
-			function ($filename, $lang) {
-				$lang_file = file_get_contents($filename);
-				$lang_file = preg_replace('/[\'"]{2,2}\s*=\>\s*[\'"]{2,2}/i', '', $lang_file);
-				$lang_file = str_replace('$lang = array(', 'array(', $lang_file);
-
-				if (strpos('=>', $lang_file) !== FALSE)
-				{
-					preg_match_all("/^[ \t]*['\"](.*?)['\"]\s*=>/im", $lang_file, $keys);
-				}
-				else
-				{
-					preg_match_all('/\[[\'"](.*)[\'"]\]/i', $lang_file, $keys);
-				}
+			function ($filename) {
+				$keys = $this->getLanguageKeysFromFile($filename);
 
 				$failures = array();
-				$keysCount = array_count_values($keys[1]);
+				$keysCount = array_count_values($keys);
 				foreach ($keysCount as $key => $count)
 				{
 					try
@@ -90,7 +102,7 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 		$this->recurseLanguageFiles(
 			$this->files,
 			BASEPATH.'language/english/',
-			function ($filename, $lang) {
+			function ($filename) {
 				$valuesCount = array_count_values($lang);
 				foreach ($valuesCount as $value => $count)
 				{
