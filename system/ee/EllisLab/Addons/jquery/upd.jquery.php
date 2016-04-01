@@ -24,7 +24,7 @@
  */
 class Jquery_upd {
 
-	var $version = '1.0';
+	var $version = '1.0.0';
 
 	/**
 	 * Module Installer
@@ -87,7 +87,7 @@ class Jquery_upd {
 
 	function update($current='')
 	{
-		return FALSE;
+		return TRUE;
 	}
 }
 // End Jquery CP Class

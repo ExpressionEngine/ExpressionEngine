@@ -22,7 +22,6 @@ $lang = array(
 'browse'				=> 'Browse',
 'tables'				=> 'tables',
 'table_name'			=> 'Table Name',
-'records'				=> 'Records',
 'size'					=> 'Size',
 'type'					=> 'Type',
 'analyze'				=> 'Analyze Tables',

@@ -372,7 +372,11 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->Versions->count() == $this->Channel->max_revisions)
 		{
-			$this->Versions->sortBy('version_date')->first()->delete();
+			$version = $this->Versions->sortBy('version_date')->first();
+			if ($version)
+			{
+				$version->delete();
+			}
 		}
 
 		$data = array(

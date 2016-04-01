@@ -26,7 +26,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 	public $info = array(
 		'name'		=> 'Relationships',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	public $has_array_data = FALSE;
@@ -1098,6 +1098,19 @@ class Relationship_ft extends EE_Fieldtype {
 				->where('field_id', $field_id)
 				->delete($this->_table);
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

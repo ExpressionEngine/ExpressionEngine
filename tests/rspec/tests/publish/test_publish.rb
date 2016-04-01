@@ -63,7 +63,7 @@ feature 'Publish Page' do
 
         @page.file_modal.files[0].click
 
-        @page.wait_until_modal_invisible
+        @page.wait_until_modal_invisible(1)
       end
 
       @page.title.set 'File Field Test'

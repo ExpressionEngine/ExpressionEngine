@@ -62,7 +62,7 @@ class EE_Typography {
 	public $bounce           = '';
 	public $smiley_array     = FALSE;
 	public $parse_smileys    = TRUE;
-	public $highlight_code   = TRUE;
+	public $highlight_code   = FALSE;
 	public $convert_curly    = TRUE;		// Convert Curly Brackets Into Entities
 	public $emoticon_url     = '';
 	public $site_index       = '';
@@ -143,7 +143,7 @@ class EE_Typography {
 		$this->bounce           = '';
 		$this->smiley_array     = FALSE;
 		$this->parse_smileys    = TRUE;
-		$this->highlight_code   = TRUE;
+		$this->highlight_code   = FALSE;
 		$this->convert_curly    = TRUE;		// Convert Curly Brackets Into Entities
 		$this->emoticon_url     = '';
 		$this->site_index       = '';
@@ -192,8 +192,7 @@ class EE_Typography {
 			'ins'        => 'ins',
 			'strong'     => 'strong',
 			'pre'        => 'pre',
-			'code'       => 'code',
-			'abbr'       => array('tag' => 'abbr', 'property' => 'title'),
+			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
 			'QUOTE'      => 'blockquote'
@@ -676,7 +675,6 @@ class EE_Typography {
 		//  Fix emoticon bug
 		$str = str_replace(array('>:-(', '>:('), array(':angry:', ':mad:'), $str);
 
-
 		//  Highlight text within [code] tags
 		// If highlighting is enabled, we'll highlight <pre> tags as well.
 		if ($this->highlight_code == TRUE)
@@ -687,6 +685,9 @@ class EE_Typography {
 		// We don't want BBCode parsed if it's within code examples so we'll
 		// convert the brackets
 		$str = $this->_protect_bbcode($str);
+
+		// Parse [code] blocks
+		$str = $this->_parse_code_blocks($str);
 
 		//  Strip IMG tags if not allowed
 		if ($this->allow_img_url == 'n')
@@ -743,6 +744,16 @@ class EE_Typography {
 				$str = $this->parse_plugin($str);
 				break;
 		}
+
+		// Parser-specific post_process
+		if ($this->separate_parser
+			&& method_exists($this, $this->text_format.'_post_process'))
+		{
+			$str = $this->{$this->text_format.'_post_process'}($str);
+		}
+
+		// Clean code tags
+		$str = $this->_clean_code_blocks($str);
 
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
@@ -841,7 +852,8 @@ class EE_Typography {
 		}
 
 		// If we're dealing with a separate parser (e.g. Markdown)
-		$this->separate_parser = ($this->text_format == 'markdown') ? TRUE : FALSE;
+		$this->auto_links      = ($this->text_format == 'markdown') ? 'n' : 'y';
+		$this->separate_parser = ($this->text_format == 'markdown');
 	}
 
 	// -------------------------------------------------------------------------
@@ -1085,27 +1097,23 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Run the Mardown code through a pre processor so we can convert all code
-	 * blocks (not inline) to bbcode blocks for highlighting
+	 * Clean bbcode from Markdown style code blocks
+	 *
 	 * @param  String $str The string to pre-process
 	 * @return String      The pre-processed string
 	 */
 	protected function markdown_pre_process($str)
 	{
-		// Must use a named group of codeblock for this to work properly
-		$hashes = array();
-		$codeblocks = array();
-		$extract_callback = function ($matches) use (&$hashes, &$codeblocks) {
-			$hash = random_string('md5');
-			$hashes[] = $hash;
-			$codeblocks[] = "[code]\n".trim($matches['codeblock'])."\n[/code]\n\n";
-			return $hash;
+		$protect_bbcode = function($matches) {
+			$code = str_replace(
+				array('[', ']'),
+				array('&#91;', '&#93;'),
+				$matches[2]
+			);
+			return $matches[1].$code.$matches[1];
 		};
 
-		// First, get the fenced code blocks. Fenced code blocks consist of
-		// three tildes or backticks in a row on their own line, followed by
-		// some code, followed by a matching set of three or more tildes or
-		// backticks on their own line again
+		// Codefences
 		if (strpos($str, '```') !== FALSE
 			OR strpos($str, '~~~') !== FALSE)
 		{
@@ -1118,23 +1126,12 @@ class EE_Typography {
 				(?:`{3,}|~{3,}))
 
 				# Capture the codeblock AND name it
-				(?P<codeblock>.*?)
+				(.*?)
 
 				# Find the matching bunch of ~ or `
 				\\1
 				/ixsm",
-				$extract_callback,
-				$str
-			);
-		}
-
-		// Second, extract actual code blocks
-		if (strpos($str, '[code]') !== FALSE
-			&& strpos($str, '[/code]') !== FALSE)
-		{
-			$str = preg_replace_callback(
-				"/\\[code\\](?P<codeblock>.*?)\\[\\/code\\]/s",
-				$extract_callback,
+				$protect_bbcode,
 				$str
 			);
 		}
@@ -1162,20 +1159,39 @@ class EE_Typography {
 				((?=^[ ]{0,4}\S)|\Z)
 				/xm',
 				function ($matches) {
-					$codeblock = $matches[1];
-
-					// Outdent these code blocks
-					$codeblock = preg_replace("/^[ ]{4}(.*)$/m", "$1", $codeblock);
-
-					// Trim the whole string and wrap it in [code]
-					return "[code]\n".trim($codeblock)."\n[/code]\n\n";
+					return str_replace(
+						array('[', ']'),
+						array('&#91;', '&#93;'),
+						$matches[0]
+					);
 				},
 				$str
 			);
 		}
 
 		// Put everything back in to place
-		return str_replace($hashes, $codeblocks, $str);
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Markdown Post Process
+	 *
+	 * The markdown library tries to be clever and encodes & to &amp;, but we've
+	 * sent it some &#91; to prevent bbcode from running. We need to undo _some_
+	 * of Markdown's encoding
+	 *
+	 * @param  string $str The string post Markdown processing
+	 * @return string The string after post processing
+	 */
+	protected function markdown_post_process($str)
+	{
+		return str_replace(
+			array('&amp;#91;', '&amp;#93;'),
+			array('&#91;', '&#93;'),
+			$str
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -1192,16 +1208,6 @@ class EE_Typography {
 	 */
 	public function markdown($str, $options = array())
 	{
-		// Ignore [code]
-		$code_blocks = array();
-		preg_match_all('/\<div class="codeblock">(.*?)\<\/div>/uis', $str, $matches);
-		foreach ($matches[0] as $match)
-		{
-			$hash = random_string('md5');
-			$code_blocks[$hash] = $match;
-			$str = str_replace($match, $hash, $str);
-		}
-
 		// and since XSS protection changed any %20's to actual spaces,
 		// let's restore the ones that are in Markdown formatted links
 		$nested_url_paren_regex =
@@ -1245,12 +1251,6 @@ class EE_Typography {
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
-
-		// Replace <div class="codeblock"> ([code]) blocks.
-		foreach ($code_blocks as $hash => $code_block)
-		{
-			$str = str_replace($hash, $code_block, $str);
-		}
 
 		return $str;
 	}
@@ -1367,21 +1367,15 @@ class EE_Typography {
 	 */
 	public function decode_bbcode($str)
 	{
-		/** -------------------------------------
-		/**  Remap some deprecated tags with valid counterparts
-		/** -------------------------------------*/
-
+		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 
-		/** -------------------------------------
-		/**  Decode BBCode array map
-		/** -------------------------------------*/
-
+		// Decode BBCode array map
 		foreach($this->safe_decode as $key => $val)
 		{
 			if (is_array($val)
-				&& isset($val['property'])
-				&& preg_match_all('/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is', $str, $matches, PREG_SET_ORDER))
+				&& isset($val['properties'])
+				&& preg_match_all('/\['.$key.'=[\'"]?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $tag_match)
 				{
@@ -1396,14 +1390,17 @@ class EE_Typography {
 						$str = str_replace($tag_match[0], '', $str);
 					}
 					else
-			{
-						$str = str_replace(
-							$tag_match[0],
-							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
-					$str
-				);
+					{
+						$tag = "<{$val['tag']}";
+						foreach ($val['properties'] as $property)
+						{
+							$tag .= " {$property}='{$tag_match[1]}'";
+						}
+						$tag .= ">";
+
+						$str = str_replace($tag_match[0], $tag, $str);
 					}
-			}
+				}
 			}
 			else
 			{
@@ -1866,6 +1863,9 @@ class EE_Typography {
 	 */
 	public function text_highlight($str)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.3.0');
+
 		// No [code] tags?  No reason to live.  Goodbye cruel world...
 
 		if ( ! preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
@@ -2104,36 +2104,90 @@ while (--j >= 0)
 	// --------------------------------------------------------------------
 
 	/**
-	 * Protect BBCOde
-	 *
-	 * We don't want BBCode parsed if it's within code examples so we'll
-	 * convert the brackets
-	 *
+	 * Protect BBCode within code blocks
+	 * @param  string $str The string to protect
+	 * @return string The protected string
 	 */
 	private function _protect_bbcode($str)
 	{
-		if (strpos($str, '[code]') !== FALSE)
+		if (preg_match_all("/(\[code.*?\])(.*?)\[\/code\]/si", $str, $matches, PREG_SET_ORDER))
 		{
-			if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
+			foreach ($matches as $match)
 			{
-				for ($i = 0; $i < count($matches['1']); $i++)
-				{
-					$temp = str_replace(array('[', ']'), array('&#91;', '&#93;'), $matches['1'][$i]);
-					$str  = str_replace($matches['0'][$i], '[code]'.$temp.'[/code]', $str);
-				}
-			}
+				$temp = str_replace(
+					array('[', ']'),
+					array('&#91;', '&#93;'),
+					$match[2]
+				);
+				$temp = trim(temp);
 
+				$str = str_replace($match[0], $match[1].$temp.'[/code]', $str);
+			}
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parse [code] blocks
+	 *
+	 * @param string $str the String to parse [code] blocks in
+	 * @return string The string now with parsed [code] blocks
+	 */
+	private function _parse_code_blocks($str)
+	{
+		if (strpos($str, '[code') !== FALSE)
+		{
 			if ($this->highlight_code == TRUE)
 			{
 				$str = $this->text_highlight($str);
 			}
 			else
 			{
-				$str = str_replace(array('[code]', '[/code]'),	array('<code>', '</code>'),	$str);
+				$str = str_replace(
+					array('[code]', '[/code]'),
+					array('<pre><code>', '</code></pre>'),
+					$str
+				);
+
+				// Handle `[code]` tags with a property
+				$str = preg_replace(
+					"/\[code=(['\"])?(.*?)\\1?]/s",
+					"<pre><code class=\"$2 language-$2\" data-language=\"$2\">",
+					$str
+				);
 			}
 		}
 
 		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean up code blocks after everything has been rendered
+	 *
+	 * @param  string $str The string to check for code blocks
+	 * @return string The cleaned up output
+	 */
+	private function _clean_code_blocks($str)
+	{
+		if (strpos($str, '<code') === FALSE)
+		{
+			return $str;
+		}
+
+		return preg_replace_callback(
+			"/(\<pre\>\<code.*?\>)(.*?)(\<\/code\>\<\/pre\>)/is",
+			function ($matches) {
+				$code = $matches[2];
+				$code = ee()->functions->encode_ee_tags($code, TRUE);
+				return $matches[1].$this->encode_tags($code).$matches[3];
+			},
+			$str
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -2157,10 +2211,12 @@ while (--j >= 0)
 			{
 				if ($this->text_format == 'legacy_typography')
 				{
-					// First line takes care of the line break that might be there, which should
-					// be a line break because it is just a simple break from the [code] tag.
+					// First line takes care of the line break that might be
+					// there, which should be a line break because it is just a
+					// simple break from the [code] tag.
 
-					// Note: [div class="codeblock"] has been converted to <div class="codeblock"> at this pont
+					// Note: [div class="codeblock"] has been converted to
+					// <div class="codeblock"> at this point
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>'."\n<br />", '</p><div class="codeblock">'.$val.'</div><p>', $str);
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', '</p><div class="codeblock">'.$val.'</div><p>', $str);
 				}

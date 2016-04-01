@@ -201,8 +201,6 @@ until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module 
 behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
 and provide them with the URL below.',
 
-'items' => 'Items',
-
 'purchases' => 'Purchases',
 
 'purchase' => 'Purchase',
@@ -214,8 +212,6 @@ and provide them with the URL below.',
 'create_template' => 'Create Template',
 
 'store_items' => 'Store Items',
-
-'add_item' => 'Add Item',
 
 'item_added' => 'Items Added',
 
@@ -283,8 +279,6 @@ and provide them with the URL below.',
 
 'no_purchases' => 'No Purchases',
 
-'create_purchase' => 'Create Purchase',
-
 'perform_item_actions' => 'Perform Actions for Item?',
 
 'email_name' => 'Email Template Name',
@@ -345,10 +339,6 @@ and provide them with the URL below.',
 
 'choose_item' => 'Choose Item',
 
-'invalid_emails' => 'Invalid Emails',
-
-'invalid_purchases' => 'Invalid Purchases',
-
 'fields_left_blank' => 'You Left Some Required Fields Blank',
 
 'add_emails' => 'Add Email Templates',
@@ -366,8 +356,6 @@ and provide them with the URL below.',
 'purchases_deleted' => 'Purchases Deleted',
 
 'email_instructions' => 'Email Instructions',
-
-'email_name' => 'Email Template Name',
 
 'email_subject' => 'Email subject',
 
@@ -420,8 +408,6 @@ and provide them with the URL below.',
 'item_cost' => 'Item Cost',
 
 'item_cost_form' => 'Item cost',
-
-'choose_item' => 'Choose Item',
 
 'invalid_date_formatting' => 'Invalid Date Formatting',
 

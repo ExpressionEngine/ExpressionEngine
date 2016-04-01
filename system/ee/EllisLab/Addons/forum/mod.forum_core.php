@@ -1180,6 +1180,7 @@ class Forum_Core extends Forum {
 
 			if ( ! preg_match("/^[0-9_]+$/i", $feed_id))
 			{
+				ee()->db->_reset_select();
 				return $this->trigger_error('no_feed_specified');
 			}
 

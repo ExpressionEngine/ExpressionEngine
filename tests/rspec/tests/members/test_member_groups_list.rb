@@ -67,92 +67,111 @@ feature 'Member Group List' do
       @page.edit.security_lock[1].checked?.should == true
     end
 
-    checkboxes = %w(
-      website_access
-      include_members_in
-      comment_actions
-      footer_helper_links
-      channel_permissions
-      channel_field_permissions
-      channel_category_permissions
-      channel_status_permissions
-      channel_entry_actions
-      allowed_channels
-      file_upload_directories
-      files
-      member_group_actions
-      member_actions
-      template_groups
-      template_partials
-      template_variables
-      template_permissions
-      allowed_template_groups
-      addons_access
-      rte_toolsets
-      access_tools
-    )
+    it 'toggles member group checkbox permissions' do
+      toggle_state = {}
 
-    checkboxes.each do |name|
-      it "toggles `#{name}` member group checkbox permissions" do
-        toggle_state = {}
+      checkboxes = %w(
+        website_access
+        include_members_in
+        comment_actions
+        footer_helper_links
+        channel_permissions
+        channel_field_permissions
+        channel_category_permissions
+        channel_status_permissions
+        channel_entry_actions
+        allowed_channels
+        file_upload_directories
+        files
+        member_group_actions
+        member_actions
+        template_groups
+        template_partials
+        template_variables
+        template_permissions
+        allowed_template_groups
+        addons_access
+        rte_toolsets
+        access_tools
+      )
 
-        @page.edit.send(name).each_with_index do |permission, index|
-          toggle_state[index] = permission.checked?
-          permission.click
-        end
-
-        submit_form
-
-        @page.edit.send(name).each_with_index do |permission, index|
-          toggle_state[index].should_not == permission.checked?
-          permission.click
-        end
-
-        submit_form
-
-        @page.edit.send(name).each_with_index do |permission, index|
-          toggle_state[index].should == permission.checked?
+      checkboxes.each do |permission_name|
+        toggle_state[permission_name] = {}
+        @page.edit.send(permission_name).each_with_index do |permission, index|
+          toggle_state[permission_name][index] = permission.checked?
           permission.click
         end
       end
+
+      submit_form
+
+      checkboxes.each do |permission_name|
+        @page.edit.send(permission_name).each_with_index do |permission, index|
+          toggle_state[permission_name][index].should_not == permission.checked?
+          permission.click
+        end
+      end
+
+      submit_form
+
+      checkboxes.each do |permission_name|
+        @page.edit.send(permission_name).each_with_index do |permission, index|
+          toggle_state[permission_name][index].should == permission.checked?
+        end
+      end
+
     end
 
-    radios = %w(
-      can_view_profiles
-      can_delete_self
-      can_post_comments
-      can_admin_channels
-      exclude_from_moderation
-      can_search
-      can_send_private_messages
-      can_attach_in_private_messages
-      can_send_bulletins
-      can_access_cp
-      cp_homepage
-      can_admin_channels
-      can_access_files
-      can_access_members
-      can_admin_mbr_groups
-      can_admin_design
-      can_admin_addons
-      can_access_utilities
-      can_access_logs
-      can_access_sys_prefs
-      can_access_security_settings
-    )
+    it 'toggles checkbox permissions successfully' do
+      radios = [
+        'can_view_profiles',
+        'can_delete_self',
+        ['can_post_comments', 'exclude_from_moderation'],
+        'can_search',
+        ['can_send_private_messages', 'can_attach_in_private_messages', 'can_send_bulletins'],
+        'cp_homepage',
+        'can_admin_channels',
+        'can_access_files',
+        ['can_access_members', 'can_admin_mbr_groups'],
+        ['can_access_design', 'can_admin_design'],
+        ['can_access_addons', 'can_admin_addons'],
+        'can_access_utilities',
+        'can_access_logs',
+        ['can_access_sys_prefs', 'can_access_security_settings']
+      ]
 
-    radios.each do |name|
-      it "toggles `#{name}` member group radio permissions" do
-        @page.edit.send(name)[0].click
+      @page.edit.can_access_cp[0].click
 
-        submit_form
+      radios.each do |radio|
+        if radio.is_a? Array
+          radio.each { |r| @page.edit.send(r)[0].click }
+        else
+          @page.edit.send(radio)[0].click
+        end
+      end
 
-        @page.edit.send(name)[0].should be_checked
-        @page.edit.send(name)[1].click
+      submit_form
 
-        submit_form
+      @page.edit.can_access_cp[0].should be_checked
 
-        @page.edit.send(name)[1].should be_checked
+      radios.each do |radio|
+        if radio.is_a? Array
+          radio.each { |r| @page.edit.send(r)[0].should be_checked }
+          @page.edit.send(radio[0])[1].click
+        else
+          @page.edit.send(radio)[0].should be_checked
+          @page.edit.send(radio)[1].click
+        end
+      end
+
+      submit_form
+
+      radios.each do |radio|
+        if radio.is_a? Array
+          @page.edit.send(radio[0])[1].should be_checked
+        else
+          @page.edit.send(radio)[1].should be_checked
+        end
       end
     end
   end

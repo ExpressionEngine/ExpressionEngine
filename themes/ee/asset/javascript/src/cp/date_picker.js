@@ -189,7 +189,7 @@ EE.cp.datePicker = {
 						date_format = $(that.element).data('dateFormat');
 					}
 
-					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format));
+					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format)).trigger('change');
 					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();

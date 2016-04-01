@@ -10,7 +10,7 @@
 
 	<?php $this->embed('_shared/table', $table); ?>
 
-	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
+	<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 	<?php if ( ! empty($table['data'])): ?>
 	<fieldset class="tbl-bulk-act hidden">

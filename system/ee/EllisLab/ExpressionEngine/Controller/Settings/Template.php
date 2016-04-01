@@ -74,7 +74,7 @@ class Template extends Settings {
 							'choices' => (ee()->admin_model->get_template_list()) ?: array(),
 							'no_results' => array(
 								'text' => 'no_templates_found',
-								'link_text' => 'create_template',
+								'link_text' => 'create_new_template',
 								'link_href' => ee('CP/URL')->make('design')
 							)
 						)

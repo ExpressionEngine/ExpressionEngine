@@ -1250,6 +1250,7 @@ CREATE TABLE `exp_sessions` (
   `login_state` varchar(32) NULL DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
+	`can_debug` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`session_id`),
   KEY `member_id` (`member_id`),
   KEY `last_activity_idx` (`last_activity`)
@@ -1684,7 +1685,9 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(8,'checkboxes','1.0.0','YTowOnt9','n'),
 	(9,'radio','1.0.0','YTowOnt9','n'),
 	(10,'relationship','1.0.0','YTowOnt9','n'),
-  (11,'rte','1.0.1','YTowOnt9','n'),
+  # Leave RTE at 1.0.0 or change test_addon_manager's "can filter by status" so
+  # it properly checks the correct number of add-ons that need updates
+  (11,'rte','1.0.0','YTowOnt9','n'),
   (12,'url','1.0.0','YTowOnt9','n'),
   (13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n');
@@ -1850,14 +1853,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_modules` WRITE;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
-	(1,'Emoticon','2.0','n','n'),
-	(2,'Jquery','1.0','n','n'),
+	(1,'Emoticon','2.0.0','n','n'),
+	(2,'Jquery','1.0.0','n','n'),
 	(3,'Channel','2.0.1','n','n'),
-	(4,'Member','2.1','n','n'),
-	(5,'Stats','2.0','n','n'),
+	(4,'Member','2.1.0','n','n'),
+	(5,'Stats','2.0.0','n','n'),
 	(6,'Rte','1.0.1','y','n'),
-	(7,'Email','2.0','n','n'),
-	(8,'Rss','2.0','n','n'),
+	(7,'Email','2.0.0','n','n'),
+	(8,'Rss','2.0.0','n','n'),
 	(9,'Comment','2.3.2','y','n'),
 	(10,'Search','2.2.2','n','n'),
 	(11,'FilePicker','1.0.0','y','n');
@@ -2073,8 +2076,9 @@ INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `
 	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
 	(2,1,'About','../images/about/','/images/about/','img','','','','','','','','','',NULL,NULL,0),
 	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(4,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(5,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
+	(4,1,'Default Avatars','../images/avatars/default/','/images/avatars/default/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(5,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(6,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
 UNLOCK TABLES;
 
 

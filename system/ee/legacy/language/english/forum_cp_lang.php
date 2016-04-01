@@ -16,14 +16,12 @@ $lang = array(
 
 // Sidebar
 'templates' => 'Templates',
-'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
 'forum_alias' => 'Forum Alias',
 'forum_aliases' => 'Forum Aliases',
 'create_new_board' => 'Create new forum board',
 
 // List / Index
-'forum_listing' => 'Forum listing',
 'create_new_category' => 'Create new category',
 'categories' => 'Categories',
 
@@ -154,9 +152,6 @@ $lang = array(
 'post_ordering' => 'Post ordering',
 'post_ordering_desc' => 'Order of posts in topic listing.',
 
-'most_recent_first' => 'Most recent first',
-'most_recent_last' => 'Most recent last',
-
 'hot_topics' => 'Hot topics',
 'hot_topics_desc' => 'Number of posts required to mark a topic as hot.',
 
@@ -253,9 +248,6 @@ $lang = array(
 
 'edit_forum_board_error' => 'Cannot Update Forum Board',
 'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
-
-'forum_board_removed' => 'Forum Board Removed',
-'forum_board_removed_desc' => 'The forum board <b>%s</b> was removed.',
 
 // Create/Edit Category Form
 
