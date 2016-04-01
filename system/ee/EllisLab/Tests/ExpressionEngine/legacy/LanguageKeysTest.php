@@ -62,21 +62,18 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 				{
 					try
 					{
-						$this->assertEquals(
-							$count,
-							1,
-							"{$filename} contains duplicate language keys for '{$key}'."
-						);
+						$message = "There are {$count} language keys for '{$key}'.";
+						$this->assertEquals($count, 1, $message);
 					}
 					catch (PHPUnit_Framework_AssertionFailedError $e)
 					{
-						$failures[] = $e->getMessage();
+						$failures[] = $message;
 					}
 				}
 
 				if ( ! empty($failures))
 				{
-					echo implode("\n\n- ", $failures);
+					echo "\n{$filename}:\n- ".implode("\n- ", $failures);
 					$this->fail("{$filename} contains duplicate language keys.");
 				}
 			}
