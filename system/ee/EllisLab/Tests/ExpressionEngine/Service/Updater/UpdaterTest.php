@@ -14,18 +14,19 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->zip_archive = Mockery::mock('ZipArchive');
 		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
+		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Verifier');
 
 		$this->license_number = '1234-1234-1234-1234';
 		$this->payload_url = 'http://0.0.0.0/ee.zip';
 
-		$this->updater = new Updater($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config);
+		$this->updater = new Updater($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier);
 	}
 
 	private function getPartialMock($methods)
 	{
 		return Mockery::mock(
 			'EllisLab\ExpressionEngine\Service\Updater\Updater['.$methods.']',
-			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config)
+			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier)
 		);
 	}
 
@@ -44,7 +45,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadConstructor($license_number, $payload_url)
 	{
-		$updater = new Updater($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config);
+		$updater = new Updater($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier);
 	}
 
 	public function badUpdaterConstructorProvider()
