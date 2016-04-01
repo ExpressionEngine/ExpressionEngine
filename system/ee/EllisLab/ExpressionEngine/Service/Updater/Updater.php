@@ -38,9 +38,11 @@ class Updater {
 	protected $filesystem = NULL;
 	protected $zip_archive = NULL;
 	protected $config = NULL;
+	protected $verifier = NULL;
 
 	protected $filename = 'ExpressionEngine.zip';
 	protected $extracted_folder = 'ExpressionEngine';
+	protected $manifest_location = '/system/ee/updater/hash-manifest';
 
 	/**
 	 * Constructor
@@ -53,7 +55,7 @@ class Updater {
 	 * @param	ZipArchive			$zip_archive	PHP-native ZipArchive object
 	 * @param	Config\File			$config			File config service object
 	 */
-	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config)
+	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier)
 	{
 		if (empty($license_number) OR ! is_string($license_number))
 		{
@@ -71,6 +73,7 @@ class Updater {
 		$this->filesystem = $filesystem;
 		$this->zip_archive = $zip_archive;
 		$this->config = $config;
+		$this->verifier = $verifier;
 
 		// TODO: Create log service?
 	}
@@ -229,8 +232,9 @@ class Updater {
 	 */
 	public function verifyZipContents()
 	{
-		// TODO: Need a manifest inside the zip that contains SHA1s of every file,
-		// then use it to verify each file
+		$extracted_path = $this->getExtractedArchivePath();
+
+		$this->verifier->verifyPath($extracted_path, $extracted_path . DIRECTORY_SEPARATOR . $this->manifest_location);
 	}
 
 	/**

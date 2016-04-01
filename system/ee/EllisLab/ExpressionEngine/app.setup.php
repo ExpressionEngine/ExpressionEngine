@@ -149,11 +149,12 @@ return array(
 			return new Updater\Updater(
 				$ee->make('License')->getEELicense()->getData('license_number'),
 				// Will be dynamic later
-				'https://dl.dropboxusercontent.com/u/28047/ExpressionEngine3.1.2.zip',
+				'http://ee.dev/download.php',
 				$ee->make('Curl'),
 				$ee->make('Filesystem'),
 				new \ZipArchive(),
-				$ee->make('Config')->getFile()
+				$ee->make('Config')->getFile(),
+				new Updater\Verifier($ee->make('Filesystem'))
 			);
 		}
 	),
