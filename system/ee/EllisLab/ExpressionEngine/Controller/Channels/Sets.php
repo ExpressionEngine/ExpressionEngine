@@ -35,8 +35,27 @@ class Sets extends AbstractChannelsController {
 	public function index()
 	{
 		$this->generateSidebar('channel');
+		$base_url = ee('CP/URL', 'channels/sets');
 
-		$vars = $this->getDefaultForm();
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => $base_url,
+			'errors' => NULL,
+			'has_file_input' => TRUE,
+			'save_btn_text' => 'btn_import',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'file_upload',
+						'fields' => array(
+							'set_file' => array('type' => 'file'),
+							'required' => TRUE
+						)
+					),
+				)
+			)
+		);
 
 		if ( ! empty($_FILES))
 		{
@@ -62,39 +81,11 @@ class Sets extends AbstractChannelsController {
 			else
 			{
 				$set = ee('ChannelSet')->importUpload($set_file);
-
-				$result = $set->validate();
-
-				if ($result->isValid())
-				{
-					$set->save();
-
-					$alert = ee('CP/Alert')->makeInline('shared-form')
-						->asSuccess()
-						->withTitle(lang('channel_set_imported'))
-						->addToBody(lang('channel_set_imported_desc'))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL', 'channels'));
-				}
-
-				if ($result->isRecoverable())
-				{
-					$vars = $this->getAliasForm($set, $result);
-
-					ee('CP/Alert')->makeInline('shared-form')
-						->asIssue()
-						->withTitle(lang('channel_set_duplicates_error'))
-						->addToBody(lang('channel_set_duplicates_error_desc'))
-						->now();
-				}
-				else
-				{
-					$fatal = $result->getErrors();
-					$model_errors = $result->getModelErrors();
-
-					// todo find a way to display those errors
-				}
+				ee()->functions->redirect(
+					ee('CP/URL')->make(
+						'channels/sets/doImport',
+						array('set_path' => str_replace(PATH_CACHE, '', $set->getPath())))
+				);
 			}
 		}
 
@@ -106,15 +97,68 @@ class Sets extends AbstractChannelsController {
 		ee()->cp->render('channels/sets/index', $vars);
 	}
 
-	public function importWithAliases()
+	/**
+	 * Export a channel as a channel set
+	 */
+	public function export($channel_id = NULL)
 	{
-		if (empty($_POST))
+		$channel = NULL;
+
+		if (isset($channel_id))
 		{
+			$channel = ee('Model')
+				->get('Channel', $channel_id)
+				->filter('site_id', ee()->config->item('site_id'))->first();
+		}
+
+		if ( ! isset($channel))
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('channel_set_not_exported'))
+				->addToBody(lang('channel_set_not_exported_desc'))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL', 'channels'));
+		}
+
+		$file = ee('ChannelSet')->export(array($channel));
+
+		$data = file_get_contents($file);
+		unlink($file);
+
+		ee()->load->helper('download');
+		force_download('ChannelSet.zip', $data);
+		exit;
+	}
+
+	/**
+	 * Import a channel set
+	 */
+	public function doImport()
+	{
+		$set_path = ee('Request')->get('set_path');
+
+		// no path or unacceptable path? abort!
+		if ( ! $set_path || strpos($set_path, '..') !== FALSE)
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('channel_set_upload_error'))
+				->addToBody(lang('channel_set_upload_error_desc'))
+				->defer();
+
 			ee()->functions->redirect(ee('CP/URL', 'channels/sets'));
 		}
 
-		$set = ee('ChannelSet')->importDir(PATH_CACHE.ee('Request')->post('set_path'));
-		$set->setAliases($_POST);
+		// load up the set
+		$set = ee('ChannelSet')->importDir(PATH_CACHE.ltrim($set_path, '/'));
+
+		// posted values? grab 'em
+		if (isset($_POST))
+		{
+			$set->setAliases($_POST);
+		}
 
 		$result = $set->validate();
 
@@ -131,48 +175,42 @@ class Sets extends AbstractChannelsController {
 			ee()->functions->redirect(ee('CP/URL', 'channels'));
 		}
 
-		var_dump($result->getRecoverableErrors());
-		die('failed again?!');
-	}
+		if ($result->isRecoverable())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('channel_set_duplicates_error'))
+				->addToBody(lang('channel_set_duplicates_error_desc'))
+				->now();
+		}
+		else
+		{
+			$fatal = $result->getErrors();
+			$model_errors = $result->getModelErrors();
 
-	private function getDefaultForm()
-	{
-		$base_url = ee('CP/URL', 'channels/sets');
+			var_dump($fatal);
+			var_dump($model_errors['Channel Field'][0][2]);
 
-		return array(
-			'ajax_validate' => TRUE,
-			'base_url' => $base_url,
-			'errors' => NULL,
-			'has_file_input' => TRUE,
-			'save_btn_text' => 'btn_import',
-			'save_btn_text_working' => 'btn_saving',
-			'sections' => array(
-				array(
-					array(
-						'title' => 'file_upload',
-						'fields' => array(
-							'set_file' => array('type' => 'file'),
-							'required' => TRUE
-						)
-					),
-				)
-			)
+			exit('unknown errors');
+			// todo find a way to display those errors
+		}
+
+		$this->generateSidebar('channel');
+
+		$vars = $this->createAliasForm($set, $result);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('channels')->compile() => lang('channels')
 		);
+
+		ee()->view->cp_page_title = lang('import_channel');
+		ee()->cp->render('channels/sets/index', $vars);
 	}
 
-	private function getAliasForm($set, $result)
+	private function createAliasForm($set, $result)
 	{
 		$vars = array();
 		$vars['sections'] = array();
-
-		$human_fields = array(
-			'ee:Channel' => 'channel_title',
-			'ee:ChannelFieldGroup' => 'group_name'
-		);
-
-		$short_names = array(
-			'ee:Channel' => array('channel_name' => 'channel_title')
-		);
 
 		foreach ($result->getRecoverableErrors() as $section => $errors)
 		{
@@ -180,52 +218,48 @@ class Sets extends AbstractChannelsController {
 			{
 				$fields = array();
 
-				list($model, $field, $value, $rule) = $error;
+				list($model, $field, $ident, $rule) = $error;
 
 				$model_name = $model->getName();
+				$long_field = $result->getLongFieldIfShortened($model, $field);
 
-				$model_ident = $human_fields[$model_name];
-				$model_id = $model->$model_ident;
+				// Show the current model title in the section header
+				$title_field = $result->getTitleFieldFor($model);
 
-				if (isset($short_names[$model_name]))
+				// Frequently the error is on the short_name, but in those cases
+				// you really want to edit the long name as well, so we'll show it.
+				if (isset($long_field))
 				{
-					$human_field = $short_names[$model_name][$field];
-
-					$fields[] = array(
-						'title' => $human_field,
+					$vars['sections'][$section.': '.$model->$title_field][] = array(
+						'title' => $long_field,
 						'fields' => array(
-							$model_name.'['.$value.']['.$human_field.']' => array(
+							$model_name.'['.$ident.']['.$long_field.']' => array(
 								'type' => 'text',
-								'value' => $model->$human_field,
+								'value' => $model->$long_field,
 								'required' => TRUE
 							)
 						)
 					);
 				}
 
-				$fields[] = array(
+				$vars['sections'][$section.': '.$model->$title_field][] = array(
 					'title' => $field,
 					'fields' => array(
-						$model_name.'['.$value.']['.$field.']' => array(
+						$model_name.'['.$ident.']['.$field.']' => array(
 							'type' => 'text',
-							'value' => $value,
+							'value' => $model->$field,
 							'required' => TRUE
 						)
 					)
 				);
-
-				$vars['sections'][$section.' '.$model_id] = $fields;
 			}
 		}
 
 		// Final view variables we need to render the form
 		$vars += array(
-			'base_url' => ee('CP/URL', 'channels/sets/importWithAliases'),
+			'base_url' => ee('CP/URL')->make('channels/sets/doImport', array('set_path' => str_replace(PATH_CACHE, '', $set->getPath()))),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
-			'form_hidden' => array(
-				'set_path' => str_replace(PATH_CACHE, '', $set->getPath())
-			)
 		);
 
 		return $vars;
