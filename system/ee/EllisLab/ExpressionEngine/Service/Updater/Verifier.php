@@ -81,6 +81,8 @@ class Verifier {
 		{
 			throw new UpdaterException('File integrity check failed for files: ' . implode(', ', $corrupt_files), 9);
 		}
+
+		return TRUE;
 	}
 
 	/**
