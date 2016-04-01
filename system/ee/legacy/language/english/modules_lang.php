@@ -57,5 +57,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file modules_lang.php */
-/* Location: ./system/expressionengine/language/english/modules_lang.php */
+// EOF

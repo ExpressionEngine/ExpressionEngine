@@ -9,7 +9,7 @@ namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
  * @subpackage	Core Datastructures
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class TreeFactory {
 
@@ -127,7 +127,4 @@ class TreeFactory {
 
 // ------------------------------------------------------------------------
 
-
-
-/* End of file TreeFactory.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Model/DataStructure/Tree/TreeFactory.php */
+// EOF

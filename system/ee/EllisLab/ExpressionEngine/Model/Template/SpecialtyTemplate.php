@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @subpackage	Template
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class SpecialtyTemplate extends Model {
 
@@ -54,6 +54,10 @@ class SpecialtyTemplate extends Model {
 		'template_type'    => 'required',
 		'template_subtype' => 'required',
 		'template_data'    => 'required',
+	);
+
+	protected static $_events = array(
+		'afterSave',
 	);
 
 	protected $template_id;
@@ -93,4 +97,10 @@ class SpecialtyTemplate extends Model {
 		return (isset($vars[$this->template_name])) ? $vars[$this->template_name] : array();
 	}
 
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
+	}
 }
+
+// EOF

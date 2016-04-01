@@ -133,6 +133,16 @@ module GridSettings
         :width => '10',
         :field_fmt => ['XHTML', 'xhtml'],
         :field_list_items => "Option 1\nOption & 2",
+      },
+      :toggle_col => {
+        :type => ['Toggle', 'toggle'],
+        :label => 'Toggle',
+        :name => 'toggle',
+        :instructions => '',
+        :required => false,
+        :searchable => false,
+        :width => '10',
+        :field_default_value => '1',
       }
     }
   end
@@ -147,7 +157,7 @@ module GridSettings
   # returns a new GridSettingsColumn object representing the column
   def self.add_column
     find('.grid-wrap .grid-item:last-child li.add a').click
-    sleep 0.1 # Wait for DOM
+    sleep 0.2 # Wait for DOM
     node = find('.grid-wrap .grid-item:last-child')
     GridSettingsColumn.new(node)
   end
@@ -244,6 +254,8 @@ class GridSettingsColumn
       @type_obj = GridSettingsColumnTypeTextarea.new(@node)
     elsif type == 'rte'
       @type_obj = GridSettingsColumnTypeRichTextarea.new(@node)
+    elsif type == 'toggle'
+      @type_obj = GridSettingsColumnTypeToggle.new(@node)
     elsif ['checkboxes', 'multi_select', 'radio', 'select'].include? type
       @type_obj = GridSettingsColumnTypeMuliselect.new(@node)
     else
@@ -490,5 +502,32 @@ class GridSettingsColumnTypeMuliselect
   def validate(data)
     @field_fmt.value.should == data[:field_fmt][1]
     @field_list_items.value.should == data[:field_list_items]
+  end
+end
+
+class GridSettingsColumnTypeToggle
+  def initialize(node)
+    @node = node
+    self.load_elements
+  end
+
+  def load_elements
+    @field_default_value = @node.find('[name*="field_default_value"]', :visible => false)
+    @field_default_value_btn = @node.find('.toggle-btn')
+  end
+
+  def fill_data(data)
+    if data[:field_default_value] == '1'
+      @field_default_value_btn.click
+    end
+  end
+
+  def validate(data)
+    @field_default_value.value.should == data[:field_default_value]
+    if data[:field_default_value] == '1'
+      @node.find('.toggle-btn.on').should_not == nil
+    else
+      @node.find('.toggle-btn.off').should_not == nil
+    end
   end
 end

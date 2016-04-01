@@ -159,5 +159,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file search_lang.php */
-/* Location: ./system/expressionengine/language/english/search_lang.php */
+// EOF

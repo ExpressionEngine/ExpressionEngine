@@ -14,9 +14,9 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Template extends AbstractDesignController {
 
@@ -72,10 +72,10 @@ class Template extends AbstractDesignController {
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
 
-		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
+		foreach (ee('Model')->get('TemplateGroup')->order('group_name')->all() as $template_group)
 		{
 			$templates = array();
-			foreach ($template_group->getTemplates() as $template)
+			foreach ($template_group->Templates->sortBy('template_name') as $template)
 			{
 				$templates[$template->template_id] = $template->template_name;
 			}
@@ -374,7 +374,7 @@ class Template extends AbstractDesignController {
 		$data = array();
 		$i = 1;
 
-		foreach ($template->Versions as $version)
+		foreach ($template->Versions->sortBy('item_date') as $version)
 		{
 			$attrs = array();
 
@@ -408,7 +408,7 @@ class Template extends AbstractDesignController {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->item_date),
-					$version->Author->getMemberName(),
+					$version->getAuthorName(),
 					$toolbar
 				)
 			);
@@ -1077,4 +1077,5 @@ class Template extends AbstractDesignController {
 		return $html;
 	}
 }
+
 // EOF

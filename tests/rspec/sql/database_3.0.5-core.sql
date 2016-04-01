@@ -1816,7 +1816,7 @@ CREATE TABLE `exp_modules` (
 
 LOCK TABLES `exp_modules` WRITE;
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
-INSERT INTO `exp_modules` VALUES (1,'Channel','2.0.1','n','n'),(2,'Comment','2.3.2','y','n'),(3,'Stats','2.0','n','n'),(4,'Rte','1.0.1','y','n'),(5,'File','1.0.0','n','n'),(6,'Filepicker','1.0','y','n'),(7,'Search','2.2.2','n','n');
+INSERT INTO `exp_modules` VALUES (1,'Channel','2.0.1','n','n'),(2,'Comment','2.3.2','y','n'),(3,'Stats','2.0.0','n','n'),(4,'Rte','1.0.1','y','n'),(5,'File','1.0.0','n','n'),(6,'Filepicker','1.0.0','y','n'),(7,'Search','2.2.2','n','n');
 /*!40000 ALTER TABLE `exp_modules` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @subpackage	Template
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Snippet extends FileSyncedModel {
 
@@ -38,6 +38,10 @@ class Snippet extends FileSyncedModel {
 		'Site' => array(
 			'type' => 'BelongsTo'
 		)
+	);
+
+	protected static $_events = array(
+		'afterSave',
 	);
 
 	protected $snippet_id;
@@ -232,4 +236,11 @@ class Snippet extends FileSyncedModel {
 
 		return $snippets;
 	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
+	}
 }
+
+// EOF

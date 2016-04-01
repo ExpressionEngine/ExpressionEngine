@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Forum_Core extends Forum {
@@ -1180,6 +1180,7 @@ class Forum_Core extends Forum {
 
 			if ( ! preg_match("/^[0-9_]+$/i", $feed_id))
 			{
+				ee()->db->_reset_select();
 				return $this->trigger_error('no_feed_specified');
 			}
 
@@ -3599,7 +3600,15 @@ class Forum_Core extends Forum {
 				$row['avatar_filename'] != '' &&
 				ee()->session->userdata('display_avatars') == 'y' )
 			{
-				$avatar_path	= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
+				$avatar_url = ee()->config->slash_item('avatar_url');
+				$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+				if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
+				{
+					$avatar_url .= 'default/';
+				}
+
+				$avatar_path	= $avatar_url.$row['avatar_filename'];
 				$avatar_width	= $row['avatar_width'];
 				$avatar_height	= $row['avatar_height'];
 
@@ -10817,5 +10826,4 @@ class Forum_Core extends Forum {
 }
 // END CLASS
 
-/* End of file mod.forum_core.php */
-/* Location: ./system/expressionengine/modules/forum/mod.forum_core.php */
+// EOF

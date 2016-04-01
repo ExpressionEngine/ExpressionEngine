@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Stylesheet {
 
@@ -115,7 +115,7 @@ class EE_Stylesheet {
 	 */
 	private function _ee_channel_form_css()
 	{
-		$files[] = PATH_THEMES.'cp/default/css/channel_form.css';
+		$files[] = PATH_THEMES.'cform/css/eecms-cform.min.css';
 
 		$out = '';
 
@@ -127,12 +127,7 @@ class EE_Stylesheet {
 			}
 		}
 
-		$cp_theme  = ee()->config->item('cp_theme');
-		$cp_theme_url = URL_THEMES.'cp/'.$cp_theme.'/';
-
-		$out = str_replace('../images', $cp_theme_url.'images', $out);
-		$out = str_replace('<?=$cp_theme_url?>', $cp_theme_url, $out);
-
+		$out = str_replace('../../asset/', URL_THEMES_GLOBAL_ASSET, $out);
 
 		$this->_send_css($out, time());
 	}
@@ -192,5 +187,4 @@ class EE_Stylesheet {
 }
 // END CLASS
 
-/* End of file Stylesheet.php */
-/* Location: ./system/expressionengine/libraries/Stylesheet.php */
+// EOF

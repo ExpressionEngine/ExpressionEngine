@@ -135,3 +135,5 @@ class TypedColumnsStub extends Model {
 	protected $json;
 	protected $native;
 }
+
+// EOF

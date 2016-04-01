@@ -7,9 +7,9 @@ use EllisLab\Addons\FilePicker\FilePicker;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -23,13 +23,13 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class File_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'File',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -227,6 +227,7 @@ class File_ft extends EE_Fieldtype {
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
+				'is_image' => ($file && $file->isImage()),
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => $fp->getUrl(),
 				'fp_upload' => $fp_upload,
@@ -810,9 +811,21 @@ STYLIO;
 	{
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END File_ft class
 
-/* End of file ft.file.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.file.php */
+// EOF

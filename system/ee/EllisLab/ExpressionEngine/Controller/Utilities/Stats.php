@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Stats extends Utilities {
 
@@ -123,7 +123,7 @@ class Stats extends Utilities {
 
 			$member_entries_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_channel_titles GROUP BY author_id ORDER BY count DESC');
 
-			if (isset(ee()->cp->installed_modules['comment']))
+			if (ee()->config->item('enable_comments') == 'y')
 			{
 				$member_comments_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');
 			}
@@ -146,7 +146,7 @@ class Stats extends Utilities {
 				}
 			}
 
-			if (ee()->cp->installed_modules['comment'])
+			if (ee()->config->item('enable_comments') == 'y')
 			{
 				if ($member_comments_count->num_rows() > 0)
 				{
@@ -431,5 +431,4 @@ class Stats extends Utilities {
 }
 // END CLASS
 
-/* End of file Stats.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Stats.php */
+// EOF

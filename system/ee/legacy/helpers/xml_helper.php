@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -67,5 +67,4 @@ if ( ! function_exists('xml_convert'))
 
 // ------------------------------------------------------------------------
 
-/* End of file xml_helper.php */
-/* Location: ./system/helpers/xml_helper.php */
+// EOF

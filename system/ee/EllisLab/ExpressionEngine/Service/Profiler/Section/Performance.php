@@ -9,8 +9,8 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
  * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -66,13 +66,16 @@ class Performance extends ProfilerSection {
 		$data = array();
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
 		{
-			$data[lang('profiler_memory')] = number_format($usage).' '.lang('bytes').' of '.ini_get('memory_limit');
+			$data[lang('profiler_memory')] = $this->formatMemoryString($usage).' of '.ini_get('memory_limit');
 		}
 		else
 		{
 			$data[lang('profiler_memory')] = lang('profiler_no_memory_usage');
 		}
+
 		$data = $data + $benchmarks;
 		$this->data = array('performance' => $data);
 	}
 }
+
+// EOF

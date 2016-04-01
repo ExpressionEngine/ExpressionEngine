@@ -28,3 +28,5 @@ class Boolean extends Token {
 		}
 	}
 }
+
+// EOF

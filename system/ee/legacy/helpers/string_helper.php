@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Helpers
  * @category	Helpers
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 // ------------------------------------------------------------------------
@@ -192,7 +192,7 @@ if ( ! function_exists('reduce_multiples'))
  */
 if ( ! function_exists('random_string'))
 {
-	function random_string($type = 'alnum', $len = 8)
+	function random_string($type = 'alnum', $len = 8, $antipool = '')
 	{
 		switch($type)
 		{
@@ -215,6 +215,8 @@ if ( ! function_exists('random_string'))
 							break;
 					}
 
+					$pool = str_replace(str_split($antipool), '', $pool);
+
 					$str = '';
 					for ($i=0; $i < $len; $i++)
 					{
@@ -229,8 +231,6 @@ if ( ! function_exists('random_string'))
 				break;
 			case 'encrypt'	:
 			case 'sha1'	:
-
-						ee()->load->helper('security');
 
 						return sha1(uniqid(mt_rand(), TRUE));
 				break;
@@ -365,5 +365,4 @@ function surrounding_character($string)
 	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
-/* End of file EE_string_helper.php */
-/* Location: ./system/expressionengine/helpers/EE_string_helper.php */
+// EOF

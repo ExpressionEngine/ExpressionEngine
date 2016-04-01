@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,13 +20,13 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Multi_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Multi Select',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -38,19 +38,26 @@ class Multi_select_ft extends EE_Fieldtype {
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
 
-		$text_direction = (isset($this->settings['field_text_direction']))
-			? $this->settings['field_text_direction'] : 'ltr';
+		$extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		if (REQ == 'CP')
 		{
 			return ee('View')->make('multi_select:publish')->render(array(
 				'field_name' => $this->field_name,
-				'values' => $values,
-				'options' => $field_options
+				'values'     => $values,
+				'options'    => $field_options,
+				'extra'      => $extra
 			));
 		}
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input"');
+		$extra .= ' dir="'.$this->get_setting('field_text_direction', 'ltr').'" class="multiselect_input"';
+
+		return form_multiselect(
+			$this->field_name.'[]',
+			$field_options,
+			$values,
+			$extra
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -217,6 +224,10 @@ class Multi_select_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			),
@@ -252,6 +263,12 @@ class Multi_select_ft extends EE_Fieldtype {
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[0]['fields']['field_fmt']['note']);
+		}
 
 		return array('field_options_multi_select' => array(
 			'label' => 'field_options',
@@ -290,54 +307,6 @@ class Multi_select_ft extends EE_Fieldtype {
 		);
 	}
 
-	function _get_field_options($data)
-	{
-		$field_options = array();
-
-		$pre_populate = isset($this->settings['field_pre_populate']) ? get_bool_from_string($this->settings['field_pre_populate']) : FALSE;
-
-		if ( ! $pre_populate)
-		{
-			if ( ! is_array($this->settings['field_list_items']))
-			{
-				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
-				{
-					$v = trim($v);
-					$field_options[form_prep($v)] = form_prep($v);
-				}
-			}
-			else
-			{
-				$field_options = $this->settings['field_list_items'];
-			}
-		}
-		else
-		{
-			// We need to pre-populate this menu from an another channel custom field
-
-			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = ee()->db->get('channel_data');
-
-			$field_options[''] = '--';
-
-			if ($pop_query->num_rows() > 0)
-			{
-				foreach ($pop_query->result_array() as $prow)
-				{
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
-					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
-					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
-
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
-				}
-			}
-		}
-
-		return $field_options;
-	}
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -361,9 +330,21 @@ class Multi_select_ft extends EE_Fieldtype {
 
 		return $data;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END Multi_select_ft class
 
-/* End of file ft.multi_select.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.multi_select.php */
+// EOF

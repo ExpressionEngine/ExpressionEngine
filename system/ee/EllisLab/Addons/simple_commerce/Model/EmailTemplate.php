@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @subpackage	Moblog Module
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EmailTemplate extends Model {
 
@@ -43,3 +43,5 @@ class EmailTemplate extends Model {
 	protected $email_subject;
 	protected $email_body;
 }
+
+// EOF

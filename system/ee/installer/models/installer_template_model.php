@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -25,7 +25,7 @@ require_once(EE_APPPATH.'models/template_model.php');
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Installer_template_model extends Template_model {
@@ -65,5 +65,4 @@ class Installer_template_model extends Template_model {
 
 }
 
-/* End of file installer_template_model.php */
-/* Location: ./system/expressionengine/installer/model/installer_template_model.php */
+// EOF

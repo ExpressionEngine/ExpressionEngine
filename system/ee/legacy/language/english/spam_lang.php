@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 $lang = array(
@@ -34,7 +34,7 @@ $lang = array(
 	'spam_word_limit_desc' => 'Number of specific words to store, for training.
 	Higher numbers can reduce performance speeds.',
 	'spam_content_limit' => 'Content Limit',
-	'spam_content_limit_desc' => 'Number of content entires to use, for training.<br>Higher numbers can reduce performance speeds.',
+	'spam_content_limit_desc' => 'Number of content entries to use, for training.<br>Higher numbers can reduce performance speeds.',
 	'spam_content' => 'Content',
 	'spam_type' => 'Type',
 	'content_type' => 'content type',
@@ -60,4 +60,7 @@ $lang = array(
 	'updating_vocabulary' => 'Updating Vocabulary',
 	'updating_parameters' => 'Updating Parameters',
 	'training_finished' => 'Training Finished',
+	'training_update_failed' => 'Could not update training data'
 );
+
+// EOF

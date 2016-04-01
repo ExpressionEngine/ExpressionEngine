@@ -51,3 +51,5 @@ $value = array_shift($argv);
 ee()->config->update_site_prefs(array($item => $value), $site_id);
 ee()->config->site_prefs('', $site_id);
 print $item . ' is now ' . ee()->config->item($item);
+
+// EOF

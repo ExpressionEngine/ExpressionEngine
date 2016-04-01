@@ -11,9 +11,9 @@ use CP_Controller;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use CP_Controller;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class HitTracking extends Settings {
 
@@ -63,7 +63,7 @@ class HitTracking extends Settings {
 					'title' => 'dynamic_tracking_disabling',
 					'desc' => sprintf(
 						lang('dynamic_tracking_disabling_desc'),
-						'https://ellislab.com/expressionengine/user-guide/cp/admin/tracking_preferences.html#suspend-tracking-label'
+						'https://docs.expressionengine.com/v3/cp/settings/hit-tracking.html#suspend-threshold'
 					),
 					'fields' => array(
 						'dynamic_tracking_disabling' => array('type' => 'text')
@@ -114,5 +114,4 @@ class HitTracking extends Settings {
 }
 // END CLASS
 
-/* End of file HitTracking.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/HitTracking.php */
+// EOF

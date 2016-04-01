@@ -30,7 +30,7 @@
 		}
 ?>
 	<label class="<?=$class?>">
-		<?=form_radio($field_name, $key, ($selected == $key))?> <?=$value?>
+		<?=form_radio($field_name, $key, ($selected == $key), $extra)?> <?=$value?>
 	</label>
 	<?php $class = $default_class; ?>
 <?php endforeach; ?>

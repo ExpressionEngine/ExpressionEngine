@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.7
  * @filesource
  */
@@ -20,13 +20,13 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Grid_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Grid',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -69,6 +69,11 @@ class Grid_ft extends EE_Fieldtype {
 	// Actual saving takes place in post_save so we have an entry_id
 	public function save($data)
 	{
+		if (is_null($data))
+		{
+			$data = array();
+		}
+
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
 		return ' ';
@@ -462,7 +467,8 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Fresh settings forms ready to be used for added columns
 		$vars['settings_forms'] = array();
-		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $fieldtype_data)
+		$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
+		foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
 		{
 			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
@@ -505,11 +511,19 @@ class Grid_ft extends EE_Fieldtype {
 		$grid_alert = '';
 		if ( ! empty($this->error_string))
 		{
-			$grid_alert = ee('CP/Alert')->makeInline('permissions-warn')
+			$grid_alert = ee('CP/Alert')->makeInline('grid-error')
 				->asIssue()
 				->addToBody($this->error_string)
 				->render();
 		}
+
+		// Create a template of the banner we generally use for alerts
+		// so we can manipulate it for AJAX validation
+		$alert_template = ee('CP/Alert')->makeInline('grid-error')
+			->asIssue()
+			->render();
+
+		ee()->javascript->set_global('alert.grid_error', $alert_template);
 
 		$settings = array(
 			'field_options_grid' => array(
@@ -577,7 +591,8 @@ class Grid_ft extends EE_Fieldtype {
 	/**
 	 * Callback for validation service
 	 *
-	 * @return	boolean	Wheather or not the settings passed validation
+	 * @return	mixed	Boolean, whether or not the settings passed validation,
+	 *   or string of errors
 	 */
 	public function _validate_grid($key, $value, $params, $rule)
 	{
@@ -586,6 +601,8 @@ class Grid_ft extends EE_Fieldtype {
 		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
 
 		$this->error_fields = array();
+
+		$ajax_field = ee()->input->post('ee_fv_field');
 
 		if ($validate !== TRUE)
 		{
@@ -598,17 +615,52 @@ class Grid_ft extends EE_Fieldtype {
 			{
 				foreach ($fields as $field => $error)
 				{
-					$errors[] = $error;
-					$this->error_fields[] = 'grid[cols]['.$column.']['.$field.']';
+					$field_name = 'grid[cols]['.$column.']['.$field.']';
+
+					if (AJAX_REQUEST && $ajax_field && $ajax_field == $field_name)
+					{
+						$rule->stop();
+						return lang($error);
+					}
+
+					if (is_numeric($column))
+					{
+						$column = 'col_id_'.$column;
+					}
+
+					if ( ! isset($errors[$field]))
+					{
+						$errors[$field] = array(
+							'message' => $error,
+							'columns' => array('['.$column.']')
+						);
+					}
+					else
+					{
+						$errors[$field]['columns'][] = '['.$column.']';
+					}
+
+					$this->error_fields[] = $field_name;
 				}
+			}
+
+			// If we got here on AJAX validation, return that we passed, because the
+			// single field we're validating must be valid
+			if (AJAX_REQUEST && $ajax_field)
+			{
+				return TRUE;
 			}
 
 			// Make error messages unique and convert to a string to pass
 			// to form validaiton library
 			$this->error_string = '';
-			foreach (array_unique($errors) as $error)
+			foreach ($errors as $field => $error)
 			{
-				$this->error_string .= lang($error).'<br>';
+				// Custom span for use with Grid settings validation callbacks
+				$this->error_string .= '<span
+					style="display: block"
+					data-field="['.$field.']"
+					data-columns="'.implode('', $error['columns']).'">'.lang($error['message']).'</span>';
 			}
 
 			$rule->stop();
@@ -675,6 +727,8 @@ class Grid_ft extends EE_Fieldtype {
 
 			ee()->grid_model->delete_field($data['field_id'], $this->content_type());
 		}
+
+		return array();
 	}
 
 	// --------------------------------------------------------------------
@@ -695,7 +749,19 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->field_name = $this->name();
 		ee()->grid_lib->content_type = $this->content_type();
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
-/* End of file ft.grid.php */
-/* Location: ./system/expressionengine/modules/ft.grid.php */
+// EOF

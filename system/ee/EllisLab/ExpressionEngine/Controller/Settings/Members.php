@@ -11,9 +11,9 @@ use CP_Controller;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use CP_Controller;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Members extends Settings {
 
@@ -55,7 +55,7 @@ class Members extends Settings {
 		}
 
 		ee()->load->model('member_model');
-		$themes = $this->member_model->get_theme_list(PATH_MBR_THEMES);
+		$themes = ee('Theme')->listThemes('member');
 
 		$member_themes = array();
 		foreach ($themes as $file => $name)
@@ -142,11 +142,10 @@ class Members extends Settings {
 						'memberlist_order_by' => array(
 							'type' => 'select',
 							'choices' => array(
-								'total_posts' => lang('memberlist_order_by_opt_posts'),
-								'screen_name' => lang('memberlist_order_by_opt_screenname'),
-								'total_entries' => lang('memberlist_order_by_opt_entries'),
-								'join_date' => lang('memberlist_order_by_reg_date'),
-								'total_comments' => lang('memberlist_order_by_opt_comments')
+								'member_id'    => lang('id'),
+								'username'     => lang('username'),
+								'dates'        => lang('join_date'),
+								'member_group' => lang('member_group')
 							)
 						)
 					)
@@ -243,5 +242,4 @@ class Members extends Settings {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Members.php */
+// EOF

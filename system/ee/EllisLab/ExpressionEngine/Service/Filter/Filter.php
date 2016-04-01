@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -26,7 +26,7 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class Filter {
 
@@ -226,5 +226,4 @@ abstract class Filter {
 }
 // END CLASS
 
-/* End of file Filter.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Filter.php */
+// EOF

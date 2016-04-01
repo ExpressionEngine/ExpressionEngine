@@ -13,7 +13,7 @@ $lang = array(
 //----------------------------------------
 
 
-'comment_moved' => 'Comment moved', 
+'comment_moved' => 'Comment moved',
 
 'comments_moved' => 'Comments moved',
 
@@ -39,13 +39,13 @@ $lang = array(
 
 'status_changed' => 'Status Changed',
 
-'comment_word_censoring' => 'Force word censoring for comments', 
+'comment_word_censoring' => 'Force word censoring for comments',
 
 'comment_moderation_override' => 'Moderate expired entries',
 
 'comment_smart_notifications' => 'Enable Smart Notifications',
 
-'selection_required' => 
+'selection_required' =>
 'At least one selection is required to submit',
 
 'close_selected' => 'Set Status to Closed',
@@ -60,7 +60,7 @@ $lang = array(
 
 'move' => 'Move',
 
-'move_comment_instr' => 'Enter the new entry id number:', 
+'move_comment_instr' => 'Enter the new entry id number:',
 
 'registered_member' => 'Registered member',
 
@@ -215,5 +215,4 @@ $lang = array(
 
 );
 
-/* End of file comment_lang.php */
-/* Location: ./system/expressionengine/language/english/comment_lang.php */
+// EOF

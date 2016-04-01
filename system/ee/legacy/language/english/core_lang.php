@@ -50,6 +50,8 @@ $lang = array(
 
 'id' => 'ID',
 
+'and_n_others' => 'and %d others...',
+
 'encoded_email' => '(JavaScript must be enabled to view this email address)',
 
 'search' => 'Search',
@@ -389,7 +391,9 @@ https://support.ellislab.com/',
 
 "no_timezones" => "No Timezones",
 
+'curl_not_installed' => 'cURL is not installed on your server',
+
 // IGNORE
 ''=>'');
-/* End of file core_lang.php */
-/* Location: ./system/expressionengine/language/english/core_lang.php */
+
+// EOF

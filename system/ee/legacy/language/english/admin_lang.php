@@ -1166,5 +1166,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file admin_lang.php */
-/* Location: ./system/expressionengine/language/english/admin_lang.php */
+// EOF

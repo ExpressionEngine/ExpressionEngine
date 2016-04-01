@@ -9,4 +9,4 @@ $lang = array(
 
 );
 
-?>
+// EOF

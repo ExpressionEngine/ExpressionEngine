@@ -126,3 +126,5 @@ class SimplePie_Rating
 		}
 	}
 }
+
+// EOF

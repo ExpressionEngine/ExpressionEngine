@@ -12,9 +12,9 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Channels extends AbstractChannelsController {
 
@@ -250,7 +250,6 @@ class Channels extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'channel_title',
-					'desc' => 'channel_title_desc',
 					'fields' => array(
 						'channel_title' => array(
 							'type' => 'text',
@@ -292,7 +291,6 @@ class Channels extends AbstractChannelsController {
 			$alert,
 			array(
 				'title' => ucfirst(strtolower(lang('status_groups'))),
-				'desc' => 'status_groups_desc',
 				'fields' => array(
 					'status_group' => array(
 						'type' => 'select',
@@ -318,7 +316,6 @@ class Channels extends AbstractChannelsController {
 			),
 			array(
 				'title' => 'custom_field_group',
-				'desc' => 'custom_field_group_desc',
 				'fields' => array(
 					'field_group' => array(
 						'type' => 'select',
@@ -334,7 +331,6 @@ class Channels extends AbstractChannelsController {
 			),
 			array(
 				'title' => ucfirst(strtolower(lang('category_groups'))),
-				'desc' => 'category_groups_desc',
 				'fields' => array(
 					'cat_group' => array(
 						'type' => 'checkbox',
@@ -821,7 +817,6 @@ class Channels extends AbstractChannelsController {
 			'publishing' => array(
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'channel_html_formatting' => array(
 							'type' => 'select',
@@ -1075,7 +1070,6 @@ class Channels extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'comment_html_formatting' => array(
 							'type' => 'select',
@@ -1265,11 +1259,6 @@ class Channels extends AbstractChannelsController {
 			ee()->channel_model->clear_versioning_data($channel->getId());
 		}
 
-		// Only one possible is revisions- enabled or disabled.
-		// We treat as installed/not and delete the whole tab.
-		ee()->load->library('layout');
-		ee()->layout->sync_layout($_POST, $channel->getId());
-
 		// Make sure we only got the fields we asked for
 		foreach ($sections as $settings)
 		{
@@ -1296,4 +1285,5 @@ class Channels extends AbstractChannelsController {
 		$channel->save();
 	}
 }
+
 // EOF

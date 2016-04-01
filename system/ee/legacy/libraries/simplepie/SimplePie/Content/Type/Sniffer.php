@@ -329,3 +329,4 @@ class SimplePie_Content_Type_Sniffer
 	}
 }
 
+// EOF

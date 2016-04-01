@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Alert;
 
 use \EE_Session;
+use \EE_Lang;
 use EllisLab\ExpressionEngine\Service\Alert\Alert;
 use EllisLab\ExpressionEngine\Service\View\View;
 
@@ -10,9 +11,9 @@ use EllisLab\ExpressionEngine\Service\View\View;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +26,7 @@ use EllisLab\ExpressionEngine\Service\View\View;
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class AlertCollection {
 
@@ -46,14 +47,20 @@ class AlertCollection {
 	private $view;
 
 	/**
+	 * @var EE_Lang $lang A EE_Lang object for loading language
+	 */
+	private $lang;
+
+	/**
 	 * Constructor: prepares the alerts data structure and loads any alerts from
 	 * session data.
 	 *
 	 * @param EE_Session $session A session object (for deferring and recall)
 	 * @param View $view A view object (for rendering Alerts)
+	 * @param EE_Lang $lang A EE_Lang object for loading language
 	 * @return void
 	 */
-	public function __construct(EE_Session $session, View $view)
+	public function __construct(EE_Session $session, View $view, EE_Lang $lang)
 	{
 		$this->alerts = array(
 			'inline' => array(),
@@ -62,6 +69,7 @@ class AlertCollection {
 		);
 		$this->session = $session;
 		$this->view = $view;
+		$this->lang = $lang;
 
 		$this->recallFromSession();
 	}
@@ -247,7 +255,7 @@ class AlertCollection {
 	 */
 	public function make($name = '', $type = 'standard')
 	{
-		return new Alert($type, $name, $this, $this->view);
+		return new Alert($type, $name, $this, $this->view, $this->lang);
 	}
 
 	/**
@@ -284,4 +292,5 @@ class AlertCollection {
 	}
 
 }
+
 // EOF

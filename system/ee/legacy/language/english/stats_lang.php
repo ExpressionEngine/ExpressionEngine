@@ -20,5 +20,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file stats_lang.php */
-/* Location: ./system/expressionengine/language/english/stats_lang.php */
+// EOF

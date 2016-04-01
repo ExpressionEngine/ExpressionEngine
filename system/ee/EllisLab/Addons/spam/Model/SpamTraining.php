@@ -35,3 +35,5 @@ class SpamTraining extends Model {
 	protected $class;
 
 }
+
+// EOF

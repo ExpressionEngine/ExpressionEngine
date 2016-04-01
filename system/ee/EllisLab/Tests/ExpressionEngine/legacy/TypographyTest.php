@@ -323,3 +323,5 @@ To see what else you can do with Markdown (including **tables**, **images**, **n
 [1]: https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet
 MD;
 define('MARKDOWN', $markdown);
+
+// EOF

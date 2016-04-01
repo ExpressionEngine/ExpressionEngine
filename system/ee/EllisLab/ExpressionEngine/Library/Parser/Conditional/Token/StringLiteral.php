@@ -23,3 +23,5 @@ class StringLiteral extends Token {
 		return var_export($this->value, TRUE);
 	}
 }
+
+// EOF

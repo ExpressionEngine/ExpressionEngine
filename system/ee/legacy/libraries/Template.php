@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Template {
 
@@ -304,7 +304,8 @@ class EE_Template {
 			'template_name' => $this->template_name,
 			'template_group' => $this->group_name,
 			'template_id' => $this->template_id,
-			'template_type' => $this->embed_type ?: $this->template_type
+			'template_type' => $this->embed_type ?: $this->template_type,
+			'is_ajax_request' => AJAX_REQUEST
 		);
 
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
@@ -2947,9 +2948,10 @@ class EE_Template {
 			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
 		}
 
-		// {site_name} {site_url} {site_index} {webmaster_email}
+		// {site_name} {site_url} {site_description} {site_index} {webmaster_email}
 		$str = str_replace(LD.'site_name'.RD, stripslashes(ee()->config->item('site_name')), $str);
 		$str = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $str);
+		$str = str_replace(LD.'site_description'.RD, stripslashes(ee()->config->item('site_description')), $str);
 		$str = str_replace(LD.'site_index'.RD, stripslashes(ee()->config->item('site_index')), $str);
 		$str = str_replace(LD.'webmaster_email'.RD, stripslashes(ee()->config->item('webmaster_email')), $str);
 
@@ -4193,5 +4195,4 @@ class EE_Template {
 }
 // END CLASS
 
-/* End of file Template.php */
-/* Location: ./system/expressionengine/libraries/Template.php */
+// EOF

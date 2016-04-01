@@ -8,9 +8,9 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class FolderItem extends ListItem {
 
@@ -89,7 +89,7 @@ class FolderItem extends ListItem {
 	 */
 	public function asDefaultItem()
 	{
-		$this->class .= 'default ';
+		$this->addClass('default');
 		return $this;
 	}
 
@@ -187,7 +187,7 @@ class FolderItem extends ListItem {
 	 */
 	public function render(ViewFactory $view)
 	{
-		$class = trim($this->class);
+		$class = $this->getClass();
 
 		if ($class)
 		{
@@ -212,4 +212,5 @@ class FolderItem extends ListItem {
 	}
 
 }
+
 // EOF

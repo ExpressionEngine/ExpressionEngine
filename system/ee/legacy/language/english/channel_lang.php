@@ -82,11 +82,9 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'name_desc' => '',
+'member_groups' => 'Member group(s)?',
 
-'member_group(s)' => 'Member group(s)?',
-
-'member_group(s)_desc' => 'Choose the member group(s) to apply this layout to.',
+'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
 'create_layout_success' => 'Form Layout Created',
 
@@ -127,11 +125,11 @@ $lang = array(
 
 'error_cannot_hide_tab' => 'Cannot Hide Tab',
 
-'error_tab_has_required_fields' => '<b>%s</b> contains at least one required field and cannot be hidden. Plese move the required field(s) to another tab.',
+'error_tab_has_required_fields' => '<b>%s</b> contains at least one required field and cannot be hidden. Please move the required field(s) to another tab.',
 
 'error_cannot_remove_tab' => 'Cannot Remove Tab',
 
-'error_tab_has_fields' => '<b>%s</b> contains at least one field and cannot be removed. Plese move all fields to another tab.',
+'error_tab_has_fields' => '<b>%s</b> contains at least one field and cannot be removed. Please move all fields to another tab.',
 
 'assigned_to' => 'assigned to',
 
@@ -142,7 +140,6 @@ $lang = array(
 'edit_channel' => 'Edit Channel',
 
 'channel_title' => 'Name',
-'channel_title_desc' => '',
 
 'channel_duplicate' => 'Duplicate existing channel?',
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
@@ -154,8 +151,6 @@ $lang = array(
 'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom field groups to collect any data other than title, and date.',
 'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom field groups</a>, first.',
 
-'status_groups_desc' => '',
-
 'default_status_group' => 'Default Statuses',
 
 'status_groups_not_found' => 'No <b>status groups</b> found',
@@ -164,15 +159,11 @@ $lang = array(
 
 'custom_field_group' => 'Custom field group',
 
-'custom_field_group_desc' => '',
-
 'custom_field_groups_not_found' => 'No <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
 
 'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
-
-'category_groups_desc' => '',
 
 'category_groups_not_found' => 'No <b>category groups</b> found',
 
@@ -239,15 +230,15 @@ $lang = array(
 
 'default_title' => 'Generated title',
 
-'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
+'default_title_desc' => 'Title assigned to all <b>new</b> entries in this channel.',
 
 'url_title_prefix' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix',
 
-'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entires in this channel.',
+'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entries in this channel.',
 
 'default_status' => 'Status',
 
-'default_status_desc' => 'Status assigned to all <b>new</b> entires in this channel.',
+'default_status_desc' => 'Status assigned to all <b>new</b> entries in this channel.',
 
 'default_category' => 'Category',
 
@@ -260,8 +251,6 @@ $lang = array(
 'publishing' => 'Publishing',
 
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
-
-'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
 'extra_publish_controls' => 'Show extra publish controls?',
 
@@ -325,7 +314,7 @@ $lang = array(
 
 'require_membership' => 'Require membership?',
 
-'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entires.',
+'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entries.',
 
 'require_email' => 'Require Email?',
 
@@ -355,8 +344,6 @@ $lang = array(
 'text_formatting_desc' => 'Type of formatting for comment text.',
 
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting',
-
-'html_formatting_desc' => 'Level of HTML allowed.',
 
 'comment_convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
 
@@ -432,8 +419,6 @@ $lang = array(
 
 'edit_category_group' => 'Edit Category Group',
 
-'group_name_desc' => '',
-
 'categories_not_found' => 'No <b>Categories</b> found.',
 
 'create_category' => 'Create Category',
@@ -444,13 +429,7 @@ $lang = array(
 
 'files' => 'Files',
 
-'cat_description_desc' => '',
-
-'cat_image_desc' => '',
-
 'html_formatting' => 'HTML formatting',
-
-'html_formatting_desc' => '',
 
 'permissions' => 'Permissions',
 
@@ -495,8 +474,6 @@ $lang = array(
 'cat_image_choose' => 'Choose from directory',
 
 'parent_category' => 'Parent category',
-
-'parent_category_desc' => '',
 
 'category_created' => 'Category Created',
 
@@ -586,8 +563,6 @@ $lang = array(
 
 'edit_status_group' => 'Edit Status Group',
 
-'status_group_name_desc' => '',
-
 'status_group_created' => 'Status Group Created',
 
 'status_group_created_desc' => 'The status group <b>%s</b> has been created.',
@@ -657,5 +632,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file channel_lang.php */
-/* Location: ./system/expressionengine/language/english/channel_lang.php */
+// EOF

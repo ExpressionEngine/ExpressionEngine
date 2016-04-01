@@ -28,3 +28,5 @@ class SearchLog extends Model {
 	protected $search_terms;
 
 }
+
+// EOF

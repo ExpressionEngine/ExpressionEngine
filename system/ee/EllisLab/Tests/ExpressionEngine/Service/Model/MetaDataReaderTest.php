@@ -122,4 +122,5 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model\Gateway {
 
 	}
 }
+
 // EOF

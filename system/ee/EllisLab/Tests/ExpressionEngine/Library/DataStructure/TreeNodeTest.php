@@ -178,3 +178,5 @@ class TreeNodeTest extends \PHPUnit_Framework_TestCase {
 		$subchild2->add($subsubchild1);
 	}
 }
+
+// EOF

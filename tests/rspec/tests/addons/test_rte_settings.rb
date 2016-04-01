@@ -267,8 +267,7 @@ feature 'RTE Settings' do
     @page.alert.text.should include "Even"
     @page.alert.text.should include "Everything"
     @page.alert.text.should include "Lists Only"
-    @page.alert.text.should include "Odd"
-    @page.alert.text.should include "Simple"
+    @page.alert.text.should include "and 2 others..."
   end
 
   it 'can reverse sort tool sets by name', :stage => 'settings' do

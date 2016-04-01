@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -1017,7 +1017,7 @@ class CI_DB_driver {
 		}
 
 		$error = load_class('Exceptions', 'core');
-		echo $error->show_error($heading, $message, 'error_db');
+		echo $error->show_error($heading, $message);
 		exit;
 	}
 
@@ -1310,6 +1310,4 @@ class CI_DB_driver {
 	}
 }
 
-
-/* End of file DB_driver.php */
-/* Location: ./system/database/DB_driver.php */
+// EOF

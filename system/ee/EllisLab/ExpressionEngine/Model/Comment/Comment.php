@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @subpackage	Comment Module
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Comment extends Model {
 
@@ -68,6 +68,7 @@ class Comment extends Model {
 	protected static $_events = array(
 		'afterInsert',
 		'afterDelete',
+		'afterSave',
 	);
 
 	protected $comment_id;
@@ -87,25 +88,34 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->Author->updateAuthorStats();
+		if ($this->Author)
+		{
+			$this->Author->updateAuthorStats();
+		}
+
 		$this->updateCommentStats();
 	}
 
 	public function onAfterDelete()
 	{
-		if ( ! $this->Author)
+		if ($this->Author)
 		{
-			return;
+			// store the author and dissociate. otherwise saving the author will
+			// attempt to save this entry to ensure relationship integrity.
+			// TODO make sure everything is already dissociated when we hit this
+			$last_author = $this->Author;
+			$this->Author = NULL;
+
+			$last_author->updateAuthorStats();
 		}
 
-		// store the author and dissociate. otherwise saving the author will
-		// attempt to save this entry to ensure relationship integrity.
-		// TODO make sure everything is already dissociated when we hit this
-		$last_author = $this->Author;
-		$this->Author = NULL;
-
-		$last_author->updateAuthorStats();
 		$this->updateCommentStats();
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
 	}
 
 	private function updateCommentStats()
@@ -132,6 +142,16 @@ class Comment extends Model {
 		$stats->total_comments = $total_comments;
 		$stats->last_comment_date = $last_comment_date;
 		$stats->save();
+
+		// Update comment count for the entry
+		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
+
+		// Query builder while a Model bug gets sorted
+		ee()->db->set('comment_total', $total_entry_comments)
+			->where('entry_id',  $this->entry_id)
+			->update('channel_titles');
 	}
 
 }
+
+// EOF

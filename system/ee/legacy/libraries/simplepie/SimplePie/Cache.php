@@ -119,3 +119,5 @@ class SimplePie_Cache
 		return $params;
 	}
 }
+
+// EOF

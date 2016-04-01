@@ -54,5 +54,34 @@ feature 'Publish Page' do
       @page.file_modal.title.should_not == 'All Files'
       @page.file_modal.has_upload_button?
     end
+
+    it 'the file field retains data after being created and edited' do
+      @page.file_fields.each do |link|
+        link.click
+        @page.wait_until_modal_visible
+        @page.file_modal.wait_for_filters
+
+        @page.file_modal.files[0].click
+
+        @page.wait_until_modal_invisible(1)
+      end
+
+      @page.title.set 'File Field Test'
+      @page.chosen_files.should have(2).items
+      @page.submit
+
+      edit = Edit.new
+      edit.load
+      edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+
+      @page.chosen_files.should have(2).items
+      @page.submit
+
+      edit = Edit.new
+      edit.load
+      edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+
+      @page.chosen_files.should have(2).items
+    end
   end
 end

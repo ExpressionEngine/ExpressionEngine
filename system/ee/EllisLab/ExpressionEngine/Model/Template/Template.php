@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
  * @subpackage	Template
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Template extends FileSyncedModel {
 
@@ -98,6 +98,10 @@ class Template extends FileSyncedModel {
 		'php_parse_location' => 'enum[i,o]',
 		'hits'               => 'isNatural',
 		'protect_javascript' => 'enum[y,n]',
+	);
+
+	protected static $_events = array(
+		'afterSave',
 	);
 
 	protected $template_id;
@@ -259,4 +263,12 @@ class Template extends FileSyncedModel {
 
 		return TRUE;
 	}
+
+	public function onAfterSave()
+	{
+		parent::onAfterSave();
+		ee()->functions->clear_caching('all');
+	}
 }
+
+// EOF

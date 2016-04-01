@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Route_segment {
 
@@ -31,7 +31,7 @@ class EE_Route_segment {
 
 	/**
 	 * __construct
-	 * 
+	 *
 	 * @param string $segment The full segment string with {vars} replaced with the var hash
 	 * @param array $parts EE_Route_segment_part[]
 	 * @access public
@@ -90,7 +90,7 @@ class EE_Route_segment {
 	 * hasValue returns true if this segment has a value that should be
 	 * used when building the route. This will always be true for static
 	 * segments and variable segments which have had their value set.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -120,5 +120,4 @@ class EE_Route_segment {
 }
 // END CLASS
 
-/* End of file Segment.php */
-/* Location: ./system/expressionengine/libraries/template_router/Segment.php */
+// EOF

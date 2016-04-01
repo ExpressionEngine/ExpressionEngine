@@ -7,9 +7,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Simple_commerce_mcp {
@@ -276,7 +276,7 @@ class Simple_commerce_mcp {
 		foreach ($entries->all() as $entry)
 		{
 			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			$data[] = array(
 				$entry->entry_id,
@@ -1555,6 +1555,4 @@ This URL must be on your web site (i.e.-http://www.yoursite.com/ipn.asp).
 
 }
 
-
-/* End of file mcp.simple_commerce.php */
-/* Location: ./system/expressionengine/modules/simple_commerce/mcp.simple_commerce.php */
+// EOF

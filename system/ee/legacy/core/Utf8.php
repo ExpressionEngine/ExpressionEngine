@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 2.0
@@ -158,5 +158,4 @@ class EE_Utf8 {
 }
 // End Utf8 Class
 
-/* End of file Utf8.php */
-/* Location: ./system/core/Utf8.php */
+// EOF

@@ -10,5 +10,4 @@
 |
 */
 
-/* End of file hooks.php */
-/* Location: ./system/expressionengine/config/hooks.php */
+// EOF

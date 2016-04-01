@@ -9,9 +9,9 @@ use \Iterator;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,12 +25,12 @@ use \Iterator;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 /**
  * Document class. Cleans and generates a frequency table of a document.
- * 
+ *
  * @implements Iterator
  */
 class Document implements Iterator {
@@ -39,10 +39,10 @@ class Document implements Iterator {
 	public $words = array();
 	public $max_frequency = 0;
 	private $position = 0;
-	
+
 	/**
 	 * Clean the text, and then generate the frequency table.
-	 * 
+	 *
 	 * @access public
 	 * @param mixed   $text The text of the Document we are getting the frequencies for
 	 * @param string  $tokenizer  Tokenizer object
@@ -63,10 +63,10 @@ class Document implements Iterator {
 		$this->words = array_keys($this->frequency);
 		$this->size = count(explode(' ',$text));
 	}
-	
+
 	/**
 	 * We override __invoke here to make the frequency easily callable.
-	 * 
+	 *
 	 * @access public
 	 * @param string $word The word you want the frequency of
 	 * @return float
@@ -75,10 +75,10 @@ class Document implements Iterator {
 	{
 		return $this->getFrequency($word);
 	}
-	
+
 	/**
 	 * Return the frequency of a word.
-	 * 
+	 *
 	 * @access public
 	 * @param string $word The word you want the frequency of
 	 * @return float
@@ -98,7 +98,7 @@ class Document implements Iterator {
 	/**
      * Counts all of the words in the text and returns a sorted array
      * of their counts.
-	 * 
+	 *
 	 * @access private
 	 * @param mixed $text
 	 * @return array
@@ -130,7 +130,7 @@ class Document implements Iterator {
 
 		$this->max_frequency = $max;
 		arsort($count);
-		return $count; 
+		return $count;
 	}
 
 	public function rewind()
@@ -157,9 +157,8 @@ class Document implements Iterator {
 	{
 		return isset($this->words[$this->position]);
 	}
-	
+
 }
 // END CLASS
 
-/* End of file Document.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Document.php */
+// EOF

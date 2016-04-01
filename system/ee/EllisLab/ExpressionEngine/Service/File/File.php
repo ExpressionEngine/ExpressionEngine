@@ -65,3 +65,5 @@ class File extends SplFileObject {
 	}
 
 }
+
+// EOF

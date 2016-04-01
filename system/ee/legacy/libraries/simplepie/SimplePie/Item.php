@@ -635,7 +635,7 @@ class SimplePie_Item
 			return null;
 		}
 	}
-	
+
 	public function get_local_date($date_format = '%c')
 	{
 		if (!$date_format)
@@ -2650,3 +2650,4 @@ class SimplePie_Item
 	}
 }
 
+// EOF

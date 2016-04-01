@@ -507,5 +507,4 @@ if (ee()->config->item('remove_close_all_button') !== 'y')
 }
 // END CLASS
 
-/* End of file Html_buttons.php */
-/* Location: ./system/expressionengine/libraries/Html_buttons.php */
+// EOF

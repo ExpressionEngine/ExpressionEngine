@@ -207,3 +207,4 @@ class SimplePie_Caption
 	}
 }
 
+// EOF

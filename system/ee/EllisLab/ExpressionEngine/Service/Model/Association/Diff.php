@@ -87,10 +87,12 @@ class Diff {
 			{
 				$this->relation->drop($this->parent, $this->removed);
 			}
-			
+
 			$this->relation->insert($this->parent, $this->added);
 		}
 
 		$this->reset();
 	}
 }
+
+// EOF

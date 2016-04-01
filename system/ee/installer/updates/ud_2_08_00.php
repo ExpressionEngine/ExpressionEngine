@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.8.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Updater {
 
@@ -604,5 +604,4 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 /* END CLASS */
 
-/* End of file ud_280.php */
-/* Location: ./system/expressionengine/installer/updates/ud_280.php */
+// EOF

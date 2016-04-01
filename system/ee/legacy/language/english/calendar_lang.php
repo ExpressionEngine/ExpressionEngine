@@ -46,6 +46,4 @@ $lang['cal_october']	= "October";
 $lang['cal_november']	= "November";
 $lang['cal_december']	= "December";
 
-
-/* End of file calendar_lang.php */
-/* Location: ./system/language/english/calendar_lang.php */
+// EOF

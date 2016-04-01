@@ -14,9 +14,9 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Cat extends AbstractChannelsController {
 
@@ -56,7 +56,7 @@ class Cat extends AbstractChannelsController {
 	}
 
 	/**
-	 * Categpry Groups Manager
+	 * Category Groups Manager
 	 */
 	public function index()
 	{
@@ -206,7 +206,6 @@ class Cat extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'group_name_desc',
 					'fields' => array(
 						'group_name' => array(
 							'type' => 'text',
@@ -217,7 +216,6 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'field_html_formatting' => array(
 							'type' => 'select',
@@ -665,6 +663,7 @@ class Cat extends AbstractChannelsController {
 
 			$category = ee('Model')->make('Category');
 			$category->setCategoryGroup($cat_group);
+			$category->site_id = ee()->config->item('site_id');
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
@@ -735,7 +734,6 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'description',
-					'desc' => 'cat_description_desc',
 					'fields' => array(
 						'cat_description' => array(
 							'type' => 'textarea',
@@ -750,7 +748,6 @@ class Cat extends AbstractChannelsController {
 		{
 			$vars['sections'][0][] = array(
 				'title' => 'image',
-				'desc' => 'cat_image_desc',
 				'fields' => array(
 					'cat_image_select' => array(
 						'type' => 'radio',
@@ -772,7 +769,6 @@ class Cat extends AbstractChannelsController {
 
 		$vars['sections'][0][] = array(
 			'title' => 'parent_category',
-			'desc' => 'parent_category_desc',
 			'fields' => array(
 				'parent_id' => array(
 					'type' => 'select',
@@ -1347,4 +1343,5 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->render('settings/form', $vars);
 	}
 }
+
 // EOF

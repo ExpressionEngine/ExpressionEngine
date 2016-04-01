@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
  /*
@@ -1920,7 +1920,7 @@ class Member {
 		if ($this->theme_path == '')
 		{
 			$theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
-			$this->theme_path = PATH_MBR_THEMES."{$theme}/";
+			$this->theme_path = ee('Theme')->getPath('member/'.$theme.'/');
 		}
 
 		if ( ! file_exists($this->theme_path.$which.'.html'))
@@ -2533,6 +2533,15 @@ class Member {
 		// Is there an avatar?
 		if (ee()->config->item('enable_avatars') == 'y' AND $query->row('avatar_filename') != '')
 		{
+			$avatar_url = ee()->config->slash_item('avatar_url');
+			$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			{
+				$avatar_url .= 'default/';
+			}
+
+			$avatar_path	= $avatar_url.$query->row('avatar_filename');
 			$avatar_path	= ee()->config->item('avatar_url').$query->row('avatar_filename');
 			$avatar_width	= $query->row('avatar_width');
 			$avatar_height	= $query->row('avatar_height');
@@ -2927,5 +2936,4 @@ class Member {
 }
 // END CLASS
 
-/* End of file mod.member.php */
-/* Location: ./system/expressionengine/modules/member/mod.member.php */
+// EOF

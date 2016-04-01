@@ -3,9 +3,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -242,7 +242,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.html()) {
+		if (tabContents.html().trim()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}

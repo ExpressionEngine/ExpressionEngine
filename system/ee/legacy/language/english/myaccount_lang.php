@@ -527,5 +527,4 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 ''=>''
 );
 
-/* End of file myaccount_lang.php */
-/* Location: ./system/expressionengine/language/english/myaccount_lang.php */
+// EOF

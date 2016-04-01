@@ -6,5 +6,4 @@ $lang['megabyte_abbr'] = '<abbr title="Megabyte">MB</abbr>';
 $lang['kilobyte_abbr'] = '<abbr title="Kilobyte">KB</abbr>';
 $lang['bytes'] = "Bytes";
 
-/* End of file number_lang.php */
-/* Location: ./system/language/english/number_lang.php */
+// EOF

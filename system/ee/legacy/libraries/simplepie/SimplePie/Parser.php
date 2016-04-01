@@ -397,3 +397,5 @@ class SimplePie_Parser
 		return $cache[$string];
 	}
 }
+
+// EOF

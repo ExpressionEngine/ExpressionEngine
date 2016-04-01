@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Core {
 
@@ -60,9 +60,10 @@ class EE_Core {
 
 		// If someone's trying to access the CP but EE_APPPATH is defined, it likely
 		// means the installer is still active; redirect to clean path
-		if (defined('EE_APPPATH') && ee()->uri->segment(1) == 'cp')
+		if (ee()->config->item('subclass_prefix') != 'EE_' && ee()->uri->segment(1) == 'cp')
 		{
 			header('Location: '.SELF);
+			exit;
 		}
 
 		// some path constants to simplify things
@@ -76,12 +77,13 @@ class EE_Core {
 		define('PATH_CACHE',  SYSPATH . 'user/cache/');
 		define('PATH_TMPL',   SYSPATH . 'user/templates/');
 		define('PATH_JS',     'src');
+		define('PATH_DICT',   SYSPATH . 'user/config/');
 
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160126');
-		define('APP_VER',		'3.1.2');
+		define('APP_BUILD',		'20160318');
+		define('APP_VER',		'3.2.2');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -90,7 +92,6 @@ class EE_Core {
 		define('NBS', 			'&nbsp;');
 		define('BR', 			'<br />');
 		define('NL',			"\n");
-		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 		define('PASSWORD_MAX_LENGTH', 72);
 
@@ -103,6 +104,13 @@ class EE_Core {
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
+
+		// For core we need to alias our replacement classes or they'll get
+		// not found errors
+		if (IS_CORE)
+		{
+			require_once SYSPATH.'ee/EllisLab/ExpressionEngine/FreeVersion/aliases.php';
+		}
 
 		// boot the addons
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
@@ -794,5 +802,4 @@ class EE_Core {
 	}
 }
 
-/* End of file Core.php */
-/* Location: ./system/expressionengine/libraries/Core.php */
+// EOF

@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Member_memberlist extends Member {
@@ -727,7 +727,15 @@ class Member_memberlist extends Member {
 					{
 						if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename'] != '' AND ee()->session->userdata('display_avatars') == 'y' )
 						{
-							$avatar_path	= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
+							$avatar_url = ee()->config->slash_item('avatar_url');
+							$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+							if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
+							{
+								$avatar_url .= 'default/';
+							}
+
+							$avatar_path	= $avatar_url.$row['avatar_filename'];
 							$avatar_width	= $row['avatar_width'];
 							$avatar_height	= $row['avatar_height'];
 
@@ -1253,5 +1261,4 @@ class Member_memberlist extends Member {
 }
 // END CLASS
 
-/* End of file mod.member_memberlist.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_memberlist.php */
+// EOF

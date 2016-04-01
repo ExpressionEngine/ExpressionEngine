@@ -335,3 +335,4 @@ class SimplePie_Locator
 	}
 }
 
+// EOF

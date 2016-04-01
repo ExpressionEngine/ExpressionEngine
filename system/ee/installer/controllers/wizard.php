@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,11 +20,11 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.1.2';	// The version being installed
+	public $version           = '3.2.2';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -445,7 +445,8 @@ class Wizard extends CI_Controller {
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
 			// Set the path to the site and CP
-			$host = 'http://';
+			$host = ($this->isSecure()) ? 'https://' : 'http://';
+
 			if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
 			{
 				$host .= $_SERVER['HTTP_HOST'].'/';
@@ -1026,7 +1027,8 @@ class Wizard extends CI_Controller {
 	private function assign_install_values()
 	{
 		// Set the path to the site and CP
-		$host = 'http://';
+		$host = ($this->isSecure()) ? 'https://' : 'http://';
+
 		if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
 		{
 			$host .= $_SERVER['HTTP_HOST'].'/';
@@ -2339,6 +2341,17 @@ class Wizard extends CI_Controller {
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
+		// Clear any caches of the config file
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($this->config->config_path);
+		}
+
+		if (function_exists('apc_delete_file'))
+		{
+			@apc_delete_file($this->config->config_path) || apc_clear_cache();
+		}
+
 		return TRUE;
 	}
 
@@ -2452,7 +2465,22 @@ class Wizard extends CI_Controller {
 		// Move the directory
 		return @rename(APPPATH, $new_path);
 	}
+
+	/**
+	 * Is this an https:// connection?
+	 *
+	 * @return bool Is it https?
+	 */
+	private function isSecure()
+	{
+		if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+			|| $_SERVER['SERVER_PORT'] == '443')
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
 }
 
-/* End of file wizard.php */
-/* Location: ./system/expressionengine/installer/controllers/wizard.php */
+// EOF

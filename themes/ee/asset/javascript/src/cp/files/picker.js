@@ -3,9 +3,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -24,7 +24,8 @@
 					modal: modal,
 					input_value: options.input_value,
 					input_name: options.input_name,
-					input_img: options.input_img
+					input_img: options.input_img,
+					source: options.source
 				};
 				options.callback(data, picker);
 			};

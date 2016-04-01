@@ -23,3 +23,5 @@ class SpamVocabulary extends Model {
 	protected $count;
 
 }
+
+// EOF

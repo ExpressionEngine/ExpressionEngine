@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,13 +20,13 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Hidden_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Hidden Field',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	// Parser Flag (preparse pairs?)
@@ -38,9 +38,21 @@ class Hidden_ft extends EE_Fieldtype {
 		ee()->javascript->set_global('publish.hidden_fields', array($this->field_id => $this->field_name));
 		return form_hidden($this->field_name, $data);
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END Hidden_Ft class
 
-/* End of file ft.hidden.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.hidden.php */
+// EOF

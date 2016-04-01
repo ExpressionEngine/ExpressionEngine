@@ -15,5 +15,4 @@ $lang = array(
 	'segments_required' => 'Require all Variables?',
 );
 
-/* End of file template_router_lang.php */
-/* Location: ./system/expressionengine/language/english/template_router_lang.php */
+// EOF

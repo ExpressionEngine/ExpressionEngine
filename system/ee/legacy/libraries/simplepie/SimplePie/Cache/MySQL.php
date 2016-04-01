@@ -435,3 +435,5 @@ class SimplePie_Cache_MySQL extends SimplePie_Cache_DB
 		}
 	}
 }
+
+// EOF

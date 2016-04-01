@@ -7,9 +7,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Moblog_mcp {
 
@@ -322,7 +322,7 @@ EOT;
 			->filter('in_authorlist', 'y');
 
 		// Then grab any members that are part of the member groups we found
-		if ($member_groups)
+		if ($member_groups->count())
 		{
 			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
 		}
@@ -1096,5 +1096,4 @@ MAGIC;
 }
 // END CLASS
 
-/* End of file mcp.moblog.php */
-/* Location: ./system/expressionengine/modules/moblog/mcp.moblog.php */
+// EOF

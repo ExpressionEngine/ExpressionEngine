@@ -224,5 +224,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file moblog_lang.php */
-/* Location: ./system/expressionengine/language/english/moblog_lang.php */
+// EOF

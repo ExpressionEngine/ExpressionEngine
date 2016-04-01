@@ -143,5 +143,4 @@ Class Rss_parser {
 	}
 }
 
-/* End of file pi.rss_parser.php */
-/* Location: ./system/expressionengine/third_party/rss_parser/pi.rss_parser.php */
+// EOF

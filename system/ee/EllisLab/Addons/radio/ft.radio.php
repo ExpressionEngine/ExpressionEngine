@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,13 +20,13 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Radio_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Radio Buttons',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = FALSE;
@@ -92,14 +92,22 @@ class Radio_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Displays the field for the CP or Frontend, and accounts for grid
+	 *
+	 * @param string $data Stored data for the field
+	 * @param string $container What type of container is this field in, 'fieldset' or 'grid'?
+	 * @return string Field display
+	 */
 	private function _display_field($data, $container = 'fieldset')
 	{
-		array_merge($this->settings, $this->settings_vars);
+		$this->settings = array_merge($this->settings_vars, $this->settings);
 
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 
 		$field_options = $this->_get_field_options($data);
+		$extra         = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		if (REQ == 'CP')
 		{
@@ -114,8 +122,9 @@ class Radio_ft extends EE_Fieldtype {
 
 			return ee('View')->make('radio:publish')->render(array(
 				'field_name' => $this->field_name,
-				'selected' => $data,
-				'options' => $field_options
+				'selected'   => $data,
+				'options'    => $field_options,
+				'extra'      => $extra
 			));
 		}
 
@@ -128,7 +137,7 @@ class Radio_ft extends EE_Fieldtype {
 		{
 			$selected = ($key == $data);
 
-			$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
+			$r .= '<label>'.form_radio($this->field_name, $value, $selected, $extra).NBS.$key.'</label>';
 		}
 
 		switch ($container)
@@ -198,6 +207,10 @@ class Radio_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			),
@@ -233,6 +246,12 @@ class Radio_ft extends EE_Fieldtype {
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[0]['fields']['field_fmt']['note']);
+		}
 
 		return array('field_options_radio' => array(
 			'label' => 'field_options',
@@ -271,54 +290,6 @@ class Radio_ft extends EE_Fieldtype {
 		);
 	}
 
-	function _get_field_options($data)
-	{
-		$field_options = array();
-
-		if ( ! isset($this->settings['field_pre_populate'])
-			OR $this->settings['field_pre_populate'] == 'n'
-				OR $this->settings['field_pre_populate'] == FALSE)
-		{
-			if ( ! is_array($this->settings['field_list_items']))
-			{
-				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
-				{
-					$v = trim($v);
-					$field_options[form_prep($v)] = $v;
-				}
-			}
-			else
-			{
-				$field_options = $this->settings['field_list_items'];
-			}
-		}
-		else
-		{
-			// We need to pre-populate this menu from an another channel custom field
-
-			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = ee()->db->get('channel_data');
-
-			$field_options[''] = '--';
-
-			if ($pop_query->num_rows() > 0)
-			{
-				foreach ($pop_query->result_array() as $prow)
-				{
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
-					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
-					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
-
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
-				}
-			}
-		}
-
-		return $field_options;
-	}
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -331,9 +302,21 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END Radio_ft class
 
-/* End of file ft.radio.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.radio.php */
+// EOF

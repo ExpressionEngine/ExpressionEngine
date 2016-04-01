@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -177,6 +177,4 @@ if ( ! function_exists('humanize'))
 	}
 }
 
-
-/* End of file inflector_helper.php */
-/* Location: ./system/helpers/inflector_helper.php */
+// EOF

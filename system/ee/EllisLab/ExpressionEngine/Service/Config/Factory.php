@@ -93,3 +93,5 @@ class Factory {
 		return array($directory, $item);
 	}
 }
+
+// EOF

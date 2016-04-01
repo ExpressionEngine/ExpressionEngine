@@ -175,5 +175,4 @@ $robots = array(
 					'lycos'				=> 'Lycos'
 				);
 
-/* End of file user_agents.php */
-/* Location: ./system/expressionengine/config/user_agents.php */
+// EOF
