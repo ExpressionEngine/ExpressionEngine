@@ -116,7 +116,7 @@ class ChannelField extends FieldModel {
 		return 'channel_data';
 	}
 
-	protected function getContentType()
+	public function getContentType()
 	{
 		return 'channel';
 	}
