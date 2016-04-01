@@ -115,4 +115,47 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 			}
 		);
 	}
+
+	/**
+	 * Test to ensure there are no duplicate language keys across all language
+	 * files
+	 */
+	public function testDuplicateLanguageKeysAcrossFiles()
+	{
+		$this->markTestSkipped('Not implemented.');
+
+		$allKeys = array();
+		$this->recurseLanguageFiles(
+			$this->files,
+			BASEPATH.'language/english/',
+			function ($filename) use (&$allKeys) {
+				$keys = $this->getLanguageKeysFromFile($filename);
+
+				foreach ($keys as $key)
+				{
+					$allKeys[$key][] = $filename;
+				}
+			}
+		);
+
+		$failures = [];
+		foreach ($allKeys as $key => $files)
+		{
+			try
+			{
+				$list = implode(', ', $files);
+				$message = "The language key '{$key}' was found in multiple files: {$list}.";
+				$this->assertTrue((count($files) <= 1), $message);
+			}
+			catch (PHPUnit_Framework_AssertionFailedError $e)
+			{
+				$failures[] = $message;
+			}
+		}
+		if ( ! empty($failures))
+		{
+			echo "\n".implode("\n\n", $failures);
+			$this->fail("Duplicate language keys found across files.");
+		}
+	}
 }
