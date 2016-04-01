@@ -63,9 +63,6 @@ $lang = array(
 
 /*----------------------------------------*/
 
-'invalid_access' => 'Invalid Access to MetaWeblog API.  Make sure you used the correct username and
-password for a member account with permissions to post to at least one channel.',
-
 'no_channels_found' => 'No Channels found for this user.',
 
 'invalid_channel' => 'Invalid Channel Selection',

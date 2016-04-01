@@ -117,7 +117,6 @@ $lang = array(
 'specific_page'					=>		'Specific Page?',
 'description'					=>		'Description',
 'version'						=>		'Version',
-// 'status'						=>		'Status',
 'fieldtype'						=>		'Fieldtype',
 
 'member_group_assignment'		=>		'Assigned Member Groups',
