@@ -172,7 +172,9 @@ return array(
 
 		'ChannelSet' => function($ee)
 		{
-			return new ChannelSet\Factory();
+			return new ChannelSet\Factory(
+				ee()->config->item('site_id')
+			);
 		},
 
 		'CP/Alert' => function($ee)
