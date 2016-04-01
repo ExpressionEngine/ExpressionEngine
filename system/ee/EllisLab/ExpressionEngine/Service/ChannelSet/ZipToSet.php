@@ -14,6 +14,12 @@ class ZipToSet {
 		$this->path = $path;
 	}
 
+	/**
+	 * Take the zip and extract it to the cache path with the given file name.
+	 *
+	 * @param String $file_name name to use for the extracted directory
+	 * @return Set Channel set importer instance
+	 */
 	public function extractAs($file_name)
 	{
 		$zip = new \ZipArchive;
