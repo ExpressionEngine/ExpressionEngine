@@ -95,7 +95,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[site_id]',
+		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -246,11 +246,11 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateUniqueUrlTitle($key, $value, $params, $rule)
 	{
-		$site_id = $this->getProperty($params[0]);
+		$channel_id = $this->getProperty($params[0]);
 
 		$entry = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_id', 'title')
-			->filter('site_id', $site_id)
+			->filter('channel_id', $channel_id)
 			->filter('url_title', $value)
 			->first();
 
