@@ -48,7 +48,7 @@ class Verifier {
 	 * @param	string	$path		Path to directory to check
 	 * @param	string	$hash_path	Path to location of hash manifest file
 	 */
-	public function verifyPath(String $path, String $hash_path)
+	public function verifyPath($path, $hash_path)
 	{
 		$hashmap = $this->createHashmap($this->filesystem->read($hash_path));
 
@@ -91,7 +91,7 @@ class Verifier {
 	 *
 	 * @param	string	$hashmap	Hash manifest file contents
 	 */
-	protected function createHashmap(String $hashmap)
+	protected function createHashmap($hashmap)
 	{
 		$lines = explode("\n", $hashmap);
 
