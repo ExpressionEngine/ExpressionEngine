@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
+use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl\RequestFactory;
 use EllisLab\ExpressionEngine\Service\Config\File;
@@ -291,9 +292,5 @@ class Updater {
 		return $cache_path;
 	}
 }
-
-use Exception;
-
-class UpdaterException extends Exception {}
 
 // EOF

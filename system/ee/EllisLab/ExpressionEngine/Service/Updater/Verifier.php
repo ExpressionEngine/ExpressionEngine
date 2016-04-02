@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
+use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
