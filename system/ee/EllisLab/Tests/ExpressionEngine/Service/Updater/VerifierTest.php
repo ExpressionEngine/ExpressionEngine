@@ -31,8 +31,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 
 		$this->filesystem->shouldReceive('read')
 			->with('manifest/path')
-			->andReturn($this->createHashmapString($hashmap))
-			->once();
+			->andReturn($this->createHashmapString($hashmap));
 
 		foreach ($hashmap as $file => $hash)
 		{
@@ -42,6 +41,102 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$this->assertEquals(TRUE, $this->verifier->verifyPath('some/path', 'manifest/path'));
+
+		foreach ($hashmap as $file => $hash)
+		{
+			$file_path = 'some/path/'.$file;
+			// Sabotage this file
+			if ($file == 'some/file2.ext')
+			{
+				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(FALSE)->once();
+			} else {
+				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(TRUE)->once();
+				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+			}
+		}
+
+		try
+		{
+			$this->verifier->verifyPath('some/path', 'manifest/path');
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(9, $e->getCode());
+			$this->assertContains('some/file2.ext', $e->getMessage());
+		}
+
+		foreach ($hashmap as $file => $hash)
+		{
+			$file_path = 'some/path/'.$file;
+			// Sabotage the other files
+			if ($file != 'some/file2.ext')
+			{
+				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(FALSE)->once();
+			} else {
+				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(TRUE)->once();
+				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+			}
+		}
+
+		try
+		{
+			$this->verifier->verifyPath('some/path', 'manifest/path');
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(9, $e->getCode());
+			$this->assertContains('some/file.ext, some/file3.ext', $e->getMessage());
+		}
+
+		foreach ($hashmap as $file => $hash)
+		{
+			$file_path = 'some/path/'.$file;
+			$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(TRUE)->once();
+			// Sabotage this file
+			if ($file == 'some/file2.ext')
+			{
+				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn('1234')->once();
+			} else {
+				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+			}
+		}
+
+		try
+		{
+			$this->verifier->verifyPath('some/path', 'manifest/path');
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(10, $e->getCode());
+			$this->assertContains('some/file2.ext', $e->getMessage());
+		}
+
+		foreach ($hashmap as $file => $hash)
+		{
+			$file_path = 'some/path/'.$file;
+			$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(TRUE)->once();
+			// Sabotage this file
+			if ($file != 'some/file2.ext')
+			{
+				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn('1234')->once();
+			} else {
+				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+			}
+		}
+
+		try
+		{
+			$this->verifier->verifyPath('some/path', 'manifest/path');
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(10, $e->getCode());
+			$this->assertContains('some/file.ext, some/file3.ext', $e->getMessage());
+		}
 	}
 
 	public function createHashmapString(Array $hashmap)

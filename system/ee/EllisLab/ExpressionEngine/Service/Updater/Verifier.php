@@ -80,7 +80,7 @@ class Verifier {
 
 		if ( ! empty($corrupt_files))
 		{
-			throw new UpdaterException('File integrity check failed for files: ' . implode(', ', $corrupt_files), 9);
+			throw new UpdaterException('File integrity check failed for files: ' . implode(', ', $corrupt_files), 10);
 		}
 
 		return TRUE;
