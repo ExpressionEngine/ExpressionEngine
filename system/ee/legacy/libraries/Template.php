@@ -308,6 +308,18 @@ class EE_Template {
 			'is_ajax_request' => AJAX_REQUEST
 		);
 
+		$user_vars	= array(
+			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
+			'email', 'ip_address', 'location', 'total_entries',
+			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+		);
+
+		foreach ($user_vars as $user_var)
+		{
+			$added_globals[$user_var] = ee()->session->userdata[$user_var];
+			$added_globals['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+		}
+
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
