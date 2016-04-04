@@ -452,6 +452,17 @@ class Filesystem {
 	}
 
 	/**
+	 * Returns the amount of free bytes at a given path
+	 *
+	 * @param	String	$path	Path to check
+	 * @return	Mixed	Number of bytes as a float, or FALSE on failure
+	 */
+	public function getFreeDiskSpace($path = '/')
+	{
+		return @disk_free_space($path);
+	}
+
+	/**
 	 * Add EE's default index file to a directory
 	 */
 	protected function addIndexHtml($dir)
