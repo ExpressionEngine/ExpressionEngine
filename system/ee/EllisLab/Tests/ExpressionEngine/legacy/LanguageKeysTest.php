@@ -170,7 +170,7 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 			}
 		);
 
-		$failures = [];
+		$failures = array();
 		foreach ($allKeys as $key => $files)
 		{
 			try
