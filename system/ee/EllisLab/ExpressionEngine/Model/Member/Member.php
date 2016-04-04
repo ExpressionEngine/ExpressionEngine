@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
+use DateTimeZone;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
