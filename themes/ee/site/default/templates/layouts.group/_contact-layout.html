@@ -34,11 +34,10 @@
 							<span class="alternate">
 								{if contact_phone}<span class="phone">{contact_phone}</span>{/if}
 								{if contact_phone AND contact_email}<br>{/if}
-								{if contact_email}<span class="e-mail">{encode='{contact_email}'}</span>{/if}
+								{if contact_email}<span class="e-mail">{contact_email}</span>{/if}
 							</span>
 						{/if}
 					</address>
 				{/exp:channel:entries}
 			</section>
 		</section>
-
