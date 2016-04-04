@@ -398,7 +398,7 @@ class ChannelEntry extends ContentModel {
 		$entries = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_date', 'channel_id')
 			->filter('site_id', $site_id)
-			->filter('entry_date', '<', $now)
+			->filter('entry_date', '<=', $now)
 			->filter('status', '!=', 'closed')
 			->filterGroup()
 				->filter('expiration_date', 0)
