@@ -4219,7 +4219,8 @@ class Channel {
 				// contain a '/'.  So we'll try to get the category the correct way first, and if
 				// it fails, we'll try the whole $qstring
 
-				$cut_qstring = array_shift($temp = explode('/', $qstring));
+				$temp = explode('/', $qstring);
+				$cut_qstring = array_shift($temp);
 
 				$result = ee()->db->query("SELECT cat_id FROM exp_categories
 									  WHERE cat_url_title='".ee()->db->escape_str($cut_qstring)."'
@@ -4697,7 +4698,9 @@ class Channel {
 		ee()->load->helper('date');
 		$zones = timezones();
 
-		$offset = ( ! isset($zones[ee()->session->userdata['timezone']]) OR $zones[ee()->session->userdata['timezone']] == '') ? 0 : ($zones[ee()->session->userdata['timezone']]*60*60);
+		$timezone = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));
+
+		$offset = ( ! isset($zones[$timezone]) OR $zones[$timezone] == '') ? 0 : ($zones[$timezone]*60*60);
 
 		if (substr($offset, 0, 1) == '-')
 		{

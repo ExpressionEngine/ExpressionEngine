@@ -1,0 +1,20 @@
+/*
+	_boxsize.less
+	-------------
+	define boxsize mixin
+*/
+
+/*
+	applies box-sizing to block level elements
+	fixes box model inconsistencies for width: 100%
+	-------------
+	arguments
+		type
+	example
+		.boxsize(border-box);
+*/
+.boxsize(@type: border-box){
+	-moz-box-sizing: @type;
+	-webkit-box-sizing: @type;
+	box-sizing: @type;
+}

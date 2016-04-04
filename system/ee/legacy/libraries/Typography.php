@@ -62,7 +62,7 @@ class EE_Typography {
 	public $bounce           = '';
 	public $smiley_array     = FALSE;
 	public $parse_smileys    = TRUE;
-	public $highlight_code   = TRUE;
+	public $highlight_code   = FALSE;
 	public $convert_curly    = TRUE;		// Convert Curly Brackets Into Entities
 	public $emoticon_url     = '';
 	public $site_index       = '';
@@ -143,7 +143,7 @@ class EE_Typography {
 		$this->bounce           = '';
 		$this->smiley_array     = FALSE;
 		$this->parse_smileys    = TRUE;
-		$this->highlight_code   = TRUE;
+		$this->highlight_code   = FALSE;
 		$this->convert_curly    = TRUE;		// Convert Curly Brackets Into Entities
 		$this->emoticon_url     = '';
 		$this->site_index       = '';
@@ -1639,7 +1639,7 @@ class EE_Typography {
 		{
 			foreach ($this->code_chunks as $key => $val)
 			{
-				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock"><pre>{'.$key.'yH45k02wsSdrp}</pre></div>', $str);
+				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
 			}
 		}
 
@@ -1866,6 +1866,9 @@ class EE_Typography {
 	 */
 	public function text_highlight($str)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.3.0');
+
 		// No [code] tags?  No reason to live.  Goodbye cruel world...
 
 		if ( ! preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
@@ -2129,7 +2132,11 @@ while (--j >= 0)
 			}
 			else
 			{
-				$str = str_replace(array('[code]', '[/code]'),	array('<code>', '</code>'),	$str);
+				$str = str_replace(
+					array('[code]', '[/code]'),
+					array('<pre><code>', '</code></pre>'),
+					$str
+				);
 			}
 		}
 

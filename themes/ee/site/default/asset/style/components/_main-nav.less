@@ -1,0 +1,73 @@
+/*
+	_main-nav.less
+	-------------
+	define main-nav
+*/
+
+@menu-bg: fade(@white,10%);
+@menu-hover: fade(@white,80%);
+
+.main-nav:extend(.menu){
+	display: none;
+		&.menu-open{
+			background-color: @menu-bg;
+			display: block;
+			margin-top: 20px;
+			.corners(3px);
+				li{
+					border-bottom: 1px solid fade(@white,5%);
+						&:last-child{ border-bottom: 0; padding-bottom: 0; }
+						&:first-child a{
+							&.act,
+							&:hover{ .corners(3px 3px 0 0); }
+						}
+						&:last-child a{
+							&.act,
+							&:hover{ .corners(0 0 3px 3px); }
+						}
+				}
+				a{
+					border: 0;
+					color: @white;
+					display: block;
+					font-weight: normal;
+					letter-spacing: 1px;
+					padding: 5px 10px;
+						&:first-letter{ font-weight: bold; }
+						&.act,
+						&:hover{
+							background-color: @menu-hover;
+							color: @primary;
+						}
+				}
+		}
+}
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.main-nav{
+		li{ margin-left: 10px; .left; }
+		// specific changes to the main-nav inside the header
+		header &{
+			a{
+				background-color: @menu-bg;
+				border: 0;
+				color: @white;
+				display: block;
+				font-weight: normal;
+				letter-spacing: 1px;
+				padding: 5px 10px;
+				text-decoration: none;
+				.corners(3px);
+					&:first-letter{ font-weight: bold; }
+					&.act,
+					&:hover{
+						background-color: @menu-hover;
+						color: @primary;
+					}
+			}
+		}
+		// specific changes to the main-nav inside the footer
+		footer &{ a.act{ color: @secondary; } }
+	}
+}

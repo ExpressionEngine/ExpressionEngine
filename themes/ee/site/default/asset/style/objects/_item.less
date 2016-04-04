@@ -1,0 +1,16 @@
+/*
+	_item.less
+	-------------
+	define item
+*/
+
+.item{
+	border-bottom: 1px solid @medium-gray;
+	margin-bottom: 20px;
+		h1, h2, h3, h4, h5, h6{ &:first-of-type{ .top; } }
+		p, ul, ol{
+			&:first-child{ .top; }
+			&:last-child{ .bottom; }
+			&:only-of-type{ margin: 0; }
+		}
+}
