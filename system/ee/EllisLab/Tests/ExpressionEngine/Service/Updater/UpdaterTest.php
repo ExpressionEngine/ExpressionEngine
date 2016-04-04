@@ -37,6 +37,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->zip_archive = NULL;
 		$this->config = NULL;
 		$this->updater = NULL;
+		$this->verifier = NULL;
 	}
 
 	/**
@@ -104,6 +105,11 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->with('cache_path')
 			->andReturn('cache/path/');
 
+		$this->filesystem->shouldReceive('getFreeDiskSpace')
+			->with('cache/path/ee_update/')
+			->andReturn(1048576000)
+			->once();
+
 		$this->filesystem->shouldReceive('mkDir');
 		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
 		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
@@ -120,6 +126,53 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->once();
 
 		define('PATH_THEMES', 'themes/path');
+		$this->filesystem->shouldReceive('isWritable')
+			->with(PATH_THEMES)
+			->andReturn(TRUE)
+			->once();
+
+		$this->updater->preflight();
+
+		$this->filesystem->shouldReceive('getFreeDiskSpace')
+			->with('cache/path/ee_update/')
+			->andReturn(1234)
+			->once();
+
+		$this->filesystem->shouldReceive('mkDir');
+		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->twice();
+		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->twice();
+		$this->filesystem->shouldReceive('delete')->times(4);
+
+		try
+		{
+			$this->updater->preflight();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(11, $e->getCode());
+			$this->assertContains('1234', $e->getMessage());
+		}
+
+		$this->filesystem->shouldReceive('getFreeDiskSpace')
+			->with('cache/path/ee_update/')
+			->andReturn(1048576000);
+
+		$this->filesystem->shouldReceive('mkDir');
+		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('delete')->twice();
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with('cache/path/ee_update/')
+			->andReturn(TRUE)
+			->once();
+
+		$this->filesystem->shouldReceive('isWritable')
+			->with(SYSPATH.'ee/')
+			->andReturn(TRUE)
+			->once();
+
 		$this->filesystem->shouldReceive('isWritable')
 			->with(PATH_THEMES)
 			->andReturn(TRUE)
@@ -412,5 +465,18 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		{
 			$this->assertEquals(8, $e->getCode());
 		}
+	}
+
+	public function testVerifyExtractedPackage()
+	{
+		$this->config->shouldReceive('get')
+			->with('cache_path')
+			->andReturn('cache/path/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
+
+		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/updater/hash-manifest');
+
+		$this->updater->verifyExtractedPackage();
 	}
 }
