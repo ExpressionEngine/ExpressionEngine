@@ -113,10 +113,43 @@ class Updater {
 	 */
 	public function preflight()
 	{
-		// TODO: Also check for available disk space
+		$this->cleanUpOldUpgrades();
+		$this->checkDiskSpace();
 		$this->checkPermissions();
 		$this->takeSiteOffline();
-		$this->cleanUpOldUpgrades();
+	}
+
+	/**
+	 * Cleans up download and extract locations of any previous update artifacts
+	 */
+	protected function cleanUpOldUpgrades()
+	{
+		// Delete any old zip archives
+		if ($this->filesystem->isFile($this->getArchiveFilePath()))
+		{
+			$this->filesystem->delete($this->getArchiveFilePath());
+		}
+
+		// Delete old extracted archives
+		if ($this->filesystem->isDir($this->getExtractedArchivePath()))
+		{
+			$this->filesystem->delete($this->getExtractedArchivePath());
+		}
+	}
+
+	/**
+	 * Verifies we have enough disk space to download and extract the package
+	 */
+	protected function checkDiskSpace()
+	{
+		$free_space = $this->filesystem->getFreeDiskSpace($this->path());
+
+		// Try to maintain at least 50MB free disk space
+		if ($free_space < 52428800)
+		{
+			$this->cleanUpOldUpgrades();
+			throw new UpdaterException('Not enough disk space available to complete the update ('.$free_space.' free bytes reported). Please free up some space and try the upgrade again.', 11);
+		}
 	}
 
 	/**
@@ -125,7 +158,6 @@ class Updater {
 	 */
 	protected function checkPermissions()
 	{
-		// TODO? May need to check recursive permissions on each of these?
 		if ( ! $this->filesystem->isWritable($this->path()))
 		{
 			throw new UpdaterException('Cache folder not writable.', 1);
@@ -149,24 +181,6 @@ class Updater {
 	protected function takeSiteOffline()
 	{
 		$this->config->set('is_site_on', 'n');
-	}
-
-	/**
-	 * Cleans up download and extract locations of any previous update artifacts
-	 */
-	protected function cleanUpOldUpgrades()
-	{
-		// Delete any old zip archives
-		if ($this->filesystem->isFile($this->getArchiveFilePath()))
-		{
-			$this->filesystem->delete($this->getArchiveFilePath());
-		}
-
-		// Delete old extracted archives
-		if ($this->filesystem->isDir($this->getExtractedArchivePath()))
-		{
-			$this->filesystem->delete($this->getExtractedArchivePath());
-		}
 	}
 
 	/**
