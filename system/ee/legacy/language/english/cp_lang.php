@@ -291,6 +291,7 @@ $lang = array(
 'btn_save' => 'Save %s',
 'btn_saving' => 'Saving...',
 'no_found' => 'No <b>%s</b> found.',
+'filters' => 'filters',
 'clear_filters' => 'Clear filters',
 'col_id' => 'ID#',
 'cp_message_issue' => 'An error occurred',

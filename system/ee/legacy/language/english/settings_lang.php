@@ -505,7 +505,7 @@ $lang = array(
 
 'new_member_notification' => 'Enable new member notifications?',
 
-'new_member_notification_desc' => 'When set to <b>yes</b>, the following Email addresses will be notified anytime a new registration occurs.',
+'new_member_notification_desc' => 'When set to <b>enable</b>, the following Email addresses will be notified anytime a new registration occurs.',
 
 'mbr_notification_emails' => 'Notification recipients',
 

@@ -6,9 +6,12 @@ define('PASSWORD_MAX_LENGTH', 72);
 
 class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 
+	private $language_path = '';
+
 	public function setUp()
 	{
-		$this->files = directory_map(BASEPATH.'language/english/', 1);
+		$this->language_path = BASEPATH.'language/english/';
+		$this->language_files = directory_map(BASEPATH.'language/english/', 1);
 	}
 
 	/**
@@ -19,15 +22,17 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 	 *  expectes a callable with ($filename, $language_array)
 	 * @return void
 	 */
-	private function recurseLanguageFiles($files, $path, $callback)
+	private function recurseFiles($files, $path, $callback)
 	{
+		$ignored_dirs = array('vendor', 'Tests', 'tests');
+		$valid_extensions = array('php', 'html', 'js');
 		foreach ($files as $dir => $filename)
 		{
-			if (is_array($filename))
+			if (is_array($filename) && (is_string($dir) && ! in_array($dir, $ignored_dirs)))
 			{
-				$this->recurseLanguageFiles($filename, $path.$dir.'/', $callback);
+				$this->recurseFiles($filename, $path.$dir.'/', $callback);
 			}
-			else if (strpos($filename, '.php') !== FALSE)
+			else if (is_string($filename) && in_array(pathinfo($filename, PATHINFO_EXTENSION), $valid_extensions))
 			{
 				$callback($path.$filename);
 			}
@@ -58,12 +63,39 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * Get all language keys in all language files
+	 *
+	 * @return array Array of all language keys as keys, with the files they
+	 *  belong to in an array as the value
+	 */
+	private function getAllLanguageKeys()
+	{
+		$all_keys = array();
+		$this->recurseFiles(
+			$this->language_files,
+			BASEPATH.'language/english/',
+			function ($filename) use (&$all_keys) {
+				$keys = $this->getLanguageKeysFromFile($filename);
+
+				foreach ($keys as $key)
+				{
+					$all_keys[$key][] = $filename;
+				}
+			}
+		);
+
+		return $all_keys;
+	}
+
+	/**
 	 * Test each language file to see if there are duplicate language keys
 	 */
 	public function testDuplicateLanguageKeys()
 	{
-		$this->recurseLanguageFiles(
-			$this->files,
+		$this->markTestSkipped('Not implemented.');
+
+		$this->recurseFiles(
+			$this->language_files,
 			BASEPATH.'language/english/',
 			function ($filename) {
 				$keys = $this->getLanguageKeysFromFile($filename);
@@ -99,8 +131,8 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->markTestSkipped('Need to discuss implications of this one.');
 
-		$this->recurseLanguageFiles(
-			$this->files,
+		$this->recurseFiles(
+			$this->language_files,
 			BASEPATH.'language/english/',
 			function ($filename) {
 				$valuesCount = array_count_values($lang);
@@ -125,8 +157,8 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 		$this->markTestSkipped('Not implemented.');
 
 		$allKeys = array();
-		$this->recurseLanguageFiles(
-			$this->files,
+		$this->recurseFiles(
+			$this->language_files,
 			BASEPATH.'language/english/',
 			function ($filename) use (&$allKeys) {
 				$keys = $this->getLanguageKeysFromFile($filename);
@@ -157,5 +189,48 @@ class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
 			echo "\n".implode("\n\n", $failures);
 			$this->fail("Duplicate language keys found across files.");
 		}
+	}
+
+	/**
+	 * Test to ensure there are no unused language keys
+	 */
+	public function testUnusedLanguageKeys()
+	{
+		$this->markTestSkipped('Not implemented.');
+
+		$all_keys = $this->getAllLanguageKeys();
+		$used_keys = array();
+		$path = realpath(SYSPATH.'../').'/';
+
+		$this->recurseFiles(
+			directory_map($path),
+			$path,
+			function ($filename) use (&$used_keys) {
+				$contents = file_get_contents($filename);
+
+				// Find our language types
+				$regexes = array(
+					"/lang\(['\"](.*?)['\"][\),]/im",
+					"/lang-\>line\([\"'](.*?)[\"'][\),]/im",
+					"/\{lang:(.*?)\}/im",
+					"/['\"](?:title|desc)['\"]\s+=>\s+['\"](.*?)['\"]/im"
+				);
+
+				foreach ($regexes as $regex)
+				{
+					if (preg_match_all($regex, $contents, $matches))
+					{
+						$used_keys = array_merge($used_keys, $matches[1]);
+					}
+				}
+			}
+		);
+
+		$used_keys         = array_unique($used_keys);
+		$unused_keys       = array_diff(array_unique(array_keys($all_keys)), $used_keys);
+		$unused_keys_count = count($unused_keys);
+
+		echo "\n- ".implode("\n- ", $unused_keys);
+		$this->assertEmpty($unused_keys, "There are {$unused_keys_count} unused language keys.");
 	}
 }
