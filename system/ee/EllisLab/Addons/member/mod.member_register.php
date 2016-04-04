@@ -479,7 +479,7 @@ class Member_register extends Member {
 		{
 			if (isset($_POST[$value]))
 			{
-				$data[$key] = $_POST[$value];
+				$data[$key] = ee()->input->post($value, TRUE); //XSS clean this
 			}
 		}
 
