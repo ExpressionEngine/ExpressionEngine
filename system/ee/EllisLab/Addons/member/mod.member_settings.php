@@ -1658,7 +1658,7 @@ class Member_settings extends Member {
 			}
 			else
 			{
-				$data[$key] = ee()->input->post($key, TRUE); // XSS Clean it!
+				$data[$key] = ee()->input->post($key);
 			}
 		}
 
@@ -1668,7 +1668,16 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(lang('invalid_action')));
 		}
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$member->set($data);
+		$result = $member->validate();
+
+		if ($result->failed())
+		{
+			return ee()->output->show_user_error('general', $result->renderErrors());
+		}
+
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message

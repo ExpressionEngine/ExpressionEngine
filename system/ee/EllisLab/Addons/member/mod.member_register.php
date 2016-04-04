@@ -489,10 +489,17 @@ class Member_register extends Member {
 			$data['authcode'] = ee()->functions->random('alnum', 10);
 		}
 
-		// Insert basic member data
-		ee()->db->query(ee()->db->insert_string('exp_members', $data));
+		$member = ee('Model')->make('Member', $data);
+		$result = $member->validate();
 
-		$member_id = ee()->db->insert_id();
+		if ($result->failed())
+		{
+			return ee()->output->show_user_error('submission', $result->renderErrors());
+		}
+
+		$member->save();
+
+		$member_id = $member->member_id;
 
 		// Insert custom fields
 		$cust_fields['member_id'] = $member_id;
