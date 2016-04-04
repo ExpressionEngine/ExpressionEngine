@@ -341,7 +341,7 @@ $lang = array(
 'rank_title' => 'Title',
 'rank_title_desc' => 'Full descriptive name of this rank.',
 
-'posts_desc' => 'Minimum number of pots a user must have to reach this rank.',
+'posts_desc' => 'Minimum number of posts a user must have to reach this rank.',
 'stars_desc' => 'Number of stars to show with this rank.',
 
 'btn_save_rank' => 'Save Rank',
