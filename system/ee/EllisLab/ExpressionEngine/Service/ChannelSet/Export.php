@@ -27,6 +27,11 @@ class Export {
 		$this->zip = new ZipArchive();
 		$location = PATH_CACHE.'cset/name.zip';
 
+		if ( ! is_dir(PATH_CACHE.'cset/'))
+		{
+			mkdir(PATH_CACHE.'cset/', DIR_WRITE_MODE);
+		}
+
 		$this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
 		$base = new \StdClass;
