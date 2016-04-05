@@ -6,191 +6,6 @@ $lang = array(
 'no_js_warning'	=>
 'Javascript must be enabled in order for this theme to function properly.  Please check your browser settings.',
 
-
-//----------------------------
-// Main Menu
-//----------------------------
-
-'nav_content'					=> 'Content',
-'nav_publish'					=> 'Publish',
-'nav_edit'						=> 'Edit',
-'nav_edit_all'					=> 'All Channels',
-'nav_files'						=> 'Files',
-	'nav_file_manager'				=> 'File Manager',
-	'nav_batch_upload'				=> 'Batch Upload',
-	'nav_sync_files'				=> 'Synchronize Files',
-
-'nav_files_short_desc'			=> 'Upload, edit, and delete Files',
-'nav_edit_short_desc'			=> 'Edit Entries',
-
-'nav_design'					=> 'Design',
-	'nav_create_group'				=> 'Create Group',
-	'nav_create_template'			=> 'Create Template',
-	'nav_edit_template_group' 		=> 'Edit Template Group',
-	'nav_edit_template_group_more'  => '...see more',
-'nav_templates'					=> 'Templates',
-	'nav_edit_templates'			=> 'Edit',
-	'nav_snippets'					=> 'Snippets',
-	'nav_snippets_short_desc'	=> 'Create, edit, and delete Snippets for your Templates',
-	'nav_sync_templates'			=> 'Synchronize Templates',
-	'nav_sync_templates_short_desc'		=> 'Synchronize templates with their associated files.',
-	'nav_global_variables'			=> 'Global Variables',
-	'nav_global_variables_short_desc'	=> 'Create, edit, and delete User Defined Global Variables',
-	'nav_template_manager'			=> 'Template Manager',
-	'nav_template_manager_short_desc'	=> 'Create, edit, delete, and manage Templates and Template Groups',
-	'nav_template_route_manager'	=> 'Template Route Manager',
-	'nav_template_route_manager_short_desc'	=> 'Review, edit, and manage your Template Routes',
-	'nav_template_preferences'		=> 'Template Preferences',
-	'nav_template_preferences_short_desc'	=> 'Batch edit Template Preferences',
-	'nav_global_preferences'		=> 'Global Preferences',
-	'nav_global_preferences_short_desc'	=> 'Manage Template handling and preferences',
-'nav_message_pages'				=> 'Message Pages',
-	'nav_email_notification'		=> 'Email Notifications',
-	'nav_email_notification_short_desc'	=> 'Edit Email Notification Templates',
-	'nav_user_message'				=> 'User Messages',
-	'nav_user_message_short_desc'	=> 'Edit User Message Template',
-	'nav_offline_template'			=> 'Offline Template',
-	'nav_offline_template_short_desc'	=> 'Edit System Offline Template',
-'nav_themes'					=> 'Themes',
-	'nav_wiki_themes'				=> 'Wiki',
-	'nav_wiki_themes_short_desc'	=> 'Edit Wiki Themes',
-	'nav_forum_themes'				=> 'Forum',
-	'nav_forum_themes_short_desc'	=> 'Edit Forum Themes',
-	'nav_member_profile_templates'	=> 'Member Profile Templates',
-	'nav_member_profile_templates_short_desc'	=> 'Edit Member Profile Templates',
-
-'nav_addons'					=> 'Add-Ons',
-'nav_extensions'				=> 'Extensions',
-'nav_extensions_short_desc'	=> 'Manage Extensions',
-'nav_plugins'					=> 'Plugins',
-'nav_plugins_short_desc'	=> 'Install and Remove Plugins.  Review Plugin Usage Docs',
-'nav_modules'					=> 'Modules',
-'nav_modules_short_desc'	=> 'Manage Module Preferences',
-'nav_fieldtypes'				=> 'Fieldtypes',
-'nav_fieldtypes_short_desc'	=> 'Manage Fieldtypes and Fieldtypes Preferences.',
-
-'nav_members'					=> 'Members',
-'nav_view_all_members'			=> 'View All',
-'nav_view_all_members_short_desc'	=> 'View All Members',
-'nav_member_groups'				=> 'Member Groups',
-'nav_member_groups_short_desc'	=> 'Create, edit, and delete Member Groups',
-'nav_ip_search'					=> 'IP Search',
-'nav_ip_search_short_desc'	=> 'Search for Member by IP Address',
-
-'nav_register_member'			=> 'Register Member',
-'nav_register_member_short_desc'	=> 'Register a new Member',
-'nav_user_banning'				=> 'User Banning',
-'nav_user_banning_short_desc'	=> 'Manage Banning Preferences and Banned Visitors',
-'nav_activate_pending_members'	=> 'Activate Pending',
-'nav_activate_pending_members_short_desc'	=> 'Moderate Pending Members',
-'nav_custom_member_fields'		=> 'Member Fields',
-'nav_custom_member_fields_short_desc'	=> 'Create, edit, and delete Custom Member Fields',
-'nav_member_config'				=> 'Preferences',
-'nav_member_config_short_desc'	=> 'Manage Membership Preferences ',
-
-'nav_admin'						=> 'Admin',
-
-'nav_channel_management'		=> 'Channel Administration',
-	'nav_channels'						=> 'Channels',
-	'nav_channels_short_desc'	=> 'Create, edit, and delete Channels',
-	'nav_category_management'			=> 'Categories',
-	'nav_category_management_short_desc'	=> 'Create, edit, and delete Categories',
-	'nav_field_group_management'			=> 'Channel Fields',
-	'nav_field_group_management_short_desc'	=> 'Create, edit, and delete Channel Fields',
-	'nav_channel_form_settings'			=> 'Channel Form',
-	'nav_channel_form_settings_short_desc'	=> 'Manage Frontend Channel Form Preferences',
-	'nav_status_group_management'		=> 'Statuses',
-	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete Statuses',
-	'nav_global_channel_preferences'	=> 'Global Preferences',
-	'nav_global_channel_preferences_short_desc'	=> 'Manage Global Channel Preferences',
-'nav_skeleton'					=> 'Site Skeleton',
-	'nav_import'				=> 'Import',
-	'nav_export'				=> 'Export',
-
-'nav_admin_content'				=> 'Content Administration',
-	'nav_file_manager_short_desc'				=> 'Upload, edit, and delete Files',
-	'nav_file_upload_preferences'				=> 'File Upload Preferences',
-	'nav_file_upload_preferences_short_desc'	=> 'Create, edit, and delete File Upload Preferences',
-	'nav_file_watermark_preferences'			=> 'Watermark Preferences',
-	'nav_file_watermark_preferences_short_desc' => 'Create, edit, and delete File Watermark Preferences',
-	'nav_default_html_buttons'					=> 'Default HTML Buttons',
-	'nav_default_html_buttons_short_desc'		=> 'Create, edit, and delete Default HTML Buttons',
-
-'nav_security_and_privacy'		=> 'Security and Privacy',
-
-'nav_software_registration'		=> 'Software Registration',
-'nav_software_registration_short_desc'		=> 'Manage Software Registraion Information',
-
-'nav_admin_system'				=> 'System Administration',
-	'nav_general_configuration'			=> 'General Configuration',
-	'nav_general_configuration_short_desc'	=> 'Manage General Configuration',
-	'nav_email_configuration'			=> 'Email Configuration',
-	'nav_email_configuration_short_desc'	=> 'Manage Email Configuration',
-	'nav_localization_settings'			=> 'Localization Settings',
-	'nav_localization_settings_short_desc'	=> 'Manage Localization Settings',
-	'nav_database_settings'				=> 'Database Settings',
-	'nav_database_settings_short_desc'	=> 'Manage Database Settings',
-	'nav_output_debugging_preferences'	=> 'Output and Debugging',
-	'nav_output_debugging_preferences_short_desc'	=> 'Manage Output and Debugging',
-	'nav_security_session_preferences'	=> 'Security and Sessions',
-	'nav_security_session_preferences_short_desc'	=> 'Manage Security and Sessions',
-	'nav_captcha_preferences'			=> 'CAPTCHA Preferences',
-	'nav_captcha_preferences_short_desc'	=> 'Manage CAPTCHA Preferences',
-	'nav_throttling_configuration'		=> 'Throttling Preferences',
-	'nav_throttling_configuration_short_desc'	=> 'Manage Throttling Preferences',
-	'nav_tracking_preferences'			=> 'Tracking Preferences',
-	'nav_tracking_preferences_short_desc'	=> 'Manage Tracking Preferences',
-	'nav_cookie_settings'				=> 'Cookie Settings',
-	'nav_cookie_settings_short_desc'	=> 'Manage Cookie Settings',
-	'nav_image_resizing_preferences'	=> 'Image Resizing Preferences',
-	'nav_image_resizing_preferences_short_desc'	=> 'Manage Image Resizing Preferences',
-	'nav_emoticon_preferences'			=> 'Emoticon Preferences',
-	'nav_emoticon_preferences_short_desc'	=> 'Manage Emoticon Preferences',
-	'nav_word_censoring'				=> 'Word Censoring',
-	'nav_word_censoring_short_desc'	=> 'Manage Word Censoring',
-	'nav_search_log_configuration'		=> 'Search Log Configuration',
-	'nav_search_log_configuration_short_desc'	=> 'Manage Search Log Configuration',
-
-'nav_tools'						=> 'Tools',
-'nav_tools_communicate'			=> 'Communicate',
-'nav_tools_communicate_short_desc'	=> 'Send Emails',
-'nav_tools_utilities'			=> 'Utilities',
-	'nav_translation_tool'			=> 'Translation Utility',
-	'nav_translation_tool_short_desc'	=> 'Translation Utility',
-	'nav_import_utilities'			=> 'Import Utilities',
-	'nav_import_utilities_short_desc'	=> 'Import Content',
-	'nav_php_info'					=> 'PHP Info',
-	'nav_php_info_short_desc'	=> 'Detailed PHP Information',
-	'nav_config_editor'				=> 'Config File Editor',
-	'nav_config_editor_short_desc'	=> 'Configuration File Editor',
-
-'nav_tools_data'				=> 'Data',
-	'nav_sql_manager'				=> 'SQL Manager',
-	'nav_sql_manager_short_desc'	=> 'Database Management Utility',
-	'nav_clear_caching'				=> 'Clear Caching',
-	'nav_clear_caching_short_desc'	=> 'Clear Cached Data',
-	'nav_search_and_replace'		=> 'Search and Replace',
-	'nav_search_and_replace_short_desc'	=> 'Search and Replace',
-	'nav_recount_stats'				=> 'Recount Statistics',
-	'nav_recount_stats_short_desc'	=> 'Recount and Resync Statistics',
-
-'nav_tools_logs'				=> 'Logs',
-	'nav_view_cp_log'				=> 'Control Panel Log',
-	'nav_view_cp_log_short_desc'	=> 'View and clear the Control Panel Log',
-	'nav_view_search_log'			=> 'Search Log',
-	'nav_view_search_log_short_desc'	=> 'View and clear the Search Log',
-	'nav_view_throttle_log'			=> 'Throttle Log',
-	'nav_view_throttle_log_short_desc'	=> 'View and clear the Throttle Log',
-	'nav_view_email_log'			=> 'Email Console Log',
-	'nav_view_email_log_short_desc'	=> 'View and clear the Email Log',
-	'nav_view_developer_log'		=> 'Developer Log',
-	'nav_view_developer_log_short_desc'	=> 'View and manage the Developer Log',
-
-'nav_help'						=> 'Help',
-'nav_overview'					=> 'Overview',
-
-'nav_add_tab'					=> '+ Add',
-
 //----------------------------
 // Develop Menu
 //----------------------------
@@ -240,8 +55,6 @@ $lang = array(
 
 'user_account' => 'Member Account',
 
-'user_guide' => 'User Guide',
-
 'logout' => 'Log-out',
 
 'session_idle' => 'Idle session detected',
@@ -255,8 +68,6 @@ $lang = array(
 'user_label' => 'User:',
 
 'user_avatar_alt' => 'User Avatar',
-
-'login' => 'Log-in',
 
 'copyright' => 'Copyright',
 
@@ -298,8 +109,6 @@ $lang = array(
 
 'required_field' => 'required field',
 
-'login' => 'Login',
-
 'forgotten_password' => 'Forgotten password',
 
 'submit_email_address' => 'Submit your email address',
@@ -329,8 +138,6 @@ $lang = array(
 'preview' => 'Preview',
 
 'update' => 'Update',
-
-'edit' => 'Edit',
 
 'delete' => 'Delete',
 
@@ -420,7 +227,6 @@ $lang = array(
 'edit_sites' 					=>	'Edit Sites',
 'edit_channels' 				=>	'Edit Channels',
 'site_id'						=>	'Site ID',
-'site'							=>	'Site',
 'site_specific_data'			=>	'This data is site specific.  If you wish to select or change data for another site, then use the \'Sites\' menu tab to switch to that site.',
 
 
@@ -485,6 +291,7 @@ $lang = array(
 'btn_save' => 'Save %s',
 'btn_saving' => 'Saving...',
 'no_found' => 'No <b>%s</b> found.',
+'filters' => 'filters',
 'clear_filters' => 'Clear filters',
 'col_id' => 'ID#',
 'cp_message_issue' => 'An error occurred',
@@ -499,7 +306,6 @@ $lang = array(
 'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 'image' => 'Image',
 'log_out' => 'log out',
-'manage' => 'Manage',
 'menu_create' => 'Create',
 'menu_edit' => 'Edit',
 'menu_files' => 'Files',
@@ -521,7 +327,6 @@ $lang = array(
 'search_results_heading' => 'Search Results<br><i>we found %d results for "%s"</i>',
 'settings_save_error' => 'Attention: Settings not saved',
 'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
-'submit' => 'Submit',
 'success' => 'Success',
 'type' => 'Type',
 'url' => 'URL',
@@ -529,7 +334,6 @@ $lang = array(
 'url_title_lc' => 'URL title',
 'used_in_cp_only' => 'Used in the control panel only.',
 'view_all' => 'View All',
-'with_selected' => 'with selected',
 'revisions' => 'Revisions',
 'rev_id' => '#',
 'rev_date' => 'Date',
@@ -547,8 +351,6 @@ $lang = array(
 'not_entered' => 'not entered',
 
 'register_now' => 'Register Now',
-
-'current' => 'current',
 
 'out_of_date' => 'out of date',
 
@@ -574,8 +376,7 @@ $lang = array(
 
 'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
-'login' =>
-'Log In',
+'login' => 'Log In',
 
 'authenticating' =>
 'authenticating...',

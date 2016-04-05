@@ -198,8 +198,6 @@ Used in the control panel only.',
 
 "12_hour" => "12 Hour with AM/PM",
 
-'time_format' => 'Time Formatting',
-
 'include_seconds' => 'Show seconds?',
 
 'site_default' => 'Use site default',

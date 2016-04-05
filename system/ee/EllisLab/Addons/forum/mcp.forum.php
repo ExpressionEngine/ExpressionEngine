@@ -1710,8 +1710,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'reply_notifications',
-					'desc' => 'reply_notifications_desc',
+					'title' => 'reply_notification',
+					'desc' => 'reply_notification_desc',
 					'fields' => array(
 						'forum_enable_notify_emails_topics' => array(
 							'type' => 'inline_radio',
@@ -2150,8 +2150,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'reply_notifications',
-					'desc' => 'reply_notifications_desc',
+					'title' => 'reply_notification',
+					'desc' => 'reply_notification_desc',
 					'fields' => array(
 						'forum_enable_notify_emails_topics' => array(
 							'type' => 'inline_radio',

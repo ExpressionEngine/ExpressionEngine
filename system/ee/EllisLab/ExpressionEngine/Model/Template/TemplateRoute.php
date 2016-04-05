@@ -35,6 +35,8 @@ class TemplateRoute extends Model {
 	protected static $_primary_key = 'route_id';
 	protected static $_table_name = 'template_routes';
 
+	protected static $_hook_id = 'template_route';
+
 	protected static $_typed_columns = array(
 		'order'          => 'int',
 		'route_required' => 'boolString',

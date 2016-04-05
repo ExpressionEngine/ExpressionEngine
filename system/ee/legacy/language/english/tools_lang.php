@@ -57,7 +57,6 @@ $lang = array(
 'preference'			=> 'Preference',
 'setting'				=> 'Setting',
 'preferences_updated'	=> 'Preferences Updated',
-'advanced_users_only' 	=> 'Advanced Users Only',
 'true'					=> 'True',
 'false'					=> 'False',
 

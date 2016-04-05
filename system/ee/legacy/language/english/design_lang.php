@@ -30,13 +30,11 @@ $lang = array(
 
 'create_new_template' => 'Create New Template',
 
+'create_new_template_group' => 'Create a New Template Group',
+
 'messages' => 'Messages',
 
 'email' => 'Email',
-
-'members' => 'members',
-
-'forums' => 'forums',
 
 'default' => 'default',
 
@@ -57,8 +55,6 @@ $lang = array(
 'make_default_group_desc' => 'When set to <b>yes</b>, this group will become the default group for this website.',
 
 'edit_template_group' => 'Edit Template Group',
-
-'create_template_group' => 'Create Template Group',
 
 'create_template_group_success' => 'Template Group Created',
 
@@ -144,8 +140,6 @@ $lang = array(
 
 'template_variable' => 'Template Variable',
 
-'template_variables' => 'Template Variables',
-
 'variable' => 'Variable',
 
 'no_template_routes' => 'No <b>Template Routes</b> found.',
@@ -187,8 +181,6 @@ $lang = array(
 'enable_template_variable_on_all_sites_desc' => 'When set to <b>enable</b>, this variable will be available for use in all sites.',
 
 'template_variables_removed_desc' => 'The following template variables were removed',
-
-'create_template' => 'Create Template',
 
 'template_type' => 'Type',
 
@@ -360,8 +352,6 @@ $lang = array(
 
 '404_page' => '404 Page',
 
-'id_not_found' => 'Group not found',
-
 'site_404_exp' => 'Determines which template should be displayed when someone tries to access an invalid URL. Note: If you choose \'None\', your default channel will be shown when an invalid URL is requested.',
 
 'strict_urls' => 'Enable Strict URLs',
@@ -431,15 +421,9 @@ $lang = array(
 
 'do_not_duplicate_group' => 'Do not duplicate a group',
 
-'duplicate_existing_group' => 'Duplicate an Existing Template Group?',
-
-'search_template' => 'Search Templates',
-
 'template_access' => 'Template Access Restriction',
 
 'group_restriction' => 'Restrict this template to specific member groups',
-
-'select_all' => 'Select All',
 
 'type' => 'Type',
 
@@ -462,8 +446,6 @@ $lang = array(
 'template_intro' => 'This page is where templates are managed.',
 
 'new_template_group' => 'New Group',
-
-'create_new_template_group' => 'Create a New Template Group',
 
 'new_template_group_form' => 'New Template Group',
 
@@ -504,8 +486,6 @@ $lang = array(
 'xml_type_col' => '<abbr title="Extensible Markup Language">XML</abbr>',
 
 'missing_name' => 'Your template must have a name',
-
-'id_not_found' => 'Template does not exist - invalid id',
 
 'template_group_del_conf' => 'Template group delete confirm',
 
@@ -551,10 +531,6 @@ $lang = array(
 
 'hits' => 'Hits',
 
-'update_and_return' => 'Update and Finished',
-
-'template_updated' => 'Template Updated',
-
 'template_created' => 'Template Created',
 
 'form_is_empty' => 'You submitted an empty form',
@@ -590,8 +566,6 @@ $lang = array(
 'view' => 'View',
 
 'clear' => 'Clear',
-
-'select_all' => 'Select All',
 
 'export' => 'Export',
 
@@ -646,10 +620,6 @@ $lang = array(
 'no_access_select_blurb' => 'If you selected \'no\' in any of the above:',
 
 'no_access_instructions' => 'When unauthorized users try to access this page, show this one instead:',
-
-'template_notes' => 'Template Notes',
-
-'template_notes_desc' => 'Use this form field to store notes and information about this template',
 
 'global_variables_explanation' => 'You can define your own variables and add them to any of your templates.',
 
@@ -841,23 +811,11 @@ You can drag and drop to rearrange the order.',
 
 'username_row' => 'Username Form Row',
 
-'signature_form' => 'Signature Form',
-
-'edit_avatar' => 'Edit Avatar Page',
-
-'avatar_folder_list' => 'Avatar Folder Listing',
-
-'browse_avatars' => 'Browse Avatar Page',
-
 'edit_photo' => 'Edit Member Photo Page',
 
 'emoticon_page' => 'Emoticon Page',
 
 'update_un_pw_form' => 'Update Username and Password Form',
-
-'update_and_return' => 'Update and Finished',
-
-'submit_and_return' => 'Submit and Finished',
 
 'group_description' => 'Member Group Description',
 

@@ -570,12 +570,10 @@ class ThemeInstaller {
 				$entry->url_title = $entry_data->url_title;
 				$entry->status = $entry_data->status;
 
-				// can't use localize here because it's expecting session class methods
-				// to be available on the legacy superobject
 				$entry->year = date('Y');
 				$entry->month = date('m');
 				$entry->day = date('d');
-				$entry->entry_date = time();
+				$entry->entry_date = ee()->localize->now;
 
 				$post_mock = array();
 

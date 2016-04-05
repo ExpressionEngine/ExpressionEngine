@@ -26,8 +26,6 @@ $lang = array(
 
 'custom_fields_not_found' => 'No <b>custom fields</b> found',
 
-'create_new_field' => 'Create New Field',
-
 'edit_field_group' => 'Edit Field Group',
 
 'create_field_group_success' => 'Field Group Created',
@@ -89,14 +87,6 @@ $lang = array(
 'field_content_text_desc' => 'Type of content this field can contain.',
 
 'field_tools' => 'Field tools',
-
-'show_smileys' => 'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
-
-'show_file_selector' => 'Asset Manager <i>&mdash; Launches asset manager.</i>',
-'show_formatting_btns' => 'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
-
-'field_populate_manually' => 'Manually <i>&mdash; Each item on a single line.</i>',
-'field_populate_from_channel' => 'From channel <i>&mdash; Choose a field.</i>',
 
 'checkbox_options' => 'Checkbox options',
 'checkbox_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
@@ -232,8 +222,6 @@ $lang = array(
 
 'order' => 'Order',
 
-'delete_category_confirmation' => 'Are you sure you want to delete the following category?',
-
 'category_description' => 'Category Description',
 
 'category_updated' => 'Category Updated',
@@ -248,7 +236,7 @@ $lang = array(
 
 'template_group_name' => 'New Template Group Name',
 
-'template_group_choose' => 'Please choose a Template Group',	//  for your new Template
+'template_group_choose' => 'Please choose a Template Group',
 
 'new_group_instructions' => 'Field is required if you are creating a new group',
 
@@ -458,8 +446,7 @@ $lang = array(
 // Generic Phrases
 //----------------------------
 
-'group'=>
-'Group',
+'group'=> 'Group',
 
 'group_name' => 'Group Name',
 
@@ -517,8 +504,6 @@ $lang = array(
 
 'delete_category' => 'Delete Category',
 
-'delete_cat_confirmation' => 'Are you sure you want to permanently delete this category?',
-
 'category_deleted' => 'Category Deleted',
 
 'category_url_title' => 'Category URL Title',
@@ -530,8 +515,6 @@ $lang = array(
 'duplicate_cat_url_title' => 'A Category with the submitted Category URL Title already exists in this Category Group',
 
 'category_name' => 'Category Name',
-
-'category_url_title' => 'Category URL Title',
 
 'category_image' => 'Category Image',
 
@@ -595,8 +578,6 @@ $lang = array(
 
 'field_group' => 'Channel Field Group',
 
-'field_groups' => 'Field Groups',
-
 'no_field_group_message' => 'There are currently no channel fields',
 
 'create_new_field_group' => 'Create a New Channel Field Group',
@@ -638,8 +619,6 @@ $lang = array(
 'field_type' => 'Type',
 
 'invalid_field_type' => 'Invalid field type',
-
-'field_max_length' => 'Maxlength',
 
 'field_max_length_cont' => 'If you are using a \'text\' field type',
 
@@ -716,8 +695,6 @@ $lang = array(
 'delete_field_confirmation' => 'Are you sure you want to permanently delete this Channel Field?',
 
 'channel_entries_will_be_deleted' => 'All channel entries containing the above field(s) will be permanently deleted.',
-
-'field_content_text' => 'Allowed content',
 
 'type_numeric' => 'Number',
 
@@ -833,7 +810,7 @@ $lang = array(
 
 'invalid_api_parameter' => 'Could not create/update entry. Missing api parameter.',
 
-'unauthorized_for_this_channel' => 'You are not authorized to post in this channel',  // Allard says he rules
+'unauthorized_for_this_channel' => 'You are not authorized to post in this channel',
 
 /**
  * 3.0

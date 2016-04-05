@@ -39,7 +39,6 @@ $lang = array(
 'disable_button' => 'Disable',
 'delete' => 'Delete',
 'toolset' => 'Tool Set',
-'toolsets' => 'Tool Sets',
 'tool' => 'Tool',
 'cancel' => 'Cancel',
 'enable_rte' => 'Enable rich text editor?',

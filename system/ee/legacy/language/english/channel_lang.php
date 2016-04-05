@@ -52,8 +52,6 @@ $lang = array(
 
 'category_groups' => 'Category Groups',
 
-'status_groups' => 'Status Groups',
-
 'no_channels' => 'No <b>Channels</b> found.',
 
 'create_channel' => 'Create Channel',
@@ -343,8 +341,6 @@ $lang = array(
 
 'text_formatting_desc' => 'Type of formatting for comment text.',
 
-'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting',
-
 'comment_convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
 
 'comment_convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s comments.',
@@ -417,7 +413,7 @@ $lang = array(
 
 'fields' => 'Fields',
 
-'edit_category_group' => 'Edit Category Group',
+'group_name_desc' => '',
 
 'categories_not_found' => 'No <b>Categories</b> found.',
 
@@ -429,7 +425,9 @@ $lang = array(
 
 'files' => 'Files',
 
-'html_formatting' => 'HTML formatting',
+'cat_description_desc' => '',
+
+'cat_image_desc' => '',
 
 'permissions' => 'Permissions',
 

@@ -198,7 +198,7 @@ class Template extends AbstractDesignController {
 		);
 
 		$this->generateSidebar($group->group_id);
-		ee()->view->cp_page_title = lang('create_template');
+		ee()->view->cp_page_title = lang('create_new_template');
 
 		ee()->cp->render('settings/form', $vars);
 	}

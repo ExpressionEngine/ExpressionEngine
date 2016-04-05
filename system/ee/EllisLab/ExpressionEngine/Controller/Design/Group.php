@@ -205,7 +205,7 @@ class Group extends AbstractDesignController {
 		}
 
 		$this->generateSidebar();
-		ee()->view->cp_page_title = lang('create_template_group');
+		ee()->view->cp_page_title = lang('create_new_template_group');
 
 		ee()->cp->render('settings/form', $vars);
 	}
