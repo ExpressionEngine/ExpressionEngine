@@ -1,4 +1,5 @@
 require './bootstrap.rb'
+require 'zip'
 
 feature 'Channel Sets' do
   before :each do
@@ -28,7 +29,41 @@ feature 'Channel Sets' do
     File.exist?(path).should == true
     no_php_js_errors
 
-    # TODO: Check to see if the file matches expectations
+    expected_files = %w(
+      /custom_fields/News/news_body.textarea
+      /custom_fields/News/news_extended.textarea
+      /custom_fields/News/news_image.file
+      channel_set.json
+    )
+    found_files = []
+    Zip::File.open(path) do |zipfile|
+      zipfile.each do |file|
+        found_files << file
+      end
+    end
+
+    news_body = JSON.parse(found_files[0].get_input_stream.read)
+    news_body['label'].should == 'Body'
+
+    news_extended = JSON.parse(found_files[1].get_input_stream.read)
+    news_extended['label'].should == 'Extended text'
+
+    news_image = JSON.parse(found_files[2].get_input_stream.read)
+    news_image['label'].should == 'News Image'
+
+    channel_set = JSON.parse(found_files[3].get_input_stream.read)
+    channel_set['channels'].size.should == 1
+    channel_set['channels'][0]['channel_title'].should == 'News'
+    channel_set['channels'][0]['field_group'].should == 'News'
+    channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
+    channel_set['status_groups'].size.should == 0
+    channel_set['category_groups'].size.should == 1
+    channel_set['category_groups'][0]['name'].should == 'News Categories'
+    channel_set['category_groups'][0]['sort_order'].should == 'a'
+    channel_set['category_groups'][0]['categories'].should == %w(News Bands)
+    channel_set['upload_destinations'].size.should == 0
+
+    expected_files.sort.should == found_files.sort.map(&:name)
   end
 
   it 'exports multiple channel sets'
