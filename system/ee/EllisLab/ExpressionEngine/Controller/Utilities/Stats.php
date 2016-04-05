@@ -298,6 +298,8 @@ class Stats extends Utilities {
 			{
 				ee()->db->update('channel_titles', $data);
 			}
+
+			unset($data);
 		}
 
 		if (in_array('forums', $this->sources))
