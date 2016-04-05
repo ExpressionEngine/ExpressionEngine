@@ -125,7 +125,6 @@ class Sets extends AbstractChannelsController {
 		$file = ee('ChannelSet')->export(array($channel));
 
 		$data = file_get_contents($file);
-		unlink($file);
 
 		ee()->load->helper('download');
 		force_download('ChannelSet.zip', $data);
