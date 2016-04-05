@@ -25,7 +25,7 @@ class Export {
 	public function zip($channels)
 	{
 		$this->zip = new ZipArchive();
-		$location = PATH_CACHE.'cset/name.zip';
+		$location = PATH_CACHE."cset/{$channels[0]->channel_name}.zip";
 
 		if ( ! is_dir(PATH_CACHE.'cset/'))
 		{
