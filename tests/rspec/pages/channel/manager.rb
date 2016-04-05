@@ -2,6 +2,7 @@ class ChannelManager < ControlPanelPage
 
   element :table, 'table'
   element :sort_col, 'table th.highlight'
+  element :import, '.tbl-search .action[href*=sets]'
   elements :channels, 'table tr'
   elements :channel_titles, 'table tr td:nth-child(2)'
   elements :channel_names, 'table tr td:nth-child(3)'

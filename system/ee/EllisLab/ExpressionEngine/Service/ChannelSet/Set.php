@@ -282,6 +282,18 @@ class Set {
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
+			foreach ($channel_data as $pref_key => $pref_value)
+			{
+				if ( ! $channel->hasProperty($pref_key))
+				{
+					continue;
+				}
+
+				$channel->$pref_key = $pref_value;
+			}
+
+			$this->applyOverrides($channel, $channel->channel_name);
+
 			if (isset($channel_data->field_group))
 			{
 				$channel->FieldGroup = $this->field_groups[$channel_data->field_group];
@@ -299,18 +311,6 @@ class Set {
 					$channel->CategoryGroups[] = $this->category_groups[$cat_group];
 				}
 			}
-
-			foreach ($channel_data as $pref_key => $pref_value)
-			{
-				if ( ! $channel->hasProperty($pref_key))
-				{
-					continue;
-				}
-
-				$channel->$pref_key = $pref_value;
-			}
-
-			$this->applyOverrides($channel, $channel->channel_name);
 
 			$this->channels[$channel_title] = $channel;
 		}

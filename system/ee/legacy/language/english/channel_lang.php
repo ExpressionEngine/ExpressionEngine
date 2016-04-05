@@ -78,7 +78,7 @@ $lang = array(
 'channel_set_duplicates_error_desc' => 'This channel set uses names that already exist on your site. Please rename the following items.',
 
 'channel_set_imported' => 'Channel Imported',
-'channel_set_imported_desc' => 'The channel was sucessfully imported.',
+'channel_set_imported_desc' => 'The channel was successfully imported.',
 
 'edit' => 'edit',
 
