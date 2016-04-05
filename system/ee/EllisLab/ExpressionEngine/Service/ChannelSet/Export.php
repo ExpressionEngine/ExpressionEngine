@@ -305,10 +305,14 @@ class Export {
 
 		$settings_obj = new StdClass();
 
-		$settings_obj->num_existing = $settings['num_existing'];
-		$settings_obj->show_existing = $settings['show_existing'];
-		$settings_obj->field_content_type = $settings['field_content_type'];
-		$settings_obj->allowed_directories = $settings['allowed_directories'];
+		$settings_obj->num_existing = (isset($settings['num_existing']))
+			? $settings['num_existing'] : 50;
+		$settings_obj->show_existing = (isset($settings['show_existing']))
+			? $settings['show_existing'] : 'y';
+		$settings_obj->field_content_type = (isset($settings['field_content_type']))
+			? $settings['field_content_type'] : 'all';
+		$settings_obj->allowed_directories = (isset($settings['allowed_directories']))
+			? $settings['allowed_directories'] : 'all';
 
 		if ($settings_obj->allowed_directories != 'all')
 		{
