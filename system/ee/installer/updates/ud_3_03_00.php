@@ -117,7 +117,10 @@ class Updater {
 			)
 		);
 
-		$sites = ee()->db->select('site_id')->get('sites')->result_array();
+		$sites = ee()->db->select('site_id')
+			->order_by('side_id', 'asc')
+			->get('sites')
+			->result_array();
 		$site_1 = array_shift($sites);
 		$msm_config = new MSM_Config();
 
