@@ -56,7 +56,10 @@ feature 'Channel Sets' do
     channel_set['channels'][0]['channel_title'].should == 'News'
     channel_set['channels'][0]['field_group'].should == 'News'
     channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
-    channel_set['status_groups'].size.should == 0
+    channel_set['status_groups'].size.should == 1
+    channel_set['status_groups'][0]['name'].should == 'Default'
+    channel_set['status_groups'][0]['statuses'].size.should == 1
+    channel_set['status_groups'][0]['statuses'][0]['name'].should == 'Featured'
     channel_set['category_groups'].size.should == 1
     channel_set['category_groups'][0]['name'].should == 'News Categories'
     channel_set['category_groups'][0]['sort_order'].should == 'a'
@@ -112,36 +115,47 @@ feature 'Channel Sets' do
       @page.all_there?.should == true
     end
 
-    it 'imports a channel set with additional Default statuses' do
-      @page.import.click
-      @page.attach_file(
-        'set_file',
-        File.expand_path('./channel_sets/default-statuses.zip')
-      )
-      @page.submit
+    context 'when importing Default statuses' do
+      def import_default_statuses(channel_set, status_name, status_count)
+        @page.import.click
+        @page.attach_file(
+          'set_file',
+          File.expand_path("./channel_sets/#{channel_set}.zip")
+        )
+        @page.submit
 
-      no_php_js_errors
-      @page.alert[:class].should include 'success'
-      @page.alert.text.should include 'Channel Imported'
-      @page.alert.text.should include 'The channel was successfully imported.'
-      @page.all_there?.should == true
+        no_php_js_errors
+        @page.alert[:class].should include 'success'
+        @page.alert.text.should include 'Channel Imported'
+        @page.alert.text.should include 'The channel was successfully imported.'
+        @page.all_there?.should == true
 
-      # Assure there's still only one default status group
-      $db.query('SELECT count(*) AS count FROM exp_status_groups WHERE group_name = "Default"').each do |row|
-        number_of_status_groups = row['count']
-        number_of_status_groups.should == 1
+        # Assure there's still only one default status group
+        $db.query('SELECT count(*) AS count FROM exp_status_groups WHERE group_name = "Default"').each do |row|
+          number_of_status_groups = row['count']
+          number_of_status_groups.should == 1
+        end
+
+        # Assure there's now THREE statuses in that group and one of them is the new status_name
+        $db.query('SELECT count(*) AS count FROM exp_statuses WHERE group_id = 1').each do |row|
+          number_of_default_statuses = row['count']
+          number_of_default_statuses.should == status_count
+        end
+        $db.query("SELECT count(*) AS count FROM exp_statuses WHERE status = '#{status_name}'").each do |row|
+          number_of_new_statuses = row['count']
+          number_of_new_statuses.should == 1
+        end
       end
 
-      # Assure there's now THREE statuses in that group and one of them is Draft
-      $db.query('SELECT count(*) AS count FROM exp_statuses WHERE group_id = 1').each do |row|
-        number_of_default_statuses = row['count']
-        number_of_default_statuses.should == 4
+      it 'imports additional Default statuses' do
+        import_default_statuses('default-statuses', 'Draft', 4)
       end
-      $db.query('SELECT count(*) AS count FROM exp_statuses WHERE status = "Draft"').each do |row|
-        number_of_featured_statuses = row['count']
-        number_of_featured_statuses.should == 1
+
+      it 'does not import duplicate statuses' do
+        import_default_statuses('default-statuses-duplicate', 'Featured', 3)
       end
     end
+
     context 'with file fields' do
       it 'imports without a specified directory'
       it 'imports with a specified directory'

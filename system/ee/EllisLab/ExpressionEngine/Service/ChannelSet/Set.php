@@ -383,6 +383,17 @@ class Set {
 
 			foreach ($status_group_data->statuses as $status_data)
 			{
+				// Ensure status doesn't already exist
+				if ($group_name == 'Default')
+				{
+					$statuses = $status_group->Statuses->pluck('status');
+
+					if (in_array($status_data->name, $statuses))
+					{
+						continue;
+					}
+				}
+
 				$status = ee('Model')->make('Status');
 				$status->site_id = $this->site_id;
 				$status->status = $status_data->name;
