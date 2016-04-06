@@ -112,7 +112,36 @@ feature 'Channel Sets' do
       @page.all_there?.should == true
     end
 
-    it 'imports a channel set with additional Default statuses'
+    it 'imports a channel set with additional Default statuses' do
+      @page.import.click
+      @page.attach_file(
+        'set_file',
+        File.expand_path('./channel_sets/default-statuses.zip')
+      )
+      @page.submit
+
+      no_php_js_errors
+      @page.alert[:class].should include 'success'
+      @page.alert.text.should include 'Channel Imported'
+      @page.alert.text.should include 'The channel was successfully imported.'
+      @page.all_there?.should == true
+
+      # Assure there's still only one default status group
+      $db.query('SELECT count(*) AS count FROM exp_status_groups WHERE group_name = "Default"').each do |row|
+        number_of_status_groups = row['count']
+        number_of_status_groups.should == 1
+      end
+
+      # Assure there's now THREE statuses in that group and one of them is Draft
+      $db.query('SELECT count(*) AS count FROM exp_statuses WHERE group_id = 1').each do |row|
+        number_of_default_statuses = row['count']
+        number_of_default_statuses.should == 4
+      end
+      $db.query('SELECT count(*) AS count FROM exp_statuses WHERE status = "Draft"').each do |row|
+        number_of_featured_statuses = row['count']
+        number_of_featured_statuses.should == 1
+      end
+    end
     context 'with file fields' do
       it 'imports without a specified directory'
       it 'imports with a specified directory'

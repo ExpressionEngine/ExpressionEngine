@@ -85,9 +85,12 @@ class Export {
 		// are ids (that's what relationships store)
 		$this->channels[$channel->getId()] = $result;
 
-		if ($channel->StatusGroup && $channel->StatusGroup->group_name != 'Default')
+		if ($channel->StatusGroup)
 		{
-			$group = $this->exportStatusGroup($channel->StatusGroup);
+			$group = $this->exportStatusGroup(
+				$channel->StatusGroup,
+				($channel->StatusGroup->group_name != 'Default')
+			);
 			$result->status_group = $group->name;
 		}
 
@@ -112,15 +115,23 @@ class Export {
 	 * Export a status group and its statuses
 	 *
 	 * @param Model $group Status group to export
+	 * @param bool $include_defaults Whether to include Open and Closed
 	 * @return StdClass Group description
 	 */
-	private function exportStatusGroup($group)
+	private function exportStatusGroup($group, $include_defaults = TRUE)
 	{
 		$result = new StdClass();
 		$result->name = $group->group_name;
 
 		$result->statuses = array();
 		$statuses = $group->Statuses->sortBy('status_order');
+
+		if ($include_defaults == FALSE)
+		{
+			$statuses = $statuses->filter(function($status) {
+				return ( ! in_array($status->status, array('open', 'closed')));
+			});
+		}
 
 		foreach ($statuses as $status)
 		{

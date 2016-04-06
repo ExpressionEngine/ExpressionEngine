@@ -367,9 +367,19 @@ class Set {
 		{
 			$group_name = $status_group_data->name;
 
-			$status_group = ee('Model')->make('StatusGroup');
-			$status_group->site_id = $this->site_id;
-			$status_group->group_name = $group_name;
+			if ($group_name == 'Default')
+			{
+				$status_group = ee('Model')->get('StatusGroup')
+					->filter('group_name', 'Default')
+					->filter('site_id', $this->site_id)
+					->first();
+			}
+			else
+			{
+				$status_group = ee('Model')->make('StatusGroup');
+				$status_group->site_id = $this->site_id;
+				$status_group->group_name = $group_name;
+			}
 
 			foreach ($status_group_data->statuses as $status_data)
 			{
