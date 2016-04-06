@@ -317,7 +317,6 @@ class EE_Template {
 
 		foreach ($this->user_vars as $user_var)
 		{
-			$added_globals[$user_var] = ee()->session->userdata[$user_var];
 			$added_globals['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 		}
 
