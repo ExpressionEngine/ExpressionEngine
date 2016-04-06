@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
 	<fieldset class="tbl-search right">
-        <a class="btn tn action" href="<?=$new?>">create new</a>
+        <a class="btn tn action" href="<?=$new?>"><?= lang('create_new') ?></a>
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 

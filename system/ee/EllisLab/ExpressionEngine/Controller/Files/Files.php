@@ -47,7 +47,6 @@ class Files extends AbstractFilesController {
 
 		$vars = $this->listingsPage($files, $base_url);
 
-
 		$this->generateSidebar(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');

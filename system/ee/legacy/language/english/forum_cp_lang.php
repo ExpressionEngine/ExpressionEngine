@@ -220,7 +220,7 @@ $lang = array(
 'start_topics_desc' => 'Allow the following member groups to start new topics.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'reply_to_topics' => 'Reply to topics',
-'reply_to_topics_desc' => 'Allow the following member groups to replay to topics.</em><em>Super Administrators are <b>always</b> allowed.',
+'reply_to_topics_desc' => 'Allow the following member groups to reply to topics.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'upload' => 'Upload',
 'upload_desc' => 'Allow the following member groups to use the upload feature.</em><em>Super Administrators are <b>always</b> allowed.',
@@ -235,7 +235,7 @@ $lang = array(
 
 'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
 'unwritable_upload_path' => 'Your image upload folder is not writable.  Please make sure the file permissions are set to 777.',
-'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group so it is not available',
+'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group or template so it is not available',
 
 'create_forum_board_success' => 'Forum Board Created',
 'create_forum_board_success_desc' => 'The forum board <b>%s</b> has been created.',
@@ -260,9 +260,6 @@ $lang = array(
 'live' => 'Live',
 'hidden' => 'Hidden',
 'read_only' => 'Read Only',
-
-'reply_notifications' => 'Reply notification',
-'reply_notifications_desc' => 'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
 
 'btn_save_category' => 'Save Category',
 
@@ -344,7 +341,7 @@ $lang = array(
 'rank_title' => 'Title',
 'rank_title_desc' => 'Full descriptive name of this rank.',
 
-'posts_desc' => 'Minimum number of pots a user must have to reach this rank.',
+'posts_desc' => 'Minimum number of posts a user must have to reach this rank.',
 'stars_desc' => 'Number of stars to show with this rank.',
 
 'btn_save_rank' => 'Save Rank',

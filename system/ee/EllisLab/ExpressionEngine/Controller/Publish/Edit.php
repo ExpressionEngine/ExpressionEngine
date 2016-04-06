@@ -59,7 +59,6 @@ class Edit extends AbstractPublishController {
 
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
-		$channel_title = '';
 
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
@@ -295,7 +294,10 @@ class Edit extends AbstractPublishController {
 		}
 		else
 		{
-			$vars['cp_heading'] = sprintf(lang('all_channel_entries'), $channel_title);
+			$vars['cp_heading'] = sprintf(
+				lang('all_channel_entries'),
+				(isset($channel->channel_title)) ? $channel->channel_title : ''
+			);
 		}
 
 		if (AJAX_REQUEST)

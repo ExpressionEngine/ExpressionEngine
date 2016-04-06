@@ -259,8 +259,8 @@ class Member extends ContentModel {
 			->filter('author_id', $this->member_id)
 			->count();
 
-		$this->total_entries = $total_entries;
-		$this->total_comments = $total_comments;
+		$this->setProperty('total_entries', $total_entries);
+		$this->setProperty('total_comments', $total_comments);
 		$this->save();
 	}
 

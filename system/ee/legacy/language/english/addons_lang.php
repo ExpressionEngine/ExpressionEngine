@@ -38,7 +38,6 @@ $lang = array(
 'btn_confirm_and_uninstall_working' => 'Uninstalling...',
 
 /* Filters */
-'filters'						=>		'Filters',
 'filter_by_status'				=>		'status',
 'developer'						=>		'developer',
 'show'							=>		'show',
