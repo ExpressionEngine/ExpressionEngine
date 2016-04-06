@@ -1,5 +1,7 @@
 require './bootstrap.rb'
 require 'zip'
+require 'base64'
+require 'php_serialize'
 
 feature 'Channel Sets' do
   before :each do
@@ -20,66 +22,87 @@ feature 'Channel Sets' do
     data.should start_with('PK')
   end
 
-  it 'downloads the zip file when exporting channel sets' do
-    download_channel_set(1)
+  context 'when exporting' do
+    it 'downloads the zip file when exporting channel sets' do
+      download_channel_set(1)
 
-    # Check to see if the file exists
-    name = @page.channel_names[0].text
-    path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
-    File.exist?(path).should == true
-    no_php_js_errors
+      # Check to see if the file exists
+      name = @page.channel_names[0].text
+      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      File.exist?(path).should == true
+      no_php_js_errors
 
-    expected_files = %w(
-      /custom_fields/News/news_body.textarea
-      /custom_fields/News/news_extended.textarea
-      /custom_fields/News/news_image.file
-      channel_set.json
-    )
-    found_files = []
-    Zip::File.open(path) do |zipfile|
-      zipfile.each do |file|
-        found_files << file
+      expected_files = %w(
+        /custom_fields/News/news_body.textarea
+        /custom_fields/News/news_extended.textarea
+        /custom_fields/News/news_image.file
+        channel_set.json
+      )
+      found_files = []
+      Zip::File.open(path) do |zipfile|
+        zipfile.each do |file|
+          found_files << file
+        end
       end
+
+      news_body = JSON.parse(found_files[0].get_input_stream.read)
+      news_body['label'].should == 'Body'
+
+      news_extended = JSON.parse(found_files[1].get_input_stream.read)
+      news_extended['label'].should == 'Extended text'
+
+      news_image = JSON.parse(found_files[2].get_input_stream.read)
+      news_image['label'].should == 'News Image'
+
+      channel_set = JSON.parse(found_files[3].get_input_stream.read)
+      channel_set['channels'].size.should == 1
+      channel_set['channels'][0]['channel_title'].should == 'News'
+      channel_set['channels'][0]['field_group'].should == 'News'
+      channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
+      channel_set['status_groups'].size.should == 1
+      channel_set['status_groups'][0]['name'].should == 'Default'
+      channel_set['status_groups'][0]['statuses'].size.should == 1
+      channel_set['status_groups'][0]['statuses'][0]['name'].should == 'Featured'
+      channel_set['category_groups'].size.should == 1
+      channel_set['category_groups'][0]['name'].should == 'News Categories'
+      channel_set['category_groups'][0]['sort_order'].should == 'a'
+      channel_set['category_groups'][0]['categories'].should == %w(News Bands)
+      channel_set['upload_destinations'].size.should == 0
+
+      expected_files.sort.should == found_files.sort.map(&:name)
     end
 
-    news_body = JSON.parse(found_files[0].get_input_stream.read)
-    news_body['label'].should == 'Body'
-
-    news_extended = JSON.parse(found_files[1].get_input_stream.read)
-    news_extended['label'].should == 'Extended text'
-
-    news_image = JSON.parse(found_files[2].get_input_stream.read)
-    news_image['label'].should == 'News Image'
-
-    channel_set = JSON.parse(found_files[3].get_input_stream.read)
-    channel_set['channels'].size.should == 1
-    channel_set['channels'][0]['channel_title'].should == 'News'
-    channel_set['channels'][0]['field_group'].should == 'News'
-    channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
-    channel_set['status_groups'].size.should == 1
-    channel_set['status_groups'][0]['name'].should == 'Default'
-    channel_set['status_groups'][0]['statuses'].size.should == 1
-    channel_set['status_groups'][0]['statuses'][0]['name'].should == 'Featured'
-    channel_set['category_groups'].size.should == 1
-    channel_set['category_groups'][0]['name'].should == 'News Categories'
-    channel_set['category_groups'][0]['sort_order'].should == 'a'
-    channel_set['category_groups'][0]['categories'].should == %w(News Bands)
-    channel_set['upload_destinations'].size.should == 0
-
-    expected_files.sort.should == found_files.sort.map(&:name)
+    it 'properly exports a specified upload destination'
   end
+
 
   it 'exports multiple channel sets'
 
   context 'when importing channel sets' do
-    it 'imports a channel set' do
+    # Import a given channel set
+    #
+    # @param [String] name The channel set's zip filename, no extension
+    # @param [Boolean] failure = false Set to true to check for failure
+    # @return [void]
+    def import_channel_set(name, failure = false)
       @page.import.click
       @page.attach_file(
         'set_file',
-        File.expand_path('./channel_sets/simple.zip')
+        File.expand_path("./channel_sets/#{name}.zip")
       )
       @page.submit
 
+      if failure == false
+        check_success
+      else
+        check_failure
+      end
+    end
+
+    # Check to make sure the import was successful
+    #
+    # @return [void]
+    def check_success
       no_php_js_errors
       @page.alert[:class].should include 'success'
       @page.alert.text.should include 'Channel Imported'
@@ -87,18 +110,23 @@ feature 'Channel Sets' do
       @page.all_there?.should == true
     end
 
-    it 'imports a channel set with duplicate names' do
-      @page.import.click
-      @page.attach_file(
-        'set_file',
-        File.expand_path('./channel_sets/simple-duplicate.zip')
-      )
-      @page.submit
-
+    # Check to make sure the import was **not** successful
+    #
+    # @return [void]
+    def check_failure
       no_php_js_errors
       @page.alert[:class].should include 'issue'
       @page.alert.text.should include 'Import Creates Duplicates'
       @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
+    end
+
+
+    it 'imports a channel set' do
+      import_channel_set 'simple'
+    end
+
+    it 'imports a channel set with duplicate names' do
+      import_channel_set 'simple-duplicate', true
 
       @page.find('input[name="ee:Channel[news][channel_title]"]').set 'Event'
       @page.find('input[name="ee:Channel[news][channel_name]"]').set 'event'
@@ -108,27 +136,19 @@ feature 'Channel Sets' do
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
       @page.submit
 
-      no_php_js_errors
-      @page.alert[:class].should include 'success'
-      @page.alert.text.should include 'Channel Imported'
-      @page.alert.text.should include 'The channel was successfully imported.'
-      @page.all_there?.should == true
+      check_success
     end
 
     context 'when importing Default statuses' do
+      # Import a channel set with default statuses and check that the new status
+      # exist and that the correct number of statuses exists
+      #
+      # @param [String] name The channel set's zip filename, no extension
+      # @param [String] status_name The name of the status being added
+      # @param [Integer] status_count The number of statuses that shoul exist
+      # @return [void]
       def import_default_statuses(channel_set, status_name, status_count)
-        @page.import.click
-        @page.attach_file(
-          'set_file',
-          File.expand_path("./channel_sets/#{channel_set}.zip")
-        )
-        @page.submit
-
-        no_php_js_errors
-        @page.alert[:class].should include 'success'
-        @page.alert.text.should include 'Channel Imported'
-        @page.alert.text.should include 'The channel was successfully imported.'
-        @page.all_there?.should == true
+        import_channel_set channel_set
 
         # Assure there's still only one default status group
         $db.query('SELECT count(*) AS count FROM exp_status_groups WHERE group_name = "Default"').each do |row|
@@ -157,8 +177,28 @@ feature 'Channel Sets' do
     end
 
     context 'with file fields' do
-      it 'imports without a specified directory'
-      it 'imports with a specified directory'
+      it 'imports with a specified directory' do
+        import_channel_set 'file-specified-directory', true
+
+        @page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
+        @page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '../images/uploads'
+        @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').set '/images/uploads'
+        @page.submit
+
+        check_success
+
+        upload_dir_id = 0
+        $db.query("SELECT id, count(*) AS count FROM exp_upload_prefs WHERE name = 'Uploads'").each do |row|
+          upload_dir_id = row['id']
+          new_upload_directory_count = row['count']
+          new_upload_directory_count.should == 1
+        end
+
+        $db.query('SELECT field_settings FROM exp_channel_fields WHERE field_name = "blog_image"').each do |row|
+          settings = PHP.unserialize(Base64.decode64(row['field_settings']))
+          settings['allowed_directories'].to_i.should == upload_dir_id.to_i
+        end
+      end
     end
     context 'with grid fields' do
       it 'imports without a relationship column'

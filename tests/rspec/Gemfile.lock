@@ -39,6 +39,7 @@ GEM
     mysql2 (0.4.3)
     nokogiri (1.6.7)
       mini_portile2 (~> 2.0.0.rc2)
+    php-serialize (1.1.0)
     rack (1.6.4)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -78,6 +79,7 @@ DEPENDENCIES
   image_size
   mail
   mysql2
+  php-serialize
   rspec
   rspec-collection_matchers
   rubyzip
