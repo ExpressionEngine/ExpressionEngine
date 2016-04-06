@@ -47,14 +47,11 @@ class Export {
 		$base->upload_destinations = array_values($this->upload_destinations);
 
 		// JSON_PRETTY_PRINT was added in PHP 5.4
-		if (is_php('5.4.0'))
+		if (version_compare(PHP_VERSION, '5.4.0', '<'))
 		{
-			$cset_json = json_encode($base, JSON_PRETTY_PRINT);
+			define('JSON_PRETTY_PRINT', 0);
 		}
-		else
-		{
-			$cset_json = json_encode($base);
-		}
+		$cset_json = json_encode($base, JSON_PRETTY_PRINT);
 
 		$this->zip->addFromString('channel_set.json', $cset_json);
 		$this->zip->close();
