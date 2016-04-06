@@ -763,40 +763,13 @@ STYLIO;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Form Validation callback; makes sure there are file upload
-	 * directories available before allowing a new file field to be saved
+	 * Form Validation callback
 	 *
 	 * @return	boolean	Whether or not to pass validation
 	 */
 	public function _validate_file_settings($key, $value, $params, $rule)
 	{
-		// count upload dirs
-		if ( ! $this->_check_directories())
-		{
-			ee()->lang->load('fieldtypes');
-			return sprintf(
-				lang('file_ft_no_upload_directories'),
-				ee('CP/URL')->make('files/uploads/create')
-			);
-		}
-
 		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Tells us whether or not upload destinations exist
-	 *
-	 * This is public to allow for access from Form_validation, which
-	 * triggers the callbacks.
-	 *
-	 * @return	boolean	Whether or not upload destinations exist
-	 */
-	public function _check_directories()
-	{
-		// count upload dirs
-		return (ee('Model')->get('UploadDestination')->filter('module_id', 0)->count() !== 0);
 	}
 
 	// --------------------------------------------------------------------

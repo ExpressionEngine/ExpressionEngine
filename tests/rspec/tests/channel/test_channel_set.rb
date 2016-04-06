@@ -199,6 +199,11 @@ feature 'Channel Sets' do
           settings['allowed_directories'].to_i.should == upload_dir_id.to_i
         end
       end
+
+      it 'imports with no existing upload directories' do
+        $db.query('TRUNCATE TABLE exp_upload_prefs')
+        import_channel_set 'simple'
+      end
     end
     context 'with grid fields' do
       it 'imports without a relationship column'
