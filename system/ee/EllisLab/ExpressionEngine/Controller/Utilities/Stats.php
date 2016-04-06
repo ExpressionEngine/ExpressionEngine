@@ -259,7 +259,7 @@ class Stats extends Utilities {
 		{
 			$channel_titles = array(); // arrays of statements to update
 
-			if (isset(ee()->cp->installed_modules['comment']))
+			if (ee()->config->item('enable_comments') == 'y')
 			{
 				$channel_comments_count = ee()->db->query('SELECT COUNT(comment_id) AS count, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY count DESC');
 				$channel_comments_recent = ee()->db->query('SELECT MAX(comment_date) AS recent, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY recent DESC');
@@ -415,7 +415,7 @@ class Stats extends Utilities {
 			{
 				ee()->config->set_item('site_id', $row['site_id']);
 
-				if (isset(ee()->cp->installed_modules['comment']))
+				if (ee()->config->item('enable_comments') == 'y')
 				{
 					ee()->stats->update_comment_stats();
 				}
