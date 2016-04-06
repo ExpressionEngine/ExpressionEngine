@@ -152,8 +152,10 @@ class Textarea_ft extends EE_Fieldtype {
 				'smileys'         => $smileys
 			);
 
-			if (isset($this->settings['field_show_file_selector'])
-				&& $this->settings['field_show_file_selector'] == 'y')
+			if ((isset($this->settings['field_show_file_selector'])
+				&& $this->settings['field_show_file_selector'] == 'y') OR
+				(isset($this->settings['field_show_formatting_btns'])
+				&& $this->settings['field_show_formatting_btns'] == 'y'))
 			{
 				$fp = new FilePicker();
 				$fp->inject(ee()->view);
