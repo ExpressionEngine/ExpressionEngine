@@ -206,8 +206,77 @@ feature 'Channel Sets' do
       end
     end
     context 'with grid fields' do
-      it 'imports without a relationship column'
-      it 'imports with a relationship column'
+      it 'imports without a relationship column' do
+        @page.import.click
+        @page.attach_file(
+          'set_file',
+          File.expand_path('./channel_sets/grid-no-relationships.zip')
+        )
+        @page.submit
+
+        no_php_js_errors
+        @page.alert[:class].should include 'success'
+        @page.alert.text.should include 'Channel Imported'
+        @page.alert.text.should include 'The channel was successfully imported.'
+        @page.all_there?.should == true
+
+        # Assure we have imported the right Channel, Field Group, Fields, and Grid Columns
+        $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_name = 'board_games' AND channel_title = 'Board Games'").each do |row|
+          number_of_channels = row['count']
+          number_of_channels.should == 1
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Board Games'").each do |row|
+          number_of_field_groups = row['count']
+          number_of_field_groups.should == 1
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE (field_name = 'duration' AND field_label = 'Duration') OR (field_name = 'editions' AND field_label = 'Editions') OR (field_name = 'number_of_players' AND field_label = 'Number of Players')").each do |row|
+          number_of_fields = row['count']
+          number_of_fields.should == 3
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_grid_columns WHERE (col_name = 'edition_name' AND col_label = 'Edition Name') OR (col_name = 'edition_number' AND col_label = 'Edition Number')").each do |row|
+          number_of_columns = row['count']
+          number_of_columns.should == 2
+        end
+      end
+
+      it 'imports with a relationship column' do
+        @page.import.click
+        @page.attach_file(
+          'set_file',
+          File.expand_path('./channel_sets/grid-with-relationship.zip')
+        )
+        @page.submit
+
+        no_php_js_errors
+        @page.alert[:class].should include 'success'
+        @page.alert.text.should include 'Channel Imported'
+        @page.alert.text.should include 'The channel was successfully imported.'
+        @page.all_there?.should == true
+
+        # Assure we have imported the right Channel, Field Group, Fields, and Grid Columns
+        $db.query("SELECT count(*) AS count FROM exp_channels WHERE (channel_name = 'board_games' AND channel_title = 'Board Games') OR (channel_name = 'game_sessions' AND channel_title = 'Game Sessions')").each do |row|
+          number_of_channels = row['count']
+          number_of_channels.should == 2
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Board Games' OR group_name = 'Game Sessions'").each do |row|
+          number_of_field_groups = row['count']
+          number_of_field_groups.should == 2
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE (field_name = 'game_day' AND field_label = 'Game Day') OR (field_name = 'games_played' AND field_label = 'Games Played') OR (field_name = 'duration' AND field_label = 'Duration') OR (field_name = 'editions' AND field_label = 'Editions') OR (field_name = 'number_of_players' AND field_label = 'Number of Players')").each do |row|
+          number_of_fields = row['count']
+          number_of_fields.should == 5
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_grid_columns WHERE (col_name = 'edition_name' AND col_label = 'Edition Name') OR (col_name = 'edition_number' AND col_label = 'Edition Number') OR (col_name = 'game' AND col_label = 'Game') OR (col_name = 'number_of_plays' AND col_label = 'Number of Plays')").each do |row|
+          number_of_columns = row['count']
+          number_of_columns.should == 4
+        end
+      end
     end
     context 'with relationship fields' do
       it 'imports'
