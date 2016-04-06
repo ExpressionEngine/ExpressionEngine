@@ -16,7 +16,7 @@ class Export {
 
 	public function __construct()
 	{
-		if ( ! is_php('5.4.0'))
+		if ( ! defined('JSON_PRETTY_PRINT'))
 		{
 			define('JSON_PRETTY_PRINT', 0);
 		}
