@@ -355,6 +355,14 @@ class Export {
 
 		foreach ($columns as $column)
 		{
+			if ($column['col_type'] == 'relationship')
+			{
+				if (isset($column['col_settings']['channels']))
+				{
+					$this->exportRelatedChannels($column['col_settings']['channels']);
+				}
+			}
+
 			$col = new StdClass();
 
 			unset(
@@ -425,25 +433,7 @@ class Export {
 
 		if (isset($settings['channels']))
 		{
-			$load_channels = array();
-
-			foreach ($settings['channels'] as $id)
-			{
-				if ( ! isset($this->channels[$id]))
-				{
-					$load_channels[] = $id;
-				}
-			}
-
-			if ( ! empty($load_channels))
-			{
-				$channels = ee('Model')->get('Channel', $load_channels)->all();
-
-				foreach ($channels as $channel)
-				{
-					$this->exportChannel($channel);
-				}
-			}
+			$this->exportRelatedChannels($settings['channels']);
 
 			$result->channels = array();
 
@@ -456,4 +446,28 @@ class Export {
 
 		return $result;
 	}
+
+	private function exportRelatedChannels($channels)
+	{
+		$load_channels = array();
+
+		foreach ($channels as $id)
+		{
+			if ( ! isset($this->channels[$id]))
+			{
+				$load_channels[] = $id;
+			}
+		}
+
+		if ( ! empty($load_channels))
+		{
+			$channels = ee('Model')->get('Channel', $load_channels)->all();
+
+			foreach ($channels as $channel)
+			{
+				$this->exportChannel($channel);
+			}
+		}
+	}
+
 }
