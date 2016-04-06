@@ -47,6 +47,8 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$this->is_admin = (ee()->session->userdata['group_id'] == 1);
 		$this->assigned_channel_ids = array_keys(ee()->session->userdata['assigned_channels']);
+
+		$this->pruneAutosaves();
 	}
 
 	protected function createChannelFilter()
@@ -367,6 +369,23 @@ abstract class AbstractPublish extends CP_Controller {
 		}
 	}
 
+	/**
+	 * Delete stale autosaved data based on the `autosave_prune_hours` config
+	 * value
+	 *
+	 * @return void
+	 */
+	protected function pruneAutosaves()
+	{
+		$prune = ee()->config->item('autosave_prune_hours') ?: 6;
+		$prune = $prune * 120; // From hours to seconds
+
+		$cutoff = ee()->localize->now - $prune;
+
+		$autosave = ee('Model')->get('ChannelEntryAutosave')
+			->filter('edit_date', '<', $cutoff)
+			->delete();
+	}
 }
 
 // EOF
