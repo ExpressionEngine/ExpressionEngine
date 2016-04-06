@@ -14,6 +14,14 @@ class Export {
 	private $category_groups = array();
 	private $upload_destinations = array();
 
+	public function __construct()
+	{
+		if ( ! is_php('5.4.0'))
+		{
+			define('JSON_PRETTY_PRINT', 0);
+		}
+	}
+
 	/**
 	 * Create the channel set zip file for one or more channels.
 	 *
@@ -46,8 +54,7 @@ class Export {
 		$base->category_groups = $this->category_groups;
 		$base->upload_destinations = array_values($this->upload_destinations);
 
-		// TODO: Add JSON_PRETTY_PRINT whenever we move to PHP 5.4.0
-		$cset_json = json_encode($base/*, JSON_PRETTY_PRINT*/);
+		$cset_json = json_encode($base, JSON_PRETTY_PRINT);
 
 		$this->zip->addFromString('channel_set.json', $cset_json);
 		$this->zip->close();
