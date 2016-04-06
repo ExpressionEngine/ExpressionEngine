@@ -278,7 +278,7 @@ class Set {
 
 			$channel->title_field_label = lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = strtolower($channel_data->channel_title);
+			$channel->channel_name = strtolower(str_replace(' ', '_', $channel_data->channel_title));
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
