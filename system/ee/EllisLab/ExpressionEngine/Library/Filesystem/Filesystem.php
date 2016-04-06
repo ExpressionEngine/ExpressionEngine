@@ -59,8 +59,9 @@ class Filesystem {
 	 * @param String $path File to write to
 	 * @param String $data Data to write
 	 * @param bool $overwrite Overwrite existing files?
+	 * @param bool $append Append to existing file?
 	 */
-	public function write($path, $data, $overwrite = FALSE)
+	public function write($path, $data, $overwrite = FALSE, $append = FALSE)
 	{
 		$path = $this->normalize($path);
 
@@ -68,12 +69,18 @@ class Filesystem {
 		{
 			throw new FilesystemException("Cannot write file, path is a directory: {$path}");
 		}
-		elseif ($this->isFile($path) && $overwrite == FALSE)
+		elseif ($this->isFile($path) && $overwrite == FALSE && $append == FALSE)
 		{
 			throw new FilesystemException("File already exists: {$path}");
 		}
 
-		file_put_contents($path, $data);
+		$flags = LOCK_EX;
+		if ($overwrite == FALSE && $append == TRUE)
+		{
+			$flags = FILE_APPEND | LOCK_EX;
+		}
+
+		file_put_contents($path, $data, $flags);
 
 		$this->ensureCorrectAccessMode($path);
 	}
