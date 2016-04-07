@@ -80,9 +80,9 @@ class SpecialtyTemplate extends Model {
 			'admin_notify_comment'          => array('channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path',  'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap', 'unwrap}{close_link}{/unwrap', 'unwrap}{approve_link}{/unwrap'),
 			'admin_notify_forum_post'       => array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
 			'mbr_activation_instructions'   => array('name',  'username', 'email', 'activation_url', 'site_name', 'site_url'),
-			'forgot_password_instructions'  => array('name', 'reset_url', 'site_name', 'site_url'),
-			'decline_member_validation'     => array('name', 'site_name', 'site_url'),
-			'validated_member_notify'       => array('name', 'site_name', 'site_url'),
+			'forgot_password_instructions'  => array('name', 'username', 'reset_url', 'site_name', 'site_url'),
+			'decline_member_validation'     => array('name', 'username', 'site_name', 'site_url'),
+			'validated_member_notify'       => array('name', 'username', 'email', 'site_name', 'site_url'),
 			'comment_notification'          => array('name_of_commenter', 'name_of_recipient', 'channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path', 'comment_url', 'comment', 'notification_removal_url', 'site_name', 'site_url', 'comment_id'),
 
 			'comments_opened_notification'  => array('name_of_recipient', 'channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path', 'comment_url', 'notification_removal_url', 'site_name', 'site_url', 'total_comments_added', 'comments', 'name_of_commenter', 'comment_id', 'comment', '/comments'),
