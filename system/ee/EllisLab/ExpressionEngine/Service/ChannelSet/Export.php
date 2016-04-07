@@ -360,6 +360,11 @@ class Export {
 				if (isset($column['col_settings']['channels']))
 				{
 					$this->exportRelatedChannels($column['col_settings']['channels']);
+					foreach ($column['col_settings']['channels'] as &$id)
+					{
+						$channel = $this->channels[$id];
+						$id = $channel->channel_title;
+					}
 				}
 			}
 
