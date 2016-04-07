@@ -207,18 +207,7 @@ feature 'Channel Sets' do
     end
     context 'with grid fields' do
       it 'imports without a relationship column' do
-        @page.import.click
-        @page.attach_file(
-          'set_file',
-          File.expand_path('./channel_sets/grid-no-relationships.zip')
-        )
-        @page.submit
-
-        no_php_js_errors
-        @page.alert[:class].should include 'success'
-        @page.alert.text.should include 'Channel Imported'
-        @page.alert.text.should include 'The channel was successfully imported.'
-        @page.all_there?.should == true
+        import_channel_set 'grid-no-relationships'
 
         # Assure we have imported the right Channel, Field Group, Fields, and Grid Columns
         $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_name = 'board_games' AND channel_title = 'Board Games'").each do |row|
@@ -243,18 +232,7 @@ feature 'Channel Sets' do
       end
 
       it 'imports with a relationship column' do
-        @page.import.click
-        @page.attach_file(
-          'set_file',
-          File.expand_path('./channel_sets/grid-with-relationship.zip')
-        )
-        @page.submit
-
-        no_php_js_errors
-        @page.alert[:class].should include 'success'
-        @page.alert.text.should include 'Channel Imported'
-        @page.alert.text.should include 'The channel was successfully imported.'
-        @page.all_there?.should == true
+        import_channel_set 'grid-with-relationship'
 
         # Assure we have imported the right Channel, Field Group, Fields, and Grid Columns
         $db.query("SELECT count(*) AS count FROM exp_channels WHERE (channel_name = 'board_games' AND channel_title = 'Board Games') OR (channel_name = 'game_sessions' AND channel_title = 'Game Sessions')").each do |row|
