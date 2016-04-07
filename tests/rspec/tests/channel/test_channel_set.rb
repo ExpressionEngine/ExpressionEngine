@@ -119,6 +119,103 @@ feature 'Channel Sets' do
       expected_files.sort.should == found_files.sort.map(&:name)
     end
 
+    context 'with relationships' do
+      it 'exports relationship fields with selected channels' do
+        channel_fields = ChannelFieldForm.new
+        channel_fields.create_field(
+        group_id: 1,
+        type: 'Relationships',
+        label: 'Relationships',
+        fields: {
+          limit: 25,
+          relationship_order_field: 'Entry Date',
+          relationship_order_dir: 'Descending (Z-A)',
+          relationship_allow_multiple: 'n',
+          relationship_future: '1'
+        }
+        ) do |page|
+          # TODO: Come back and make sure these _actually_ export properly
+          page.find('input[name="relationship_channels[]"][value="2"]').click
+          # page.find('input[name="relationship_authors[]"][value="g_1"]').click
+          # page.find('input[name="relationship_statuses[]"][value="open"]').click
+        end
+
+        @page.load
+        download_channel_set(1)
+
+        # Check to see if the file exists
+        name = @page.channel_names[0].text
+        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        File.exist?(path).should == true
+        no_php_js_errors
+
+        found_files = []
+        Zip::File.open(path) do |zipfile|
+          zipfile.each do |file|
+            found_files << file
+          end
+        end
+
+        relationship = JSON.parse(found_files[7].get_input_stream.read)
+        relationship['label'].should == 'Relationships'
+        relationship['settings']['future'].should == 'y'
+        relationship['settings']['allow_multiple'].should == 'n'
+        relationship['settings']['limit'].to_i.should == 25
+        relationship['settings']['order_field'].should == 'entry_date'
+        relationship['settings']['order_dir'].should == 'desc'
+        relationship['settings']['channels'].should == ['Information Pages']
+
+        # Make sure we're exporting two channels
+        channel_set = JSON.parse(found_files[8].get_input_stream.read)
+        channel_set['channels'].size.should == 2
+      end
+
+      it 'exports relationship fields with all channels' do
+        channel_fields = ChannelFieldForm.new
+        channel_fields.create_field(
+          group_id: 1,
+          type: 'Relationships',
+          label: 'Relationships',
+          fields: {
+            limit: 25,
+            relationship_order_field: 'Entry Date',
+            relationship_order_dir: 'Descending (Z-A)',
+            relationship_allow_multiple: 'n',
+            relationship_future: '1'
+          }
+        )
+
+        @page.load
+        download_channel_set(1)
+
+        # Check to see if the file exists
+        name = @page.channel_names[0].text
+        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        File.exist?(path).should == true
+        no_php_js_errors
+
+        found_files = []
+        Zip::File.open(path) do |zipfile|
+          zipfile.each do |file|
+            found_files << file
+          end
+        end
+
+        relationship = JSON.parse(found_files[3].get_input_stream.read)
+        relationship['label'].should == 'Relationships'
+        relationship['settings']['future'].should == 'y'
+        relationship['settings']['allow_multiple'].should == 'n'
+        relationship['settings']['limit'].to_i.should == 25
+        relationship['settings']['order_field'].should == 'entry_date'
+        relationship['settings']['order_dir'].should == 'desc'
+        relationship['settings']['channels'].should == []
+
+        # Make sure we're exporting two channels
+        channel_set = JSON.parse(found_files[4].get_input_stream.read)
+        channel_set['channels'].size.should == 1
+      end
+    end
+
     it 'exports fieldtypes with custom settings' do
       channel_fields = ChannelFieldForm.new
       channel_fields.create_field(
