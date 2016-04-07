@@ -351,9 +351,10 @@ class Text_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{
 		return array(
-			'field_maxl'				=> ee()->input->post('field_maxl'),
-			'field_content_type'		=> ee()->input->post('field_content_type'),
-			'field_show_file_selector'	=> ee()->input->post('field_show_file_selector')
+			'field_maxl'               => ee()->input->post('field_maxl'),
+			'field_content_type'       => ee()->input->post('field_content_type'),
+			'field_show_smileys'       => ee()->input->post('field_show_smileys'),
+			'field_show_file_selector' => ee()->input->post('field_show_file_selector')
 		);
 	}
 

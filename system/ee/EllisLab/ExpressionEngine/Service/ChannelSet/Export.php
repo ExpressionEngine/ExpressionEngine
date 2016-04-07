@@ -266,6 +266,23 @@ class Export {
 			$result->list_items = explode("\n", trim($field->field_list_items));
 		}
 
+		if ($field->field_pre_populate)
+		{
+			$result->field_pre_populate   = 'y';
+			$result->field_pre_channel_id = $field->field_pre_channel_id;
+			$result->field_pre_field_id   = $field->field_pre_field_id;
+		}
+
+		if ($field->field_maxl && $field->field_maxl != 256)
+		{
+			$result->field_maxl = $field->field_maxl;
+		}
+
+		if ($field->field_text_direction && $field->field_text_direction != 'ltr')
+		{
+			$result->field_text_direction = $field->field_text_direction;
+		}
+
 		// fieldtype specific stuff
 		if ($field->field_type == 'textarea')
 		{
@@ -285,6 +302,37 @@ class Export {
 		if ($field->field_type == 'relationship')
 		{
 			$result->settings = $this->exportRelationshipField($field);
+		}
+
+		if (in_array($field->field_type, array('textarea', 'rte')))
+		{
+			$result->field_ta_rows = $field->field_ta_rows;
+		}
+
+		if ($field->field_type == 'toggle')
+		{
+			$result->field_default_value = $field->field_settings['field_default_value'];
+		}
+
+		if (in_array($field->field_type, array('textarea', 'text')))
+		{
+			if ($field->field_settings['field_show_smileys'])
+			{
+				$result->field_show_smileys = $field->field_settings['field_show_smileys'];
+			}
+
+			if ($field->field_settings['field_show_file_selector'])
+			{
+				$result->field_show_file_selector = $field->field_settings['field_show_file_selector'];
+			}
+		}
+
+		if ($field->field_type == 'textarea')
+		{
+			if ($field->field_settings['field_show_formatting_btns'])
+			{
+				$result->field_show_formatting_btns = $field->field_settings['field_show_formatting_btns'];
+			}
 		}
 
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);

@@ -96,6 +96,10 @@ feature 'Channel Sets' do
 
       news_image = JSON.parse(found_files[2].get_input_stream.read)
       news_image['label'].should == 'News Image'
+      news_image['settings']['num_existing'].should == 50
+      news_image['settings']['show_existing'].should == 'y'
+      news_image['settings']['field_content_type'].should == 'image'
+      news_image['settings']['allowed_directories'].should == 'all'
 
       channel_set = JSON.parse(found_files[3].get_input_stream.read)
       channel_set['channels'].size.should == 1
@@ -113,6 +117,157 @@ feature 'Channel Sets' do
       channel_set['upload_destinations'].size.should == 0
 
       expected_files.sort.should == found_files.sort.map(&:name)
+    end
+
+    it 'exports fieldtypes with custom settings' do
+      channel_fields = ChannelFieldForm.new
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Checkboxes',
+        label: 'Checkboxes',
+        fields: {
+          field_list_items: "Yes\nNo\nMaybe"
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Radio Buttons',
+        label: 'Radio Buttons',
+        fields: {
+          field_list_items: "Left\nCenter\nRight"
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Multi Select',
+        label: 'Multi Select',
+        fields: {
+          field_list_items: "Red\nGreen\nBlue"
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Select Dropdown',
+        label: 'Select Dropdown',
+        fields: {
+          field_list_items: "Mac\nWindows\nLinux"
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Select Dropdown',
+        label: 'Prepopulated',
+        fields: {
+          field_pre_populate: 'y'
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Rich Text Editor',
+        label: 'Rich Text Editor',
+        fields: {
+          field_ta_rows: 20,
+          field_text_direction: 'Right to left'
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Toggle',
+        label: 'Toggle'
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Text Input',
+        label: 'Text Input',
+        fields: {
+          field_maxl: 100,
+          field_fmt: 'None',
+          field_show_fmt: 'y',
+          field_text_direction: 'Right to left',
+          field_content_type: 'Decimal',
+          field_show_smileys: 'y',
+          field_show_file_selector: 'y'
+        }
+      )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'Textarea',
+        label: 'Textarea',
+        fields: {
+          field_ta_rows: 20,
+          field_fmt: 'None',
+          field_show_fmt: 'y',
+          field_text_direction: 'Right to left',
+          field_show_formatting_btns: 'y',
+          field_show_smileys: 'y',
+          field_show_file_selector: 'y'
+        }
+      )
+
+      @page.load
+      download_channel_set(1)
+
+      # Check to see if the file exists
+      name = @page.channel_names[0].text
+      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      File.exist?(path).should == true
+      no_php_js_errors
+
+      found_files = []
+      Zip::File.open(path) do |zipfile|
+        zipfile.each do |file|
+          found_files << file
+        end
+      end
+
+      checkboxes = JSON.parse(found_files[3].get_input_stream.read)
+      checkboxes['label'].should == 'Checkboxes'
+      checkboxes['list_items'].should == ['Yes', 'No', 'Maybe']
+
+      radio_buttons = JSON.parse(found_files[4].get_input_stream.read)
+      radio_buttons['label'].should == 'Radio Buttons'
+      radio_buttons['list_items'].should == ['Left', 'Center', 'Right']
+
+      multi_select = JSON.parse(found_files[5].get_input_stream.read)
+      multi_select['label'].should == 'Multi Select'
+      multi_select['list_items'].should == ['Red', 'Green', 'Blue']
+
+      select_dropdown = JSON.parse(found_files[6].get_input_stream.read)
+      select_dropdown['label'].should == 'Select Dropdown'
+      select_dropdown['list_items'].should == ['Mac', 'Windows', 'Linux']
+
+      prepopulated = JSON.parse(found_files[7].get_input_stream.read)
+      prepopulated['label'].should == 'Prepopulated'
+      prepopulated['field_pre_populate'].should == 'y'
+      prepopulated['field_pre_channel_id'].should == 2
+      prepopulated['field_pre_field_id'].should == 7
+
+      rte = JSON.parse(found_files[8].get_input_stream.read)
+      rte['label'].should == 'Rich Text Editor'
+      rte['field_ta_rows'].should == 20
+      rte['field_text_direction'].should == 'rtl'
+
+      toggle = JSON.parse(found_files[9].get_input_stream.read)
+      toggle['label'].should == 'Toggle'
+      toggle['field_default_value'].to_i.should == 0
+
+      text_input = JSON.parse(found_files[10].get_input_stream.read)
+      text_input['label'].should == 'Text Input'
+      text_input['field_maxl'].to_i.should == 100
+      text_input['fmt'].should == 'none'
+      text_input['field_text_direction'].should == 'rtl'
+      text_input['content_type'].should == 'decimal'
+      text_input['field_show_smileys'].should == 'y'
+      text_input['field_show_file_selector'].should == 'y'
+
+      textarea = JSON.parse(found_files[11].get_input_stream.read)
+      textarea['label'].should == 'Textarea'
+      textarea['fmt'].should == 'none'
+      textarea['field_ta_rows'].should == 20
+      textarea['field_text_direction'].should == 'rtl'
+      textarea['field_show_formatting_btns'].should == 'y'
+      textarea['field_show_smileys'].should == 'y'
+      textarea['field_show_file_selector'].should == 'y'
     end
 
     it 'properly exports a specified upload destination'
