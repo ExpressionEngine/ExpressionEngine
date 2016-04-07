@@ -578,6 +578,31 @@ feature 'Channel Sets' do
           number_of_columns.should == 4
         end
       end
+
+      it 'imports a grid with all native fields' do
+        import_channel_set 'grid-with-everything'
+
+        # Assure we have imported the right Channel, Field Group, Fields, and Grid Columns
+        $db.query("SELECT count(*) AS count FROM exp_channels WHERE (channel_name = 'big_grid' AND channel_title = 'Big Grid')").each do |row|
+          number_of_channels = row['count']
+          number_of_channels.should == 1
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Gridlocked''").each do |row|
+          number_of_field_groups = row['count']
+          number_of_field_groups.should == 1
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE (field_name = 'zen' AND field_label = 'Zen')").each do |row|
+          number_of_fields = row['count']
+          number_of_fields.should == 1
+        end
+
+        $db.query("SELECT count(*) AS count FROM exp_grid_columns WHERE (col_name = 'checkboxes' AND col_label = 'Checkboxes') OR (col_name = 'date' AND col_label = 'Date') OR (col_name = 'email_address' AND col_label = 'Email Address') OR (col_name = 'file' AND col_label = 'File') OR (col_name = 'multi_select' AND col_label = 'Multi Select') OR (col_name = 'radio_buttons' AND col_label = 'Radio Buttons') OR (col_name = 'relationships' AND col_label = 'Relationships') OR (col_name = 'rich_text_editor' AND col_label = 'Rich Text Editor') OR (col_name = 'select_dropdown' AND col_label = 'Select Dropdown') OR (col_name = 'text_input' AND col_label = 'Text Input') OR (col_name = 'textarea' AND col_label = 'Textarea') OR (col_name = 'toggle' AND col_label = 'Toggle') OR (col_name = 'url' AND col_label = 'URL')").each do |row|
+          number_of_columns = row['count']
+          number_of_columns.should == 13
+        end
+      end
     end
     context 'with relationship fields' do
       it 'imports'
