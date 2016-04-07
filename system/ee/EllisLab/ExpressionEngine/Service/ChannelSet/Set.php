@@ -561,6 +561,15 @@ class Set {
 			// grid[cols][new_0][col_label]
 			foreach ($columns as $i => $column)
 			{
+				if ($column['type'] == 'relationship')
+				{
+					if (isset($column['settings']['channels']))
+					{
+						$channel_ids = $this->getIdsForChannels($column['settings']['channels']);
+						$column['settings']['channels'] = $channel_ids;
+					}
+				}
+
 				foreach ($column as $col_label => $col_value)
 				{
 					// Grid is expecting a POSTed checkbox, so if it's in POST at all
