@@ -22,6 +22,49 @@ feature 'Channel Sets' do
     data.should start_with('PK')
   end
 
+  # Import a given channel set
+  #
+  # @param [String] name The channel set's zip filename, no extension
+  # @param [Boolean] failure = false Set to true to check for failure
+  # @return [void]
+  def import_channel_set(name, method: 'success')
+    @page.import.click
+    @page.attach_file(
+      'set_file',
+      File.expand_path("./channel_sets/#{name}.zip")
+    )
+    @page.submit
+
+    if block_given?
+      no_php_js_errors
+      @page.alert[:class].should include 'issue'
+      yield
+    else
+      send('check_' + method)
+    end
+  end
+
+  # Check to make sure the import was successful
+  #
+  # @return [void]
+  def check_success
+    no_php_js_errors
+    @page.alert[:class].should include 'success'
+    @page.alert.text.should include 'Channel Imported'
+    @page.alert.text.should include 'The channel was successfully imported.'
+    @page.all_there?.should == true
+  end
+
+  # Check to make sure the import was **not** successful
+  #
+  # @return [void]
+  def check_issue_duplicate
+    no_php_js_errors
+    @page.alert[:class].should include 'issue'
+    @page.alert.text.should include 'Import Creates Duplicates'
+    @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
+  end
+
   context 'when exporting' do
     it 'downloads the zip file when exporting channel sets' do
       download_channel_set(1)
@@ -73,56 +116,69 @@ feature 'Channel Sets' do
     end
 
     it 'properly exports a specified upload destination'
-  end
 
+    context 'with grid fields' do
+      it 'exports without a relationship column' do
+        import_channel_set 'grid-no-relationships'
+
+        name = "board_games"
+        channel_id = @page.get_channel_id_from_name(name)
+        download_channel_set(channel_id)
+
+        # Check to see if the file exists
+        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        File.exist?(path).should == true
+
+        expected_files = [
+          '/custom_fields/Board Games/editions.grid',
+          '/custom_fields/Board Games/duration.text',
+          '/custom_fields/Board Games/number_of_players.text',
+          'channel_set.json'
+        ]
+        found_files = []
+        Zip::File.open(path) do |zipfile|
+          zipfile.each do |file|
+            found_files << file
+          end
+        end
+
+        expected_files.sort.should == found_files.sort.map(&:name)
+      end
+
+      it 'exports with a relatioship column' do
+        import_channel_set 'grid-with-relationship'
+
+        name = "game_sessions"
+        channel_id = @page.get_channel_id_from_name(name)
+        download_channel_set(channel_id)
+
+        # Check to see if the file exists
+        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        File.exist?(path).should == true
+
+        expected_files = [
+          '/custom_fields/Board Games/editions.grid',
+          '/custom_fields/Board Games/duration.text',
+          '/custom_fields/Board Games/number_of_players.text',
+          '/custom_fields/Game Sessions/game_day.date',
+          '/custom_fields/Game Sessions/games_played.grid',
+          'channel_set.json'
+        ]
+        found_files = []
+        Zip::File.open(path) do |zipfile|
+          zipfile.each do |file|
+            found_files << file
+          end
+        end
+
+        expected_files.sort.should == found_files.sort.map(&:name)
+      end
+    end
+  end
 
   it 'exports multiple channel sets'
 
   context 'when importing channel sets' do
-    # Import a given channel set
-    #
-    # @param [String] name The channel set's zip filename, no extension
-    # @param [Boolean] failure = false Set to true to check for failure
-    # @return [void]
-    def import_channel_set(name, method: 'success')
-      @page.import.click
-      @page.attach_file(
-        'set_file',
-        File.expand_path("./channel_sets/#{name}.zip")
-      )
-      @page.submit
-
-      if block_given?
-        no_php_js_errors
-        @page.alert[:class].should include 'issue'
-        yield
-      else
-        send('check_' + method)
-      end
-    end
-
-    # Check to make sure the import was successful
-    #
-    # @return [void]
-    def check_success
-      no_php_js_errors
-      @page.alert[:class].should include 'success'
-      @page.alert.text.should include 'Channel Imported'
-      @page.alert.text.should include 'The channel was successfully imported.'
-      @page.all_there?.should == true
-    end
-
-    # Check to make sure the import was **not** successful
-    #
-    # @return [void]
-    def check_issue_duplicate
-      no_php_js_errors
-      @page.alert[:class].should include 'issue'
-      @page.alert.text.should include 'Import Creates Duplicates'
-      @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
-    end
-
-
     it 'imports a channel set' do
       import_channel_set 'simple'
     end
