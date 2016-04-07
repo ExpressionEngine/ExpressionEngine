@@ -35,7 +35,7 @@ class Verifier {
 	/**
 	 * Constructor
 	 *
-	 * @param	Filesystem	$filesystem	Filesystem service object
+	 * @param	Filesystem	$filesystem	Filesystem library object
 	 */
 	public function __construct(Filesystem $filesystem)
 	{

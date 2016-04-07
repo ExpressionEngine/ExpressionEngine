@@ -40,6 +40,7 @@ class Updater {
 	protected $zip_archive = NULL;
 	protected $config = NULL;
 	protected $verifier = NULL;
+	protected $logger = NULL;
 
 	protected $filename = 'ExpressionEngine.zip';
 	protected $extracted_folder = 'ExpressionEngine';
@@ -56,7 +57,7 @@ class Updater {
 	 * @param	ZipArchive			$zip_archive	PHP-native ZipArchive object
 	 * @param	Config\File			$config			File config service object
 	 */
-	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier)
+	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger)
 	{
 		if (empty($license_number) OR ! is_string($license_number))
 		{
@@ -75,8 +76,7 @@ class Updater {
 		$this->zip_archive = $zip_archive;
 		$this->config = $config;
 		$this->verifier = $verifier;
-
-		// TODO: Create log service?
+		$this->logger = $logger;
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Updater {
 			'unzipPackage',
 			'verifyExtractedPackage',
 			// TODO: Check requirements of new version here?
-			'moveUpdater'
+			'moveFiles'
 		);
 	}
 
@@ -114,6 +114,13 @@ class Updater {
 	 */
 	public function preflight()
 	{
+		// Attempt to set time and memory limits
+		@set_time_limit(0);
+		@ini_set('memory_limit','256M');
+
+		$this->logger->log('Maximum execution time: '.@ini_get('max_execution_time'));
+		$this->logger->log('Memory limit: '.@ini_get('memory_limit'));
+
 		$this->cleanUpOldUpgrades();
 		$this->checkDiskSpace();
 		$this->checkPermissions();
@@ -125,15 +132,21 @@ class Updater {
 	 */
 	protected function cleanUpOldUpgrades()
 	{
+		$this->logger->log('Cleaning up upgrade working directory');
+
+		// TODO: Check to see if we even have permission to do these things
+		
 		// Delete any old zip archives
 		if ($this->filesystem->isFile($this->getArchiveFilePath()))
 		{
+			$this->logger->log('Old zip archives found, deleting');
 			$this->filesystem->delete($this->getArchiveFilePath());
 		}
 
 		// Delete old extracted archives
 		if ($this->filesystem->isDir($this->getExtractedArchivePath()))
 		{
+			$this->logger->log('Old extracted archives found, deleting');
 			$this->filesystem->delete($this->getExtractedArchivePath());
 		}
 	}
@@ -143,6 +156,7 @@ class Updater {
 	 */
 	protected function checkDiskSpace()
 	{
+		$this->logger->log('Checking free disk space');
 		$free_space = $this->filesystem->getFreeDiskSpace($this->path());
 
 		// Try to maintain at least 50MB free disk space
@@ -159,6 +173,7 @@ class Updater {
 	 */
 	protected function checkPermissions()
 	{
+		$this->logger->log('Checking file permissions needed to complete the update');
 		if ( ! $this->filesystem->isWritable($this->path()))
 		{
 			throw new UpdaterException('Cache folder not writable.', 1);
@@ -181,6 +196,7 @@ class Updater {
 	 */
 	protected function takeSiteOffline()
 	{
+		$this->logger->log('Taking the site offline');
 		$this->config->set('is_site_on', 'n');
 	}
 
@@ -189,6 +205,8 @@ class Updater {
 	 */
 	public function downloadPackage()
 	{
+		$this->logger->log('Downloading update package');
+
 		$curl = $this->curl->post(
 			$this->payload_url,
 			array('license' => $this->license_number)
@@ -230,12 +248,15 @@ class Updater {
 	 */
 	public function unzipPackage()
 	{
+		$this->logger->log('Unzipping package');
+
 		$this->filesystem->mkDir($this->getExtractedArchivePath());
 
 		if (($response = $this->zip_archive->open($this->getArchiveFilePath())) === TRUE)
 		{
 			$this->zip_archive->extractTo($this->getExtractedArchivePath());
 			$this->zip_archive->close();
+			$this->logger->log('Package unzipped');
 		}
 		else
 		{
@@ -248,18 +269,21 @@ class Updater {
 	 */
 	public function verifyExtractedPackage()
 	{
+		$this->logger->log('Verifying integrity of unzipped package');
+
 		$extracted_path = $this->getExtractedArchivePath();
 
 		$this->verifier->verifyPath($extracted_path, $extracted_path . DIRECTORY_SEPARATOR . $this->manifest_location);
+
+		$this->logger->log('Package contents successfully verified');
 	}
 
 	/**
 	 * Moves the update package into position to be executed and finish the upgrade
 	 */
-	public function moveUpdater()
+	public function moveFiles()
 	{
-		// TODO: Move update package into place, verify its integrity, then launch
-		// into the updater package; we're finished with this controller
+		//
 	}
 
 	/**

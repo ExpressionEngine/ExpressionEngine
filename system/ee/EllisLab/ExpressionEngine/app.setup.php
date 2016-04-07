@@ -12,6 +12,7 @@ use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\License;
+use EllisLab\ExpressionEngine\Service\Logger;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
@@ -164,15 +165,20 @@ return array(
 
 		'Updater' => function($ee)
 		{
+			$filesystem = $ee->make('Filesystem');
+			$file_logger = new Logger\File(PATH_CACHE.'ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
+			$file_logger->truncate();
+
 			return new Updater\Updater(
 				$ee->make('License')->getEELicense()->getData('license_number'),
 				// Will be dynamic later
 				'http://ee.dev/download.php',
 				$ee->make('Curl'),
-				$ee->make('Filesystem'),
+				$filesystem,
 				new \ZipArchive(),
 				$ee->make('Config')->getFile(),
-				new Updater\Verifier($ee->make('Filesystem'))
+				new Updater\Verifier($filesystem),
+				new Updater\Logger($file_logger)
 			);
 		}
 	),

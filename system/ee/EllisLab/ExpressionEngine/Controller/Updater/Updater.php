@@ -41,6 +41,7 @@ class Updater extends CP_Controller {
 		ee('Updater')->getUpdateFiles();
 
 		// TODO: Can we catch a PHP timeout and report that to the user?
+		// TODO: Prolly just restrict super admins to auto-updating
 	}
 }
 // EOF
