@@ -15,18 +15,21 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->zip_archive = Mockery::mock('ZipArchive');
 		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
 		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Verifier');
+		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
+
+		$this->logger->shouldReceive('log');
 
 		$this->license_number = '1234-1234-1234-1234';
 		$this->payload_url = 'http://0.0.0.0/ee.zip';
 
-		$this->updater = new Updater($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier);
+		$this->updater = new Updater($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
 	}
 
 	private function getPartialMock($methods)
 	{
 		return Mockery::mock(
 			'EllisLab\ExpressionEngine\Service\Updater\Updater['.$methods.']',
-			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier)
+			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger)
 		);
 	}
 
@@ -46,7 +49,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadConstructor($license_number, $payload_url)
 	{
-		$updater = new Updater($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier);
+		$updater = new Updater($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
 	}
 
 	public function badUpdaterConstructorProvider()
@@ -71,13 +74,13 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGetUpdateFiles()
 	{
-		$updater = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyZipContents,moveUpdater');
+		$updater = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,moveFiles');
 
 		$updater->shouldReceive('preflight')->once();
 		$updater->shouldReceive('downloadPackage')->once();
 		$updater->shouldReceive('unzipPackage')->once();
-		$updater->shouldReceive('verifyZipContents')->once();
-		$updater->shouldReceive('moveUpdater')->once();
+		$updater->shouldReceive('verifyExtractedPackage')->once();
+		$updater->shouldReceive('moveFiles')->once();
 
 		$updater->getUpdateFiles();
 	}
@@ -90,8 +93,8 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			'preflight',
 			'downloadPackage',
 			'unzipPackage',
-			'verifyZipContents',
-			'moveUpdater'
+			'verifyExtractedPackage',
+			'moveFiles'
 		);
 
 		$this->assertEquals($expected, $steps);
