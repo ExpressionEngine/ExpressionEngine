@@ -70,7 +70,6 @@ $lang = array(
 'channel_set_not_exported' => 'Cannot Export Channel Set',
 'channel_set_not_exported_desc' => 'Not a valid channel.',
 
-
 'channel_set_upload_error' => 'Cannot Import Channel',
 'channel_set_upload_error_desc' => 'We were unable to import the channel, please make sure your cache folder is writable.',
 

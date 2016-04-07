@@ -84,7 +84,7 @@ feature 'Channel Sets' do
     # @param [String] name The channel set's zip filename, no extension
     # @param [Boolean] failure = false Set to true to check for failure
     # @return [void]
-    def import_channel_set(name, failure = false)
+    def import_channel_set(name, method: 'success')
       @page.import.click
       @page.attach_file(
         'set_file',
@@ -92,10 +92,12 @@ feature 'Channel Sets' do
       )
       @page.submit
 
-      if failure == false
-        check_success
+      if block_given?
+        no_php_js_errors
+        @page.alert[:class].should include 'issue'
+        yield
       else
-        check_failure
+        send('check_' + method)
       end
     end
 
@@ -113,7 +115,7 @@ feature 'Channel Sets' do
     # Check to make sure the import was **not** successful
     #
     # @return [void]
-    def check_failure
+    def check_issue_duplicate
       no_php_js_errors
       @page.alert[:class].should include 'issue'
       @page.alert.text.should include 'Import Creates Duplicates'
@@ -126,7 +128,7 @@ feature 'Channel Sets' do
     end
 
     it 'imports a channel set with duplicate names' do
-      import_channel_set 'simple-duplicate', true
+      import_channel_set 'simple-duplicate', method: 'issue_duplicate'
 
       @page.find('input[name="ee:Channel[news][channel_title]"]').set 'Event'
       @page.find('input[name="ee:Channel[news][channel_name]"]').set 'event'
@@ -137,6 +139,13 @@ feature 'Channel Sets' do
       @page.submit
 
       check_success
+    end
+
+    it 'shows errors when the channel set cannot be imported' do
+      import_channel_set('no-json') do
+        @page.alert.text.should include 'Cannot Import Channel'
+        @page.alert.text.should include 'Missing channel_set.json file.'
+      end
     end
 
     context 'when importing Default statuses' do
@@ -178,7 +187,7 @@ feature 'Channel Sets' do
 
     context 'with file fields' do
       it 'imports with a specified directory' do
-        import_channel_set 'file-specified-directory', true
+        import_channel_set 'file-specified-directory', method: 'issue_duplicate'
 
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '../images/uploads'

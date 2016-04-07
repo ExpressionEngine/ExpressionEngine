@@ -184,14 +184,20 @@ class Sets extends AbstractChannelsController {
 		}
 		else
 		{
-			$fatal = $result->getErrors();
+			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
+			foreach ($model_errors['Channel Field'][0][2] as $error)
+			{
+				$errors[] = $error->getLanguageKey();
+			}
 
-			var_dump($fatal);
-			var_dump($model_errors['Channel Field'][0][2]);
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('channel_set_upload_error'))
+				->addToBody($errors)
+				->defer();
 
-			exit('unknown errors');
-			// todo find a way to display those errors
+			ee()->functions->redirect(ee('CP/URL', 'channels/sets'));
 		}
 
 		$this->generateSidebar('channel');
