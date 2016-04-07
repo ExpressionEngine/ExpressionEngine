@@ -335,6 +335,12 @@ class Export {
 			}
 		}
 
+		if ($field->field_type == 'url')
+		{
+			$result->url_scheme_placeholder = $field->field_settings['url_scheme_placeholder'];
+			$result->allowed_url_schemes = $field->field_settings['allowed_url_schemes'];
+		}
+
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);
 
 		$this->zip->addFromString($file, $field_json);

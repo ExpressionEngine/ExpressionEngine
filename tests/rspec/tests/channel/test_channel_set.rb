@@ -203,6 +203,18 @@ feature 'Channel Sets' do
           field_show_file_selector: 'y'
         }
       )
+      channel_fields.create_field(
+        group_id: 1,
+        type: 'URL',
+        label: 'URL Field',
+        fields: {
+          url_scheme_placeholder: '// (Protocol Relative URL)'
+        }
+      ) do |page|
+        page.all('input[name="allowed_url_schemes[]"]').each do |element|
+          element.click unless element.checked?
+        end
+      end
 
       @page.load
       download_channel_set(1)
@@ -268,6 +280,11 @@ feature 'Channel Sets' do
       textarea['field_show_formatting_btns'].should == 'y'
       textarea['field_show_smileys'].should == 'y'
       textarea['field_show_file_selector'].should == 'y'
+
+      url = JSON.parse(found_files[12].get_input_stream.read)
+      url['label'].should == 'URL Field'
+      url['url_scheme_placeholder'].should == '//'
+      url['allowed_url_schemes'].should == ["http://", "https://", "//", "ftp://", "sftp://", "ssh://"]
     end
 
     it 'properly exports a specified upload destination'
