@@ -268,27 +268,22 @@ class Export {
 
 		if ($field->field_pre_populate)
 		{
-			$result->field_pre_populate   = 'y';
-			$result->field_pre_channel_id = $field->field_pre_channel_id;
-			$result->field_pre_field_id   = $field->field_pre_field_id;
+			$result->pre_populate   = 'y';
+			$result->pre_channel_id = $field->field_pre_channel_id;
+			$result->pre_field_id   = $field->field_pre_field_id;
 		}
 
 		if ($field->field_maxl && $field->field_maxl != 256)
 		{
-			$result->field_maxl = $field->field_maxl;
+			$result->maxl = $field->field_maxl;
 		}
 
 		if ($field->field_text_direction && $field->field_text_direction != 'ltr')
 		{
-			$result->field_text_direction = $field->field_text_direction;
+			$result->text_direction = $field->field_text_direction;
 		}
 
 		// fieldtype specific stuff
-		if ($field->field_type == 'textarea')
-		{
-			$result->ta_rows = $field->field_ta_rows;
-		}
-
 		if ($field->field_type == 'file')
 		{
 			$result->settings = $this->exportFileFieldSettings($field);
@@ -306,24 +301,24 @@ class Export {
 
 		if (in_array($field->field_type, array('textarea', 'rte')))
 		{
-			$result->field_ta_rows = $field->field_ta_rows;
+			$result->ta_rows = $field->field_ta_rows;
 		}
 
 		if ($field->field_type == 'toggle')
 		{
-			$result->field_default_value = $field->field_settings['field_default_value'];
+			$result->settings['field_default_value'] = $field->field_settings['field_default_value'];
 		}
 
 		if (in_array($field->field_type, array('textarea', 'text')))
 		{
 			if ($field->field_settings['field_show_smileys'])
 			{
-				$result->field_show_smileys = $field->field_settings['field_show_smileys'];
+				$result->settings['field_show_smileys'] = $field->field_settings['field_show_smileys'];
 			}
 
 			if ($field->field_settings['field_show_file_selector'])
 			{
-				$result->field_show_file_selector = $field->field_settings['field_show_file_selector'];
+				$result->settings['field_show_file_selector'] = $field->field_settings['field_show_file_selector'];
 			}
 		}
 
@@ -331,14 +326,14 @@ class Export {
 		{
 			if ($field->field_settings['field_show_formatting_btns'])
 			{
-				$result->field_show_formatting_btns = $field->field_settings['field_show_formatting_btns'];
+				$result->settings['field_show_formatting_btns'] = $field->field_settings['field_show_formatting_btns'];
 			}
 		}
 
 		if ($field->field_type == 'url')
 		{
-			$result->url_scheme_placeholder = $field->field_settings['url_scheme_placeholder'];
-			$result->allowed_url_schemes = $field->field_settings['allowed_url_schemes'];
+			$result->settings['url_scheme_placeholder'] = $field->field_settings['url_scheme_placeholder'];
+			$result->settings['allowed_url_schemes'] = $field->field_settings['allowed_url_schemes'];
 		}
 
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);

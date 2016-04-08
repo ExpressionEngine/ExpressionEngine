@@ -221,14 +221,14 @@ feature 'Channel Sets' do
 
       prepopulated = JSON.parse(found_files[7].get_input_stream.read)
       prepopulated['label'].should == 'Prepopulated'
-      prepopulated['field_pre_populate'].should == 'y'
-      prepopulated['field_pre_channel_id'].should == 2
-      prepopulated['field_pre_field_id'].should == 7
+      prepopulated['pre_populate'].should == 'y'
+      prepopulated['pre_channel_id'].should == 2
+      prepopulated['pre_field_id'].should == 7
 
       rte = JSON.parse(found_files[8].get_input_stream.read)
       rte['label'].should == 'Rich Text Editor'
-      rte['field_ta_rows'].should == 20
-      rte['field_text_direction'].should == 'rtl'
+      rte['ta_rows'].should == 20
+      rte['text_direction'].should == 'rtl'
 
       toggle = JSON.parse(found_files[9].get_input_stream.read)
       toggle['label'].should == 'Toggle'
@@ -236,26 +236,26 @@ feature 'Channel Sets' do
 
       text_input = JSON.parse(found_files[10].get_input_stream.read)
       text_input['label'].should == 'Text Input'
-      text_input['field_maxl'].to_i.should == 100
+      text_input['maxl'].to_i.should == 100
       text_input['fmt'].should == 'none'
-      text_input['field_text_direction'].should == 'rtl'
+      text_input['text_direction'].should == 'rtl'
       text_input['content_type'].should == 'decimal'
-      text_input['field_show_smileys'].should == 'y'
-      text_input['field_show_file_selector'].should == 'y'
+      text_input['settings']['field_show_smileys'].should == 'y'
+      text_input['settings']['field_show_file_selector'].should == 'y'
 
       textarea = JSON.parse(found_files[11].get_input_stream.read)
       textarea['label'].should == 'Textarea'
       textarea['fmt'].should == 'none'
-      textarea['field_ta_rows'].should == 20
-      textarea['field_text_direction'].should == 'rtl'
-      textarea['field_show_formatting_btns'].should == 'y'
-      textarea['field_show_smileys'].should == 'y'
-      textarea['field_show_file_selector'].should == 'y'
+      textarea['ta_rows'].should == 20
+      textarea['text_direction'].should == 'rtl'
+      textarea['settings']['field_show_formatting_btns'].should == 'y'
+      textarea['settings']['field_show_smileys'].should == 'y'
+      textarea['settings']['field_show_file_selector'].should == 'y'
 
       url = JSON.parse(found_files[12].get_input_stream.read)
       url['label'].should == 'URL Field'
-      url['url_scheme_placeholder'].should == '//'
-      url['allowed_url_schemes'].should == ["http://", "https://", "//", "ftp://", "sftp://", "ssh://"]
+      url['settings']['url_scheme_placeholder'].should == '//'
+      url['settings']['allowed_url_schemes'].should == ["http://", "https://", "//", "ftp://", "sftp://", "ssh://"]
     end
 
     it 'properly exports a specified upload destination'
@@ -319,8 +319,6 @@ feature 'Channel Sets' do
     end
   end
 
-  it 'exports multiple channel sets'
-
   context 'when importing channel sets' do
     it 'imports a channel set' do
       import_channel_set 'simple'
@@ -381,6 +379,14 @@ feature 'Channel Sets' do
 
       it 'does not import duplicate statuses' do
         import_default_statuses('default-statuses-duplicate', 'Featured', 3)
+      end
+    end
+
+    context 'with custom fields' do
+      it 'imports a relationship field with channels'
+      it 'imports a relationship field with a specified channel'
+      it 'imports all other first-party custom fields' do
+        import_channel_set 'custom-fields'
       end
     end
 
