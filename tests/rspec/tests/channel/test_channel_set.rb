@@ -288,7 +288,7 @@ feature 'Channel Sets' do
         expected_files.sort.should == found_files.sort.map(&:name)
       end
 
-      it 'exports with a relatioship column' do
+      it 'exports with a relationship column' do
         import_channel_set 'grid-with-relationship'
 
         name = "game_sessions"
