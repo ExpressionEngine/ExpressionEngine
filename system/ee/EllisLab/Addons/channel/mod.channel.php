@@ -4698,7 +4698,9 @@ class Channel {
 		ee()->load->helper('date');
 		$zones = timezones();
 
-		$offset = ( ! isset($zones[ee()->session->userdata['timezone']]) OR $zones[ee()->session->userdata['timezone']] == '') ? 0 : ($zones[ee()->session->userdata['timezone']]*60*60);
+		$timezone = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));
+
+		$offset = ( ! isset($zones[$timezone]) OR $zones[$timezone] == '') ? 0 : ($zones[$timezone]*60*60);
 
 		if (substr($offset, 0, 1) == '-')
 		{

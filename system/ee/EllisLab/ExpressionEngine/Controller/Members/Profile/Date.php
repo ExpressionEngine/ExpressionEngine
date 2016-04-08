@@ -46,7 +46,20 @@ class Date extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
+					'title' => 'site_default',
+					'fields' => array(
+						'site_default' => array(
+							'type' => 'yes_no',
+							'value' => (empty($this->member->timezone)) ? 'y' : 'n',
+							'group_toggle' => array(
+								'n' => 'localize'
+							)
+						)
+					)
+				),
+				array(
 					'title' => 'timezone',
+					'group' => 'localize',
 					'fields' => array(
 						'timezone' => array(
 							'type' => 'html',
@@ -57,6 +70,7 @@ class Date extends Settings {
 				array(
 					'title' => 'date_format',
 					'desc' => 'used_in_cp_only',
+					'group' => 'localize',
 					'fields' => array(
 						'date_format' => array(
 							'type' => 'select',
@@ -73,13 +87,10 @@ class Date extends Settings {
 				array(
 					'title' => 'include_seconds',
 					'desc' => 'include_seconds_desc',
+					'group' => 'localize',
 					'fields' => array(
 						'include_seconds' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => $this->member->include_seconds
 						)
 					)
@@ -89,23 +100,8 @@ class Date extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'timezone',
-				 'label'   => 'lang:timezone',
-				 'rules'   => 'required'
-			),
-			array(
-				 'field'   => 'date_format',
-				 'label'   => 'lang:date_format',
-				 'rules'   => 'required'
-			),
-			array(
-				 'field'   => 'time_format',
-				 'label'   => 'lang:time_format',
-				 'rules'   => 'required'
-			),
-			array(
-				 'field'   => 'include_seconds',
-				 'label'   => 'lang:include_seconds',
+				 'field'   => 'site_default',
+				 'label'   => 'lang:site_default',
 				 'rules'   => 'required'
 			)
 		));
@@ -117,7 +113,30 @@ class Date extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveSettings($vars['sections']))
+			$success = FALSE;
+			if (ee()->input->post('site_default') == 'y')
+			{
+				/* @TODO Use models when models can set NULL
+				$this->member->timezone = NULL;
+				$this->member->date_format = NULL;
+				$this->member->time_format = NULL;
+				$this->member->include_seconds = NULL;
+				$this->member->save();
+				*/
+				ee()->db->set('timezone', NULL);
+				ee()->db->set('date_format', NULL);
+				ee()->db->set('time_format', NULL);
+				ee()->db->set('include_seconds', NULL);
+				ee()->db->where('member_id', $this->member->member_id);
+				ee()->db->update('members');
+				$success = TRUE;
+			}
+			else
+			{
+				$success = $this->saveSettings($vars['sections']);
+			}
+
+			if ($success)
 			{
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -131,10 +150,14 @@ class Date extends Settings {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/form_group'),
+		));
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;

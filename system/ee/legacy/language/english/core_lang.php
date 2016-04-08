@@ -391,6 +391,10 @@ https://support.ellislab.com/',
 
 "no_timezones" => "No Timezones",
 
+'invalid_timezone' => "The timezone you submitted is invalid.",
+
+'invalid_date_format' => "The date format you submitted is invalid.",
+
 'curl_not_installed' => 'cURL is not installed on your server',
 
 // IGNORE

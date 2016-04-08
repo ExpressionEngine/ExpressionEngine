@@ -64,7 +64,7 @@ class Profile extends CP_Controller {
 		$this->query_string = $qs;
 		$this->base_url = ee('CP/URL')->make('members/profile/settings');
 		$this->base_url->setQueryStringVariable('id', $id);
-		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
+		$this->member = ee('Model')->get('Member', $id)->first();
 
 		if (is_null($this->member))
 		{
