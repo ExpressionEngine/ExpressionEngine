@@ -351,10 +351,10 @@ class Text_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{
 		return array(
-			'field_maxl'               => $data['field_maxl'],
-			'field_content_type'       => $data['field_content_type'],
-			'field_show_smileys'       => $data['field_show_smileys'],
-			'field_show_file_selector' => $data['field_show_file_selector']
+			'field_maxl'               => array_key_exists('field_maxl', $data) ? $data['field_maxl'] : NULL,
+			'field_content_type'       => array_key_exists('field_content_type', $data) ? $data['field_content_type'] : NULL,
+			'field_show_smileys'       => array_key_exists('field_show_smileys', $data) ? $data['field_show_smileys'] : NULL,
+			'field_show_file_selector' => array_key_exists('field_show_file_selector', $data) ? $data['field_show_file_selector'] : NULL
 		);
 	}
 
