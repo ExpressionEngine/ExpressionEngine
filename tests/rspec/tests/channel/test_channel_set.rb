@@ -387,6 +387,85 @@ feature 'Channel Sets' do
       it 'imports a relationship field with a specified channel'
       it 'imports all other first-party custom fields' do
         import_channel_set 'custom-fields'
+
+        fields = {
+          'checkboxes' => {
+            'field_list_items' => "Yes\nNo\nMaybe"
+          },
+          'multi_select' => {
+            'field_list_items' => "Red\nGreen\nBlue"
+          },
+          'radio_buttons' => {
+            'field_list_items' => "Left\nCenter\nRight"
+          },
+          'select_dropdown' => {
+            'field_list_items' => "Mac\nWindows\nLinux"
+          },
+          'prepopulated' => {
+            'field_pre_populate' => 'y',
+            'field_pre_channel_id' => 2,
+            'field_pre_field_id' => 7
+          },
+          'rich_text_editor' => {
+            'field_ta_rows' => 20,
+            'field_text_direction' => 'rtl'
+          },
+          'text_input' => {
+            'field_maxl' => 100,
+            'field_fmt' => 'none',
+            'field_show_fmt' => 'y',
+            'field_text_direction' => 'rtl',
+            'field_content_type' => 'decimal',
+            'field_settings' => {
+              'field_show_smileys' => 'y',
+              'field_show_file_selector' => 'y'
+            }
+          },
+          'textarea' => {
+            'field_ta_rows' => 20,
+            'field_fmt' => 'none',
+            'field_show_fmt' => 'y',
+            'field_text_direction' => 'rtl',
+            'field_settings' => {
+              'field_show_formatting_btns' => 'y',
+              'field_show_smileys' => 'y',
+              'field_show_file_selector' => 'y'
+            }
+          },
+          'toggle' => {
+            'field_settings' => {
+              'field_default_value' => '0'
+            }
+          },
+          'url_field' => {
+            'field_settings' => {
+              'url_scheme_placeholder' => '//',
+              'allowed_url_schemes' => [
+                'http://',
+                'https://',
+                '//',
+                'ftp://',
+                'sftp://',
+                'ssh://'
+              ]
+            }
+          }
+        }
+
+        $db.query('SELECT * FROM exp_channel_fields WHERE group_id = 3').each do |row|
+          if fields.has_key? row['field_name']
+            fields[row['field_name']].each do |key, assumed_value|
+              if key == 'field_settings'
+                field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
+                fields[row['field_name']]['field_settings'].each do |key, value|
+                  field_settings[key].should == value
+                end
+              else
+                row[key].should == assumed_value
+              end
+            end
+          end
+        end
       end
     end
 
