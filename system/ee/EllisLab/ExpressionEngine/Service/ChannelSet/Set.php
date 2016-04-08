@@ -655,9 +655,9 @@ class Set {
 		$field_data = array_merge($defaults, $field_data);
 
 		// rewrite any that might be wonky after that rather heavy conversion
-		$field_data['expired'] = (int) ($field_data['expired'] == 'y');
-		$field_data['future'] = (int) ($field_data['future'] == 'y');
-		$field_data['allow_multiple'] = (int) ($field_data['allow_multiple'] == 'y');
+		$field_data['expired']        = (int) ($field_data['expired'] === 'y');
+		$field_data['future']         = (int) ($field_data['future'] === 'y');
+		$field_data['allow_multiple'] = (int) ($field_data['allow_multiple'] === 'y');
 
 		if (isset($field_data['channels']))
 		{
