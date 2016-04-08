@@ -59,7 +59,7 @@ $predefined_buttons = array(
 												'tag_open'  => '<ul>',
 												'tag_close' => '</ul>',
 												'accesskey' => 'u',
-												'classname'	 => 'html-order-list'
+												'classname'	 => 'html-list'
 												),
 							'ol'		=> array(
 												'tag_name'  => lang('html_btn_ol'),
