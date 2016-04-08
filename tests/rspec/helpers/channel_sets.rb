@@ -182,5 +182,33 @@ module ChannelSets
         clear_db_result
       end
     end
+
+    # Prepare our grid test data for comparison to JSON
+    def prepare_test_data(data)
+      case data[:type][1]
+        when 'file' then
+          data[:file_type] = data[:file_type][1]
+          data[:allowed_dirs] = data[:allowed_dirs][1]
+
+        when 'relationship' then
+          data[:channels] = data[:channels][0]
+          data[:categories] = data[:categories][0]
+          data[:authors] = data[:authors][0]
+          data[:statuses] = data[:statuses][1]
+
+        when 'text', 'textarea' then
+          data[:field_fmt] = data[:field_fmt][1]
+          data[:field_content_type] = data[:field_content_type][1]
+          data[:field_text_direction] = data[:field_text_direction][1]
+
+        when 'rte' then
+          data[:field_text_direction] = data[:field_text_direction][1]
+
+        when 'checkboxes', 'multi_select', 'radio', 'select' then
+          data[:field_fmt] = data[:field_fmt][1]
+      end
+
+      return data
+    end
   end
 end
