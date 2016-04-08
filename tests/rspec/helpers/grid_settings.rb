@@ -154,7 +154,27 @@ module GridSettings
         :searchable => false,
         :width => '10',
         :field_default_value => '1',
-      }
+      },
+      :email_col => {
+        :type => ['Email Address', 'email_address'],
+        :label => 'Email Address',
+        :name => 'email_address',
+        :instructions => '',
+        :required => false,
+        :searchable => false,
+        :width => '10',
+      },
+      :url_col => {
+        :type => ['URL', 'url'],
+        :label => 'URL',
+        :name => 'url',
+        :instructions => '',
+        :required => false,
+        :searchable => false,
+        :width => '10',
+        :allowed_url_schemes => ['http://', 'https://'],
+        :url_scheme_placeholder => 'http://',
+      },
     }
   end
 
@@ -267,6 +287,10 @@ class GridSettingsColumn
       @type_obj = GridSettingsColumnTypeRichTextarea.new(@node)
     elsif type == 'toggle'
       @type_obj = GridSettingsColumnTypeToggle.new(@node)
+    elsif type == 'email_address'
+      @type_obj = GridSettingsColumnTypeEmailAddress.new(@node)
+    elsif type == 'url'
+      @type_obj = GridSettingsColumnTypeUrl.new(@node)
     elsif ['checkboxes', 'multi_select', 'radio', 'select'].include? type
       @type_obj = GridSettingsColumnTypeMuliselect.new(@node)
     else
@@ -540,5 +564,49 @@ class GridSettingsColumnTypeToggle
     else
       @node.find('.toggle-btn.off').should_not == nil
     end
+  end
+end
+
+class GridSettingsColumnTypeEmailAddress
+  def initialize(node)
+    @node = node
+  end
+
+  def load_elements
+  end
+
+  def fill_data(data)
+  end
+
+  def validate(data)
+  end
+end
+
+class GridSettingsColumnTypeUrl
+  def initialize(node)
+    @node = node
+    self.load_elements
+  end
+
+  def load_elements
+    @allowed_url_schemes = @node.all('[name*="allowed_url_schemes"]')
+    @url_scheme_placeholder = @node.find('[name*="url_scheme_placeholder"]')
+  end
+
+  def fill_data(data)
+    @allowed_url_schemes.each do |checkbox|
+      checkbox.set(false)
+    end
+    data[:allowed_url_schemes].each do |scheme|
+      @node.find("[name*='allowed_url_schemes'][value='#{scheme}']").set(true)
+    end
+    @url_scheme_placeholder.set data[:url_scheme_placeholder]
+  end
+
+  def validate(data)
+    data[:allowed_url_schemes].each do |scheme|
+      @node.find("[name*='allowed_url_schemes'][value='#{scheme}']").checked?.should == true
+    end
+    @url_scheme_placeholder.value.should == data[:url_scheme_placeholder]
   end
 end
