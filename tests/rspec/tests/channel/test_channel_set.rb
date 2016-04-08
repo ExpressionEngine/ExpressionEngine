@@ -676,7 +676,7 @@ feature 'Channel Sets' do
           number_of_channels.should == 1
         end
 
-        $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Gridlocked''").each do |row|
+        $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Gridlocked'").each do |row|
           number_of_field_groups = row['count']
           number_of_field_groups.should == 1
         end
