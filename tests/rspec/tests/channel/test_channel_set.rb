@@ -316,6 +316,94 @@ feature 'Channel Sets' do
 
         expected_files.sort.should == found_files.sort.map(&:name)
       end
+
+      it 'exports grid colums with settings' do
+        # Create a "Gridlocked" group
+        page = FieldGroups.new
+        page.load
+        page.create_new.click
+
+        field_group_form = FieldGroupForm.new
+        field_group_form.name.set 'Gridlocked'
+        field_group_form.submit.click
+
+        page.find('a', :text => 'Gridlocked').click
+
+        # Create the "Zen" grid field
+        page = ChannelFields.new
+        page.all('.w-12 .tbl-ctrls a.btn')[0].click
+        channel_fields = ChannelFieldForm.new
+        channel_fields.field_label.set 'Zen'
+        channel_fields.field_type.select 'Grid'
+
+        GridSettings::populate_grid_settings
+        channel_fields.submit
+
+        # Create the "Big Grid" channel
+        page = ChannelCreate.new
+        page.load
+        page.channel_title.set 'Big Grid'
+        page.field_group.select 'Gridlocked'
+        page.submit
+
+        @page.load
+        name = "big_grid"
+        channel_id = @page.get_channel_id_from_name(name)
+        download_channel_set(channel_id)
+
+        # Check to see if the file exists
+        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        File.exist?(path).should == true
+
+        expected_files = [
+          '/custom_fields/About/about_body.textarea',
+          '/custom_fields/About/about_extended.textarea',
+          '/custom_fields/About/about_image.file',
+          '/custom_fields/About/about_staff_title.text',
+          '/custom_fields/Gridlocked/zen.grid',
+          '/custom_fields/News/news_body.textarea',
+          '/custom_fields/News/news_extended.textarea',
+          '/custom_fields/News/news_image.file',
+          'channel_set.json'
+        ]
+        found_files = []
+        Zip::File.open(path) do |zipfile|
+          zipfile.each do |file|
+            found_files << file
+          end
+        end
+
+        expected_files.sort.should == found_files.sort.map(&:name)
+
+        grid = JSON.parse(found_files.sort[4].get_input_stream.read)
+
+        data = GridSettings::test_data
+
+        grid['columns'].each do |column|
+          key = column['type'] + '_col'
+          compare = @importer.prepare_test_data(data[key.to_sym])
+
+          column['type'].should == compare[:type][1]
+          column['label'].should == compare[:label]
+          column['name'].should == compare[:name]
+          column['instructions'].should == compare[:instructions]
+          column['required'].should == (compare[:required] ? 'y' : 'n')
+          column['search'].should == (compare[:searchable] ? 'y' : 'n')
+          column['width'].should == compare[:width]
+
+          column['settings'].each do |key, value|
+            if compare.has_key? key.to_sym then
+              if compare[key.to_sym].is_a?(TrueClass) then
+                ['y', '1', 1].should include value
+              elsif compare[key.to_sym].is_a?(FalseClass) then
+                ['n', '0', 0].should include value
+              else
+                value.should == compare[key.to_sym]
+              end
+            end
+          end
+        end
+      end
     end
   end
 
