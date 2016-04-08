@@ -89,7 +89,6 @@ $lang = array(
 'clear_throttle_logs'	=> 'Remove all Throttling Logs',
 
 /* Filters */
-'filters'				=> 'Filters',
 'filter_by_username'	=> 'filter username',
 'filter_by_site'		=> 'filter sites',
 'date'					=> 'date',

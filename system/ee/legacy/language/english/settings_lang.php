@@ -8,8 +8,6 @@ $lang = array(
 
 'general_settings' => 'General Settings',
 
-'license_and_reg' => 'License & Registration',
-
 'url_path_settings' => 'URL and Path Settings',
 
 'outgoing_email' => 'Outgoing Email',
@@ -253,7 +251,7 @@ $lang = array(
 
 'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
@@ -431,8 +429,6 @@ $lang = array(
  * Word Censoring
  */
 
-'word_censorship' => 'Word Censorship',
-
 'enable_censoring' => 'Enable censorship?',
 
 'enable_censoring_desc' => 'When set to <b>enable</b>, words listed will be replaced with the specified replacement characters.',
@@ -511,7 +507,7 @@ $lang = array(
 
 'new_member_notification' => 'Enable new member notifications?',
 
-'new_member_notification_desc' => 'When set to <b>yes</b>, the following Email addresses will be notified anytime a new registration occurs.',
+'new_member_notification_desc' => 'When set to <b>enable</b>, the following Email addresses will be notified anytime a new registration occurs.',
 
 'mbr_notification_emails' => 'Notification recipients',
 
@@ -542,8 +538,6 @@ $lang = array(
 'prv_msg_upload_url' => 'Upload directory',
 
 'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
-
-'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
 'prv_msg_upload_path' => 'Upload path',
 

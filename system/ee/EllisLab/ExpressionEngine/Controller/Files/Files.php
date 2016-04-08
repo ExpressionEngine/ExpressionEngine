@@ -40,74 +40,24 @@ class Files extends AbstractFilesController {
 
 		$base_url = ee('CP/URL')->make('files');
 
-		$search_terms = ee()->input->get_post('search');
-		if ($search_terms)
-		{
-			$base_url->setQueryStringVariable('search', $search_terms);
-		}
-
 		$files = ee('Model')->get('File')
 			->with('UploadDestination')
 			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$filters = ee('CP/Filter')
-			->add('Perpage', $files->count(), 'show_all_files');
-
-		$filter_values = $filters->values();
-		$base_url->addQueryStringVariables($filter_values);
-		$table = $this->buildTableFromFileCollection($files->all(), $filter_values['perpage']);
-
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		ee()->view->filters = $filters->render($base_url);
-
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($base_url);
-
-		$upload_destinations = ee('Model')->get('UploadDestination')
-			->fields('id', 'name')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('module_id', 0);
-
-		$upload_destinations = $upload_destinations->all();
-
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			$member_group = ee()->session->userdata['group_id'];
-			$upload_destinations->filter(function($dir) use ($member_group){
-				return $dir->memberGroupHasAccess($member_group);
-			});
-		}
-
-		$vars['directories'] = $upload_destinations;
-
-		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
-		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/confirm_remove',
-				'cp/files/manager'
-			),
-		));
+		$vars = $this->listingsPage($files, $base_url);
 
 		$this->generateSidebar(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
 
 		// Set search results heading
-		if ( ! empty($vars['table']['search']))
+		if ( ! empty($vars['search_terms']))
 		{
 			ee()->view->cp_heading = sprintf(
 				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				$vars['table']['search']
+				$vars['total_files'],
+				$vars['search_terms']
 			);
 		}
 		else
@@ -149,35 +99,15 @@ class Files extends AbstractFilesController {
 
 		$base_url = ee('CP/URL')->make('files/directory/' . $id);
 
-		$filters = ee('CP/Filter')
-			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
+		$files = ee('Model')->get('File')
+			->with('UploadDestination')
+			->filter('upload_location_id', $dir->getId());
 
-		$filter_values = $filters->values();
-		$table = $this->buildTableFromFileCollection($dir->getFiles(), $filter_values['perpage']);
+		$vars = $this->listingsPage($files, $base_url);
 
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		ee()->view->filters = $filters->render($base_url);
-
-		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
 		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($base_url);
-
-		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
-		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/confirm_remove',
-				'cp/files/manager'
-			),
-		));
 
 		$this->generateSidebar($id);
 		$this->stdHeader();
@@ -185,11 +115,8 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		// Check to see if they can sync the directory
-		$upload_destination = ee('Model')->get('UploadDestination')
-			->filter('id', $id)
-			->first();
 		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
-			&& $upload_destination->memberGroupHasAccess(ee()->session->userdata('group_id'));
+			&& $dir->memberGroupHasAccess(ee()->session->userdata('group_id'));
 
 		ee()->cp->render('files/directory', $vars);
 	}

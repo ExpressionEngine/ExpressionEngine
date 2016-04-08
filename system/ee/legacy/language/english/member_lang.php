@@ -367,8 +367,6 @@ content associated with your account will also be deleted.',
 
 'mbr_aol' => 'AOL',
 
-'mbr_icq' => 'ICQ',
-
 'mbr_url' => 'URL',
 
 'mbr_msn_short' => 'MSN',
@@ -420,8 +418,6 @@ content associated with your account will also be deleted.',
 'mbr_most_recent_entry' => 'Most Recent Entry',
 
 'mbr_most_recent_comment' => 'Most Recent Comment',
-
-'mbr_submit' => 'Submit',
 
 'mbr_join_date' => 'Join Date',
 
@@ -592,8 +588,6 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 'ignore_list_updated' => 'Ignore List successfully updated',
 
 'delete_selected_members' => 'Delete selected member(s)',
-
-'member_search' => 'Member Search',
 
 'any' => 'Any',
 

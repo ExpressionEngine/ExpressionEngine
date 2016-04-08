@@ -372,7 +372,11 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->Versions->count() == $this->Channel->max_revisions)
 		{
-			$this->Versions->sortBy('version_date')->first()->delete();
+			$version = $this->Versions->sortBy('version_date')->first();
+			if ($version)
+			{
+				$version->delete();
+			}
 		}
 
 		$data = array(
@@ -394,7 +398,7 @@ class ChannelEntry extends ContentModel {
 		$entries = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_date', 'channel_id')
 			->filter('site_id', $site_id)
-			->filter('entry_date', '<', $now)
+			->filter('entry_date', '<=', $now)
 			->filter('status', '!=', 'closed')
 			->filterGroup()
 				->filter('expiration_date', 0)

@@ -32,6 +32,8 @@ class ChannelField extends FieldModel {
 	protected static $_primary_key = 'field_id';
 	protected static $_table_name = 'channel_fields';
 
+	protected static $_hook_id = 'channel_field';
+
 	protected static $_typed_columns = array(
 		'field_pre_populate'   => 'boolString',
 		'field_pre_channel_id' => 'int',

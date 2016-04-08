@@ -1033,7 +1033,7 @@ class Simple_commerce_mcp {
 			)
 		));
 
-		$table->setNoResultsText(sprintf(lang('no_found'), lang('no_email_templates')), 'create_template', ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
+		$table->setNoResultsText(sprintf(lang('no_found'), lang('no_email_templates')), 'create_new_template', ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
 
 		$sort_map = array(
 			'name' => 'email_name',

@@ -1,10 +1,11 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
     "hash": "d8eba767ca8d1381aa47cf532a025871",
+    "content-hash": "4e454c0c21eebec0ebe994d84f9452c3",
     "packages": [
         {
             "name": "doctrine/instantiator",

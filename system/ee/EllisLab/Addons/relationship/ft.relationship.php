@@ -390,6 +390,20 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
+		// -------------------------------------------
+		// 'relationships_display_field_options' hook.
+		//  - Allow developers to add additional filters to the entries that populate the field options
+		//
+		if (ee()->extensions->active_hook('relationships_display_field_options') === TRUE)
+		{
+			ee()->extensions->call(
+					'relationships_display_field_options',
+					$entries,
+					$this->field_id,
+					$this->settings
+				);
+		}
+
 		// Create a cache of channel names
 		if (empty($this->channels))
 		{

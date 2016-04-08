@@ -56,7 +56,7 @@
 	</div>
 </fieldset>
 <h2><?=lang('default_theme')?></h2>
-<fieldset class="col-group last">
+<fieldset class="col-group  <?=form_error_class('install_default_theme')?> last">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('install_default_theme')?></h3>
 		<em><?=lang('install_default_theme_info')?></em>
@@ -64,6 +64,7 @@
 	<div class="setting-field col w-8 last">
 		<label class="choice mr yes"><input name="install_default_theme" value="y" type="radio" <?=set_radio('install_default_theme', 'y');?>> <?=lang('yes')?></label>
 		<label class="choice chosen no"><input name="install_default_theme" value="n" type="radio" <?=set_radio('install_default_theme', 'n', TRUE);?>> <?=lang('no')?></label>
+		<?=form_error('install_default_theme');?>
 	</div>
 </fieldset>
 <h2><?=lang('administrator_account')?></h2>

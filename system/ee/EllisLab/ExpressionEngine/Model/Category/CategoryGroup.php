@@ -33,6 +33,8 @@ class CategoryGroup extends StructureModel {
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('CategoryGroupGateway');
 
+	protected static $_hook_id = 'category_group';
+
 	protected static $_relationships = array(
 		'CategoryFields' => array(
 			'type' => 'hasMany',

@@ -420,8 +420,8 @@ class Layouts extends AbstractChannelsController {
 				)
 			),
 			array(
-				'title' => 'member_group(s)',
-				'desc' => 'member_group(s)_desc',
+				'title' => 'member_groups',
+				'desc' => 'member_groups_desc',
 				'fields' => array(
 					'member_groups' => array(
 						'type' => 'checkbox',

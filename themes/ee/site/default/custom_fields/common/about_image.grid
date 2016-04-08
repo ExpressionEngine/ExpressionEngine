@@ -45,7 +45,7 @@
 			"settings":
 			{
 				"field_fmt": "none",
-				"field_list_items": "none\\nleft\\nright",
+				"field_list_items": "none\nleft\nright",
 				"field_required": "n"
 			}
 		}

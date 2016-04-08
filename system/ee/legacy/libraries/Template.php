@@ -104,10 +104,11 @@ class EE_Template {
 	public $marker               = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
 
-	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
-	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
+	protected $_tag_cache_prefix  = 'tag_cache';	// Tag cache key namespace
+	protected $_page_cache_prefix = 'page_cache'; // Page cache key namespace
 
-	private $layout_contents		= '';
+	private $layout_contents      = '';
+	private $user_vars            = array();
 
 	// --------------------------------------------------------------------
 
@@ -129,6 +130,12 @@ class EE_Template {
 
 			$this->start_microtime = microtime(TRUE);
 		}
+
+		$this->user_vars = array(
+			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
+			'email', 'ip_address', 'location', 'total_entries',
+			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -308,6 +315,11 @@ class EE_Template {
 			'is_ajax_request' => AJAX_REQUEST
 		);
 
+		foreach ($this->user_vars as $user_var)
+		{
+			$added_globals['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+		}
+
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
@@ -462,19 +474,12 @@ class EE_Template {
 			$this->template = $this->parse_template_php($this->template);
 		}
 
-
 		// Set up logged_in_* variables for early conditional evaluation
-		$user_vars	= array(
-			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-			'email', 'ip_address', 'location', 'total_entries',
-			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
-		);
-
 		$logged_in_user_cond = array();
 
 		if ($this->cache_status != 'EXPIRED')
 		{
-			foreach ($user_vars as $user_var)
+			foreach ($this->user_vars as $user_var)
 			{
 				$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 			}
@@ -2861,13 +2866,6 @@ class EE_Template {
 	{
 		$charset 	= '';
 		$lang		= '';
-		$user_vars	= array(
-					'member_id', 'group_id', 'group_description',
-					'group_title', 'member_group', 'username', 'screen_name',
-					'email', 'ip_address', 'location', 'total_entries',
-					'total_comments', 'private_messages', 'total_forum_posts',
-					'total_forum_topics', 'total_forum_replies'
-				);
 
 		// Redirect - if we have one of these, no need to go further
 		if (strpos($str, LD.'redirect') !== FALSE)
@@ -2948,9 +2946,10 @@ class EE_Template {
 			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
 		}
 
-		// {site_name} {site_url} {site_index} {webmaster_email}
+		// {site_name} {site_url} {site_description} {site_index} {webmaster_email}
 		$str = str_replace(LD.'site_name'.RD, stripslashes(ee()->config->item('site_name')), $str);
 		$str = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $str);
+		$str = str_replace(LD.'site_description'.RD, stripslashes(ee()->config->item('site_description')), $str);
 		$str = str_replace(LD.'site_index'.RD, stripslashes(ee()->config->item('site_index')), $str);
 		$str = str_replace(LD.'webmaster_email'.RD, stripslashes(ee()->config->item('webmaster_email')), $str);
 
@@ -3093,7 +3092,7 @@ class EE_Template {
 		// Parse non-cachable variables
 		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
 
-		foreach ($user_vars as $val)
+		foreach ($this->user_vars as $val)
 		{
 			$replace = (isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
 				ee()->session->userdata[$val] : '';
@@ -3242,15 +3241,9 @@ class EE_Template {
 			return $str;
 		}
 
-		$user_vars	= array(
-			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-			'email', 'ip_address', 'location', 'total_entries',
-			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
-		);
-
 		$data = array();
 
-		foreach ($user_vars as $user_var)
+		foreach ($this->user_vars as $user_var)
 		{
 			$data[$user_var] = ee()->session->userdata[$user_var];
 			$data['logged_in_'.$user_var] = ee()->session->userdata[$user_var];

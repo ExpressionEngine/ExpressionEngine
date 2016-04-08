@@ -39,6 +39,8 @@ class File extends Model {
 	protected static $_table_name = 'files';
 	protected static $_events = array('beforeDelete');
 
+	protected static $_hook_id = 'file';
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'belongsTo'
