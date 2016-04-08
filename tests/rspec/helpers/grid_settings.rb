@@ -9,6 +9,17 @@ module GridSettings
   extend RSpec::Expectations
   extend RSpec::Matchers
 
+  def self.populate_grid_settings
+    self.test_data.each_with_index do |column_data, index|
+      # First column is already there, so call add_column for
+      # subsequent columns after index 0
+      column = index == 0 ? self.column(1) : self.add_column
+      column.fill_data(column_data[1])
+    end
+
+    no_php_js_errors
+  end
+
   def self.test_data
     return {
       :date_col => {
