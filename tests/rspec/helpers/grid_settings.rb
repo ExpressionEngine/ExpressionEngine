@@ -64,7 +64,7 @@ module GridSettings
         :order_dir => ['Descending', 'desc'],
         :allow_multiple => true
       },
-      :text_input_col => {
+      :text_col => {
         :type => ['Text Input', 'text'],
         :label => 'Text Input',
         :name => 'text_input',
@@ -90,7 +90,7 @@ module GridSettings
         :field_ta_rows => '10',
         :show_formatting_buttons => true,
       },
-      :rich_textarea_col => {
+      :rte_col => {
         :type => ['Rich Text Editor', 'rte'],
         :label => 'Rich Textarea',
         :name => 'rich_textarea',
@@ -112,7 +112,7 @@ module GridSettings
         :field_fmt => ['XHTML', 'xhtml'],
         :field_list_items => "Option 1\nOption & 2",
       },
-      :multiselect_col => {
+      :multi_select_col => {
         :type => ['Multi Select', 'multi_select'],
         :label => 'Multi Select',
         :name => 'multi_select',
@@ -155,7 +155,7 @@ module GridSettings
         :width => '10',
         :field_default_value => '1',
       },
-      :email_col => {
+      :email_address_col => {
         :type => ['Email Address', 'email_address'],
         :label => 'Email Address',
         :name => 'email_address',
