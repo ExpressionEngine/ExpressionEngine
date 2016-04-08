@@ -383,7 +383,6 @@ feature 'Channel Sets' do
     end
 
     context 'with custom fields' do
-      it 'imports a relationship field with a specified channel'
       it 'imports a relationship field with all channels' do
         import_channel_set 'relationships-all-channels'
 
@@ -397,6 +396,22 @@ feature 'Channel Sets' do
           field_settings['order_field'].should == 'entry_date'
           field_settings['order_dir'].should == 'desc'
           field_settings['channels'].should == []
+        end
+      end
+
+      it 'imports a relationship field with a specified channel' do
+        import_channel_set 'relationships-specified-channels'
+
+        $db.query('SELECT * FROM exp_channel_fields WHERE field_id = 11').each do |row|
+          row['field_name'].should == 'relationships'
+          field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
+          field_settings['expired'].should == 0
+          field_settings['future'].should == 1
+          field_settings['allow_multiple'].should == 0
+          field_settings['limit'].to_i.should == 25
+          field_settings['order_field'].should == 'entry_date'
+          field_settings['order_dir'].should == 'desc'
+          field_settings['channels'].should == {'Event' => "4"}
         end
       end
 
