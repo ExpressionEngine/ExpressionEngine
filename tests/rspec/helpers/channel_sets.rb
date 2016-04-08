@@ -192,13 +192,19 @@ module ChannelSets
 
         when 'relationship' then
           data[:channels] = data[:channels][0]
-          data[:categories] = data[:categories][0]
-          data[:authors] = data[:authors][0]
+          data[:categories] = data[:categories][1] #@todo swtich to names?
+          data[:authors] = data[:authors][1] #@todo swtich to names?
           data[:statuses] = data[:statuses][1]
+          data[:order_field] = data[:order_field][1]
+          data[:order_dir] = data[:order_dir][1]
 
-        when 'text', 'textarea' then
+        when 'text' then
           data[:field_fmt] = data[:field_fmt][1]
           data[:field_content_type] = data[:field_content_type][1]
+          data[:field_text_direction] = data[:field_text_direction][1]
+
+        when 'textarea' then
+          data[:field_fmt] = data[:field_fmt][1]
           data[:field_text_direction] = data[:field_text_direction][1]
 
         when 'rte' then
