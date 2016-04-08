@@ -66,6 +66,11 @@ feature 'Channel Sets' do
   end
 
   context 'when exporting' do
+    before :each do
+      # Set debug to false to create fieldtypes from scratch
+      @importer = ChannelSets::Importer.new(@page, debug: false)
+    end
+
     it 'downloads the zip file when exporting channel sets' do
       download_channel_set(1)
 
@@ -121,26 +126,7 @@ feature 'Channel Sets' do
 
     context 'with relationships' do
       it 'exports relationship fields with selected channels' do
-        channel_fields = ChannelFieldForm.new
-        channel_fields.create_field(
-        group_id: 1,
-        type: 'Relationships',
-        label: 'Relationships',
-        fields: {
-          limit: 25,
-          relationship_order_field: 'Entry Date',
-          relationship_order_dir: 'Descending (Z-A)',
-          relationship_allow_multiple: 'n',
-          relationship_future: '1'
-        }
-        ) do |page|
-          # TODO: Come back and make sure these _actually_ export properly
-          page.find('input[name="relationship_channels[]"][value="2"]').click
-          # page.find('input[name="relationship_authors[]"][value="g_1"]').click
-          # page.find('input[name="relationship_statuses[]"][value="open"]').click
-        end
-
-        @page.load
+        @importer.relationships_specified_channels
         download_channel_set(1)
 
         # Check to see if the file exists
@@ -165,27 +151,12 @@ feature 'Channel Sets' do
         relationship['settings']['order_dir'].should == 'desc'
         relationship['settings']['channels'].should == ['Information Pages']
 
-        # Make sure we're exporting two channels
         channel_set = JSON.parse(found_files[8].get_input_stream.read)
         channel_set['channels'].size.should == 2
       end
 
       it 'exports relationship fields with all channels' do
-        channel_fields = ChannelFieldForm.new
-        channel_fields.create_field(
-          group_id: 1,
-          type: 'Relationships',
-          label: 'Relationships',
-          fields: {
-            limit: 25,
-            relationship_order_field: 'Entry Date',
-            relationship_order_dir: 'Descending (Z-A)',
-            relationship_allow_multiple: 'n',
-            relationship_future: '1'
-          }
-        )
-
-        @page.load
+        @importer.relationships_all_channels
         download_channel_set(1)
 
         # Check to see if the file exists
@@ -210,110 +181,13 @@ feature 'Channel Sets' do
         relationship['settings']['order_dir'].should == 'desc'
         relationship['settings']['channels'].should == []
 
-        # Make sure we're exporting two channels
         channel_set = JSON.parse(found_files[4].get_input_stream.read)
         channel_set['channels'].size.should == 1
       end
     end
 
     it 'exports fieldtypes with custom settings' do
-      channel_fields = ChannelFieldForm.new
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Checkboxes',
-        label: 'Checkboxes',
-        fields: {
-          field_list_items: "Yes\nNo\nMaybe"
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Radio Buttons',
-        label: 'Radio Buttons',
-        fields: {
-          field_list_items: "Left\nCenter\nRight"
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Multi Select',
-        label: 'Multi Select',
-        fields: {
-          field_list_items: "Red\nGreen\nBlue"
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Select Dropdown',
-        label: 'Select Dropdown',
-        fields: {
-          field_list_items: "Mac\nWindows\nLinux"
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Select Dropdown',
-        label: 'Prepopulated',
-        fields: {
-          field_pre_populate: 'y'
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Rich Text Editor',
-        label: 'Rich Text Editor',
-        fields: {
-          field_ta_rows: 20,
-          field_text_direction: 'Right to left'
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Toggle',
-        label: 'Toggle'
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Text Input',
-        label: 'Text Input',
-        fields: {
-          field_maxl: 100,
-          field_fmt: 'None',
-          field_show_fmt: 'y',
-          field_text_direction: 'Right to left',
-          field_content_type: 'Decimal',
-          field_show_smileys: 'y',
-          field_show_file_selector: 'y'
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'Textarea',
-        label: 'Textarea',
-        fields: {
-          field_ta_rows: 20,
-          field_fmt: 'None',
-          field_show_fmt: 'y',
-          field_text_direction: 'Right to left',
-          field_show_formatting_btns: 'y',
-          field_show_smileys: 'y',
-          field_show_file_selector: 'y'
-        }
-      )
-      channel_fields.create_field(
-        group_id: 1,
-        type: 'URL',
-        label: 'URL Field',
-        fields: {
-          url_scheme_placeholder: '// (Protocol Relative URL)'
-        }
-      ) do |page|
-        page.all('input[name="allowed_url_schemes[]"]').each do |element|
-          element.click unless element.checked?
-        end
-      end
-
-      @page.load
+      @importer.custom_fields
       download_channel_set(1)
 
       # Check to see if the file exists
@@ -593,6 +467,5 @@ feature 'Channel Sets' do
     context 'with relationship fields' do
       it 'imports'
     end
-    it 'imports a two channel set'
   end
 end

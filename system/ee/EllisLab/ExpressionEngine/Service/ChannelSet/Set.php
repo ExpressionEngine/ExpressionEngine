@@ -554,7 +554,8 @@ class Set {
 	 */
 	private function importGrid($field, $columns)
 	{
-		$fn = function() use ($columns)
+		$that = $this;
+		$fn = function() use ($columns, $that)
 		{
 			unset($_POST['grid']);
 
@@ -565,7 +566,7 @@ class Set {
 				{
 					if (isset($column['settings']['channels']))
 					{
-						$channel_ids = $this->getIdsForChannels($column['settings']['channels']);
+						$channel_ids = $that->getIdsForChannels($column['settings']['channels']);
 						$column['settings']['channels'] = $channel_ids;
 					}
 				}
