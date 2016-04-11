@@ -751,13 +751,17 @@ STYLIO;
 
 	function save_settings($data)
 	{
-		return array(
-			'field_content_type'	=> $data['field_content_type'],
-			'allowed_directories'	=> $data['allowed_directories'],
-			'show_existing'			=> $data['show_existing'],
-			'num_existing'			=> $data['num_existing'],
+		$defaults = array(
+			'field_content_type'	=> 'all',
+			'allowed_directories'	=> '',
+			'show_existing'			=> '',
+			'num_existing'			=> 0,
 			'field_fmt' 			=> 'none'
 		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	// --------------------------------------------------------------------

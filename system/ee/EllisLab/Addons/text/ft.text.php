@@ -214,7 +214,7 @@ class Text_ft extends EE_Fieldtype {
 					'field_fmt' => array(
 						'type' => 'select',
 						'choices' => $format_options,
-						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
+						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
 						'note' => form_label(
 							form_checkbox('update_formatting', 'y')
 							.lang('update_existing_fields')
@@ -350,12 +350,16 @@ class Text_ft extends EE_Fieldtype {
 
 	function save_settings($data)
 	{
-		return array(
-			'field_maxl'               => array_key_exists('field_maxl', $data) ? $data['field_maxl'] : NULL,
-			'field_content_type'       => array_key_exists('field_content_type', $data) ? $data['field_content_type'] : NULL,
-			'field_show_smileys'       => array_key_exists('field_show_smileys', $data) ? $data['field_show_smileys'] : NULL,
-			'field_show_file_selector' => array_key_exists('field_show_file_selector', $data) ? $data['field_show_file_selector'] : NULL
+		$defaults = array(
+			'field_maxl'               => 256,
+			'field_content_type'       => '',
+			'field_show_smileys'       => 'n',
+			'field_show_file_selector' => 'n'
 		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	// --------------------------------------------------------------------
