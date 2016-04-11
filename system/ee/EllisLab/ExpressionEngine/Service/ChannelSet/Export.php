@@ -406,6 +406,11 @@ class Export {
 		{
 			if ($column['col_type'] == 'relationship')
 			{
+				// @TODO Actually export these things in a non-complicated manner
+				$column['col_settings']['categories'] = array();
+				$column['col_settings']['authors'] = array();
+				$column['col_settings']['statuses'] = array();
+
 				if (isset($column['col_settings']['channels']))
 				{
 					$this->exportRelatedChannels($column['col_settings']['channels']);
