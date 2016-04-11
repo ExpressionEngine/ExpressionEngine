@@ -192,9 +192,9 @@ module ChannelSets
 
         when 'relationship' then
           data[:channels] = data[:channels][0]
-          data[:categories] = data[:categories][1] #@todo swtich to names?
-          data[:authors] = data[:authors][1] #@todo swtich to names?
-          data[:statuses] = data[:statuses][1]
+          data[:categories] = [] #data[:categories][1] #@todo swtich to names?
+          data[:authors] = [] #data[:authors][1] #@todo swtich to names?
+          data[:statuses] = [] #data[:statuses][1]
           data[:order_field] = data[:order_field][1]
           data[:order_dir] = data[:order_dir][1]
 
