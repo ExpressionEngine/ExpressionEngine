@@ -501,6 +501,13 @@ class Export {
 		return $result;
 	}
 
+	/**
+	 * Loops through an array of channels (by id) and exports any that have not
+	 * already been exported
+	 *
+	 * @param Array $channels an array of channel ids
+	 * @return void
+	 */
 	private function exportRelatedChannels($channels)
 	{
 		$load_channels = array();
