@@ -258,8 +258,6 @@ feature 'Channel Sets' do
       url['settings']['allowed_url_schemes'].should == ["http://", "https://", "//", "ftp://", "sftp://", "ssh://"]
     end
 
-    it 'properly exports a specified upload destination'
-
     context 'with grid fields' do
       it 'exports without a relationship column' do
         import_channel_set 'grid-no-relationships'
@@ -691,9 +689,6 @@ feature 'Channel Sets' do
           number_of_columns.should == 13
         end
       end
-    end
-    context 'with relationship fields' do
-      it 'imports'
     end
   end
 end
