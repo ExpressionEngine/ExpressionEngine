@@ -81,7 +81,7 @@ abstract class FieldModel extends Model {
 		}
 
 		$field = $this->getField($this->getSettingsValues());
-		$data = array_merge($data, $field->saveSettingsForm($data));
+		$data = array_merge($field->saveSettingsForm($data), $data);
 
 		return parent::set($data);
 	}

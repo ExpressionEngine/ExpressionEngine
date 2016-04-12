@@ -985,7 +985,10 @@ class Grid_lib {
 
 		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
 
-		$settings = ee()->grid_parser->call('display_settings', $column['col_settings']);
+		$settings = ee()->grid_parser->call(
+			'display_settings',
+			(isset($column['col_settings'])) ? $column['col_settings'] : array()
+		);
 
 		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}

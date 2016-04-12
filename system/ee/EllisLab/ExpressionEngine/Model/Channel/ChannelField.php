@@ -62,7 +62,7 @@ class ChannelField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-		'group_id'             => 'required|integer',
+//		'group_id'             => 'required|integer',
 		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved',
 		'field_label'          => 'required',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
@@ -118,7 +118,7 @@ class ChannelField extends FieldModel {
 		return 'channel_data';
 	}
 
-	protected function getContentType()
+	public function getContentType()
 	{
 		return 'channel';
 	}

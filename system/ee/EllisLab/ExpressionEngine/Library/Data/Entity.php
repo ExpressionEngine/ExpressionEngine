@@ -66,7 +66,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	/**
 	 * Isset implementation, also required for empty() to work
 	 */
-	function __isset($name)
+	public function __isset($name)
 	{
 		return $this->hasGetterFor($name) OR ($this->hasProperty($name) && $this->getRawProperty($name) !== NULL);
 	}

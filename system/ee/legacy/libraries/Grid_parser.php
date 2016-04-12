@@ -650,7 +650,7 @@ class Grid_parser {
 		// Assign fieldtype column settings and any other information that will
 		// be helpful to be accessible by fieldtypes
 		$fieldtype->settings = array_merge(
-			$column['col_settings'],
+			(isset($column['col_settings'])) ? $column['col_settings'] : array(),
 			array(
 				'field_label'		=> $column['col_label'],
 				'field_required'	=> $column['col_required'],

@@ -82,17 +82,6 @@ DROP TABLE IF EXISTS `exp_category_field_data`;
 DROP TABLE IF EXISTS `exp_categories`;
 DROP TABLE IF EXISTS `exp_captcha`;
 DROP TABLE IF EXISTS `exp_actions`;
-DROP TABLE IF EXISTS `exp_accessories`;
-
-
-CREATE TABLE `exp_accessories` (
-  `accessory_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `class` varchar(75) NOT NULL DEFAULT '',
-  `member_groups` varchar(255) NOT NULL DEFAULT 'all',
-  `controllers` text,
-  `accessory_version` varchar(12) NOT NULL,
-  PRIMARY KEY (`accessory_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_actions` (
@@ -1466,13 +1455,6 @@ CREATE TABLE `exp_upload_prefs` (
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
-
-
-LOCK TABLES `exp_accessories` WRITE;
-INSERT INTO `exp_accessories` (`accessory_id`, `class`, `member_groups`, `controllers`, `accessory_version`) VALUES
-	(1,'Expressionengine_info_acc','1|5','addons|addons_accessories|addons_extensions|addons_fieldtypes|addons_modules|addons_plugins|admin_content|admin_system|content|content_edit|content_files|content_files_modal|content_publish|design|homepage|members|myaccount|sites','1.0');
-UNLOCK TABLES;
-
 
 LOCK TABLES `exp_actions` WRITE;
 INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
