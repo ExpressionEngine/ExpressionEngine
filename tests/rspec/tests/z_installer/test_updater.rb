@@ -182,7 +182,7 @@ feature 'Updater' do
     # correct page
     attempts = 0
     header_step_1 = /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
-    while @page.header.text.match header_step_1 == false && attempts < 5
+    while @page.header.text.match(header_step_1) == false && attempts < 5
       sleep 1
       @page.load
       attempts += 1
