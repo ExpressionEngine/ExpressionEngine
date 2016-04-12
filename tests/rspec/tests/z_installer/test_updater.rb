@@ -176,8 +176,17 @@ feature 'Updater' do
 
     # Attempt to work around potential asynchronicity
     sleep 1
-
     @page.load
+
+    # Wait a second and try loading the page again in case we're not seeing the
+    # correct page
+    attempts = 0
+    header_step_1 = /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    while @page.header.text.match header_step_1 == false && attempts < 5
+      sleep 1
+      @page.load
+      attempts += 1
+    end
 
     @page.should have(0).inline_errors
     @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
