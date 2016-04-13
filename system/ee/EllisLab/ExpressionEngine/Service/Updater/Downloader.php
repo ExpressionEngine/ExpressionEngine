@@ -23,7 +23,7 @@ use ZipArchive;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Updater class
+ * ExpressionEngine Updater Downloader class
  *
  * @package		ExpressionEngine
  * @subpackage	Updater
@@ -31,7 +31,7 @@ use ZipArchive;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Updater {
+class Downloader {
 
 	protected $license_number = '';
 	protected $payload_url = '';
@@ -77,6 +77,10 @@ class Updater {
 		$this->config = $config;
 		$this->verifier = $verifier;
 		$this->logger = $logger;
+
+		// Attempt to set time and memory limits
+		@set_time_limit(0);
+		@ini_set('memory_limit','256M');
 	}
 
 	/**
@@ -114,10 +118,6 @@ class Updater {
 	 */
 	public function preflight()
 	{
-		// Attempt to set time and memory limits
-		@set_time_limit(0);
-		@ini_set('memory_limit','256M');
-
 		$this->logger->log('Maximum execution time: '.@ini_get('max_execution_time'));
 		$this->logger->log('Memory limit: '.@ini_get('memory_limit'));
 
@@ -135,7 +135,7 @@ class Updater {
 		$this->logger->log('Cleaning up upgrade working directory');
 
 		// TODO: Check to see if we even have permission to do these things
-		
+
 		// Delete any old zip archives
 		if ($this->filesystem->isFile($this->getArchiveFilePath()))
 		{

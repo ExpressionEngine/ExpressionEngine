@@ -163,13 +163,13 @@ return array(
 			return new Permission\Permission($userdata);
 		},
 
-		'Updater' => function($ee)
+		'Updater\Downloader' => function($ee)
 		{
 			$filesystem = $ee->make('Filesystem');
 			$file_logger = new Logger\File(PATH_CACHE.'ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
 			$file_logger->truncate();
 
-			return new Updater\Updater(
+			return new Updater\Downloader(
 				$ee->make('License')->getEELicense()->getData('license_number'),
 				// Will be dynamic later
 				'http://ee.dev/download.php',

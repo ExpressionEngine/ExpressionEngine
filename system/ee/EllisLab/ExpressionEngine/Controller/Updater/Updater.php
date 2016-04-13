@@ -38,7 +38,7 @@ class Updater extends CP_Controller {
 	{
 		// Temporary for testing; final controller implementation will probably
 		// allow you to step through download steps individually via AJAX
-		ee('Updater')->getUpdateFiles();
+		ee('Updater\Downloader')->getUpdateFiles();
 
 		// TODO: Can we catch a PHP timeout and report that to the user?
 		// TODO: Prolly just restrict super admins to auto-updating
