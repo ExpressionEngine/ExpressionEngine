@@ -648,8 +648,9 @@ class Set {
 		$defaults['statuses'] = array();
 		$defaults['limit'] = 100;
 
-		$defaults['expired'] = 0;
-		$defaults['future'] = 0;
+		$defaults['expired'] = 'n';
+		$defaults['future'] = 'n';
+		$defaults['allow_multiple'] = 'n';
 
 		$defaults['order_field'] = 'title';
 		$defaults['order_dir'] = 'asc';
