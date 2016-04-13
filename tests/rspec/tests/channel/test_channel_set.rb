@@ -414,6 +414,11 @@ feature 'Channel Sets' do
   context 'when importing channel sets' do
     it 'imports a channel set' do
       import_channel_set 'simple'
+
+      $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row|
+        channel_title_field_label = row['count']
+        channel_title_field_label.should == 1
+      end
     end
 
     it 'imports a channel set with duplicate names' do
