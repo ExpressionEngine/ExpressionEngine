@@ -80,6 +80,11 @@ class Export {
 
 		$result->channel_title = $channel->channel_title;
 
+		if ($channel->title_field_label != 'Title')
+		{
+			$result->title_field_label = $channel->title_field_label;
+		}
+
 		// add it to the array early so that relationship can see
 		// that it is already part of the set. That's also why these
 		// are ids (that's what relationships store)
