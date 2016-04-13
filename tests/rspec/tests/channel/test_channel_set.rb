@@ -342,6 +342,7 @@ feature 'Channel Sets' do
         page.load
         page.channel_title.set 'Big Grid'
         page.field_group.select 'Gridlocked'
+        page.title_field_label.set '¯\_(ツ)_/¯'
         page.submit
 
         @page.load
@@ -372,6 +373,11 @@ feature 'Channel Sets' do
         end
 
         expected_files.sort.should == found_files.sort.map(&:name)
+
+        # Check that we exported the title field label
+        channel_set = JSON.parse(found_files.sort.last.get_input_stream.read)
+        channel_set['channels'][0]['channel_title'].should eq 'Big Grid'
+        channel_set['channels'][0]['title_field_label'].should eq '¯\_(ツ)_/¯'
 
         grid = JSON.parse(found_files.sort[4].get_input_stream.read)
 
