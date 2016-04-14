@@ -250,7 +250,7 @@ class Filesystem {
 			throw new FilesystemException("Cannot copy non-existent path: {$source}");
 		}
 
-		rename(
+		copy(
 			$this->normalize($source),
 			$this->normalize($dest)
 		);
