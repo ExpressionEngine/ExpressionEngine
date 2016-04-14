@@ -162,7 +162,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 				continue;
 			}
 
-			$file = 'some/path/some_other_path/'.$file;
+			$file = 'some/path/some_other_path' . str_replace('some_other_path', '', $file);
 			$this->filesystem->shouldReceive('exists')->with($file)->andReturn(TRUE)->once();
 			$this->filesystem->shouldReceive('sha1File')->with($file)->andReturn($hash)->once();
 		}

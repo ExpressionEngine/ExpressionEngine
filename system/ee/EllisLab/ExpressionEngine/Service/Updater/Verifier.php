@@ -67,7 +67,14 @@ class Verifier {
 			}
 
 			// Abosulute server path to the file in question
-			$absolute_file_path = $path . DIRECTORY_SEPARATOR . $file_path;
+			if (empty($subpath))
+			{
+				$absolute_file_path = $path . DIRECTORY_SEPARATOR . $file_path;
+			}
+			else
+			{
+				$absolute_file_path = $path . str_replace($subpath, '', $file_path);
+			}
 
 			// Does the file even exist?
 			if ( ! $this->filesystem->exists($absolute_file_path))
