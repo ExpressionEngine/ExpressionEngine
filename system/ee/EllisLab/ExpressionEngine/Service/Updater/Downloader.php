@@ -108,7 +108,7 @@ class Downloader {
 			'unzipPackage',
 			'verifyExtractedPackage',
 			// TODO: Check requirements of new version here?
-			'moveFiles'
+			'moveUpdater'
 		);
 	}
 
@@ -281,7 +281,7 @@ class Downloader {
 	/**
 	 * Moves the update package into position to be executed and finish the upgrade
 	 */
-	public function moveFiles()
+	public function moveUpdater()
 	{
 		//
 	}

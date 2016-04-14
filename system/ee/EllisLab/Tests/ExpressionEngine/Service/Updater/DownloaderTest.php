@@ -2,11 +2,11 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\Updater;
+use EllisLab\ExpressionEngine\Service\Updater\Downloader;
 use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 
-class UpdaterTest extends \PHPUnit_Framework_TestCase {
+class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
@@ -22,13 +22,13 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->license_number = '1234-1234-1234-1234';
 		$this->payload_url = 'http://0.0.0.0/ee.zip';
 
-		$this->updater = new Updater($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
+		$this->downloader = new Downloader($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
 	}
 
 	private function getPartialMock($methods)
 	{
 		return Mockery::mock(
-			'EllisLab\ExpressionEngine\Service\Updater\Updater['.$methods.']',
+			'EllisLab\ExpressionEngine\Service\Updater\Downloader['.$methods.']',
 			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger)
 		);
 	}
@@ -39,7 +39,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem = NULL;
 		$this->zip_archive = NULL;
 		$this->config = NULL;
-		$this->updater = NULL;
+		$this->downloader = NULL;
 		$this->verifier = NULL;
 	}
 
@@ -49,7 +49,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadConstructor($license_number, $payload_url)
 	{
-		$updater = new Updater($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
+		$updater = new Downloader($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
 	}
 
 	public function badUpdaterConstructorProvider()
@@ -74,27 +74,27 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGetUpdateFiles()
 	{
-		$updater = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,moveFiles');
+		$downloader = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,moveUpdater');
 
-		$updater->shouldReceive('preflight')->once();
-		$updater->shouldReceive('downloadPackage')->once();
-		$updater->shouldReceive('unzipPackage')->once();
-		$updater->shouldReceive('verifyExtractedPackage')->once();
-		$updater->shouldReceive('moveFiles')->once();
+		$downloader->shouldReceive('preflight')->once();
+		$downloader->shouldReceive('downloadPackage')->once();
+		$downloader->shouldReceive('unzipPackage')->once();
+		$downloader->shouldReceive('verifyExtractedPackage')->once();
+		$downloader->shouldReceive('moveUpdater')->once();
 
-		$updater->getUpdateFiles();
+		$downloader->getUpdateFiles();
 	}
 
 	public function testGetSteps()
 	{
-		$steps = $this->updater->getSteps();
+		$steps = $this->downloader->getSteps();
 
 		$expected = array(
 			'preflight',
 			'downloadPackage',
 			'unzipPackage',
 			'verifyExtractedPackage',
-			'moveFiles'
+			'moveUpdater'
 		);
 
 		$this->assertEquals($expected, $steps);
@@ -134,7 +134,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->andReturn(TRUE)
 			->once();
 
-		$this->updater->preflight();
+		$this->downloader->preflight();
 
 		$this->filesystem->shouldReceive('getFreeDiskSpace')
 			->with('cache/path/ee_update/')
@@ -148,7 +148,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->preflight();
+			$this->downloader->preflight();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -181,7 +181,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->andReturn(TRUE)
 			->once();
 
-		$this->updater->preflight();
+		$this->downloader->preflight();
 
 		$this->filesystem->shouldReceive('isWritable')
 			->with('cache/path/ee_update/')
@@ -202,19 +202,19 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
 		$this->filesystem->shouldReceive('delete')->once();
 
-		$this->updater->preflight();
+		$this->downloader->preflight();
 
 		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
 		$this->filesystem->shouldReceive('isDir')->andReturn(FALSE)->once();
 		$this->filesystem->shouldReceive('delete')->once();
 
-		$this->updater->preflight();
+		$this->downloader->preflight();
 
 		$this->filesystem->shouldReceive('isFile')->andReturn(FALSE)->once();
 		$this->filesystem->shouldReceive('isDir')->andReturn(FALSE)->once();
 		$this->filesystem->shouldReceive('delete')->never();
 
-		$this->updater->preflight();
+		$this->downloader->preflight();
 
 		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE);
 		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE);
@@ -232,7 +232,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 		// was thrown x times
 		try
 		{
-			$this->updater->preflight();
+			$this->downloader->preflight();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -252,7 +252,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->preflight();
+			$this->downloader->preflight();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -277,7 +277,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->preflight();
+			$this->downloader->preflight();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -335,7 +335,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 			->once()
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
-		$this->updater->downloadPackage();
+		$this->downloader->downloadPackage();
 	}
 
 	public function testDownloadPackageExceptions()
@@ -358,7 +358,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->downloadPackage();
+			$this->downloader->downloadPackage();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -377,7 +377,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->downloadPackage();
+			$this->downloader->downloadPackage();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -396,7 +396,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->downloadPackage();
+			$this->downloader->downloadPackage();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -424,7 +424,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->downloadPackage();
+			$this->downloader->downloadPackage();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -452,7 +452,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->zip_archive->shouldReceive('close')->once();
 
-		$this->updater->unzipPackage();
+		$this->downloader->unzipPackage();
 
 		$this->zip_archive->shouldReceive('open')
 			->with('cache/path/ee_update/ExpressionEngine.zip')
@@ -461,7 +461,7 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		try
 		{
-			$this->updater->unzipPackage();
+			$this->downloader->unzipPackage();
 			$this->fail();
 		}
 		catch (UpdaterException $e)
@@ -480,6 +480,6 @@ class UpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/updater/hash-manifest');
 
-		$this->updater->verifyExtractedPackage();
+		$this->downloader->verifyExtractedPackage();
 	}
 }
