@@ -139,6 +139,37 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 		}
 	}
 
+	public function testVerifySubPath()
+	{
+		$hashmap = array(
+			'some/file.ext' => '7306a81f37ed094bf8a8d61aee3b795f5c51e501',
+			'some/file2.ext' => '23730c203df385026e5604a77a9675094d5f3acc',
+			'some/file3.ext' => '9b1fea0170c2baa1ab29d07e185db04afed839c7',
+			'some_other_path/file.ext' => '7306a81f37ed094bf8a8d61aee3b795f5c51e501',
+			'some_other_path/file2.ext' => '23730c203df385026e5604a77a9675094d5f3acc',
+			'some_other_path/file3.ext' => '9b1fea0170c2baa1ab29d07e185db04afed839c7'
+		);
+
+		$this->filesystem->shouldReceive('read')
+			->with('manifest/path')
+			->andReturn($this->createHashmapString($hashmap));
+
+		foreach ($hashmap as $file => $hash)
+		{
+			// Skip files in the first path to make sure we're only testing files in the other path
+			if (strpos($file, 'some/') !== FALSE)
+			{
+				continue;
+			}
+
+			$file = 'some/path/some_other_path/'.$file;
+			$this->filesystem->shouldReceive('exists')->with($file)->andReturn(TRUE)->once();
+			$this->filesystem->shouldReceive('sha1File')->with($file)->andReturn($hash)->once();
+		}
+
+		$this->assertEquals(TRUE, $this->verifier->verifyPath('some/path/some_other_path', 'manifest/path', '/some_other_path'));
+	}
+
 	public function createHashmapString(Array $hashmap)
 	{
 		$string = "";
