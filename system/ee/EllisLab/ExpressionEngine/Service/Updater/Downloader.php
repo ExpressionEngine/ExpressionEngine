@@ -44,7 +44,7 @@ class Downloader {
 
 	protected $filename = 'ExpressionEngine.zip';
 	protected $extracted_folder = 'ExpressionEngine';
-	protected $manifest_location = 'system/ee/updater/hash-manifest';
+	protected $manifest_location = 'system/ee/installer/updater/hash-manifest';
 
 	/**
 	 * Constructor
@@ -273,7 +273,7 @@ class Downloader {
 
 		$extracted_path = $this->getExtractedArchivePath();
 
-		$this->verifier->verifyPath($extracted_path, $extracted_path . DIRECTORY_SEPARATOR . $this->manifest_location);
+		$this->verifier->verifyPath($extracted_path, $extracted_path . '/' . $this->manifest_location);
 
 		$this->logger->log('Package contents successfully verified');
 	}
@@ -283,7 +283,15 @@ class Downloader {
 	 */
 	public function moveUpdater()
 	{
-		//
+		$source = $this->getExtractedArchivePath().'/system/ee/installer/updater';
+
+		$this->filesystem->rename($source, SYSPATH.'ee/updater');
+
+		$this->verifier->verifyPath(
+			SYSPATH . '/ee/updater',
+			SYSPATH . '/ee/updater/hash-manifest',
+			'system/ee/installer/updater'
+		);
 	}
 
 	/**

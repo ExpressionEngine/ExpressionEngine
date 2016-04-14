@@ -478,8 +478,28 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
 		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
 
-		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/updater/hash-manifest');
+		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
 
 		$this->downloader->verifyExtractedPackage();
+	}
+
+	public function testMoveUpdater()
+	{
+		$this->config->shouldReceive('get')
+			->with('cache_path')
+			->andReturn('cache/path/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
+		$this->filesystem->shouldReceive('rename')->with(
+			'cache/path/ee_update/ExpressionEngine/system/ee/installer/updater',
+			SYSPATH.'ee/updater'
+		);
+
+		$this->verifier->shouldReceive('verifyPath')->with(
+			SYSPATH . '/ee/updater',
+			SYSPATH . '/ee/updater/hash-manifest',
+			'system/ee/installer/updater'
+		);
+
+		$this->downloader->moveUpdater();
 	}
 }
