@@ -37,7 +37,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'add_can_debug_column',
-				'use_site_default_localization_settings'
+				'use_site_default_localization_settings',
+				'update_doc_url'
 			)
 		);
 
@@ -168,6 +169,19 @@ class Updater {
 			}
 
 			ee()->db->update('members');
+		}
+	}
+
+	/**
+	 * Update doc_url to our current URL
+	 */
+	public function update_doc_url()
+	{
+		if (ee()->config->item('doc_url') == 'http://ellislab.com/expressionengine/user-guide/')
+		{
+			ee()->config->update_site_prefs(array(
+				'doc_url' => 'https://docs.expressionengine.com/v3/'
+			));
 		}
 	}
 }

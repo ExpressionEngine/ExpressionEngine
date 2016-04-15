@@ -13,7 +13,6 @@
 
 $config['app_version'] = '{app_version}';
 $config['debug'] = '{debug}';
-$config['cp_url'] = '{cp_url}';
 $config['doc_url'] = '{doc_url}';
 $config['is_system_on'] = '{is_system_on}';
 $config['allow_extensions'] = '{allow_extensions}';

@@ -85,7 +85,7 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	public $userdata = array(
 		'app_version'           => '',
-		'doc_url'               => 'https://ellislab.com/expressionengine/user-guide/',
+		'doc_url'               => 'https://docs.expressionengine.com/v3/',
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
