@@ -41,6 +41,7 @@ class Downloader {
 	protected $config = NULL;
 	protected $verifier = NULL;
 	protected $logger = NULL;
+	protected $requirements = NULL;
 
 	protected $filename = 'ExpressionEngine.zip';
 	protected $extracted_folder = 'ExpressionEngine';
@@ -57,7 +58,7 @@ class Downloader {
 	 * @param	ZipArchive			$zip_archive	PHP-native ZipArchive object
 	 * @param	Config\File			$config			File config service object
 	 */
-	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger)
+	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements)
 	{
 		if (empty($license_number) OR ! is_string($license_number))
 		{
@@ -77,6 +78,7 @@ class Downloader {
 		$this->config = $config;
 		$this->verifier = $verifier;
 		$this->logger = $logger;
+		$this->requirements = $requirements;
 
 		// Attempt to set time and memory limits
 		@set_time_limit(0);
@@ -107,7 +109,7 @@ class Downloader {
 			'downloadPackage',
 			'unzipPackage',
 			'verifyExtractedPackage',
-			// TODO: Check requirements of new version here?
+			'checkRequirements',
 			'moveUpdater'
 		);
 	}
@@ -276,6 +278,26 @@ class Downloader {
 		$this->verifier->verifyPath($extracted_path, $extracted_path . '/' . $this->manifest_location);
 
 		$this->logger->log('Package contents successfully verified');
+	}
+
+	/**
+	 * Check server requirements for the new update before we bother doing anything else
+	 */
+	public function checkRequirements()
+	{
+		$this->requirements->setClassPath(
+			$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php'
+		);
+		$result = $this->requirements->check();
+
+		if ($result !== TRUE)
+		{
+			$failed = array_map(function($requirement) {
+				return $requirement->getMessage();
+			}, $result);
+
+			throw new UpdaterException("Your server has failed the requirements for this version of ExpressionEngine: \n" . implode("\n", $failed), 14);
+		}
 	}
 
 	/**

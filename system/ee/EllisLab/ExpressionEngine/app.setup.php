@@ -178,7 +178,8 @@ return array(
 				new \ZipArchive(),
 				$ee->make('Config')->getFile(),
 				new Updater\Verifier($filesystem),
-				new Updater\Logger($file_logger)
+				new Updater\Logger($file_logger),
+				new Updater\RequirementsCheckerLoader($filesystem)
 			);
 		}
 	),
