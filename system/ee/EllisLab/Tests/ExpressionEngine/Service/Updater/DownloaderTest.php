@@ -16,20 +16,21 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
 		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Verifier');
 		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
+		$this->requirements = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\RequirementsCheckerLoader');
 
 		$this->logger->shouldReceive('log');
 
 		$this->license_number = '1234-1234-1234-1234';
 		$this->payload_url = 'http://0.0.0.0/ee.zip';
 
-		$this->downloader = new Downloader($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
+		$this->downloader = new Downloader($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements);
 	}
 
 	private function getPartialMock($methods)
 	{
 		return Mockery::mock(
 			'EllisLab\ExpressionEngine\Service\Updater\Downloader['.$methods.']',
-			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger)
+			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements)
 		);
 	}
 
@@ -49,7 +50,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadConstructor($license_number, $payload_url)
 	{
-		$updater = new Downloader($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger);
+		$updater = new Downloader($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements);
 	}
 
 	public function badUpdaterConstructorProvider()
@@ -74,12 +75,13 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGetUpdateFiles()
 	{
-		$downloader = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,moveUpdater');
+		$downloader = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,checkRequirements,moveUpdater');
 
 		$downloader->shouldReceive('preflight')->once();
 		$downloader->shouldReceive('downloadPackage')->once();
 		$downloader->shouldReceive('unzipPackage')->once();
 		$downloader->shouldReceive('verifyExtractedPackage')->once();
+		$downloader->shouldReceive('checkRequirements')->once();
 		$downloader->shouldReceive('moveUpdater')->once();
 
 		$downloader->getUpdateFiles();
@@ -94,6 +96,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			'downloadPackage',
 			'unzipPackage',
 			'verifyExtractedPackage',
+			'checkRequirements',
 			'moveUpdater'
 		);
 
@@ -483,6 +486,38 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->downloader->verifyExtractedPackage();
 	}
 
+	public function testCheckRequirements()
+	{
+		$this->config->shouldReceive('get')
+			->with('cache_path')
+			->andReturn('cache/path/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
+
+		$this->requirements->shouldReceive('setClassPath')->with('cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php');
+		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
+
+		$this->downloader->checkRequirements();
+
+		$failures = [
+			new MockRequirement('This thing is required.'),
+			new MockRequirement('So is this.')
+		];
+		$this->requirements->shouldReceive('check')->andReturn($failures)->once();
+
+		try
+		{
+			$this->downloader->checkRequirements();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(14, $e->getCode());
+			$this->assertContains('This thing is required.', $e->getMessage());
+			$this->assertContains('So is this.', $e->getMessage());
+		}
+	}
+
 	public function testMoveUpdater()
 	{
 		$this->config->shouldReceive('get')
@@ -501,5 +536,20 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$this->downloader->moveUpdater();
+	}
+}
+
+class MockRequirement
+{
+	private $message = '';
+
+	public function __construct($message)
+	{
+		$this->message = $message;
+	}
+
+	public function getMessage()
+	{
+		return $this->message;
 	}
 }
