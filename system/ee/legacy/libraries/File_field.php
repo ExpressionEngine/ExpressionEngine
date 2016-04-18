@@ -547,7 +547,8 @@ class File_field {
 			// Query based on file name and directory ID
 			else
 			{
-				$file = ee()->file_model->get_files_by_name($file_reference, $dir_id)->row_array();
+				$files = $this->get_files_by_name($file_reference, $dir_id);
+				$file = array_shift($files);
 			}
 
 			$this->_files[] = $file;

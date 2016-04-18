@@ -1382,7 +1382,9 @@ class Comment {
 			return FALSE;
 		}
 
-		if ($query->row('allow_comments') == 'n' OR $query->row('comment_system_enabled') == 'n')
+		if ($query->row('allow_comments') == 'n'
+			OR $query->row('comment_system_enabled') == 'n'
+			OR ee()->config->item('enable_comments') != 'y')
 		{
 			$halt_processing = 'disabled';
 		}

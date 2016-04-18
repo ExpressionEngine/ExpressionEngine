@@ -135,7 +135,6 @@ class Rte_lib {
 			array(
 				array(
 					'title' => 'tool_set_name',
-					'desc' => 'tool_set_name_desc',
 					'fields' => array(
 						'toolset_name' => array(
 							'type' => 'text',
@@ -146,7 +145,6 @@ class Rte_lib {
 				),
 				array(
 					'title' => 'choose_tools',
-					'desc' => 'choose_tools_desc',
 					'fields' => array(
 						'tools' => array(
 							'type' => 'checkbox',
@@ -235,7 +233,6 @@ class Rte_lib {
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_updated'))
-				->addToBody(lang('toolset_updated_desc'))
 				->defer();
 		}
 		else

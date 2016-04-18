@@ -10,7 +10,11 @@
 			<em></em>
 		</div>
 		<div class="setting-field col w-8 last">
+		<?php if ($value['type'] == 'text'): ?>
 			<input type="text" name="<?=$key?>" value='<?=set_value($key, $value['trans'])?>'>
+		<?php else: ?>
+			<textarea name="<?=$key?>" cols="" rows=""><?=set_value($key, $value['trans'])?></textarea>
+		<?php endif; ?>
 		</div>
 	</fieldset>
 
