@@ -108,7 +108,7 @@ feature 'Query Form' do
     results.should have_no_text 'No rows returned'
 
     results.should have(0).pages
-    results.should have(3).rows # 2 results plus header
+    results.should have(2).rows
     results.table.should have_text 'channel_id'
     results.table.should have_text 'site_id'
     results.table.should have_text 'channel_name'
@@ -134,7 +134,7 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.should have(0).pages
-    results.should have(11).rows # 10 results plus header
+    results.should have(10).rows
 
     results.search_field.set 'the'
     results.search_btn.click
@@ -143,7 +143,7 @@ feature 'Query Form' do
     results.should have_text 'Search Results we found 2 results for "the"'
     results.search_field.value.should eq 'the'
     results.should have(0).pages
-    results.should have(3).rows # 2 results plus header
+    results.should have(2).rows
     results.table.find('tbody tr:nth-child(2) td:nth-child(7)').should have_text 'About the Label'
 
     # Make sure we can still sort and maintain search results
@@ -152,7 +152,7 @@ feature 'Query Form' do
     results.should have_text 'Search Results we found 2 results for "the"'
     results.search_field.value.should eq 'the'
     results.should have(0).pages
-    results.should have(3).rows # 2 results plus header
+    results.should have(2).rows
     # This should be in the next row down now
     results.table.find('tbody tr:nth-child(1) td:nth-child(7)').should have_text 'About the Label'
   end
@@ -167,12 +167,12 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(26).rows # 25 results plus header
+    results.should have(25).rows
     results.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(7).rows # 5 results plus header
+    results.should have(6).rows
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
@@ -211,7 +211,7 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.should have(6).pages
-    results.should have(26).rows # 25 results plus header
+    results.should have(25).rows
 
     results.search_field.set 'alter'
     results.search_btn.click
@@ -223,7 +223,7 @@ feature 'Query Form' do
     results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
     results.search_field.value.should eq 'alter'
     results.should have(0).pages
-    results.should have(searched.count+1).rows
+    results.should have(searched.count).rows
     results.first_column.map {|source| source.text}.should == searched
 
     # Make sure we can still sort and maintain search results
@@ -231,7 +231,7 @@ feature 'Query Form' do
     results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
     results.search_field.value.should eq 'alter'
     results.should have(0).pages
-    results.should have(searched.count+1).rows
+    results.should have(searched.count).rows
     results.first_column.map {|source| source.text}.should == searched.reverse
   end
 
@@ -243,13 +243,13 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(26).rows # 25 results plus header
+    results.should have(25).rows
     results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
     results.first_column.map {|source| source.text}.should == status.sort[0..24]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(26).rows # 25 results plus header
+    results.should have(25).rows
     results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
     results.first_column.map {|source| source.text}.should == status.sort[25..49]
   end

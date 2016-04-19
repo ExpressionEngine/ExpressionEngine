@@ -184,9 +184,9 @@ class Toggle_ft extends EE_Fieldtype {
 
 	function save_settings($data)
 	{
-		return array(
-			'field_default_value' => $data['field_default_value']
-		);
+		$all = array_merge($this->settings_vars, $data);
+
+		return array_intersect_key($all, $this->settings_vars);
 	}
 
 	/**

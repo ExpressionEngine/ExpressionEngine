@@ -88,27 +88,42 @@ class Edit extends AbstractPublishController {
 			'sort_col' => 'column_entry_date',
 		));
 
-		$table->setColumns(
-			array(
-				'column_entry_id',
-				'column_title' => array(
-					'encode' => FALSE
-				),
-				'column_comment_total' => array(
-					'encode' => FALSE
-				),
-				'column_entry_date',
-				'column_status' => array(
-					'type'	=> Table::COL_STATUS
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
+		$columns = array(
+			'column_entry_id',
+			'column_title' => array(
+				'encode' => FALSE
 			)
 		);
+
+		$show_comments_column = (
+			ee()->config->item('enable_comments') == 'y' OR
+			ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count() > 0);
+
+		if ($show_comments_column)
+		{
+			$columns = array_merge($columns, array(
+				'column_comment_total' => array(
+					'encode' => FALSE
+				)
+			));
+		}
+
+		$columns = array_merge($columns, array(
+			'column_entry_date',
+			'column_status' => array(
+				'type'	=> Table::COL_STATUS
+			),
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setColumns($columns);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
 		if ($channel_id)
@@ -231,7 +246,6 @@ class Edit extends AbstractPublishController {
 			$column = array(
 				$entry->entry_id,
 				$title,
-				$comments,
 				ee()->localize->human_time($entry->entry_date),
 				$entry->status,
 				array('toolbar_items' => $toolbar),
@@ -244,6 +258,11 @@ class Edit extends AbstractPublishController {
 					)
 				)
 			);
+
+			if ($show_comments_column)
+			{
+				array_splice($column, 2, 0, array($comments));
+			}
 
 			$attrs = array();
 

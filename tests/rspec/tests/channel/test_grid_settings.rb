@@ -20,17 +20,6 @@ feature 'Grid Field Settings' do
     @page.field_type.select 'Grid'
   end
 
-  def populate_grid_settings
-    GridSettings::test_data.each_with_index do |column_data, index|
-      # First column is already there, so call add_column for
-      # subsequent columns after index 0
-      column = index == 0 ? GridSettings::column(1) : GridSettings::add_column
-      column.fill_data(column_data[1])
-    end
-
-    no_php_js_errors
-  end
-
   it 'shows the Grid field settings' do
     @page.field_name.value.should eq 'test_grid'
     @page.should have_text('Grid Fields')
@@ -99,7 +88,7 @@ feature 'Grid Field Settings' do
   end
 
   it 'should save column settings' do
-    populate_grid_settings
+    GridSettings::populate_grid_settings
     no_php_js_errors
 
     # Save!
@@ -118,7 +107,7 @@ feature 'Grid Field Settings' do
   end
 
   it 'should fail validation and retain data' do
-    populate_grid_settings
+    GridSettings::populate_grid_settings
 
     # Sabbotage a column to make sure data is retained on validation error
     column = GridSettings::column(1)
@@ -141,7 +130,7 @@ feature 'Grid Field Settings' do
   end
 
   it 'should delete a column' do
-    populate_grid_settings
+    GridSettings::populate_grid_settings
 
     @page.submit
     no_php_js_errors

@@ -520,7 +520,7 @@ EOT;
 					'desc' => 'data_encrypted',
 					'fields' => array(
 						'moblog_email_password' => array(
-							'type' => 'text',
+							'type' => 'password',
 							'value' => $moblog->moblog_email_password,
 							'required' => TRUE
 						)

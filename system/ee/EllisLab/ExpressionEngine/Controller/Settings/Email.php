@@ -107,7 +107,7 @@ class Email extends Settings {
 				array(
 					'title' => 'password',
 					'fields' => array(
-						'smtp_password' => array('type' => 'text')
+						'smtp_password' => array('type' => 'password')
 					)
 				),
 			),

@@ -207,10 +207,14 @@ class Url_Ft extends EE_Fieldtype {
 	 */
 	public function save_settings($data)
 	{
-		return array(
-			'allowed_url_schemes' => $data['allowed_url_schemes'],
-			'url_scheme_placeholder' => $data['url_scheme_placeholder']
+		$defaults = array(
+			'allowed_url_schemes' => $this->getSchemes(TRUE),
+			'url_scheme_placeholder' => ''
 		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	// --------------------------------------------------------------------

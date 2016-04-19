@@ -6,10 +6,7 @@
 */
 
 // prevent text size adjust, without disabling zoom
-html{
-	-ms-text-size-adjust: 100%;
-	-webkit-text-size-adjust: 100%;
-}
+html{ -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
 
 // block HTML5 elements
 article, aside, details, figcaption, figure,footer,
@@ -57,11 +54,7 @@ del{ text-decoration: line-through; }
 ins{ text-decoration: none; }
 
 // insure proper line height control for sub and sup
-sub, sup{
-	line-height: 0;
-	position: relative;
-	vertical-align: baseline;
-}
+sub, sup{ line-height: 0; position: relative; vertical-align: baseline; }
 
 // position sup
 sup{ top: -0.25em; }
@@ -82,10 +75,7 @@ th{ text-align: left; }
 th, td{ padding: 0; }
 
 // set the top and bottom margin of common block elements to @v-gutter
-address, blockquote, dl, figure, ol, p, ul, table{
-	margin: @v-gutter 0;
-		// &:last-child{ margin-bottom: 0; }
-}
+address, blockquote, dl, figure, ol, p, ul, table{ margin: @v-gutter 0; }
 
 // remove margins from tables inside figures
 figure table{ margin: 0; }

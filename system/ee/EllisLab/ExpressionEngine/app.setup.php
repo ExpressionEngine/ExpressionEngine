@@ -5,6 +5,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
@@ -194,6 +195,13 @@ return array(
 		'Captcha' => function($ee)
 		{
 			return new Library\Captcha();
+		},
+
+		'ChannelSet' => function($ee)
+		{
+			return new ChannelSet\Factory(
+				ee()->config->item('site_id')
+			);
 		},
 
 		'CP/Alert' => function($ee)

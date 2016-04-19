@@ -161,7 +161,7 @@ class Rte_ft extends EE_Fieldtype {
 	{
 		return array(
 			'field_show_fmt' => 'n',
-			'field_ta_rows' => $data['field_ta_rows']
+			'field_ta_rows' => isset($data['field_ta_rows']) ? $data['field_ta_rows'] : 6
 		);
 	}
 

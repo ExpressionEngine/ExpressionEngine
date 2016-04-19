@@ -53,7 +53,7 @@ feature 'SQL Manager' do
     @page.search_field.set 'access'
     @page.search_btn.click
 
-    @page.should have_text 'Search Results we found 4 results for "access"'
+    @page.should have_text 'Search Results we found 3 results for "access"'
 
     @page.tables.map {|source| source.text}.should == tables.grep(/access/)
   end
@@ -66,7 +66,7 @@ feature 'SQL Manager' do
 
     @page.sort_links[0].click
 
-    @page.should have_text 'Search Results we found 4 results for "access"'
+    @page.should have_text 'Search Results we found 3 results for "access"'
 
     @page.tables.map {|source| source.text}.should == tables.grep(/access/).reverse
   end
@@ -139,12 +139,12 @@ feature 'SQL Manager' do
 
     results = QueryResults.new
     no_php_js_errors
-    results.should have_text 'SQL Managerexp_accessories Table' # How Capybara sees the breadcrumb
-    results.should have_text 'exp_accessories Table'
-    results.should have(2).rows
+    results.should have_text 'SQL Managerexp_actions Table' # How Capybara sees the breadcrumb
+    results.should have_text 'exp_actions Table'
+    results.should have(22).rows
 
     # Make sure breadcrumb info persists in base URL
     results.sort_links[0].click
-    results.should have_text 'SQL Managerexp_accessories Table'
+    results.should have_text 'SQL Managerexp_actions Table'
   end
 end
