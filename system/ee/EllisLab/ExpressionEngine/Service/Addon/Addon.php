@@ -33,6 +33,8 @@ class Addon {
 	protected $basepath;
 	protected $shortname;
 
+	private static $installed_plugins = NULL;
+
 	public function __construct(Provider $provider)
 	{
 		$this->provider = $provider;
@@ -89,19 +91,17 @@ class Addon {
 				return TRUE;
 			}
 			*/
-			ee()->load->driver('cache');
 
-			$installed_plugins = ee()->cache->get('installed-plugins', \Cache::GLOBAL_SCOPE);
+			$installed_plugins = self::$installed_plugins;
 
-			if (empty($installed_plugins))
+			if (is_null($installed_plugins))
 			{
 				$installed_plugins = array_map('array_pop', ee()->db
 				    ->select('plugin_package')
-				    ->where('plugin_package', $this->shortname)
 				    ->get('plugins')
 				    ->result_array());
 
-				ee()->cache->save('installed-plugins', $installed_plugins, 60, \Cache::GLOBAL_SCOPE);
+				self::$installed_plugins = $installed_plugins;
 			}
 
 			if (in_array($this->shortname, $installed_plugins))
