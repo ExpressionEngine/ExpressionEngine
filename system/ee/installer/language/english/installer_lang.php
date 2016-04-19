@@ -87,6 +87,8 @@ $lang = array(
 'version_warning'                    => 'In order to install ExpressionEngine, your server must be running PHP version <mark><b>%s</b></mark> or newer. Your server is current running PHP version: <b>%s</b>. Contact your hosting provider to see if newer software is available for your server.',
 'error_installing'                   => 'Error While Installing %s',
 'error_updating'                     => 'Error While Updating %s to %s',
+'requirements_checker_not_found'     => 'Could not find RequirementsChecker file.',
+'requirements_checker_not_loaded'    => 'Could not load RequirementsChecker class.',
 
 // Install/Upgrade Success
 'install_success'       => "ExpressionEngine %s Installed",
