@@ -89,29 +89,14 @@ class Downloader {
 	 * Performs all steps to download, extract, and verify the update in succession,
 	 * meant for CLI use
 	 */
-	public function getUpdateFiles()
+	public function getUpdate()
 	{
-		$steps = $this->getSteps();
+		$step = $this->preflight();
 
-		foreach ($steps as $step)
+		while ($step !== FALSE)
 		{
-			$this->$step();
+			$step = $this->$step();
 		}
-	}
-
-	/**
-	 * Gets update steps separated in chunks to be performed in AJAX requests
-	 */
-	public function getSteps()
-	{
-		return array(
-			'preflight',
-			'downloadPackage',
-			'unzipPackage',
-			'verifyExtractedPackage',
-			'checkRequirements',
-			'moveUpdater'
-		);
 	}
 
 	/**
@@ -127,6 +112,8 @@ class Downloader {
 		$this->checkDiskSpace();
 		$this->checkPermissions();
 		$this->takeSiteOffline();
+
+		return 'downloadPackage';
 	}
 
 	/**
@@ -243,6 +230,8 @@ class Downloader {
 		{
 			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('Package-Hash') . ' does not match ' . $hash, 7);
 		}
+
+		return 'unzipPackage';
 	}
 
 	/**
@@ -264,6 +253,8 @@ class Downloader {
 		{
 			throw new UpdaterException('Could not unzip update archive. ZipArchive error code: ' . $response, 8);
 		}
+
+		return 'verifyExtractedPackage';
 	}
 
 	/**
@@ -278,6 +269,8 @@ class Downloader {
 		$this->verifier->verifyPath($extracted_path, $extracted_path . '/' . $this->manifest_location);
 
 		$this->logger->log('Package contents successfully verified');
+
+		return 'checkRequirements';
 	}
 
 	/**
@@ -285,6 +278,8 @@ class Downloader {
 	 */
 	public function checkRequirements()
 	{
+		$this->logger->log('Checking server requirements of new ExpressionEngine version');
+
 		$this->requirements->setClassPath(
 			$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php'
 		);
@@ -298,6 +293,10 @@ class Downloader {
 
 			throw new UpdaterException("Your server has failed the requirements for this version of ExpressionEngine: \n" . implode("\n", $failed), 14);
 		}
+
+		$this->logger->log('SUCCESS: Server requirements check completed');
+
+		return 'moveUpdater';
 	}
 
 	/**
@@ -305,15 +304,28 @@ class Downloader {
 	 */
 	public function moveUpdater()
 	{
+		$this->logger->log('Moving the updater micro app into place');
+
 		$source = $this->getExtractedArchivePath().'/system/ee/installer/updater';
 
 		$this->filesystem->rename($source, SYSPATH.'ee/updater');
 
-		$this->verifier->verifyPath(
-			SYSPATH . '/ee/updater',
-			SYSPATH . '/ee/updater/hash-manifest',
-			'system/ee/installer/updater'
-		);
+		try {
+			$this->verifier->verifyPath(
+				SYSPATH . '/ee/updater',
+				SYSPATH . '/ee/updater/hash-manifest',
+				'system/ee/installer/updater'
+			);
+		}
+		catch (Exception $e)
+		{
+			// Remove the updater
+			$this->filesystem->deleteDir($source, SYSPATH.'ee/updater');
+			throw new UpdaterException($e->getMessage(), $e->getCode());
+		}
+
+		// No further steps needed by this class
+		return FALSE;
 	}
 
 	/**
