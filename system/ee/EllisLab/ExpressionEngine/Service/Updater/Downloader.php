@@ -317,14 +317,14 @@ class Downloader {
 				'system/ee/installer/updater'
 			);
 		}
-		catch (Exception $e)
+		catch (UpdaterException $e)
 		{
 			// Remove the updater
-			$this->filesystem->deleteDir($source, SYSPATH.'ee/updater');
+			$this->filesystem->deleteDir(SYSPATH.'ee/updater');
 			throw new UpdaterException($e->getMessage(), $e->getCode());
 		}
 
-		// No further steps needed by this class
+		// No further steps needed, Updater app will take over
 		return FALSE;
 	}
 

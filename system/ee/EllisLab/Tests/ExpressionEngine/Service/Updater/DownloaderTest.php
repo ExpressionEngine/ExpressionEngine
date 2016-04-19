@@ -73,34 +73,18 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	public function testGetUpdateFiles()
+	public function testGetUpdate()
 	{
 		$downloader = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,checkRequirements,moveUpdater');
 
-		$downloader->shouldReceive('preflight')->once();
-		$downloader->shouldReceive('downloadPackage')->once();
-		$downloader->shouldReceive('unzipPackage')->once();
-		$downloader->shouldReceive('verifyExtractedPackage')->once();
-		$downloader->shouldReceive('checkRequirements')->once();
-		$downloader->shouldReceive('moveUpdater')->once();
+		$downloader->shouldReceive('preflight')->once()->andReturn('downloadPackage');
+		$downloader->shouldReceive('downloadPackage')->once()->andReturn('unzipPackage');
+		$downloader->shouldReceive('unzipPackage')->once()->andReturn('verifyExtractedPackage');
+		$downloader->shouldReceive('verifyExtractedPackage')->once()->andReturn('checkRequirements');
+		$downloader->shouldReceive('checkRequirements')->once()->andReturn('moveUpdater');
+		$downloader->shouldReceive('moveUpdater')->once()->andReturn(FALSE);
 
-		$downloader->getUpdateFiles();
-	}
-
-	public function testGetSteps()
-	{
-		$steps = $this->downloader->getSteps();
-
-		$expected = array(
-			'preflight',
-			'downloadPackage',
-			'unzipPackage',
-			'verifyExtractedPackage',
-			'checkRequirements',
-			'moveUpdater'
-		);
-
-		$this->assertEquals($expected, $steps);
+		$downloader->getUpdate();
 	}
 
 	public function testPreflight()
@@ -137,7 +121,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn(TRUE)
 			->once();
 
-		$this->downloader->preflight();
+		$next_step = $this->downloader->preflight();
+		$this->assertEquals('downloadPackage', $next_step);
 
 		$this->filesystem->shouldReceive('getFreeDiskSpace')
 			->with('cache/path/ee_update/')
@@ -338,7 +323,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->once()
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
-		$this->downloader->downloadPackage();
+		$next_step = $this->downloader->downloadPackage();
+		$this->assertEquals('unzipPackage', $next_step);
 	}
 
 	public function testDownloadPackageExceptions()
@@ -455,7 +441,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->zip_archive->shouldReceive('close')->once();
 
-		$this->downloader->unzipPackage();
+		$next_step = $this->downloader->unzipPackage();
+		$this->assertEquals('verifyExtractedPackage', $next_step);
 
 		$this->zip_archive->shouldReceive('open')
 			->with('cache/path/ee_update/ExpressionEngine.zip')
@@ -483,7 +470,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
 
-		$this->downloader->verifyExtractedPackage();
+		$next_step = $this->downloader->verifyExtractedPackage();
+		$this->assertEquals('checkRequirements', $next_step);
 	}
 
 	public function testCheckRequirements()
@@ -497,7 +485,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->requirements->shouldReceive('setClassPath')->with('cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php');
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
-		$this->downloader->checkRequirements();
+		$next_step = $this->downloader->checkRequirements();
+		$this->assertEquals('moveUpdater', $next_step);
 
 		$failures = [
 			new MockRequirement('This thing is required.'),
@@ -533,9 +522,30 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			SYSPATH . '/ee/updater',
 			SYSPATH . '/ee/updater/hash-manifest',
 			'system/ee/installer/updater'
-		);
+		)->once();
 
-		$this->downloader->moveUpdater();
+		$next_step = $this->downloader->moveUpdater();
+		$this->assertEquals(FALSE, $next_step);
+
+		$exception = new UpdaterException('Something bad happened.', 23);
+		$this->verifier->shouldReceive('verifyPath')->with(
+			SYSPATH . '/ee/updater',
+			SYSPATH . '/ee/updater/hash-manifest',
+			'system/ee/installer/updater'
+		)->andThrow($exception)->once();
+
+		$this->filesystem->shouldReceive('deleteDir')->once();
+
+		try
+		{
+			$this->downloader->moveUpdater();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(23, $e->getCode());
+			$this->assertEquals('Something bad happened.', $e->getMessage());
+		}
 	}
 }
 
