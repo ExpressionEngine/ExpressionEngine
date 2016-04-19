@@ -70,7 +70,7 @@ class Buttons extends Settings {
 			$preview = array('toolbar_items' => array(
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-					'title' => $button->tag_name,
+					'title' => lang($button->tag_name),
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
@@ -83,7 +83,7 @@ class Buttons extends Settings {
 
 			$columns = array(
 				'preview' => $preview,
-				'tag_name' => $button->tag_name,
+				'tag_name' => lang($button->tag_name),
 				'accesskey' => $button->accesskey,
 				$toolbar,
 				array(
@@ -340,7 +340,7 @@ class Buttons extends Settings {
 			array(
 				 'field'   => 'tag_close',
 				 'label'   => 'lang:tag_close',
-				 'rules'   => 'required|valid_xss_check'
+				 'rules'   => 'valid_xss_check'
 			),
 			array(
 				 'field'   => 'accesskey',

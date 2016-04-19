@@ -474,7 +474,7 @@ class Channel_form_lib
 
 				elseif (preg_match('/^label:(.*)$/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_label'] : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_label : '';
 				}
 
 				elseif (preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) && ($field_type_match = $this->get_field_type($match[1])) &&
@@ -504,7 +504,7 @@ class Channel_form_lib
 
 				elseif (preg_match('/^instructions:(.*)$/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_instructions'] : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
 				}
 
 				elseif (preg_match('/^error:(.*)$/', $key, $match))
@@ -529,7 +529,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					else
+					elseif (strncmp($key, 'exp', 3) !== 0)
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}
@@ -1489,20 +1489,7 @@ GRID_FALLBACK;
 				isset($_POST[$field->field_name.'_hidden_file'])
 			);
 
-			if ($this->edit || ! $isset)
-			{
-				if ($field->field_type == 'date')
-				{
-					$_POST['field_id_'.$field->field_id] = $_POST[$field->field_name] = ee()->localize->human_time($this->entry($field->field_name));
-				}
-				elseif ($field->field_required == 'y')
-				{
-					//add a dummy value to be removed later
-					//to get around _check_data_for_errors, a redundant check
-					$_POST['field_id_'.$field->field_id] = '1';
-				}
-			}
-			else
+			if ($isset)
 			{
 				$field_rules = array();
 
@@ -1833,8 +1820,14 @@ GRID_FALLBACK;
 
 			foreach ($this->field_errors as $field => $error)
 			{
-				$field = lang($field);
-				$field_errors[] = "<b>{$field}: </b>{$error}";
+				$label = lang($field);
+
+				if ($this->entry->hasCustomField($field))
+				{
+					$label = $this->entry->getCustomField($field)->getItem('field_label');
+				}
+
+				$field_errors[] = "<b>{$label}: </b>{$error}";
 			}
 
 			throw new Channel_form_exception(
@@ -2195,6 +2188,8 @@ GRID_FALLBACK;
 			// Assign defaults based on the channel
 			$this->entry->title = $this->channel->default_entry_title;
 			$this->entry->versioning_enabled = $this->channel->enable_versioning;
+			$this->entry->status = $this->channel->deft_status;
+			$this->entry->author_id = ee()->session->userdata('member_id');
 
 			if (isset($this->channel->deft_category))
 			{
@@ -2211,6 +2206,7 @@ GRID_FALLBACK;
 				$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
 				$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
 			}
+
 			return;
 		}
 

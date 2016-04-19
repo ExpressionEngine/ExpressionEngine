@@ -64,7 +64,7 @@ $(document).ready(function(){
 		$('.scroll').on('click',function(){
 			// animate the window scroll to
 			// #top for 800 milliseconds
-			$('#top').animate({ scrollTop: 0 }, 800);
+			$('#top, html').animate({ scrollTop: 0 }, 800);
 			// stop #top from reloading
 			// the source window and appending to the URI
 			return false;

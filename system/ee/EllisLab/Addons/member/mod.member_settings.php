@@ -1605,6 +1605,7 @@ class Member_settings extends Member {
 		ee()->load->helper('form');
 
 		$defaults = array(
+			'site_default'    => empty(ee()->session->userdata('timezone')) ? 'y' : 'n',
 			'date_format'     => ee()->session->userdata('date_format'),
 			'time_format'     => ee()->session->userdata('time_format'),
 			'include_seconds' => ee()->session->userdata('include_seconds')
@@ -1619,6 +1620,7 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_localization'))
 				),
 				'path:update_localization' => $this->_member_path('update_localization'),
+				'form:site_default'        => form_preference('site_default', $config_fields['fields']['site_default']),
 				'form:localization'        => ee()->localize->timezone_menu((ee()->session->userdata('timezone') == '') ? 'UTC' : ee()->session->userdata('timezone'), 'timezone'),
 				'form:date_format'         => form_preference('date_format', $config_fields['fields']['date_format']),
 				'form:time_format'         => form_preference('time_format', $config_fields['fields']['time_format']),
@@ -1646,11 +1648,19 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		$data['language']        = ee()->security->sanitize_filename($_POST['language']);
-		$data['timezone']        = $_POST['timezone'];
-		$data['date_format']     = $_POST['date_format'];
-		$data['time_format']     = $_POST['time_format'];
-		$data['include_seconds'] = $_POST['include_seconds'];
+		$data['language'] = ee()->security->sanitize_filename($_POST['language']);
+
+		foreach (array('timezone', 'date_format', 'time_format', 'include_seconts') as $key)
+		{
+			if ($_POST['site_default'] == 'y')
+			{
+				$data[$key] = NULL;
+			}
+			else
+			{
+				$data[$key] = ee()->input->post($key);
+			}
+		}
 
 		$language_pack_names = array_keys(ee()->lang->language_pack_names());
 		if ( ! in_array($data['language'], $language_pack_names))
@@ -1658,7 +1668,16 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(lang('invalid_action')));
 		}
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$member->set($data);
+		$result = $member->validate();
+
+		if ($result->failed())
+		{
+			return ee()->output->show_user_error('general', $result->renderErrors());
+		}
+
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message

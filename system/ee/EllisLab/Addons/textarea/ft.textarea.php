@@ -29,7 +29,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Textarea',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = FALSE;
@@ -60,6 +60,11 @@ class Textarea_ft extends EE_Fieldtype {
 
 			foreach ($buttons as $button)
 			{
+				// Don't let markItUp handle this button
+				if ($button->classname == 'html-upload')
+				{
+					$button->tag_open = '';
+				}
 				$markItUp['markupSet'][] = $button->prepForJSON();
 			}
 
@@ -70,9 +75,19 @@ class Textarea_ft extends EE_Fieldtype {
 					.not(".grid-textarea textarea")
 					.markItUp(EE.markitup.settings);
 
+				$("li.html-upload").addClass("m-link").attr({
+					rel: "modal-file",
+					href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+				});
+
 				Grid.bind("textarea", "display", function(cell)
 				{
 					$("textarea[data-markitup]", cell).markItUp(EE.markitup.settings);
+
+					$("li.html-upload", cell).addClass("m-link").attr({
+						rel: "modal-file",
+						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+					});
 				});
 			');
 
@@ -137,8 +152,10 @@ class Textarea_ft extends EE_Fieldtype {
 				'smileys'         => $smileys
 			);
 
-			if (isset($this->settings['field_show_file_selector'])
-				&& $this->settings['field_show_file_selector'] == 'y')
+			if ((isset($this->settings['field_show_file_selector'])
+				&& $this->settings['field_show_file_selector'] == 'y') OR
+				(isset($this->settings['field_show_formatting_btns'])
+				&& $this->settings['field_show_formatting_btns'] == 'y'))
 			{
 				$fp = new FilePicker();
 				$fp->inject(ee()->view);
@@ -353,6 +370,19 @@ class Textarea_ft extends EE_Fieldtype {
 		$all = array_merge($defaults, $data);
 
 		return array_intersect_key($all, $defaults);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

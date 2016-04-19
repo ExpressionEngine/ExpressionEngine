@@ -1,0 +1,87 @@
+{
+	"label": "Contact Address",
+	"instructions": "Address where someone can send mail.",
+	"order": 4,
+	"columns": [
+		{
+			"type": "text",
+			"label": "Street",
+			"name": "street",
+			"instructions": "Street address",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "text",
+			"label": "Street 2",
+			"name": "street_2",
+			"instructions": "Street address continued, e.g. Suite 2",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "text",
+			"label": "City",
+			"name": "city",
+			"instructions": "",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "text",
+			"label": "State",
+			"name": "state",
+			"instructions": "",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "text",
+			"label": "ZIP",
+			"name": "zip",
+			"instructions": "",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		}
+	]
+}

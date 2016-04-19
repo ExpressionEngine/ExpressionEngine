@@ -32,6 +32,10 @@ class Session extends Model {
 	protected static $_primary_key = 'session_id';
 	protected static $_table_name = 'sessions';
 
+	protected static $_typed_columns = array(
+		'can_debug' => 'boolString'
+	);
+
 	protected static $relationships = array(
 		'Member' => array(
 			'type' => 'BelongsTo'
@@ -46,6 +50,7 @@ class Session extends Model {
 	protected $fingerprint;
 	protected $sess_start;
 	protected $last_activity;
+	protected $can_debug;
 
 }
 

@@ -25,7 +25,7 @@
 
 class Simple_commerce_upd {
 
-	var $version			= '2.2';
+	var $version			= '2.2.0';
 
 	/**
 	 * Module Installer

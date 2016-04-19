@@ -8,7 +8,7 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 	 * Why? because I want to preserve fields that haven't been POSTed
 	 *
 	 **/
-	public function _prepare_data(&$data, &$mod_data)
+	public function _prepare_data(&$data, &$mod_data, $autosave = FALSE)
 	{
 		$this->_pre_prepare_data($data);
 		parent::_prepare_data($data, $mod_data);

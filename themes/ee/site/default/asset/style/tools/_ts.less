@@ -1,0 +1,20 @@
+/*
+	_ts.less
+	-------------
+	define ts mixin
+*/
+
+/*
+	applies a transition to block level elements
+	-------------
+	arguments
+		prop, time, ease
+	example
+		.ts(all 1s linear);
+
+*/
+.ts(@args){
+	-moz-transition: @args;
+	-webkit-transition: @args;
+	transition: @args;
+}

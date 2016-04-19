@@ -62,7 +62,7 @@ class Settings extends CP_Controller {
 		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL')->make('settings/general'))
 			->addBasicList();
 
-		$list->addItem(lang('license_and_reg'), ee('CP/URL')->make('settings/license'));
+		$list->addItem(lang('license_and_registration'), ee('CP/URL')->make('settings/license'));
 		$list->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
 		if (ee()->cp->allowed_group('can_access_comm'))

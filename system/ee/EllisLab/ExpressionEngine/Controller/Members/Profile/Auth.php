@@ -153,7 +153,7 @@ class Auth extends Settings {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
@@ -255,9 +255,7 @@ class Auth extends Settings {
 
 		$this->member_model->update_member($this->member->member_id, $data);
 
-		$this->cp->get_installed_modules();
-
-		if (isset($this->cp->installed_modules['comment']))
+		if (ee()->config->item('enable_comments') == 'y')
 		{
 			if ($query->row('screen_name') != $_POST['screen_name'])
 			{

@@ -98,7 +98,7 @@ class Pages_tab {
 		{
 			$no_templates = ee('View')->make('ee:_shared/form/no_results')->render(array(
 				'text' => sprintf(lang('no_found'), lang('pages_templates')),
-				'link_text' => lang('create_template'),
+				'link_text' => lang('create_new_template'),
 				'link_href' => ee('CP/URL', 'design'),
 			));
 		}

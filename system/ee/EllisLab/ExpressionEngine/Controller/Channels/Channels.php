@@ -250,7 +250,6 @@ class Channels extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'channel_title',
-					'desc' => 'channel_title_desc',
 					'fields' => array(
 						'channel_title' => array(
 							'type' => 'text',
@@ -292,7 +291,6 @@ class Channels extends AbstractChannelsController {
 			$alert,
 			array(
 				'title' => ucfirst(strtolower(lang('status_groups'))),
-				'desc' => 'status_groups_desc',
 				'fields' => array(
 					'status_group' => array(
 						'type' => 'select',
@@ -318,7 +316,6 @@ class Channels extends AbstractChannelsController {
 			),
 			array(
 				'title' => 'custom_field_group',
-				'desc' => 'custom_field_group_desc',
 				'fields' => array(
 					'field_group' => array(
 						'type' => 'select',
@@ -334,7 +331,6 @@ class Channels extends AbstractChannelsController {
 			),
 			array(
 				'title' => ucfirst(strtolower(lang('category_groups'))),
-				'desc' => 'category_groups_desc',
 				'fields' => array(
 					'cat_group' => array(
 						'type' => 'checkbox',
@@ -510,13 +506,6 @@ class Channels extends AbstractChannelsController {
 			}
 
 			$channel->save();
-
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
-			{
-				// Duplicate layouts
-				ee()->load->library('layout');
-				ee()->layout->duplicate_layout($dupe_id, $channel->channel_id);
-			}
 
 			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
@@ -821,7 +810,6 @@ class Channels extends AbstractChannelsController {
 			'publishing' => array(
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'channel_html_formatting' => array(
 							'type' => 'select',
@@ -1075,7 +1063,6 @@ class Channels extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'comment_html_formatting' => array(
 							'type' => 'select',

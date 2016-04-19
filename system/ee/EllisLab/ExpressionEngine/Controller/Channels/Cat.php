@@ -56,7 +56,7 @@ class Cat extends AbstractChannelsController {
 	}
 
 	/**
-	 * Categpry Groups Manager
+	 * Category Groups Manager
 	 */
 	public function index()
 	{
@@ -206,7 +206,6 @@ class Cat extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'group_name_desc',
 					'fields' => array(
 						'group_name' => array(
 							'type' => 'text',
@@ -217,7 +216,6 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'field_html_formatting' => array(
 							'type' => 'select',
@@ -736,7 +734,6 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'description',
-					'desc' => 'cat_description_desc',
 					'fields' => array(
 						'cat_description' => array(
 							'type' => 'textarea',
@@ -751,7 +748,6 @@ class Cat extends AbstractChannelsController {
 		{
 			$vars['sections'][0][] = array(
 				'title' => 'image',
-				'desc' => 'cat_image_desc',
 				'fields' => array(
 					'cat_image_select' => array(
 						'type' => 'radio',
@@ -773,7 +769,6 @@ class Cat extends AbstractChannelsController {
 
 		$vars['sections'][0][] = array(
 			'title' => 'parent_category',
-			'desc' => 'parent_category_desc',
 			'fields' => array(
 				'parent_id' => array(
 					'type' => 'select',

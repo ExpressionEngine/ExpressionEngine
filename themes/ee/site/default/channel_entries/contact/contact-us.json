@@ -1,0 +1,25 @@
+{
+	"title": "Contact Us",
+	"url_title": "contact-us",
+	"status": "open",
+	"custom_fields":
+	{
+		"p_seo_title": "Contact {site_name}",
+		"p_seo_desc": "Contact us, phone, mailing, email.",
+		"p_content": "Cupcake ipsum dolor sit. Amet I love liquorice jujubes pudding croissant I love pudding. Apple pie macaroon toffee jujubes pie tart cookie applicake caramels. Halvah macaroon I love lollipop. Wypas I love pudding brownie cheesecake tart jelly-o. Bear claw cookie chocolate bar jujubes toffee.",
+		"contact_phone": "(555) 123-4567",
+		"contact_email": "user@example.com",
+		"contact_address":
+		{
+			"rows": [
+				{
+					"street": "1234 Any Street",
+					"street_2": "Suite 2",
+					"city": "Anywhere",
+					"state": "ES",
+					"zip": "12345"
+				}
+			]
+		}
+	}
+}

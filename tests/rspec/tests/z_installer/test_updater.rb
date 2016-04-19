@@ -27,27 +27,11 @@ feature 'Updater' do
   after :each do
     @installer.revert_config
     @installer.revert_database_config
-
-    if File.exist?('../../system/user/templates/default_site.old/')
-      FileUtils.rm_rf '../../system/user/templates/default_site.old/'
-    end
-
-    if File.exist?('../../system/user/templates/default_site/')
-      FileUtils.mv(
-        '../../system/user/templates/default_site/',
-        '../../system/user/templates/default_site.old/'
-      )
-    end
+    @installer.backup_templates
   end
 
   after :all do
-    if File.exist?('../../system/user/templates/default_site.old/')
-      FileUtils.mv(
-        '../../system/user/templates/default_site.old/',
-        '../../system/user/templates/default_site/'
-      )
-    end
-
+    @installer.restore_templates
     @installer.disable_installer
     @installer.delete_database_config
   end
@@ -55,7 +39,7 @@ feature 'Updater' do
   it 'appears when using a database.php file' do
     @page.load
     @page.should have(0).inline_errors
-    @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.header.text.should match /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
   end
 
   it 'shows an error when no database information exists at all' do
@@ -88,7 +72,8 @@ feature 'Updater' do
       @installer.revert_config
       @installer.replace_config(
         @config,
-        tmpl_file_basepath: '../system/expressionengine/templates'
+        tmpl_file_basepath: '../system/expressionengine/templates',
+        app_version: '2.20.0'
       )
       test_update
       test_templates
@@ -98,7 +83,8 @@ feature 'Updater' do
       @installer.revert_config
       @installer.replace_config(
         @config,
-        tmpl_file_basepath: '../system/not/a/directory/templates'
+        tmpl_file_basepath: '../system/not/a/directory/templates',
+        app_version: '2.20.0'
       )
       test_update
       test_templates
@@ -108,7 +94,8 @@ feature 'Updater' do
       @installer.revert_config
       @installer.replace_config(
         @config,
-        tmpl_file_basepath: '../system/user/templates'
+        tmpl_file_basepath: '../system/user/templates',
+        app_version: '2.20.0'
       )
       test_update
       test_templates
@@ -145,7 +132,10 @@ feature 'Updater' do
 
   it 'updates successfully when updating from 2.1.3 to 3.x' do
     @installer.revert_config
-    @installer.replace_config(File.expand_path('../circleci/config-2.1.3.php'))
+    @installer.replace_config(
+      File.expand_path('../circleci/config-2.1.3.php'),
+      app_version: '213'
+    )
     @installer.revert_database_config
     @installer.replace_database_config(
       File.expand_path('../circleci/database-2.1.3.php')
@@ -168,7 +158,8 @@ feature 'Updater' do
         database: $test_config[:db_name],
         username: $test_config[:db_username],
         password: $test_config[:db_password]
-      }
+      },
+      app_version: '3.0.5'
     )
 
     clean_db do
@@ -192,14 +183,23 @@ feature 'Updater' do
 
     # Attempt to work around potential asynchronicity
     sleep 1
-
     @page.load
 
+    # Wait a second and try loading the page again in case we're not seeing the
+    # correct page
+    attempts = 0
+    header_step_1 = /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    while @page.header.text.match(header_step_1) == false && attempts < 5
+      sleep 1
+      @page.load
+      attempts += 1
+    end
+
     @page.should have(0).inline_errors
-    @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.header.text.should match /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
     @page.submit.click
 
-    @page.header.text.should match /Updating ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.header.text.should match /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
     @page.req_title.text.should include 'Processing | Step 2 of 3'
 
     # Sleep until ready

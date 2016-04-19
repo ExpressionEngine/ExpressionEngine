@@ -53,8 +53,6 @@ $lang = array(
 
 'folder_page' => 'Page',
 
-'no_messages' => 'No Messages Found',
-
 'message_subject' => 'Subject',
 
 'message_sender' => 'Sender',
@@ -118,8 +116,6 @@ $lang = array(
 'max_size' => 'Max Size:',
 
 'message_recipients' => 'Recipients',
-
-'message_subject' => 'Subject',
 
 'message' => 'Message',
 
@@ -190,8 +186,6 @@ $lang = array(
 'any' => 'Any',
 
 'member_search' => 'Member Search',
-
-'search_results' => 'Search Results',
 
 'insert_member_instructions' => 'Click member name to select it',
 

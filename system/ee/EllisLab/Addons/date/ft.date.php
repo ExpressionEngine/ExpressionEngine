@@ -26,7 +26,7 @@ class Date_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Date',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = FALSE;
@@ -76,7 +76,7 @@ class Date_ft extends EE_Fieldtype {
 
 		if ( ! empty($data) && $this->settings['localize'] !== TRUE)
 		{
-			$data = array($data, ee()->session->userdata('timezone'));
+			$data = array($data, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')));
 		}
 
 		return $data;
@@ -369,6 +369,19 @@ class Date_ft extends EE_Fieldtype {
 	 * @return bool   Accepts all content types
 	 */
 	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
 	{
 		return TRUE;
 	}

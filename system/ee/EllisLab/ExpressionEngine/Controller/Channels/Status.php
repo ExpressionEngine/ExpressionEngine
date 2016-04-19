@@ -177,7 +177,6 @@ class Status extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'status_group_name_desc',
 					'fields' => array(
 						'group_name' => array(
 							'type' => 'text',

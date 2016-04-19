@@ -126,7 +126,7 @@ class Translate extends Utilities {
 
 		foreach ($language_files as $file)
 		{
-			if ($file == 'email_data.php')
+			if ($file == 'email_data.php' OR $file == 'stopwords.php')
 			{
 				continue;
 			}
@@ -305,8 +305,9 @@ class Translate extends Utilities {
 			if ($key != '')
 			{
 				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
-				$keys[$key]['original'] = $val;
+				$keys[$key]['original'] = htmlentities($val);
 				$keys[$key]['trans'] = str_replace("'", "&#39;", $trans);
+				$keys[$key]['type'] = (strlen($val) > 100) ? 'textarea' : 'text';
 			}
 		}
 

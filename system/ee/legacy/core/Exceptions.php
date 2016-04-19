@@ -223,7 +223,8 @@ class EE_Exceptions {
 		// Only show the file name if debug isn't on
 		if ( ! $debug)
 		{
-			$location = array_pop(explode(DIRECTORY_SEPARATOR, $location));
+			$location_parts = explode(DIRECTORY_SEPARATOR, $location);
+			$location = array_pop($location_parts);
 		}
 
 		if (ob_get_level() > $this->ob_level + 1)

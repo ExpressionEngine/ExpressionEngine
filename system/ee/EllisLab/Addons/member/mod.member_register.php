@@ -442,15 +442,7 @@ class Member_register extends Member {
 			'location'		=> ee()->input->post('location'),
 
 			// overridden below if used as optional fields
-			'language'		=> (ee()->config->item('deft_lang')) ?
-									ee()->config->item('deft_lang') : 'english',
-			'date_format'	=> ee()->config->item('date_format') ?
-					 				ee()->config->item('date_format') : '%n/%j/%Y',
-			'time_format'	=> ee()->config->item('time_format') ?
-									ee()->config->item('time_format') : '12',
-			'include_seconds' => ee()->config->item('include_seconds') ?
-									ee()->config->item('include_seconds') : 'n',
-			'timezone'		=> ee()->config->item('default_site_timezone')
+			'language'		=> (ee()->config->item('deft_lang')) ?: 'english',
 		);
 
 		// Set member group
@@ -487,7 +479,7 @@ class Member_register extends Member {
 		{
 			if (isset($_POST[$value]))
 			{
-				$data[$key] = $_POST[$value];
+				$data[$key] = ee()->input->post($value, TRUE); //XSS clean this
 			}
 		}
 
@@ -497,10 +489,17 @@ class Member_register extends Member {
 			$data['authcode'] = ee()->functions->random('alnum', 10);
 		}
 
-		// Insert basic member data
-		ee()->db->query(ee()->db->insert_string('exp_members', $data));
+		$member = ee('Model')->make('Member', $data);
+		$result = $member->validate();
 
-		$member_id = ee()->db->insert_id();
+		if ($result->failed())
+		{
+			return ee()->output->show_user_error('submission', $result->renderErrors());
+		}
+
+		$member->save();
+
+		$member_id = $member->member_id;
 
 		// Insert custom fields
 		$cust_fields['member_id'] = $member_id;

@@ -26,7 +26,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 	public $info = array(
 		'name'		=> 'Relationships',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	public $has_array_data = FALSE;
@@ -388,6 +388,20 @@ class Relationship_ft extends EE_Fieldtype {
 			{
 				$entries->filter('channel_id', ee()->input->post('channel'));
 			}
+		}
+
+		// -------------------------------------------
+		// 'relationships_display_field_options' hook.
+		//  - Allow developers to add additional filters to the entries that populate the field options
+		//
+		if (ee()->extensions->active_hook('relationships_display_field_options') === TRUE)
+		{
+			ee()->extensions->call(
+					'relationships_display_field_options',
+					$entries,
+					$this->field_id,
+					$this->settings
+				);
 		}
 
 		// Create a cache of channel names
@@ -826,7 +840,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$save = $form->values();
 
 		// Boolstring conversion
-		$save['allow_multiple'] = ($save['allow_multiple'] == 'y') ? 1 : 0;
+		$save['allow_multiple'] = ($save['allow_multiple'] === 'y') ? 1 : 0;
 
 		foreach ($save as $field => $value)
 		{
@@ -1098,6 +1112,19 @@ class Relationship_ft extends EE_Fieldtype {
 				->where('field_id', $field_id)
 				->delete($this->_table);
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

@@ -74,7 +74,7 @@ class Buttons extends Settings {
 			$preview = array('toolbar_items' => array(
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('members/profile/buttons/edit/' . $button->id, $this->query_string),
-					'title' => $button->tag_name,
+					'title' => lang($button->tag_name),
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
@@ -87,7 +87,7 @@ class Buttons extends Settings {
 
 			$columns = array(
 				'preview' => $preview,
-				'tag_name' => $button->tag_name,
+				'tag_name' => lang($button->tag_name),
 				'accesskey' => $button->accesskey,
 				$toolbar,
 				array(

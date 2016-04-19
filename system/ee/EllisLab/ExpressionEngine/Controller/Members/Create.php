@@ -140,10 +140,6 @@ class Create extends Members {
 			$member->ip_address = ee()->input->ip_address();
 			$member->join_date = ee()->localize->now;
 			$member->language = ee()->config->item('deft_lang');
-			$member->timezone = ee()->config->item('default_site_timezone');
-			$member->date_format = ee()->config->item('date_format');
-			$member->time_format = ee()->config->item('time_format');
-			$member->include_seconds = ee()->config->item('include_seconds');
 
 			$result = $member->validate();
 			$password_confirm = $validator->validate($_POST);

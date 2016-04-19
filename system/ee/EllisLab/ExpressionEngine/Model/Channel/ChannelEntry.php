@@ -95,7 +95,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[site_id]',
+		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -246,11 +246,11 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateUniqueUrlTitle($key, $value, $params, $rule)
 	{
-		$site_id = $this->getProperty($params[0]);
+		$channel_id = $this->getProperty($params[0]);
 
 		$entry = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_id', 'title')
-			->filter('site_id', $site_id)
+			->filter('channel_id', $channel_id)
 			->filter('url_title', $value)
 			->first();
 
@@ -372,7 +372,11 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->Versions->count() == $this->Channel->max_revisions)
 		{
-			$this->Versions->sortBy('version_date')->first()->delete();
+			$version = $this->Versions->sortBy('version_date')->first();
+			if ($version)
+			{
+				$version->delete();
+			}
 		}
 
 		$data = array(
@@ -394,7 +398,7 @@ class ChannelEntry extends ContentModel {
 		$entries = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_date', 'channel_id')
 			->filter('site_id', $site_id)
-			->filter('entry_date', '<', $now)
+			->filter('entry_date', '<=', $now)
 			->filter('status', '!=', 'closed')
 			->filterGroup()
 				->filter('expiration_date', 0)

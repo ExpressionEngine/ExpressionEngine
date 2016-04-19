@@ -26,7 +26,7 @@
 
 class Member_upd {
 
-	var $version = '2.1';
+	var $version = '2.1.0';
 
 	/**
 	 * Module Installer

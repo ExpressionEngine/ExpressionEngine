@@ -118,7 +118,7 @@ class Relationship_model extends CI_Model {
 			{
 				$db->join(
 					"{$this->_table} as L{$next_level}",
-					"L{$level}.parent_id = L{$next_level}.parent_id".(($next_level >= $shortest_branch_length) ? " OR L{$next_level}.child_id = NULL" : ''),
+					"L{$level}.parent_id = L{$next_level}.parent_id",
 					($next_level >= $shortest_branch_length) ? 'left' : ''
 				);
 
