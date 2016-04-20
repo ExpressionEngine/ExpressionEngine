@@ -271,7 +271,10 @@ class Groups extends Members\Members {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
+        $this->group = ee('Model')->get('MemberGroup')
+            ->filter('group_id', $group_id)
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first();
 
 		if ($this->group->is_locked == 'y' && ! $this->super_admin)
 		{
