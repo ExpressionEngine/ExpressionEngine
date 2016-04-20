@@ -62,10 +62,28 @@ class RequirementsChecker
 				return FALSE;
 			}
 
+			$hostname = $this->db_config['hostname'];
+			$username = $this->db_config['username'];
+			$password = $this->db_config['password'];
+			$database = $this->db_config['database'];
+			$char_set = $this->db_config['char_set'];
+			$pconnect = $this->db_config['pconnect'];
+			$port     = $this->db_config['port'];
+
+			$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
+
+			$options = array(
+				PDO::ATTR_PERSISTENT => $pconnect,
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_CASE => PDO::CASE_NATURAL,
+				PDO::ATTR_STRINGIFY_FETCHES => FALSE
+			);
+
 			$pdo = new PDO(
-				"mysql:host={$this->db_config['hostname']};dbname={$this->db_config['database']}",
-				$this->db_config['username'],
-				$this->db_config['password']
+				$dsn,
+				$username,
+				$password,
+				$options
 			);
 
 			if ( ! $pdo)
