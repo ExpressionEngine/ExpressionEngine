@@ -50,6 +50,7 @@ class EE_Template {
 	public $protect_javascript   = FALSE;		// Protect js blocks from conditional parsing?
 
 	public $group_name           = '';			// Group of template being parsed
+	public $template_group_id    = 0;
 	public $template_name        = '';			// Name of template being parsed
 	public $template_id          = 0;
 
@@ -304,15 +305,16 @@ class EE_Template {
 
 		// Define some path and template related global variables
 		$added_globals = array(
-			'last_segment' => end($seg_array),
-			'current_url' => ee()->functions->fetch_current_uri(),
-			'current_path' => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
+			'last_segment'         => end($seg_array),
+			'current_url'          => ee()->functions->fetch_current_uri(),
+			'current_path'         => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
 			'current_query_string' => http_build_query($_GET), // GET has been sanitized!
-			'template_name' => $this->template_name,
-			'template_group' => $this->group_name,
-			'template_id' => $this->template_id,
-			'template_type' => $this->embed_type ?: $this->template_type,
-			'is_ajax_request' => AJAX_REQUEST
+			'template_name'        => $this->template_name,
+			'template_group'       => $this->group_name,
+			'template_group_id'    => $this->template_group_id,
+			'template_id'          => $this->template_id,
+			'template_type'        => $this->embed_type ?: $this->template_type,
+			'is_ajax_request'      => AJAX_REQUEST
 		);
 
 		foreach ($this->user_vars as $user_var)
@@ -2584,9 +2586,10 @@ class EE_Template {
 		// -------------------------------------------
 
 		// remember what template we're on
-		$this->group_name = $row['group_name'];
-		$this->template_id = $row['template_id'];
-		$this->template_name = $row['template_name'];
+		$this->group_name        = $row['group_name'];
+		$this->template_group_id = $row['group_id'];
+		$this->template_name     = $row['template_name'];
+		$this->template_id       = $row['template_id'];
 
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
 	}
