@@ -357,7 +357,7 @@ class MemberGroup extends StructureModel {
 	{
 		if ($this->isDirty('site_id'))
 		{
-			throw new LogicException('Cannot modify site_id.');
+			throw new \LogicException('Cannot modify site_id.');
 		}
 
 		$query->filter('site_id', $this->site_id);
