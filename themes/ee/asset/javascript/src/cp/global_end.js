@@ -48,4 +48,10 @@ $('table').each(function() {
 	}
 });
 
+// Apply minicolors to all fields with color-picker
+if (jQuery().minicolors)
+{
+	$('input.color-picker').minicolors();
+}
+
 })(jQuery);

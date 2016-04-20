@@ -577,6 +577,7 @@ class Status extends AbstractChannelsController {
 					'fields' => array(
 						'highlight' => array(
 							'type' => 'text',
+							'attrs' => 'class="color-picker"',
 							'value' => $status->highlight ?: '000000'
 						)
 					)
@@ -670,6 +671,8 @@ class Status extends AbstractChannelsController {
 			ee('CP/URL')->make('channels/status/status-list/'.$group_id),
 			$status_group->group_name . ' &mdash; ' . lang('statuses')
 		);
+
+		ee()->cp->add_js_script('plugin', 'minicolors');
 
 		ee()->cp->render('settings/form', $vars);
 	}
