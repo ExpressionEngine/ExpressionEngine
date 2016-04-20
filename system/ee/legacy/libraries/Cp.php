@@ -183,8 +183,6 @@ class Cp {
 			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters')
 		);
 
-		$js_scripts['plugin'][] = 'ee_navigation';
-
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
 
