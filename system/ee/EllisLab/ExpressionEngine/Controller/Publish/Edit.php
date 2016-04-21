@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use Mexitek\PHPColors\Color;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
@@ -243,11 +244,26 @@ class Edit extends AbstractPublishController {
 
 			$disabled_checkbox = ! $can_delete;
 
+			$status = ee('Model')->get('Status')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', $entry->Channel->status_group)
+				->filter('status', $entry->status)
+				->first();
+
+			$highlight = new Color($status->highlight);
+			$color = ($highlight->isLight())
+				? $highlight->darken(100)
+				: $highlight->lighten(100);
+
 			$column = array(
 				$entry->entry_id,
 				$title,
 				ee()->localize->human_time($entry->entry_date),
-				$entry->status,
+				array(
+					'content'          => $status->status,
+					'color'            => $color,
+					'background-color' => $status->highlight
+				),
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
