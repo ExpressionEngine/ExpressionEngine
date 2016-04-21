@@ -85,7 +85,6 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	public $userdata = array(
 		'app_version'           => '',
-		'doc_url'               => 'https://docs.expressionengine.com/v3/',
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
@@ -126,12 +125,10 @@ class Wizard extends CI_Controller {
 		'install_default_theme' => 'n'
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the EE
-	// and CI config files are one in the same now we use this data when we write the
-	// initial config file using $this->write_config_data()
+	// These are the default values for the CodeIgniter config array.  Since the
+	// EE and CI config files are one in the same now we use this data when we
+	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
-		'uri_protocol'       => 'AUTO',
-		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
@@ -1620,7 +1617,6 @@ class Wizard extends CI_Controller {
 			'site_label'                => $this->userdata['site_label'],
 			'site_url'                  => $this->userdata['site_url'],
 			'theme_folder_url'          => $this->userdata['site_url'].'themes/',
-			'doc_url'                   => $this->userdata['doc_url'],
 			'webmaster_email'           => $this->userdata['email_address'],
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',

@@ -39,6 +39,18 @@ class EE_Config {
 	public $_global_vars        = array(); // The global vars from path.php (deprecated but usable for other purposes now)
 	public $_config_path_errors = array();
 
+	protected $defaults = array(
+		'cache_path'         => '',
+		'charset'            => 'UTF-8',
+		'doc_url'            => 'https://docs.expressionengine.com/v3/',
+		'encryption_key'     => '',
+		'log_date_format'    => 'Y-m-d H:i:s',
+		'log_threshold'      => 0,
+		'rewrite_short_tags' => TRUE,
+		'subclass_prefix'    => 'EE_',
+		'uri_protocol'       => 'AUTO',
+	);
+
 	/**
 	 * Constructor
 	 */
@@ -359,7 +371,7 @@ class EE_Config {
 		ee('Database')->getLog()->saveQueries($save_queries);
 
 		// lowercase version charset to use in HTML output
-		$this->config['output_charset'] = strtolower($this->config['charset']);
+		$this->config['output_charset'] = strtolower($this->item('charset'));
 	}
 
 	// --------------------------------------------------------------------
@@ -378,12 +390,15 @@ class EE_Config {
 	{
 		if ($index == '')
 		{
-			if ( ! isset($this->config[$item]))
+			if (isset($this->config[$item]))
 			{
-				return FALSE;
+				return $this->config[$item];
 			}
 
-			$pref = $this->config[$item];
+			if (isset($this->defaults[$item]))
+			{
+				return $this->defaults[$item];
+			}
 		}
 		else
 		{
@@ -392,15 +407,13 @@ class EE_Config {
 				return FALSE;
 			}
 
-			if ( ! isset($this->config[$index][$item]))
+			if (isset($this->config[$index][$item]))
 			{
-				return FALSE;
+				return $this->config[$index][$item];
 			}
-
-			$pref = $this->config[$index][$item];
 		}
 
-		return $pref;
+		return FALSE;
 	}
 
 

@@ -25,9 +25,20 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       https://ellislab.com
  */
-class File implements Config {
+class File extends Config {
 
 	protected $config = array();
+
+	protected $defaults = array(
+		'cache_path'         => '',
+		'charset'            => 'UTF-8',
+		'encryption_key'     => '',
+		'log_date_format'    => 'Y-m-d H:i:s',
+		'log_threshold'      => 0,
+		'rewrite_short_tags' => TRUE,
+		'subclass_prefix'    => 'EE_',
+		'uri_protocol'       => 'AUTO',
+	);
 
 	/**
 	 * Create a new Config\File object
