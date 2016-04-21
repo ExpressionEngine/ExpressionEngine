@@ -34,6 +34,7 @@
 	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
 		->addPrefix('EllisLab', SYSPATH.'ee/EllisLab/')
 		->addPrefix('Michelf', SYSPATH.'ee/legacy/libraries/typography/Markdown/Michelf/')
+		->addPrefix('Mexitek', SYSPATH.'ee/Mexitek/')
 		->register();
 
 /*
