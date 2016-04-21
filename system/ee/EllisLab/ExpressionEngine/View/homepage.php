@@ -95,8 +95,8 @@
 	$menu = ee()->menu->generate_menu();
 	if ($can_create_channels || count($menu['channels']['create'])): ?>
 
-	<div class="col-group snap">
-		<div class="col w-16 last">
+	<div class="col-group snap mb">
+		<div class="col w-16">
 			<div class="box">
 				<h1 class="btn-right"><?=lang('content')?>
 					<?php if ($number_of_channels == 0): ?>
@@ -130,6 +130,23 @@
 					<ul class="arrow-list">
 						<li><a href="<?=ee('CP/URL', 'publish/edit')?>"><?=sprintf(lang('entries_with_comments'), $number_of_entries, $number_of_comments)?></a></li>
 						<li><a href="<?=ee('CP/URL')->make('publish/edit', array('filter_by_status' => 'closed'))?>"><?=sprintf(lang('closed_entries_with_comments'), $number_of_closed_entries, $number_of_comments_on_closed_entries)?></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-group snap">
+		<div class="col w-16 last">
+			<div class="box">
+				<h1>News</h1>
+				<div class="info">
+					<ul class="arrow-list">
+						<?php foreach ($news as $item): ?>
+							<li>
+								<a href="<?=$item['link']?>"><?=$item['title']?></a>
+							</li>
+						<?php endforeach; ?>
 					</ul>
 				</div>
 			</div>

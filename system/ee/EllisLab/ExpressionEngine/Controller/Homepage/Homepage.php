@@ -102,6 +102,36 @@ class Homepage extends CP_Controller {
 		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
 
+		ee()->load->library(array('rss_parser', 'typography'));
+		$news = array();
+		$feed = ee()->rss_parser->create(
+			'https://ellislab.com/blog/rss-feed/cpnews/',
+			60 * 6, // 6 hour cache
+			'cpnews_feed'
+		);
+
+		foreach ($feed->get_items(0, 10) as $item)
+		{
+			$news[] = array(
+				'title'   => strip_tags($item->get_title()),
+				'date'    => ee()->localize->human_time($item->get_date('U')),
+				'content' => ee()->security->xss_clean(
+					ee()->typography->parse_type(
+						$item->get_content(),
+						array(
+							'text_format'   => 'xhtml',
+							'html_format'   => 'all',
+							'auto_links'    => 'y',
+							'allow_img_url' => 'n'
+						)
+					)
+				),
+				'link'    => ee()->cp->masked_url($item->get_permalink())
+			);
+		}
+
+		$vars['news'] = $news;
+
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
 	}
