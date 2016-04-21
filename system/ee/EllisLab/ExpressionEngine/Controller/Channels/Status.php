@@ -762,7 +762,7 @@ class Status extends AbstractChannelsController {
 	 */
 	public function validateHex($hex)
 	{
-		if ($hex != '' && ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
+		if ($hex != '' && ! preg_match('/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
 		{
 			ee()->form_validation->set_message('validateHex', lang('invalid_hex_code'));
 			return FALSE;
@@ -792,7 +792,7 @@ class Status extends AbstractChannelsController {
 		}
 
 		$status->status = ee()->input->post('status');
-		$status->highlight = ee()->input->post('highlight');
+		$status->highlight = ltrim(ee()->input->post('highlight'), '#');
 
 		$access = ee()->input->post('status_access') ?: array();
 
