@@ -106,33 +106,41 @@ class Homepage extends CP_Controller {
 		ee()->load->library(array('rss_parser', 'typography'));
 		$url_rss = 'https://ellislab.com/blog/rss-feed/cpnews/';
 		$news = array();
-		$feed = ee()->rss_parser->create(
-			$url_rss,
-			60 * 6, // 6 hour cache
-			'cpnews_feed'
-		);
 
-		foreach ($feed->get_items(0, 10) as $item)
+		try
 		{
-			$news[] = array(
-				'title'   => strip_tags($item->get_title()),
-				'date'    => ee()->localize->format_date(
-					"%j%S %F, %Y",
-					$item->get_date('U')
-				),
-				'content' => ee()->security->xss_clean(
-					ee()->typography->parse_type(
-						$item->get_content(),
-						array(
-							'text_format'   => 'xhtml',
-							'html_format'   => 'all',
-							'auto_links'    => 'y',
-							'allow_img_url' => 'n'
-						)
-					)
-				),
-				'link'    => ee()->cp->masked_url($item->get_permalink())
+			$feed = ee()->rss_parser->create(
+				$url_rss,
+				60 * 6, // 6 hour cache
+				'cpnews_feed'
 			);
+
+			foreach ($feed->get_items(0, 10) as $item)
+			{
+				$news[] = array(
+					'title'   => strip_tags($item->get_title()),
+					'date'    => ee()->localize->format_date(
+						"%j%S %F, %Y",
+						$item->get_date('U')
+					),
+					'content' => ee()->security->xss_clean(
+						ee()->typography->parse_type(
+							$item->get_content(),
+							array(
+								'text_format'   => 'xhtml',
+								'html_format'   => 'all',
+								'auto_links'    => 'y',
+								'allow_img_url' => 'n'
+							)
+						)
+					),
+					'link'    => ee()->cp->masked_url($item->get_permalink())
+				);
+			}
+		}
+		catch (\Exception $e)
+		{
+			// Nothing to see here, the view will take care of it
 		}
 
 		$vars['news']    = $news;
