@@ -139,7 +139,7 @@
 	<div class="col-group snap">
 		<div class="col w-16 last">
 			<div class="box widget">
-				<h1><?=sprintf(lang('ellislab_news'), $url_ellislab)?> <a class="btn action" href="<?=$url_rss?>" rel="external">RSS</a></h1>
+				<h1><?=lang('eecms_news')?> <a class="btn action" href="<?=$url_rss?>" rel="external">RSS</a></h1>
 				<?php if (empty($news)): ?>
 					<div class="widget-empty">
  						<div class="widget-content">
@@ -149,7 +149,6 @@
  					</div>
 				<?php else: ?>
 					<div class="info">
-						<h2><?=lang('latest_news_and_articles')?></h2>
 						<div class="col-group">
 							<div class="col w-8">
 								<ul class="arrow-list">

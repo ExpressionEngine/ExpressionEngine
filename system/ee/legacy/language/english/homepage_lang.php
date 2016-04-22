@@ -60,7 +60,7 @@ $lang = array(
 
 'rss' => 'RSS',
 
-'ellislab_news' => '<a href="%s" rel="external">EllisLab.com</a> News',
+'eecms_news' => 'ExpressionEngine News',
 
 'news_fetch_failure' => 'Oops, we couldn\'t fetch the news.',
 

@@ -135,9 +135,8 @@ class Homepage extends CP_Controller {
 			);
 		}
 
-		$vars['news']         = $news;
-		$vars['url_ellislab'] = ee()->cp->masked_url('https://ellislab.com/');
-		$vars['url_rss']      = $url_rss;
+		$vars['news']    = $news;
+		$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
