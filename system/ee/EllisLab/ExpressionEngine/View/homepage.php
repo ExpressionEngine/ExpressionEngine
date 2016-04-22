@@ -91,10 +91,10 @@
 			</div>
 		</div>
 	</div>
-	<?php
-	$menu = ee()->menu->generate_menu();
-	if ($can_create_channels || count($menu['channels']['create'])): ?>
 
+<?php
+$menu = ee()->menu->generate_menu();
+if ($can_create_channels || count($menu['channels']['create'])): ?>
 	<div class="col-group snap mb">
 		<div class="col w-16">
 			<div class="box">
@@ -135,7 +135,9 @@
 			</div>
 		</div>
 	</div>
+<?php endif; ?>
 
+<?php if ($can_view_homepage_news): ?>
 	<div class="col-group snap">
 		<div class="col w-16 last">
 			<div class="box widget">
@@ -176,6 +178,5 @@
 			</div>
 		</div>
 	</div>
-
-	<?php endif; ?>
+<?php endif; ?>
 </div>
