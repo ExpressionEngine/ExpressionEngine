@@ -104,7 +104,7 @@ class Homepage extends CP_Controller {
 
 		// Gather the news
 		ee()->load->library(array('rss_parser', 'typography'));
-		$url_rss = 'https://ellislab.com/blog/rss-feed/cpnews/';
+		$url_rss = 'feed://ellislab.com/blog/rss-feed/cpnews/';
 		$news = array();
 
 		try
