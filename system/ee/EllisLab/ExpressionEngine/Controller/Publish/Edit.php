@@ -248,9 +248,8 @@ class Edit extends AbstractPublishController {
 
 			$disabled_checkbox = ! $can_delete;
 
-			$status = ee('Model')->get('Status')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', $entry->Channel->status_group)
+			// Display status highlight if one exists
+			$status = $statuses->filter('group_id', $entry->Channel->status_group)
 				->filter('status', $entry->status)
 				->first();
 
