@@ -102,10 +102,12 @@ class Homepage extends CP_Controller {
 		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
 
+		// Gather the news
 		ee()->load->library(array('rss_parser', 'typography'));
+		$url_rss = 'https://ellislab.com/blog/rss-feed/cpnews/';
 		$news = array();
 		$feed = ee()->rss_parser->create(
-			'https://ellislab.com/blog/rss-feed/cpnews/',
+			$url_rss,
 			60 * 6, // 6 hour cache
 			'cpnews_feed'
 		);
@@ -114,7 +116,10 @@ class Homepage extends CP_Controller {
 		{
 			$news[] = array(
 				'title'   => strip_tags($item->get_title()),
-				'date'    => ee()->localize->human_time($item->get_date('U')),
+				'date'    => ee()->localize->format_date(
+					"%j%S %F, %Y",
+					$item->get_date('U')
+				),
 				'content' => ee()->security->xss_clean(
 					ee()->typography->parse_type(
 						$item->get_content(),
@@ -130,7 +135,9 @@ class Homepage extends CP_Controller {
 			);
 		}
 
-		$vars['news'] = $news;
+		$vars['news']         = $news;
+		$vars['url_ellislab'] = ee()->cp->masked_url('https://ellislab.com/');
+		$vars['url_rss']      = $url_rss;
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);

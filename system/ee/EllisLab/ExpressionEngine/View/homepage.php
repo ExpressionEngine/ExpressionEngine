@@ -138,19 +138,45 @@
 
 	<div class="col-group snap">
 		<div class="col w-16 last">
-			<div class="box">
-				<h1>News</h1>
-				<div class="info">
-					<ul class="arrow-list">
-						<?php foreach ($news as $item): ?>
-							<li>
-								<a href="<?=$item['link']?>"><?=$item['title']?></a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
+			<div class="box widget">
+				<h1><?=sprintf(lang('ellislab_news'), $url_ellislab)?> <a class="btn action" href="<?=$url_rss?>" rel="external">RSS</a></h1>
+				<?php if (empty($news)): ?>
+					<div class="widget-empty">
+ 						<div class="widget-content">
+ 							<p><?=lang('news_fetch_failure')?></p>
+ 							<a href="" class="btn submit"><?=lang('retry')?></a>
+ 						</div>
+ 					</div>
+				<?php else: ?>
+					<div class="info">
+						<h2><?=lang('latest_news_and_articles')?></h2>
+						<div class="col-group">
+							<div class="col w-8">
+								<ul class="arrow-list">
+									<?php for ($i = 0; $i < 5; $i++) { ?>
+										<li>
+											<a href="<?=$news[$i]['link']?>" rel="external"><b><?=$news[$i]['title']?></b></a>
+											<time>&mdash; <?=$news[$i]['date']?></time>
+										</li>
+										<?php } ?>
+									</ul>
+								</div>
+								<div class="col w-8">
+									<ul class="arrow-list">
+										<?php for ($i = 5; $i < 10; $i++) { ?>
+											<li>
+												<a href="<?=$news[$i]['link']?>" rel="external"><b><?=$news[$i]['title']?></b></a>
+												<time>&mdash; <?=$news[$i]['date']?></time>
+											</li>
+											<?php } ?>
+										</ul>
+									</div>
+								</div>
+							</div>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>
+
 	<?php endif; ?>
 </div>
