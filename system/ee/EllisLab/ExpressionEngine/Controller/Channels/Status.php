@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use Mexitek\PHPColors\Color;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -557,6 +558,19 @@ class Status extends AbstractChannelsController {
 		// Member IDs NOT in $no_access have access...
 		list($allowed_groups, $member_groups) = $this->getAllowedGroups(is_null($status_id) ? NULL : $status);
 
+		// Create the status example
+		$status_style = '';
+		if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
+		{
+			$foreground = $this->getForegroundColor($status->highlight);
+			$status_style = "style='background-color: {$status->highlight}; border-color: {$status->highlight}; color: {$foreground};'";
+		}
+
+		$status_name = (empty($status->status)) ? lang('status') : $status->status;
+
+		$status_class = str_replace(' ', '_', strtolower($status->status));
+		$status_example = '<span class="status-tag st-'.$status_class.'" '.$status_style.'>'.$status_name.'</span>';
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -574,6 +588,7 @@ class Status extends AbstractChannelsController {
 				array(
 					'title' => 'highlight_color',
 					'desc' => 'highlight_color_desc',
+					'example' => $status_example,
 					'fields' => array(
 						'highlight' => array(
 							'type' => 'text',
@@ -672,9 +687,43 @@ class Status extends AbstractChannelsController {
 			$status_group->group_name . ' &mdash; ' . lang('statuses')
 		);
 
+		ee()->javascript->set_global('status.default_name', lang('status'));
+		ee()->javascript->set_global('status.foreground_color_url', ee('CP/URL', 'channels/status/get-foreground-color')->compile());
+		ee()->cp->add_js_script('file', 'cp/channel/status_edit');
 		ee()->cp->add_js_script('plugin', 'minicolors');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Retrieve the foreground color for a given status color
+	 *
+	 * @param string $color The hex color for the background
+	 * @return string The hex color best suited for the background color
+	 */
+	public function getForegroundColor($color = '')
+	{
+		if (AJAX_REQUEST)
+		{
+			$color = ee()->input->post('color');
+		}
+		else if ($color = '')
+		{
+			throw new \InvalidArgumentException();
+		}
+
+		$background = new Color($color);
+		$foreground = ($background->isLight())
+			? $background->darken(100)
+			: $background->lighten(100);
+
+		if (AJAX_REQUEST)
+		{
+			echo $foreground;
+			exit;
+		}
+
+		return $foreground;
 	}
 
 	/**
