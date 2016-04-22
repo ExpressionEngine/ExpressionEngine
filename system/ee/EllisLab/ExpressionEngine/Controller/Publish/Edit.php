@@ -149,7 +149,8 @@ class Edit extends AbstractPublishController {
 		$entry_id = ee()->session->flashdata('entry_id');
 
 		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		foreach ($entries->all() as $entry)
 		{
