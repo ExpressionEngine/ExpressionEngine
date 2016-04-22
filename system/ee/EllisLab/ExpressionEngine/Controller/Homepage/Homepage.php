@@ -114,7 +114,7 @@ class Homepage extends CP_Controller {
 						"%j%S %F, %Y",
 						$item->get_date('U')
 					),
-					'content' => ee()->security->xss_clean(
+					'content' => ee('security/XSS')->clean(
 						ee()->typography->parse_type(
 							$item->get_content(),
 							array(
