@@ -49,6 +49,9 @@ class EE_RSS_Parser {
 		// Load our own caching driver for SimplePie
 		$feed->registry->call('Cache', 'register', array('ee', 'EE_SimplePie_Cache_driver'));
 
+		// Set the timeout lower
+		$feed->set_timeout(3);
+
 		// Establish the cache
 		$feed->set_cache_location('ee:' . $cache_name);
 		$feed->set_cache_duration($duration * 60); // Get parameter to seconds
