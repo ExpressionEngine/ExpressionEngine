@@ -148,6 +148,10 @@ class Edit extends AbstractPublishController {
 
 		$entry_id = ee()->session->flashdata('entry_id');
 
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		foreach ($entries->all() as $entry)
 		{
 			if (ee()->cp->allowed_group('can_edit_other_entries')
@@ -250,20 +254,29 @@ class Edit extends AbstractPublishController {
 				->filter('status', $entry->status)
 				->first();
 
-			$highlight = new Color($status->highlight);
-			$color = ($highlight->isLight())
-				? $highlight->darken(100)
-				: $highlight->lighten(100);
+			if ($status)
+			{
+				$highlight = new Color($status->highlight);
+				$color = ($highlight->isLight())
+					? $highlight->darken(100)
+					: $highlight->lighten(100);
+
+				$status = array(
+					'content'          => $status->status,
+					'color'            => $color,
+					'background-color' => $status->highlight
+				);
+			}
+			else
+			{
+				$status = $entry->status;
+			}
 
 			$column = array(
 				$entry->entry_id,
 				$title,
 				ee()->localize->human_time($entry->entry_date),
-				array(
-					'content'          => $status->status,
-					'color'            => $color,
-					'background-color' => $status->highlight
-				),
+				$status,
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
