@@ -123,13 +123,8 @@ end
 # @return [void]
 
 def clean_db
-  t1 = Time.now
   $db.query(IO.read('sql/truncate_db.sql'))
   clear_db_result
-
-  t2 = Time.now
-  print "truncate: ", t2 - t1, "\n"
-
 
   yield if block_given?
 
@@ -140,7 +135,6 @@ end
 def reset_db(test_file = '')
 
   clean_db do
-    t1 = Time.now
     if test_file == 'updater'
       $db.query(IO.read('sql/database_2.10.1.sql'))
       clear_db_result
@@ -148,9 +142,6 @@ def reset_db(test_file = '')
       $db.query(IO.read('sql/database.sql'))
       clear_db_result
     end
-    t2 = Time.now
-    print "create: ", t2 - t1, "\n"
-
   end
 
 end
