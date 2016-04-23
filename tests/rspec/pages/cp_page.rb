@@ -83,5 +83,10 @@ class ControlPanelPage < SitePrism::Page
       sleep 0.01
       i += 1 # Prevent infinite loop
     end
+
+    # Element is still there after our timeout? No good.
+    if element_count != count && i == (seconds * 100)
+      raise StandardError, "Error message did not disappear"
+    end
   end
 end
