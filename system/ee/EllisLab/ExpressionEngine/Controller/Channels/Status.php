@@ -707,7 +707,7 @@ class Status extends AbstractChannelsController {
 		{
 			$color = ee()->input->post('color');
 		}
-		else if ($color = '')
+		else if ($color == '')
 		{
 			throw new \InvalidArgumentException();
 		}
