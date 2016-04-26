@@ -625,7 +625,7 @@ class EE_Session {
 		$this->userdata['display_photos'] = ee()->config->item('enable_photos');
 
 		//  Are users allowed to localize?
-		if (ee()->config->item('allow_member_localization') == 'n')
+		if (ee()->config->item('allow_member_localization') == 'n' OR empty($this->userdata['date_format']))
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
 			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';
