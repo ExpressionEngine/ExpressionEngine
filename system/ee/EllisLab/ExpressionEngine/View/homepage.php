@@ -91,12 +91,12 @@
 			</div>
 		</div>
 	</div>
-	<?php
-	$menu = ee()->menu->generate_menu();
-	if ($can_create_channels || count($menu['channels']['create'])): ?>
 
-	<div class="col-group snap">
-		<div class="col w-16 last">
+<?php
+$menu = ee()->menu->generate_menu();
+if ($can_create_channels || count($menu['channels']['create'])): ?>
+	<div class="col-group snap mb">
+		<div class="col w-16">
 			<div class="box">
 				<h1 class="btn-right"><?=lang('content')?>
 					<?php if ($number_of_channels == 0): ?>
@@ -135,5 +135,48 @@
 			</div>
 		</div>
 	</div>
-	<?php endif; ?>
+<?php endif; ?>
+
+<?php if ($can_view_homepage_news): ?>
+	<div class="col-group snap">
+		<div class="col w-16 last">
+			<div class="box widget">
+				<h1><?=lang('eecms_news')?> <a class="btn action" href="<?=$url_rss?>" rel="external">RSS</a></h1>
+				<?php if (empty($news)): ?>
+					<div class="widget-empty">
+ 						<div class="widget-content">
+ 							<p><?=lang('news_fetch_failure')?></p>
+ 							<a href="" class="btn submit"><?=lang('retry')?></a>
+ 						</div>
+ 					</div>
+				<?php else: ?>
+					<div class="info">
+						<div class="col-group">
+							<div class="col w-8">
+								<ul class="arrow-list">
+									<?php for ($i = 0; $i < 5; $i++) { ?>
+										<li>
+											<a href="<?=$news[$i]['link']?>" rel="external"><b><?=$news[$i]['title']?></b></a>
+											<time>&mdash; <?=$news[$i]['date']?></time>
+										</li>
+										<?php } ?>
+									</ul>
+								</div>
+								<div class="col w-8">
+									<ul class="arrow-list">
+										<?php for ($i = 5; $i < 10; $i++) { ?>
+											<li>
+												<a href="<?=$news[$i]['link']?>" rel="external"><b><?=$news[$i]['title']?></b></a>
+												<time>&mdash; <?=$news[$i]['date']?></time>
+											</li>
+											<?php } ?>
+										</ul>
+									</div>
+								</div>
+							</div>
+				<?php endif; ?>
+			</div>
+		</div>
+	</div>
+<?php endif; ?>
 </div>

@@ -129,6 +129,8 @@ $lang = array(
 
 'reveal_sidebar' => 'show sidebar',
 
+'retry' => 'Retry?',
+
 //----------------------------
 // Buttons
 //----------------------------
