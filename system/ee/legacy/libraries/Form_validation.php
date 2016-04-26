@@ -634,7 +634,7 @@ class EE_Form_validation {
   			if (strpos($str, '@gmail.com') !== FALSE)
   			{
   				$address = explode('@', $str);
-				$query = ee()->db->query('SELECT REPLACE(REPLACE(email, "@gmail.com", ""), ".", "") AS gmail
+				$query = ee()->db->query('SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
 					FROM exp_members
 					WHERE email LIKE "%gmail.com"
 					HAVING gmail = "'.str_replace('.', '', $address[0]).'";');
