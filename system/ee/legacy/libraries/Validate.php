@@ -380,9 +380,23 @@ class EE_Validate {
 			/**  Duplicate emails?
 			/** -------------------------------------*/
 
-			$query = ee()->db->query("SELECT COUNT(*) as count FROM exp_members WHERE email = '".ee()->db->escape_str($this->email)."'");
+			// Gmail addresses ignore . in the username
+			if (strpos($this->email, '@gmail.com') !== FALSE)
+			{
+				$address = explode('@', $this->email);
+				$query = ee()->db->query('SELECT REPLACE(REPLACE(email, "@gmail.com", ""), ".", "") AS gmail
+					FROM exp_members
+					WHERE email LIKE "%gmail.com"
+					HAVING gmail = "'.str_replace('.', '', $address[0]).'";');
+				$count = $query->num_rows();
+			}
+			else
+			{
+				$count = ee()->db->where('email', $this->email)
+					->count_all_results('members');
+			}
 
-			if ($query->row('count')  > 0)
+			if ($count > 0)
 			{
 				$this->errors[] = ee()->lang->line('email_taken');
 			}
