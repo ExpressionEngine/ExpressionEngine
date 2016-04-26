@@ -132,6 +132,12 @@ class RequirementsChecker
 			'Your PHP installation does not have the OpenSSL extension enabled.',
 			function_exists('openssl_verify')
 		);
+
+		// ZipArchive extension
+		$this->requirements[] = new Requirement(
+			'Your PHP installation does not have the OpenSSL extension enabled.',
+			class_exists('ZipArchive')
+		);
 	}
 
 	/**
