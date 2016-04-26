@@ -49,15 +49,16 @@ class File implements Config {
 	 * Get an item from the config, you can use
 	 * "item.subitem.subsubitem" to drill down in the config
 	 *
-	 * @param  string $path    The config item to get
-	 * @param  mixed  $default The value to return if $path can not be found
-	 * @return mixed           The value found for $path, otherwise $default
+	 * @param  string $path      The config item to get
+	 * @param  mixed  $default   The value to return if $path can not be found
+	 * @param  mixed  $raw_value Whether or not to return the raw value with unparsed variables
+	 * @return mixed             The value found for $path, otherwise $default
 	 */
-	public function get($path, $default = NULL)
+	public function get($path, $default = NULL, $raw_value = FALSE)
 	{
 		$config = $this->getArrayValue($this->config, $path);
 
-		return ($config !== NULL) ? $config : $default;
+		return ($config !== NULL) ? parse_config_value($config) : $default;
 	}
 
 	/**

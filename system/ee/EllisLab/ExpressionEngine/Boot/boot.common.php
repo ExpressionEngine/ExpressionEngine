@@ -230,7 +230,28 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			return FALSE;
 		}
 
-		return $config[$item];
+		return parse_config_value($config[$item]);
+	}
+
+// ------------------------------------------------------------------------
+
+/**
+* Parses select variables in a config value's string
+*
+* @access	public
+* @return	mixed
+*/
+	function parse_config_value($value)
+	{
+		if (is_string($value) && strpos($value, '{') !== FALSE)
+		{
+			foreach (array('base_path', 'base_url') as $variable)
+			{
+				$value = str_replace('{'.$variable.'}', config_item($variable), $value);
+			}
+		}
+
+		return $value;
 	}
 
 // ------------------------------------------------------------------------

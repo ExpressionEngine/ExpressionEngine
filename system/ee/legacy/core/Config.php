@@ -371,10 +371,10 @@ class EE_Config {
 	 * @access	public
 	 * @param	string	the config item name
 	 * @param	string	the index name
-	 * @param	bool
+	 * @param	boolean	Whether or not to return the raw value with unparsed variables
 	 * @return	string
 	 */
-	function item($item, $index = '')
+	function item($item, $index = '', $raw_value = FALSE)
 	{
 		if ($index == '')
 		{
@@ -400,7 +400,7 @@ class EE_Config {
 			$pref = $this->config[$index][$item];
 		}
 
-		return $pref;
+		return $raw_value ? $pref : parse_config_value($pref);
 	}
 
 
@@ -506,6 +506,8 @@ class EE_Config {
 	{
 		$system_default = array(
 			'is_site_on',
+			'base_url',
+			'base_path',
 			'site_index',
 			'site_url',
 			'cp_url',
@@ -1824,7 +1826,7 @@ class EE_Config {
 			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
 		}
 
-		return $pref;
+		return parse_config_value($pref);
 	}
 
 
