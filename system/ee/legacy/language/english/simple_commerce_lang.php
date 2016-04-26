@@ -192,15 +192,6 @@ $lang = array(
 
 'year' => 'Year',
 
-'ipn_url' => 'Instant Payment Notification (IPN) URL',
-
-'ipn_details' => 'Instant Payment Notification is a PayPal service that allows the processing of
-transactions on their site and then notifying ExpressionEngine when the transaction is complete
-and accepted.  This allows purchases to not be stored and recorded in the Simple Commerce module
-until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module automates all of this
-behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
-and provide them with the URL below.',
-
 'purchases' => 'Purchases',
 
 'purchase' => 'Purchase',
@@ -223,19 +214,7 @@ and provide them with the URL below.',
 
 'recurring_purchase_warning' => "Recurring purchases must be set up through PayPal for full functionality.",
 
-'current_subscriptions' => 'Current Subscriptions',
-
-'add_items' => 'Add Items',
-
-'edit_items' => 'Edit Items',
-
 'export_items' => 'Export All Items',
-
-'store_purchases' => 'Store Purchases',
-
-'edit_purchases' => 'Edit Purchases',
-
-'add_purchase' => 'Add Purchase',
 
 'export_purchases' => 'Export All Purchases',
 
@@ -253,45 +232,17 @@ and provide them with the URL below.',
 
 'entry_title' => 'Entry Title',
 
-'update_item' => 'Update Item',
-
-'update_items' => 'Update Items',
-
 'sale_price' => 'Sale price',
 
 'regular_price' => 'Regular price',
-
-'item_enabled' => 'Item Enabled',
-
-'purchase_actions' => 'Purchase Actions',
-
-'store_emails' => 'Store Emails',
-
-'add_email_template' => 'Add Email Template',
-
-'template_name' => 'Template Name',
-
-'edit_email_templates' => 'Edit Email Templates',
 
 'sales_information' => 'Sales Information',
 
 'no_email_templates' => 'Email templates',
 
-'no_purchases' => 'No Purchases',
-
 'perform_item_actions' => 'Perform Actions for Item?',
 
 'email_name' => 'Email Template Name',
-
-'edit_emails' => 'Edit Emails',
-
-'monthly_sales' => 'Monthly Sales',
-
-'customer_email' => 'Customer Email Template',
-
-'on_subscribe' => 'On Subscribe',
-
-'on_unsubscribe' => 'On Unsubscribe',
 
 'email_options' => 'Email Options',
 
@@ -306,8 +257,6 @@ and provide them with the URL below.',
 'admin_email_address' => 'Admin email address',
 
 'admin_email_address_desc' => 'Email address to notify when a sale is made.',
-
-'invalid_price' => 'Invalid Price!',
 
 'select_admin_template' => 'Must Select Admin Email Template if Email Address is Filled Out',
 
