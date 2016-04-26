@@ -62,29 +62,19 @@ class RequirementsChecker
 				return FALSE;
 			}
 
-			$hostname = $this->db_config['hostname'];
-			$username = $this->db_config['username'];
-			$password = $this->db_config['password'];
-			$database = $this->db_config['database'];
-			$char_set = $this->db_config['char_set'];
-			$pconnect = $this->db_config['pconnect'];
-			$port     = $this->db_config['port'];
-
-			$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
-
-			$options = array(
-				PDO::ATTR_PERSISTENT => $pconnect,
-				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-				PDO::ATTR_CASE => PDO::CASE_NATURAL,
-				PDO::ATTR_STRINGIFY_FETCHES => FALSE
-			);
-
-			$pdo = new PDO(
-				$dsn,
-				$username,
-				$password,
-				$options
-			);
+			try
+			{
+				$pdo = $this->connectToDbUsingConfig($this->db_config);
+			}
+			catch (Exception $e)
+			{
+				// If they're using localhost, fall back to 127.0.0.1
+				if ($hostname == 'localhost')
+				{
+					$this->db_config['hostname'] = '127.0.0.1';
+					$pdo = $this->connectToDbUsingConfig($this->db_config);
+				}
+			}
 
 			if ( ! $pdo)
 			{
@@ -137,6 +127,39 @@ class RequirementsChecker
 		$this->requirements[] = new Requirement(
 			'Your PHP installation does not have the OpenSSL extension enabled.',
 			class_exists('ZipArchive')
+		);
+	}
+
+	/**
+	 * Attempts to connect to a database in the specifed config array
+	 *
+	 * @param	array	Database connection configuration
+	 * @return	PDO		PDO connection object
+	 */
+	private function connectToDbUsingConfig($config)
+	{
+		$hostname = $config['hostname'];
+		$username = $config['username'];
+		$password = $config['password'];
+		$database = $config['database'];
+		$char_set = $config['char_set'];
+		$pconnect = $config['pconnect'];
+		$port     = $config['port'];
+
+		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
+
+		$options = array(
+			PDO::ATTR_PERSISTENT => $pconnect,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_CASE => PDO::CASE_NATURAL,
+			PDO::ATTR_STRINGIFY_FETCHES => FALSE
+		);
+
+		return new PDO(
+			$dsn,
+			$username,
+			$password,
+			$options
 		);
 	}
 
