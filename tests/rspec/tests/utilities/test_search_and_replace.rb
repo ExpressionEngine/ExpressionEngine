@@ -53,7 +53,7 @@ feature 'Search and Replace' do
     should_have_error_text(@page.password_auth, @field_required)
     should_have_form_errors(@page)
 
-    @page.password_auth.set 'test'
+    @page.password_auth.set 'password'
     @page.password_auth.trigger 'blur'
     @page.wait_for_error_message_count(2)
 
