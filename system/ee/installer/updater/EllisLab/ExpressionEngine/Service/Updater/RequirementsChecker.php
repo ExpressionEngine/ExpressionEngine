@@ -69,14 +69,14 @@ class RequirementsChecker
 			catch (Exception $e)
 			{
 				// If they're using localhost, fall back to 127.0.0.1
-				if ($hostname == 'localhost')
+				if ($this->db_config['hostname'] == 'localhost')
 				{
 					$this->db_config['hostname'] = '127.0.0.1';
 					$pdo = $this->connectToDbUsingConfig($this->db_config);
 				}
 			}
 
-			if ( ! $pdo)
+			if ( ! isset($pdo) OR ! $pdo)
 			{
 				throw new Exception('Could not connect to the database using the credentials provided.', 12);
 			}
@@ -144,7 +144,7 @@ class RequirementsChecker
 		$database = $config['database'];
 		$char_set = $config['char_set'];
 		$pconnect = $config['pconnect'];
-		$port     = $config['port'];
+		$port     = isset($config['port']) ? $config['port'] : 3306;
 
 		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
