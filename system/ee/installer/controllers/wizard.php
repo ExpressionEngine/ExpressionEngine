@@ -135,7 +135,7 @@ class Wizard extends CI_Controller {
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'encryption_key'     => '',
+		'encryption_key'     => sha1(uniqid(mt_rand(), TRUE)),
 
 		// Enabled for cleaner view files and compatibility
 		'rewrite_short_tags' => TRUE
