@@ -906,6 +906,7 @@ abstract class EE_Fieldtype {
 			{
 				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
 				{
+					//$v = form_prep(trim($v));
 					$v = trim($v);
 					$field_options[$v] = $v;
 				}
