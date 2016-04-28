@@ -17,20 +17,21 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Verifier');
 		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
 		$this->requirements = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\RequirementsCheckerLoader');
+		$this->sites = Mockery::mock('EllisLab\ExpressionEngine\Library\Data\Collection');
 
 		$this->logger->shouldReceive('log');
 
 		$this->license_number = '1234-1234-1234-1234';
 		$this->payload_url = 'http://0.0.0.0/ee.zip';
 
-		$this->downloader = new Downloader($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements);
+		$this->downloader = new Downloader($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites);
 	}
 
 	private function getPartialMock($methods)
 	{
 		return Mockery::mock(
 			'EllisLab\ExpressionEngine\Service\Updater\Downloader['.$methods.']',
-			[$this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements]
+			[$this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites]
 		);
 	}
 
@@ -50,7 +51,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadConstructor($license_number, $payload_url)
 	{
-		$updater = new Downloader($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements);
+		$updater = new Downloader($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites);
 	}
 
 	public function badUpdaterConstructorProvider()
@@ -518,6 +519,31 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			SYSPATH.'ee/updater'
 		);
 
+		// Protected method stashConfigs() called inside moveUpdater()
+		$site1 = new MockSite();
+		$site1->site_system_preferences = new MockSystemPrefs();
+		$site1->site_system_preferences->theme_folder_path = '/some/theme/path';
+
+		$site2 = new MockSite();
+		$site2->site_system_preferences = new MockSystemPrefs();
+		$site2->site_system_preferences->theme_folder_path = '/some/theme/path2';
+
+		$iterator = new \ArrayIterator([$site1, $site2]);
+		$this->sites->shouldReceive('getIterator')->andReturn($iterator);
+		$this->filesystem->shouldReceive('write')->with(
+			'cache/path/ee_update/configs.json',
+			json_encode([
+				'update_path' => 'cache/path/ee_update/',
+				'archive_path' => 'cache/path/ee_update/ExpressionEngine',
+				'theme_paths' => [
+					'/some/theme/path',
+					'/some/theme/path2'
+				]
+			]),
+			TRUE
+		)->twice();
+
+		// Now moveUpdater()
 		$this->verifier->shouldReceive('verifyPath')->with(
 			SYSPATH . '/ee/updater',
 			SYSPATH . '/ee/updater/hash-manifest',
@@ -562,4 +588,14 @@ class MockRequirement
 	{
 		return $this->message;
 	}
+}
+
+class MockSite
+{
+	public $site_system_preferences;
+}
+
+class MockSystemPrefs
+{
+	public $theme_folder_path;
 }

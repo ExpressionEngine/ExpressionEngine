@@ -311,6 +311,8 @@ class Downloader {
 	 */
 	public function moveUpdater()
 	{
+		$this->stashConfigs();
+
 		$this->logger->log('Moving the updater micro app into place');
 
 		$source = $this->getExtractedArchivePath().'/system/ee/installer/updater';
@@ -333,6 +335,35 @@ class Downloader {
 
 		// No further steps needed, Updater app will take over
 		return FALSE;
+	}
+
+	/**
+	 * Here, we need to gather all the information the updater microapp might need,
+	 * such as file paths. We may not be able to access these things easily from
+	 * within the microapp because they may be stored in any manner of places, so
+	 * we'll grab them early and put them in our working directory for the update.
+	 */
+	protected function stashConfigs()
+	{
+		$theme_paths = [];
+		foreach ($this->sites as $site)
+		{
+			// TODO: When {base_path} thing is merged in, make sure this parses
+			// to the proper path
+			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
+		}
+
+		$configs = [
+			'update_path' => $this->path(),
+			'archive_path' => $this->getExtractedArchivePath(),
+			'theme_paths' => array_unique($theme_paths)
+		];
+
+		$this->filesystem->write(
+			$this->path() . 'configs.json',
+			json_encode($configs),
+			TRUE
+		);
 	}
 
 	/**
