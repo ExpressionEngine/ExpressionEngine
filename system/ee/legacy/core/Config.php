@@ -825,7 +825,7 @@ class EE_Config {
 					$site_prefs[$val] .= '/';
 				}
 
-				$fp = $site_prefs[$val];
+				$fp = parse_config_value($site_prefs[$val]);
 
 				if ( ! @is_dir($fp))
 				{

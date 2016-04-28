@@ -34,7 +34,7 @@ class Writable extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		return $this->getFilesystem()->isWritable($value);
+		return $this->getFilesystem()->isWritable(parse_config_value($value));
 	}
 
 	protected function getFilesystem()

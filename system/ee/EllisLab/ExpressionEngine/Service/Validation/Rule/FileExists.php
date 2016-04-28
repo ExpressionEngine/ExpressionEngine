@@ -34,7 +34,7 @@ class FileExists extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		if ($this->getFilesystem()->exists($value))
+		if ($this->getFilesystem()->exists(parse_config_value($value)))
 		{
 			return TRUE;
 		}
