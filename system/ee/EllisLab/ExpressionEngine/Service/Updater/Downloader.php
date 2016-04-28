@@ -52,11 +52,14 @@ class Downloader {
 	 *
 	 * @param	string				$license_number	License number to send along
 	 * 	with the payload request
-	 * @param	string				$payload_url	URL to request payload from
-	 * @param	Curl\RequestFactory	$curl			cURL service object
-	 * @param	Filesystem			$filesystem		Filesystem service object
-	 * @param	ZipArchive			$zip_archive	PHP-native ZipArchive object
-	 * @param	Config\File			$config			File config service object
+	 * @param	string						$payload_url	URL to request payload from
+	 * @param	Curl\RequestFactory			$curl			cURL service object
+	 * @param	Filesystem					$filesystem		Filesystem service object
+	 * @param	ZipArchive					$zip_archive	PHP-native ZipArchive object
+	 * @param	Config\File					$config			File config service object
+	 * @param	Verifier					$verifier		File verifier object
+	 * @param	Logger						$logger			Updater logger object
+	 * @param	RequirementsCheckerLoader	$requirements	Requirements checker loader object
 	 */
 	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements)
 	{
