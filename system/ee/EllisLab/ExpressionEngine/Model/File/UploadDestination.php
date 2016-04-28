@@ -145,6 +145,11 @@ class UploadDestination extends Model {
 			$value = $this->_property_overrides[$this->id][$name];
 		}
 
+		if ($name == 'url' OR $name == 'server_path')
+		{
+			$value = parse_config_value((string) $value);
+		}
+
 		return $value;
 	}
 
