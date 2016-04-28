@@ -219,9 +219,11 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 * Returns the specified config item
 *
 * @access	public
+* @param	string	$item		Name of config item
+* @param	string	$raw_value	When TRUE, does not run through parse_config_value
 * @return	mixed
 */
-	function config_item($item)
+	function config_item($item, $raw_value = FALSE)
 	{
 		$config =& get_config();
 
@@ -230,7 +232,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			return FALSE;
 		}
 
-		return parse_config_value($config[$item]);
+		return $raw_value ? $config[$item] : parse_config_value($config[$item]);
 	}
 
 // ------------------------------------------------------------------------
@@ -250,7 +252,10 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		{
 			foreach (array('base_path', 'base_url') as $variable)
 			{
-				$var_value = isset($variables[$variable]) ? $variables[$variable] : config_item($variable);
+				// Get the variable's value but prevent a possible infinite loop
+				// by getting the raw config value; will need to revisit if we
+				// allow nested variables later on
+				$var_value = isset($variables[$variable]) ? $variables[$variable] : config_item($variable, TRUE);
 
 				$value = str_replace('{'.$variable.'}', $var_value, $value);
 			}
