@@ -239,15 +239,20 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 * Parses select variables in a config value's string
 *
 * @access	public
+* @param	string	$value		Config value containing variables needing parsed
+* @param	string	$variables	Optional override variables, like when a parsed value
+*   relies on something in POST
 * @return	mixed
 */
-	function parse_config_value($value)
+	function parse_config_value($value, $variables = array())
 	{
 		if (is_string($value) && strpos($value, '{') !== FALSE)
 		{
 			foreach (array('base_path', 'base_url') as $variable)
 			{
-				$value = str_replace('{'.$variable.'}', config_item($variable), $value);
+				$var_value = isset($variables[$variable]) ? $variables[$variable] : config_item($variable);
+
+				$value = str_replace('{'.$variable.'}', $var_value, $value);
 			}
 		}
 
