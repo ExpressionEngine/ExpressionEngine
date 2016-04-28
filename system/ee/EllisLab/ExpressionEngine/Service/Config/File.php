@@ -58,7 +58,12 @@ class File implements Config {
 	{
 		$config = $this->getArrayValue($this->config, $path);
 
-		return ($config !== NULL) ? parse_config_value($config) : $default;
+		if ( ! $raw_value)
+		{
+			$config = parse_config_value($config);
+		}
+
+		return ($config !== NULL) ? $config : $default;
 	}
 
 	/**
