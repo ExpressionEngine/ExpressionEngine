@@ -55,8 +55,8 @@ class Verifier {
 		$hashmap = $this->createHashmap($this->filesystem->read($hash_path));
 		$subpath = ltrim($subpath, '/');
 
-		$missing_files = array();
-		$corrupt_files = array();
+		$missing_files = [];
+		$corrupt_files = [];
 
 		foreach ($hashmap as $file_path => $hash)
 		{
@@ -111,7 +111,7 @@ class Verifier {
 	{
 		$lines = explode("\n", $hashmap);
 
-		$hashmap = array();
+		$hashmap = [];
 		foreach ($lines as $line) {
 			$line_parts = explode(' ', $line);
 			if (count($line_parts) == 2)

@@ -201,7 +201,7 @@ class Downloader {
 
 		$curl = $this->curl->post(
 			$this->payload_url,
-			array('license' => $this->license_number)
+			['license' => $this->license_number]
 		);
 
 		$data = $curl->exec();

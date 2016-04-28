@@ -30,7 +30,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	{
 		return Mockery::mock(
 			'EllisLab\ExpressionEngine\Service\Updater\Downloader['.$methods.']',
-			array($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements)
+			[$this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements]
 		);
 	}
 
@@ -59,16 +59,16 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$license_number = '';
 		$payload_url = 'http://0.0.0.0/ee.zip';
 
-		$return = array(array($license_number, $payload_url));
+		$return = [[$license_number, $payload_url]];
 
 		// No payload
 		$license_number = '1234-1234-1234-1234';
 		$payload_url = '';
 
 		// Nothing
-		$return[] = array($license_number, $payload_url);
+		$return[] = [$license_number, $payload_url];
 
-		$return[] = array('', '');
+		$return[] = ['', ''];
 
 		return $return;
 	}
@@ -280,7 +280,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->curl->shouldReceive('post')->with(
 				$this->payload_url,
-				array('license' => $this->license_number)
+				['license' => $this->license_number]
 			)
 			->once()
 			->andReturn($request);
@@ -333,7 +333,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->curl->shouldReceive('post')->with(
 				$this->payload_url,
-				array('license' => $this->license_number)
+				['license' => $this->license_number]
 			)
 			->andReturn($request);
 

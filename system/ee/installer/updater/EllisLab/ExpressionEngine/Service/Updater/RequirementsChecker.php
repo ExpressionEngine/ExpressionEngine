@@ -28,7 +28,7 @@ class RequirementsChecker
 	private $requirements = [];
 	private $minimum_php = '5.4.0';
 	private $minimum_mysql = '5.0.3';
-	private $db_config = array();
+	private $db_config = [];
 
 	/**
 	 * Constructor
@@ -148,12 +148,12 @@ class RequirementsChecker
 
 		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
-		$options = array(
+		$options = [
 			PDO::ATTR_PERSISTENT => $pconnect,
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_CASE => PDO::CASE_NATURAL,
 			PDO::ATTR_STRINGIFY_FETCHES => FALSE
-		);
+		];
 
 		return new PDO(
 			$dsn,

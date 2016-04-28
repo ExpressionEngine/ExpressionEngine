@@ -23,11 +23,11 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 
 	public function testVerifyPath()
 	{
-		$hashmap = array(
+		$hashmap = [
 			'some/file.ext' => '7306a81f37ed094bf8a8d61aee3b795f5c51e501',
 			'some/file2.ext' => '23730c203df385026e5604a77a9675094d5f3acc',
 			'some/file3.ext' => '9b1fea0170c2baa1ab29d07e185db04afed839c7'
-		);
+		];
 
 		$this->filesystem->shouldReceive('read')
 			->with('manifest/path')
@@ -141,14 +141,14 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 
 	public function testVerifySubPath()
 	{
-		$hashmap = array(
+		$hashmap = [
 			'some/file.ext' => '7306a81f37ed094bf8a8d61aee3b795f5c51e501',
 			'some/file2.ext' => '23730c203df385026e5604a77a9675094d5f3acc',
 			'some/file3.ext' => '9b1fea0170c2baa1ab29d07e185db04afed839c7',
 			'some_other_path/file.ext' => '7306a81f37ed094bf8a8d61aee3b795f5c51e501',
 			'some_other_path/file2.ext' => '23730c203df385026e5604a77a9675094d5f3acc',
 			'some_other_path/file3.ext' => '9b1fea0170c2baa1ab29d07e185db04afed839c7'
-		);
+		];
 
 		$this->filesystem->shouldReceive('read')
 			->with('manifest/path')
