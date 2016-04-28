@@ -31,6 +31,8 @@ use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 class SystemPreferences extends CustomType {
 
 	protected $is_site_on;
+	protected $base_url;
+	protected $base_path;
 	protected $site_index;
 	protected $site_url;
 	protected $cp_url;
