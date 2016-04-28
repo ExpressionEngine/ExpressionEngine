@@ -180,7 +180,8 @@ return array(
 				$ee->make('Config')->getFile(),
 				new Updater\Verifier($filesystem),
 				new Updater\Logger($file_logger),
-				new Updater\RequirementsCheckerLoader($filesystem)
+				new Updater\RequirementsCheckerLoader($filesystem),
+				$ee->make('Model')->get('Site')->all()
 			);
 		}
 	),

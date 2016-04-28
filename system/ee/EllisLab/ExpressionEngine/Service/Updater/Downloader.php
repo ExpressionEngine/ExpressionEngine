@@ -6,6 +6,7 @@ use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl\RequestFactory;
 use EllisLab\ExpressionEngine\Service\Config\File;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use ZipArchive;
 
 /**
@@ -42,6 +43,7 @@ class Downloader {
 	protected $verifier = NULL;
 	protected $logger = NULL;
 	protected $requirements = NULL;
+	protected $sites = NULL;
 
 	protected $filename = 'ExpressionEngine.zip';
 	protected $extracted_folder = 'ExpressionEngine';
@@ -60,8 +62,9 @@ class Downloader {
 	 * @param	Verifier					$verifier		File verifier object
 	 * @param	Logger						$logger			Updater logger object
 	 * @param	RequirementsCheckerLoader	$requirements	Requirements checker loader object
+	 * @param	Collection					$sites			Collection of all the Site model objects
 	 */
-	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements)
+	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements, Collection $sites)
 	{
 		if (empty($license_number) OR ! is_string($license_number))
 		{
@@ -82,6 +85,7 @@ class Downloader {
 		$this->verifier = $verifier;
 		$this->logger = $logger;
 		$this->requirements = $requirements;
+		$this->sites = $sites;
 
 		// Attempt to set time and memory limits
 		@set_time_limit(0);
