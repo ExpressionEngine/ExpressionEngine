@@ -78,7 +78,7 @@ feature 'Outgoing Email Settings' do
       @page.mail_protocol.select 'SMTP'
       @page.smtp_server.set ''
       @page.smtp_server.trigger 'blur'
-      @page.wait_for_error_message_count(2)
+      @page.wait_for_error_message_count(1)
       should_have_form_errors(@page)
       should_have_error_text(@page.smtp_server, server_required)
     end
@@ -86,38 +86,38 @@ feature 'Outgoing Email Settings' do
     it 'validates webmaster email when using an empty string' do
       @page.webmaster_email.set ''
       @page.webmaster_email.trigger 'blur'
-      @page.wait_for_error_message_count(1)
+      @page.wait_for_error_message_count(2)
       should_have_form_errors(@page)
       should_have_error_text(@page.webmaster_email, field_required)
 
       @page.webmaster_email.set 'test@test.com'
       @page.webmaster_email.trigger 'blur'
-      @page.wait_for_error_message_count(0)
+      @page.wait_for_error_message_count(1)
       should_have_no_error_text(@page.webmaster_email)
     end
 
     it 'validates webmaster name using a xss vector' do
       @page.webmaster_name.set $xss_vector
       @page.webmaster_name.trigger 'blur'
-      @page.wait_for_error_message_count(3)
+      @page.wait_for_error_message_count(2)
       should_have_form_errors(@page)
       should_have_error_text(@page.webmaster_name, $xss_error)
 
       @page.webmaster_name.set 'Trey Anastasio'
       @page.webmaster_name.trigger 'blur'
-      @page.wait_for_error_message_count(2)
+      @page.wait_for_error_message_count(1)
       should_have_no_error_text(@page.webmaster_name)
     end
 
     it 'validates webmaster email when using nonsense' do
       @page.webmaster_email.set 'dfsfdsf'
       @page.webmaster_email.trigger 'blur'
-      @page.wait_for_error_message_count(1)
+      @page.wait_for_error_message_count(2)
       should_have_error_text(@page.webmaster_email, email_invalid)
 
       @page.webmaster_email.set 'test@test.com'
       @page.webmaster_email.trigger 'blur'
-      @page.wait_for_error_message_count(0)
+      @page.wait_for_error_message_count(1)
       should_have_no_error_text(@page.webmaster_email)
     end
 
