@@ -142,7 +142,7 @@ class SystemPreferences extends CustomType {
 	public function __get($name)
 	{
 		$value = parent::__get($name);
-		$value = parse_config_value($value, $this->getValues());
+		$value = parse_config_variables($value, $this->getValues());
 
 		return $value;
 	}

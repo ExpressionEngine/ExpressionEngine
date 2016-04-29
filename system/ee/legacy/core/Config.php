@@ -411,7 +411,7 @@ class EE_Config {
 			$pref = $this->config[$index][$item];
 		}
 
-		return $raw_value ? $pref : parse_config_value($pref);
+		return $raw_value ? $pref : parse_config_variables($pref);
 	}
 
 
@@ -836,7 +836,7 @@ class EE_Config {
 					$site_prefs[$val] .= '/';
 				}
 
-				$fp = parse_config_value($site_prefs[$val]);
+				$fp = parse_config_variables($site_prefs[$val]);
 
 				if ( ! @is_dir($fp))
 				{
@@ -1837,7 +1837,7 @@ class EE_Config {
 			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
 		}
 
-		return parse_config_value($pref);
+		return parse_config_variables($pref);
 	}
 
 

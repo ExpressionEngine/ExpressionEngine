@@ -178,7 +178,7 @@ class UploadDestination extends Model {
 			$overrides = $site_configs[$site_id];
 		}
 
-		return parse_config_value($value, $overrides);
+		return parse_config_variables($value, $overrides);
 	}
 
 	/**

@@ -220,7 +220,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 *
 * @access	public
 * @param	string	$item		Name of config item
-* @param	string	$raw_value	When TRUE, does not run through parse_config_value
+* @param	string	$raw_value	When TRUE, does not run through parse_config_variables
 * @return	mixed
 */
 	function config_item($item, $raw_value = FALSE)
@@ -232,7 +232,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			return FALSE;
 		}
 
-		return $raw_value ? $config[$item] : parse_config_value($config[$item]);
+		return $raw_value ? $config[$item] : parse_config_variables($config[$item]);
 	}
 
 // ------------------------------------------------------------------------
@@ -246,7 +246,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 *   relies on something in POST
 * @return	mixed
 */
-	function parse_config_value($value, $variables = array())
+	function parse_config_variables($value, $variables = array())
 	{
 		if (is_string($value) && strpos($value, '{') !== FALSE)
 		{

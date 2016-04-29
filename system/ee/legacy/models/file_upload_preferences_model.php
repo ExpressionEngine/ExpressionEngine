@@ -157,8 +157,8 @@ class File_upload_preferences_model extends CI_Model
 			$overrides = $site_configs[$site_id];
 		}
 
-		$upload_destination['url'] = parse_config_value($upload_destination['url'], $overrides);
-		$upload_destination['server_path'] = parse_config_value($upload_destination['server_path'], $overrides);
+		$upload_destination['url'] = parse_config_variables($upload_destination['url'], $overrides);
+		$upload_destination['server_path'] = parse_config_variables($upload_destination['server_path'], $overrides);
 
 		return $upload_destination;
 	}

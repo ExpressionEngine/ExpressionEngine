@@ -117,7 +117,7 @@ class Watermark extends Model {
 
 		if ($name == 'wm_image_path')
 		{
-			$value = parse_config_value($value);
+			$value = parse_config_variables($value);
 		}
 
 		return $value;

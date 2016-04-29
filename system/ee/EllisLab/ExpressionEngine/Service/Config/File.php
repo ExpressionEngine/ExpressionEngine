@@ -60,7 +60,7 @@ class File implements Config {
 
 		if ( ! $raw_value)
 		{
-			$config = parse_config_value($config);
+			$config = parse_config_variables($config);
 		}
 
 		return ($config !== NULL) ? $config : $default;

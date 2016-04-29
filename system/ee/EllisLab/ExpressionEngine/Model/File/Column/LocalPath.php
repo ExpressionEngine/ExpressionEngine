@@ -55,7 +55,7 @@ class LocalPath extends SerializedType {
 	 */
 	protected function readPath()
 	{
-		$path = parse_config_value($this->path);
+		$path = parse_config_variables($this->path);
 
 		if (is_dir($path))
 		{
