@@ -7,8 +7,6 @@ feature 'Status Create/Edit' do
     @page = StatusCreate.new
     @page.load_view_for_status_group(1)
     no_php_js_errors
-
-    @invalid_hex_code = 'This field must contain a valid hex color code.'
   end
 
   it 'shows the Status Create/Edit page' do
@@ -55,42 +53,45 @@ feature 'Status Create/Edit' do
     should_have_no_error_text(@page.status)
     should_have_no_form_errors(@page)
 
+    # Minicolors should show up
+    @page.highlight.trigger 'focus'
+    @page.wait_until_color_panel_visible(2)
+    @page.should have_color_panel
+
+    # We MUST mousedown to hide the minicolors panel
+    @page.status.trigger 'mousedown'
+    @page.wait_until_color_panel_invisible(2)
+    # Seems to be the accepted way to check for invisible elements
+    @page.should have_selector('div.minicolors-panel', visible: false)
+
     # Invalid hex
+    @page.highlight.trigger 'focus'
     @page.highlight.set '00000g'
     @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.highlight, @invalid_hex_code)
-    should_have_form_errors(@page)
+    @page.status.trigger 'mousedown'
+    @page.wait_until_color_panel_invisible(2)
+    @page.highlight.value.should  == '#000000'
 
-    @page.highlight.set '000000'
-    @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-    should_have_no_error_text(@page.highlight)
-    should_have_no_form_errors(@page)
-
+    @page.highlight.trigger 'focus'
     @page.highlight.set '0000'
     @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.highlight, @invalid_hex_code)
-    should_have_form_errors(@page)
+    @page.status.trigger 'mousedown'
+    @page.wait_until_color_panel_invisible(2)
+    @page.highlight.value.should  == ''
 
-    @page.highlight.set '000000'
-    @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-    should_have_no_error_text(@page.highlight)
-    should_have_no_form_errors(@page)
-
+    @page.highlight.trigger 'focus'
     @page.highlight.set 'ff'
     @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.highlight, @invalid_hex_code)
-    should_have_form_errors(@page)
+    @page.status.trigger 'mousedown'
+    @page.wait_until_color_panel_invisible(2)
+    @page.highlight.value.should  == ''
 
+    @page.highlight.trigger 'focus'
     @page.highlight.set 'fff'
     @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-    should_have_no_error_text(@page.highlight)
-    should_have_no_form_errors(@page)
+    @page.status.trigger 'mousedown'
+    @page.wait_until_color_panel_invisible(2)
+    @page.highlight.value.should  == '#ffffff'
   end
 
   it 'should reject XSS' do
@@ -104,24 +105,20 @@ feature 'Status Create/Edit' do
 
     @page.highlight.set $xss_vector
     @page.highlight.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    should_have_error_text(@page.highlight, $xss_error)
-    should_have_form_errors(@page)
+    @page.highlight.value.should == ''
   end
 
    it 'should repopulate the form on validation error' do
     @page.load_create_for_status_group(1)
 
-    @page.status.set 'Test'
-    @page.highlight.set 'ffff'
+    @page.status.set 'Open'
     @page.status_access[0].set false
     @page.submit
 
     @page.should have_text 'Cannot Create Status'
-    should_have_error_text(@page.highlight, @invalid_hex_code)
+    should_have_error_text(@page.status, 'A status already exists with the same name.')
 
-    @page.status.value.should == 'Test'
-    @page.highlight.value.should == 'ffff'
+    @page.status.value.should == 'Open'
     @page.status_access[0].checked?.should == false
   end
 
@@ -129,7 +126,8 @@ feature 'Status Create/Edit' do
     @page.load_create_for_status_group(1)
 
     @page.status.set 'Test'
-    @page.highlight.set 'fff'
+    @page.highlight.set '333'
+    @page.status.trigger 'mousedown'
     @page.status_access[0].set false
     @page.submit
     no_php_js_errors
@@ -144,7 +142,7 @@ feature 'Status Create/Edit' do
     should_have_no_form_errors(@page)
 
     @page.status.value.should == 'Test'
-    @page.highlight.value.should == 'fff'
+    @page.highlight.value.should == '#333333'
     @page.status_access[0].checked?.should == false
 
     # Make sure we can edit
@@ -163,7 +161,7 @@ feature 'Status Create/Edit' do
     should_have_no_form_errors(@page)
 
     @page.status.value.should == 'Test2'
-    @page.highlight.value.should == 'fff'
+    @page.highlight.value.should == '#333333'
     @page.status_access[0].checked?.should == true
   end
 
