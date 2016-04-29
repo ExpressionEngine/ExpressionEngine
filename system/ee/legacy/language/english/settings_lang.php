@@ -145,11 +145,11 @@ $lang = array(
 
 'base_url' => 'Website base URL',
 
-'base_url_desc' => 'URL of the root of the site, can be used to build other URLs in settings fields using the <mark>{base_url}</mark> variable.',
+'base_url_desc' => 'URL of the root of your site, can be used to build other URLs in settings fields using the <mark>{base_url}</mark> variable.',
 
 'base_path' => 'Website base path',
 
-'base_path_desc' => 'Server path of the root of the site, can be used to build other paths in settings fields using the <mark>{base_path}</mark> variable.',
+'base_path_desc' => 'Server path of the root of your site, can be used to build other paths in settings fields using the <mark>{base_path}</mark> variable.',
 
 'site_index' => 'Website index page',
 
