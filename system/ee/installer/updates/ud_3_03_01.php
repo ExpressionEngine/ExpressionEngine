@@ -98,7 +98,8 @@ class Updater {
 	 */
 	private function set_encryption_key()
 	{
-		if (empty(ee()->config->item('encryption_key')))
+		$encryption_key = ee()->config->item('encryption_key');
+		if (empty($encryption_key))
 		{
 			ee()->config->update_site_prefs(array(
 				'encryption_key' => sha1(uniqid(mt_rand(), TRUE))
