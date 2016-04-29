@@ -147,10 +147,38 @@ class UploadDestination extends Model {
 
 		if ($name == 'url' OR $name == 'server_path')
 		{
-			$value = parse_config_value((string) $value);
+			$value = $this->parseConfigVars((string) $value);
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Upload paths may have a {base_url} or {base_path} in them, so we need
+	 * to parse those but also take into account when an upload destination
+	 * belongs to another site
+	 *
+	 * @param string $value Value of property to parse
+	 * @return string Upload path or URL with variables parsed
+	 */
+	private function parseConfigVars($value)
+	{
+		static $site_configs = array();
+
+		$overrides = array();
+		$site_id = $this->getProperty('site_id');
+
+		if ($site_id != ee()->config->item('site_id'))
+		{
+			if ( ! isset($site_configs[$site_id]))
+			{
+				$site_configs[$site_id] = ee()->config->site_prefs('', $site_id, FALSE);
+			}
+
+			$overrides = $site_configs[$site_id];
+		}
+
+		return parse_config_value($value, $overrides);
 	}
 
 	/**
@@ -303,7 +331,7 @@ class UploadDestination extends Model {
 	 */
 	public function exists()
 	{
-		return file_exists($this->getProperty('server_path'));
+		return file_exists($this->parseConfigVars((string) $this->getProperty('server_path')));
 	}
 
 	/**
@@ -313,7 +341,7 @@ class UploadDestination extends Model {
 	 */
 	public function isWritable()
 	{
-		return is_writable($this->getProperty('server_path'));
+		return is_writable($this->parseConfigVars((string) $this->getProperty('server_path')));
 	}
 
 }
