@@ -136,6 +136,16 @@ class SystemPreferences extends CustomType {
 		return Base64Native::serialize($data);
 	}
 
+	/**
+	 * Custom getter to parse path variables
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+		$value = parse_config_value($value, $this->getValues());
+
+		return $value;
+	}
 }
 
 // EOF
