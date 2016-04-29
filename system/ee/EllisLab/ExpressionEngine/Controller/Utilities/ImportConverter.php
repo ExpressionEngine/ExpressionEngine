@@ -206,7 +206,7 @@ class ImportConverter extends Utilities {
 			default:		$delimiter = ",";
 		}
 
-		$member_file = ee()->input->post('member_file');
+		$member_file = parse_config_variables(ee()->input->post('member_file'));
 		$enclosure = ee()->input->post('enclosure') ?: '';
 
 		//  Read data file into an array
@@ -361,7 +361,7 @@ class ImportConverter extends Utilities {
 			default:		$delimiter = ",";
 		}
 
-		$member_file = ee()->input->post('member_file');
+		$member_file = parse_config_variables(ee()->input->post('member_file'));
 		$enclosure = ee()->input->post('enclosure') ?: '';
 
 		//  Read data file into an array
@@ -414,7 +414,7 @@ class ImportConverter extends Utilities {
 			default:		$delimiter = ",";
 		}
 
-		$member_file = ee()->input->post('member_file');
+		$member_file = parse_config_variables(ee()->input->post('member_file'));
 		$enclosure = ee()->input->post('enclosure') ?: '';
 		$encrypt = ($this->input->post('encrypt') == 'y');
 

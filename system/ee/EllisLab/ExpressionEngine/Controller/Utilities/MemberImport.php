@@ -207,7 +207,7 @@ class MemberImport extends Utilities {
 		}
 
 		$data = array(
-			'xml_file'   		=> ee()->input->post('xml_file'),
+			'xml_file'   		=> parse_config_variables(ee()->input->post('xml_file')),
 			'group_id' 			=> ee()->input->post('group_id'),
 			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : ee()->input->post('language'),
 			'timezones' 		=> ee()->input->post('timezones'),
@@ -279,7 +279,7 @@ class MemberImport extends Utilities {
 
 		$this->lang->loadfile('member_import');
 
-		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : $this->input->post('xml_file');
+		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : parse_config_variables($this->input->post('xml_file'));
 
 		//  Read XML file contents
 		$this->load->helper('file');
