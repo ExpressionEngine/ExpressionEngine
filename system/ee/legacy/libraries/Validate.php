@@ -370,7 +370,6 @@ class EE_Validate {
 			/** -------------------------------------
 			/**  Is email banned?
 			/** -------------------------------------*/
-
 			if (ee()->session->ban_check('email', $this->email))
 			{
 				return $this->errors[] = ee()->lang->line('email_taken');
@@ -379,24 +378,7 @@ class EE_Validate {
 			/** -------------------------------------
 			/**  Duplicate emails?
 			/** -------------------------------------*/
-
-			// Gmail addresses ignore . in the username
-			if (strpos($this->email, '@gmail.com') !== FALSE)
-			{
-				$address = explode('@', $this->email);
-				$query = ee()->db->query('SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
-					FROM exp_members
-					WHERE email LIKE "%gmail.com"
-					HAVING gmail = "'.str_replace('.', '', $address[0]).'";');
-				$count = $query->num_rows();
-			}
-			else
-			{
-				$count = ee()->db->where('email', $this->email)
-					->count_all_results('members');
-			}
-
-			if ($count > 0)
+			if ( ! ee('Email', $this->email)->unique())
 			{
 				$this->errors[] = ee()->lang->line('email_taken');
 			}

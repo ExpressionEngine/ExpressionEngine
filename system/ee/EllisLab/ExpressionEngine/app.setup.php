@@ -1,6 +1,7 @@
 <?php
 
 use EllisLab\ExpressionEngine\Library;
+use EllisLab\ExpressionEngine\Library\Data;
 use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
@@ -101,6 +102,11 @@ return array(
 		'db' => function($ee)
 		{
 			return $ee->make('Database')->newQuery();
+		},
+
+		'Email' => function($ee, $email)
+		{
+			return new Data\Email($email);
 		},
 
 		'Event' => function($ee)

@@ -103,7 +103,7 @@ class Member extends ContentModel {
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|unique',
+		'email'           => 'required|email|unique|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
@@ -453,6 +453,23 @@ class Member extends ContentModel {
 		if (ee()->form_validation->_lookup_dictionary_word($lc_pass) == TRUE)
 		{
 			return 'password_in_dictionary';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Checks to see if the email is unique
+	 *
+	 * @param  string $key The name of the key being checked
+	 * @param  string $email The email address to validate
+	 * @return mixed TRUE if valid, language key of error otherwise
+	 */
+	public function validateEmail($key, $email)
+	{
+		if ( ! ee('Email', $email)->unique())
+		{
+			return 'email_taken';
 		}
 
 		return TRUE;

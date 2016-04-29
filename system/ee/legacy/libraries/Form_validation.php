@@ -628,25 +628,8 @@ class EE_Form_validation {
 				return FALSE;
 			}
 
-
 			// Duplicate emails?
-			// Gmail addresses ignore . in the username
-  			if (strpos($str, '@gmail.com') !== FALSE)
-  			{
-  				$address = explode('@', $str);
-				$query = ee()->db->query('SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
-					FROM exp_members
-					WHERE email LIKE "%gmail.com"
-					HAVING gmail = "'.str_replace('.', '', $address[0]).'";');
-				$count = $query->num_rows();
-			}
-			else
-			{
-				$count = ee()->db->where('email', $str)
-					->count_all_results('members');
-			}
-
-			if ($count > 0)
+			if ( ! ee('Email', $str)->unique())
 			{
 				$this->set_message('valid_user_email', ee()->lang->line('email_taken'));
 				return FALSE;
