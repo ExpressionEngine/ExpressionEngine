@@ -142,19 +142,12 @@ class File_upload_preferences_model extends CI_Model
 	 */
 	private function parse_upload_path_vars($upload_destination)
 	{
-		static $site_configs = array();
-
 		$site_id = $upload_destination['site_id'];
 		$overrides = array();
 
 		if ($site_id != ee()->config->item('site_id'))
 		{
-			if ( ! isset($site_configs[$site_id]))
-			{
-				$site_configs[$site_id] = ee()->config->site_prefs('', $site_id, FALSE);
-			}
-
-			$overrides = $site_configs[$site_id];
+			$overrides = ee()->config->get_cached_site_prefs($site_id);
 		}
 
 		$upload_destination['url'] = parse_config_variables($upload_destination['url'], $overrides);

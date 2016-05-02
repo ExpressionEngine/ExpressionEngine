@@ -376,6 +376,28 @@ class EE_Config {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get config for another site, but do not mutate the active global config
+	 * and cache the config for accessing later as well
+	 *
+	 * @access	public
+	 * @param	int		Site ID to get the config for
+	 * @return	array	Associative array of site config data
+	 */
+	public function get_cached_site_prefs($site_id)
+	{
+		static $site_configs = array();
+
+		if ( ! isset($site_configs[$site_id]))
+		{
+			$site_configs[$site_id] = $this->site_prefs('', $site_id, FALSE);
+		}
+
+		return $site_configs[$site_id];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Fetch a config file item
 	 *
 	 *

@@ -117,7 +117,14 @@ class Watermark extends Model {
 
 		if ($name == 'wm_image_path')
 		{
-			$value = parse_config_variables($value);
+			$overrides = array();
+
+			if ($this->FileDimension !== NULL && $this->FileDimension->site_id == ee()->config->item('site_id'))
+			{
+				$overrides = ee()->config->get_cached_site_prefs($this->FileDimension->site_id);
+			}
+
+			$value = parse_config_variables($value, $overrides);
 		}
 
 		return $value;

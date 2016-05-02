@@ -163,22 +163,14 @@ class UploadDestination extends Model {
 	 */
 	private function parseConfigVars($value)
 	{
-		static $site_configs = array();
-
 		$overrides = array();
-		$site_id = $this->getProperty('site_id');
 
-		if ($site_id != ee()->config->item('site_id'))
+		if ($this->getProperty('site_id') != ee()->config->item('site_id'))
 		{
-			if ( ! isset($site_configs[$site_id]))
-			{
-				$site_configs[$site_id] = ee()->config->site_prefs('', $site_id, FALSE);
-			}
-
-			$overrides = $site_configs[$site_id];
+			$overrides = ee()->config->get_cached_site_prefs($this->getProperty('site_id'));
 		}
 
-		return parse_config_variables($value, $overrides);
+		return parse_config_variables((string) $value, $overrides);
 	}
 
 	/**
