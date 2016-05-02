@@ -42,8 +42,6 @@ class Select_ft extends EE_Fieldtype {
 			return TRUE;
 		}
 
-		$data = form_prep($data);
-
 		foreach($field_options as $key => $val)
 		{
 			if (is_array($val))

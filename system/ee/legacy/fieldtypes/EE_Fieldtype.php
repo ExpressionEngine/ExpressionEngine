@@ -906,7 +906,6 @@ abstract class EE_Fieldtype {
 			{
 				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
 				{
-					//$v = form_prep(trim($v));
 					$v = trim($v);
 					$field_options[$v] = $v;
 				}
@@ -941,9 +940,8 @@ abstract class EE_Fieldtype {
 					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
 
-					$field_options[form_prep(trim($prow['field_id_'.$this->settings['field_pre_field_id']]))] = $pretitle;
+					$field_options[trim($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
 				}
 			}
 		}
