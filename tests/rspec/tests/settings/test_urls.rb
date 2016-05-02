@@ -101,7 +101,7 @@ feature 'URL and Path Settings' do
     # Invalid theme path
     @page.theme_folder_path.set '/dfsdfsdfd'
     @page.theme_folder_path.trigger 'blur'
-    @page.wait_for_error_message_count(4)
+    @page.wait_for_error_message_count(4, 10)
 
     should_have_form_errors(@page)
     should_have_error_text(@page.site_url, field_required)

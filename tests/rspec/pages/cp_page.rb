@@ -86,7 +86,7 @@ class ControlPanelPage < SitePrism::Page
 
     # Element is still there after our timeout? No good.
     if element_count != count && i == (seconds * 100)
-      raise StandardError, "Wrong number of validation errors. Got " << element_count.to_s << ", expected " << count.to_s << "."
+      raise StandardError, "Wrong number of validation errors. Got #{element_count}, expected #{count}."
     end
   end
 end
