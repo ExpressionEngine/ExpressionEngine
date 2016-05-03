@@ -36,7 +36,10 @@ class UniqueEmail extends ValidationRule {
 	 */
 	public function validate($key, $value)
 	{
-		if (strpos($value, '@gmail.com') !== FALSE)
+		// Check for config, otherwise default
+		$prevent = ee()->config->item('gmail_duplication_prevention') ?: 'y';
+		
+		if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== FALSE)
 		{
 			$address = explode('@', $value);
 			$query = ee()->db->query('SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail

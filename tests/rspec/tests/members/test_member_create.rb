@@ -20,6 +20,7 @@ feature 'Member Registration' do
     @page.confirm_password.set 'password'
     @page.submit
 
+    no_php_js_errors
     @page.all_there?.should == false
 
     @page.load
