@@ -135,7 +135,7 @@ class Wizard extends CI_Controller {
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'encryption_key'     => '',
+		'encryption_key'     => NULL,
 
 		// Enabled for cleaner view files and compatibility
 		'rewrite_short_tags' => TRUE
@@ -166,6 +166,8 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
+		
+		$this->ci_config['encryption_key'] = sha1(uniqid(mt_rand(), TRUE));
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
