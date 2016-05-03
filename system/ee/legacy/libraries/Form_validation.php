@@ -629,7 +629,7 @@ class EE_Form_validation {
 			}
 
 			// Duplicate emails?
-			if ( ! ee('Email', $str)->unique())
+			if ( ! ee('Validation')->check('uniqueEmail', $str))
 			{
 				$this->set_message('valid_user_email', ee()->lang->line('email_taken'));
 				return FALSE;

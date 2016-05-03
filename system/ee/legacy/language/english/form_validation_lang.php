@@ -25,6 +25,7 @@ $lang['required']			= "This field is required.";
 $lang['unique']				= "This field must be unique.";
 $lang['valid_base64']		= "This field may only contain characters in the base64 character set (alpha-numeric, slash, plus, and equals).";
 $lang['valid_email']		= "This field must contain a valid email address.";
+$lang['unique_email']		= "This field must contain a unique email address.";
 $lang['valid_emails']		= "This field must contain all valid email addresses.";
 $lang['valid_ip']			= "This field must contain a valid IP.";
 $lang['valid_url']			= "This field must contain a valid URL.";

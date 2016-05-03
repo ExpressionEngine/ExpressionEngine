@@ -378,7 +378,7 @@ class EE_Validate {
 			/** -------------------------------------
 			/**  Duplicate emails?
 			/** -------------------------------------*/
-			if ( ! ee('Email', $this->email)->unique())
+			if ( ! ee('Validation')->check('uniqueEmail', $this->email))
 			{
 				$this->errors[] = ee()->lang->line('email_taken');
 			}

@@ -28,6 +28,9 @@ feature 'Member Registration' do
     @page.email.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_form_errors(@page)
-    should_have_error_text(@page.email, 'The email you chose is not available')
+    should_have_error_text(
+      @page.email,
+      'This field must contain a unique email address.'
+    )
   end
 end
