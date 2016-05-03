@@ -918,7 +918,6 @@ abstract class EE_Fieldtype {
 		else
 		{
 			// We need to pre-populate this menu from an another channel custom field
-
 			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
 			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
 			$pop_query = ee()->db->get('channel_data');
@@ -937,7 +936,6 @@ abstract class EE_Fieldtype {
 					 	continue;
 					}
 
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
 
