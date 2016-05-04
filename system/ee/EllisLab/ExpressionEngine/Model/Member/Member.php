@@ -103,7 +103,7 @@ class Member extends ContentModel {
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|unique|uniqueEmail',
+		'email'           => 'required|email|uniqueEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
