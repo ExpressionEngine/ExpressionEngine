@@ -697,7 +697,7 @@ $lang = array(
 
 'name_of_dictionary_file_desc' => 'Name of your <mark>dictionary</mark> file in your config folder.',
 
-'form_security_settings' => 'Form Security Settings',
+'form_security_settings' => 'Content Submission Settings',
 
 'deny_duplicate_data' => 'Deny duplicate data?',
 
@@ -710,6 +710,10 @@ $lang = array(
 'xss_clean_uploads' => 'Apply <abbr title="Cross Site Scripting">XSS</abbr> filtering?',
 
 'xss_clean_uploads_desc' => 'When set to <b>yes</b>, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
+
+'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
+
+'enable_rank_denial_desc' => 'When set to <b>enable</b>, denies a spammer search engine ranking benefits by altering submitted links so are sent to an intermediary "redirect page" first.',
 
 /**
  * Access Throttling
