@@ -865,7 +865,7 @@ class Addons extends CP_Controller {
 			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
 		);
 
-		ee()->view->header = array(
+		$vars['header'] = array(
 			'title' => lang('addon_manager'),
 			'form_url' => ee('CP/URL')->make('addons'),
 			'search_button_value' => lang('search_addons_button')
@@ -892,6 +892,11 @@ class Addons extends CP_Controller {
 				}
 
 				$vars['_module_cp_body'] = $data['body'];
+
+				if (isset($data['header']))
+				{
+					$vars['header'] = $data['header'];
+				}
 
 				if (isset($data['heading']))
 				{
