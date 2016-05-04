@@ -35,6 +35,20 @@ class Factory {
 		return new Validator($rules);
 	}
 
+	/**
+	 * Check to see if a value passes a rule's validation
+	 *
+	 * @param  string $rule The rule to check
+	 * @param  string $value The value to check
+	 * @return boolean TRUE if the check passes
+	 */
+	public function check($rule, $value)
+	{
+		return $this->make(array('check' => $rule))
+			->validate(array('check' => $value))
+			->isValid();
+	}
+
 }
 
 // EOF

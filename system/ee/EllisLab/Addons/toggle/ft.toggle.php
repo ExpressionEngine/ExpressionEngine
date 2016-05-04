@@ -126,7 +126,7 @@ class Toggle_ft extends EE_Fieldtype {
 		{
 			$selected = ($value == $data);
 
-			$html .= '<label>'.form_radio($this->field_name, $value, $selected, $extra).NBS.$key.'</label>';
+			$html .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
 		}
 
 		switch ($container)

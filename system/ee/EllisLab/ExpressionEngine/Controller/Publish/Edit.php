@@ -148,6 +148,10 @@ class Edit extends AbstractPublishController {
 
 		$entry_id = ee()->session->flashdata('entry_id');
 
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		foreach ($entries->all() as $entry)
 		{
 			if (ee()->cp->allowed_group('can_edit_other_entries')
@@ -244,26 +248,34 @@ class Edit extends AbstractPublishController {
 
 			$disabled_checkbox = ! $can_delete;
 
-			$status = ee('Model')->get('Status')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', $entry->Channel->status_group)
+			// Display status highlight if one exists
+			$status = $statuses->filter('group_id', $entry->Channel->status_group)
 				->filter('status', $entry->status)
 				->first();
 
-			$highlight = new Color($status->highlight);
-			$color = ($highlight->isLight())
-				? $highlight->darken(100)
-				: $highlight->lighten(100);
+			if ($status)
+			{
+				$highlight = new Color($status->highlight);
+				$color = ($highlight->isLight())
+					? $highlight->darken(100)
+					: $highlight->lighten(100);
+
+				$status = array(
+					'content'          => $status->status,
+					'color'            => $color,
+					'background-color' => $status->highlight
+				);
+			}
+			else
+			{
+				$status = $entry->status;
+			}
 
 			$column = array(
 				$entry->entry_id,
 				$title,
 				ee()->localize->human_time($entry->entry_date),
-				array(
-					'content'          => $status->status,
-					'color'            => $color,
-					'background-color' => $status->highlight
-				),
+				$status,
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',

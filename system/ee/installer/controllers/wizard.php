@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.3.0';	// The version being installed
+	public $version           = '3.4.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -132,7 +132,7 @@ class Wizard extends CI_Controller {
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'encryption_key'     => '',
+		'encryption_key'     => NULL,
 
 		// Enabled for cleaner view files and compatibility
 		'rewrite_short_tags' => TRUE
@@ -163,6 +163,8 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
+		
+		$this->ci_config['encryption_key'] = sha1(uniqid(mt_rand(), TRUE));
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));

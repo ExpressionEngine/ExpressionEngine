@@ -35,6 +35,7 @@
 			'html-bold',
 			'html-italic',
 			'html-order-list',
+			'html-list',
 			'html-link',
 			'html-upload',
 			'html-quote',
