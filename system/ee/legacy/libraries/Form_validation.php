@@ -628,13 +628,8 @@ class EE_Form_validation {
 				return FALSE;
 			}
 
-
 			// Duplicate emails?
-
-			ee()->db->where('email', $str);
-			$count = ee()->db->count_all_results('members');
-
-			if ($count > 0)
+			if ( ! ee('Validation')->check('uniqueEmail', $str))
 			{
 				$this->set_message('valid_user_email', ee()->lang->line('email_taken'));
 				return FALSE;
