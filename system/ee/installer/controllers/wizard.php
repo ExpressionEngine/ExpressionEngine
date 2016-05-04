@@ -88,8 +88,6 @@ class Wizard extends CI_Controller {
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
-		'db_conntype'           => '0',
-		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -749,8 +747,7 @@ class Wizard extends CI_Controller {
 			'username' => $this->userdata['db_username'],
 			'password' => $this->userdata['db_password'],
 			'database' => $this->userdata['db_name'],
-			'dbdriver' => $this->userdata['dbdriver'],
-			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'dbdriver' => 'mysqli',
 			'dbprefix' => $this->getDbPrefix(),
 			'swap_pre' => 'exp_',
 			'db_debug' => TRUE, // We show our own errors
@@ -771,7 +768,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Does the specified database schema type exist?
-		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php'))
+		if ( ! file_exists(APPPATH.'schema/mysqli_schema.php'))
 		{
 			$errors[] = lang('unreadable_dbdriver');
 		}
@@ -791,7 +788,7 @@ class Wizard extends CI_Controller {
 		$this->userdata['screen_name'] = $this->userdata['username'];
 
 		// Load the DB schema
-		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
+		require APPPATH.'schema/mysqli_schema.php';
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
@@ -1089,30 +1086,6 @@ class Wizard extends CI_Controller {
 
 		// Make sure the site_url has a trailing slash
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
-
-		// Set the checkbox values
-		$prefs = array(
-			'db_conntype'		=> array(
-				'persistent' => array('persistent', 'nonpersistent')
-			)
-		);
-
-		foreach ($prefs as $name => $value)
-		{
-			foreach ($value as $k => $v)
-			{
-				if ($this->userdata[$name] == $k)
-				{
-					$this->userdata[$v[0]] = 'checked="checked"';
-					$this->userdata[$v[1]] = '';
-				}
-				else
-				{
-					$this->userdata[$v[0]] = '';
-					$this->userdata[$v[1]] = 'checked="checked"';
-				}
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1609,12 +1582,9 @@ class Wizard extends CI_Controller {
 			'db_username'               => $this->userdata['db_username'],
 			'db_password'               => $this->userdata['db_password'],
 			'db_database'               => $this->userdata['db_name'],
-			'db_dbdriver'               => $this->userdata['dbdriver'],
-			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
 			'debug'                     => '1',
-			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
 			'site_label'                => $this->userdata['site_label'],
 			'site_url'                  => $this->userdata['site_url'],
