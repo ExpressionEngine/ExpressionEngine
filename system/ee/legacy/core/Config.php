@@ -39,17 +39,7 @@ class EE_Config {
 	public $_global_vars        = array(); // The global vars from path.php (deprecated but usable for other purposes now)
 	public $_config_path_errors = array();
 
-	protected $defaults = array(
-		'cache_path'         => '',
-		'charset'            => 'UTF-8',
-		'doc_url'            => 'https://docs.expressionengine.com/v3/',
-		'encryption_key'     => '',
-		'log_date_format'    => 'Y-m-d H:i:s',
-		'log_threshold'      => 0,
-		'rewrite_short_tags' => TRUE,
-		'subclass_prefix'    => 'EE_',
-		'uri_protocol'       => 'AUTO',
-	);
+	protected $defaults = array();
 
 	/**
 	 * Constructor
@@ -60,6 +50,8 @@ class EE_Config {
 
 		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
 		$this->config_path = SYSPATH.'user/config/config.php';
+
+		$this->defaults = default_config_items();
 
 		$this->_initialize();
 	}

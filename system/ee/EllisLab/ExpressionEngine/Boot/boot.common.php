@@ -210,7 +210,38 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			}
 		}
 
+		// Merge in defaults
+		$config = array_merge(default_config_items(), $config);
+
 		return $config;
+	}
+
+// ------------------------------------------------------------------------
+
+/**
+ * Returns the default config items
+ *
+ * @access public
+ * @return array Associative array of default config items
+ */
+	function default_config_items()
+	{
+		return array(
+			'allow_extensions'   => 'y',
+			'cache_driver'       => 'file',
+			'cache_path'         => '',
+			'charset'            => 'UTF-8',
+			'cookie_httponly'    => 'y',
+			'debug'              => 1,
+			'doc_url'            => 'https://docs.expressionengine.com/v3/',
+			'encryption_key'     => '',
+			'is_system_on'       => 'y',
+			'log_date_format'    => 'Y-m-d H:i:s',
+			'log_threshold'      => 0,
+			'rewrite_short_tags' => TRUE,
+			'subclass_prefix'    => 'EE_',
+			'uri_protocol'       => 'AUTO',
+		);
 	}
 
 // ------------------------------------------------------------------------

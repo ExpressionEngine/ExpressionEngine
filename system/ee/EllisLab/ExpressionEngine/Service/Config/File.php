@@ -27,18 +27,8 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  */
 class File extends Config {
 
-	protected $config = array();
-
-	protected $defaults = array(
-		'cache_path'         => '',
-		'charset'            => 'UTF-8',
-		'encryption_key'     => '',
-		'log_date_format'    => 'Y-m-d H:i:s',
-		'log_threshold'      => 0,
-		'rewrite_short_tags' => TRUE,
-		'subclass_prefix'    => 'EE_',
-		'uri_protocol'       => 'AUTO',
-	);
+	protected $config   = array();
+	protected $defaults = array();
 
 	/**
 	 * Create a new Config\File object
@@ -54,6 +44,8 @@ class File extends Config {
 		{
 			$this->config = $config;
 		}
+
+		$this->defaults = default_config_items();
 	}
 
 	/**
