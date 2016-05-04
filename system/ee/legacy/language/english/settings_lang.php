@@ -713,7 +713,7 @@ $lang = array(
 
 'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
 
-'enable_rank_denial_desc' => 'When set to <b>enable</b>, denies a spammer search engine ranking benefits by altering submitted links so are sent to an intermediary "redirect page" first.',
+'enable_rank_denial_desc' => 'When set to <b>enable</b>, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',
 
 /**
  * Access Throttling

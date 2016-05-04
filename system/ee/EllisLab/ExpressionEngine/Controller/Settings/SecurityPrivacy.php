@@ -215,7 +215,7 @@ class SecurityPrivacy extends Settings {
 				),
 				array(
 					'title' => 'enable_rank_denial',
-					'desc' => 'enable_rank_denial_desc',
+					'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
 					'fields' => array(
 						'redirect_submitted_links' => array(
 							'type' => 'inline_radio',
