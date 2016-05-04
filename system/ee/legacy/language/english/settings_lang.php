@@ -247,7 +247,7 @@ $lang = array(
 
 'enable_errors' => 'Enable error reporting?',
 
-'enable_errors_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'When set to <b>enable</b>, super admins will see PHP/MySQL errors when they occur.',
 
 'show_profiler' => 'Enable debugging?',
 
