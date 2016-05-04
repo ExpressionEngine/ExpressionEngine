@@ -54,6 +54,10 @@
 
 		// Grid added a row? Hook up the new buttons!
 		$('.tbl-wrap table').on('grid:addRow', function(event, el) {
+			$(el).find('.grid-textarea').each(function() {
+				var input_name = $(this).find('textarea').attr('name');
+				$(this).find('.textarea-field-filepicker, li.html-upload').attr('data-input-value', input_name);
+			});
 			$(el).find('.textarea-field-filepicker, li.html-upload').FilePicker({callback: filePickerCallback});
 		});
 	});
