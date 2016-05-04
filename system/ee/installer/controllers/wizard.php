@@ -163,7 +163,7 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
-		
+
 		$this->ci_config['encryption_key'] = sha1(uniqid(mt_rand(), TRUE));
 
  		// Load the helpers we intend to use
@@ -2044,7 +2044,6 @@ class Wizard extends CI_Controller {
 				$data = str_replace('{'.$key.'}', $config[$key], $data);
 				unset($config[$key]);
 			}
-
 		}
 
 		// any unanticipated keys that aren't in our template?
@@ -2057,8 +2056,16 @@ class Wizard extends CI_Controller {
 			unset($config['site_label']);
 		}
 
+		// Create extra_config, unset defaults
+		$defaults = default_config_items();
 		foreach ($config as $key => $val)
 		{
+			// Bypass defaults and empty values
+			if (empty($val) || (isset($defaults[$key]) && $defaults[$key] == $val))
+			{
+				continue;
+			}
+
 			$extra_config .= "\$config['{$key}'] = '{$val}';\n";
 		}
 
