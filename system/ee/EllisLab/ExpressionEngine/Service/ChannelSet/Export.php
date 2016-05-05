@@ -292,10 +292,7 @@ class Export {
 		// start by defining any that exist- then overwrite special cases
 		if (isset($field->field_settings))
 		{
-			foreach($field->field_settings as $name => $value)
-			{
-				$result->settings[$name] = $value;
-			}
+			$result->settings = $field->field_settings;
 		}
 
 		if ($field->field_type == 'file')
