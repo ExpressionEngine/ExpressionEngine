@@ -8,6 +8,11 @@
  */
 	define('BASEPATH', SYSPATH.'ee/legacy/');
 
+	define('FILE_READ_MODE', 0644);
+	define('FILE_WRITE_MODE', 0666);
+	define('DIR_READ_MODE', 0755);
+	define('DIR_WRITE_MODE', 0777);
+
 /*
  * ------------------------------------------------------
  *  Load the autoloader and register it
@@ -28,29 +33,28 @@
 
 	if (php_sapi_name() != 'cli')
 	{
-		routeRequest();
+		$directory = (isset($_GET['D'])) ? $_GET['D'] : 'updater';
+		$controller = (isset($_GET['C'])) ? $_GET['C'] : 'updater';
+		$method = (isset($_GET['M'])) ? $_GET['M'] : 'index';
+		routeRequest($directory, $controller, $method);
 	}
 
 	// For scoping
-	function routeRequest()
+	function routeRequest($directory, $controller, $method = '')
 	{
-		if (isset($_GET['D']) && isset($_GET['C']))
+		$class = 'EllisLab\ExpressionEngine\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
+
+		if (class_exists($class))
 		{
-			$class = 'EllisLab\ExpressionEngine\Controller\\'.ucfirst($_GET['D']).'\\'.ucfirst($_GET['C']);
+			$controller_methods = array_map(
+				'strtolower', get_class_methods($class)
+			);
 
-			if (class_exists($class))
+			if ( ! empty($method) && in_array($method, $controller_methods))
 			{
-				$controller_methods = array_map(
-					'strtolower', get_class_methods($class)
-				);
+				$controller_object = new $class;
 
-				if (isset($_GET['M']) && in_array($_GET['M'], $controller_methods))
-				{
-					$controller = new $class;
-					$method = $_GET['M'];
-
-					echo $controller->$method();
-				}
+				echo $controller_object->$method();
 			}
 		}
 	}
