@@ -170,19 +170,45 @@ class Downloader {
 	protected function checkPermissions()
 	{
 		$this->logger->log('Checking file permissions needed to complete the update');
+
 		if ( ! $this->filesystem->isWritable($this->path()))
 		{
 			throw new UpdaterException('Cache folder not writable.', 1);
 		}
 
+		// system/ee
 		if ( ! $this->filesystem->isWritable(SYSPATH.'ee/'))
 		{
 			throw new UpdaterException('system/ee folder not writable.', 2);
 		}
 
-		if ( ! $this->filesystem->isWritable(PATH_THEMES))
+		// Contents of system/ee
+		foreach ($this->filesystem->getDirectoryContents(SYSPATH.'ee/') as $path)
 		{
-			throw new UpdaterException('themes/ee folder not writable.', 3);
+			if ( ! $this->filesystem->isWritable($path))
+			{
+				throw new UpdaterException('Path not writable: ' . $path, 15);
+			}
+		}
+
+		// Theme paths for each site
+		foreach ($this->getThemePaths() as $path)
+		{
+			$theme_path = rtrim($path, DIRECTORY_SEPARATOR).'/ee/';
+
+			if ( ! $this->filesystem->isWritable($theme_path))
+			{
+				throw new UpdaterException('Path not writable: ' . $path, 3);
+			}
+
+			// Theme path folder contents
+			foreach ($this->filesystem->getDirectoryContents($theme_path) as $path)
+			{
+				if ( ! $this->filesystem->isWritable($path))
+				{
+					throw new UpdaterException('Path not writable: ' . $path, 16);
+				}
+			}
 		}
 	}
 
@@ -193,7 +219,9 @@ class Downloader {
 	protected function takeSiteOffline()
 	{
 		$this->logger->log('Taking the site offline');
-		$this->config->set('is_site_on', 'n');
+
+		// TODO: This isn't actually writing to the file
+		$this->config->set('is_system_on', 'n');
 	}
 
 	/**
