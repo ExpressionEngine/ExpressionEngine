@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Updater;
 
-use EllisLab\ExpressionEngine\Service\Config;
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use EllisLab\ExpressionEngine\Service;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -31,13 +32,27 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class Updater {
 
+	private $updater;
+
 	/**
 	 * Request end-point for updater tasks
 	 */
 	public function index($step = '')
 	{
-		$config = new Config\File(SYSPATH.'user/config/config.php');
-		return $config->get('allow_extensions');
+		$this->updater = $this->getUpdaterService();
+		$this->updater->updateFiles();
+		echo 'hi';
+	}
+
+	/**
+	 * Constructs the updater service and assigns it to a class variable
+	 */
+	protected function getUpdaterService()
+	{
+		$filesystem = new Filesystem();
+		$config = new Service\Config\File(SYSPATH.'user/config/config.php');
+
+		return new Service\Updater\Updater($filesystem, $config);
 	}
 }
 // EOF
