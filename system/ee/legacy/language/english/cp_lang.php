@@ -173,6 +173,10 @@ $lang = array(
 
 'member_logged_out' => 'Logged out',
 
+'member_changed_password' => 'Changed password for: %s (%d)',
+
+'member_changed_email' => 'Changed email for: %s (%d)',
+
 'close' => 'Close',
 
 //----------------------------
