@@ -345,18 +345,12 @@ class Downloader {
 	 */
 	protected function stashConfigs()
 	{
-		$theme_paths = [];
-		foreach ($this->sites as $site)
-		{
-			// TODO: When {base_path} thing is merged in, make sure this parses
-			// to the proper path
-			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
-		}
-
 		$configs = [
 			'update_path' => $this->path(),
 			'archive_path' => $this->getExtractedArchivePath(),
-			'theme_paths' => array_unique($theme_paths)
+			'theme_paths' => array_unique(
+				$this->getThemePaths()
+			)
 		];
 
 		$this->filesystem->write(
@@ -364,6 +358,30 @@ class Downloader {
 			json_encode($configs),
 			TRUE
 		);
+	}
+
+	/**
+	 * Creates an array of theme paths for all sites
+	 *
+	 * @return	array	Theme server paths
+	 */
+	protected function getThemePaths()
+	{
+		// Is there a config file override for the theme path? Use that instead
+		// and hope that the other sites' paths aren't conditionally set in the
+		// file because we'll only get the one
+		if ($this->config->get('theme_folder_path') !== NULL)
+		{
+			return [$this->config->get('theme_folder_path')];
+		}
+
+		$theme_paths = [];
+		foreach ($this->sites as $site)
+		{
+			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
+		}
+
+		return $theme_paths;
 	}
 
 	/**
