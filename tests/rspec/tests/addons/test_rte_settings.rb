@@ -49,7 +49,7 @@ feature 'RTE Settings' do
     @page.load
 
     @page.displayed?
-    @page.headings[0].text.should eq 'Add-On Manager'
+    @page.headings[0].text.should eq 'Rich Text Editor'
   end
 
   before(:each, :stage => 'settings') do
@@ -68,15 +68,6 @@ feature 'RTE Settings' do
     @page.enable_switch.should be_checked
     @page.disable_switch.should_not be_checked
     @page.default_tool_set.value.should eq '1'
-  end
-
-  it 'can search for an add-on', :stage => 'settings' do
-    @page.phrase_search.set 'Rich Text Editor'
-    @page.search_submit_button.click
-    no_php_js_errors
-
-    addon_manager = AddonManager.new
-    addon_manager.displayed?
   end
 
   it 'can navigate back to the add-on manager via the breadcrumb', :stage => 'settings' do
