@@ -2,6 +2,7 @@ class StatusCreate < ControlPanelPage
 
   element :status, 'input[name=status]'
   element :highlight, 'input[name=highlight]'
+  element :color_panel, 'div.minicolors-panel'
   elements :status_access, 'input[name="status_access[]"]'
 
   def load
