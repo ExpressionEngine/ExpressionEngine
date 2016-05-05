@@ -406,7 +406,7 @@ class Downloader {
 		$theme_paths = [];
 		foreach ($this->sites as $site)
 		{
-			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
+			$theme_paths[$site->site_id] = $site->site_system_preferences->theme_folder_path;
 		}
 
 		return $theme_paths;
@@ -445,6 +445,10 @@ class Downloader {
 		if (empty($cache_path))
 		{
 			$cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache/';
+		}
+		else
+		{
+			$cache_path = rtrim($cache_path, DIRECTORY_SEPARATOR).'/';
 		}
 
 		$cache_path .= 'ee_update/';

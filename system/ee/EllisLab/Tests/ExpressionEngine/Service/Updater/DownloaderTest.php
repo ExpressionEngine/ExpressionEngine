@@ -577,8 +577,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 				'update_path' => 'cache/path/ee_update/',
 				'archive_path' => 'cache/path/ee_update/ExpressionEngine',
 				'theme_paths' => [
-					'/some/theme/path',
-					'/some/theme/path2'
+					1 => '/some/theme/path',
+					2 => '/some/theme/path2'
 				]
 			]),
 			TRUE
@@ -619,10 +619,12 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	{
 		// Protected method stashConfigs() called inside moveUpdater()
 		$site1 = new MockSite();
+		$site1->site_id = 1;
 		$site1->site_system_preferences = new MockSystemPrefs();
 		$site1->site_system_preferences->theme_folder_path = '/some/theme/path';
 
 		$site2 = new MockSite();
+		$site2->site_id = 2;
 		$site2->site_system_preferences = new MockSystemPrefs();
 		$site2->site_system_preferences->theme_folder_path = '/some/theme/path2';
 
