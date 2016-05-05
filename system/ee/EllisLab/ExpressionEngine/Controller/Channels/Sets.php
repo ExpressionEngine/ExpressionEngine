@@ -214,6 +214,7 @@ class Sets extends AbstractChannelsController {
 
 	private function createAliasForm($set, $result)
 	{
+		ee()->lang->loadfile('filemanager');
 		$vars = array();
 		$vars['sections'] = array();
 
