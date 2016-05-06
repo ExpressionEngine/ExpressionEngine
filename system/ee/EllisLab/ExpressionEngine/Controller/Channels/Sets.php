@@ -217,6 +217,7 @@ class Sets extends AbstractChannelsController {
 		ee()->lang->loadfile('filemanager');
 		$vars = array();
 		$vars['sections'] = array();
+		$vars['errors'] = new \EllisLab\ExpressionEngine\Service\Validation\Result;
 
 		foreach ($result->getRecoverableErrors() as $section => $errors)
 		{
@@ -242,7 +243,7 @@ class Sets extends AbstractChannelsController {
 							$model_name.'['.$ident.']['.$long_field.']' => array(
 								'type' => 'text',
 								'value' => $model->$long_field,
-								'required' => TRUE
+								// 'required' => TRUE
 							)
 						)
 					);
@@ -258,6 +259,10 @@ class Sets extends AbstractChannelsController {
 						)
 					)
 				);
+				foreach ($rule as $r)
+				{
+					$vars['errors']->addFailed($model_name.'['.$ident.']['.$field.']', $r);
+				}
 			}
 		}
 
