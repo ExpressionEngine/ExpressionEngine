@@ -52,8 +52,12 @@ class Updater {
 	 */
 	public function backupExistingInstallFiles()
 	{
-		// First backup the contents of system/ee
-		$this->move(SYSPATH.'ee/', $this->getBackupsPath() . 'system_ee/');
+		// First backup the contents of system/ee, excluding ourselves
+		$this->move(
+			SYSPATH.'ee/',
+			$this->getBackupsPath() . 'system_ee/',
+			[SYSPATH.'ee/updater']
+		);
 
 		// We'll only backup one theme folder, they _should_ all be the same
 		// across sites
@@ -68,8 +72,10 @@ class Updater {
 	 *
 	 * @param	string	$source			Source directory
 	 * @param	string	$destination	Destination directory
+	 * @param	array	$excludions		Array of any paths to exlude when moving
+	 * @param	boolean	$copy			Destination directory
 	 */
-	protected function move($source, $destination)
+	protected function move($source, $destination, $exclusions = [], $copy = FALSE)
 	{
 		if ( ! $this->filesystem->exists($destination))
 		{
@@ -80,14 +86,16 @@ class Updater {
 
 		foreach ($contents as $path)
 		{
-			// Don't move ourselves when backing up system/ee
-			if (substr($path, -7) == 'updater')
+			// Skip exclusions
+			if (in_array($path, $exclusions))
 			{
 				continue;
 			}
 
 			$new_path = str_replace($source, $destination, $path);
-			$this->filesystem->rename($path, $new_path);
+
+			$method = $copy ? 'copy' : 'rename';
+			$this->filesystem->$method($path, $new_path);
 		}
 	}
 
