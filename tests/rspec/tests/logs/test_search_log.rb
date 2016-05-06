@@ -20,13 +20,22 @@ feature 'Search Log' do
     @page.heading.text.should eq 'Search Logs'
     @page.should have_phrase_search
     @page.should have_submit_button
+
     @page.should have_username_filter
+    @page.username_filter.click
     @page.should have_username_manual_filter
+
     # @page.should have_site_filter # This will not be present if MSM is diabled or we are running Core
+
     @page.should have_date_filter
+    @page.date_filter.click
     @page.should have_date_manual_filter
+
     @page.should have_perpage_filter
+    @page.perpage_filter.click
     @page.should have_perpage_manual_filter
+
+    @page.hide_filters
   end
 
   it 'shows the Search Logs page', :pregen => true do
@@ -140,7 +149,7 @@ feature 'Search Log' do
     no_php_js_errors
 
     @page.date_filter.click
-    @page.wait_until_date_filter_menu_visible
+    @page.wait_until_date_filter_menu_visible(2)
     @page.date_filter_menu.click_link "Last 24 Hours"
 
     @page.date_filter.text.should eq "date (Last 24 Hours)"

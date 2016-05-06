@@ -431,8 +431,12 @@ class Auth {
 		ee()->db->delete('sessions');
 
 		// update password in db
-		ee()->db->where('member_id', (int) $member_id);
-		ee()->db->update('members', $hashed_pair);
+		$member = ee('Model')->get('Member')
+			->filter('member_id', $member_id)
+			->first();
+
+		$member->set($hashed_pair);
+		$member->save();
 
 		return (bool) ee()->db->affected_rows();
 	}
