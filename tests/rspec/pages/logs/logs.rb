@@ -27,6 +27,10 @@ class Logs < ControlPanelPage
 
   attr_accessor :menu_item
 
+  def hide_filters
+    find('div.filters a.open').click
+  end
+
   def load
     open_dev_menu
     click_link 'Logs'
