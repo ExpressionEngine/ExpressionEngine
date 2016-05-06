@@ -33,12 +33,14 @@ class Updater {
 
 	protected $filesystem = NULL;
 	protected $config = NULL;
+	protected $verifier = NULL;
 	protected $configs = [];
 
-	public function __construct(Filesystem $filesystem, File $config)
+	public function __construct(Filesystem $filesystem, File $config, Verifier $verifier)
 	{
 		$this->filesystem = $filesystem;
 		$this->config = $config;
+		$this->verifier = $verifier;
 		$this->configs = $this->parseConfigs();
 	}
 
@@ -46,6 +48,7 @@ class Updater {
 	{
 		$this->backupExistingInstallFiles();
 		$this->moveNewInstallFiles();
+		$this->verifyNewFiles();
 	}
 
 	/**
@@ -99,8 +102,6 @@ class Updater {
 
 			$this->move($new_themes_dir, $theme_path);
 		}
-
-		// TODO: Verify files
 	}
 
 	/**
@@ -132,6 +133,51 @@ class Updater {
 
 			$method = $copy ? 'copy' : 'rename';
 			$this->filesystem->$method($path, $new_path);
+		}
+	}
+
+	/**
+	 * Verifies the newly-moved files made it over intact
+	 */
+	public function verifyNewFiles()
+	{
+		try {
+			$this->verifier->verifyPath(
+				SYSPATH . '/ee',
+				SYSPATH . '/ee/updater/hash-manifest',
+				'system/ee'
+			);
+
+			if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+			{
+				foreach ($this->configs['theme_paths'] as $theme_path)
+				{
+					$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+					$this->verifier->verifyPath(
+						$theme_path,
+						SYSPATH . '/ee/updater/hash-manifest',
+						'themes/ee'
+					);
+				}
+			}
+			// Otherwise, just move the themes to the one themes folder
+			else
+			{
+				$theme_path = array_values($this->configs['theme_paths'])[0];
+				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+				$this->verifier->verifyPath(
+					$theme_path,
+					SYSPATH . '/ee/updater/hash-manifest',
+					'themes/ee'
+				);
+			}
+		}
+		catch (UpdaterException $e)
+		{
+			// TODO: Start rollback process
+			throw new UpdaterException($e->getMessage(), $e->getCode());
 		}
 	}
 
