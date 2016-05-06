@@ -45,6 +45,7 @@ class Updater {
 	public function updateFiles()
 	{
 		$this->backupExistingInstallFiles();
+		$this->moveNewInstallFiles();
 	}
 
 	/**
@@ -65,6 +66,41 @@ class Updater {
 		$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
 		$this->move($theme_path, $this->getBackupsPath() . 'themes_ee/');
+	}
+
+	/**
+	 * Backs up the existing install files
+	 */
+	public function moveNewInstallFiles()
+	{
+		// Move new system/ee folder contents into place
+		$new_system_dir = $this->configs['archive_path'] . '/system/ee/';
+
+		$this->move($new_system_dir, SYSPATH.'ee/');
+
+		// Now move new themes into place
+		$new_themes_dir = $this->configs['archive_path'] . '/themes/ee/';
+
+		// If multiple theme paths exist, _copy_ the themes to each folder
+		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		{
+			foreach ($this->configs['theme_paths'] as $theme_path)
+			{
+				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+				$this->move($new_themes_dir, $theme_path, [], TRUE);
+			}
+		}
+		// Otherwise, just move the themes to the one themes folder
+		else
+		{
+			$theme_path = array_values($this->configs['theme_paths'])[0];
+			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+			$this->move($new_themes_dir, $theme_path);
+		}
+
+		// TODO: Verify files
 	}
 
 	/**
