@@ -53,18 +53,14 @@ class Updater {
 	public function backupExistingInstallFiles()
 	{
 		// First backup the contents of system/ee
-		$system_backup_dir = $this->getBackupsPath() . 'system_ee/';
+		$this->move(SYSPATH.'ee/', $this->getBackupsPath() . 'system_ee/');
 
-		$this->move(SYSPATH.'ee/', $system_backup_dir);
+		// We'll only backup one theme folder, they _should_ all be the same
+		// across sites
+		$theme_path = array_values($this->configs['theme_paths'])[0];
+		$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
-		// Now, theme folder for each site
-		foreach ($this->configs['theme_paths'] as $site_id => $theme_path)
-		{
-			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-			$theme_backup_dir = $this->getBackupsPath() . 'themes_ee_'.$site_id.'/';
-
-			$this->move($theme_path, $theme_backup_dir);
-		}
+		$this->move($theme_path, $this->getBackupsPath() . 'themes_ee/');
 	}
 
 	/**
