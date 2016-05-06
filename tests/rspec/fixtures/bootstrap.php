@@ -56,9 +56,6 @@ function &get_config($replace = array())
 		}
 	}
 
-	// Merge in defaults
-	$config = array_merge(default_config_items(), $config);
-
 	$_config[0] =& $config;
 
 	return $_config[0];
@@ -94,8 +91,16 @@ function config_item($item)
 
 		if ( ! isset($config[$item]))
 		{
+			$defaults = default_config_items();
+
+			if (isset($defaults[$item]))
+			{
+				return $defaults[$item];
+			}
+
 			return FALSE;
 		}
+
 		$_config_item[$item] = $config[$item];
 	}
 

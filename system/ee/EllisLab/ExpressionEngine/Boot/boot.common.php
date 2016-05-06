@@ -210,9 +210,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			}
 		}
 
-		// Merge in defaults
-		$config = array_merge(default_config_items(), $config);
-
 		return $config;
 	}
 
@@ -258,6 +255,13 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 		if ( ! isset($config[$item]))
 		{
+			$defaults = default_config_items();
+
+			if (isset($defaults[$item]))
+			{
+				return $defaults[$item];
+			}
+
 			return FALSE;
 		}
 
