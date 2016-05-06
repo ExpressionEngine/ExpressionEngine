@@ -236,6 +236,16 @@ class Member extends ContentModel {
 					$this->member_id
 				));
 			}
+
+			if ($this->isDirty('group_id'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_member_group'),
+					$this->MemberGroup->group_title,
+					$this->username,
+					$this->member_id
+				));
+			}
 		}
 	}
 
