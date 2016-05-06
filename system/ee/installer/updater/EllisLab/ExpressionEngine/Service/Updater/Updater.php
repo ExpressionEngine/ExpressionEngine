@@ -47,12 +47,15 @@ class Updater {
 		$this->backupExistingInstallFiles();
 	}
 
+	/**
+	 * Backs up the existing install files
+	 */
 	public function backupExistingInstallFiles()
 	{
 		// First backup the contents of system/ee
 		$system_backup_dir = $this->getBackupsPath() . 'system_ee/';
 
-		$this->backup(SYSPATH.'ee/', $system_backup_dir);
+		$this->move(SYSPATH.'ee/', $system_backup_dir);
 
 		// Now, theme folder for each site
 		foreach ($this->configs['theme_paths'] as $site_id => $theme_path)
@@ -60,11 +63,17 @@ class Updater {
 			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 			$theme_backup_dir = $this->getBackupsPath() . 'themes_ee_'.$site_id.'/';
 
-			$this->backup($theme_path, $theme_backup_dir);
+			$this->move($theme_path, $theme_backup_dir);
 		}
 	}
 
-	protected function backup($source, $destination)
+	/**
+	 * Moves contents of directories to another directory
+	 *
+	 * @param	string	$source			Source directory
+	 * @param	string	$destination	Destination directory
+	 */
+	protected function move($source, $destination)
 	{
 		if ( ! $this->filesystem->exists($destination))
 		{
@@ -118,6 +127,11 @@ class Updater {
 		return $cache_path . 'ee_update/';
 	}
 
+	/**
+	 * Opens the configs.json file and parses the JSON as an associative array
+	 *
+	 * @return	array	Associative array of configs
+	 */
 	protected function parseConfigs()
 	{
 		$configs_path = $this->path() . 'configs.json';
