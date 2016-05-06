@@ -48,18 +48,33 @@ class Verifier {
 	 *
 	 * @param	string	$path		Path to directory to check
 	 * @param	string	$hash_path	Path to location of hash manifest file
+	 * @param	string	$subpath	Optional subpath inside hashmap to limit verification to that path
 	 */
-	public function verifyPath($path, $hash_path)
+	public function verifyPath($path, $hash_path, $subpath = '')
 	{
 		$hashmap = $this->createHashmap($this->filesystem->read($hash_path));
+		$subpath = ltrim($subpath, '/');
 
-		$missing_files = array();
-		$corrupt_files = array();
+		$missing_files = [];
+		$corrupt_files = [];
 
 		foreach ($hashmap as $file_path => $hash)
 		{
+			// If a subpath was specified but the current file is not in that path, skip it
+			if ( ! empty($subpath) && substr($file_path, 0, strlen($subpath)) !== $subpath)
+			{
+				continue;
+			}
+
 			// Abosulute server path to the file in question
-			$absolute_file_path = $path . DIRECTORY_SEPARATOR . $file_path;
+			if (empty($subpath))
+			{
+				$absolute_file_path = $path . DIRECTORY_SEPARATOR . $file_path;
+			}
+			else
+			{
+				$absolute_file_path = $path . str_replace($subpath, '', $file_path);
+			}
 
 			// Does the file even exist?
 			if ( ! $this->filesystem->exists($absolute_file_path))
@@ -96,7 +111,7 @@ class Verifier {
 	{
 		$lines = explode("\n", $hashmap);
 
-		$hashmap = array();
+		$hashmap = [];
 		foreach ($lines as $line) {
 			$line_parts = explode(' ', $line);
 			if (count($line_parts) == 2)
