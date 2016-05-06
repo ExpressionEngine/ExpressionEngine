@@ -266,9 +266,9 @@ class Filesystem {
 	}
 
 	/**
-	 * Copy a file
+	 * Copy a file or directory
 	 *
-	 * @param String $source File to copy
+	 * @param String $source File or directory to copy
 	 * @param Stirng $dest Path to the duplicate
 	 */
 	public function copy($source, $dest)
@@ -278,12 +278,48 @@ class Filesystem {
 			throw new FilesystemException("Cannot copy non-existent path: {$source}");
 		}
 
-		copy(
-			$this->normalize($source),
-			$this->normalize($dest)
-		);
+		if ($this->isDir($source))
+		{
+			$this->recursiveCopy($source, $dest);
+		}
+		else
+		{
+			copy(
+				$this->normalize($source),
+				$this->normalize($dest)
+			);
+		}
 
 		$this->ensureCorrectAccessMode($dest);
+	}
+
+	/**
+	 * Copies a directory to another directory by recursively iterating over its files
+	 *
+	 * @param String $source Directory to copy
+	 * @param Stirng $dest Path to the duplicate
+	 */
+	protected function recursiveCopy($source, $dest)
+	{
+		$dir = opendir($source);
+		@mkdir($dest);
+
+		while(false !== ($file = readdir($dir)))
+		{
+			if (($file != '.') && ($file != '..'))
+			{
+				if ( is_dir($source . '/' . $file) )
+				{
+					$this->recursiveCopy($source . '/' . $file, $dest . '/' . $file);
+				}
+				else
+				{
+					copy($source . '/' . $file, $dest . '/' . $file);
+				}
+			}
+		}
+
+		closedir($dir);
 	}
 
 	/**
