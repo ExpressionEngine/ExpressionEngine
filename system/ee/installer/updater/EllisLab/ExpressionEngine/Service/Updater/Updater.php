@@ -122,8 +122,8 @@ class Updater {
 
 		foreach ($contents as $path)
 		{
-			// Skip exclusions
-			if (in_array($path, $exclusions))
+			// Skip exclusions and .DS_Store
+			if (in_array($path, $exclusions) OR strpos($path, '.DS_Store') !== FALSE)
 			{
 				continue;
 			}
