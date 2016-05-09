@@ -700,6 +700,8 @@ class Comment {
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
 			$row['total_results']	= $total_results;
+			$row['channel_url']		= parse_config_variables($row['channel_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
+			$row['comment_url']		= parse_config_variables($row['comment_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
 
 			// If we do not paginate, then the total comments ARE the comments
 			// on the page
