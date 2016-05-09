@@ -1060,6 +1060,18 @@ class Template extends AbstractDesignController {
 		return $html;
 	}
 
+	/**
+	 * Gets a list of all the templates for the current site, grouped by
+	 * their template group name:
+	 *   array(
+	 *     'news' => array(
+	 *       1 => 'index',
+	 *       3 => 'about',
+	 *     )
+	 *   )
+	 *
+	 * @return array An associative array of templates
+	 */
 	private function getExistingTemplates()
 	{
 		$existing_templates = array();
