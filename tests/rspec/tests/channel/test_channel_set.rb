@@ -430,6 +430,7 @@ feature 'Channel Sets' do
       @page.find('input[name="ee:ChannelField[news_body][field_name]"]').set 'event_body'
       @page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
+      @page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
       @page.submit
 
       check_success
@@ -603,6 +604,7 @@ feature 'Channel Sets' do
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '../images/uploads'
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').set '/images/uploads'
+        @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').trigger 'blur'
         @page.submit
 
         check_success
