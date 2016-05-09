@@ -389,7 +389,15 @@ class EE_Config {
 
 		if ( ! isset($site_configs[$site_id]))
 		{
-			$site_configs[$site_id] = $this->site_prefs('', $site_id, FALSE);
+			// Asking for the current site? No need to reload everything
+			if ($site_id == $this->item('site_id'))
+			{
+				$site_configs[$site_id] = $this->config;
+			}
+			else
+			{
+				$site_configs[$site_id] = $this->site_prefs('', $site_id, FALSE);
+			}
 		}
 
 		return $site_configs[$site_id];
