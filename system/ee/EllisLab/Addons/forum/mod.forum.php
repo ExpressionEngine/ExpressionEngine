@@ -833,7 +833,7 @@ class Forum {
 	 */
 	public function fetch_pref($which)
 	{
-		return ( ! isset($this->preferences[$which])) ? '' : $this->preferences[$which];
+		return ( ! isset($this->preferences[$which])) ? '' : parse_config_variables($this->preferences[$which]);
 	}
 
 	// --------------------------------------------------------------------

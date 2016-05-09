@@ -622,7 +622,7 @@ class Members {
 					{
 						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
 
-						$path = reduce_double_slashes(ee()->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/');
+						$path = reduce_double_slashes(ee()->functions->prep_query_string(parse_config_variables($row['board_forum_url'])).'/viewthread/'.$row['topic_id'].'/');
 
 						$result_ids[$forum_keys[$row['topic_id']]] = array(
 												'title' => $row['title'],
