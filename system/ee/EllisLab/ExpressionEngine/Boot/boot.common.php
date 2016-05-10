@@ -257,7 +257,11 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 				// allow nested variables later on
 				$var_value = isset($variables[$variable]) ? $variables[$variable] : config_item($variable, TRUE);
 
+				// Replace the variable
 				$value = str_replace('{'.$variable.'}', $var_value, $value);
+
+				// Reduce double slashes
+				$value = preg_replace("#([^/:])/+#", "\\1/", $value);
 			}
 		}
 
