@@ -31,6 +31,8 @@ class SecuritySettings < ControlPanelPage
   element :require_ip_for_posting_n, 'input[name=require_ip_for_posting][value=n]'
   element :xss_clean_uploads_y, 'input[name=xss_clean_uploads][value=y]'
   element :xss_clean_uploads_n, 'input[name=xss_clean_uploads][value=n]'
+  element :redirect_submitted_links_y, 'input[name=redirect_submitted_links][value=y]'
+  element :redirect_submitted_links_n, 'input[name=redirect_submitted_links][value=n]'
 
   def load
     settings_btn.click

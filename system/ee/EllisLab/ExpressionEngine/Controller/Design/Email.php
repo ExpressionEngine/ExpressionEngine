@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 

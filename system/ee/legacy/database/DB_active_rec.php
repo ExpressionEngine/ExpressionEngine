@@ -235,7 +235,8 @@ class CI_DB_active_record extends CI_DB_driver {
 	{
 		if (strpos($item, '.') !== FALSE)
 		{
-			return end(explode('.', $item));
+			$item = explode('.', $item);
+			return end($item);
 		}
 
 		return $item;

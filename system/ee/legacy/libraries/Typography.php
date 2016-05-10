@@ -852,8 +852,8 @@ class EE_Typography {
 		}
 
 		// If we're dealing with a separate parser (e.g. Markdown)
-		$this->auto_links      = ($this->text_format == 'markdown') ? 'n' : 'y';
 		$this->separate_parser = ($this->text_format == 'markdown');
+		$this->auto_links      = ($this->separate_parser) ? 'n' : $this->auto_links;
 	}
 
 	// -------------------------------------------------------------------------

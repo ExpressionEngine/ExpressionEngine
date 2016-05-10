@@ -74,16 +74,17 @@ feature 'Watermark Create/Edit' do
     @page.wait_until_wm_opacity_visible
     @page.wait_until_wm_x_transp_visible
     @page.wait_until_wm_y_transp_visible
+    @page.wait_for_error_message_count(2)
 
     @page.wm_image_path.set 'sdfsd'
     @page.wm_image_path.trigger 'blur'
-    @page.wait_for_error_message_count(8)
+    @page.wait_for_error_message_count(3)
     should_have_error_text(@page.wm_image_path, $invalid_path)
     should_have_form_errors(@page)
 
     @page.wm_opacity.set 'sdfsd'
     @page.wm_opacity.trigger 'blur'
-    @page.wait_for_error_message_count(9)
+    @page.wait_for_error_message_count(4)
     should_have_error_text(@page.wm_opacity, $natural_number)
     should_have_form_errors(@page)
 

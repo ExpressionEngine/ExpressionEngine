@@ -1423,7 +1423,15 @@ class Channel {
 			$stime = ee()->localize->string_to_timestamp($year.'-'.$smonth.'-'.$sday.' 00:00');
 			$etime = ee()->localize->string_to_timestamp($year.'-'.$emonth.'-'.$eday.' 23:59');
 
-			$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+			if ($stime && $etime)
+			{
+				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+			}
+			else
+			{
+				// Log invalid date to notify the user.
+				ee()->TMPL->log_item('WARNING: Invalid date parameter, limiting by year/month/day skipped.');
+			}
 		}
 		else
 		{
@@ -1447,7 +1455,15 @@ class Channel {
 				$stime = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$sday.' 00:00:00');
 				$etime = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$eday.' 23:59:59');
 
-				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+				if ($stime && $etime)
+				{
+					$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+				}
+				else
+				{
+					// Log invalid date to notify the user.
+					ee()->TMPL->log_item('WARNING: Invalid date URI, limiting by year/month/day skipped.');
+				}
 			}
 			else
 			{

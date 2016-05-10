@@ -1603,9 +1603,10 @@ class Member_settings extends Member {
 		// the same options
 		ee()->load->model('admin_model');
 		ee()->load->helper('form');
+		$timezone = ee()->session->userdata('timezone');
 
 		$defaults = array(
-			'site_default'    => empty(ee()->session->userdata('timezone')) ? 'y' : 'n',
+			'site_default'    => empty($timezone) ? 'y' : 'n',
 			'date_format'     => ee()->session->userdata('date_format'),
 			'time_format'     => ee()->session->userdata('time_format'),
 			'include_seconds' => ee()->session->userdata('include_seconds')

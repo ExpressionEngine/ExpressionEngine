@@ -19,10 +19,10 @@ class WatermarkEdit < FileManagerPage
   element :wm_shadow_color, 'input[name=wm_shadow_color]'
 
   # Image options
-  element :wm_image_path, 'input[name=wm_image_path]', visible: false
-  element :wm_opacity, 'input[name=wm_opacity]', visible: false
-  element :wm_x_transp, 'input[name=wm_x_transp]', visible: false
-  element :wm_y_transp, 'input[name=wm_y_transp]', visible: false
+  element :wm_image_path, 'input[name=wm_image_path]'
+  element :wm_opacity, 'input[name=wm_opacity]'
+  element :wm_x_transp, 'input[name=wm_x_transp]'
+  element :wm_y_transp, 'input[name=wm_y_transp]'
 
   def load
     click_link 'Files'
