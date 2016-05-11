@@ -145,6 +145,12 @@ class Login extends Profile {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->logger->log_action(sprintf(
+			lang('member_login_as'),
+			$this->member->username,
+			$this->member->member_id
+		));
+
 		//  Do we allow multiple logins on the same account?
 		if (ee()->config->item('allow_multi_logins') == 'n')
 		{

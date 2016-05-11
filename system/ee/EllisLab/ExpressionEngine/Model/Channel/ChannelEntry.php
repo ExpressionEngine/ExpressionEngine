@@ -318,6 +318,16 @@ class ChannelEntry extends ContentModel {
 	{
 		$this->Author->updateAuthorStats();
 		$this->updateEntryStats();
+
+		if ($this->Channel->channel_notify == 'y' && $this->Channel->channel_notify_emails != '')
+		{
+			ee()->load->library('notifications');
+			ee()->notifications->send_admin_notification(
+				$this->Channel->channel_notify_emails,
+				$this->Channel->getId(),
+				$this->getId()
+			);
+		}
 	}
 
 	public function onAfterUpdate($changed)

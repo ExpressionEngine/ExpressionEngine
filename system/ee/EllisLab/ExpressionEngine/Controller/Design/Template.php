@@ -72,15 +72,7 @@ class Template extends AbstractDesignController {
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
 
-		foreach (ee('Model')->get('TemplateGroup')->order('group_name')->all() as $template_group)
-		{
-			$templates = array();
-			foreach ($template_group->Templates->sortBy('template_name') as $template)
-			{
-				$templates[$template->template_id] = $template->template_name;
-			}
-			$existing_templates[$template_group->group_name] = $templates;
-		}
+		$existing_templates = array_merge($existing_templates, $this->getExistingTemplates());
 
 		$template = ee('Model')->make('Template');
 		$template->site_id = ee()->config->item('site_id');
@@ -213,6 +205,7 @@ class Template extends AbstractDesignController {
 		}
 
 		$template = ee('Model')->get('Template', $template_id)
+			->with('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -969,17 +962,7 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
-		$existing_templates = array();
-
-		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
-		{
-			$templates = array();
-			foreach ($template_group->getTemplates() as $t)
-			{
-				$templates[$t->template_id] = $t->template_name;
-			}
-			$existing_templates[$template_group->group_name] = $templates;
-		}
+		$existing_templates = $this->getExistingTemplates();
 
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
@@ -1075,6 +1058,41 @@ class Template extends AbstractDesignController {
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Gets a list of all the templates for the current site, grouped by
+	 * their template group name:
+	 *   array(
+	 *     'news' => array(
+	 *       1 => 'index',
+	 *       3 => 'about',
+	 *     )
+	 *   )
+	 *
+	 * @return array An associative array of templates
+	 */
+	private function getExistingTemplates()
+	{
+		$existing_templates = array();
+
+		$all_templates = ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->with('TemplateGroup')
+			->order('TemplateGroup.group_name')
+			->order('template_name')
+			->all();
+
+		foreach ($all_templates as $template)
+		{
+			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
+			{
+				$existing_templates[$template->TemplateGroup->group_name] = array();
+			}
+			$existing_templates[$template->TemplateGroup->group_name][$template->template_id] = $template->template_name;
+		}
+
+		return $existing_templates;
 	}
 }
 

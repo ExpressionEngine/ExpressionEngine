@@ -1,7 +1,6 @@
 require './bootstrap.rb'
 
 feature 'Member List' do
-
   before(:each) do
     cp_session
     @page = Members.new
@@ -10,6 +9,7 @@ feature 'Member List' do
   end
 
   it 'shows the Member List page' do
-    @page.all_there?.should == true
+    @page.should have_member_search
+    @page.should have_member_table
   end
 end

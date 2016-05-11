@@ -223,6 +223,8 @@ Grid.Publish.prototype = {
 		// Fire 'display' event for the new row
 		this._fireEvent('display', el);
 
+		$(this.root).trigger('grid:addRow', el);
+
 		// Bind the new row's inputs to AJAX form validation
 		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);

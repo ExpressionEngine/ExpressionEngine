@@ -38,7 +38,8 @@ feature 'CP Log' do
   end
 
   it 'does not show filters at 10 items', :pregen => false do
-    @page.generate_data(count: 9) # +1 for the login in cp_session
+    # +2 for login and password change due to hash update
+    @page.generate_data(count: 8)
     @page.load
 
     @page.displayed?
@@ -129,7 +130,7 @@ feature 'CP Log' do
     @page.date_filter_menu.click_link "Last 24 Hours"
 
     @page.date_filter.text.should eq "date (Last 24 Hours)"
-    @page.should have(1).items
+    @page.should have(2).items
   end
 
   it 'can change page size', :pregen => true do
@@ -241,7 +242,7 @@ feature 'CP Log' do
     @page.modal_submit_button.click # Submits a form
 
     @page.should have_alert
-    @page.alert.text.should eq "Logs Deleted 166 log(s) deleted from Control Panel logs"
+    @page.alert.text.should eq "Logs Deleted 167 log(s) deleted from Control Panel logs"
 
     @page.should have_no_results
     @page.should_not have_pagination

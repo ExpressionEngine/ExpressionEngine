@@ -212,6 +212,19 @@ class SecurityPrivacy extends Settings {
 					'fields' => array(
 						'xss_clean_uploads' => array('type' => 'yes_no')
 					)
+				),
+				array(
+					'title' => 'enable_rank_denial',
+					'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
+					'fields' => array(
+						'redirect_submitted_links' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => lang('enable'),
+								'n' => lang('disable')
+							)
+						)
+					)
 				)
 			)
 		);

@@ -8,8 +8,8 @@ class Publish < ControlPanelPage
   elements :tab_links, 'ul.tabs li'
   elements :tabs, '.tab-wrap div.tabs'
 
-  section :file_modal, FileModal, '.modal-file', visible: false
-  section :forum_tab, ForumTab, 'body', visible: false
+  section :file_modal, FileModal, '.modal-file'
+  section :forum_tab, ForumTab, 'body'
 
   def load
     visit '/system/index.php?/cp/publish/create/1'
