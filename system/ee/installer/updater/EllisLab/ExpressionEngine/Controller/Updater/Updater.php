@@ -52,8 +52,11 @@ class Updater {
 		$filesystem = new Filesystem();
 		$config = new Service\Config\File(SYSPATH.'user/config/config.php');
 		$verifier = new Service\Updater\Verifier($filesystem);
+		// TODO: prolly need to put this cache path into the configs.json and load that here
+		$file_logger = new Service\Logger\File(SYSPATH.'user/cache/ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
+		$updater_logger = new Service\Updater\Logger($file_logger);
 
-		return new Service\Updater\FileUpdater($filesystem, $config, $verifier);
+		return new Service\Updater\FileUpdater($filesystem, $config, $verifier, $updater_logger);
 	}
 }
 // EOF

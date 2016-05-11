@@ -112,6 +112,7 @@ class Downloader {
 	 */
 	public function preflight()
 	{
+		// TODO: Maybe try to log free disk space, too
 		$this->logger->log('Maximum execution time: '.@ini_get('max_execution_time'));
 		$this->logger->log('Memory limit: '.@ini_get('memory_limit'));
 
@@ -329,7 +330,7 @@ class Downloader {
 			throw new UpdaterException("Your server has failed the requirements for this version of ExpressionEngine: \n" . implode("\n", $failed), 14);
 		}
 
-		$this->logger->log('SUCCESS: Server requirements check completed');
+		$this->logger->log('Server requirements check passed with flying colors');
 
 		return 'moveUpdater';
 	}

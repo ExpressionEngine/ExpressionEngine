@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
+use EllisLab\ExpressionEngine\Service\Updater\Logger;
 use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Service\Config\File;
@@ -34,13 +35,15 @@ class FileUpdater {
 	protected $filesystem = NULL;
 	protected $config = NULL;
 	protected $verifier = NULL;
+	protected $logger = NULL;
 	protected $configs = [];
 
-	public function __construct(Filesystem $filesystem, File $config, Verifier $verifier)
+	public function __construct(Filesystem $filesystem, File $config, Verifier $verifier, Logger $logger)
 	{
 		$this->filesystem = $filesystem;
 		$this->config = $config;
 		$this->verifier = $verifier;
+		$this->logger = $logger;
 		$this->configs = $this->parseConfigs();
 	}
 
@@ -56,6 +59,8 @@ class FileUpdater {
 	 */
 	public function backupExistingInstallFiles()
 	{
+		$this->logger->log('Starting backup of existing installation');
+
 		// First backup the contents of system/ee, excluding ourselves
 		$this->move(
 			SYSPATH.'ee/',
@@ -76,6 +81,8 @@ class FileUpdater {
 	 */
 	public function moveNewInstallFiles()
 	{
+		$this->logger->log('Moving new ExpressionEngine installation into place');
+
 		// Move new system/ee folder contents into place
 		$new_system_dir = $this->configs['archive_path'] . '/system/ee/';
 
@@ -87,6 +94,8 @@ class FileUpdater {
 		// If multiple theme paths exist, _copy_ the themes to each folder
 		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
 		{
+			$this->logger->log('Multiple theme paths detected, copying new themes folders into place');
+
 			foreach ($this->configs['theme_paths'] as $theme_path)
 			{
 				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
@@ -102,6 +111,8 @@ class FileUpdater {
 
 			$this->move($new_themes_dir, $theme_path);
 		}
+
+		$this->logger->log('The new ExpressionEngine files have been successfully put into place');
 	}
 
 	/**
@@ -131,6 +142,8 @@ class FileUpdater {
 
 			$new_path = str_replace($source, $destination, $path);
 
+			$this->logger->log('Moving '.$path.' to '.$new_path);
+
 			$method = $copy ? 'copy' : 'rename';
 			$this->filesystem->$method($path, $new_path);
 		}
@@ -141,6 +154,8 @@ class FileUpdater {
 	 */
 	public function verifyNewFiles()
 	{
+		$this->logger->log('Verifying the integrity of the new ExpressionEngine files');
+
 		try {
 			$this->verifier->verifyPath(
 				SYSPATH . '/ee',
@@ -179,6 +194,8 @@ class FileUpdater {
 			// TODO: Start rollback process
 			throw new UpdaterException($e->getMessage(), $e->getCode());
 		}
+
+		$this->logger->log('New ExpressionEngine files successfully verified');
 	}
 
 	/**
