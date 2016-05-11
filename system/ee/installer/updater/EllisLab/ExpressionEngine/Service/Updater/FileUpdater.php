@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Config\File;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Updater {
+class FileUpdater {
 
 	protected $filesystem = NULL;
 	protected $config = NULL;

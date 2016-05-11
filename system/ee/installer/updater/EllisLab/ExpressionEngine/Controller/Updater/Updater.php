@@ -53,7 +53,7 @@ class Updater {
 		$config = new Service\Config\File(SYSPATH.'user/config/config.php');
 		$verifier = new Service\Updater\Verifier($filesystem);
 
-		return new Service\Updater\Updater($filesystem, $config, $verifier);
+		return new Service\Updater\FileUpdater($filesystem, $config, $verifier);
 	}
 }
 // EOF
