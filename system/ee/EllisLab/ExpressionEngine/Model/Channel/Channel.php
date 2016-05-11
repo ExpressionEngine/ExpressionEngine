@@ -176,6 +176,30 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template;
 
+	/**
+	 * Parses URL properties for any config variables
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return mixed The value of the property
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+
+		if (in_array($name, array('channel_url', 'comment_url', 'search_results_url', 'rss_url')))
+		{
+			$overrides = array();
+
+			if ($this->getProperty('site_id') != ee()->config->item('site_id'))
+			{
+				$overrides = ee()->config->get_cached_site_prefs($this->getProperty('site_id'));
+			}
+
+			$value = parse_config_variables((string) $value, $overrides);
+		}
+
+		return $value;
+	}
 
 	public function getContentType()
 	{

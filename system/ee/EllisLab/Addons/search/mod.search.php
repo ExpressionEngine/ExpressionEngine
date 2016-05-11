@@ -1427,6 +1427,11 @@ class Search {
 	 */
 	public function callback_search_result_row($tagdata, $row)
 	{
+		$overrides = ee()->config->get_cached_site_prefs($row['entry_site_id']);
+		$row['channel_url']			= parse_config_variables($row['channel_url'], $overrides);
+		$row['comment_url']			= parse_config_variables($row['comment_url'], $overrides);
+		$row['search_results_url']	= parse_config_variables($row['search_results_url'], $overrides);
+
 		if (isset($row['field_id_'.$row['search_excerpt']]) AND $row['field_id_'.$row['search_excerpt']])
 		{
 			$format = ( ! isset($row['field_ft_'.$row['search_excerpt']])) ? 'xhtml' : $row['field_ft_'.$row['search_excerpt']];

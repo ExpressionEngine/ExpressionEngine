@@ -143,6 +143,14 @@ $lang = array(
 
 'url_path_settings_title' => '<abbr title="Uniform Resource Location">URL</abbr> and Path Settings',
 
+'base_url' => 'Default base URL',
+
+'base_url_desc' => 'Use <code>{base_url}</code> to build URLs in control panel URL fields.',
+
+'base_path' => 'Default base path',
+
+'base_path_desc' => 'Use <code>{base_path}</code> to build paths in control panel path fields.',
+
 'site_index' => 'Website index page',
 
 'site_index_desc' => 'Most commonly <mark>index.php</mark>.',

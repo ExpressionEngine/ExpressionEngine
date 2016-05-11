@@ -165,7 +165,7 @@ class Rss {
 		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates, FALSE);
 
 		// Setup {trimmed_url}
-		$channel_url = $query->row('channel_url');
+		$channel_url = parse_config_variables($query->row('channel_url'));
 		$trimmed_url = (isset($channel_url) AND $channel_url != '') ? $channel_url : '';
 
 		$trimmed_url = str_replace('http://', '', $trimmed_url);
@@ -179,7 +179,7 @@ class Rss {
 				'encoding'				=> ee()->config->item('output_charset'),
 				'channel_language'		=> $query->row('channel_lang'),
 				'channel_description'	=> $query->row('channel_description'),
-				'channel_url'			=> $query->row('channel_url'),
+				'channel_url'			=> parse_config_variables($query->row('channel_url')),
 				'channel_name'			=> $query->row('channel_title'),
 				'email'					=> $query->row('email'),
 				'author'				=> $query->row('screen_name'),
