@@ -39,6 +39,20 @@ class Urls extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
+					'title' => 'base_url',
+					'desc' => 'base_url_desc',
+					'fields' => array(
+						'base_url' => array('type' => 'text', 'required' => TRUE)
+					)
+				),
+				array(
+					'title' => 'base_path',
+					'desc' => 'base_path_desc',
+					'fields' => array(
+						'base_path' => array('type' => 'text', 'required' => TRUE)
+					)
+				),
+				array(
 					'title' => 'site_index',
 					'desc' => 'site_index_desc',
 					'fields' => array(

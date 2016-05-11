@@ -389,7 +389,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_image_path' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_image_path
+								'value' => $watermark->getRawProperty('wm_image_path')
 							)
 						)
 					),

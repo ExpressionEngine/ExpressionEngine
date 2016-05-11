@@ -691,7 +691,7 @@ class EE_Form_validation {
 	 */
 	public function file_exists($file)
 	{
-		return file_exists($file);
+		return file_exists(parse_config_variables($file, $_POST));
 	}
 
 	// --------------------------------------------------------------------
@@ -706,7 +706,7 @@ class EE_Form_validation {
 	 */
 	public function writable($path)
 	{
-		return is_really_writable($path);
+		return is_really_writable(parse_config_variables($path, $_POST));
 	}
 
 	// --------------------------------------------------------------------
