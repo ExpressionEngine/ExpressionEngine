@@ -107,6 +107,28 @@ class Watermark extends Model {
 	{
 		return ($this->wm_type == 'text') ? TRUE : $rule->skip();
 	}
+
+	/**
+	 * Custom getter to parse path variables in the image path
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+
+		if ($name == 'wm_image_path')
+		{
+			$overrides = array();
+
+			if ($this->FileDimension !== NULL && $this->FileDimension->site_id == ee()->config->item('site_id'))
+			{
+				$overrides = ee()->config->get_cached_site_prefs($this->FileDimension->site_id);
+			}
+
+			$value = parse_config_variables($value, $overrides);
+		}
+
+		return $value;
+	}
 }
 
 // EOF
