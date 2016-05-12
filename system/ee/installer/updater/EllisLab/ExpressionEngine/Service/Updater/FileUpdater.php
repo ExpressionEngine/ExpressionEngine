@@ -162,7 +162,7 @@ class FileUpdater {
 		catch (UpdaterException $e)
 		{
 			$this->logger->log('There was an error verifying the new installation\'s files: '.$e->getMessage());
-			//$this->rollbackFiles();
+			$this->rollbackFiles();
 			throw new UpdaterException($e->getMessage(), $e->getCode());
 		}
 
@@ -270,7 +270,7 @@ class FileUpdater {
 			{
 				if ( ! $this->filesystem->isWritable($path_to_check))
 				{
-					//throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path_to_check}", 19);
+					throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path_to_check}", 19);
 				}
 			}
 
