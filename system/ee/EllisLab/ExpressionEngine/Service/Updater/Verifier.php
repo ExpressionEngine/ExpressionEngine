@@ -49,8 +49,9 @@ class Verifier {
 	 * @param	string	$path		Path to directory to check
 	 * @param	string	$hash_path	Path to location of hash manifest file
 	 * @param	string	$subpath	Optional subpath inside hashmap to limit verification to that path
+	 * @param	array	$exclusions	Array of any paths to exlude when verifying
 	 */
-	public function verifyPath($path, $hash_path, $subpath = '')
+	public function verifyPath($path, $hash_path, $subpath = '', Array $exclusions = [])
 	{
 		$hashmap = $this->createHashmap($this->filesystem->read($hash_path));
 		$subpath = ltrim($subpath, '/');
@@ -64,6 +65,15 @@ class Verifier {
 			if ( ! empty($subpath) && substr($file_path, 0, strlen($subpath)) !== $subpath)
 			{
 				continue;
+			}
+
+			// Skip paths we don't want to verify
+			foreach ($exclusions as $exclude)
+			{
+				if (substr($file_path, 0, strlen($exclude)) === $exclude)
+				{
+					continue 2;
+				}
 			}
 
 			// Abosulute server path to the file in question
