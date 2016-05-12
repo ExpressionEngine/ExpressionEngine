@@ -186,6 +186,11 @@ class Filesystem {
 	 */
 	public function getDirectoryContents($path, $recursive = FALSE)
 	{
+		if ( ! $this->exists($path) OR ! $this->isDir($path))
+		{
+			throw new FilesystemException('Cannot get contents of path, either invalid or not a directory: '.$path);
+		}
+
 		$contents = new FilesystemIterator($this->normalize($path));
 		$contents_array = [];
 
