@@ -529,7 +529,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					elseif (strncmp($key, 'exp', 3) !== 0)
+					elseif (strncmp($key, 'exp', 3) !== 0 && strncmp($key, 'embed=', 6) !== 0)
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}

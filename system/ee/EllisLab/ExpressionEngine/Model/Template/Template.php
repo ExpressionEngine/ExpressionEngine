@@ -44,7 +44,7 @@ class Template extends FileSyncedModel {
 		'allow_php'          => 'boolString',
 		'protect_javascript' => 'boolString',
 		'refresh'            => 'int',
-		'hit_counter'        => 'int',
+		'hits'               => 'int',
 	);
 
 	protected static $_relationships = array(
@@ -141,12 +141,17 @@ class Template extends FileSyncedModel {
 	 */
 	public function getFilePath()
 	{
+		static $group;
+
 		if (ee()->config->item('save_tmpl_files') != 'y')
 		{
 			return NULL;
 		}
 
-		$group = $this->getTemplateGroup();
+		if ( ! $group || $group->group_id != $this->group_id)
+		{
+			$group = $this->getTemplateGroup();
+		}
 
 		if ( ! isset($group))
 		{

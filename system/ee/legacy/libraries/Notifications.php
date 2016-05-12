@@ -53,14 +53,15 @@ class Notifications {
 
 		$e = ee()->channel_entries_model->get_entry($entry_id, $channel_id);
 		$c = ee()->api_channel_structure->get_channel_info($channel_id);
+		$overrides = ee()->config->get_cached_site_prefs($c->row('site_id'));
 
 		$swap = array(
 						'name'				=> ee()->session->userdata('screen_name'),
 						'email'				=> ee()->session->userdata('email'),
 						'channel_name'		=> $c->row('channel_title'),
 						'entry_title'		=> $e->row('title'),
-						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
-						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title')),
+						'entry_url'			=> reduce_double_slashes(parse_config_variables($c->row('channel_url'), $overrides).'/'.$e->row('url_title')),
+						'comment_url'		=> reduce_double_slashes(parse_config_variables($c->row('comment_url'), $overrides).'/'.$e->row('url_title')),
 						'cp_edit_entry_url'	=> ee('CP/URL')->make('publish/edit/entry/'.$row['entry_id'],
 												array(),
 												ee()->config->item('cp_url')
@@ -86,6 +87,7 @@ class Notifications {
 		{
 			//	Send email
 			ee()->load->library('email');
+			ee()->load->helper('text_helper');
 
 			foreach (explode(',', $notify_address) as $addy)
 			{

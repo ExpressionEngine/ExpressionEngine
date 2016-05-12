@@ -98,6 +98,12 @@ class Moblog extends Model {
 	 */
 	public function validateEmails($key, $value, $params, $rule)
 	{
+		// Not dirty
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
 		foreach($value as $email)
 		{
 			if (trim($email) != '' && (bool) filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)

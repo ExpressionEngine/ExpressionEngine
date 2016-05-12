@@ -31,6 +31,8 @@ use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 class SystemPreferences extends CustomType {
 
 	protected $is_site_on;
+	protected $base_url;
+	protected $base_path;
 	protected $site_index;
 	protected $site_url;
 	protected $cp_url;
@@ -134,6 +136,16 @@ class SystemPreferences extends CustomType {
 		return Base64Native::serialize($data);
 	}
 
+	/**
+	 * Custom getter to parse path variables
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+		$value = parse_config_variables($value, $this->getValues());
+
+		return $value;
+	}
 }
 
 // EOF

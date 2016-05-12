@@ -85,7 +85,7 @@ class Messages extends Settings {
 					'fields' => array(
 						'prv_msg_upload_url' => array(
 							'type' => 'text',
-							'value' => ($directory) ? $directory->url : str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
+							'value' => ($directory) ? $directory->url : str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url', '', TRUE)),
 							'required' => TRUE
 						)
 					)

@@ -51,7 +51,7 @@ feature 'Template Settings' do
 
     @page.max_tmpl_revisions.set '100'
     @page.max_tmpl_revisions.trigger 'blur'
-    @page.wait_for_error_message_count(1)
+    @page.wait_for_error_message_count(0)
   end
 
   it 'should save and load the settings' do

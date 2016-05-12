@@ -117,6 +117,8 @@ class EE_Session {
 
 		$this->cookie_ttl = $this->_setup_cookie_ttl();
 
+		$this->sess_crypt_key = ee()->config->item('encryption_key');
+
 		// Set Default Session Values
 		// Set USER-DATA as GUEST until proven otherwise
 		$this->_initialize_userdata();
@@ -625,7 +627,7 @@ class EE_Session {
 		$this->userdata['display_photos'] = ee()->config->item('enable_photos');
 
 		//  Are users allowed to localize?
-		if (ee()->config->item('allow_member_localization') == 'n')
+		if (ee()->config->item('allow_member_localization') == 'n' OR empty($this->userdata['date_format']))
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
 			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';

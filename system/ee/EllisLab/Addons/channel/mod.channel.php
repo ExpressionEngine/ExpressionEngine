@@ -1423,7 +1423,15 @@ class Channel {
 			$stime = ee()->localize->string_to_timestamp($year.'-'.$smonth.'-'.$sday.' 00:00');
 			$etime = ee()->localize->string_to_timestamp($year.'-'.$emonth.'-'.$eday.' 23:59');
 
-			$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+			if ($stime && $etime)
+			{
+				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+			}
+			else
+			{
+				// Log invalid date to notify the user.
+				ee()->TMPL->log_item('WARNING: Invalid date parameter, limiting by year/month/day skipped.');
+			}
 		}
 		else
 		{
@@ -1447,7 +1455,15 @@ class Channel {
 				$stime = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$sday.' 00:00:00');
 				$etime = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$eday.' 23:59:59');
 
-				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+				if ($stime && $etime)
+				{
+					$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+				}
+				else
+				{
+					// Log invalid date to notify the user.
+					ee()->TMPL->log_item('WARNING: Invalid date URI, limiting by year/month/day skipped.');
+				}
 			}
 			else
 			{
@@ -4493,7 +4509,7 @@ class Channel {
 			$ids = ee()->functions->sql_andor_string($entry_id, 't.entry_id').' ';
 		}
 
-		$sql = 'SELECT t.entry_id, t.title, t.url_title, w.channel_name, w.channel_title, w.comment_url, w.channel_url
+		$sql = 'SELECT t.entry_id, t.title, t.url_title, w.channel_name, w.channel_title, w.comment_url, w.channel_url, w.site_id
 				FROM (exp_channel_titles AS t)
 				LEFT JOIN exp_channels AS w ON w.channel_id = t.channel_id ';
 
@@ -4654,7 +4670,13 @@ class Channel {
 		/** ---------------------------------------*/
 
 		ee()->load->library('typography');
-		$comment_path = ($query->row('comment_url') != '') ? $query->row('comment_url') : $query->row('channel_url');
+
+		$overrides = ee()->config->get_cached_site_prefs($query->row('site_id'));
+		$channel_url = parse_config_variables($query->row('channel_url'), $overrides);
+		$comment_url = parse_config_variables($query->row('comment_url'), $overrides);
+
+		$comment_path = ($comment_url != '') ? $comment_url : $channel_url;
+
 		$title = ee()->typography->format_characters($query->row('title'));
 
 		$vars['0'] = array(
@@ -4665,7 +4687,7 @@ class Channel {
 			'url_title'						=> $query->row('url_title'),
 			'channel_short_name'			=> $query->row('channel_name'),
 			'channel'						=> $query->row('channel_title'),
-			'channel_url'					=> $query->row('channel_url'),
+			'channel_url'					=> $channel_url,
 			'comment_entry_id_auto_path'	=> reduce_double_slashes($comment_path.'/'.$query->row('entry_id')),
 			'comment_url_title_auto_path'	=> reduce_double_slashes($comment_path.'/'.$query->row('url_title'))
 		);

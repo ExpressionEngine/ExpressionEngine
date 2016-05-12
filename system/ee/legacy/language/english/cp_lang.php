@@ -129,6 +129,8 @@ $lang = array(
 
 'reveal_sidebar' => 'show sidebar',
 
+'retry' => 'Retry?',
+
 //----------------------------
 // Buttons
 //----------------------------
@@ -172,6 +174,14 @@ $lang = array(
 'member_logged_in' => 'Logged in',
 
 'member_logged_out' => 'Logged out',
+
+'member_changed_password' => 'Changed password for "%s" (%d)',
+
+'member_changed_email' => 'Changed email for "%s" (%d)',
+
+'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
+
+'member_login_as' => 'Member logged in as "%s" (%d)',
 
 'close' => 'Close',
 

@@ -889,7 +889,7 @@ var spaceString = new RegExp('!-!', "g");
 			if (group == 'moblog_categories') {
 				var checkbox_values = [];
 				// Categories are checkboxes
-				$('input[name="moblog_categories[]"]').each(function() {
+				$('input[name="moblog_categories[]"]:checked').each(function() {
 					checkbox_values.push(this.value);
 				});
 				jQuery.each(values, function(a, b) {

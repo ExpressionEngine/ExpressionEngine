@@ -10,7 +10,8 @@ feature 'Member Group List' do
 
   it 'shows the Member Group List page' do
     @page.all_there?.should == true
-    @page.list.all_there?.should == true
+    @page.list.should have_groups_table
+    @page.list.should have_groups
   end
 
   context 'when creating a member group' do
@@ -226,7 +227,8 @@ feature 'Member Group List' do
 
       find('form[action$="cp/members/groups/delete"] input[type="submit"]').click
 
-      @page.list.all_there?.should == true
+      @page.list.should have_groups_table
+      @page.list.should have_groups
       @page.list.groups.size.should == 5
       @page.alert.text.should_not match(/[a-z]_[a-z]/)
 
@@ -240,7 +242,9 @@ feature 'Member Group List' do
     @page.new_group.click
 
     @page.all_there?.should == true
-    @page.edit.all_there?.should == true
+    @page.edit.should have_name
+    @page.edit.should have_description
+    @page.edit.should have_security_lock
 
     @page.edit.name.set 'Moderators'
     @page.edit.description.set 'Moderators description.'
@@ -286,7 +290,9 @@ feature 'Member Group List' do
     @page.list.groups.last.find('li.edit a').click
 
     @page.list.all_there?.should == false
-    @page.edit.all_there?.should == true
+    @page.edit.should have_name
+    @page.edit.should have_description
+    @page.edit.should have_security_lock
   end
 
   def edit_member_group
@@ -302,7 +308,9 @@ feature 'Member Group List' do
     @page.list.groups.last.find('li.edit a').click
 
     @page.list.all_there?.should == false
-    @page.edit.all_there?.should == true
+    @page.edit.should have_name
+    @page.edit.should have_description
+    @page.edit.should have_security_lock
 
     @page.edit.name.value.should == 'Editors'
     @page.edit.description.value.should == 'Editors description.'
@@ -322,7 +330,9 @@ feature 'Member Group List' do
     @page.list.groups.last.find('li.edit a').click
 
     @page.list.all_there?.should == false
-    @page.edit.all_there?.should == true
+    @page.edit.should have_name
+    @page.edit.should have_description
+    @page.edit.should have_security_lock
   end
 
   def create_msm_site

@@ -706,7 +706,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'channel_url' => array(
 							'type' => 'text',
-							'value' => $channel->channel_url
+							'value' => $channel->getRawProperty('channel_url')
 						)
 					)
 				),
@@ -716,7 +716,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'comment_url' => array(
 							'type' => 'text',
-							'value' => $channel->comment_url
+							'value' => $channel->getRawProperty('comment_url')
 						)
 					)
 				),
@@ -726,7 +726,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'search_results_url' => array(
 							'type' => 'text',
-							'value' => $channel->search_results_url
+							'value' => $channel->getRawProperty('search_results_url')
 						)
 					)
 				),
@@ -736,7 +736,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'rss_url' => array(
 							'type' => 'text',
-							'value' => $channel->rss_url
+							'value' => $channel->getRawProperty('rss_url')
 						)
 					)
 				),

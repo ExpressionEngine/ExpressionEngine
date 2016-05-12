@@ -103,7 +103,7 @@ class Member extends ContentModel {
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|unique',
+		'email'           => 'required|email|uniqueEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
@@ -118,7 +118,8 @@ class Member extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'beforeUpdate'
 	);
 
 	// Properties
@@ -209,6 +210,43 @@ class Member extends ContentModel {
 	{
 		$this->setProperty('unique_id', sha1(uniqid(mt_rand(), TRUE)));
 		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
+	}
+
+	/**
+	 * Log email and password changes
+	 */
+	public function onBeforeUpdate()
+	{
+		if (REQ == 'CP')
+		{
+			if ($this->isDirty('password'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_password'),
+					$this->username,
+					$this->member_id
+				));
+			}
+
+			if ($this->isDirty('email'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_email'),
+					$this->username,
+					$this->member_id
+				));
+			}
+
+			if ($this->isDirty('group_id'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_member_group'),
+					$this->MemberGroup->group_title,
+					$this->username,
+					$this->member_id
+				));
+			}
+		}
 	}
 
 	/**

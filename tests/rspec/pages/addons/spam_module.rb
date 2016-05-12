@@ -7,8 +7,8 @@ class SpamTrap < ControlPanelPage
   # Main box elements
   element :heading, '.align-right div.col.w-16 div.box form h1'
   element :perpage_filter, 'div.col.w-16 div.box form h1 + div.filters ul li:first-child'
-  element :perpage_filter_menu, 'div.col.w-16 div.box form h1 + div.filters ul li:first-child div.sub-menu ul', visible: false
-  element :perpage_manual_filter, 'input[name="perpage"]', visible: false
+  element :perpage_filter_menu, 'div.col.w-16 div.box form h1 + div.filters ul li:first-child div.sub-menu ul'
+  element :perpage_manual_filter, 'input[name="perpage"]'
 
   # Main box's table elements
   elements :spam_trap, 'div.box form div.tbl-wrap table tr'
@@ -27,12 +27,12 @@ class SpamTrap < ControlPanelPage
   elements :ip_addresses, 'div.box form div.tbl-wrap table tr td:nth-child(3)'
   elements :manage_actions, 'div.box form div.tbl-wrap table tr td:nth-child(4)'
 
-  element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
+  element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :action_submit_button, 'form fieldset.tbl-bulk-act button.submit'
 
   element :no_results, 'tr.no-results'
 
-  element :view_modal, 'div.spam-modal', visible: false
+  element :view_modal, 'div.spam-modal'
   element :view_modal_header, 'div.spam-modal h1'
 
   def load

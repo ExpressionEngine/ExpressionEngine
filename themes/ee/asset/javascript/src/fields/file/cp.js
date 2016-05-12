@@ -25,12 +25,13 @@
 					// Assign the value {filedir_#}filename.ext
 					input.val('{filedir_' + data.upload_location_id + '}' + data.file_name).trigger('change');
 
+					input.siblings('figure').find('.toolbar .txt-only').remove();
+
 					if (data.isImage) {
 						// Set the thumbnail
 						references.input_img.show();
 						references.input_img.removeClass('hidden');
 						references.input_img.attr('src', data.thumb_path);
-						input.siblings('figure').find('.toolbar .txt-only').remove();
 
 						input.siblings('figure').removeClass('no-image');
 					} else {

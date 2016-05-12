@@ -55,18 +55,20 @@ class LocalPath extends SerializedType {
 	 */
 	protected function readPath()
 	{
-		if (is_dir($this->path))
+		$path = parse_config_variables($this->path);
+
+		if (is_dir($path))
 		{
 			$files = array();
 			$directory = ee('Model')->get('UploadDestination')->fields('id')->filter('server_path', $this->path)->first();
 			$mime = new \EllisLab\ExpressionEngine\Library\Mime\MimeType();
 			$exclude = array('index.html');
 
-			if ($dh = opendir($this->path))
+			if ($dh = opendir($path))
 			{
 				while (($file = readdir($dh)) !== false)
 				{
-					$path = $this->path . '/' . $file;
+					$path = $path . '/' . $file;
 
 					if ( ! is_dir($path) && ! in_array($file, $exclude))
 					{

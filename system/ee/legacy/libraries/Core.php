@@ -82,8 +82,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160419');
-		define('APP_VER',		'3.3.0');
+		define('APP_BUILD',		'20160426');
+		define('APP_VER',		'3.4.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -487,13 +487,6 @@ class EE_Core {
 
 		// Laod Menu library
 		ee()->load->library('menu');
-
-		// update documentation URL if site was running the beta and had the old location
-		// @todo remove after 2.1.1's release, move to the update script
-		if (strncmp(ee()->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
-		{
-			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
-		}
 
 		$this->set_newrelic_transaction(function () use ($get) {
 			$request = $get;

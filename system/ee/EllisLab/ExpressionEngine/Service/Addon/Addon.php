@@ -33,6 +33,11 @@ class Addon {
 	protected $basepath;
 	protected $shortname;
 
+	private static $installed_plugins;
+	private static $installed_modules;
+	private static $installed_extensions;
+	private static $installed_fieldtypes;
+
 	public function __construct(Provider $provider)
 	{
 		$this->provider = $provider;
@@ -56,13 +61,63 @@ class Addon {
 	{
 		$types = array('modules', 'fieldtypes', 'extensions');
 
-		ee()->load->library('addons');
+		ee()->load->model('addons_model');
 
-		foreach ($types as $type)
+
+		if (is_null(self::$installed_modules))
 		{
-			$installed = ee()->addons->get_installed($type);
+			$query = ee()->addons_model->get_installed_modules();
 
-			if (array_key_exists($this->shortname, $installed))
+			self::$installed_modules = array();
+
+			foreach ($query->result() as $row)
+			{
+				self::$installed_modules[$row->module_name] = $row;
+			}
+		}
+
+		if (array_key_exists($this->shortname, self::$installed_modules))
+		{
+			return TRUE;
+		}
+
+		if (is_null(self::$installed_extensions))
+		{
+			$query = ee()->addons_model->get_installed_extensions();
+
+			self::$installed_extensions = array();
+
+			foreach ($query->result() as $row)
+			{
+				$name = strtolower(preg_replace('/^(.*?)(_(ext|mcp))?$/', '$1', $row->class));
+				self::$installed_extensions[$name] = $row;
+			}
+		}
+
+		if (array_key_exists($this->shortname, self::$installed_extensions))
+		{
+			return TRUE;
+		}
+
+		if (is_null(self::$installed_fieldtypes))
+		{
+			$query = ee()->db->select('name')->get('fieldtypes');
+
+			self::$installed_fieldtypes = array();
+
+			foreach ($query->result() as $row)
+			{
+				self::$installed_fieldtypes[$row->name] = $row;
+			}
+		}
+
+		$paths = $this->getFilesMatching('ft.*.php');
+
+		foreach ($paths as $path)
+		{
+			$shortname = preg_replace('/ft.(.*?).php/', '$1', basename($path));
+
+			if (array_key_exists($shortname, self::$installed_fieldtypes))
 			{
 				return TRUE;
 			}
@@ -89,19 +144,17 @@ class Addon {
 				return TRUE;
 			}
 			*/
-			ee()->load->driver('cache');
 
-			$installed_plugins = ee()->cache->get('installed-plugins', \Cache::GLOBAL_SCOPE);
+			$installed_plugins = self::$installed_plugins;
 
-			if (empty($installed_plugins))
+			if (is_null($installed_plugins))
 			{
 				$installed_plugins = array_map('array_pop', ee()->db
 				    ->select('plugin_package')
-				    ->where('plugin_package', $this->shortname)
 				    ->get('plugins')
 				    ->result_array());
 
-				ee()->cache->save('installed-plugins', $installed_plugins, 60, \Cache::GLOBAL_SCOPE);
+				self::$installed_plugins = $installed_plugins;
 			}
 
 			if (in_array($this->shortname, $installed_plugins))

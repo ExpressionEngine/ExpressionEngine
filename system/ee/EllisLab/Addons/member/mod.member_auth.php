@@ -620,7 +620,7 @@ class Member_auth extends Member {
 		}
 
 		// Build success message
-		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: $url;
+		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: parse_config_variables($url);
 		$name	= ( ! isset($url)) ? stripslashes(ee()->config->item('site_name'))	: $name;
 
 		$data = array(
@@ -734,7 +734,7 @@ class Member_auth extends Member {
 					->get('forum_boards');
 			}
 
-			$return		= $query->row('board_forum_url') ;
+			$return		= parse_config_variables($query->row('board_forum_url'));
 			$site_name	= $query->row('board_label') ;
 			$board_id	= $query->row('board_id') ;
 		}
@@ -1008,7 +1008,7 @@ class Member_auth extends Member {
 				->get('forum_boards');
 
 			$site_name = $forum_query->row('board_label');
-			$return = $forum_query->row('board_forum_url');
+			$return = parse_config_variables($forum_query->row('board_forum_url'));
 		}
 		else
 		{
