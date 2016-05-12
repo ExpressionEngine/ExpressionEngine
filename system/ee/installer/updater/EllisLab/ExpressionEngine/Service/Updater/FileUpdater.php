@@ -111,8 +111,127 @@ class FileUpdater {
 
 			$this->move($new_themes_dir, $theme_path);
 		}
+	}
 
-		$this->logger->log('The new ExpressionEngine files have been successfully put into place');
+	/**
+	 * Verifies the newly-moved files made it over intact
+	 */
+	public function verifyNewFiles()
+	{
+		$this->logger->log('Verifying the integrity of the new ExpressionEngine files');
+
+		$hash_manifiest = SYSPATH . '/ee/updater/hash-manifest';
+		$exclusions = ['system/ee/installer/updater'];
+
+		try {
+			$this->verifier->verifyPath(
+				SYSPATH . '/ee',
+				$hash_manifiest,
+				'system/ee',
+				$exclusions
+			);
+
+			if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+			{
+				foreach ($this->configs['theme_paths'] as $theme_path)
+				{
+					$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+					$this->verifier->verifyPath(
+						$theme_path,
+						$hash_manifiest,
+						'themes/ee',
+						$exclusions
+					);
+				}
+			}
+			// Otherwise, just move the themes to the one themes folder
+			else
+			{
+				$theme_path = array_values($this->configs['theme_paths'])[0];
+				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+				$this->verifier->verifyPath(
+					$theme_path,
+					$hash_manifiest,
+					'themes/ee',
+					$exclusions
+				);
+			}
+		}
+		catch (UpdaterException $e)
+		{
+			$this->logger->log('There was an error verifying the new installation\'s files: '.$e->getMessage());
+			//$this->rollbackFiles();
+			throw new UpdaterException($e->getMessage(), $e->getCode());
+		}
+
+		$this->logger->log('New ExpressionEngine files successfully verified');
+	}
+
+	/**
+	 * Rolls back to the previous installation's files and puts the new
+	 * installation's files back in the extracted archive path in case we need
+	 * to inspect them
+	 */
+	public function rollbackFiles()
+	{
+		$this->logger->log('Rolling back to previous installation\'s files');
+
+		// Move back the new installation
+		$this->move(
+			SYSPATH.'ee/',
+			$this->configs['archive_path'] . '/system/ee/',
+			[SYSPATH.'ee/updater']
+		);
+
+		// Now move new themes into place
+		$new_themes_dir = $this->configs['archive_path'] . '/themes/ee/';
+
+		// If multiple theme paths exist, delete the contents of them since we
+		// copied to them before
+		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		{
+			foreach ($this->configs['theme_paths'] as $theme_path)
+			{
+				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+				$this->delete($theme_path);
+			}
+		}
+		// Otherwise, move the themes folder back to the archive folder
+		else
+		{
+			$theme_path = array_values($this->configs['theme_paths'])[0];
+			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+			$this->move($theme_path, $new_themes_dir);
+		}
+
+		// Now, restore backups
+		$this->move(
+			$this->getBackupsPath() . 'system_ee/',
+			SYSPATH.'ee/'
+		);
+
+		// Copy themes backup to each theme folder
+		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		{
+			foreach ($this->configs['theme_paths'] as $theme_path)
+			{
+				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+				$this->move($this->getBackupsPath() . 'themes_ee/', $theme_path, [], TRUE);
+			}
+		}
+		// Or move back if there is only one theme path
+		else
+		{
+			$theme_path = array_values($this->configs['theme_paths'])[0];
+			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+			$this->move($this->getBackupsPath() . 'themes_ee/', $theme_path);
+		}
 	}
 
 	/**
@@ -120,14 +239,18 @@ class FileUpdater {
 	 *
 	 * @param	string	$source			Source directory
 	 * @param	string	$destination	Destination directory
-	 * @param	array	$excludions		Array of any paths to exlude when moving
-	 * @param	boolean	$copy			Destination directory
+	 * @param	array	$exclusions		Array of any paths to exlude when moving
+	 * @param	boolean	$copy			When TRUE, copies instead of moves
 	 */
-	protected function move($source, $destination, $exclusions = [], $copy = FALSE)
+	protected function move($source, $destination, Array $exclusions = [], $copy = FALSE)
 	{
 		if ( ! $this->filesystem->exists($destination))
 		{
 			$this->filesystem->mkDir($destination, FALSE);
+		}
+		elseif ( ! $this->filesystem->isDir($destination))
+		{
+			throw new UpdaterException('Destination path not a directory: '.$destination, 18);
 		}
 
 		$contents = $this->filesystem->getDirectoryContents($source);
@@ -142,6 +265,15 @@ class FileUpdater {
 
 			$new_path = str_replace($source, $destination, $path);
 
+			// Try to catch permissions errors before PHP's file I/O functions do
+			foreach ([$path, $new_path] as $path_to_check)
+			{
+				if ( ! $this->filesystem->isWritable($path_to_check))
+				{
+					//throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path_to_check}", 19);
+				}
+			}
+
 			$this->logger->log('Moving '.$path.' to '.$new_path);
 
 			$method = $copy ? 'copy' : 'rename';
@@ -150,52 +282,31 @@ class FileUpdater {
 	}
 
 	/**
-	 * Verifies the newly-moved files made it over intact
+	 * Deletes contents of a directory
+	 *
+	 * @param	string	$directory	Direcotry to delete the contents from
+	 * @param	array	$exclusions	Array of any paths to exlude when deleting
 	 */
-	public function verifyNewFiles()
+	protected function delete($directory, Array $exclusions = [])
 	{
-		$this->logger->log('Verifying the integrity of the new ExpressionEngine files');
+		$contents = $this->filesystem->getDirectoryContents($directory);
 
-		try {
-			$this->verifier->verifyPath(
-				SYSPATH . '/ee',
-				SYSPATH . '/ee/updater/hash-manifest',
-				'system/ee'
-			);
-
-			if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
-			{
-				foreach ($this->configs['theme_paths'] as $theme_path)
-				{
-					$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-
-					$this->verifier->verifyPath(
-						$theme_path,
-						SYSPATH . '/ee/updater/hash-manifest',
-						'themes/ee'
-					);
-				}
-			}
-			// Otherwise, just move the themes to the one themes folder
-			else
-			{
-				$theme_path = array_values($this->configs['theme_paths'])[0];
-				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-
-				$this->verifier->verifyPath(
-					$theme_path,
-					SYSPATH . '/ee/updater/hash-manifest',
-					'themes/ee'
-				);
-			}
-		}
-		catch (UpdaterException $e)
+		foreach ($contents as $path)
 		{
-			// TODO: Start rollback process
-			throw new UpdaterException($e->getMessage(), $e->getCode());
-		}
+			// Skip exclusions
+			if (in_array($path, $exclusions))
+			{
+				continue;
+			}
 
-		$this->logger->log('New ExpressionEngine files successfully verified');
+			if ( ! $this->filesystem->isWritable($path))
+			{
+				throw new UpdaterException("Cannot delete path ${path}, it is not writable", 19);
+			}
+
+			$this->logger->log('Deleting ' . $path);
+			$this->filesystem->delete($path);
+		}
 	}
 
 	/**
