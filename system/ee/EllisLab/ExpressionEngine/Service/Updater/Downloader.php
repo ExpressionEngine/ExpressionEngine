@@ -186,6 +186,11 @@ class Downloader {
 		// Contents of system/ee
 		foreach ($this->filesystem->getDirectoryContents(SYSPATH.'ee/') as $path)
 		{
+			if (strpos($path, '.DS_Store') !== FALSE)
+			{
+				continue;
+			}
+			
 			if ( ! $this->filesystem->isWritable($path))
 			{
 				throw new UpdaterException('Path not writable: ' . $path, 15);
