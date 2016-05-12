@@ -166,7 +166,7 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
-		
+
 		$this->ci_config['encryption_key'] = sha1(uniqid(mt_rand(), TRUE));
 
  		// Load the helpers we intend to use
@@ -183,6 +183,7 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('localize');
 		$this->load->library('cp');
+		$this->load->library('functions');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
 
