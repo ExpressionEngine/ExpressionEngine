@@ -299,6 +299,7 @@ class Stats extends Utilities {
 				ee()->db->update('channel_titles', $data);
 			}
 
+			// now update the channels table
 			$channel_entries_count = ee()->db->query('SELECT count(entry_id) AS count, channel_id
 					FROM exp_channel_titles
 					GROUP BY channel_id');
