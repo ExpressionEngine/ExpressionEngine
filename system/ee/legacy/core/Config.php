@@ -425,12 +425,15 @@ class EE_Config {
 		{
 			if (isset($this->config[$item]))
 			{
-				return $this->config[$item];
+				$pref = $this->config[$item];
 			}
-
-			if (isset($this->defaults[$item]))
+			else if (isset($this->defaults[$item]))
 			{
-				return $this->defaults[$item];
+				$pref = $this->defaults[$item];
+			}
+			else
+			{
+				return FALSE;
 			}
 		}
 		else
@@ -440,10 +443,12 @@ class EE_Config {
 				return FALSE;
 			}
 
-			if (isset($this->config[$index][$item]))
+			if ( ! isset($this->config[$index][$item]))
 			{
-				return $this->config[$index][$item];
+				return FALSE;
 			}
+
+			$pref = $this->config[$index][$item];
 		}
 
 		return $raw_value ? $pref : parse_config_variables($pref);
