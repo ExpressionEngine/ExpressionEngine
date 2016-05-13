@@ -42,14 +42,14 @@ class Urls extends Settings {
 					'title' => 'base_url',
 					'desc' => 'base_url_desc',
 					'fields' => array(
-						'base_url' => array('type' => 'text', 'required' => TRUE)
+						'base_url' => array('type' => 'text')
 					)
 				),
 				array(
 					'title' => 'base_path',
 					'desc' => 'base_path_desc',
 					'fields' => array(
-						'base_path' => array('type' => 'text', 'required' => TRUE)
+						'base_path' => array('type' => 'text')
 					)
 				),
 				array(
@@ -138,6 +138,11 @@ class Urls extends Settings {
 		);
 
 		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'base_path',
+				'label' => 'lang:base_path',
+				'rules' => 'file_exists'
+			),
 			array(
 				'field' => 'site_index',
 				'label' => 'lang:site_index',
