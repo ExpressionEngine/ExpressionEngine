@@ -355,7 +355,7 @@ class EE_Config {
 		}
 
 		// lowercase version charset to use in HTML output
-		$config['output_charset'] = strtolower($this->config['charset']);
+		$config['output_charset'] = strtolower($this->item('charset'));
 
 		if ($mutating)
 		{

@@ -88,9 +88,9 @@ class App {
 
 		require BASEPATH.'core/Controller.php';
 
-		if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php'))
+		if (file_exists(APPPATH.'core/'.$CFG->item('subclass_prefix').'Controller.php'))
 		{
-			require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
+			require APPPATH.'core/'.$CFG->item('subclass_prefix').'Controller.php';
 		}
 	}
 
