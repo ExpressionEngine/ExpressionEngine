@@ -426,6 +426,15 @@ class ChannelEntry extends ContentModel {
 		$stats->total_entries = $total_entries;
 		$stats->last_entry_date = $last_entry_date;
 		$stats->save();
+
+		// Channel gets unfiltered stats, just literal count of entries
+		$channel_entry_count = $this->getModelFacade()->get('ChannelEntry')
+			->filter('channel_id', $this->channel_id)
+			->count();
+
+		$channel = $this->getModelFacade()->get('Channel')->filter('channel_id', $this->channel_id)->first();
+		$channel->total_entries = $channel_entry_count;
+		$channel->save();
 	}
 
 	/**
