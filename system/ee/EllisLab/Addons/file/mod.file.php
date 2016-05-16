@@ -220,6 +220,8 @@ class File {
 		$random			= ($order_by == 'random') ? TRUE : FALSE;
 		$sort			= strtolower(ee()->TMPL->fetch_param('sort', 'desc'));
 		$sort			= ($random) ? 'random' : $sort;
+
+		ee()->db->select($order_by);
 		ee()->db->order_by($order_by, $sort);
 
 		// Run the query and pass it to the final query
