@@ -542,7 +542,7 @@ class Groups extends Members\Members {
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
-			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
+			$group->assignChannels($allowed_channels);
 		}
 
 		foreach ($sections as $section)
