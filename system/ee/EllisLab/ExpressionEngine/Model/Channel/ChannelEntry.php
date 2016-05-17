@@ -784,6 +784,28 @@ class ChannelEntry extends ContentModel {
 
 				foreach ($cat_groups as $cat_group)
 				{
+					$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
+					$editable = FALSE;
+
+					if (ee()->session->userdata['group_id'] == 1
+						|| (ee()->session->userdata['can_edit_categories']
+							&& in_array(ee()->session->userdata['group_id'], $can_edit)
+							))
+						{
+							$editable = TRUE;
+						}
+
+					$can_delete = explode('|', rtrim($cat_group->can_delete_categories, '|'));
+					$deletable = FALSE;
+
+					if (ee()->session->userdata['group_id'] == 1
+						|| (ee()->session->userdata['can_delete_categories']
+							&& in_array(ee()->session->userdata['group_id'], $can_delete)
+							))
+						{
+							$deletable = TRUE;
+						}
+
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
 						'field_id'				=> 'categories',
 						'group_id'				=> $cat_group->getId(),
@@ -795,9 +817,9 @@ class ChannelEntry extends ContentModel {
 						'field_type'			=> 'checkboxes',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
-						'editable'				=> ee()->session->userdata['can_edit_categories'],
+						'editable'				=> $editable,
 						'editing'				=> FALSE, // Not currently in editing state
-						'deletable'				=> ee()->session->userdata['can_delete_categories'],
+						'deletable'				=> $deletable,
 						'populateCallback'		=> array($this, 'populateCategories'),
 						'manage_toggle_label'	=> lang('manage_categories'),
 						'content_item_label'	=> lang('category')
