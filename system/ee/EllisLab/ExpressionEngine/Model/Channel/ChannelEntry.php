@@ -940,6 +940,7 @@ class ChannelEntry extends ContentModel {
 	public function populateStatus($field)
 	{
 		$statuses = ee('Model')->get('Status')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $this->Channel->status_group);
 
@@ -955,8 +956,15 @@ class ChannelEntry extends ContentModel {
 			);
 		}
 
+		$member_group_id = ee()->session->userdata('group_id');
+
 		foreach ($all_statuses as $status)
 		{
+			if ($member_group_id != 1 && in_array($member_group_id, $status->NoAccess->pluck('group_id')))
+			{
+				continue;
+			}
+
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
 		}
