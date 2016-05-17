@@ -202,7 +202,7 @@ class Query extends Utilities {
 
 		// If it's a SELECT query we'll see if we need to limit
 		// the result total and add pagination links
-		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
+		if (strpos(strtoupper(trim($sql)), 'SELECT') === 0)
 		{
 			$sort_col = $table->sort_col; // PHP 5.3
 			if ( ! empty($sort_col))
