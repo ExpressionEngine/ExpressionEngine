@@ -88,13 +88,6 @@ class Urls extends Settings {
 					)
 				),
 				array(
-					'title' => 'docs_url',
-					'desc' => 'docs_url_desc',
-					'fields' => array(
-						'doc_url' => array('type' => 'text')
-					)
-				),
-				array(
 					'title' => 'member_segment_trigger',
 					'desc' => 'member_segment_trigger_desc',
 					'fields' => array(
@@ -172,11 +165,6 @@ class Urls extends Settings {
 				'field' => 'profile_trigger',
 				'label' => 'lang:member_segment_trigger',
 				'rules' => 'alpha_dash'
-			),
-			array(
-				'field' => 'doc_url',
-				'label' => 'lang:docs_url',
-				'rules' => 'strip_tags|valid_xss_check'
 			),
 		));
 

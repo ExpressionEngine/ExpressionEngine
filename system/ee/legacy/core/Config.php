@@ -1352,7 +1352,6 @@ class EE_Config {
 				'caching_driver'         => array('f', 'caching_driver'),
 				'max_caches'             => array('i', '', 'numeric'),
 				'new_version_check'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'doc_url'                => array('i', '', 'strip_tags|trim|valid_xss_check'),
 			),
 
 			'db_cfg'			=>	array(

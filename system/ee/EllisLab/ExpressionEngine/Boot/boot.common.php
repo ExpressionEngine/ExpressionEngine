@@ -230,7 +230,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			'charset'            => 'UTF-8',
 			'cookie_httponly'    => 'y',
 			'debug'              => 1,
-			'doc_url'            => 'https://docs.expressionengine.com/v3/',
 			'encryption_key'     => '',
 			'is_system_on'       => 'y',
 			'log_date_format'    => 'Y-m-d H:i:s',
