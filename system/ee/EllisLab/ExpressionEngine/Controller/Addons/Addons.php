@@ -992,6 +992,9 @@ class Addons extends CP_Controller {
 		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
 		$parser = new MarkdownExtra;
+		$parser->url_filter_func = function ($url) {
+		    return ee()->cp->masked_url($url);
+		};
 		$readme = $parser->transform($readme);
 
 		// Some post-processing
