@@ -303,6 +303,11 @@ class ChannelEntry extends ContentModel {
 			ee()->load->remove_package_path($info->getPath());
 		}
 
+		if ($this->versioning_enabled)
+		{
+			$this->saveVersion();
+		}
+
 		// clear caches
 		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
