@@ -981,8 +981,8 @@ class Addons extends CP_Controller {
 			'name'        => $info->getName(),
 			'version'     => $this->formatVersionNumber($info->getVersion()),
 			'author'      => $info->getAuthor(),
-			'author_url'  => $info->get('author_url'),
-			'docs_url'    => $info->get('docs_url'),
+			'author_url'  => ee()->cp->masked_url($info->get('author_url')),
+			'docs_url'    => ee()->cp->masked_url($info->get('docs_url')),
 			'description' => $info->get('description')
 		);
 
@@ -992,6 +992,9 @@ class Addons extends CP_Controller {
 		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
 		$parser = new MarkdownExtra;
+		$parser->url_filter_func = function ($url) {
+		    return ee()->cp->masked_url($url);
+		};
 		$readme = $parser->transform($readme);
 
 		// Some post-processing
