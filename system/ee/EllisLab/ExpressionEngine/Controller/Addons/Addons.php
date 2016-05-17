@@ -981,8 +981,8 @@ class Addons extends CP_Controller {
 			'name'        => $info->getName(),
 			'version'     => $this->formatVersionNumber($info->getVersion()),
 			'author'      => $info->getAuthor(),
-			'author_url'  => $info->get('author_url'),
-			'docs_url'    => $info->get('docs_url'),
+			'author_url'  => ee()->cp->masked_url($info->get('author_url')),
+			'docs_url'    => ee()->cp->masked_url($info->get('docs_url')),
 			'description' => $info->get('description')
 		);
 
