@@ -303,6 +303,11 @@ class ChannelEntry extends ContentModel {
 			ee()->load->remove_package_path($info->getPath());
 		}
 
+		if ($this->versioning_enabled)
+		{
+			$this->saveVersion();
+		}
+
 		// clear caches
 		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
@@ -779,6 +784,28 @@ class ChannelEntry extends ContentModel {
 
 				foreach ($cat_groups as $cat_group)
 				{
+					$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
+					$editable = FALSE;
+
+					if (ee()->session->userdata['group_id'] == 1
+						|| (ee()->session->userdata['can_edit_categories']
+							&& in_array(ee()->session->userdata['group_id'], $can_edit)
+							))
+						{
+							$editable = TRUE;
+						}
+
+					$can_delete = explode('|', rtrim($cat_group->can_delete_categories, '|'));
+					$deletable = FALSE;
+
+					if (ee()->session->userdata['group_id'] == 1
+						|| (ee()->session->userdata['can_delete_categories']
+							&& in_array(ee()->session->userdata['group_id'], $can_delete)
+							))
+						{
+							$deletable = TRUE;
+						}
+
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
 						'field_id'				=> 'categories',
 						'group_id'				=> $cat_group->getId(),
@@ -790,9 +817,9 @@ class ChannelEntry extends ContentModel {
 						'field_type'			=> 'checkboxes',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
-						'editable'				=> ee()->session->userdata['can_edit_categories'],
+						'editable'				=> $editable,
 						'editing'				=> FALSE, // Not currently in editing state
-						'deletable'				=> ee()->session->userdata['can_delete_categories'],
+						'deletable'				=> $deletable,
 						'populateCallback'		=> array($this, 'populateCategories'),
 						'manage_toggle_label'	=> lang('manage_categories'),
 						'content_item_label'	=> lang('category')
@@ -935,6 +962,7 @@ class ChannelEntry extends ContentModel {
 	public function populateStatus($field)
 	{
 		$statuses = ee('Model')->get('Status')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $this->Channel->status_group);
 
@@ -950,8 +978,15 @@ class ChannelEntry extends ContentModel {
 			);
 		}
 
+		$member_group_id = ee()->session->userdata('group_id');
+
 		foreach ($all_statuses as $status)
 		{
+			if ($member_group_id != 1 && in_array($member_group_id, $status->NoAccess->pluck('group_id')))
+			{
+				continue;
+			}
+
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
 		}
