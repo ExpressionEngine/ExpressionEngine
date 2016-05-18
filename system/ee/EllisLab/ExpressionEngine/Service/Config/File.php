@@ -28,7 +28,6 @@ namespace EllisLab\ExpressionEngine\Service\Config;
 class File extends Config {
 
 	protected $config   = array();
-	protected $defaults = array();
 
 	/**
 	 * Create a new Config\File object
