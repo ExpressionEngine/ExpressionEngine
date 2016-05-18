@@ -24,7 +24,7 @@ class FormatterFactory {
 	 * @param String $formatter_name Formatter
 	 * @return Object Formatter
 	 */
-	public function make($formatter_name)
+	public function __get($formatter_name)
 	{
 		$formatter_class = implode('', array_map('ucfirst', explode('_', $formatter_name)));
 
