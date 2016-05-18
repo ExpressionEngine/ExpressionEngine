@@ -12,6 +12,7 @@ use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
@@ -111,6 +112,11 @@ return array(
 		'Filesystem' => function($ee)
 		{
 			return new Filesystem\Filesystem();
+		},
+
+		'Format' => function($ee)
+		{
+			return new Formatter\FormatterFactory($ee, ee()->lang);
 		},
 
 		'Curl' => function($ee)
