@@ -20,3 +20,5 @@ return array(
 		'Toolset' => 'Model\Toolset'
 	)
 );
+
+// EOF

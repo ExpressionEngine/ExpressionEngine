@@ -16,6 +16,4 @@ $config = array(
 								)
 				);
 
-
-/* End of file form_validation.php */
-/* Location: ./system/expressionengine/config/form_validation.php */
+// EOF

@@ -96,6 +96,7 @@ class Channel extends StructureModel {
 
 	protected static $_validation_rules = array(
 		'site_id'                    => 'required|isNatural',
+		'channel_name'               => 'required|unique[site_id]|validateShortName',
 		'deft_comments'              => 'enum[y,n]',
 		'channel_require_membership' => 'enum[y,n]',
 		'channel_allow_img_urls'     => 'enum[y,n]',
@@ -286,6 +287,18 @@ class Channel extends StructureModel {
 		{
 			$this->syncCatGroupsWithLayouts();
 		}
+
+		if (isset($previous['enable_versioning']) && count($this->ChannelLayouts))
+		{
+			if ($this->getProperty('enable_versioning'))
+			{
+				$this->addRevisionTab();
+			}
+			else
+			{
+				$this->removeRevisionTab();
+			}
+		}
 	}
 
 	/**
@@ -347,6 +360,53 @@ class Channel extends StructureModel {
 		}
 	}
 
+	private function addRevisionTab()
+	{
+		foreach ($this->ChannelLayouts as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+			$field_layout[] = array(
+				'id' => 'revisions',
+				'name' => 'revisions',
+				'visible' => TRUE,
+				'fields' => array(
+					array(
+						'field' => 'versioning_enabled',
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					),
+					array(
+						'field' => 'revisions',
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					)
+				)
+			);
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
+	private function removeRevisionTab()
+	{
+		foreach ($this->ChannelLayouts as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+
+			foreach ($field_layout as $i => $section)
+			{
+				if ($section['name'] == 'revisions')
+				{
+					array_splice($field_layout, $i, 1);
+					break;
+				}
+			}
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
 	public function onBeforeDelete()
 	{
 		// Delete Pages URIs for this Channel
@@ -375,4 +435,26 @@ class Channel extends StructureModel {
 			}
 		}
 	}
+
+	public function validateShortName($key, $value, $params, $rule)
+	{
+		if (preg_match('/[^a-z0-9\-\_]/i', $value))
+		{
+			return 'invalid_short_name';
+		}
+
+		$channel = $this->getModelFacade()->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('channel_name', $value)
+			->filter('channel_id', '!=', $this->channel_id);
+
+		if ($channel->count() > 0)
+		{
+			return 'taken_channel_name';
+		}
+
+		return TRUE;
+	}
 }
+
+// EOF

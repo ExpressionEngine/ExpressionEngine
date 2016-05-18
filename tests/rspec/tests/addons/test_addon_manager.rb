@@ -83,7 +83,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(5).first_party_addons
+      @page.should have(6).first_party_addons
 
       # By uninstalled
       @page.first_party_status_filter.click
@@ -107,7 +107,7 @@ feature 'Add-On Manager' do
       @page.should_not have_first_party_pagination
 
       # RTE has the correct version number now
-      @page.should have(1).first_party_addons # Email + RTE
+      @page.should have(2).first_party_addons
     end
 
     it 'retains filters on sort' do
@@ -120,7 +120,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(5).first_party_addons
+      @page.should have(6).first_party_addons
 
       versions = @page.first_party_versions.map {|version| version.text}
 
@@ -157,7 +157,7 @@ feature 'Add-On Manager' do
 
       @page.first_party_version_header[:class].should eq 'highlight'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
-      sorted_versions[-1].should == '1.0.1'
+      sorted_versions[-1].should == '1.0.0'
     end
 
     it 'retains filters on searching' do
@@ -294,7 +294,8 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (uninstalled)"
       @page.should have_first_party_alert
       @page.first_party_alert.text.should include "Add-Ons Installed"
-      @page.first_party_alert.text.should include addons.join(' ')
+      @page.first_party_alert.text.should include addons[0...4].join(' ')
+      @page.first_party_alert.text.should include "and #{addons[4..-1].count} others..."
       @page.should have_first_party_no_results
       @page.should_not have_first_party_pagination
       @page.should_not have_first_party_bulk_action
@@ -360,7 +361,8 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should have_first_party_alert
       @page.first_party_alert.text.should include "Add-Ons Uninstalled"
-      @page.first_party_alert.text.should include addons.join(' ')
+      @page.first_party_alert.text.should include addons[0...4].join(' ')
+      @page.first_party_alert.text.should include "and #{addons[4..-1].count} others..."
     end
 
     # The settings buttons "work" (200 response)
@@ -691,7 +693,8 @@ feature 'Add-On Manager' do
         @page.should_not have_first_party_alert
         @page.should have_third_party_alert
         @page.third_party_alert.text.should include "Add-Ons Installed"
-        @page.third_party_alert.text.should include addons.join(' ')
+        @page.third_party_alert.text.should include addons[0...4].join(' ')
+        @page.third_party_alert.text.should include "and #{addons[4..-1].count} others..."
       end
 
       it 'displays an itemized modal when attempting to uninstall 5 or less add-on', :install => true do
@@ -755,7 +758,8 @@ feature 'Add-On Manager' do
         @page.should_not have_first_party_alert
         @page.should have_third_party_alert
         @page.third_party_alert.text.should include "Add-Ons Uninstalled"
-        @page.third_party_alert.text.should include addons.join(' ')
+        @page.third_party_alert.text.should include addons[0...4].join(' ')
+        @page.third_party_alert.text.should include "and #{addons[4..-1].count} others..."
       end
 
       # The settings buttons "work" (200 response)

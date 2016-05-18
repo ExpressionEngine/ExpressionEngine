@@ -200,8 +200,6 @@ $lang = array(
 
 'unauthorized_to_edit' => 'You are not allowed to edit the entries you selected.',
 
-'today' => 'Today',
-
 'edit_selected' => 'Edit Selected',
 
 'confirm_exit' => 'When you leave, any data entered will be lost. Are you sure you want to leave?',
@@ -227,10 +225,6 @@ $lang = array(
 'live_look' => 'Live Look',
 
 'delete_comments_confirm' => 'Are you sure you want to permanently delete these comments?',
-
-'comment_updated' => 'Comment Updated',
-
-
 
 'field_blank' => 'You left a field blank.',
 
@@ -423,8 +417,6 @@ $lang = array(
 
 'continue_editing' => 'Continue Editing',
 
-'entry_status' => 'Status',
-
 'status' => 'Status',
 
 'comments' => 'Comments',
@@ -439,23 +431,17 @@ $lang = array(
 
 'options' => 'Options',
 
-'sticky' => 'Make Entry Sticky',
-
 'date' => 'Date',
 
 'start_date' => 'Start',
 
 'end_date' => 'End',
 
-'expiration_date' => 'Expiration Date',
-
 'invalid_date_formatting' => 'The date you submitted was not formatted correctly (year-month-day hour:minute)',
 
 'date_outside_of_range' => 'The date you submitted is outside the accepted range (1902 - 2037).',
 
 'category' => 'Category',
-
-'categories' => 'Categories',
 
 'no_categories' => 'No categories have been assigned to this channel.',
 
@@ -470,8 +456,6 @@ $lang = array(
 'auto_br' => 'Auto &lt;br /&gt;',
 
 'link' => 'Link',
-
-'image' => 'Image',
 
 'email' => 'Email',
 
@@ -521,8 +505,6 @@ $lang = array(
 'view_filtered' => 'Return to Filtered Entries',
 
 'publish_another_entry' => 'Publish Another Entry',
-
-'autosaved_entries' => 'Auto saved Entries',
 
 'autosaved' => 'Auto saved',
 
@@ -635,8 +617,6 @@ $lang = array(
 'comment_deleted' => 'Comments Deleted',
 
 'comment_updated' => 'Comment Updated',
-
-'status_changed' => 'Status Changed',
 
 'delete_comment_confirm' => 'Are you sure you want to permanently delete this comment?',
 
@@ -808,8 +788,6 @@ $lang = array(
 
 'invalid_date_ambiguous' => 'The date you submitted is ambiguous, please either use a four digit year or use slashes instead of dashes.',
 
-'fields' => 'Fields',
-
 'comment_moved' => 'Comment moved',
 
 'comments_moved' => 'Comments moved',
@@ -845,6 +823,4 @@ $lang = array(
 ''=>''
 );
 
-
-/* End of file publish_lang.php */
-/* Location: ./system/expressionengine/language/english/publish_lang.php */
+// EOF

@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Member_auth extends Member {
@@ -770,8 +770,7 @@ class Member_auth extends Member {
 		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
 
 		// Kill old data from the reset_password field
-		$a_day_ago = time() - (60*60*24);
-		ee()->db->where('date <', $a_day_ago)
+		ee()->db->where('date <', $this->getTokenExpiration())
 			->delete('reset_password');
 
 		// Check flood control
@@ -862,10 +861,9 @@ class Member_auth extends Member {
 		}
 
 		// Make sure the token is valid and belongs to a member.
-		$a_day_ago = time() - (60*60*24);
 		$member_id_query = ee()->db->select('member_id')
 			->where('resetcode', $resetcode)
-			->where('date >', $a_day_ago)
+			->where('date >', $this->getTokenExpiration())
 			->get('reset_password');
 
 		if ($member_id_query->num_rows() === 0)
@@ -931,12 +929,12 @@ class Member_auth extends Member {
 
 		// We'll use this in a couple of places to determine whether a token is still valid
 		// or not.  Tokens expire after exactly 1 day.
-		$a_day_ago = time() - (60*60*24);
+		$expired = $this->getTokenExpiration();
 
 		// Make sure the token is valid and belongs to a member.
 		$member_id_query = ee()->db->select('member_id')
 			->where('resetcode', $resetcode)
-			->where('date >', $a_day_ago)
+			->where('date >', $expired)
 			->get('reset_password');
 
 		if ($member_id_query->num_rows() === 0)
@@ -983,7 +981,7 @@ class Member_auth extends Member {
 
 		// Invalidate the old token.  While we're at it, may as well wipe out expired
 		// tokens too, just to keep them from building up.
-		ee()->db->where('date <', $a_day_ago)
+		ee()->db->where('date <', $expired)
 			->or_where('member_id', $member_id_query->row('member_id'))
 			->delete('reset_password');
 
@@ -1045,8 +1043,15 @@ class Member_auth extends Member {
 		ee()->output->show_message($data);
 	}
 
+	/**
+	 * Creates a timestamp for use in determinig a token's expiration
+	 */
+	private function getTokenExpiration()
+	{
+		return ee()->localize->now - (60*60); // One hour
+	}
+
 }
 // END CLASS
 
-/* End of file mod.member_auth.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_auth.php */
+// EOF

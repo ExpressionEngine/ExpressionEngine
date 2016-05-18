@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Route {
 
@@ -60,9 +60,9 @@ class EE_Route {
 	 */
 	public function __construct($route, $required = FALSE)
 	{
-		require_once APPPATH.'libraries/template_router/Part.php';
-		require_once APPPATH.'libraries/template_router/Segment.php';
-		require_once APPPATH.'libraries/template_router/Converters.php';
+		require_once BASEPATH.'libraries/template_router/Part.php';
+		require_once BASEPATH.'libraries/template_router/Segment.php';
+		require_once BASEPATH.'libraries/template_router/Converters.php';
 		ee()->lang->loadfile('template_router');
 		$this->required = $required;
 		$this->rules = new EE_Template_router_converters();
@@ -385,5 +385,4 @@ class EE_Route {
 }
 // END CLASS
 
-/* End of file Route.php */
-/* Location: ./system/expressionengine/libraries/template_router/Route.php */
+// EOF

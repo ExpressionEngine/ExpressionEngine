@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Buttons extends Settings {
 
@@ -70,7 +70,7 @@ class Buttons extends Settings {
 			$preview = array('toolbar_items' => array(
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-					'title' => $button->tag_name,
+					'title' => lang($button->tag_name),
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
@@ -83,7 +83,7 @@ class Buttons extends Settings {
 
 			$columns = array(
 				'preview' => $preview,
-				'tag_name' => $button->tag_name,
+				'tag_name' => lang($button->tag_name),
 				'accesskey' => $button->accesskey,
 				$toolbar,
 				array(
@@ -340,7 +340,7 @@ class Buttons extends Settings {
 			array(
 				 'field'   => 'tag_close',
 				 'label'   => 'lang:tag_close',
-				 'rules'   => 'required|valid_xss_check'
+				 'rules'   => 'valid_xss_check'
 			),
 			array(
 				 'field'   => 'accesskey',
@@ -414,3 +414,5 @@ class Buttons extends Settings {
 
 }
 // END CLASS
+
+// EOF

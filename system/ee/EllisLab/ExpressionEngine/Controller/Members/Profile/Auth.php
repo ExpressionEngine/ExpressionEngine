@@ -11,9 +11,9 @@ use CP_Controller;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use CP_Controller;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Auth extends Settings {
 
@@ -153,7 +153,7 @@ class Auth extends Settings {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
@@ -255,9 +255,7 @@ class Auth extends Settings {
 
 		$this->member_model->update_member($this->member->member_id, $data);
 
-		$this->cp->get_installed_modules();
-
-		if (isset($this->cp->installed_modules['comment']))
+		if (ee()->config->item('enable_comments') == 'y')
 		{
 			if ($query->row('screen_name') != $_POST['screen_name'])
 			{
@@ -331,5 +329,4 @@ class Auth extends Settings {
 }
 // END CLASS
 
-/* End of file Auth.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Auth.php */
+// EOF

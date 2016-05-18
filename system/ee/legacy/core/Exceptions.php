@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Exceptions {
 
@@ -223,7 +223,8 @@ class EE_Exceptions {
 		// Only show the file name if debug isn't on
 		if ( ! $debug)
 		{
-			$location = array_pop(explode(DIRECTORY_SEPARATOR, $location));
+			$location_parts = explode(DIRECTORY_SEPARATOR, $location);
+			$location = array_pop($location_parts);
 		}
 
 		if (ob_get_level() > $this->ob_level + 1)
@@ -293,5 +294,4 @@ class EE_Exceptions {
 }
 // END Exceptions Class
 
-/* End of file EE_Exceptions.php */
-/* Location: ./system/expressionengine/libraries/EE_Exceptions.php */
+// EOF

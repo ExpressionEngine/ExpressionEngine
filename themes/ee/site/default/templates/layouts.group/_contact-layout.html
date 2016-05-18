@@ -1,0 +1,43 @@
+{layout='layouts/_html-wrapper'}
+
+{!-- embed for breadcrumb, needed to pass arguments (embeds aren't evil) --}
+{layout:set name='breadcrumbs'}
+	{embed='common/_breadcrumb'
+		p_url='{layout:p_url}'
+		p_title='{layout:p_title}'
+	}
+{/layout:set}
+
+{layout:set name='scripts'}
+	<script src="{theme_folder_url}site/default/asset/js/plugins/validate.min.js"></script>
+	{layout:scripts}
+{/layout:set}
+
+		<section class="row reverse pad">
+			<section class="w-12">
+				{layout:contents}
+			</section>
+			<section class="w-4">
+				{!-- output contact info --}
+				{exp:channel:entries channel='{layout:ch}' disable='{layout:ch_disable}' limit='1' dynamic='no'}
+					<address class="v-card">
+						<strong class="org">{site_name}</strong>
+						{if contact_address}
+							{contact_address}
+								<span class="address">
+									<span class="street">{contact_address:street}</span>, <span class="street-2">{contact_address:street_2}</span><br>
+									<span class="city">{contact_address:city}</span>, <span class="state">{contact_address:state}</span> <span class="zip">{contact_address:zip}</span>
+								</span>
+							{/contact_address}
+						{/if}
+						{if contact_phone OR contact_email}
+							<span class="alternate">
+								{if contact_phone}<span class="phone">{contact_phone}</span>{/if}
+								{if contact_phone AND contact_email}<br>{/if}
+								{if contact_email}<span class="e-mail">{contact_email}</span>{/if}
+							</span>
+						{/if}
+					</address>
+				{/exp:channel:entries}
+			</section>
+		</section>

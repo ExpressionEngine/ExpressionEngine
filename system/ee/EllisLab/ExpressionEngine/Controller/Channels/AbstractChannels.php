@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class AbstractChannels extends CP_Controller {
 
@@ -240,12 +240,16 @@ abstract class AbstractChannels extends CP_Controller {
 					'href' => ee('CP/URL')->make('channels/layouts/'.$channel->getId()),
 					'title' => (lang('layouts')),
 					'content' => strtolower(lang('layouts'))
-				)
+				),
+				'download' => array(
+					'href' => ee('CP/URL')->make('channels/sets/export/'.$channel->getId()),
+					'title' => strtolower(lang('export_set'))
+				),
 			);
 
 			if ( ! ee()->cp->allowed_group('can_edit_channels'))
 			{
-				$toolbar = array();
+				unset($toolbar['edit'], $toolbar['settings'], $toolbar['txt-only']);
 			}
 
 			$columns = array(
@@ -416,20 +420,20 @@ abstract class AbstractChannels extends CP_Controller {
 
 		foreach ($groups->all() as $group)
 		{
-			$edit_url = ee('CP/URL')->make('channels/fields/groups/edit/' . $group->group_id);
+			$view_url = ee('CP/URL')->make('channels/fields/' . $group->group_id);
 
 			$column = array(
 				array(
 					'content' => $group->group_name,
-					'href' => $edit_url
+					'href' => $view_url
 				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => $edit_url,
+						'href' => ee('CP/URL')->make('channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/fields/' . $group->group_id),
+						'href' => $view_url,
 						'title' => lang('custom_fields'),
 						'content' => strtolower(lang('fields'))
 					)
@@ -518,21 +522,21 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$edit_url = ee('CP/URL')->make('channels/cat/edit/'.$group->getId());
+			$view_url = ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId());
 
 			$columns = array(
 				$group->getId(),
 				array(
 					'content' => $group->group_name . ' ('.count($group->getCategories()).')',
-					'href' => $edit_url
+					'href' => $view_url
 				),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId()),
+						'href' => $view_url,
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => $edit_url,
+						'href' => ee('CP/URL')->make('channels/cat/edit/'.$group->getId()),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
@@ -729,4 +733,5 @@ abstract class AbstractChannels extends CP_Controller {
 		return $table;
 	}
 }
+
 // EOF

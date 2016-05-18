@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class AbstractPublish extends CP_Controller {
 
@@ -47,6 +47,8 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$this->is_admin = (ee()->session->userdata['group_id'] == 1);
 		$this->assigned_channel_ids = array_keys(ee()->session->userdata['assigned_channels']);
+
+		$this->pruneAutosaves();
 	}
 
 	protected function createChannelFilter()
@@ -163,10 +165,16 @@ abstract class AbstractPublish extends CP_Controller {
 		$table->setNoResultsText(lang('no_revisions'));
 
 		$data = array();
+		$authors = array();
 		$i = 1;
 
 		foreach ($entry->Versions as $version)
 		{
+			if ( ! isset($authors[$version->author_id]))
+			{
+				$authors[$version->author_id] = $version->getAuthorName();
+			}
+
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
 				'toolbar_items' => array(
 						'txt-only' => array(
@@ -185,7 +193,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->version_date->format('U')),
-					$version->Author->getMemberName(),
+					$authors[$version->author_id],
 					$toolbar
 				)
 			);
@@ -199,6 +207,11 @@ abstract class AbstractPublish extends CP_Controller {
 				$attrs = array('class' => 'selected');
 			}
 
+			if ( ! isset($authors[$entry->author_id]))
+			{
+				$authors[$entry->author_id] = $entry->getAuthorName();
+			}
+
 			// Current
 			$edit_date = ($entry->edit_date)
 				? ee()->localize->human_time($entry->edit_date->format('U'))
@@ -209,7 +222,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					$edit_date,
-					$entry->Author->getMemberName(),
+					$authors[$entry->author_id],
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
@@ -277,9 +290,11 @@ abstract class AbstractPublish extends CP_Controller {
 						continue;
 					}
 
-					if ( ! array_key_exists($field->getName(), $_POST))
+					$field_name = strstr($field->getName(), '[', TRUE) ?: $field->getName();
+
+					if ( ! array_key_exists($field_name, $_POST))
 					{
-						$_POST[$field->getName()] = NULL;
+						$_POST[$field_name] = NULL;
 					}
 				}
 			}
@@ -321,38 +336,40 @@ abstract class AbstractPublish extends CP_Controller {
 	protected function saveEntryAndRedirect($entry)
 	{
 		$action = ($entry->isNew()) ? 'create' : 'edit';
+		$entry->edit_date = ee()->localize->now;
+		$entry->save();
 
-		if ($entry->versioning_enabled && ee()->input->post('save_revision'))
+		if ($action == 'create')
 		{
-			$entry->saveVersion();
-
-			ee('CP/Alert')->makeInline('entry-form')
-				->asSuccess()
-				->withTitle(lang('revision_saved'))
-				->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
+			ee()->session->set_flashdata('entry_id', $entry->entry_id);
 		}
-		else
-		{
-			$entry->edit_date = ee()->localize->now;
-			$entry->save();
 
-			if ($action == 'create')
-			{
-				ee()->session->set_flashdata('entry_id', $entry->entry_id);
-			}
+		ee('CP/Alert')->makeInline('entry-form')
+			->asSuccess()
+			->withTitle(lang($action . '_entry_success'))
+			->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
+			->defer();
 
-			ee('CP/Alert')->makeInline('entry-form')
-				->asSuccess()
-				->withTitle(lang($action . '_entry_success'))
-				->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
-		}
+		ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 	}
 
+	/**
+	 * Delete stale autosaved data based on the `autosave_prune_hours` config
+	 * value
+	 *
+	 * @return void
+	 */
+	protected function pruneAutosaves()
+	{
+		$prune = ee()->config->item('autosave_prune_hours') ?: 6;
+		$prune = $prune * 120; // From hours to seconds
+
+		$cutoff = ee()->localize->now - $prune;
+
+		$autosave = ee('Model')->get('ChannelEntryAutosave')
+			->filter('edit_date', '<', $cutoff)
+			->delete();
+	}
 }
+
 // EOF

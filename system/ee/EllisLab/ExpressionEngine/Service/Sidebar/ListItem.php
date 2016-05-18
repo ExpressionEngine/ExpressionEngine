@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -24,7 +24,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class ListItem {
 
@@ -44,9 +44,9 @@ abstract class ListItem {
 	protected $url_is_external = FALSE;
 
 	/**
-	 * @var string $class The class of the item
+	 * @var array $class The class of the item
 	 */
-	protected $class = '';
+	protected $class = array();
 
 	/**
 	 * Constructor: sets the text and url properties of the item
@@ -94,15 +94,60 @@ abstract class ListItem {
 	}
 
 	/**
+	 * Adds a class to the class array
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	protected function addClass($class)
+	{
+		$this->class[$class] = TRUE;
+		return $this;
+	}
+
+	/**
+	 * Removes a class to the class array
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	protected function removeClass($class)
+	{
+		if (isset($this->class[$class]))
+		{
+			unset($this->class[$class]);
+		}
+		return $this;
+	}
+
+	/**
+	 * Converts the class array into a space delimited string.
+	 *
+	 * @return string All the classes separated by spaces.
+	 */
+	protected function getClass()
+	{
+		return implode(' ', array_keys($this->class));
+	}
+
+	/**
 	 * Marks the item as active
 	 *
 	 * @return self This returns a reference to itself
 	 */
 	public function isActive()
 	{
-		$this->class .= 'act ';
-		return $this;
+		return $this->addClass('act');
+	}
+
+	/**
+	 * Marks the item as inactive
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isInactive()
+	{
+		return $this->removeClass('act');
 	}
 
 }
+
 // EOF

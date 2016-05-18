@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Localize {
 
@@ -141,9 +141,9 @@ class Localize {
 		// These letters following a percent sign we will convert to their
 		// matching PHP date variable value
 		$allowed_date_vars = array(
-			'a', 'A', 'B', 'd', 'D', 'F', 'g', 'G', 'h', 'H', 'i', 'I',
-			'j', 'l', 'L', 'm', 'M', 'n', 'O', 'P', 'Q', 'r', 's', 'S',
-			't', 'T', 'U', 'w', 'W', 'y', 'Y', 'z', 'Z'
+			'a', 'A', 'B', 'c', 'd', 'D', 'e', 'F', 'g', 'G', 'h', 'H', 'i', 'I',
+			'j', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O', 'P', 'Q', 'r', 's', 'S',
+			't', 'T', 'u', 'U', 'w', 'W', 'y', 'Y', 'z', 'Z'
 		);
 
 		// These date variables have month or day names and need to be ran
@@ -298,7 +298,7 @@ class Localize {
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{
-			$timezone = ($timezone) ? ee()->session->userdata('timezone') : 'UTC';
+			$timezone = ($timezone) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : 'UTC';
 		}
 
 		// If timezone isn't known by PHP, it may be our legacy timezone
@@ -771,5 +771,4 @@ EOF;
 }
 // END CLASS
 
-/* End of file Localize.php */
-/* Location: ./system/expressionengine/libraries/Localize.php */
+// EOF

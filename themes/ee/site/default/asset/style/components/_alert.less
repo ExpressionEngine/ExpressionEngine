@@ -1,0 +1,53 @@
+/*
+	_alert.less
+	-------------
+	define alert
+*/
+
+.alert{
+	background-color: @off-white;
+	border: 1px solid @gray;
+	margin-bottom: @v-gutter - 10;
+	padding: 10px;
+	position: relative;
+		h3{
+			font-size: @font-base + 2;
+			font-weight: bold;
+			margin: 0;
+				&:before{
+					content: @fa-var-exclamation-triangle;
+					font-family: @fam-ico;
+					font-size: @font-base - 2;
+					font-weight: normal;
+					margin-right: 5px;
+				}
+		}
+		p, ul, ol{
+			margin: 0 0 @h-gutter;
+			&:last-child,
+			&:nth-last-child(2){ margin-bottom: 0; }
+		}
+		ul, ol{ margin-left: @v-gutter; }
+		ol{ list-style-position: inside; }
+		&.issue{
+			background-color: lighten(@red,57%);
+			border-color: lighten(@red,40%);
+				h3, p, li, a{ color: @red; }
+		}
+		&.warn{
+			background-color: lighten(@yellow,35%);
+			border-color: lighten(@yellow,5%);
+				h3, p, li, a{ color: darken(@yellow,30%); }
+		}
+		&.success{
+			background-color: lighten(@green,45%);
+			border-color: lighten(@green,20%);
+				h3, p, li, a{ color: darken(@green,20%); }
+		}
+		a:hover{ color: @black; }
+		.close{
+			position: absolute;
+			top: 10px;
+			right: 10px;
+		}
+}

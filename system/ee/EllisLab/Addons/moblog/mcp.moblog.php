@@ -7,9 +7,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Moblog_mcp {
 
@@ -520,7 +520,7 @@ EOT;
 					'desc' => 'data_encrypted',
 					'fields' => array(
 						'moblog_email_password' => array(
-							'type' => 'text',
+							'type' => 'password',
 							'value' => $moblog->moblog_email_password,
 							'required' => TRUE
 						)
@@ -889,7 +889,7 @@ var spaceString = new RegExp('!-!', "g");
 			if (group == 'moblog_categories') {
 				var checkbox_values = [];
 				// Categories are checkboxes
-				$('input[name="moblog_categories[]"]').each(function() {
+				$('input[name="moblog_categories[]"]:checked').each(function() {
 					checkbox_values.push(this.value);
 				});
 				jQuery.each(values, function(a, b) {
@@ -1096,5 +1096,4 @@ MAGIC;
 }
 // END CLASS
 
-/* End of file mcp.moblog.php */
-/* Location: ./system/expressionengine/modules/moblog/mcp.moblog.php */
+// EOF

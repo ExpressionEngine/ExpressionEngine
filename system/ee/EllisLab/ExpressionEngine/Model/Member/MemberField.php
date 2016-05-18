@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,12 +25,14 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  * @subpackage	Member
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class MemberField extends FieldModel {
 
 	protected static $_primary_key = 'm_field_id';
 	protected static $_table_name = 'member_fields';
+
+	protected static $_hook_id = 'member_field';
 
 	protected static $_events = array(
 		'beforeInsert'
@@ -176,3 +178,5 @@ class MemberField extends FieldModel {
 		return $key;
 	}
 }
+
+// EOF

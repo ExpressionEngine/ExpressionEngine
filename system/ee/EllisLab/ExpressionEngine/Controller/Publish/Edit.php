@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use Mexitek\PHPColors\Color;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
@@ -12,9 +13,9 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -28,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Edit extends AbstractPublishController {
 
@@ -59,7 +60,6 @@ class Edit extends AbstractPublishController {
 
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
-		$channel_title = '';
 
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
@@ -89,27 +89,42 @@ class Edit extends AbstractPublishController {
 			'sort_col' => 'column_entry_date',
 		));
 
-		$table->setColumns(
-			array(
-				'column_entry_id',
-				'column_title' => array(
-					'encode' => FALSE
-				),
-				'column_comment_total' => array(
-					'encode' => FALSE
-				),
-				'column_entry_date',
-				'column_status' => array(
-					'type'	=> Table::COL_STATUS
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
+		$columns = array(
+			'column_entry_id',
+			'column_title' => array(
+				'encode' => FALSE
 			)
 		);
+
+		$show_comments_column = (
+			ee()->config->item('enable_comments') == 'y' OR
+			ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count() > 0);
+
+		if ($show_comments_column)
+		{
+			$columns = array_merge($columns, array(
+				'column_comment_total' => array(
+					'encode' => FALSE
+				)
+			));
+		}
+
+		$columns = array_merge($columns, array(
+			'column_entry_date',
+			'column_status' => array(
+				'type'	=> Table::COL_STATUS
+			),
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setColumns($columns);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
 		if ($channel_id)
@@ -132,6 +147,10 @@ class Edit extends AbstractPublishController {
 		$data = array();
 
 		$entry_id = ee()->session->flashdata('entry_id');
+
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		foreach ($entries->all() as $entry)
 		{
@@ -174,7 +193,7 @@ class Edit extends AbstractPublishController {
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			if ($entry->comment_total > 0)
 			{
@@ -229,12 +248,34 @@ class Edit extends AbstractPublishController {
 
 			$disabled_checkbox = ! $can_delete;
 
+			// Display status highlight if one exists
+			$status = $statuses->filter('group_id', $entry->Channel->status_group)
+				->filter('status', $entry->status)
+				->first();
+
+			if ($status)
+			{
+				$highlight = new Color($status->highlight);
+				$color = ($highlight->isLight())
+					? $highlight->darken(100)
+					: $highlight->lighten(100);
+
+				$status = array(
+					'content'          => $status->status,
+					'color'            => $color,
+					'background-color' => $status->highlight
+				);
+			}
+			else
+			{
+				$status = $entry->status;
+			}
+
 			$column = array(
 				$entry->entry_id,
 				$title,
-				$comments,
 				ee()->localize->human_time($entry->entry_date),
-				$entry->status,
+				$status,
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
@@ -245,6 +286,11 @@ class Edit extends AbstractPublishController {
 					)
 				)
 			);
+
+			if ($show_comments_column)
+			{
+				array_splice($column, 2, 0, array($comments));
+			}
 
 			$attrs = array();
 
@@ -295,7 +341,10 @@ class Edit extends AbstractPublishController {
 		}
 		else
 		{
-			$vars['cp_heading'] = sprintf(lang('all_channel_entries'), $channel_title);
+			$vars['cp_heading'] = sprintf(
+				lang('all_channel_entries'),
+				(isset($channel->channel_title)) ? $channel->channel_title : ''
+			);
 		}
 
 		if (AJAX_REQUEST)
@@ -312,7 +361,7 @@ class Edit extends AbstractPublishController {
 	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
-			->with('Channel', 'Versions')
+			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -470,4 +519,5 @@ class Edit extends AbstractPublishController {
 	}
 
 }
+
 // EOF

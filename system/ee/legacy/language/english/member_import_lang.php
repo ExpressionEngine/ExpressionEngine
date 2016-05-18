@@ -204,5 +204,4 @@ type of your imported data, the passwords will not work, and affected members wi
 ''=>''
 );
 
-/* End of file member_import_lang.php */
-/* Location: ./system/expressionengine/language/english/member_import_lang.php */
+// EOF

@@ -39,3 +39,5 @@ class ToOne extends Association {
 		}
 	}
 }
+
+// EOF

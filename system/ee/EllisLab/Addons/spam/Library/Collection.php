@@ -7,9 +7,9 @@ namespace EllisLab\Addons\Spam\Library;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -23,7 +23,7 @@ namespace EllisLab\Addons\Spam\Library;
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Collection {
@@ -34,12 +34,12 @@ class Collection {
 	public $idf_lookup = array();
 	public $corpus = "";
 	public $limit = 1000;
-	
+
 	/**
 	 * Register the rules we want to use for vectorizing
-	 * 
+	 *
 	 * @access public
-	 * @param array 	 $transformations  The transformations to use when 
+	 * @param array 	 $transformations  The transformations to use when
 	 * 					 				   calculating the vector
 	 * @return void
 	 */
@@ -52,9 +52,9 @@ class Collection {
 	}
 
 	/**
-	 * Fit the vectorizer to our collection of sources, will return an array of 
+	 * Fit the vectorizer to our collection of sources, will return an array of
 	 * vectorized sources.
-	 * 
+	 *
 	 * @param array $sources Array of source strings to fit
 	 * @access public
 	 * @return array
@@ -73,7 +73,7 @@ class Collection {
 
 	/**
 	 * Computes a vector of feature values suitable for using with Naive Bayes
-	 * 
+	 *
 	 * @param string $source The string to vectorize
 	 * @access public
 	 * @return array An array of floats
@@ -102,8 +102,8 @@ class Collection {
 
 	/**
 	 * Register a vectorizer rule
-	 * 
-	 * @param mixed $class 
+	 *
+	 * @param mixed $class
 	 * @access public
 	 * @return void
 	 */
@@ -119,4 +119,4 @@ class Collection {
 
 }
 
-?>
+// EOF

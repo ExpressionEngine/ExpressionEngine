@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,7 +19,7 @@
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Template_model extends CI_Model {
 
@@ -1099,9 +1099,9 @@ class Template_model extends CI_Model {
 						'admin_notify_comment'					=> array('channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path',  'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap', 'unwrap}{close_link}{/unwrap', 'unwrap}{approve_link}{/unwrap'),
 						'admin_notify_forum_post'				=> array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
 						'mbr_activation_instructions'			=> array('name',  'username', 'email', 'activation_url', 'site_name', 'site_url'),
-						'forgot_password_instructions'			=> array('name', 'reset_url', 'site_name', 'site_url'),
-						'decline_member_validation'				=> array('name', 'site_name', 'site_url'),
-						'validated_member_notify'				=> array('name', 'site_name', 'site_url'),
+						'forgot_password_instructions'			=> array('name', 'username', 'reset_url', 'site_name', 'site_url'),
+						'decline_member_validation'			=> array('name', 'username', 'site_name', 'site_url'),
+						'validated_member_notify'				=> array('name', 'username', 'email', 'site_name', 'site_url'),
 						'comment_notification'					=> array('name_of_commenter', 'name_of_recipient', 'channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path', 'comment_url', 'comment', 'notification_removal_url', 'site_name', 'site_url', 'comment_id'),
 
 						'comments_opened_notification'					=> array('name_of_recipient', 'channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path', 'comment_url', 'notification_removal_url', 'site_name', 'site_url', 'total_comments_added', 'comments', 'name_of_commenter', 'comment_id', 'comment', '/comments'),
@@ -1400,5 +1400,4 @@ class Template_Group_Entity
 
 }
 
-/* End of file template_model.php */
-/* Location: ./system/expressionengine/models/template_model.php */
+// EOF

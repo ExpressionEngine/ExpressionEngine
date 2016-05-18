@@ -9,6 +9,8 @@ class ChannelFieldGroup extends Model {
 	protected static $_primary_key 	= 'group_id';
 	protected static $_table_name = 'field_groups';
 
+	protected static $_hook_id = 'channel_field_group';
+
 	protected static $_relationships = array(
 		'Channels' => array(
 			'weak' => TRUE,
@@ -49,3 +51,5 @@ class ChannelFieldGroup extends Model {
 	}
 
 }
+
+// EOF

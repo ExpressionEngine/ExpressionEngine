@@ -67,5 +67,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file ip_to_nation_lang.php */
-/* Location: ./system/expressionengine/language/english/ip_to_nation_lang.php */
+// EOF

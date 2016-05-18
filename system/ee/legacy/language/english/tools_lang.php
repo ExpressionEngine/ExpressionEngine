@@ -57,7 +57,6 @@ $lang = array(
 'preference'			=> 'Preference',
 'setting'				=> 'Setting',
 'preferences_updated'	=> 'Preferences Updated',
-'advanced_users_only' 	=> 'Advanced Users Only',
 'true'					=> 'True',
 'false'					=> 'False',
 
@@ -71,5 +70,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file tools_lang.php */
-/* Location: ./system/expressionengine/language/english/tools_lang.php */
+// EOF

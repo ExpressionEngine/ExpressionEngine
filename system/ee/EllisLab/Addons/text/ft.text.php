@@ -7,9 +7,9 @@ use EllisLab\Addons\FilePicker\FilePicker;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -23,13 +23,13 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Text_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Text Input',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	// Parser Flag (preparse pairs?)
@@ -101,14 +101,18 @@ class Text_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
-		$type = (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
-
+		$type  = $this->get_setting('field_content_type', 'all');
 		$field = array(
-			'name'		=> $this->field_name,
-			'value'		=> $this->_format_number($data, $type),
-			'dir'		=> $this->settings['field_text_direction'],
+			'name'               => $this->field_name,
+			'value'              => $this->_format_number($data, $type),
+			'dir'                => $this->settings['field_text_direction'],
 			'field_content_type' => $type
 		);
+
+		if ($this->get_setting('field_disabled'))
+		{
+			$field['disabled'] = 'disabled';
+		}
 
 		if (isset($this->settings['field_placeholder']))
 		{
@@ -125,8 +129,7 @@ class Text_ft extends EE_Fieldtype {
 		{
 			$format_options = array();
 
-			if (isset($this->settings['field_show_fmt'])
-				&& $this->settings['field_show_fmt'] == 'y')
+			if ($this->get_setting('field_show_fmt'))
 			{
 				ee()->load->model('addons_model');
 				$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
@@ -139,8 +142,7 @@ class Text_ft extends EE_Fieldtype {
 				'format_options'  => $format_options,
 			);
 
-			if (isset($this->settings['field_show_file_selector'])
-				&& $this->settings['field_show_file_selector'] == 'y')
+			if ($this->get_setting('field_show_file_selector'))
 			{
 				$fp = new FilePicker();
 				$fp->inject(ee()->view);
@@ -212,11 +214,21 @@ class Text_ft extends EE_Fieldtype {
 					'field_fmt' => array(
 						'type' => 'select',
 						'choices' => $format_options,
-						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
+						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[1]['fields']['field_fmt']['note']);
+		}
 
 		if ($this->content_type() != 'grid')
 		{
@@ -338,11 +350,16 @@ class Text_ft extends EE_Fieldtype {
 
 	function save_settings($data)
 	{
-		return array(
-			'field_maxl'				=> ee()->input->post('field_maxl'),
-			'field_content_type'		=> ee()->input->post('field_content_type'),
-			'field_show_file_selector'	=> ee()->input->post('field_show_file_selector')
+		$defaults = array(
+			'field_maxl'               => 256,
+			'field_content_type'       => '',
+			'field_show_smileys'       => 'n',
+			'field_show_file_selector' => 'n'
 		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	// --------------------------------------------------------------------
@@ -460,9 +477,21 @@ class Text_ft extends EE_Fieldtype {
 
 		return $data;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END Text_Ft class
 
-/* End of file ft.text.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.text.php */
+// EOF

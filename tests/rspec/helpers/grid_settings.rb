@@ -9,6 +9,17 @@ module GridSettings
   extend RSpec::Expectations
   extend RSpec::Matchers
 
+  def self.populate_grid_settings
+    self.test_data.each_with_index do |column_data, index|
+      # First column is already there, so call add_column for
+      # subsequent columns after index 0
+      column = index == 0 ? self.column(1) : self.add_column
+      column.fill_data(column_data[1])
+    end
+
+    no_php_js_errors
+  end
+
   def self.test_data
     return {
       :date_col => {
@@ -53,7 +64,7 @@ module GridSettings
         :order_dir => ['Descending', 'desc'],
         :allow_multiple => true
       },
-      :text_input_col => {
+      :text_col => {
         :type => ['Text Input', 'text'],
         :label => 'Text Input',
         :name => 'text_input',
@@ -79,7 +90,7 @@ module GridSettings
         :field_ta_rows => '10',
         :show_formatting_buttons => true,
       },
-      :rich_textarea_col => {
+      :rte_col => {
         :type => ['Rich Text Editor', 'rte'],
         :label => 'Rich Textarea',
         :name => 'rich_textarea',
@@ -101,7 +112,7 @@ module GridSettings
         :field_fmt => ['XHTML', 'xhtml'],
         :field_list_items => "Option 1\nOption & 2",
       },
-      :multiselect_col => {
+      :multi_select_col => {
         :type => ['Multi Select', 'multi_select'],
         :label => 'Multi Select',
         :name => 'multi_select',
@@ -133,7 +144,37 @@ module GridSettings
         :width => '10',
         :field_fmt => ['XHTML', 'xhtml'],
         :field_list_items => "Option 1\nOption & 2",
-      }
+      },
+      :toggle_col => {
+        :type => ['Toggle', 'toggle'],
+        :label => 'Toggle',
+        :name => 'toggle',
+        :instructions => '',
+        :required => false,
+        :searchable => false,
+        :width => '10',
+        :field_default_value => '1',
+      },
+      :email_address_col => {
+        :type => ['Email Address', 'email_address'],
+        :label => 'Email Address',
+        :name => 'email_address',
+        :instructions => '',
+        :required => false,
+        :searchable => false,
+        :width => '10',
+      },
+      :url_col => {
+        :type => ['URL', 'url'],
+        :label => 'URL',
+        :name => 'url',
+        :instructions => '',
+        :required => false,
+        :searchable => false,
+        :width => '10',
+        :allowed_url_schemes => ['http://', 'https://'],
+        :url_scheme_placeholder => 'http://',
+      },
     }
   end
 
@@ -147,7 +188,7 @@ module GridSettings
   # returns a new GridSettingsColumn object representing the column
   def self.add_column
     find('.grid-wrap .grid-item:last-child li.add a').click
-    sleep 0.1 # Wait for DOM
+    sleep 0.2 # Wait for DOM
     node = find('.grid-wrap .grid-item:last-child')
     GridSettingsColumn.new(node)
   end
@@ -244,6 +285,12 @@ class GridSettingsColumn
       @type_obj = GridSettingsColumnTypeTextarea.new(@node)
     elsif type == 'rte'
       @type_obj = GridSettingsColumnTypeRichTextarea.new(@node)
+    elsif type == 'toggle'
+      @type_obj = GridSettingsColumnTypeToggle.new(@node)
+    elsif type == 'email_address'
+      @type_obj = GridSettingsColumnTypeEmailAddress.new(@node)
+    elsif type == 'url'
+      @type_obj = GridSettingsColumnTypeUrl.new(@node)
     elsif ['checkboxes', 'multi_select', 'radio', 'select'].include? type
       @type_obj = GridSettingsColumnTypeMuliselect.new(@node)
     else
@@ -490,5 +537,76 @@ class GridSettingsColumnTypeMuliselect
   def validate(data)
     @field_fmt.value.should == data[:field_fmt][1]
     @field_list_items.value.should == data[:field_list_items]
+  end
+end
+
+class GridSettingsColumnTypeToggle
+  def initialize(node)
+    @node = node
+    self.load_elements
+  end
+
+  def load_elements
+    @field_default_value = @node.find('[name*="field_default_value"]', :visible => false)
+    @field_default_value_btn = @node.find('.toggle-btn')
+  end
+
+  def fill_data(data)
+    if data[:field_default_value] == '1'
+      @field_default_value_btn.click
+    end
+  end
+
+  def validate(data)
+    @field_default_value.value.should == data[:field_default_value]
+    if data[:field_default_value] == '1'
+      @node.find('.toggle-btn.on').should_not == nil
+    else
+      @node.find('.toggle-btn.off').should_not == nil
+    end
+  end
+end
+
+class GridSettingsColumnTypeEmailAddress
+  def initialize(node)
+    @node = node
+  end
+
+  def load_elements
+  end
+
+  def fill_data(data)
+  end
+
+  def validate(data)
+  end
+end
+
+class GridSettingsColumnTypeUrl
+  def initialize(node)
+    @node = node
+    self.load_elements
+  end
+
+  def load_elements
+    @allowed_url_schemes = @node.all('[name*="allowed_url_schemes"]')
+    @url_scheme_placeholder = @node.find('[name*="url_scheme_placeholder"]')
+  end
+
+  def fill_data(data)
+    @allowed_url_schemes.each do |checkbox|
+      checkbox.set(false)
+    end
+    data[:allowed_url_schemes].each do |scheme|
+      @node.find("[name*='allowed_url_schemes'][value='#{scheme}']").set(true)
+    end
+    @url_scheme_placeholder.set data[:url_scheme_placeholder]
+  end
+
+  def validate(data)
+    data[:allowed_url_schemes].each do |scheme|
+      @node.find("[name*='allowed_url_schemes'][value='#{scheme}']").checked?.should == true
+    end
+    @url_scheme_placeholder.value.should == data[:url_scheme_placeholder]
   end
 end

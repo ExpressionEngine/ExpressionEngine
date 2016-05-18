@@ -16,30 +16,9 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$this->typography = new TypographyStub();
 	}
 
-	public function testCodeFencePreProcess()
-	{
-		$str = $this->typography->markdown_pre_process_bypass(CODE_FENCE);
-
-		// Make sure we've removed all code fences
-		$this->assertNotContains('~~~', $str);
-		$this->assertNotContains('```', $str);
-
-		// Leave in the thing that might kinda look like a code fence
-		$this->assertContains('~~``~~', $str);
-
-		// Must contain unaffected opening and close php tags
-		$this->assertContains('<?php', $str);
-		$this->assertContains('?>', $str);
-
-		// Should contain 3 codeblocks
-		$this->assertTrue(substr_count($str, '[code]') == 3);
-		$this->assertTrue(substr_count($str, '[/code]') == 3);
-	}
-
 	public function testCodeFence()
 	{
-		$str = $this->typography->markdown_pre_process_bypass(CODE_FENCE);
-		$str = $this->typography->markdown($str);
+		$str = $this->typography->markdown(CODE_FENCE);
 
 		// Make sure we've removed all code fences
 		$this->assertNotContains('~~~', $str);
@@ -50,83 +29,25 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains('~~</code>~~', $str);
 
 		// Must contain unaffected opening and close php tags
-		$this->assertContains('<?php', $str);
-		$this->assertContains('?>', $str);
-
-		// Should contain 3 codeblocks
-		$this->assertTrue(substr_count($str, '[code]') == 3);
-		$this->assertTrue(substr_count($str, '[/code]') == 3);
-	}
-
-	public function testCodeBlockPreProcess()
-	{
-		$str = $this->typography->markdown_pre_process_bypass(CODE_FENCE);
-
-		// Should contain no tabs
-		$this->assertNotContains("\t", $str);
-
-		// Should contain 3 codeblocks
-		$this->assertTrue(substr_count($str, '[code]') == 3);
-		$this->assertTrue(substr_count($str, '[/code]') == 3);
-
-		// Codeblocks should not contain indenting at the beginning
-		$this->assertRegExp('/\[code\]\n\S/i', $str);
-
-		// Must contain unaffected opening and close php tags
-		$this->assertContains('<?php', $str);
-		$this->assertContains('?>', $str);
+		$this->assertContains('&lt;?php', $str);
+		$this->assertContains('?&gt;', $str);
 	}
 
 	public function testCodeBlock()
 	{
-		$str = $this->typography->markdown_pre_process_bypass(CODE_FENCE);
-		$str = $this->typography->markdown($str);
+		$str = $this->typography->markdown(CODE_FENCE);
 
 		// Should contain no tabs
 		$this->assertNotContains("\t", $str);
 
-		// Should contain 3 codeblocks
-		$this->assertTrue(substr_count($str, '[code]') == 3);
-		$this->assertTrue(substr_count($str, '[/code]') == 3);
-
-		// Codeblocks should not contain indenting at the beginning
-		$this->assertRegExp('/\[code\]\n\S/i', $str);
-
 		// Must contain unaffected opening and close php tags
-		$this->assertContains('<?php', $str);
-		$this->assertContains('?>', $str);
-	}
-
-	public function testCodeBlockAndFencePreProcess()
-	{
-		$str = $this->typography->markdown_pre_process_bypass(CODE_BLOCK_AND_FENCE);
-
-		// Should contain no tabs
-		$this->assertNotContains("\t", $str);
-
-		// Make sure we've removed all code fences
-		$this->assertNotContains('~~~', $str);
-		$this->assertNotContains('```', $str);
-
-		// Leave in the thing that might kinda look like a code fence
-		$this->assertContains('~~``~~', $str);
-
-		// Should contain 6 codeblocks
-		$this->assertTrue(substr_count($str, '[code]') == 6);
-		$this->assertTrue(substr_count($str, '[/code]') == 6);
-
-		// Codeblocks should not contain indenting at the beginning
-		$this->assertRegExp('/\[code\]\n\S/i', $str);
-
-		// Must contain unaffected opening and close php tags
-		$this->assertContains('<?php', $str);
-		$this->assertContains('?>', $str);
+		$this->assertContains('&lt;?php', $str);
+		$this->assertContains('?&gt;', $str);
 	}
 
 	public function testCodeBlockAndFence()
 	{
-		$str = $this->typography->markdown_pre_process_bypass(CODE_BLOCK_AND_FENCE);
-		$str = $this->typography->markdown($str);
+		$str = $this->typography->markdown(CODE_BLOCK_AND_FENCE);
 
 		// Should contain no tabs
 		$this->assertNotContains("\t", $str);
@@ -139,24 +60,14 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains('~~<code>~~', $str);
 		$this->assertContains('~~</code>~~', $str);
 
-		// Should contain 6 codeblocks
-		$this->assertTrue(substr_count($str, '[code]') == 6);
-		$this->assertTrue(substr_count($str, '[/code]') == 6);
-
-		// Codeblocks should not contain indenting at the beginning
-		$this->assertRegExp('/\[code\]\n\S/i', $str);
-
 		// Must contain unaffected opening and close php tags
-		$this->assertContains('<?php', $str);
-		$this->assertContains('?>', $str);
+		$this->assertContains('&lt;?php', $str);
+		$this->assertContains('?&gt;', $str);
 	}
 
 	public function testSmartyPants()
 	{
-		$smartypants = $this->typography->markdown_pre_process_bypass(SMARTYPANTS);
-
-		// Test WITH SmartyPants
-		$str = $this->typography->markdown($smartypants);
+		$str = $this->typography->markdown(SMARTYPANTS);
 
 		// The em and en dashes should be where you'd expect them
 		$this->assertContains("dashes&#8212;they", $str);
@@ -168,7 +79,7 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains("&#8216;there&#8217;", $str);
 
 		// Test WITHOUT SmartyPants
-		$str = $this->typography->markdown($smartypants, array('smartypants' => FALSE));
+		$str = $this->typography->markdown(SMARTYPANTS, array('smartypants' => FALSE));
 
 		// dashes and quotes should not be converted
 		$this->assertContains("dashes---they", $str);
@@ -180,8 +91,7 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 
 	public function testNoMarkup()
 	{
-		$str = $this->typography->markdown_pre_process_bypass(MARKDOWN);
-		$str = $this->typography->markdown($str, array('no_markup' => TRUE));
+		$str = $this->typography->markdown(MARKDOWN, array('no_markup' => TRUE));
 
 		// Make sure markup is not parsed
 		$this->assertNotContains('<div', $str);
@@ -201,11 +111,6 @@ class TypographyStub extends EE_Typography
 	public function __construct()
 	{
 		// Skipping initialize and autoloader
-	}
-
-	public function markdown_pre_process_bypass($text)
-	{
-		return $this->markdown_pre_process($text);
 	}
 }
 
@@ -323,3 +228,5 @@ To see what else you can do with Markdown (including **tables**, **images**, **n
 [1]: https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet
 MD;
 define('MARKDOWN', $markdown);
+
+// EOF

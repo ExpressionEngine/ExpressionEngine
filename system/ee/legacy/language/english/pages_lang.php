@@ -128,5 +128,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file pages_lang.php */
-/* Location: ./system/expressionengine/language/english/pages_lang.php */
+// EOF

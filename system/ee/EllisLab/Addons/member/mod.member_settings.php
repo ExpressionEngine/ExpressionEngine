@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class Member_settings extends Member {
@@ -1350,25 +1350,18 @@ class Member_settings extends Member {
 
 		$query = ee()->db->query("SELECT email, password FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
-		$VAL = new EE_Validate(
-								array(
-										'member_id'		=> ee()->session->userdata('member_id'),
-										'val_type'		=> 'update', // new or update
-										'fetch_lang' 	=> TRUE,
-										'require_cpw' 	=> FALSE,
-										'enable_log'	=> FALSE,
-										'email'			=> $_POST['email'],
-										'cur_email'		=> $query->row('email'),
-										'cur_password'	=> $_POST['password']
-									 )
-							);
+		$VAL = new EE_Validate(array(
+			'member_id'    => ee()->session->userdata('member_id'),
+			'val_type'     => 'update', // new or update
+			'fetch_lang'   => TRUE,
+			'require_cpw'  => TRUE,
+			'enable_log'   => FALSE,
+			'email'        => $_POST['email'],
+			'cur_email'    => $query->row('email'),
+			'cur_password' => $_POST['password']
+		));
 
 		$VAL->validate_email();
-
-		if ($_POST['email'] != $query->row('email') )
-		{
-			$VAL->password_safety_check();
-		}
 
 		if (count($VAL->errors) > 0)
 		{
@@ -1610,8 +1603,10 @@ class Member_settings extends Member {
 		// the same options
 		ee()->load->model('admin_model');
 		ee()->load->helper('form');
+		$timezone = ee()->session->userdata('timezone');
 
 		$defaults = array(
+			'site_default'    => empty($timezone) ? 'y' : 'n',
 			'date_format'     => ee()->session->userdata('date_format'),
 			'time_format'     => ee()->session->userdata('time_format'),
 			'include_seconds' => ee()->session->userdata('include_seconds')
@@ -1626,6 +1621,7 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_localization'))
 				),
 				'path:update_localization' => $this->_member_path('update_localization'),
+				'form:site_default'        => form_preference('site_default', $config_fields['fields']['site_default']),
 				'form:localization'        => ee()->localize->timezone_menu((ee()->session->userdata('timezone') == '') ? 'UTC' : ee()->session->userdata('timezone'), 'timezone'),
 				'form:date_format'         => form_preference('date_format', $config_fields['fields']['date_format']),
 				'form:time_format'         => form_preference('time_format', $config_fields['fields']['time_format']),
@@ -1653,11 +1649,19 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		$data['language']        = ee()->security->sanitize_filename($_POST['language']);
-		$data['timezone']        = $_POST['timezone'];
-		$data['date_format']     = $_POST['date_format'];
-		$data['time_format']     = $_POST['time_format'];
-		$data['include_seconds'] = $_POST['include_seconds'];
+		$data['language'] = ee()->security->sanitize_filename($_POST['language']);
+
+		foreach (array('timezone', 'date_format', 'time_format', 'include_seconts') as $key)
+		{
+			if ($_POST['site_default'] == 'y')
+			{
+				$data[$key] = NULL;
+			}
+			else
+			{
+				$data[$key] = ee()->input->post($key);
+			}
+		}
 
 		$language_pack_names = array_keys(ee()->lang->language_pack_names());
 		if ( ! in_array($data['language'], $language_pack_names))
@@ -1665,7 +1669,16 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(lang('invalid_action')));
 		}
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$member->set($data);
+		$result = $member->validate();
+
+		if ($result->failed())
+		{
+			return ee()->output->show_user_error('general', $result->renderErrors());
+		}
+
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message
@@ -2328,5 +2341,4 @@ UNGA;
 }
 // END CLASS
 
-/* End of file mod.member_settings.php */
-/* Location: ./system/expressionengine/modules/member/mod.member_settings.php */
+// EOF

@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesCon
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesCon
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class File extends AbstractFilesController {
 
@@ -412,4 +412,5 @@ class File extends AbstractFilesController {
 		force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
 	}
 }
+
 // EOF

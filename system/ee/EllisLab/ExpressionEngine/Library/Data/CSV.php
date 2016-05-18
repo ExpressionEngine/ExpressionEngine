@@ -123,3 +123,5 @@ class CSV {
 		return $this->generate();
 	}
 }
+
+// EOF

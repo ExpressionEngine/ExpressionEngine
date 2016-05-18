@@ -19,7 +19,7 @@ if (function_exists('opcache_reset'))
 }
 
 $config['site_url'] = 'http://ee2.test:8080/';
-$config['app_version'] = '3.1.3';
+$config['app_version'] = '3.3.2';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
@@ -150,6 +150,4 @@ $config['encryption_key'] = '';
 */
 $config['rewrite_short_tags'] = TRUE;
 
-
-/* End of file config.php */
-/* Location: ./system/expressionengine/config/config.php */
+// EOF

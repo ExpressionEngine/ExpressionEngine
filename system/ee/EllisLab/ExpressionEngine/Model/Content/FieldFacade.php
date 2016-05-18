@@ -336,3 +336,5 @@ class FieldFacade {
 		return $settings;
 	}
 }
+
+// EOF

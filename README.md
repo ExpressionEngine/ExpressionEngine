@@ -4,86 +4,79 @@
 
 ## Naming Branches
 
-ExpressionEngine follows the Git Flow naming conventions. The primary
-branches are:
+ExpressionEngine follows the Git Flow naming conventions. The primary branches are:
 
-* stability - development for bug fixes (next minor release)
-* develop - development for features (the next major release)
-* master - no development, matches the last release
+* `stability` - development for bug fixes (next minor release)
+* `master` - no development, matches the last release
 
-Feature development should take place in feature branches. These should
-be prefixed with `feature/`:
+Feature development should take place in feature branches. These should be prefixed with `feature/`:
 
-* feature/commerce
-* feature/pandora-accessory
+* `feature/commerce`
+* `feature/pandora-accessory`
 
-Feature branches should be turned into pull-requests before they are
-merged into develop.
+Feature branches should be turned into pull-requests before they are merged into develop.
 
-When code for a release is frozen, a branch prefixed with `release/`
-should be created. Version numbers should follow
-[semver](http://semver.org) conventions.
+When code for a release is frozen, a branch prefixed with `release/` should be created. Version numbers should follow [semver](http://semver.org) conventions.
 
-* release/2.9.0
-* release/2.22.0-dp.15+intrepid-earwig
+* `release/2.9.0`
+* `release/2.22.0-dp.15+intrepid-earwig`
 
 ## Installing / Getting up and running
 
 Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
-```
+```php
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
 to
 
-```
+```php
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
-Create an empty `config.php` file in `/system/user/config/`
-
-Run the installer.
-
-Set the development configuration items below.
+1. Create an empty `config.php` file in `/system/user/config/`
+2. Run the installer.
+3. Set the development configuration items below.
 
 ## Development Configuration
 
 Force MySQL strict mode:
 
-```
-$db['expressionengine']['stricton'] = TRUE;
+```php
+$config['database']['expressionengine']['stricton'] = TRUE;
 ```
 
 Turn debug on:
 
-```
+```php
 $debug = 1;
+$config['debug'] = '2';
 ```
 
 ## Updating from the repo
 
 Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
-```
+```php
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
 to
 
-```
+```php
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
 Modify config version variable in `system/user/config/config.php` around line 14 from:
 
-```
+```php
 $config['app_version'] = '3.0.0';
 ```
 
 to
 
-```
+```php
 $config['app_version'] = '2.9.0';
 ```
 
@@ -92,110 +85,72 @@ Run updater, login.
 
 ## Unit Testing
 
-In order to run unit tests you will need Composer and PHPUnit. In the
-system/Tests directory run:
+In order to run unit tests you will need Composer and PHPUnit. In the system/Tests directory run:
 
-```
+```shell
 composer install
 ```
 
-This will install the versions listed in the composer.lock file. If you
-wish to update phpunit, mockery, or any of the others, run `composer
-update` instead and commit the new lock file after testing.
+This will install the versions listed in the composer.lock file. If you wish to update phpunit, mockery, or any of the others, run `composer update` instead and commit the new lock file after testing.
 
 From there you can run the ExpressionEngine tests with:
 
-```
+```shell
 phpunit ExpressionEngine/
 ```
-
-Alternatively you can install phing and run all current unit tests from
-the project root using:
-
-```
-phing tests
-```
-
 
 ### Writing Unit Tests
 
 Before beginning to write tests, please read the documentation for:
 
-* Mockery: https://github.com/padraic/mockery#documentation, especially
-  the sections on expectation declarations, argument validation, and
-  partial mocking.
+* Mockery: https://github.com/padraic/mockery#documentation, especially the sections on expectation declarations, argument validation, and partial mocking.
 
-* PHPUnit: http://phpunit.de/manual/current/en/index.html, especially
-  the sections on assertions and database testing.
+* PHPUnit: http://phpunit.de/manual/current/en/index.html, especially the sections on assertions and database testing.
 
 General Guidelines:
 
  - Use mockery for mocks
- - Prefer the matchesPattern hamcrest matcher instead of the mockery
-   regex default for clarity.
+ - Prefer the matchesPattern hamcrest matcher instead of the mockery regex default for clarity.
  - Use array datasets for database tests
 
-Each test case should look as close to a minimal production or
-documentation code sample as possible and should be self documenting.
-They should be easy to find, quick to add, and on the rare occasion that
-they are edited it should be very difficult to make the test unclear or
-nullify the assertion. As a result, slightly different rules apply to
-test writing than what you might be used to in regular code.
+Each test case should look as close to a minimal production or documentation code sample as possible and should be self documenting. They should be easy to find, quick to add, and on the rare occasion that they are edited it should be very difficult to make the test unclear or nullify the assertion. As a result, slightly different rules apply to test writing than what you might be used to in regular code.
 
 The Good:
 
 * Write tests for bugs
 * Write tests while building a feature
 * Mirror the existing folder structure for your test
-* Name your class test files <ClassName>Test.php
-* Name your test methods tests<MethodName>
+* Name your class test files `<ClassName>Test.php`
+* Name your test methods `tests<MethodName>`
 * Use annotations wherever possible.
 * Use separate methods to test exceptions
-  * Call them tests<MethodName>ThrowsException<condition> and use the
-    @expectedException annotation.
+  * Call them `tests<MethodName>ThrowsException<condition>` and use the `@expectedException` annotation.
 * Use the `$message` parameter on assertions to help document the tests
-  * This helps pinpoint the failing assertion. Use this when there are a
-    lot of assertions in your method or when it is not immediately clear
-    from the `$expected`/`$actual` pair which assertion failed. Try
-    failing a few assertions on purpose to get a feel for how to find
-    them.
-  * This field is a comment to your assertion. It should describe the
-    expected behavior. Keep it short, it is not documentation for the
-    code -- that belongs with the code.
-  * If your class has a lot of methods, especially if they are similar
-    consider prefixing the message. `func() accepts no arguments`
-* For testing a range of options, use dataProviders to keep the test
-  short.
-* Include the $message parameter in your dataProvider array
-* Use tearDown to cleanup your setUp
-* Use @covers on methods that you cannot fully isolate or on
-  constructors. Always set it on constructor tests as they may grow to
-  include things that are verified in a separate test.
+  * This helps pinpoint the failing assertion. Use this when there are a lot of assertions in your method or when it is not immediately clear from the `$expected`/`$actual` pair which assertion failed. Try failing a few assertions on purpose to get a feel for how to find them.
+  * This field is a comment to your assertion. It should describe the expected behavior. Keep it short, it is not documentation for the code -- that belongs with the code.
+  * If your class has a lot of methods, especially if they are similar consider prefixing the message. `func() accepts no arguments`
+* For testing a range of options, use `dataProviders` to keep the test short.
+* Include the `$message` parameter in your `dataProvider` array
+* Use `tearDown` to cleanup your setUp
+* Use `@covers` on methods that you cannot fully isolate or on constructors. Always set it on constructor tests as they may grow to include things that are verified in a separate test.
 
   `@covers EllisLab\ExpressionEngine\Something::__construct`
 
 The Bad:
 
-* Never assume that the test is wrong. A bug has probably been
-  introduced.
+* Never assume that the test is wrong. A bug has probably been introduced.
 * Never commit a new test that is broken unless it tests new code.
-* Never commit a test that you did not see fail first. It may not be
-  running.
-* Avoid control structures (if/while/try/foreach).
-  * Loops can be avoided by using @dataProvider
-  * Try statements can be avoided using @expectedException
+* Never commit a test that you did not see fail first. It may not be running.
+* Avoid control structures (`if`/`while`/`try`/`foreach`).
+  * Loops can be avoided by using `@dataProvider`
+  * Try statements can be avoided using `@expectedException`
   * If statements can be avoided by creating multiple methods
 * Avoid needless comments
     * They obscure the annotations, making the test harder to follow
-    * They increase the perceived effort of adding a test, resulting in
-      lower coverage
-    * Consider putting the comment on the code you're testing instead.
-      Do not duplicate code documentation in the test.
-    * If your test needs more explanation than fits into the `$message`
-      parameter, then you should reconsider the test case or the code it
-      is testing.
-* If you're stubbing a lot, take a step back and consider if you can
-  decouple your class more cleanly.
+    * They increase the perceived effort of adding a test, resulting in lower coverage
+    * Consider putting the comment on the code you're testing instead. Do not duplicate code documentation in the test.
+    * If your test needs more explanation than fits into the `$message` parameter, then you should reconsider the test case or the code it is testing.
+* If you're stubbing a lot, take a step back and consider if you can decouple your class more cleanly.
 
 
 Example of a class to test:

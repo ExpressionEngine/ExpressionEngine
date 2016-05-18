@@ -13,9 +13,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Quicklinks extends Settings {
 
@@ -276,7 +276,7 @@ class Quicklinks extends Settings {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
@@ -342,5 +342,4 @@ class Quicklinks extends Settings {
 }
 // END CLASS
 
-/* End of file Quicklinks.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Quicklinks.php */
+// EOF

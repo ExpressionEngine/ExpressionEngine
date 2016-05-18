@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Library\CP;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Query extends Utilities {
 
@@ -202,7 +202,7 @@ class Query extends Utilities {
 
 		// If it's a SELECT query we'll see if we need to limit
 		// the result total and add pagination links
-		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
+		if (strpos(strtoupper(trim($sql)), 'SELECT') === 0)
 		{
 			$sort_col = $table->sort_col; // PHP 5.3
 			if ( ! empty($sort_col))
@@ -289,5 +289,4 @@ class Query extends Utilities {
 }
 // END CLASS
 
-/* End of file Query.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Query.php */
+// EOF

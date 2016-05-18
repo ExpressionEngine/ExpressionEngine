@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Member_model extends CI_Model {
 
@@ -657,7 +657,8 @@ class Member_model extends CI_Model {
 		// First, we need to get a list of recipient IDs who will be affected
 		// by deleting the members we are deleting so that we can update the
 		// unread PM count for those users only
-		$this->db->distinct('recipient_id');
+		$this->db->select('recipient_id');
+		$this->db->distinct();
 		$this->db->where('message_read', 'n');
 		$this->db->where_in('sender_id', $member_ids);
 		$messages = $this->db->get('message_copies');
@@ -1617,5 +1618,4 @@ class Member_model extends CI_Model {
 	}
 }
 
-/* End of file member_model.php */
-/* Location: ./system/expressionengine/models/member_model.php */
+// EOF

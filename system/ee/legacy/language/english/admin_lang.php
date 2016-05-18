@@ -82,8 +82,6 @@ $lang = array(
 
 'no_extensions_exist' => "No Extensions Exist",
 
-'extensions_manager' => "Extensions Manager",
-
 'available_extensions' => "Available Extensions",
 
 'extension' => "Extension",
@@ -226,79 +224,6 @@ $lang = array(
 
 "email_module_captchas" => "Enable CAPTCHAs for Tell-a-Friend and Contact emails",
 
-"sql_good_query" => "Your query was successful",
-
-"must_submit_number" => "You must submit the number of days to filter the pruning routine by.",
-
-"must_submit_group" => "You must choose at least one member group",
-
-"must_submit_channel" => "You must choose at least one channel",
-
-"taken_channel_name" => "This channel name is already taken.",
-
-"good_member_pruning" => "%x member accounts have been deleted",
-
-"prune_member_confirm_msg" => "Are you sure you want to delete the member accounts you specified?",
-
-"member_pruning" => "Membership Account Pruning",
-
-"mbr_prune_x_days" => "Delete membership accounts that are more than X days old",
-
-"mbr_prune_never_posted" => "Only delete users who have never posted entries, comments, or forum posts",
-
-"mbr_prune_zero_note" => "If you submit a zero, member accounts from any date will be deleted.",
-
-"mbr_prune_groups" => "Delete only within the selected groups",
-
-"channel_entry_pruning" => "Channel Entry Pruning",
-
-"channel_prune_x_days" => "Delete channel entries that are more than X days old",
-
-"channel_prune_never_posted" => "Only delete entries that have no comments",
-
-"prune_entry_confirm_msg" => "Are you sure you want to delete the channel entries you specified?",
-
-"good_entry_pruning" => "%x channel entries have been deleted",
-
-"select_prune_channels" => "Delete only within the selected channels",
-
-"comment_pruning" => "Comment Pruning",
-
-"comment_prune_x_days" => "Delete comments that are more than X days old",
-
-"good_commennt_pruning" => "%x comments have been deleted",
-
-"prune_comment_confirm_msg" => "Are you sure you want to delete the comments you specified?",
-
-/* Someday, oh someday...
-'pm_pruning' => 'Private Message Pruning',
-
-'good_pm_pruning' => '%x private messages have been deleted',
-
-'pm_prune_x_days' => 'Permanently delete trashed messages X days old',
-
-'prune_pm_confirm_msg' => 'Are you sure you want to delete the private messages you specified?',
-*/
-"topic_pruning" => "Forum Topic Pruning",
-
-"good_topic_pruning" => "%x forum topics have been deleted",
-
-"topic_prune_x_days" => "Delete forum topics that are more than X days old",
-
-"must_submit_forums" => "You must choose at least one forum",
-
-"prune_if_no_posts" => "Delete topics only if they do not contain any posts",
-
-"select_prune_forums" => "Delete only within the selected forums",
-
-"must_select_one" => "You must select at least one",
-
-"prune_topic_confirm_msg" => "Are you sure you want to delete the forum topics you specified?",
-
-"select_prune_topics" => "Delete only within the selected forums",
-
-'pm_cfg' => "Private Messaging Preferences",
-
 'prv_msg_enabled' => 'Enable private messaging between members?',
 
 'prv_msg_storage_limit' => "Maximum Number of Private Messages a user can store",
@@ -327,31 +252,6 @@ $lang = array(
 "html_all" => "Allow all HTML (not recommended)",
 
 "html_none" => "Convert HTML into character entities",
-
-/* moved to design - DJ
-
-"html_header" => "HTML Header",
-
-"page_header" => "Page Header",
-
-"page_subheader" => "Page Sub-header",
-
-"import_utilities" => "Import Utilities",
-
-"html_footer" => "HTML Footer",
-
-"breadcrumb_trail" => "Breadcrumb Trail",
-
-"breadcrumb_current_page" => "Breadcrumb Current Page",
-
-"signature_form" => "Signature Edit Page",
-
-"edit_avatar" => "Avatar Edit Page",
-
-"avatar_folder_list" => "Pre-installed Avatar Folder List",
-
-"browse_avatars" => "Browse Avatars Page",
-*/
 
 "config_editor" => "Config File Editor",
 
@@ -973,8 +873,6 @@ $lang = array(
 
 "table_name" => "Table Name",
 
-"records" => "Records",
-
 "size" => "Size",
 
 "type" => "Type",
@@ -988,8 +886,6 @@ $lang = array(
 "optimize_table" => "Optimize selected tables",
 
 "repair_table" => "Repair selected tables",
-
-"select_all" => "Select All",
 
 "no_buttons_selected" => "You must select the tables in which to perform this action",
 
@@ -1125,8 +1021,6 @@ $lang = array(
 
 "no_additional_info" => "No additional information is available for this plugin",
 
-'update_and_return' => "Update and Finished",
-
 "view_throttle_log" => "View Throttle Log",
 
 "no_throttle_logs" => "No IPs are currently being throttled by the system.",
@@ -1166,5 +1060,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file admin_lang.php */
-/* Location: ./system/expressionengine/language/english/admin_lang.php */
+// EOF

@@ -522,3 +522,5 @@ class SimplePie_Sanitize
 		}
 	}
 }
+
+// EOF

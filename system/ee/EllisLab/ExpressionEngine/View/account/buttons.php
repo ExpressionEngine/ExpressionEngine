@@ -2,18 +2,11 @@
 
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-			 <fieldset class="tbl-search right">
-							 <a class="btn tn action" href="<?=$new?>">create new</a>
-			 </fieldset>
-			 <h1>
-							 <ul class="toolbar">
-											 <li class="settings">
-															 <a href="<?=ee('CP/URL')->make('settings/members')?>" title="<?=lang('member_settings')?>"></a>
-											 </li>
-							 </ul>
-							 <?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
-			 </h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
+			<fieldset class="tbl-search right">
+				<a class="btn tn action" href="<?=$new?>"><?= lang('create_new') ?></a>
+			</fieldset>
+		 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
+		 	<?=ee('CP/Alert')->getAllInlines()?>
 
 			 <?php if (isset($filters)) echo $filters; ?>
 

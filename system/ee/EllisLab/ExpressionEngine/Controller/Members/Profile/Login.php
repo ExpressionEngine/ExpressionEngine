@@ -11,9 +11,9 @@ use CP_Controller;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use CP_Controller;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Login extends Profile {
 
@@ -118,7 +118,7 @@ class Login extends Profile {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
@@ -144,6 +144,12 @@ class Login extends Profile {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		ee()->logger->log_action(sprintf(
+			lang('member_login_as'),
+			$this->member->username,
+			$this->member->member_id
+		));
 
 		//  Do we allow multiple logins on the same account?
 		if (ee()->config->item('allow_multi_logins') == 'n')
@@ -182,7 +188,7 @@ class Login extends Profile {
 		}
 
 		// Create a new session
-		$session_id = ee()->session->create_new_session($this->member->member_id , TRUE);
+		$session_id = ee()->session->create_new_session($this->member->member_id , TRUE, TRUE);
 
 		// Delete old password lockouts
 		ee()->session->delete_password_lockout();
@@ -209,5 +215,4 @@ class Login extends Profile {
 }
 // END CLASS
 
-/* End of file Settings.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/Profile/Settings.php */
+// EOF

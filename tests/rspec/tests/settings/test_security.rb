@@ -25,6 +25,7 @@ feature 'Security & Privacy Settings' do
     deny_duplicate_data = ee_config(item: 'deny_duplicate_data')
     require_ip_for_posting = ee_config(item: 'require_ip_for_posting')
     xss_clean_uploads = ee_config(item: 'xss_clean_uploads')
+    redirect_submitted_links = ee_config(item: 'redirect_submitted_links')
 
     @page.cp_session_type.value.should == ee_config(item: 'cp_session_type')
     @page.website_session_type.value.should == ee_config(item: 'website_session_type')
@@ -57,6 +58,8 @@ feature 'Security & Privacy Settings' do
     @page.require_ip_for_posting_n.checked?.should == (require_ip_for_posting == 'n')
     @page.xss_clean_uploads_y.checked?.should == (xss_clean_uploads == 'y')
     @page.xss_clean_uploads_n.checked?.should == (xss_clean_uploads == 'n')
+    @page.redirect_submitted_links_y.checked?.should == (redirect_submitted_links == 'y')
+    @page.redirect_submitted_links_n.checked?.should == (redirect_submitted_links == 'n')
   end
 
   it 'should validate the form' do
@@ -136,6 +139,7 @@ feature 'Security & Privacy Settings' do
     @page.deny_duplicate_data_n.click
     @page.require_ip_for_posting_n.click
     @page.xss_clean_uploads_n.click
+    @page.redirect_submitted_links_y.click
     @page.submit
 
     # Since we changed session settings, login again
@@ -161,5 +165,6 @@ feature 'Security & Privacy Settings' do
     @page.deny_duplicate_data_n.checked?.should == true
     @page.require_ip_for_posting_n.checked?.should == true
     @page.xss_clean_uploads_n.checked?.should == true
+    @page.redirect_submitted_links_y.checked?.should == true
   end
 end

@@ -12,9 +12,9 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Status extends AbstractChannelsController {
 
@@ -177,7 +177,6 @@ class Status extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'status_group_name_desc',
 					'fields' => array(
 						'group_name' => array(
 							'type' => 'text',
@@ -812,4 +811,5 @@ class Status extends AbstractChannelsController {
 		return $status->save();
 	}
 }
+
 // EOF

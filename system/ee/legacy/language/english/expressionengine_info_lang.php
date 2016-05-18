@@ -28,5 +28,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file expressionengine_info_lang.php */
-/* Location: ./system/expressionengine/language/english/expressionengine_info_lang.php */
+// EOF

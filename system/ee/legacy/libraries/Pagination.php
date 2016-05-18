@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.4
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Pagination
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class EE_Pagination {
@@ -962,5 +962,4 @@ class Pagination_object {
 
 // END Pagination class
 
-/* End of file Pagination.php */
-/* Location: ./system/expressionengine/libraries/Pagination.php */
+// EOF

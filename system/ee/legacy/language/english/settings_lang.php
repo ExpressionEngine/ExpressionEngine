@@ -8,8 +8,6 @@ $lang = array(
 
 'general_settings' => 'General Settings',
 
-'license_and_reg' => 'License & Registration',
-
 'url_path_settings' => 'URL and Path Settings',
 
 'outgoing_email' => 'Outgoing Email',
@@ -82,6 +80,8 @@ $lang = array(
 'language' => 'Language',
 
 'date_time_settings' => 'Date &amp; Time Settings',
+
+'site_default' => 'Use site default',
 
 'timezone' => 'Timezone',
 
@@ -247,11 +247,11 @@ $lang = array(
 
 'enable_errors' => 'Enable error reporting?',
 
-'enable_errors_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'When set to <b>enable</b>, super admins will see PHP/MySQL errors when they occur.',
 
 'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
@@ -429,8 +429,6 @@ $lang = array(
  * Word Censoring
  */
 
-'word_censorship' => 'Word Censorship',
-
 'enable_censoring' => 'Enable censorship?',
 
 'enable_censoring_desc' => 'When set to <b>enable</b>, words listed will be replaced with the specified replacement characters.',
@@ -509,7 +507,7 @@ $lang = array(
 
 'new_member_notification' => 'Enable new member notifications?',
 
-'new_member_notification_desc' => 'When set to <b>yes</b>, the following Email addresses will be notified anytime a new registration occurs.',
+'new_member_notification_desc' => 'When set to <b>enable</b>, the following Email addresses will be notified anytime a new registration occurs.',
 
 'mbr_notification_emails' => 'Notification recipients',
 
@@ -540,8 +538,6 @@ $lang = array(
 'prv_msg_upload_url' => 'Upload directory',
 
 'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
-
-'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
 'prv_msg_upload_path' => 'Upload path',
 
@@ -699,9 +695,9 @@ $lang = array(
 
 'name_of_dictionary_file' => 'Dictionary file',
 
-'name_of_dictionary_file_desc' => 'URL location of your <mark>dictionary</mark> file.',
+'name_of_dictionary_file_desc' => 'Name of your <mark>dictionary</mark> file in your config folder.',
 
-'form_security_settings' => 'Form Security Settings',
+'form_security_settings' => 'Content Submission Settings',
 
 'deny_duplicate_data' => 'Deny duplicate data?',
 
@@ -714,6 +710,10 @@ $lang = array(
 'xss_clean_uploads' => 'Apply <abbr title="Cross Site Scripting">XSS</abbr> filtering?',
 
 'xss_clean_uploads_desc' => 'When set to <b>yes</b>, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
+
+'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
+
+'enable_rank_denial_desc' => 'When set to <b>enable</b>, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',
 
 /**
  * Access Throttling
@@ -775,5 +775,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file settings_lang.php */
-/* Location: ./system/expressionengine/language/english/settings_lang.php */
+// EOF

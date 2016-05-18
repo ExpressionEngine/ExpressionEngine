@@ -54,7 +54,7 @@ case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?>>
 <?php break;
 case 'password': ?>
-	<input type="password" name="<?=$field_name?>"<?=$attrs?>>
+	<input type="password" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 <?php break;
 case 'hidden': ?>
 	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
@@ -126,7 +126,7 @@ case 'checkbox': ?>
 				$disabled = in_array($key, $field['disabled_choices']);
 			}
 		?>
-			<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
+			<label class="choice block<?php if ($selected):?> chosen<?php endif ?><?php if ($disabled):?> disable<?php endif ?>">
 				<input type="checkbox" name="<?=$field_name?>" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
 			</label>
 		<?php endforeach ?>

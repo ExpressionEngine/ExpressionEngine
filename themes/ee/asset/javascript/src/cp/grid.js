@@ -223,6 +223,8 @@ Grid.Publish.prototype = {
 		// Fire 'display' event for the new row
 		this._fireEvent('display', el);
 
+		$(this.root).trigger('grid:addRow', el);
+
 		// Bind the new row's inputs to AJAX form validation
 		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
@@ -316,6 +318,7 @@ Grid.Settings.prototype = {
 		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
 		this._bindColTypeChange();
+		this._bindValidationCallback();
 
 		// If this is a new field, bind the automatic column title plugin
 		// to the first column
@@ -327,6 +330,92 @@ Grid.Settings.prototype = {
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.colTemplateContainer.find(':input').attr('disabled', 'disabled');
+	},
+
+	/**
+	 * Since the Grid settings form is laid out differently than most forms, we
+	 * need to do some extra DOM handling when a Grid settings field is validated
+	 */
+	_bindValidationCallback: function() {
+		EE.cp.formValidation.bindCallbackForField('grid', function(result, error, field) {
+			var alert = $('div.grid-wrap').prev(),
+				fieldName = field.attr('name'),
+				columnId = '['+field.parents('.grid-item').attr('data-field-name')+']';
+
+			// Get the last segment of the fieldname so we don't show duplicate errors
+			// if multiple columns have the same error; instead we'll keep track of
+			// the columns that have the error and keep it persisting while those errors
+			// still exist
+			if (fieldName.indexOf('[') > -1) {
+				fieldName = fieldName.substr(-(fieldName.length - fieldName.lastIndexOf('[')));
+			}
+
+			// Isolate the error text from the <em>
+			var errorText = $('<div/>').html(error).contents().html(),
+				existingError;
+
+			// If validation failed, get the error element based on current error text
+			if (error !== undefined) {
+				existingError = $('span[data-field="'+fieldName+'"]:contains("'+errorText+'")', alert);
+			// If validation passed, get the error element associated with our column and field
+			} else {
+				existingError = $('span[data-field="'+fieldName+'"][data-columns*="'+columnId+'"]', alert);
+			}
+
+			// Get the error element for this field and error if we've already created it
+			var existingErrorColumns = existingError.attr('data-columns');
+
+			// On validation failure
+			if (result === false) {
+				// Remove the inline error set by the form validation JS library,
+				// it doesn't work with the design here
+				field.parents('fieldset').find('em.ee-form-error-message').remove();
+
+				// Create a span for the error message with some data attributes
+				// that we'll use later to see if we need to remove the message
+				// or make sure there are no duplicate error messages
+				var errorSpan = $('<span/>').attr({
+							'data-field': fieldName,
+							'data-columns': columnId,
+							'style': 'display: block'
+						}).text(errorText);
+
+				// Alert not already there? Add it and add our error message
+				if ( ! alert.hasClass('alert')) {
+					var alert = $('<div/>').html(EE.alert.grid_error).contents();
+					alert.html('<p>'+errorSpan.prop('outerHTML')+'</p>');
+					alert.insertBefore($('div.grid-wrap'));
+				// Alert already exists
+				} else {
+					// There isn't an error span for this error yet, add it anew
+					if (existingError.size() == 0) {
+						$('p', alert).append(errorSpan);
+					// Otherwise, there's already an error for this, keep track of
+					// which columns have this error
+					} else {
+						if (existingErrorColumns.indexOf(columnId) == -1) {
+							existingError.attr('data-columns', existingErrorColumns + columnId);
+						}
+					}
+				}
+			// Validation succeeded? Sweet, remove the error
+			} else if (alert.hasClass('alert')) {
+
+				// If the error exists, we need to remove the column ID of the column
+				// that validated successfully for this field, and if the error doesn't
+				// exist for any more columns, remove the error entirely
+				if (existingError.size() > 0) {
+					existingError.attr('data-columns', existingErrorColumns.replace(columnId, ''));
+					if (existingError.attr('data-columns') == '') {
+						existingError.remove();
+					}
+				}
+				// No more errors? Get rid of the alert
+				if ($('span', alert).size() == 0) {
+					alert.remove();
+				}
+			}
+		});
 	},
 
 	/**
@@ -530,6 +619,9 @@ Grid.Settings.prototype = {
 		// Bind column manipulation buttons
 		this._bindActionButtons(column);
 
+		// Bind AJAX form validation
+		EE.cp.formValidation.bindInputs(column);
+
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
 	},
@@ -565,15 +657,16 @@ Grid.Settings.prototype = {
 		}
 
 		// Clear out column name field in new column because it has to be unique
-		el.find('input[name$="\\[name\\]"]').attr('value', '');
+		el.find('input[name$="\\[col_name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
 		var new_namespace = 'new_' + $('.grid-item', this.root).size();
+		var old_namespace = el.data('field-name');
 
 		el.html(
 			el.html().replace(
-				RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-				new_namespace
+				RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
+				'name="grid[cols][' + new_namespace + ']'
 			)
 		);
 
@@ -605,11 +698,14 @@ Grid.Settings.prototype = {
 				.parents('.grid-item')
 				.find('.grid-col-settings-custom');
 
+			var new_namespace = customSettingsContainer.parents('.grid-item').attr('data-field-name');
+			var old_namespace = '(new_)?[0-9]{1,}';
+
 			// Namespace fieldnames for the current column
 			settings.html(
 				settings.html().replace(
-					RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-					customSettingsContainer.parents('.grid-item').data('fieldName')
+					RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
+					'name="grid[cols][' + new_namespace + ']'
 				)
 			);
 

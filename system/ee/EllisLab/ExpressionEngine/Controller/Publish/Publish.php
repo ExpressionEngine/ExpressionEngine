@@ -11,9 +11,9 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Publish extends AbstractPublishController {
 
@@ -46,12 +46,11 @@ class Publish extends AbstractPublishController {
 	 *
 	 * @param int $channel_id The Channel ID
 	 * @param int $entry_id The Entry ID
-	 * @param string $field_name The name of the field to render
 	 * @return array An associative array (for JSON) containing the rendered HTML
 	 */
-	public function field($channel_id, $entry_id, $field_name)
+	public function field($channel_id, $entry_id)
 	{
-		if ($entry_id)
+		if (is_numeric($entry_id) && $entry_id != 0)
 		{
 			$entry = ee('Model')->get('ChannelEntry', $entry_id)
 				->filter('site_id', ee()->config->item('site_id'))
@@ -65,7 +64,7 @@ class Publish extends AbstractPublishController {
 
 		$entry->set($_POST);
 
-		return array('html' => $entry->getCustomField($field_name)->getForm());
+		return array('html' => $entry->getCustomField(ee()->input->get('field_name'))->getForm());
 	}
 
 	/**
@@ -294,4 +293,5 @@ class Publish extends AbstractPublishController {
 		$entry->set($data);
 	}
 }
+
 // EOF

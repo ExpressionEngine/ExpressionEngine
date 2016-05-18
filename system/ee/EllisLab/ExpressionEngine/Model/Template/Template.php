@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,12 +29,14 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
  * @subpackage	Template
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Template extends FileSyncedModel {
 
 	protected static $_primary_key = 'template_id';
 	protected static $_table_name = 'templates';
+
+	protected static $_hook_id = 'template';
 
 	protected static $_typed_columns = array(
 		'cache'              => 'boolString',
@@ -42,7 +44,7 @@ class Template extends FileSyncedModel {
 		'allow_php'          => 'boolString',
 		'protect_javascript' => 'boolString',
 		'refresh'            => 'int',
-		'hit_counter'        => 'int',
+		'hits'               => 'int',
 	);
 
 	protected static $_relationships = array(
@@ -139,12 +141,17 @@ class Template extends FileSyncedModel {
 	 */
 	public function getFilePath()
 	{
+		static $group;
+
 		if (ee()->config->item('save_tmpl_files') != 'y')
 		{
 			return NULL;
 		}
 
-		$group = $this->getTemplateGroup();
+		if ( ! $group || $group->group_id != $this->group_id)
+		{
+			$group = $this->getTemplateGroup();
+		}
 
 		if ( ! isset($group))
 		{
@@ -270,3 +277,5 @@ class Template extends FileSyncedModel {
 		ee()->functions->clear_caching('all');
 	}
 }
+
+// EOF

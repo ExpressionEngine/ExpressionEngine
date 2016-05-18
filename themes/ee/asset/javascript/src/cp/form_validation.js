@@ -3,9 +3,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -19,6 +19,7 @@ $(document).ready(function() {
 EE.cp.formValidation = {
 
 	paused: false,
+	_validationCallbacks: [],
 
 	pause: function(noTimer) {
 		this.paused = true;
@@ -68,7 +69,7 @@ EE.cp.formValidation = {
 
 		$(this._textInputSelectors, container).blur(function() {
 			// Unbind keydown validation when the invalid field loses focus
-			$(this).unbind('keydown');
+			$(this).data('validating', false);
 			var element = $(this);
 
 			setTimeout(function() {
@@ -87,9 +88,25 @@ EE.cp.formValidation = {
 		// Upon loading the page with invalid fields, bind the text field
 		// timer to correct the validation as the user types (for AJAX
 		// validation only)
-		$('form.ajax-validate fieldset.invalid').each(function() {
+		$('form.ajax-validate fieldset.invalid, form.ajax-validate div.grid-publish:has(div.invalid)').each(function() {
 			that._bindTextFieldTimer($(this));
 		});
+	},
+
+	/**
+	 * Given a field name, sets a callback for that field to get called on
+	 * validation. Handy if you need to do extra processing or change anything
+	 * about the default DOM manipulation that this library does upon validation
+	 * success or failure. Only the root name of a field may be passed in. For
+	 * example, if you have field[row][column], then `field` must be passed in.
+	 * You'll then get a notificaiton for each field under that field's umbrella
+	 * but also the object of the actual field being validated.
+	 *
+	 * @param	{string}	fieldName	Root name of field to get notified of validation for
+	 * @param	{callback}	callback	Callback function for validation event
+	 */
+	bindCallbackForField: function(fieldName, callback) {
+		this._validationCallbacks[fieldName] = callback;
 	},
 
 	/**
@@ -379,6 +396,13 @@ EE.cp.formValidation = {
 				button.text(EE.lang.btn_fix_errors);
 			}
 		}
+
+		// There may be callbacks for fields that need to do extra processing
+		// on validation; check for those and call them
+		var cleanField = field.attr('name').replace(/\[.+?\]/g, '');
+		if (this._validationCallbacks[cleanField] !== undefined) {
+			this._validationCallbacks[cleanField](message == 'success', message.error, field);
+		}
 	},
 
 	/**
@@ -394,14 +418,20 @@ EE.cp.formValidation = {
 	_bindTextFieldTimer: function(container) {
 
 		var that = this,
-			timer;
+			timer,
+			inputs = $(this._textInputSelectors, container);
 
-		// Only bind to text fields
-		$('input[type=text], input[type=password], textarea', container).unbind('keydown').keydown(function() {
+		// Don't double-up on bindings
+		if (inputs.data('validating') === true)
+		{
+			return;
+		}
+
+		// Bind the timer on keydown and change
+		inputs.data('validating', true).on('keydown change', function() {
 
 			// Reset the timer, no need to validate if user is still typing
-			if (timer !== undefined)
-			{
+			if (timer !== undefined) {
 				clearTimeout(timer);
 			}
 

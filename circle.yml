@@ -5,7 +5,7 @@ machine:
   hosts:
     ee2.test: 127.0.0.1
   environment:
-    php_versions: 5.3.10 5.4.37 5.5.21 5.6.14 7.0.0RC7
+    php_versions: 5.3.20 5.4.37 5.5.21 5.6.14 7.0.4
 
 dependencies:
   override:
@@ -24,13 +24,11 @@ checkout:
     - cp tests/circleci/config.php system/user/config/
     - cp tests/circleci/license.key system/user/config/
     - chmod 666 system/user/config/config.php
-    - chmod -R 777 system/user/cache
-    - chmod -R 777 system/user/templates
+    - chmod -R 777 system/user
     - chmod -R 777 system/ee/legacy/translations
     - chmod 777 tests/rspec/support/tmp
     - chmod -R 777 tests/rspec/support/file-sync/uploads
     - chmod -R 777 images
-    - chmod -R 777 themes/ee/site/agile_records/images/uploads
     - chmod +x tests/circleci/runtests.sh
 
 test:

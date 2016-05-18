@@ -11,9 +11,9 @@ use CP_Controller;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -27,7 +27,7 @@ use CP_Controller;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class WordCensor extends Settings {
 
@@ -105,7 +105,7 @@ class WordCensor extends Settings {
 		}
 
 		ee()->view->base_url = $base_url;
-		ee()->view->cp_page_title = lang('word_censorship');
+		ee()->view->cp_page_title = lang('word_censoring');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
@@ -113,5 +113,4 @@ class WordCensor extends Settings {
 }
 // END CLASS
 
-/* End of file WordCensor.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/WordCensor.php */
+// EOF

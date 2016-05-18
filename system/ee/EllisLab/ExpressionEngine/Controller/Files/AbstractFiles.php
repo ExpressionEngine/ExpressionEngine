@@ -13,9 +13,9 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 abstract class AbstractFiles extends CP_Controller {
 
@@ -134,14 +134,11 @@ abstract class AbstractFiles extends CP_Controller {
 		);
 	}
 
-	protected function buildTableFromFileCollection(Collection $files, $limit = 25)
+	protected function buildTable($files, $limit, $offset)
 	{
 		$table = ee('CP/Table', array(
-			'autosort'   => TRUE,
 			'sort_col'   => 'date_added',
-			'sort_dir'   => 'desc',
-			'limit'      => $limit,
-			'autosearch' => TRUE
+			'sort_dir'   => 'desc'
 		));
 
 		$table->setColumns(
@@ -161,6 +158,24 @@ abstract class AbstractFiles extends CP_Controller {
 		);
 
 		$table->setNoResultsText(sprintf(lang('no_found'), lang('files')));
+
+		$sort_col = $table->sort_col;
+
+		$sort_map = array(
+			'title_or_name' => 'title',
+			'file_type' => 'mime_type',
+			'date_added' => 'upload_date'
+		);
+
+		if ( ! array_key_exists($sort_col, $sort_map))
+		{
+			throw new \Exception("Invalid sort column: ".htmlentities($sort_col));
+		}
+
+		$files = $files->order($sort_map[$sort_col], $table->sort_dir)
+			->limit($limit)
+			->offset($offset)
+			->all();
 
 		$data = array();
 		$missing_files = FALSE;
@@ -273,5 +288,81 @@ abstract class AbstractFiles extends CP_Controller {
 		return $table;
 	}
 
+	protected function listingsPage($files, $base_url)
+	{
+		$vars = array();
+		$search_terms = ee()->input->get_post('search');
+
+		if ($search_terms)
+		{
+			$base_url->setQueryStringVariable('search', $search_terms);
+			$files
+				->filterGroup()
+				->filter('title', 'LIKE', '%' . $search_terms . '%')
+				->orFilter('file_name', 'LIKE', '%' . $search_terms . '%')
+				->orFilter('mime_type', 'LIKE', '%' . $search_terms . '%')
+				->endFilterGroup();
+
+			$vars['search_terms'] = $search_terms;
+		}
+
+		$total_files = $files->count();
+		$vars['total_files'] = $total_files;
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $total_files, 'show_all_files');
+
+		$filter_values = $filters->values();
+
+		$perpage = $filter_values['perpage'];
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $perpage;
+
+		$base_url->addQueryStringVariables($filter_values);
+		$table = $this->buildTable($files, $perpage, $offset);
+
+		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		ee()->view->filters = $filters->render($base_url);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		$vars['pagination'] = ee('CP/Pagination', $total_files)
+			->perPage($perpage)
+			->currentPage($page)
+			->render($base_url);
+
+		$upload_destinations = ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0);
+
+		$upload_destinations = $upload_destinations->all();
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			$member_group = ee()->session->userdata['group_id'];
+			$upload_destinations->filter(function($dir) use ($member_group)
+			{
+				return $dir->memberGroupHasAccess($member_group);
+			});
+		}
+
+		$vars['directories'] = $upload_destinations;
+
+		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
+		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/confirm_remove',
+				'cp/files/manager'
+			),
+		));
+
+		return $vars;
+	}
 }
+
 // EOF

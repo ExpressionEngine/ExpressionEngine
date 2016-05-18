@@ -9,9 +9,9 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -25,7 +25,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class MemberImport extends Utilities {
 
@@ -620,10 +620,10 @@ class MemberImport extends Utilities {
 		//  Set our optional default values
 		$this->default_fields['group_id']			= $this->input->post('group_id');
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
-		$this->default_fields['timezone']			= $this->input->post('timezones') ? $this->input->post('timezones') : $this->config->item('default_site_timezone');
-		$this->default_fields['date_format']		= $this->input->post('date_format');
-		$this->default_fields['time_format']		= $this->input->post('time_format');
-		$this->default_fields['include_seconds']	= $this->input->post('include_seconds');
+		$this->default_fields['timezone']			= $this->input->post('timezones') ?: NULL;
+		$this->default_fields['date_format']		= $this->input->post('date_format') ?: NULL;
+		$this->default_fields['time_format']		= $this->input->post('time_format') ?: NULL;
+		$this->default_fields['include_seconds']	= $this->input->post('include_seconds') ?: NULL;
 		$this->default_fields['ip_address']			= '0.0.0.0';
 		$this->default_fields['join_date']			= $this->localize->now;
 
@@ -975,5 +975,4 @@ class MemberImport extends Utilities {
 }
 // END CLASS
 
-/* End of file Member_import.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/MemberImport.php */
+// EOF

@@ -7,9 +7,9 @@ use EllisLab\Addons\FilePicker\FilePicker;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
@@ -23,7 +23,7 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @subpackage	RTE
  * @category	RTE
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Image_rte {
 
@@ -115,5 +115,4 @@ class Image_rte {
 
 } // END Image_rte
 
-/* End of file rte.image.php */
-/* Location: ./system/expressionengine/rte_tools/image/rte.image.php */
+// EOF

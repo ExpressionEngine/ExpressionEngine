@@ -15,3 +15,5 @@ return array(
 		)
 	)
 );
+
+// EOF

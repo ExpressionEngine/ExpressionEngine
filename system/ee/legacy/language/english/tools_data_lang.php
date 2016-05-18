@@ -22,7 +22,6 @@ $lang = array(
 'browse'				=> 'Browse',
 'tables'				=> 'tables',
 'table_name'			=> 'Table Name',
-'records'				=> 'Records',
 'size'					=> 'Size',
 'type'					=> 'Type',
 'analyze'				=> 'Analyze Tables',
@@ -68,5 +67,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file tools_lang.php */
-/* Location: ./system/expressionengine/language/english/tools_lang.php */
+// EOF

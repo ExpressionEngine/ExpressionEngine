@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Relationship_model extends CI_Model {
 
@@ -118,7 +118,7 @@ class Relationship_model extends CI_Model {
 			{
 				$db->join(
 					"{$this->_table} as L{$next_level}",
-					"L{$level}.parent_id = L{$next_level}.parent_id".(($next_level >= $shortest_branch_length) ? " OR L{$next_level}.child_id = NULL" : ''),
+					"L{$level}.parent_id = L{$next_level}.parent_id",
 					($next_level >= $shortest_branch_length) ? 'left' : ''
 				);
 
@@ -227,3 +227,5 @@ class Relationship_model extends CI_Model {
 		return $longest;
 	}
 }
+
+// EOF

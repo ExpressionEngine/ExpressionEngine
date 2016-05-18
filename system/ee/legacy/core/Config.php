@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_Config {
 
@@ -1362,6 +1362,7 @@ class EE_Config {
 			),
 
 			'localization_cfg'	=>	array(
+				'site_default'       => array('r', array('y' => 'yes', 'n' => 'no')),
 				'default_site_timezone' => array('f', 'timezone'),
 				'date_format'           => array('s', array(
 					'%n/%j/%Y' => 'mm/dd/yyyy',
@@ -1883,5 +1884,4 @@ class EE_Config {
 }
 // END CLASS
 
-/* End of file EE_Config.php */
-/* Location: ./system/expressionengine/libraries/EE_Config.php */
+// EOF

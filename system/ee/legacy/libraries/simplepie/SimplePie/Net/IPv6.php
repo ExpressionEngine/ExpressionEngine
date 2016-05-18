@@ -255,3 +255,4 @@ class SimplePie_Net_IPv6
 	}
 }
 
+// EOF

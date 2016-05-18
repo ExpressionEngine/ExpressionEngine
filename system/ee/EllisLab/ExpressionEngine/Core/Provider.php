@@ -377,3 +377,5 @@ class Provider extends InjectionBindingDecorator {
 		return $name;
 	}
 }
+
+// EOF

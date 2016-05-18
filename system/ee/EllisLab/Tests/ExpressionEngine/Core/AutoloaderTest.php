@@ -66,3 +66,5 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame($one, $three);
 	}
 }
+
+// EOF

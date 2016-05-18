@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Pages_tab {
 
@@ -98,7 +98,7 @@ class Pages_tab {
 		{
 			$no_templates = ee('View')->make('ee:_shared/form/no_results')->render(array(
 				'text' => sprintf(lang('no_found'), lang('pages_templates')),
-				'link_text' => lang('create_template'),
+				'link_text' => lang('create_new_template'),
 				'link_href' => ee('CP/URL', 'design'),
 			));
 		}
@@ -337,3 +337,5 @@ class Pages_tab {
 	}
 
 }
+
+// EOF

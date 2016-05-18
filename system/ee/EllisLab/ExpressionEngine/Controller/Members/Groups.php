@@ -14,9 +14,9 @@ use EllisLab\ExpressionEngine\Controller\Members;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Controller\Members;
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Groups extends Members\Members {
 
@@ -251,9 +251,15 @@ class Groups extends Members\Members {
 
 		$vars = $this->group->getValues();
 		$vars['cp_page_title'] = sprintf(lang('copy_member_group'), $this->group->group_title);
+
+		unset($vars['group_id'], $vars['group_title']);
 		$sections = $this->buildForm($vars);
+
 		$current = $this->groupData($this->group, $sections);
+
+		unset($current['group_id'], $current['group_title']);
 		$vars['sections'] = $this->buildForm(array_merge($vars, $current));
+
 		$this->group = NULL;
 		$this->form($vars, $master);
 	}
@@ -265,7 +271,10 @@ class Groups extends Members\Members {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
+        $this->group = ee('Model')->get('MemberGroup')
+            ->filter('group_id', $group_id)
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first();
 
 		if ($this->group->is_locked == 'y' && ! $this->super_admin)
 		{
@@ -454,7 +463,7 @@ class Groups extends Members\Members {
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('settings_save_erorr'))
+				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->now();
 		}
@@ -514,7 +523,7 @@ class Groups extends Members\Members {
 	private function save($sections)
 	{
 		$this->index_url = 'members/groups';
-		$allowed_channels = ee()->input->post('allowed_channels');
+		$allowed_channels = ee()->input->post('allowed_channels') ?: array();
 		$allowed_template_groups = ee()->input->post('allowed_template_groups');
 		$allowed_addons = ee()->input->post('addons_access');
 		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
@@ -533,7 +542,7 @@ class Groups extends Members\Members {
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
-			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
+			$group->assignChannels($allowed_channels);
 		}
 
 		foreach ($sections as $section)
@@ -1459,5 +1468,4 @@ class Groups extends Members\Members {
 }
 // END CLASS
 
-/* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controller/Members/Members.php */
+// EOF

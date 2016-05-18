@@ -18,3 +18,5 @@ class PostRequest extends Request {
 	}
 
 }
+
+// EOF

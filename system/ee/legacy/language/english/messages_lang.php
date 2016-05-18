@@ -53,8 +53,6 @@ $lang = array(
 
 'folder_page' => 'Page',
 
-'no_messages' => 'No Messages Found',
-
 'message_subject' => 'Subject',
 
 'message_sender' => 'Sender',
@@ -118,8 +116,6 @@ $lang = array(
 'max_size' => 'Max Size:',
 
 'message_recipients' => 'Recipients',
-
-'message_subject' => 'Subject',
 
 'message' => 'Message',
 
@@ -191,8 +187,6 @@ $lang = array(
 
 'member_search' => 'Member Search',
 
-'search_results' => 'Search Results',
-
 'insert_member_instructions' => 'Click member name to select it',
 
 'description_charlimit' => '(less than 50 characters)',
@@ -254,5 +248,4 @@ you must remove them from your Recipients or CC fields: %overflow_names%',
 ''=>''
 );
 
-/* End of file messages_lang.php */
-/* Location: ./system/expressionengine/language/english/messages_lang.php */
+// EOF

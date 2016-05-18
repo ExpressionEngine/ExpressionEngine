@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class File_model extends CI_Model {
 
@@ -341,14 +341,12 @@ class File_model extends CI_Model {
 		$dir_func = $this->_where_function($dir_id);
 		$this->db->$dir_func('upload_location_id', $dir_id);
 
-		// Collate does not work on the IN operator, so we cast to binary
 		if (is_array($file_name))
 		{
 			foreach($file_name as $key => $file)
 			{
-				$file_name[$key] = "binary $file";
+				ee()->db->or_where('file_name', $file);
 			}
-			$this->db->where_in('file_name', $file_name);
 		}
 		else
 		{
@@ -763,5 +761,4 @@ class File_model extends CI_Model {
 	}
 }
 
-/* End of file file_model.php */
-/* Location: ./system/expressionengine/models/file_model.php */
+// EOF

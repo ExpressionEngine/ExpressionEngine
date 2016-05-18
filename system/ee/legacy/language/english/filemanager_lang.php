@@ -135,11 +135,8 @@ $lang = array(
 
 'btn_resize_and_save_image' => 'Resize &amp; Save Image',
 
-'crop' => 'Crop',
 'cropped' => 'cropped',
-'rotate' => 'Rotate',
 'rotated' => 'rotated',
-'resize' => 'Resize',
 'resized' => 'resized',
 
 'crop_file_success' => 'File %s Success',
@@ -176,11 +173,7 @@ $lang = array(
 
 'all_upload_dirs' => 'All Upload Directories',
 
-'file_manager' => 'File Manager',
-
 'upload_id' => 'ID#',
-
-'upload_directory' => 'Directory',
 
 'upload_manage' => 'Manage',
 
@@ -316,10 +309,6 @@ $lang = array(
 
 'apply_manipulations_desc' => 'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
 
-'crop' => 'crop',
-
-'constrain' => 'constrain',
-
 'by' => 'by',
 
 'btn_sync_directory' => 'Sync Directory',
@@ -414,10 +403,6 @@ $lang = array(
 
 'watermark_image_transparency_map_desc' => 'Coordinates for alpha transparency of images to be watermarked.',
 
-'x_axis' => 'x-axis',
-
-'y_axis' => 'y-axis',
-
 'watermark_created' => 'Watermark Created',
 
 'watermark_created_desc' => 'The watermark <b>%s</b> has been created.',
@@ -506,7 +491,6 @@ $lang = array(
 'crop_mode'				=> 'Crop Mode',
 'resize_mode'			=> 'Resize Mode',
 'rotate_mode'			=> 'Rotate Mode',
-'apply_changes'			=> 'Apply Changes?',
 'cancel_changes'		=> 'Cancel Changes',
 'exit_apply_changes'	=> 'You are about to exit this edit mode.  Permanently apply changes first?',
 'processing_image'		=> 'Processing Image',
@@ -546,8 +530,6 @@ $lang = array(
 'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
 
 'upload_pref_name' => 'Descriptive name of upload directory',
-
-'new_file_upload_preferences' => 'New File Upload Destination',
 
 'server_path' => 'Server Path to Upload Directory',
 
@@ -657,17 +639,11 @@ $lang = array(
 
 'wm_edit' => 'Edit Watermark',
 
-'text' => 'Text',
-
 'wm_name_taken' => 'Duplicate Name',
 
 'wm_test' => 'Test Watermark',
 
-"wm_type" => "Enable Watermarking",
-
 'wm_watermark' => 'Watermark',
-
-"wm_text" => "Text Version",
 
 'wm_name' => 'Watermark Name',
 
@@ -695,17 +671,9 @@ $lang = array(
 
 "wm_alignment" => "Watermark Alignment",
 
-"top" => "Top",
-
 "mid" => "Middle",
 
 "bot" => "Bottom",
-
-"left" => "Left",
-
-"center" => "Center",
-
-"right" => "Right",
 
 "wm_padding" => "Padding",
 
@@ -769,12 +737,7 @@ $lang = array(
 
 'invalid_filename' => 'The image file name may only contain alpha-numeric characters, dashes and underscores.',
 
-'description' => 'Description',
-
-'credit' => 'Credit',
-
 ''=>''
 );
 
-/* End of file filemanager_lang.php */
-/* Location: ./system/expressionengine/language/english/filemanager_lang.php */
+// EOF

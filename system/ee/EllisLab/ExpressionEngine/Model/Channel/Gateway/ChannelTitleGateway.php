@@ -37,3 +37,5 @@ class ChannelTitleGateway extends Gateway {
 	public $comment_total;
 
 }
+
+// EOF

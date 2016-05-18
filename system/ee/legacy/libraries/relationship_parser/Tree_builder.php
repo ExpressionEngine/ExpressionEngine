@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -27,7 +27,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class EE_relationship_tree_builder {
 
@@ -248,7 +248,7 @@ class EE_relationship_tree_builder {
 		else
 		{
 			$force_parent = implode('|', $this->grid_relationship_names);
-			$regex = '\/?('.$force_parent.'(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
+			$regex = '\/?((?:'.$force_parent.')(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
 		}
 
 		require_once __DIR__.'/VariableFinder.php';
@@ -582,5 +582,4 @@ class EE_relationship_tree_builder {
 	}
 }
 
-/* End of file Tree_builder.php */
-/* Location: ./system/expressionengine/libraries/relationship_parser/Tree_builder.php */
+// EOF

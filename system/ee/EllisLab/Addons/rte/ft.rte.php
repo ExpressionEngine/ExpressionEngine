@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Rte_ft extends EE_Fieldtype {
 
@@ -161,7 +161,7 @@ class Rte_ft extends EE_Fieldtype {
 	{
 		return array(
 			'field_show_fmt' => 'n',
-			'field_ta_rows' => $data['field_ta_rows']
+			'field_ta_rows' => isset($data['field_ta_rows']) ? $data['field_ta_rows'] : 6
 		);
 	}
 
@@ -171,9 +171,21 @@ class Rte_ft extends EE_Fieldtype {
 	{
 		return $data;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END Rte_ft class
 
-/* End of file ft.rte.php */
-/* Location: ./system/expressionengine/modules/ft.rte.php */
+// EOF

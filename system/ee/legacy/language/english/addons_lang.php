@@ -38,7 +38,6 @@ $lang = array(
 'btn_confirm_and_uninstall_working' => 'Uninstalling...',
 
 /* Filters */
-'filters'						=>		'Filters',
 'filter_by_status'				=>		'status',
 'developer'						=>		'developer',
 'show'							=>		'show',
@@ -117,7 +116,6 @@ $lang = array(
 'specific_page'					=>		'Specific Page?',
 'description'					=>		'Description',
 'version'						=>		'Version',
-// 'status'						=>		'Status',
 'fieldtype'						=>		'Fieldtype',
 
 'member_group_assignment'		=>		'Assigned Member Groups',
@@ -131,5 +129,5 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file addons_lang.php */
-/* Location: ./system/expressionengine/language/english/addons_lang.php */
+
+// EOF

@@ -95,7 +95,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[site_id]',
+		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -246,11 +246,11 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateUniqueUrlTitle($key, $value, $params, $rule)
 	{
-		$site_id = $this->getProperty($params[0]);
+		$channel_id = $this->getProperty($params[0]);
 
 		$entry = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_id', 'title')
-			->filter('site_id', $site_id)
+			->filter('channel_id', $channel_id)
 			->filter('url_title', $value)
 			->first();
 
@@ -303,6 +303,11 @@ class ChannelEntry extends ContentModel {
 			ee()->load->remove_package_path($info->getPath());
 		}
 
+		if ($this->versioning_enabled)
+		{
+			$this->saveVersion();
+		}
+
 		// clear caches
 		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
@@ -318,6 +323,16 @@ class ChannelEntry extends ContentModel {
 	{
 		$this->Author->updateAuthorStats();
 		$this->updateEntryStats();
+
+		if ($this->Channel->channel_notify == 'y' && $this->Channel->channel_notify_emails != '')
+		{
+			ee()->load->library('notifications');
+			ee()->notifications->send_admin_notification(
+				$this->Channel->channel_notify_emails,
+				$this->Channel->getId(),
+				$this->getId()
+			);
+		}
 	}
 
 	public function onAfterUpdate($changed)
@@ -372,7 +387,11 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->Versions->count() == $this->Channel->max_revisions)
 		{
-			$this->Versions->sortBy('version_date')->first()->delete();
+			$version = $this->Versions->sortBy('version_date')->first();
+			if ($version)
+			{
+				$version->delete();
+			}
 		}
 
 		$data = array(
@@ -394,7 +413,7 @@ class ChannelEntry extends ContentModel {
 		$entries = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_date', 'channel_id')
 			->filter('site_id', $site_id)
-			->filter('entry_date', '<', $now)
+			->filter('entry_date', '<=', $now)
 			->filter('status', '!=', 'closed')
 			->filterGroup()
 				->filter('expiration_date', 0)
@@ -412,6 +431,15 @@ class ChannelEntry extends ContentModel {
 		$stats->total_entries = $total_entries;
 		$stats->last_entry_date = $last_entry_date;
 		$stats->save();
+
+		// Channel gets unfiltered stats, just literal count of entries
+		$channel_entry_count = $this->getModelFacade()->get('ChannelEntry')
+			->filter('channel_id', $this->channel_id)
+			->count();
+
+		$channel = $this->getModelFacade()->get('Channel')->filter('channel_id', $this->channel_id)->first();
+		$channel->total_entries = $channel_entry_count;
+		$channel->save();
 	}
 
 	/**
@@ -756,6 +784,28 @@ class ChannelEntry extends ContentModel {
 
 				foreach ($cat_groups as $cat_group)
 				{
+					$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
+					$editable = FALSE;
+
+					if (ee()->session->userdata['group_id'] == 1
+						|| (ee()->session->userdata['can_edit_categories']
+							&& in_array(ee()->session->userdata['group_id'], $can_edit)
+							))
+						{
+							$editable = TRUE;
+						}
+
+					$can_delete = explode('|', rtrim($cat_group->can_delete_categories, '|'));
+					$deletable = FALSE;
+
+					if (ee()->session->userdata['group_id'] == 1
+						|| (ee()->session->userdata['can_delete_categories']
+							&& in_array(ee()->session->userdata['group_id'], $can_delete)
+							))
+						{
+							$deletable = TRUE;
+						}
+
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = array(
 						'field_id'				=> 'categories',
 						'group_id'				=> $cat_group->getId(),
@@ -767,9 +817,9 @@ class ChannelEntry extends ContentModel {
 						'field_type'			=> 'checkboxes',
 						'field_list_items'      => '',
 						'field_maxl'			=> 100,
-						'editable'				=> ee()->session->userdata['can_edit_categories'],
+						'editable'				=> $editable,
 						'editing'				=> FALSE, // Not currently in editing state
-						'deletable'				=> ee()->session->userdata['can_delete_categories'],
+						'deletable'				=> $deletable,
 						'populateCallback'		=> array($this, 'populateCategories'),
 						'manage_toggle_label'	=> lang('manage_categories'),
 						'content_item_label'	=> lang('category')
@@ -818,12 +868,12 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
+
 	public function populateChannels($field)
 	{
-		// Channels
 		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
-				OR ee()->session->userdata('group_id') == 1
-				OR ! is_array(ee()->session->userdata('assigned_channels')))
+			OR ee()->session->userdata('group_id') == 1
+			OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
@@ -836,18 +886,45 @@ class ChannelEntry extends ContentModel {
 		$field->setItem('field_list_items', $channel_filter_options);
 	}
 
+
+ 	/**
+	 * Populate the Authors dropdown
+	 *
+	 * @param   object  $field  ChannelEntry object
+	 * @return	void    Sets author field metaddata
+	 *
+	 * The following are included in the author list regardless of
+	 * their channel posting permissions:
+	 *	  The current user
+	 *	  The current author (if editing)
+	 *	  Anyone in a group set to 'include_in_authorlist'
+	 *    Any individual member 'in_authorlist'
+	 *
+	 */
 	public function populateAuthors($field)
 	{
 		$author_options = array();
 
+		// Default author
+		$author = $this->Author;
+
+		if ( ! $author)
+		{
+			$field->setItem('field_list_items', $author_options);
+			return;
+		}
+
+		$author_options[$author->getId()] = $author->getMemberName();
+
+		if ($author->getId() != ee()->session->userdata('member_id'))
+		{
+			$author_options[ee()->session->userdata('member_id')] =
+			ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+		}
+
 		// First, get member groups who should be in the list
 		$member_groups = ee('Model')->get('MemberGroup')
-			->with('AssignedChannels')
-			->filterGroup()
-			->orFilter('include_in_authorlist', 'y')
-			->orFilter('AssignedChannels.channel_id', $this->channel_id)
-			->endFilterGroup()
-			->fields('group_id')
+			->filter('include_in_authorlist', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
@@ -885,6 +962,7 @@ class ChannelEntry extends ContentModel {
 	public function populateStatus($field)
 	{
 		$statuses = ee('Model')->get('Status')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $this->Channel->status_group);
 
@@ -900,8 +978,15 @@ class ChannelEntry extends ContentModel {
 			);
 		}
 
+		$member_group_id = ee()->session->userdata('group_id');
+
 		foreach ($all_statuses as $status)
 		{
+			if ($member_group_id != 1 && in_array($member_group_id, $status->NoAccess->pluck('group_id')))
+			{
+				continue;
+			}
+
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
 		}
@@ -962,4 +1047,11 @@ class ChannelEntry extends ContentModel {
 
 		return $list;
 	}
+
+	public function getAuthorName()
+	{
+		return ($this->author_id) ? $this->Author->getMemberName() : '';
+	}
 }
+
+// EOF

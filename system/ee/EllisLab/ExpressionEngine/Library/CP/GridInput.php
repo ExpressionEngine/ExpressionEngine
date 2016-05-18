@@ -7,9 +7,9 @@ namespace EllisLab\ExpressionEngine\Library\CP;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -23,7 +23,7 @@ namespace EllisLab\ExpressionEngine\Library\CP;
  * @subpackage	Library
  * @category	CP
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 class GridInput extends Table {
@@ -199,10 +199,18 @@ class GridInput extends Table {
 	 */
 	public function namespaceForGrid($search, $row_id = 'new_row_0')
 	{
-		return $this->namespaceInputs(
+		$str = $this->namespaceInputs(
 			$search,
 			'$1name="'.$this->config['field_name'].'[rows]['.$row_id.'][$2]$3"'
 		);
+
+		$str = preg_replace(
+			'/data-input-value=["\']([^"\'\[\]]+)([^"\']*)["\']/',
+			'data-input-value="'.$this->config['field_name'].'[rows]['.$row_id.'][$1]$2"',
+			$str
+		);
+
+		return $str;
 	}
 
 	/**

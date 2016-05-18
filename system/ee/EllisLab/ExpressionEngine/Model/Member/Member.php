@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
+use DateTimeZone;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
@@ -100,20 +101,25 @@ class Member extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
-		'group_id'			=> 'required|isNatural|validateGroupId',
-		'username'			=> 'required|unique|maxLength[50]|validateUsername',
-		'email'				=> 'required|email|unique',
-		'password'			=> 'required|validatePassword',
-		'url'				=> 'url',
-		'location'			=> 'xss',
-		'bio'				=> 'xss',
-		'bday_d'			=> 'xss',
-		'bday_m'			=> 'xss',
-		'bday_y'			=> 'xss'
+		'group_id'        => 'required|isNatural|validateGroupId',
+		'username'        => 'required|unique|maxLength[50]|validateUsername',
+		'email'           => 'required|email|unique',
+		'password'        => 'required|validatePassword',
+		'timezone'        => 'validateTimezone',
+		'date_format'     => 'validateDateFormat',
+		'time_format'     => 'enum[12,24]',
+		'include_seconds' => 'enum[y,n]',
+		'url'             => 'url',
+		'location'        => 'xss',
+		'bio'             => 'xss',
+		'bday_d'          => 'xss',
+		'bday_m'          => 'xss',
+		'bday_y'          => 'xss'
 	);
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'beforeUpdate'
 	);
 
 	// Properties
@@ -207,6 +213,43 @@ class Member extends ContentModel {
 	}
 
 	/**
+	 * Log email and password changes
+	 */
+	public function onBeforeUpdate()
+	{
+		if (REQ == 'CP')
+		{
+			if ($this->isDirty('password'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_password'),
+					$this->username,
+					$this->member_id
+				));
+			}
+
+			if ($this->isDirty('email'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_email'),
+					$this->username,
+					$this->member_id
+				));
+			}
+
+			if ($this->isDirty('group_id'))
+			{
+				ee()->logger->log_action(sprintf(
+					lang('member_changed_member_group'),
+					$this->MemberGroup->group_title,
+					$this->username,
+					$this->member_id
+				));
+			}
+		}
+	}
+
+	/**
 	 * Gets the member's name
 	 *
 	 * @return string The member's name
@@ -259,8 +302,8 @@ class Member extends ContentModel {
 			->filter('author_id', $this->member_id)
 			->count();
 
-		$this->total_entries = $total_entries;
-		$this->total_comments = $total_comments;
+		$this->setProperty('total_entries', $total_entries);
+		$this->setProperty('total_comments', $total_comments);
 		$this->save();
 	}
 
@@ -460,4 +503,34 @@ class Member extends ContentModel {
 	{
 		return 'm_field_id_';
 	}
+
+	/**
+	 * Validates the template name checking for illegal characters and
+	 * reserved names.
+	 */
+	public function validateTimezone($key, $value, $params, $rule)
+	{
+		if ( ! in_array($value, DateTimeZone::listIdentifiers()))
+		{
+			return 'invalid_timezone';
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validates the template name checking for illegal characters and
+	 * reserved names.
+	 */
+	public function validateDateFormat($key, $value, $params, $rule)
+	{
+		if ( ! preg_match("#^[a-zA-Z0-9_\.\-%/]+$#i", $value))
+		{
+			return 'invalid_date_format';
+		}
+
+		return TRUE;
+	}
 }
+
+// EOF

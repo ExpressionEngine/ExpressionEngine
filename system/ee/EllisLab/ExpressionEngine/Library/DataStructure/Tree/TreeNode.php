@@ -10,7 +10,7 @@ namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
  * @subpackage	Core Datastructures
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  *
  * If you're completely new to this ideas:
  * @see http://xlinux.nist.gov/dads/HTML/tree.html
@@ -456,3 +456,4 @@ class TreeNode {
 	}
 }
 
+// EOF

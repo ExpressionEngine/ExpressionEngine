@@ -13,7 +13,9 @@ feature 'Status Create/Edit' do
 
   it 'shows the Status Create/Edit page' do
     @page.load_create_for_status_group(1)
-    @page.all_there?.should == true
+    @page.should have_status
+    @page.should have_highlight
+    @page.should have_status_access
     @page.should have_text 'Create Status'
   end
 

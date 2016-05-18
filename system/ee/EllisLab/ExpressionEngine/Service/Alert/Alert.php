@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Alert;
 use Serializable;
 use BadMethodCallException;
 use InvalidArgumentException;
+use \EE_Lang;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
@@ -11,9 +12,9 @@ use EllisLab\ExpressionEngine\Service\View\View;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -26,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\View\View;
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Alert {
 
@@ -77,6 +78,11 @@ class Alert {
 	private $view;
 
 	/**
+	 * @var EE_Lang $lang A EE_Lang object for loading language
+	 */
+	private $lang;
+
+	/**
 	 * Constructor: sets the type and name of the alert, and injects the
 	 * AllertCollection and View dependencies.
 	 *
@@ -85,14 +91,16 @@ class Alert {
 	 * @param AlertCollection $collection A collection of alerts for use with
 	 *  deferring or immediately displaying alerts
 	 * @param View $view A View object for rendering this alert
+	 * @param EE_Lang $lang A EE_Lang object for loading language
 	 * @return self This returns a reference to itself
 	 */
-	public function __construct($type = 'standard', $name = '', AlertCollection $collection, View $view)
+	public function __construct($type = 'standard', $name = '', AlertCollection $collection, View $view, EE_Lang $lang)
 	{
 		$this->type = $type;
 		$this->name = $name;
 		$this->collection = $collection;
 		$this->view = $view;
+		$this->lang = $lang;
 		return $this;
 	}
 
@@ -130,6 +138,13 @@ class Alert {
 
 		if (is_array($item))
 		{
+			if (count($item) > 5)
+			{
+				$remainder = count($item) - 4;
+				$item = array_slice($item, 0, 4);
+				$item[] = sprintf($this->lang->line('and_n_others'), $remainder);
+			}
+
 			$this->body .= '<ul>';
 			foreach ($item as $i)
 			{
@@ -269,4 +284,5 @@ class Alert {
 		return $this;
 	}
 }
+
 // EOF

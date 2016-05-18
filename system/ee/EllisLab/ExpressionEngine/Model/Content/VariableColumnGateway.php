@@ -26,3 +26,5 @@ class VariableColumnGateway extends Gateway {
 	}
 
 }
+
+// EOF

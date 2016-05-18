@@ -5,9 +5,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.9.3
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Updater {
 
@@ -132,7 +132,7 @@ class Updater {
 		if ( ! IS_CORE)
 		{
 			ee()->load->model('template_model');
-			ee()->lang->load('template_router', ee()->lang->user_lang, FALSE, TRUE, EE_APPPATH);
+			ee()->lang->loadfile('template_router');
 			require_once EE_APPPATH . 'libraries/template_router/Route.php';
 
 			ee()->db->select('template_routes.template_id, route_required, route');
@@ -205,5 +205,4 @@ class Updater {
 }
 /* END CLASS */
 
-/* End of file ud_293.php */
-/* Location: ./system/expressionengine/installer/updates/ud_293.php */
+// EOF

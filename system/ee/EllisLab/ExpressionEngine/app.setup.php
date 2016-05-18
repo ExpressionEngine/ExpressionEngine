@@ -5,6 +5,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
@@ -140,6 +141,11 @@ return array(
 			return new Theme\Theme(PATH_THEMES, URL_THEMES, PATH_THIRD_THEMES, URL_THIRD_THEMES);
 		},
 
+		'ThemeInstaller' => function($ee)
+		{
+			return new Theme\ThemeInstaller();
+		},
+
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
@@ -169,10 +175,17 @@ return array(
 			return new Library\Captcha();
 		},
 
+		'ChannelSet' => function($ee)
+		{
+			return new ChannelSet\Factory(
+				ee()->config->item('site_id')
+			);
+		},
+
 		'CP/Alert' => function($ee)
 		{
 			$view = $ee->make('View')->make('_shared/alert');
-			return new Alert\AlertCollection(ee()->session, $view);
+			return new Alert\AlertCollection(ee()->session, $view, ee()->lang);
 		},
 
 		'CP/FilePicker' => function($ee)
@@ -362,3 +375,5 @@ return array(
 			'RevisionTracker' => 'Model\Revision\RevisionTracker'
 	)
 );
+
+// EOF

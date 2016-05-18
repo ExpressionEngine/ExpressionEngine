@@ -121,5 +121,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file specialty_tmp_lang.php */
-/* Location: ./system/expressionengine/language/english/specialty_tmp_lang.php */
+// EOF

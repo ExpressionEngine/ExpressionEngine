@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 
 // ------------------------------------------------------------------------
@@ -431,8 +431,12 @@ class Auth {
 		ee()->db->delete('sessions');
 
 		// update password in db
-		ee()->db->where('member_id', (int) $member_id);
-		ee()->db->update('members', $hashed_pair);
+		$member = ee('Model')->get('Member')
+			->filter('member_id', $member_id)
+			->first();
+
+		$member->set($hashed_pair);
+		$member->save();
 
 		return (bool) ee()->db->affected_rows();
 	}
@@ -909,6 +913,4 @@ class Auth_result {
 }
 // END Auth_member class
 
-
-/* End of file Authentication.php */
-/* Location: ./libraries/Authentication.php */
+// EOF

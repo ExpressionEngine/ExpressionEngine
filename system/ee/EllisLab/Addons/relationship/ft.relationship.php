@@ -4,9 +4,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 2.6
  * @filesource
  */
@@ -20,13 +20,13 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @link		https://ellislab.com
  */
 class Relationship_ft extends EE_Fieldtype {
 
 	public $info = array(
 		'name'		=> 'Relationships',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	public $has_array_data = FALSE;
@@ -390,6 +390,20 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
+		// -------------------------------------------
+		// 'relationships_display_field_options' hook.
+		//  - Allow developers to add additional filters to the entries that populate the field options
+		//
+		if (ee()->extensions->active_hook('relationships_display_field_options') === TRUE)
+		{
+			ee()->extensions->call(
+					'relationships_display_field_options',
+					$entries,
+					$this->field_id,
+					$this->settings
+				);
+		}
+
 		// Create a cache of channel names
 		if (empty($this->channels))
 		{
@@ -667,6 +681,10 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->load->library('Relationships_ft_cp');
 		$util = ee()->relationships_ft_cp;
 
+		ee()->cp->add_js_script(array(
+			'file' => 'fields/relationship/settings',
+		));
+
 		$form = $this->_form();
 		$form->populate($data);
 		$values = $form->values();
@@ -678,6 +696,8 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_channels' => array(
 						'type' => 'checkbox',
+						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'wrap' => TRUE,
 						'choices' => $util->all_channels(),
 						'value' => ($values['channels']) ?: '--'
@@ -713,6 +733,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_categories' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'choices' => $util->all_categories(),
 						'value' => ($values['categories']) ?: '--'
 					)
@@ -725,6 +746,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_authors' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'choices' => $util->all_authors(),
 						'value' => ($values['authors']) ?: '--'
 					)
@@ -736,6 +758,8 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_statuses' => array(
 						'type' => 'checkbox',
+						'nested' => TRUE,
+						'attrs' => 'data-any="y"',
 						'wrap' => TRUE,
 						'choices' => $util->all_statuses(),
 						'value' => ($values['statuses']) ?: '--'
@@ -816,7 +840,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$save = $form->values();
 
 		// Boolstring conversion
-		$save['allow_multiple'] = ($save['allow_multiple'] == 'y') ? 1 : 0;
+		$save['allow_multiple'] = ($save['allow_multiple'] === 'y') ? 1 : 0;
 
 		foreach ($save as $field => $value)
 		{
@@ -1089,9 +1113,21 @@ class Relationship_ft extends EE_Fieldtype {
 				->delete($this->_table);
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
+	}
 }
 
 // END Relationship_ft class
 
-/* End of file ft.relationship.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.relationship.php */
+// EOF

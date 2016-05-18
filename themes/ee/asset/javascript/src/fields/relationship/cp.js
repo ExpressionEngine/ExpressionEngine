@@ -3,9 +3,9 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
  * @since		Version 3.0
  * @filesource
  */
@@ -119,7 +119,7 @@
 		function ajaxRefresh(elem, channelId, delay) {
 			var field = $(elem).closest('fieldset').find('div.col.last').eq(0),
 				data = $(elem).closest('fieldset').serialize(),
-				url = EE.publish.field.URL + '/' + $(field).find('.relate-wrap').data('field'),
+				url = EE.publish.field.URL + '&field_name=' + $(field).find('.relate-wrap').data('field'),
 				name = $(elem).attr('name');
 
 			// Assume it's in a Grid
@@ -130,7 +130,7 @@
 
 				data = $(field).find('input').serialize() + '&column_id=' + $(field).data('column-id') + '&row_id=' + row_id;
 
-				url = EE.publish.field.URL + '/' + $(elem).closest('table').attr('id');
+				url = EE.publish.field.URL + '&field_name=' + $(elem).closest('table').attr('id');
 			}
 
 			if (channelId)

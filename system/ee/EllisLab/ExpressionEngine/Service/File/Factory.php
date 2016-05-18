@@ -11,3 +11,5 @@ class Factory {
 		return new Directory($path);
 	}
 }
+
+// EOF

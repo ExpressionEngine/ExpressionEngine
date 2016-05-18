@@ -83,5 +83,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file cp_search_lang.php */
-/* Location: ./system/expressionengine/language/english/cp_search_lang.php */
+// EOF

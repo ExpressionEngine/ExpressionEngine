@@ -57,6 +57,4 @@ $lang = array(
 	'UP14'	=> '(UTC +14:00) Line Islands'
 );
 
-
-/* End of file date_lang.php */
-/* Location: ./system/language/english/date_lang.php */
+// EOF

@@ -59,3 +59,5 @@ class ChannelEntryAutosave extends Model {
 	protected $comment_total;
 	protected $entry_data;
 }
+
+// EOF

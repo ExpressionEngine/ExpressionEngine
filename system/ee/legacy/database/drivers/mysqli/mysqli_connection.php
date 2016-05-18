@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -74,7 +74,9 @@ class CI_DB_mysqli_connection {
 
 		$options = array(
 			PDO::ATTR_PERSISTENT => $pconnect,
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_CASE => PDO::CASE_NATURAL,
+			PDO::ATTR_STRINGIFY_FETCHES => FALSE
 		);
 
 		$this->connection = @new PDO(
@@ -106,7 +108,7 @@ class CI_DB_mysqli_connection {
 		$time_start = microtime(TRUE);
 		$memory_start = memory_get_usage();
 
-		$query = $this->enforceCharsetAndCollation($query);
+		$query = $this->enforceCreateTableParameters($query);
 
 		try
 		{
@@ -205,17 +207,25 @@ class CI_DB_mysqli_connection {
 	 * @param String $query Query to check
 	 * @return Rewritten query, if necessary
 	 */
-	private function enforceCharsetAndCollation($query)
+	private function enforceCreateTableParameters($query)
 	{
-		$charset = $this->config['char_set'];
-		$collation = $this->config['dbcollat'];
-
 		$query = trim($query);
 
 		if (strncasecmp($query, 'CREATE TABLE', 12) != 0)
 		{
 			return $query;
 		}
+
+		$query = $this->enforceCharsetAndCollation($query);
+		$query = $this->addEngineIfNotPresent($query);
+
+		return $query;
+	}
+
+	private function enforceCharsetAndCollation($query)
+	{
+		$charset = $this->config['char_set'];
+		$collation = $this->config['dbcollat'];
 
 		$find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
 		$want = "DEFAULT CHARACTER SET {$charset} COLLATE {$collation}";
@@ -227,9 +237,25 @@ class CI_DB_mysqli_connection {
 		else
 		{
 			$query = rtrim($query, ';');
-			$query .= $want.';';
+			$query .= ' '.$want.';';
+		}
+
+		return $query;
+	}
+
+	private function addEngineIfNotPresent($query)
+	{
+		$find = '/ENGINE\s*=\s*(\w+)/';
+		$want = "ENGINE=InnoDB";
+
+		if ( ! preg_match($find, $query))
+		{
+			$query = rtrim($query, ';');
+			$query .= ' '.$want.';';
 		}
 
 		return $query;
 	}
 }
+
+// EOF

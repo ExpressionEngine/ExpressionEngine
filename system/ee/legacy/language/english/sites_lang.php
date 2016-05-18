@@ -6,8 +6,6 @@ $lang = array(
 'sites' => 'Sites',
 'switch_to' => 'Switch to',
 'short_name' => 'Short Name',
-'online' => 'online',
-'offline' => 'offline',
 'cannot_remove_site_1' => 'You cannot remove site <b>%s</b>.',
 'sites_removed_desc' => 'The following sites were removed',
 'create_site' => 'Create Site',
@@ -40,5 +38,4 @@ $lang = array(
 ''=>''
 );
 
-/* End of file sites_lang.php */
-/* Location: ./system/expressionengine/language/english/sites_lang.php */
+// EOF
