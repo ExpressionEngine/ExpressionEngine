@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
 use EllisLab\ExpressionEngine\Service\View\View;
+use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -45,6 +46,8 @@ abstract class ProfilerSection {
 	 **/
 	protected $section_name;
 
+	protected $fmt_factory;
+
 	/**
 	 * Get a brief text summary (used for tabs, labels, etc.)
 	 *
@@ -57,9 +60,10 @@ abstract class ProfilerSection {
 	 *
 	 * @param  string  $section_name  the section's name, should map to a localization key
 	 **/
-	public function __construct($section_name)
+	public function __construct($section_name, FormatterFactory $fmt_factory)
 	{
 		$this->section_name = $section_name;
+		$this->fmt_factory = $fmt_factory;
 	}
 
 	/**
@@ -103,40 +107,5 @@ abstract class ProfilerSection {
 	public function render(View $view, $index)
 	{
 		return $view->render(array('profiler_data' => $this->data, 'index' => $index));
-	}
-
-	/**
-	 * Format the memory to a sane byte format
-	 *
-	 * @param  string  $memory  the memory in bytes
-	 * @return string  the formatted memory string
-	 **/
-	protected function formatMemoryString($memory)
-	{
-		$precision = 0;
-
-		if ($memory >= 1000000000)
-		{
-			$precision = 2;
-			$memory = round($memory / 1073741824, $precision);
-			$unit = lang('profiler_gigabytes');
-		}
-		elseif ($memory >= 1000000)
-		{
-			$precision = 1;
-			$memory = round($memory / 1048576, $precision);
-			$unit = lang('profiler_megabytes');
-		}
-		elseif ($memory >= 1000)
-		{
-			$memory = round($memory / 1024);
-			$unit = lang('profiler_kilobytes');
-		}
-		else
-		{
-			$unit = lang('profiler_bytes');
-		}
-
-		return number_format($memory, $precision).' '.$unit;
 	}
 }

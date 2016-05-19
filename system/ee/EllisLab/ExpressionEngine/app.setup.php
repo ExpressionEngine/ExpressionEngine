@@ -159,7 +159,7 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
 		},
 
 		'Permission' => function($ee)
