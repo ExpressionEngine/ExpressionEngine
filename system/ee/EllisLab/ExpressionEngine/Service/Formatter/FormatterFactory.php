@@ -2,17 +2,50 @@
 
 namespace EllisLab\ExpressionEngine\Service\Formatter;
 
+use EE_Lang;
 use EllisLab\ExpressionEngine\Core\Provider;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine FormatterFactory Class
+ *
+ * @package		ExpressionEngine
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		https://ellislab.com
+ */
 class FormatterFactory {
 
-	private $provider;
+	/**
+	 * @var object $lang EE_Lang
+	 **/
 	private $lang;
 
 	/**
+	 * @var object $provider EllisLab\ExpressionEngine\Core\Provider
+	 **/
+	private $provider;
+
+	/**
+	 * Constructor
 	 *
+	 * @param object EllisLab\ExpressionEngine\Core\Provider
+	 * @param object EE_Lang
 	 */
-	public function __construct(Provider $provider, $lang)
+	public function __construct(Provider $provider, EE_Lang $lang)
 	{
 		$this->provider = $provider;
 		$this->lang = $lang;

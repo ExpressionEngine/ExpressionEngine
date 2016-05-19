@@ -4,13 +4,35 @@ namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
 
 use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Formatter\Number Class
+ *
+ * @package		ExpressionEngine
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		https://ellislab.com
+ */
 class Number extends Formatter {
 
 	/**
 	 * Format the memory to a sane byte format
 	 *
-	 * @param  string  $memory  the memory in bytes
-	 * @return string  the formatted memory string
+	 * @param  bool $abbr Use the abbreviated form of the byte format
+	 * @return self This returns a reference to itself
 	 **/
 	public function memory($abbr = TRUE)
 	{
