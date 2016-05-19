@@ -876,7 +876,7 @@ class Addons extends CP_Controller {
 		{
 			$data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
-			$addon_header = ee()->cp->header;
+			$addon_header = ee()->view->header;
 			$header = array('title' => $module['name']);
 
 			if (isset($addon_header['toolbar_items']))
