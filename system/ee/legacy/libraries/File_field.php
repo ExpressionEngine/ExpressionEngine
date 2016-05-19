@@ -643,6 +643,9 @@ class File_field {
 		$file['image_properties'] = $upload_dir['properties'];
 		$file['file_properties'] = $upload_dir['file_properties'];
 
+		$file['file_size:human'] = ee('Format')->make('Number', $file['file_size'])->memory();
+		$file['file_size:human_long'] = ee('Format')->make('Number', $file['file_size'])->memory(FALSE);
+
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
 		if ( ! empty($manipulations))
