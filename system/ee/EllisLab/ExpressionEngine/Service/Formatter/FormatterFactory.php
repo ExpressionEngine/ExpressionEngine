@@ -24,7 +24,7 @@ class FormatterFactory {
 	 * @param String $formatter_name Formatter
 	 * @return Object Formatter
 	 */
-	public function __get($formatter_name)
+	public function make($formatter_name, $content)
 	{
 		$formatter_class = implode('', array_map('ucfirst', explode('_', $formatter_name)));
 
@@ -32,7 +32,7 @@ class FormatterFactory {
 
 		if (class_exists($class))
 		{
-			return new $class($this->provider, $this->lang);
+			return new $class($content, $this->provider, $this->lang);
 		}
 
 		throw new \Exception("Unknown formatter: `{$formatter_name}`.");

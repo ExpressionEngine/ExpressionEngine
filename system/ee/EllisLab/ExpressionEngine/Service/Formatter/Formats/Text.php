@@ -6,9 +6,10 @@ use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
 
 class Text extends Formatter {
 
-	public function attribute_escape($str)
+	public function attribute_escape()
 	{
-		return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+		$this->content = htmlspecialchars($this->content, ENT_QUOTES, 'UTF-8');
+		return $this;
 	}
 
 }
