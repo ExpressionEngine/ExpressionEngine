@@ -268,7 +268,18 @@ class Select extends Query {
 
 		if (is_null($value) || strtoupper($value) == 'NULL')
 		{
-			$query->$fn("{$property} {$operator} NULL");			
+			switch ($operator)
+			{
+				case '!=':
+					$operator = 'IS NOT';
+					break;
+				case '==':
+				case '':
+					$operator = 'IS';
+					break;
+			}
+
+			$query->$fn("{$property} {$operator} NULL");
 		}
 		else
 		{
