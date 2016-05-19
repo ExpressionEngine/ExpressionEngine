@@ -194,7 +194,7 @@ class Builder {
 	 * @param Mixed   $value     Value to compare to
 	 * @return Query  $this
 	 */
-	public function orFilter($property, $operator, $value = NULL)
+	public function orFilter($property, $operator, $value = FALSE)
 	{
 		$this->addFilter($property, $operator, $value, 'or');
 		return $this;
