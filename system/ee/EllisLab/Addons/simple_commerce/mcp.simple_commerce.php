@@ -58,7 +58,14 @@ class Simple_commerce_mcp {
 		$this->email_templates_nav = $this->sidebar->addHeader(lang('email_templates'), ee('CP/URL')->make('addons/settings/simple_commerce/email-templates'))
 			->withButton(lang('new'), ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template'));
 
-		$this->sidebar->addHeader(lang('settings'), ee('CP/URL')->make('addons/settings/simple_commerce/settings'));
+		ee()->view->header = array(
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL')->make('addons/settings/simple_commerce/settings'),
+					'title' => lang('settings')
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
