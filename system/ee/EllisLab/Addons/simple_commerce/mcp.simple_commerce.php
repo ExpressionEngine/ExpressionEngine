@@ -467,7 +467,7 @@ class Simple_commerce_mcp {
 		}
 
 		$vars['sections'] = $this->itemForm($item);
-		$vars['cp_page_title'] = lang('edit_item');
+		$vars['cp_page_title'] = lang('edit_item').': '.$item->ChannelEntry->title;
 		$vars['base_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/edit-item/'.$item_id);
 		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('item'));
 		$vars['save_btn_text_working'] = 'btn_saving';
