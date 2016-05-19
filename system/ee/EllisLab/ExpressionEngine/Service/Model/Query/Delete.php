@@ -211,12 +211,12 @@ class Delete extends Query {
 
 			if ($a[1] instanceOf \Closure)
 			{
-				return -5e10;
+				return 5e10;
 			}
 
 			if ($b[1] instanceOf \Closure)
 			{
-				return 5e10;
+				return -5e10;
 			}
 
 			return count($a[1]) - count($b[1]);
@@ -284,6 +284,7 @@ class Delete extends Query {
 				$this->recursivePath($to_model, $subpath);
 			}
 		}
+
 	}
 
 	/**
