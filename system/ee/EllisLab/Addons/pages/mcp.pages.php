@@ -57,15 +57,8 @@ class Pages_mcp {
 			}
 		}
 
-		ee()->view->header = array(
-			'title' => lang('pages_manager'),
-			'toolbar_items' => array(
-				'settings' => array(
-					'href' => ee('CP/URL')->make('addons/settings/pages/settings'),
-					'title' => lang('settings')
-				)
-			)
-		);
+		$this->sidebar = ee('CP/Sidebar')->make();
+		$this->sidebar->addHeader(lang('nav_settings'), ee('CP/URL')->make('addons/settings/pages/settings'));
 	}
 
 	// --------------------------------------------------------------------
@@ -157,7 +150,8 @@ class Pages_mcp {
 
 		return array(
 			'heading' => lang('pages_manager'),
-			'body' => ee('View')->make('pages:index')->render($vars)
+			'body' => ee('View')->make('pages:index')->render($vars),
+			'sidebar' => $this->sidebar
 		);
 
 		return ee('View')->make('pages:index')->render($vars);
@@ -311,7 +305,8 @@ class Pages_mcp {
 			'breadcrumb' => array(
 				ee('CP/URL')->make('addons/settings/pages')->compile() => lang('pages_manager')
 			),
-			'body' => ee('View')->make('pages:form')->render($vars)
+			'body' => ee('View')->make('pages:form')->render($vars),
+			'sidebar' => $this->sidebar
 		);
 	}
 
