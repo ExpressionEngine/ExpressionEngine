@@ -42,11 +42,14 @@ abstract class ProfilerSection {
 	protected $data = array();
 
 	/**
+	 * @var object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 **/
+	protected $fmt_factory;
+
+	/**
 	 * @var The section's name, should map to a localization key
 	 **/
 	protected $section_name;
-
-	protected $fmt_factory;
 
 	/**
 	 * Get a brief text summary (used for tabs, labels, etc.)
@@ -58,7 +61,8 @@ abstract class ProfilerSection {
 	/**
 	 * Constructor
 	 *
-	 * @param  string  $section_name  the section's name, should map to a localization key
+	 * @param string $section_name the section's name, should map to a localization key
+	 * @param object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
 	 **/
 	public function __construct($section_name, FormatterFactory $fmt_factory)
 	{

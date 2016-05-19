@@ -33,6 +33,11 @@ use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 class Profiler {
 
 	/**
+	 * @var object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 **/
+	protected $fmt_factory;
+
+	/**
 	 * @var the section objects to render
 	 */
 	protected $sections = array();
@@ -49,9 +54,11 @@ class Profiler {
 
 	/**
 	 * Constructor
-	 * Inject:
-	 *   EE_Lang $lang for loadfile()
-	 *   ViewFactory $view_factory A ViewFactory object for making and rendering views
+	 *
+	 * @param object $lang EE_Lang
+	 * @param object $view_factory EllisLab\ExpressionEngine\Service\View\ViewFactory
+	 * @param object $uri EE_URI
+	 * @param object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
 	 */
 	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri, FormatterFactory $fmt_factory)
 	{
