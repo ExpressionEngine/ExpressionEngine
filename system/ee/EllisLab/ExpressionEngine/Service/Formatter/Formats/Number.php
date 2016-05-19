@@ -12,8 +12,9 @@ class Number extends Formatter {
 	 * @param  string  $memory  the memory in bytes
 	 * @return string  the formatted memory string
 	 **/
-	public function memory($memory, $abbr = TRUE)
+	public function memory($abbr = TRUE)
 	{
+		$memory = $this->content;
 		$precision = 0;
 		$lang_suffix = ($abbr) ? '_abbr' : '';
 
@@ -40,7 +41,8 @@ class Number extends Formatter {
 		}
 
 		$unit = ($abbr) ? $unit : ' '.$unit;
-		return number_format($memory, $precision).$unit;
+		$this->content = number_format($memory, $precision).$unit;
+		return $this;
 	}
 
 }
