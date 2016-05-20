@@ -32,13 +32,26 @@ class Number extends Formatter {
 	 * Format the memory to a sane byte format
 	 *
 	 * @param  bool $abbr Use the abbreviated form of the byte format
+	 * @param  bool $include_markup Output with <abbr> HTML. Only affects abbreviated forms.
 	 * @return self This returns a reference to itself
 	 **/
-	public function memory($abbr = TRUE)
+	public function memory($abbr = TRUE, $include_markup = TRUE)
 	{
 		$memory = $this->content;
 		$precision = 0;
-		$lang_suffix = ($abbr) ? '_abbr' : '';
+
+		if ($abbr && $include_markup)
+		{
+			$lang_suffix = '_abbr_html';
+		}
+		elseif ($abbr)
+		{
+			$lang_suffix = '_abbr';
+		}
+		else
+		{
+			$lang_suffix = '';
+		}
 
 		if ($memory >= 1000000000)
 		{
