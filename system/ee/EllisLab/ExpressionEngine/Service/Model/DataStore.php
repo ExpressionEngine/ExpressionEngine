@@ -253,6 +253,24 @@ class DataStore {
 				// todo also check if valid reverse type
 				if (array_reverse($possibility->getKeys()) == $relation->getKeys())
 				{
+					$pivot1 = $relation->getPivot();
+					$pivot2 = $possibility->getPivot();
+
+					if (count($pivot1) != count($pivot2))
+					{
+						// todo error?
+						continue;
+					}
+					elseif (count($pivot1) > 0)
+					{
+						if (($pivot1['table'] != $pivot2['table']) ||
+							($pivot1['left'] != $pivot2['right']) ||
+							($pivot1['right'] != $pivot2['left']))
+						{
+							continue;
+						}
+					}
+
 					return $possibility;
 				}
 			}

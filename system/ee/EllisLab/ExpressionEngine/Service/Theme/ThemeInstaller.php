@@ -67,6 +67,8 @@ class ThemeInstaller {
 	{
 		ee()->load->library('api');
 		ee()->load->library('extensions');
+
+		ee()->remove('functions');
 		ee()->set('functions', new FunctionsStub());
 	}
 

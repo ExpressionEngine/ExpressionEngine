@@ -427,9 +427,6 @@ EE.cp.formValidation = {
 			return;
 		}
 
-		var that = this,
-			timer;
-
 		// Bind the timer on keydown and change
 		inputs.data('validating', true).on('keydown change', function() {
 

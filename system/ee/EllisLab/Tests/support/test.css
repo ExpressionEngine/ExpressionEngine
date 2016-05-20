@@ -1,0 +1,176 @@
+body{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+}
+
+a{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+h1{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+h2{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+p{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+ul{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+li{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+dl{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+dt{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+dd{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+mark{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+i{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+b{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+code{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+pre{
+	background-color: green;
+	color: red;
+	font-family: "Georgia", Sans-Serif;
+	font-size: 24px;
+	font-style: italic;
+	font-weight: bold;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}

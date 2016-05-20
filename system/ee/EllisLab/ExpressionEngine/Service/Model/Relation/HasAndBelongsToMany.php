@@ -41,6 +41,15 @@ class HasAndBelongsToMany extends Relation {
 	}
 
 	/**
+	 * Get pivot data
+	 */
+	public function getPivot()
+	{
+		return $this->pivot;
+	}
+
+
+	/**
 	 *
 	 */
 	public function createAssociation(Model $source)
@@ -203,6 +212,7 @@ class HasAndBelongsToMany extends Relation {
 			'right' => $this->to_primary_key
 		);
 
+		$this->is_weak = TRUE;
 		$this->pivot = array_merge($pivot, $options['pivot']);
 	}
 }
