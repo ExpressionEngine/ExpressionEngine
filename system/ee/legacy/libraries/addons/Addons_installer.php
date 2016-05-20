@@ -31,6 +31,7 @@ class Addons_installer {
 	{
 		ee()->load->library('api');
 		ee()->load->library('addons');
+		ee()->lang->loadfile('modules');
 	}
 
 	// --------------------------------------------------------------------

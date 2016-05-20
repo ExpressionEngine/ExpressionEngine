@@ -523,7 +523,7 @@ class Groups extends Members\Members {
 	private function save($sections)
 	{
 		$this->index_url = 'members/groups';
-		$allowed_channels = ee()->input->post('allowed_channels');
+		$allowed_channels = ee()->input->post('allowed_channels') ?: array();
 		$allowed_template_groups = ee()->input->post('allowed_template_groups');
 		$allowed_addons = ee()->input->post('addons_access');
 		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
@@ -542,7 +542,7 @@ class Groups extends Members\Members {
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
-			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
+			$group->assignChannels($allowed_channels);
 		}
 
 		foreach ($sections as $section)

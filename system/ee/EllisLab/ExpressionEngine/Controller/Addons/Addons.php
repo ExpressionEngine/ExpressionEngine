@@ -981,8 +981,8 @@ class Addons extends CP_Controller {
 			'name'        => $info->getName(),
 			'version'     => $this->formatVersionNumber($info->getVersion()),
 			'author'      => $info->getAuthor(),
-			'author_url'  => $info->get('author_url'),
-			'docs_url'    => $info->get('docs_url'),
+			'author_url'  => ee()->cp->masked_url($info->get('author_url')),
+			'docs_url'    => ee()->cp->masked_url($info->get('docs_url')),
 			'description' => $info->get('description')
 		);
 
@@ -1363,9 +1363,9 @@ class Addons extends CP_Controller {
 			}
 
 			// Get some details on the extension
-			$Extension = new $class_name();
+			$ext_obj = new $class_name($extension->settings);
 			if (version_compare($info->getVersion(), $extension->version, '>')
-				&& method_exists($Extension, 'update_extension') === TRUE)
+				&& method_exists($ext_obj, 'update_extension') === TRUE)
 			{
 				$data['update'] = $info->getVersion();
 			}
@@ -1639,7 +1639,7 @@ class Addons extends CP_Controller {
 		$current = strip_slashes($extension_model->settings);
 
 		$class_name = $extension['class'];
-		$OBJ = new $class_name();
+		$OBJ = new $class_name($current);
 
 		if (method_exists($OBJ, 'settings_form') === TRUE)
 		{
