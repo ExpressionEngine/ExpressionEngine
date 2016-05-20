@@ -651,7 +651,6 @@ class File_field {
 		// @TODO - need to switch all of this to our Models so the association is there
 		$file['directory_title'] = '';
 
-
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
 		if ( ! empty($manipulations))
@@ -661,6 +660,12 @@ class File_field {
 				$file['url:'.$manipulation->short_name] = $file['path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
 
 				$dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
+
+				$size = filesize($upload_dir['server_path'].'_'.$manipulation->short_name.'/'.$file['file_name']);
+
+				$file['file_size:'.$manipulation->short_name] = $size;
+				$file['file_size:'.$manipulation->short_name.':human'] = (string) ee('Format')->make('Number', $size)->bytes();
+				$file['file_size:'.$manipulation->short_name.':human_long'] = (string) ee('Format')->make('Number', $size)->bytes(FALSE);
 
 				if ($dimensions)
 				{
