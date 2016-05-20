@@ -57,7 +57,7 @@ class File extends AbstractFilesController {
 			'file' => $file,
 			'height' => $info['height'],
 			'width' => $info['width'],
-			'size' => ee('Format')->make('Number', $file->file_size)->memory()
+			'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes()
 		);
 
 		ee()->cp->render('files/view', $vars);

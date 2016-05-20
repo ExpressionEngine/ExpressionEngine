@@ -170,7 +170,7 @@ class Database extends ProfilerSection {
 			$data[] = array(
 				'time' => number_format($time, 4),
 				'memory' => $memory,
-				'formatted_memory'=> $this->fmt_factory->make('Number', $memory)->memory(),
+				'formatted_memory'=> (string) $this->fmt_factory->make('Number', $memory)->bytes(),
 				'time_threshold' => $this->time_threshold,
 				'memory_threshold' => $this->memory_threshold,
 				'query' => $this->highlightSql($sql),

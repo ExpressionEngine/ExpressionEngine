@@ -51,7 +51,7 @@ class Template extends ProfilerSection {
 	 **/
 	public function getSummary()
 	{
-		return $this->fmt_factory->make('Number', $this->template_memory)->memory().
+		return $this->fmt_factory->make('Number', $this->template_memory)->bytes().
 			' '.
 			lang('profiler_'.$this->section_name);
 	}

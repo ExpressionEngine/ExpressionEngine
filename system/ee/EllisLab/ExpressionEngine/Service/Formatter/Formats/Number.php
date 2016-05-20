@@ -35,7 +35,7 @@ class Number extends Formatter {
 	 * @param  bool $include_markup Output with <abbr> HTML. Only affects abbreviated forms.
 	 * @return self This returns a reference to itself
 	 **/
-	public function memory($abbr = TRUE, $include_markup = TRUE)
+	public function bytes($abbr = TRUE, $include_markup = TRUE)
 	{
 		$memory = $this->content;
 		$precision = 0;

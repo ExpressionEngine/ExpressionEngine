@@ -66,7 +66,7 @@ class Performance extends ProfilerSection {
 		$data = array();
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
 		{
-			$data[lang('profiler_memory')] = $this->fmt_factory->make('Number', $usage)->memory().' of '.ini_get('memory_limit');
+			$data[lang('profiler_memory')] = $this->fmt_factory->make('Number', $usage)->bytes().' of '.ini_get('memory_limit');
 		}
 		else
 		{

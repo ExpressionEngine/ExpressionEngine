@@ -643,8 +643,14 @@ class File_field {
 		$file['image_properties'] = $upload_dir['properties'];
 		$file['file_properties'] = $upload_dir['file_properties'];
 
-		$file['file_size:human'] = ee('Format')->make('Number', $file['file_size'])->memory();
-		$file['file_size:human_long'] = ee('Format')->make('Number', $file['file_size'])->memory(FALSE);
+		$file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
+		$file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(FALSE);
+
+		$file['directory_id'] = $file['upload_location_id'];
+
+		// @TODO - need to switch all of this to our Models so the association is there
+		$file['directory_title'] = '';
+
 
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
