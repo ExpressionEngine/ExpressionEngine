@@ -128,6 +128,29 @@ class MimeType {
 			@finfo_close($finfo);
 		}
 
+		// A few files are identified as plain text, which while true is not as
+		// helpful as which type of plain text files they are.
+		if ($mime == 'text/plain')
+		{
+			$parts = explode('.', $path);
+			$extension = end($parts);
+
+			switch ($extension)
+			{
+				case 'css':
+					$mime = 'text/css';
+					break;
+
+				case 'js':
+					$mime = 'application/javascript';
+					break;
+
+				case 'json':
+					$mime = 'application/json';
+					break;
+			}
+		}
+
 		return $mime;
 	}
 
