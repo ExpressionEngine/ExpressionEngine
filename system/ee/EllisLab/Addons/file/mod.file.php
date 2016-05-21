@@ -504,6 +504,7 @@ class File {
 				}
 				elseif ( ! isset($row[$data['name'].'_height']))
 				{
+					$row['url:'.$data['name']]                     = '';
 					$row['height:'.$data['name']]                  = '';
 					$row['width:'.$data['name']]                   = '';
 					$row['file_size:'.$data['name']]               = '';
