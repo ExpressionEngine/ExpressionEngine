@@ -33,7 +33,7 @@ class Text extends Formatter {
 	 *
 	 * @return self This returns a reference to itself
 	 */
-	public function attribute_escape()
+	public function attributeEscape()
 	{
 		$this->content = htmlspecialchars($this->content, ENT_QUOTES, 'UTF-8');
 		return $this;
