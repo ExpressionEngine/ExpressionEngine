@@ -55,6 +55,7 @@ class FormatterFactory {
 	 * Helper function to create a formatter object
 	 *
 	 * @param String $formatter_name Formatter
+	 * @param mixed $content The content to be formatted
 	 * @return Object Formatter
 	 */
 	public function make($formatter_name, $content)
