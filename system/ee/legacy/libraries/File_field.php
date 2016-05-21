@@ -647,9 +647,7 @@ class File_field {
 		$file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(FALSE);
 
 		$file['directory_id'] = $file['upload_location_id'];
-
-		// @TODO - need to switch all of this to our Models so the association is there
-		$file['directory_title'] = '';
+		$file['directory_title'] = $upload_dir['name'];
 
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
