@@ -87,6 +87,8 @@ tests/rspec/support/file-sync/uploads/*
 
 system/ee/EllisLab/Tests/vendor/*
 system/ee/EllisLab/Tests/composer.lock
+system/ee/installer/updater/EllisLab/Tests/vendor/*
+system/ee/installer/updater/EllisLab/Tests/composer.lock
 
 
 # Themes/Images ================================================================
