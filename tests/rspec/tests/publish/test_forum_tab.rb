@@ -8,7 +8,7 @@ feature 'Forum Tab' do
     cp_session
     @page = Publish.new
     @page.forum_tab.install_forum
-    @page.load
+    @page.load(channel_id: 1)
     no_php_js_errors
   end
 
@@ -49,7 +49,7 @@ feature 'Forum Tab' do
       first_entry = row['entry_id']
     end
 
-    @page.load
+    @page.load(channel_id: 1)
     @page.title.set 'Second Forum Tab Test'
     @page.tab_links[4].click
     @page.forum_tab.forum_topic_id.set 1
@@ -64,7 +64,7 @@ feature 'Forum Tab' do
   it 'invalidates an entry with both new post content and a forum topic ID' do
     create_entry
 
-    @page.load
+    @page.load(channel_id: 1)
     @page.tab_links[4].click
     @page.forum_tab.forum_title.set 'Something'
     @page.forum_tab.forum_body.set 'Lorem ipsum dolor sit amet...'
