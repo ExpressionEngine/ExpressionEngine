@@ -312,6 +312,7 @@ class Member_register extends Member {
 							  ->get('member_fields');
 
 		$cust_errors = array();
+		$custom_data = array();
 
 		if ($query->num_rows() > 0)
 		{
@@ -337,7 +338,7 @@ class Member_register extends Member {
 
 				if ($valid)
 				{
-					$data[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
+					$custom_data[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
 				}
 			}
 		}
@@ -382,7 +383,6 @@ class Member_register extends Member {
 			'username'		=> trim_nbs(ee()->input->post('username')),
 			'password'		=> sha1($_POST['password']),
 			'ip_address'	=> ee()->input->ip_address(),
-			'unique_id'		=> ee()->functions->random('encrypt'),
 			'join_date'		=> ee()->localize->now,
 			'email'			=> trim_nbs(ee()->input->post('email')),
 			'screen_name'	=> trim_nbs(ee()->input->post('screen_name')),
@@ -392,6 +392,8 @@ class Member_register extends Member {
 			// overridden below if used as optional fields
 			'language'		=> (ee()->config->item('deft_lang')) ?: 'english',
 		);
+
+		$data = array_merge($data, $custom_data);
 
 		// Set member group
 
@@ -451,7 +453,7 @@ class Member_register extends Member {
 		if ($result->failed())
 		{
 			$field_errors = array();
-			
+
 			$e = $result->getAllErrors();
 			$errors = array_map('current', $e);
 
@@ -466,8 +468,8 @@ class Member_register extends Member {
 
 				$field_errors[] = "<b>{$label}: </b>{$error}";
 			}
-		}	
-		
+		}
+
 		$errors = array_merge($field_errors, $cust_errors, $this->errors);
 
 		// Display error if there are any
@@ -475,7 +477,7 @@ class Member_register extends Member {
 		{
 			return ee()->output->show_user_error('submission', $errors);
 		}
-		
+
 
 		// Do we require captcha?
 		if (ee('Captcha')->shouldRequireCaptcha())
@@ -493,7 +495,14 @@ class Member_register extends Member {
 
 		$member->save();
 
+		// Update stats
+		if (ee()->config->item('req_mbr_activation') == 'none')
+		{
+			ee()->stats->update_member_stats();
+		}
+
 		$member_id = $member->member_id;
+
 
 		// Send admin notifications
 		if (ee()->config->item('new_member_notification') == 'y' &&
