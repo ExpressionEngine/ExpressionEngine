@@ -2459,9 +2459,12 @@ GRID_FALLBACK;
 		// check to see if either exists and if it does make sure that the
 		// passed in version is the same as what we find in the database.
 		// If they are different (most likely it wasn't found in the
-		// database) then don't show them the form
+		// database) then don't show them the form.  We also double check it's
+		// in the correct channel
 
 		if (
+			($params['entry_id'] != '' && $this->channel('channel_id') != $this->entry('channel_id')) OR
+			($params['url_title'] != '' && $this->channel('channel_id') != $this->entry('channel_id')) OR
 			($params['entry_id'] != '' && $this->entry('entry_id') != $params['entry_id']) OR
 			($params['url_title'] != '' && $this->entry('url_title') != $params['url_title'])
 		)
