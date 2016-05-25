@@ -380,7 +380,25 @@ class Member extends ContentModel {
 	{
 		$member_groups = $this->getModelFacade()->get('MemberGroup');
 
-		if (ee()->session->userdata('group_id') != 1)
+		// If we allow registration, we'll manually override any lock on
+		// the default user group
+
+		$lock_override = FALSE;
+
+		if (ee()->config->item('allow_member_registration'))
+		{
+			if (ee()->config->item('req_mbr_activation') == 'manual' OR
+				ee()->config->item('req_mbr_activation') == 'email')
+			{
+				$lock_override = ($group_id == 4) ? TRUE : FALSE;  // Pending
+			}
+			else
+			{
+				$lock_override = ($group_id == ee()->config->item('default_member_group')) ? TRUE : FALSE;
+			}
+		}
+
+		if (ee()->session->userdata('group_id') != 1 OR $lock_override == FALSE)
 		{
 			$member_groups->filter('is_locked', 'n');
 		}
