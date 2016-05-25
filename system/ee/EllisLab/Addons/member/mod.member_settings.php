@@ -1743,7 +1743,7 @@ class Member_settings extends Member {
 						 	  'id'				=> 'target'
 						 	  );
 
-		$images_folder = URL_THEMES.'cp_global_images/';
+		$images_folder = URL_THEMES.'asset/img/';
 
 		$finalized = $this->_var_swap($this->_load_element('edit_ignore_list_form'),
 								array(

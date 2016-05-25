@@ -145,8 +145,7 @@ class EE_Messages {
 		$this->title = ee()->lang->line('private_messages');
 		$this->crumb = ee()->lang->line('private_messages');
 
-		$this->images_folder = URL_THEMES.'cp_global_images/';
-
+		$this->images_folder = URL_THEMES.'/asset/img/';
 		$this->single_parts['path']['image_url'] = $this->images_folder;
 
 		/** -----------------------------------
@@ -1890,7 +1889,6 @@ DOH;
 
 		$this->single_parts['image']['messages_graph']['width']		= '1';
 		$this->single_parts['image']['messages_graph']['height']	= '11';
-		$this->single_parts['image']['messages_graph']['url']		= $this->images_folder.'bar.gif';
 
 		/** ----------------------
 		/**  Calculate
