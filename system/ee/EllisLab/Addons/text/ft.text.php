@@ -99,6 +99,40 @@ class Text_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Save the field's value
+	 *
+	 * Mostly used to check it the value is empty when dealing with numeric
+	 * field content types
+	 *
+	 * @param  string $data The data submitted
+	 * @return mixed The cleaned data to be saved
+	 */
+	public function save($data)
+	{
+		if ( ! isset($this->field_content_types))
+		{
+			ee()->load->model('field_model');
+			$this->field_content_types = ee()->field_model->get_field_content_types();
+		}
+
+		$content_type = (isset($this->settings['field_content_type']))
+			? $this->settings['field_content_type']
+			: 'any';
+
+		if (in_array($content_type, $this->field_content_types['text']) && $content_type != 'any')
+		{
+			if ($data == '')
+			{
+				return NULL;
+			}
+		}
+
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
 	function display_field($data)
 	{
 		$type  = $this->get_setting('field_content_type', 'all');
@@ -456,6 +490,12 @@ class Text_ft extends EE_Fieldtype {
 
 	function _format_number($data, $type = 'all', $decimals = FALSE)
 	{
+		// Numeric fields that have no data are stored as NULL
+		if ($data == NULL)
+		{
+			return '';
+		}
+
 		switch($type)
 		{
 			case 'numeric':	$data = rtrim(rtrim(sprintf('%F', $data), '0'), '.'); // remove trailing zeros up to decimal point and kill decimal point if no trailing zeros
