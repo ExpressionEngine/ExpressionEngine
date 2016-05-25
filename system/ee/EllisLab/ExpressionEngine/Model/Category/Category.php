@@ -120,6 +120,22 @@ class Category extends ContentModel {
 		}
 	}
 
+	/**
+	 * Converts the fields into facades
+	 *
+	 * We're doing this here to properly set the format on a given field
+	 */
+	protected function addFacade($id, $info, $name_prefix = '')
+	{
+		$field = $this->getFrontend()->get('CategoryField')
+			->filter('field_id', $id)
+			->first();
+
+		$this->setProperty('field_ft_'.$id, $field->field_default_fmt);
+
+		return parent::addFacade($id, $info, $name_prefix);
+	}
+
 }
 
 // EOF
