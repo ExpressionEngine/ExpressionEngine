@@ -1462,7 +1462,7 @@ class EE_Messages {
 			$this->theme_path = ee('Theme')->getPath('member/'.$theme);
 		}
 
-		if ( ! file_exists($this->theme_path.$which.'.html'))
+		if ( ! file_exists($this->theme_path.'/'.$which.'.html'))
 		{
 			$data = array(	'title' 	=> ee()->lang->line('error'),
 							'heading'	=> ee()->lang->line('general_error'),
@@ -1474,7 +1474,7 @@ class EE_Messages {
 			return ee()->output->show_message($data, 0);
 		}
 
-		return $this->MS->_prep_element(trim(file_get_contents($this->theme_path.$which.'.html')));
+		return $this->MS->_prep_element(trim(file_get_contents($this->theme_path.'/'.$which.'.html')));
 	}
 
 
