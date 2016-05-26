@@ -41,7 +41,8 @@ class CategoryField extends FieldModel {
 	);
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'afterSave'
 	);
 
 	protected static $_validation_rules = array(
@@ -94,6 +95,43 @@ class CategoryField extends FieldModel {
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('field_order', $count + 1);
+		}
+	}
+
+	/**
+	 * Set the values, checking to see if we're updating formatting. If we are,
+	 * purposefully make the field_default_fmt dirty since update_formatting
+	 * will be discarded.
+	 */
+	public function set(array $data = array())
+	{
+		if (isset($data['update_formatting'])
+			&& $data['update_formatting'] == 'y')
+		{
+			$this->setProperty(
+				'field_default_fmt',
+				$data['field_default_fmt']
+			);
+		}
+
+		return parent::set($data);
+	}
+
+	/**
+	 * Checks to see if we're updating formatting and updates the field_fmt for
+	 * this given category field.
+	 *
+	 * @return void
+	 */
+	public function onAfterSave()
+	{
+		if (isset($_POST['update_formatting'])
+			&& $_POST['update_formatting'] == 'y')
+		{
+			ee()->db->update(
+				$this->getDataTable(),
+				array('field_ft_'.$this->field_id => $this->field_default_fmt)
+			);
 		}
 	}
 
