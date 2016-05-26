@@ -193,6 +193,9 @@ class Database extends ProfilerSection {
 		ee()->load->helper('text');
 		$highlighted = highlight_code($sql, ENT_QUOTES, 'UTF-8');
 
+		// Our CSS is expecting <code><pre>...</pre></code>
+		$highlighted = str_replace(array('<code>', '</code>'), array('<code><pre>', '</pre></code>'), $highlighted);
+
 		foreach ($this->keywords as $keyword)
 		{
 			$highlighted = str_replace($keyword, '<b>'.$keyword.'</b>', $highlighted);
