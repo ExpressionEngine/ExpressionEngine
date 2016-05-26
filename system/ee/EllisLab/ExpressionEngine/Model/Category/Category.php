@@ -84,11 +84,6 @@ class Category extends ContentModel {
 	protected $cat_order;
 
 	/**
-	 * @var array Array of the format types for categories
-	 */
-	private static $formats = array();
-
-	/**
 	 * A link back to the owning category group object.
 	 *
 	 * @return	Structure	A link back to the Structure object that defines
@@ -126,33 +121,16 @@ class Category extends ContentModel {
 	}
 
 	/**
-	 * Get the field format for a given category field
-	 *
-	 * @param  int $field_id The category field id
-	 * @return String The field formatting for a given field
-	 */
-	private function getFieldFormat($field_id)
-	{
-		if ( ! isset(self::$formats))
-		{
-			self::$formats = $this->getFrontend()->get('CategoryField')
-				->all()
-				->indexBy('field_id');
-		}
-
-		return (isset(self::$formats[$field_id]))
-			? self::$formats[$id]->field_default_fmt
-			: NULL;
-	}
-
-	/**
 	 * Converts the fields into facades
 	 *
 	 * We're doing this here to properly set the format on a given field
 	 */
 	protected function addFacade($id, $info, $name_prefix = '')
 	{
-		$this->setProperty('field_ft_'.$id, $this->getFieldFormat($id));
+		if (array_key_exists('field_default_fmt', $info))
+		{
+			$info['field_fmt'] = $info['field_default_fmt'];
+		}
 
 		return parent::addFacade($id, $info, $name_prefix);
 	}
