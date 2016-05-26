@@ -55,10 +55,18 @@ class Updater {
 	 */
 	private function update_category_fields()
 	{
-		// $category_fields = ee('Model')->get('CategoryField')->all();
+		$category_fields = ee('Model')->get('CategoryField')
+			->all()
+			->indexBy('field_id');
 
-		// TODO: Loop through all category_fields and their formatting
-		// TODO: Run updates to category_field_data to set the field_fmt
+		foreach ($category_fields as $id => $field)
+		{
+			ee()->db->update(
+				'category_field_data',
+				array('field_ft_'.$id => $field->field_default_fmt),
+				array('field_ft_'.$id => NULL)
+			);
+		}
 	}
 }
 
