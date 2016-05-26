@@ -1687,6 +1687,7 @@ GRID_FALLBACK;
 					);
 
 					$this->entry->set($entry_data);
+					$this->entry->edit_date = ee()->localize->now;
 
 					$result = $this->entry->validate();
 
