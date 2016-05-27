@@ -1,36 +1,26 @@
-/*
+/* eecms highlighter styles */
 
-Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
-
-*/
-
-.hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: #FFFFFF;
+.hljs{
+	background-color: #ffffff;
+	color: #333333;
+	display: block;
+	overflow-x: auto;
+	padding: 20px;
 }
 
-.hljs,
-.hljs-subst {
-  color: #434f54;
-}
+.hljs-subst{ color: #333333; }
 
 .hljs-keyword,
 .hljs-attribute,
 .hljs-selector-tag,
 .hljs-doctag,
-.hljs-name {
-  color: #00979D;
-}
+.hljs-name{ color: #3672a4; }
 
 .hljs-built_in,
 .hljs-literal,
 .hljs-bullet,
 .hljs-code,
-.hljs-addition {
-  color: #D35400;
-}
+.hljs-addition{ color: #d56400; }
 
 .hljs-regexp,
 .hljs-symbol,
@@ -38,9 +28,7 @@ Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
 .hljs-template-variable,
 .hljs-link,
 .hljs-selector-attr,
-.hljs-selector-pseudo {
-  color: #00979D;
-}
+.hljs-selector-pseudo{ color: #3cbba8; }
 
 .hljs-type,
 .hljs-string,
@@ -48,41 +36,23 @@ Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
 .hljs-selector-class,
 .hljs-quote,
 .hljs-template-tag,
-.hljs-deletion {
-  color: #005C5F;
-}
+.hljs-deletion{ color: #c06e04; }
 
 .hljs-title,
-.hljs-section {
-  color: #880000;
-  font-weight: bold;
-}
+.hljs-section{ color: #3639a4; font-weight: bold; }
 
-.hljs-comment {
-  color: rgba(149,165,166,.8);
-}
+.hljs-comment{ color: #999999; }
 
-.hljs-meta-keyword {
-  color: #728E00;
-}
+.hljs-meta-keyword{ color: #1aa697; }
 
-.hljs-meta {
-  color: #728E00;
-  color: #434f54;
-}
+.hljs-meta{ color: #808080; }
 
-.hljs-emphasis {
-  font-style: italic;
-}
+.hljs-emphasis{ font-style: italic; }
 
-.hljs-strong {
-  font-weight: bold;
-}
+.hljs-strong{ font-weight: bold; }
 
-.hljs-function {
-  color: #728E00;
-}
+.hljs-function{ color: #3639a4; }
 
-.hljs-number {
-  color: #8A7B52;
-}
+.hljs-number{ color: #00904b; }
+
+.apache .hljs-attribute{ font-weight: bold; }
