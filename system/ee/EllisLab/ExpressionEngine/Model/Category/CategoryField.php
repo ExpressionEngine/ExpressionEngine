@@ -41,8 +41,7 @@ class CategoryField extends FieldModel {
 	);
 
 	protected static $_events = array(
-		'beforeInsert',
-		'afterSave'
+		'beforeInsert'
 	);
 
 	protected static $_validation_rules = array(
@@ -118,21 +117,16 @@ class CategoryField extends FieldModel {
 	}
 
 	/**
-	 * Checks to see if we're updating formatting and updates the field_fmt for
-	 * this given category field.
+	 * Update field formatting on existing categories
 	 *
 	 * @return void
 	 */
-	public function onAfterSave()
+	public function updateFormattingOnExisting()
 	{
-		if (isset($_POST['update_formatting'])
-			&& $_POST['update_formatting'] == 'y')
-		{
-			ee()->db->update(
-				$this->getDataTable(),
-				array('field_ft_'.$this->field_id => $this->field_default_fmt)
-			);
-		}
+		ee()->db->update(
+			$this->getDataTable(),
+			array('field_ft_'.$this->field_id => $this->field_default_fmt)
+		);
 	}
 
 	public function getStructure()
