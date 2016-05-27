@@ -98,25 +98,6 @@ class CategoryField extends FieldModel {
 	}
 
 	/**
-	 * Set the values, checking to see if we're updating formatting. If we are,
-	 * purposefully make the field_default_fmt dirty since update_formatting
-	 * will be discarded.
-	 */
-	public function set(array $data = array())
-	{
-		if (isset($data['update_formatting'])
-			&& $data['update_formatting'] == 'y')
-		{
-			$this->setProperty(
-				'field_default_fmt',
-				$data['field_default_fmt']
-			);
-		}
-
-		return parent::set($data);
-	}
-
-	/**
 	 * Update field formatting on existing categories
 	 *
 	 * @return void
