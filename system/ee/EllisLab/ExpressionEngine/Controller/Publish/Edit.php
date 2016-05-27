@@ -358,8 +358,13 @@ class Edit extends AbstractPublishController {
 		ee()->cp->render('publish/edit/index', $vars);
 	}
 
-	public function entry($id, $autosave_id = NULL)
+	public function entry($id = NULL, $autosave_id = NULL)
 	{
+		if ( ! $id)
+		{
+			show_404();
+		}
+
 		$entry = ee('Model')->get('ChannelEntry', $id)
 			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))

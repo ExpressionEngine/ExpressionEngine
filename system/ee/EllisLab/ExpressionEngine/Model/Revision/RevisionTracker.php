@@ -61,7 +61,7 @@ class RevisionTracker extends Model {
 
 	public function getAuthorName()
 	{
-		return ($this->item_author_id) ? $this->Author->getMemberName() : '';
+		return ($this->item_author_id && $this->Author) ? $this->Author->getMemberName() : '';
 	}
 }
 
