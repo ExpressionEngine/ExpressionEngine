@@ -56,6 +56,7 @@ class Group extends AbstractDesignController {
 		);
 		ee('Model')->get('TemplateGroup')
 			->all()
+			->filter('site_id', ee()->config->item('site_id'))
 			->each(function($group) use (&$groups) {
 				$groups[$group->group_id] = $group->group_name;
 				if ($group->is_site_default)
@@ -133,13 +134,6 @@ class Group extends AbstractDesignController {
 			$group->site_id = ee()->config->item('site_id');
 			$group->group_name = ee()->input->post('group_name');
 			$group->is_site_default = ee()->input->post('make_default_group');
-
-			if ($group->is_site_default)
-			{
-				ee('Model')->get('TemplateGroup')
-					->set('is_site_default', 'n')
-					->update();
-			}
 
 			$group->save();
 

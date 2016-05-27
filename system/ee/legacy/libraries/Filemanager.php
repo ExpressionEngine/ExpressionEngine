@@ -2649,7 +2649,8 @@ class Filemanager {
 					continue;
 				}
 
-				if ( ! is_dir($source_dir.$file))
+				$index = array('index.html', 'index.htm', 'index.php');
+				if ( ! is_dir($source_dir.$file) && ! in_array($file, $index))
 				{
 					$mime = ee()->mime_type->ofFile($source_dir.$file);
 

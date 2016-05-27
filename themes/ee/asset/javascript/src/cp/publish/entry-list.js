@@ -14,6 +14,8 @@ $(document).ready(function () {
 
 	var replaceData = function(data) {
 		$('.wrap .col-group:nth-child(2) .box').html(data.html);
+		$.fuzzyFilter();
+
 		$('input[name="search"]').closest('form').attr('action', data.url);
 
 		if (jQuery().toggle_all) {
@@ -42,7 +44,7 @@ $(document).ready(function () {
 	}, 150));
 
 	// Selecting a channel filter
-	$('form > .filters .sub-menu a, .filters .filter-clear a').on('click', function(event) {
+	$('body').on('click', 'form > .filters .sub-menu a, .filters .filter-clear a, .paginate ul li a', function(event) {
 		$.ajax({
 			url: $(this).attr('href'),
 			type: 'GET',

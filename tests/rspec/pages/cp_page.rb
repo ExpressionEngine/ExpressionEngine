@@ -6,6 +6,9 @@ class ControlPanelPage < SitePrism::Page
   element :settings_btn, '.dev-menu .settings > a'
   elements :error_messages, 'em.ee-form-error-message'
 
+  # Main Section
+  element :page_title, '.wrap .box h1'
+
   # Tables
   element :select_all, 'th.check-ctrl input'
   element :sort_col, 'table th.highlight'
@@ -38,6 +41,10 @@ class ControlPanelPage < SitePrism::Page
   # Tabs
   element :tab_bar, 'div.tab-wrap'
   elements :tabs, 'div.tab-wrap ul.tabs li'
+
+  def is_404?
+    page_title.text.start_with? '404'
+  end
 
   def open_dev_menu
     main_menu.dev_menu.click
