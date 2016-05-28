@@ -97,6 +97,19 @@ class CategoryField extends FieldModel {
 		}
 	}
 
+	/**
+	 * Update field formatting on existing categories
+	 *
+	 * @return void
+	 */
+	public function updateFormattingOnExisting()
+	{
+		ee()->db->update(
+			$this->getDataTable(),
+			array('field_ft_'.$this->field_id => $this->field_default_fmt)
+		);
+	}
+
 	public function getStructure()
 	{
 		return $this->getCategoryGroup();
