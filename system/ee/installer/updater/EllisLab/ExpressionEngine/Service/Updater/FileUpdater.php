@@ -36,7 +36,9 @@ class FileUpdater {
 	protected $config = NULL;
 	protected $verifier = NULL;
 	protected $logger = NULL;
-	protected $configs = [];
+
+	// Public for unit testing :/
+	public $configs = [];
 
 	public function __construct(Filesystem $filesystem, File $config, Verifier $verifier, Logger $logger)
 	{
@@ -120,12 +122,12 @@ class FileUpdater {
 	{
 		$this->logger->log('Verifying the integrity of the new ExpressionEngine files');
 
-		$hash_manifiest = SYSPATH . '/ee/updater/hash-manifest';
+		$hash_manifiest = SYSPATH . 'ee/updater/hash-manifest';
 		$exclusions = ['system/ee/installer/updater'];
 
 		try {
 			$this->verifier->verifyPath(
-				SYSPATH . '/ee',
+				SYSPATH . 'ee/',
 				$hash_manifiest,
 				'system/ee',
 				$exclusions
