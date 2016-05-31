@@ -215,6 +215,14 @@ class EntryListing {
 			$entries->filter('title', 'LIKE', '%' . $this->search_value . '%');
 		}
 
+		if (isset($channel) && ! empty($this->search_value))
+		{
+			foreach ($channel->CustomFields as $cf)
+			{
+				$entries->orFilter('field_id_'.$cf->getId(), 'LIKE', '%'.$this->search_value.'%');
+			}
+		}
+
 		$filter_values = $this->filters->values();
 
 		if ( ! empty($filter_values['filter_by_date']))
