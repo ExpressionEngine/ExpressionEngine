@@ -4,7 +4,7 @@
 error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 1);
 
-$project_base = realpath(dirname(__FILE__).'/../../../').'/';
+$project_base = realpath(dirname(__FILE__).'/../../../../../').'/';
 
 // Path constants
 define('SYSPATH', $project_base);
