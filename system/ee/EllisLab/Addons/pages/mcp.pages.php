@@ -58,7 +58,6 @@ class Pages_mcp {
 		}
 
 		ee()->view->header = array(
-			'title' => lang('pages_manager'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('addons/settings/pages/settings'),

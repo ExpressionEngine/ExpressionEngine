@@ -96,7 +96,6 @@ $lang = array(
 'enable_rte_myaccount' => 'Enable Rich Text Editor',
 'enable_rte_for_field' => 'Enable Rich Text Editor',
 'rte_image_caption'	=> 'Image Caption:',
-'rte_center_error' => 'You can’t center an element that is being wrapped',
 'rte_url' => 'URL',
 'rte_title' => 'Title',
 'rte_relationship' => 'Relationship',
@@ -174,13 +173,15 @@ $lang = array(
 
 'img_add' => 'Image',
 'img_remove' => 'Remove Image',
-'img_align_left' => 'Align Left',
-'img_align_center' => 'Align Center',
-'img_align_right' => 'Align Right',
-'img_wrap_left' => 'Wrap Left',
+'img_align_left' => 'Left-align image',
+'img_align_center' => 'Center image',
+'img_align_right' => 'Right-align image',
+'img_wrap_left' => 'Left-align image in text',
 'img_wrap_none' => 'Separate Text',
-'img_wrap_right' => 'Wrap Right',
+'img_wrap_right' => 'Right-align image in text',
 'img_title' => 'upload file',
+'img_in_text' => 'in text',
+'img_center' => 'center',
 
 ''=>''
 );

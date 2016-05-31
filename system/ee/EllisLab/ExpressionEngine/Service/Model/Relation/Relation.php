@@ -201,6 +201,11 @@ abstract class Relation {
 		return $this->key_tuple;
 	}
 
+	public function getPivot()
+	{
+		return array();
+	}
+
 	public function getInverseOptions()
 	{
 		return array(

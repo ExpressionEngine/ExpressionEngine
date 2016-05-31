@@ -561,6 +561,7 @@ class Channels extends AbstractChannelsController {
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		$live_look_template_options[0] = lang('no_live_look_template');
