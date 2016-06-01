@@ -36,7 +36,8 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'update_category_fields'
+				'update_category_fields',
+				'alter_is_locked'
 			)
 		);
 
@@ -67,6 +68,28 @@ class Updater {
 				array('field_ft_'.$id => NULL)
 			);
 		}
+	}
+
+	/**
+	 * Update is_locked in exp_member_groups to default to unlocked
+	 *
+	 * @return void
+	 */
+	private function alter_is_locked()
+	{
+		// ALTER TABLE `exp_member_groups` CHANGE COLUMN `is_locked` `is_locked` char(1) NOT NULL DEFAULT 'n';
+		ee()->smartforge->modify_column(
+			'member_groups',
+			array(
+				'is_locked' => array(
+					'name'			=> 'is_locked',
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'default'		=> 'n',
+					'null'			=> FALSE
+				)
+			)
+		);
 	}
 }
 
