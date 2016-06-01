@@ -97,7 +97,7 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'member_groups' => 'Member group(s)?',
+'layout_member_groups' => 'Member group(s)?',
 
 'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
