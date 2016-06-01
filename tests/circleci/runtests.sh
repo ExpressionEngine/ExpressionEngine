@@ -50,7 +50,18 @@ do
 
 			# Remove CLI colors
 			sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+		popd
 
+		# Updater microapp unit tests
+		pushd system/ee/installer/updater/EllisLab/Tests/
+			printf "Running PHPUnit tests\n\n"
+			phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
+
+			# Save our exit status code
+			((STATUS+=$?))
+
+			# Remove CLI colors
+			sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
 		popd
 	fi
 	((i++))
