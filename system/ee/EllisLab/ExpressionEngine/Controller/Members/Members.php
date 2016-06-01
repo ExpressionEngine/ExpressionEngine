@@ -1153,6 +1153,10 @@ class Members extends CP_Controller {
 			$entries->Author = $heir;
 			$entries->save();
 
+			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
+			$entries->Author = $heir;
+			$entries->save();
+
 			$heir->updateAuthorStats();
 		}
 
