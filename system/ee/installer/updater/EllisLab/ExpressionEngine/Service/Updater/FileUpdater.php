@@ -303,7 +303,7 @@ class FileUpdater {
 
 			if ( ! $this->filesystem->isWritable($path))
 			{
-				throw new UpdaterException("Cannot delete path ${path}, it is not writable", 19);
+				throw new UpdaterException("Cannot delete path ${path}, it is not writable", 20);
 			}
 
 			$this->logger->log('Deleting ' . $path);
