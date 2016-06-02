@@ -111,6 +111,8 @@ class EE_Template {
 	private $layout_contents      = '';
 	private $user_vars            = array();
 
+	protected $_preg_quoted_partials = array();
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -335,8 +337,13 @@ class EE_Template {
 		{
 			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
+			if (empty($this->_preg_quoted_partials))
+			{
+				$this->_preg_quoted_partials = array_map('preg_quote', array_keys(ee()->config->_global_vars));
+			}
+
 			// Only iterate over the partials present in the template
-			if (preg_match_all('/'.LD.'('.implode('|', array_keys(ee()->config->_global_vars)).')'.RD.'/', $this->template, $result))
+			if (preg_match_all('/'.LD.'('.implode('|', $this->_preg_quoted_partials).')'.RD.'/', $this->template, $result))
 			{
 				foreach ($result[1] as $variable)
 				{
