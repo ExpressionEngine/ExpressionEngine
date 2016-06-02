@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Database;
 
-use \EllisLab\ExpressionEngine\Service\Config\Config;
+use \EllisLab\ExpressionEngine\Service\Config\ConfigWithDefaults;
 use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
@@ -28,7 +28,7 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
  * @author     EllisLab Dev Team
  * @link       https://ellislab.com
  */
-class DBConfig extends Config {
+class DBConfig extends ConfigWithDefaults {
 
 	protected $delegate;
 	protected $active_group;
