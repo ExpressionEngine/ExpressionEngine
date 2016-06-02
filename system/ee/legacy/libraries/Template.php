@@ -110,8 +110,7 @@ class EE_Template {
 
 	private $layout_contents      = '';
 	private $user_vars            = array();
-
-	protected $_global_vars_names = array();
+	private $globals_regex;
 
 	// --------------------------------------------------------------------
 
@@ -337,18 +336,9 @@ class EE_Template {
 		{
 			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
-			$this->_global_vars_names = array_keys(ee()->config->_global_vars);
-
-			// Only preg_quote if a variable has a dash in the name, and only run once
-			static $preg_quoted_partials_ran = FALSE;
-			if ( ! $preg_quoted_partials_ran && strpos(implode($this->_global_vars_names), '-') !== FALSE)
-			{
-				$preg_quoted_partials_ran = TRUE;
-				$this->_global_vars_names = array_map('preg_quote', $this->_global_vars_names);
-			}
-
 			// Only iterate over the partials present in the template
-			if (preg_match_all('/'.LD.'('.implode('|', $this->_global_vars_names).')'.RD.'/', $this->template, $result))
+			$regex = $this->getGlobalsRegex();
+			if (preg_match_all($regex, $this->template, $result))
 			{
 				foreach ($result[1] as $variable)
 				{
@@ -590,6 +580,31 @@ class EE_Template {
 			$this->final_template = $this->template;
 			$this->_cleanup_layout_tags();
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generates the regex needed to grab all global template
+	 * partials/variables present on the page
+	 *
+	 * @return	string	Regex to grab globals
+	 */
+	private function getGlobalsRegex()
+	{
+		if ( ! isset($this->globals_regex))
+		{
+			$global_names = array_keys(ee()->config->_global_vars);
+
+			if (strpos(implode($global_names), '-') !== FALSE)
+			{
+				$global_names = array_map('preg_quote', $global_names);
+			}
+
+			$this->globals_regex = '/'.LD.'('.implode('|', $global_names).')'.RD.'/';
+		}
+
+		return $this->globals_regex;
 	}
 
 	// --------------------------------------------------------------------
