@@ -1641,6 +1641,8 @@ GRID_FALLBACK;
 			}
 		}
 
+		$id_to_name_map = array();
+
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1649,6 +1651,8 @@ GRID_FALLBACK;
 		{
 			$field_id = 'field_id_'.$field->field_id;
 			$field_name = $field->field_name;
+
+			$id_to_name_map[$field_id] = $field_name;
 
 			if (isset($_POST[$field_id]) && isset($_POST[$field_name]))
 			{
@@ -1705,6 +1709,13 @@ GRID_FALLBACK;
 
 						// only show the first error for each field to match CI's old behavior
 						$this->field_errors = array_map('current', $errors);
+						foreach($this->field_errors as $field => $error)
+						{
+							if (isset($id_to_name_map[$field]))
+							{
+								$this->field_errors[$id_to_name_map[$field]] = $error;
+							}
+						}
 					}
 				}
 				else
