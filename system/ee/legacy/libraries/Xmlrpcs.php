@@ -168,13 +168,13 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 		$parser_object = new XML_RPC_Message("filler");
 
 		$parser_name = (string) $parser;
-		$parser_object->xh[$parser_name]					= array();
-		$parser_object->xh[$parser_name]['isf']			= 0;
-		$parser_object->xh[$parser_name]['isf_reason']	= '';
-		$parser_object->xh[$parser_name]['params']		= array();
-		$parser_object->xh[$parser_name]['stack']		= array();
-		$parser_object->xh[$parser_name]['valuestack']	= array();
-		$parser_object->xh[$parser_name]['method']		= '';
+		$parser_object->xh[$parser_name]               = array();
+		$parser_object->xh[$parser_name]['isf']        = 0;
+		$parser_object->xh[$parser_name]['isf_reason'] = '';
+		$parser_object->xh[$parser_name]['params']     = array();
+		$parser_object->xh[$parser_name]['stack']      = array();
+		$parser_object->xh[$parser_name]['valuestack'] = array();
+		$parser_object->xh[$parser_name]['method']     = '';
 
 		xml_set_object($parser, $parser_object);
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
