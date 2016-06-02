@@ -91,7 +91,7 @@ class FilePicker {
 		$table = ee('CP/Table', array(
 			'limit'    => $limit,
 			'class'    => 'file-list',
-			'autosort' => TRUE
+			'autosort' => FALSE
 		));
 
 		$table->setColumns(
