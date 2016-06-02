@@ -335,18 +335,24 @@ class EE_Template {
 		{
 			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
-			foreach (ee()->config->_global_vars as $key => &$val)
+			// Only iterate over the partials present in the template
+			if (preg_match_all("/{(".implode('|', array_keys(ee()->config->_global_vars)).")}/", $this->template, $result))
 			{
-				// in case any of these variables have EE comments of their own
-				// removing from the value makes snippets more usable in conditionals
-				$val = $this->remove_ee_comments($val);
+				foreach ($result[1] as $variable)
+				{
+					// In case any of these variables have EE comments of their own,
+					// removing from the value makes snippets more usable in conditionals
+					$value = $this->remove_ee_comments(
+						ee()->config->_global_vars[$variable]
+					);
 
-				$replace = $this->wrapInContextAnnotations(
-					$val,
-					'Snippet "'.$key.'"'
-				);
+					$replace = $this->wrapInContextAnnotations(
+						$value,
+						'Snippet "'.$variable.'"'
+					);
 
-				$this->template = str_replace(LD.$key.RD, $replace, $this->template);
+					$this->template = str_replace(LD.$variable.RD, $replace, $this->template);
+				}
 			}
 		}
 
