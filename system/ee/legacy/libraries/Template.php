@@ -336,7 +336,7 @@ class EE_Template {
 			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
 			// Only iterate over the partials present in the template
-			if (preg_match_all("/{(".implode('|', array_keys(ee()->config->_global_vars)).")}/", $this->template, $result))
+			if (preg_match_all('/'.LD.'('.implode('|', array_keys(ee()->config->_global_vars)).')'.RD.'/', $this->template, $result))
 			{
 				foreach ($result[1] as $variable)
 				{
