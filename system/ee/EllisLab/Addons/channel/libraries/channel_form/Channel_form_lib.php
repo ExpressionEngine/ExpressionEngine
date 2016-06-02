@@ -207,11 +207,6 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_author_only'));
 		}
 
-		if (is_array($this->entry('category')))
-		{
-			$this->entry['categories'] = $this->entry('category');
-		}
-
 		$meta = $this->_build_meta_array();
 
 		//add hidden field data
@@ -410,7 +405,7 @@ class Channel_form_lib
 				ee()->load->library('channel_form/channel_form_category_tree');
 
 				$tree = ee()->channel_form_category_tree->create(
-					$this->channel('cat_group'), 'edit', '', $this->entry('categories')
+					$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
 				);
 
 				$this->parse_variables['category_menu'] = array(
@@ -1464,9 +1459,9 @@ GRID_FALLBACK;
 		// Reset categories if they weren't set above
 		if ($this->_meta['entry_id'] &&
 			ee()->input->post('category') === FALSE &&
-			$this->entry('categories'))
+			count($this->entry->Categories))
 		{
-			$_POST['category'] = $this->entry('categories');
+			$_POST['category'] = $this->entry->Categories->pluck('cat_id');
 		}
 
 		foreach ($this->custom_fields as $i => $field)
