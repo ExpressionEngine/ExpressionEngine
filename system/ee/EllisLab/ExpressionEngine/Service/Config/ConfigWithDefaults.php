@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Config;
 
+use EllisLab\ExpressionEngine\Protocol\Config\Config;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -25,22 +27,12 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       https://ellislab.com
  */
-abstract class Config {
+abstract class ConfigWithDefaults implements Config {
 
 	/**
 	 * @var the default values to check when referencing this config
 	 */
 	protected $defaults = array();
-
-
-	/**
-	 * Get an item from the config
-	 *
-	 * @param  string $path    The config item to get
-	 * @param  mixed  $default The value to return if $path can not be found
-	 * @return mixed           The value found for $path, otherwise $default
-	 */
-	abstract public function get($item, $default = NULL);
 
 	/**
 	 * Get the default for a given config item. If they gave us a
