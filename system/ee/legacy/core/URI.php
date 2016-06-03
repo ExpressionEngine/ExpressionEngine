@@ -104,7 +104,9 @@ class EE_URI {
 			}
 		}
 
-		if (strtoupper($this->config->item('uri_protocol')) == 'AUTO')
+		$protocol = strtoupper($this->config->item('uri_protocol')) ?: 'AUTO';
+
+		if ($protocol == 'AUTO')
 		{
 			// Let's try the REQUEST_URI first, this will work in most situations
 			if ($uri = $this->_detect_uri('REQUEST_URI'))
@@ -142,15 +144,16 @@ class EE_URI {
 			return;
 		}
 
-		$uri = strtoupper($this->config->item('uri_protocol'));
-
-		if ($uri == 'REQUEST_URI' OR $uri == 'QUERY_STRING')
+		if ($protocol == 'REQUEST_URI' OR $protocol == 'QUERY_STRING')
 		{
-			$this->_set_uri_string($this->_detect_uri($uri));
+			$this->_set_uri_string($this->_detect_uri($protocol));
 			return;
 		}
 
-		$path = (isset($_SERVER[$uri])) ? $_SERVER[$uri] : @getenv($uri);
+		$path = (isset($_SERVER[$protocol]))
+			? $_SERVER[$protocol]
+			: @getenv($protocol);
+
 		$this->_set_uri_string($path);
 	}
 

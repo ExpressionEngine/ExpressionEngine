@@ -3059,7 +3059,7 @@ class EE_Template {
 		$str = str_replace(LD.'lang'.RD, ee()->config->item('xml_lang'), $str);
 
 		// {doc_url}
-		$str = str_replace(LD.'doc_url'.RD, ee()->config->item('doc_url'), $str);
+		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
 
 		// {password_max_length}
 		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);

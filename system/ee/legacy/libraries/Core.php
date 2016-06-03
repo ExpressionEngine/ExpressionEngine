@@ -94,6 +94,7 @@ class EE_Core {
 		define('NL',			"\n");
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 		define('PASSWORD_MAX_LENGTH', 72);
+		define('DOC_URL',       'https://docs.expressionengine.com/v3/');
 
 		ee()->load->helper('language');
 		ee()->load->helper('string');
