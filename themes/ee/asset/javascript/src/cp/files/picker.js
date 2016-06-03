@@ -82,7 +82,21 @@
 			e.preventDefault();
 			$(this).parents('div.box').load($(this).attr('href'));
 		});
-		$('.modal-file').on('click', '.tbl-search a', function(e) {
+		// Capture form submission
+		$('.modal-file').on('submit', 'form', function(e) {
+			var url = $(this).attr('action'),
+				payload_elements = $('input[name=search], input[name=perpage]', this);
+
+			// Only do this if we're on the file listing screen
+			if (payload_elements.size() == 0) {
+				return;
+			}
+
+			e.preventDefault();
+
+			$(this).parents('div.box').load(url+'&'+payload_elements.serialize());
+		});
+		$('.modal-file').on('click', '.tbl-action .action', function(e) {
 			e.preventDefault();
 			$('div.box', modal).html("<iframe></iframe>");
 			$('iframe', modal).css('border', 'none');
