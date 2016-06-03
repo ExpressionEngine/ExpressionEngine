@@ -1,9 +1,10 @@
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<?php if ( ! empty($upload) && is_numeric($dir)): ?>
-	<fieldset class="tbl-search right">
-		<a class="btn tn action" href="<?=$upload?>">Upload New File</a>
-	</fieldset>
+	<?php if ($search_allowed): ?>
+		<fieldset class="tbl-search right">
+			<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$search ? $search : ''?>">
+			<input class="btn submit" type="submit" value="<?=lang('search_files')?>">
+		</fieldset>
 	<?php endif ?>
 	<h1>
 		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
@@ -36,6 +37,11 @@
 		<?php $i++; ?>
 		<?php endforeach ?>
 			</tr>
+			<?php if ( ! empty($upload) && is_numeric($dir)): ?>
+				<tr class="tbl-action">
+					<td colspan="5" class="solo"><a class="btn action" href="<?=$upload?>"><?=lang('upload_new_file')?></a></td>
+				</tr>
+			<?php endif ?>
 		</table>
 	</div>
 	<?php else: ?>

@@ -24,6 +24,8 @@ $lang = array(
 
 'upload_new_file' => 'Upload New File',
 
+'search_files' => 'Search Files',
+
 'filter_upload_directories' => 'filter upload directories',
 
 'title_or_name' => 'Title/Name',
