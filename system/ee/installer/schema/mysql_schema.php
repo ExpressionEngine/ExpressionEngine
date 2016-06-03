@@ -1459,6 +1459,7 @@ class EE_Schema {
 			array(
 				'group_title'                    => 'Super Admin',
 				'group_id'                       => 1,
+				'is_locked'                      => 'y',
 				'can_view_offline_system'        => 'y',
 				'can_access_cp'                  => 'y',
 				'can_access_footer_report_bug'   => 'y',
