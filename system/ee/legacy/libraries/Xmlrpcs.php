@@ -120,6 +120,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 	function serve()
 	{
 		$r = $this->parseRequest();
+
 		$payload  = '<?xml version="1.0" encoding="'.$this->xmlrpc_defencoding.'"?'.'>'."\n";
 		$payload .= $this->debug_msg;
 		$payload .= $r->prepare_response();
@@ -149,7 +150,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
 	function parseRequest($data='')
 	{
-		global $HTTP_RAW_POST_DATA;
+		// $HTTP_RAW_POST_DATA is deprecated in PHP 5.6 and removed in 7.0
 
 		//-------------------------------------
 		//  Get Data
@@ -157,7 +158,14 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
 		if ($data == '')
 		{
-			$data = $HTTP_RAW_POST_DATA;
+			static $raw_post_data;
+
+			if (empty($raw_post_data))
+			{
+				$raw_post_data = file_get_contents("php://input");
+			}
+
+			$data = $raw_post_data;
 		}
 
 		//-------------------------------------
@@ -342,7 +350,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 				}
 				else
 				{
-					return $this->object->$method_parts['1']($m);
+					return $this->object->{$method_parts['1']}($m);
 					//return call_user_func(array(&$method_parts['0'],$method_parts['1']), $m);
 				}
 			}
