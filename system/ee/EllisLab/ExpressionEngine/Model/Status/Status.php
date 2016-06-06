@@ -56,6 +56,10 @@ class Status extends Model {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'highlight'			=> 'required',
+	);
+
 	protected static $_events = array(
 		'beforeInsert'
 	);
