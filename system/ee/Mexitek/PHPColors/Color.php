@@ -15,7 +15,6 @@ use \Exception;
  */
 class Color {
 
-    public $default_hex = '000000';
     private $_hex;
     private $_hsl;
     private $_rgb;
@@ -35,7 +34,6 @@ class Color {
     function __construct( $hex ) {
         // Strip # sign is present
         $color = str_replace("#", "", $hex);
-        $color = (empty($color)) ? $this->default_hex : $color;
 
         // Make sure it's 6 digits
         if( strlen($color) === 3 ) {
@@ -313,7 +311,7 @@ class Color {
         // Return the new value in HEX
         return self::hslToHex($hsl);
     }
-
+    
     /**
      * Returns your color's HSL array
      */
@@ -332,7 +330,7 @@ class Color {
     public function getRgb() {
         return $this->_rgb;
     }
-
+    
     /**
      * Returns the cross browser CSS3 gradient
      * @param int $amount Optional: percentage amount to light/darken the gradient
@@ -484,7 +482,6 @@ class Color {
     private static function _checkHex( $hex ) {
         // Strip # sign is present
         $color = str_replace("#", "", $hex);
-        $color = (empty($color)) ? $this->default_hex : $color;
 
         // Make sure it's 6 digits
         if( strlen($color) == 3 ) {

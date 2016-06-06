@@ -263,7 +263,7 @@ class Edit extends AbstractPublishController {
 				$status = array(
 					'content'          => $status->status,
 					'color'            => $color,
-					'background-color' => ($status->highlight) ?: '000000'
+					'background-color' => $status->highlight
 				);
 			}
 			else
