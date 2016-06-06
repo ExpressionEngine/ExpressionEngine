@@ -37,7 +37,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'update_category_fields',
-				'alter_is_locked'
+				'alter_is_locked',
+				'update_status_highlight'
 			)
 		);
 
@@ -90,6 +91,32 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Update status highlight field to have a default
+	 *
+	 * @return void
+	 */
+	private function update_status_highlight()
+	{
+		// ALTER TABLE `exp_statuses` CHANGE COLUMN `highlight` `highlight` varchar(30) NOT NULL DEFAULT '000000';
+		ee()->smartforge->modify_column(
+			'statuses',
+			array(
+				'highlight' => array(
+					'name'			=> 'highlight',
+					'type'			=> 'varchar',
+					'constraint'	=> 30,
+					'default'		=> '000000',
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		// Update existing
+		ee()->db->where('highlight', '')
+			->update('statuses', array('highlight' => '000000'));
 	}
 }
 

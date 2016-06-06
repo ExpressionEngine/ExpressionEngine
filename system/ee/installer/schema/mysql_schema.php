@@ -809,7 +809,7 @@ class EE_Schema {
 			group_id int(4) unsigned NOT NULL,
 			status varchar(50) NOT NULL,
 			status_order int(3) unsigned NOT NULL,
-			highlight varchar(30) NOT NULL,
+			highlight varchar(30) NOT NULL default '000000',
 			PRIMARY KEY `status_id` (`status_id`),
 			KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
