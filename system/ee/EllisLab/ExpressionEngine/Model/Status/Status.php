@@ -72,6 +72,25 @@ class Status extends Model {
 	protected $highlight;
 
 	/**
+	 * Ensures the highlight field has a default value
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return str The value of the property
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+
+		if ($name == 'highlight' && empty($value))
+		{
+			$value = '000000';
+		}
+
+		return $value;
+	}
+
+
+	/**
 	 * New statuses get appended
 	 */
 	public function onBeforeInsert()
