@@ -77,18 +77,10 @@ class Status extends Model {
 	 * @param str $name The name of the property to fetch
 	 * @return str The value of the property
 	 */
-	public function __get($name)
+	protected function get__highlight()
 	{
-		$value = parent::__get($name);
-
-		if ($name == 'highlight' && empty($value))
-		{
-			$value = '000000';
-		}
-
-		return $value;
+		return $this->highlight ?: '000000';
 	}
-
 
 	/**
 	 * New statuses get appended
