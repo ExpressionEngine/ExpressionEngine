@@ -207,11 +207,6 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_author_only'));
 		}
 
-		if (is_array($this->entry('category')))
-		{
-			$this->entry['categories'] = $this->entry('category');
-		}
-
 		$meta = $this->_build_meta_array();
 
 		//add hidden field data
@@ -410,7 +405,7 @@ class Channel_form_lib
 				ee()->load->library('channel_form/channel_form_category_tree');
 
 				$tree = ee()->channel_form_category_tree->create(
-					$this->channel('cat_group'), 'edit', '', $this->entry('categories')
+					$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
 				);
 
 				$this->parse_variables['category_menu'] = array(
@@ -1464,9 +1459,9 @@ GRID_FALLBACK;
 		// Reset categories if they weren't set above
 		if ($this->_meta['entry_id'] &&
 			ee()->input->post('category') === FALSE &&
-			$this->entry('categories'))
+			count($this->entry->Categories))
 		{
-			$_POST['category'] = $this->entry('categories');
+			$_POST['category'] = $this->entry->Categories->pluck('cat_id');
 		}
 
 		foreach ($this->custom_fields as $i => $field)
@@ -1646,6 +1641,8 @@ GRID_FALLBACK;
 			}
 		}
 
+		$id_to_name_map = array();
+
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1654,6 +1651,8 @@ GRID_FALLBACK;
 		{
 			$field_id = 'field_id_'.$field->field_id;
 			$field_name = $field->field_name;
+
+			$id_to_name_map[$field_id] = $field_name;
 
 			if (isset($_POST[$field_id]) && isset($_POST[$field_name]))
 			{
@@ -1687,6 +1686,7 @@ GRID_FALLBACK;
 					);
 
 					$this->entry->set($entry_data);
+					$this->entry->edit_date = ee()->localize->now;
 
 					$result = $this->entry->validate();
 
@@ -1709,6 +1709,13 @@ GRID_FALLBACK;
 
 						// only show the first error for each field to match CI's old behavior
 						$this->field_errors = array_map('current', $errors);
+						foreach($this->field_errors as $field => $error)
+						{
+							if (isset($id_to_name_map[$field]))
+							{
+								$this->field_errors[$id_to_name_map[$field]] = $error;
+							}
+						}
 					}
 				}
 				else
@@ -2459,9 +2466,12 @@ GRID_FALLBACK;
 		// check to see if either exists and if it does make sure that the
 		// passed in version is the same as what we find in the database.
 		// If they are different (most likely it wasn't found in the
-		// database) then don't show them the form
+		// database) then don't show them the form.  We also double check it's
+		// in the correct channel
 
 		if (
+			($params['entry_id'] != '' && $this->channel('channel_id') != $this->entry('channel_id')) OR
+			($params['url_title'] != '' && $this->channel('channel_id') != $this->entry('channel_id')) OR
 			($params['entry_id'] != '' && $this->entry('entry_id') != $params['entry_id']) OR
 			($params['url_title'] != '' && $this->entry('url_title') != $params['url_title'])
 		)

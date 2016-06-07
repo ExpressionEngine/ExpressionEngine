@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.3.2';	// The version being installed
+	public $version           = '3.3.3';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -1143,6 +1143,9 @@ class Wizard extends CI_Controller {
 	{
 		// Make sure the current step is the correct number
 		$this->current_step = ($this->addon_step) ? 3 : 2;
+
+		// ensures the Installer_Extensions lib is loaded which prevents extension hooks from running
+		$this->load->library('extensions');
 
 		$this->load->library('javascript');
 

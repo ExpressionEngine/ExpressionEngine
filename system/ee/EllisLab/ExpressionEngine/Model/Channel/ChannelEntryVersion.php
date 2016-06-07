@@ -45,7 +45,7 @@ class ChannelEntryVersion extends Model {
 
 	public function getAuthorName()
 	{
-		return ($this->author_id) ? $this->Author->getMemberName() : '';
+		return ($this->author_id && $this->Author) ? $this->Author->getMemberName() : '';
 	}
 }
 
