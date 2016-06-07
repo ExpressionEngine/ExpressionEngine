@@ -15,7 +15,7 @@
 		</ul>
 	</div>
 </div>
-<div class="box">
+<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
 			<?php if ( ! $write): ?>
