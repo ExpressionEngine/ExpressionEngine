@@ -393,7 +393,7 @@ class EE_Schema {
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`group_title` varchar(100) NOT NULL,
 			`group_description` text NOT NULL,
-			`is_locked` char(1) NOT NULL DEFAULT 'y',
+			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			`can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
 			`can_view_online_system` char(1) NOT NULL DEFAULT 'y',
 			`can_access_cp` char(1) NOT NULL DEFAULT 'y',
@@ -810,7 +810,7 @@ class EE_Schema {
 			group_id int(4) unsigned NOT NULL,
 			status varchar(50) NOT NULL,
 			status_order int(3) unsigned NOT NULL,
-			highlight varchar(30) NOT NULL,
+			highlight varchar(30) NOT NULL default '000000',
 			PRIMARY KEY `status_id` (`status_id`),
 			KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
@@ -1460,6 +1460,7 @@ class EE_Schema {
 			array(
 				'group_title'                    => 'Super Admin',
 				'group_id'                       => 1,
+				'is_locked'                      => 'y',
 				'can_view_offline_system'        => 'y',
 				'can_access_cp'                  => 'y',
 				'can_access_footer_report_bug'   => 'y',

@@ -296,6 +296,7 @@ abstract class AbstractPublish extends CP_Controller {
 					{
 						$_POST[$field_name] = NULL;
 					}
+
 				}
 			}
 		}
@@ -306,13 +307,6 @@ abstract class AbstractPublish extends CP_Controller {
 		}
 
 		$entry->set($_POST);
-
-		// if categories are not in POST, then they've unchecked everything
-		// and we need to clear them out
-		if ( ! isset($_POST['categories']))
-		{
-			$entry->categories = array();
-		}
 
 		$result = $entry->validate();
 

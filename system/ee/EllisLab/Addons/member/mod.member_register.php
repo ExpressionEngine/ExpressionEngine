@@ -305,33 +305,6 @@ class Member_register extends Member {
 			$_POST['screen_name'] = $_POST['username'];
 		}
 
-		// Instantiate validation class
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		$VAL = new EE_Validate(array(
-			'member_id'			=> '',
-			'val_type'			=> 'new', // new or update
-			'fetch_lang' 		=> TRUE,
-			'require_cpw' 		=> FALSE,
-		 	'enable_log'		=> FALSE,
-			'username'			=> trim_nbs($_POST['username']),
-			'cur_username'		=> '',
-			'screen_name'		=> trim_nbs($_POST['screen_name']),
-			'cur_screen_name'	=> '',
-			'password'			=> $_POST['password'],
-		 	'password_confirm'	=> $_POST['password_confirm'],
-		 	'cur_password'		=> '',
-		 	'email'				=> trim($_POST['email']),
-		 	'cur_email'			=> ''
-		 ));
-
-		$VAL->validate_username();
-		$VAL->validate_screen_name();
-		$VAL->validate_password();
-		$VAL->validate_email();
 
 		// Do we have any custom fields?
 		$query = ee()->db->select('m_field_id, m_field_name, m_field_label, m_field_type, m_field_list_items, m_field_required')
@@ -339,7 +312,7 @@ class Member_register extends Member {
 							  ->get('member_fields');
 
 		$cust_errors = array();
-		$cust_fields = array();
+		$custom_data = array();
 
 		if ($query->num_rows() > 0)
 		{
@@ -351,11 +324,7 @@ class Member_register extends Member {
 				$valid = isset($_POST[$field_name]) && $_POST[$field_name] != '';
 
 				// Basic validations
-				if ($row['m_field_required'] == 'y' && ! $valid)
-				{
-					$cust_errors[] = lang('mbr_field_required').'&nbsp;'.$row['m_field_label'];
-				}
-				elseif ($row['m_field_type'] == 'select' && $valid)
+				if ($row['m_field_type'] == 'select' && $valid)
 				{
 					// Ensure their selection is actually a valid choice
 					$options = explode("\n", $row['m_field_list_items']);
@@ -369,7 +338,7 @@ class Member_register extends Member {
 
 				if ($valid)
 				{
-					$cust_fields[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
+					$custom_data[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
 				}
 			}
 		}
@@ -406,35 +375,14 @@ class Member_register extends Member {
 		//
 		// -------------------------------------------
 
-		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
-
-		// Display error is there are any
-		if (count($errors) > 0)
-		{
-			return ee()->output->show_user_error('submission', $errors);
-		}
-
-		// Do we require captcha?
-		if (ee('Captcha')->shouldRequireCaptcha())
-		{
-			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha WHERE word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-
-			if ($query->row('count')  == 0)
-			{
-				return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')));
-			}
-
-			ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-		}
 
 		ee()->load->helper('security');
 
-		// Assign the base query data
+		// Assign the data
 		$data = array(
 			'username'		=> trim_nbs(ee()->input->post('username')),
 			'password'		=> sha1($_POST['password']),
 			'ip_address'	=> ee()->input->ip_address(),
-			'unique_id'		=> ee()->functions->random('encrypt'),
 			'join_date'		=> ee()->localize->now,
 			'email'			=> trim_nbs(ee()->input->post('email')),
 			'screen_name'	=> trim_nbs(ee()->input->post('screen_name')),
@@ -444,6 +392,8 @@ class Member_register extends Member {
 			// overridden below if used as optional fields
 			'language'		=> (ee()->config->item('deft_lang')) ?: 'english',
 		);
+
+		$data = array_merge($data, $custom_data);
 
 		// Set member group
 
@@ -492,33 +442,67 @@ class Member_register extends Member {
 		$member = ee('Model')->make('Member', $data);
 		$result = $member->validate();
 
+		$field_labels = array();
+
+		foreach ($member->getDisplay()->getFields() as $field)
+		{
+			$field_labels[$field->getName()] = $field->getLabel();
+		}
+
+
 		if ($result->failed())
 		{
-			return ee()->output->show_user_error('submission', $result->renderErrors());
+			$field_errors = array();
+
+			$e = $result->getAllErrors();
+			$errors = array_map('current', $e);
+
+			foreach ($errors as $field => $error)
+			{
+				$label = lang($field);
+
+				if (isset($field_labels[$field]))
+				{
+					$label = $field_labels[$field];
+				}
+
+				$field_errors[] = "<b>{$label}: </b>{$error}";
+			}
 		}
+
+		$errors = array_merge($field_errors, $cust_errors, $this->errors);
+
+		// Display error if there are any
+		if (count($errors) > 0)
+		{
+			return ee()->output->show_user_error('submission', $errors);
+		}
+
+
+		// Do we require captcha?
+		if (ee('Captcha')->shouldRequireCaptcha())
+		{
+			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha WHERE word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
+
+			if ($query->row('count')  == 0)
+			{
+				return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')));
+			}
+
+			ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
+		}
+
 
 		$member->save();
 
-		$member_id = $member->member_id;
-
-		// Insert custom fields
-		$cust_fields['member_id'] = $member_id;
-
-		ee()->db->query(ee()->db->insert_string('exp_member_data', $cust_fields));
-
-
-		// Create a record in the member homepage table
-		// This is only necessary if the user gains CP access,
-		// but we'll add the record anyway.
-
-		ee()->db->query(ee()->db->insert_string('exp_member_homepage',
-								array('member_id' => $member_id)));
-
-		// Update
+		// Update stats
 		if (ee()->config->item('req_mbr_activation') == 'none')
 		{
 			ee()->stats->update_member_stats();
 		}
+
+		$member_id = $member->member_id;
+
 
 		// Send admin notifications
 		if (ee()->config->item('new_member_notification') == 'y' &&

@@ -752,7 +752,7 @@ CREATE TABLE `exp_member_groups` (
     `site_id` int(4) unsigned NOT NULL DEFAULT '1',
     `group_title` varchar(100) NOT NULL,
     `group_description` text NOT NULL,
-    `is_locked` char(1) NOT NULL DEFAULT 'y',
+    `is_locked` char(1) NOT NULL DEFAULT 'n',
     `can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
     `can_view_online_system` char(1) NOT NULL DEFAULT 'y',
     `can_access_cp` char(1) NOT NULL DEFAULT 'y',

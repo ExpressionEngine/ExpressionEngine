@@ -334,7 +334,7 @@ class EE_Template {
 
 		if (count(ee()->config->_global_vars) > 0)
 		{
-			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
+			$this->log_item("Config Assignments & Template Partials");
 
 			// Only iterate over the partials present in the template
 			$regex = $this->getGlobalsRegex();
@@ -3414,7 +3414,7 @@ class EE_Template {
 			'time' => $time,
 			'memory' => $memory_usage,
 			'message' => $str,
-			'details' => ($details) ? var_export($details, TRUE) : $details,
+			'details' => ($details) ? htmlspecialchars(var_export($details, TRUE), ENT_QUOTES, 'UTF-8') : $details,
 			'time_gain' => $time_gain,
 			'memory_gain' => $memory_gain
 		);
