@@ -249,24 +249,79 @@ class Select extends Query {
 
 		$property = $this->translateProperty($property);
 
-		$fn = 'where';
-
-		switch ($operator)
+		if ($this->isSearchOperator($operator))
 		{
-			case 'NOT IN':
-				$fn .= '_not';
-			case 'IN':
-				$fn .= '_in';
-			case '==':
-				$operator = '';
+			$fn = 'like';
+
+			switch ($operator)
+			{
+				case '^=':
+				case 'STARTS WITH':
+					$side = 'right';
+					break;
+				case '$=':
+				case 'ENDS WITH':
+					$side = 'left';
+					break;
+				case '*=':
+				case 'CONTAINS':
+					$side = 'both';
+					break;
+				case 'NOT CONTAINS':
+					$side = 'both';
+					$fn = 'not_like';
+					break;
+			}
+
+			if ($connective == 'or')
+			{
+				$fn = 'or_'.$fn;
+			}
+
+			$query->$fn($property, $value, $side);
+		}
+		else
+		{
+			$fn = 'where';
+
+			if ($connective == 'or')
+			{
+				$fn = 'or_where';
+			}
+
+			switch ($operator)
+			{
+				case 'NOT IN':
+					$fn .= '_not';
+				case 'IN':
+					$fn .= '_in';
+				case '==':
+					$operator = '';
+			}
+
+			$query->$fn("{$property} {$operator}", $value);
 		}
 
-		if ($connective == 'or')
-		{
-			$fn = 'or_'.$fn;
-		}
+	}
 
-		$query->$fn("{$property} {$operator}", $value);
+	/**
+	 * Identify search operators, they will need LIKE queries with
+	 * approriate escaping.
+	 *
+	 * @param String $op Operator
+	 * @return Bool Is search operator?
+	 */
+	private function isSearchOperator($op)
+	{
+		return (
+			$op == 'STARTS WITH'
+		 || $op == 'CONTAINS'
+		 || $op == 'NOT CONTAINS'
+		 || $op == 'ENDS WITH'
+	 	 || $op == '^='
+	 	 || $op == '*='
+		 || $op == '$='
+	 	);
 	}
 
 	/**
