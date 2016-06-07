@@ -110,6 +110,7 @@ class EE_Template {
 
 	private $layout_contents      = '';
 	private $user_vars            = array();
+	private $globals_regex;
 
 	// --------------------------------------------------------------------
 
@@ -335,18 +336,25 @@ class EE_Template {
 		{
 			$this->log_item("Config Assignments & Template Partials");
 
-			foreach (ee()->config->_global_vars as $key => &$val)
+			// Only iterate over the partials present in the template
+			$regex = $this->getGlobalsRegex();
+			if (preg_match_all($regex, $this->template, $result))
 			{
-				// in case any of these variables have EE comments of their own
-				// removing from the value makes snippets more usable in conditionals
-				$val = $this->remove_ee_comments($val);
+				foreach ($result[1] as $variable)
+				{
+					// In case any of these variables have EE comments of their own,
+					// removing from the value makes snippets more usable in conditionals
+					$value = $this->remove_ee_comments(
+						ee()->config->_global_vars[$variable]
+					);
 
-				$replace = $this->wrapInContextAnnotations(
-					$val,
-					'Snippet "'.$key.'"'
-				);
+					$replace = $this->wrapInContextAnnotations(
+						$value,
+						'Snippet "'.$variable.'"'
+					);
 
-				$this->template = str_replace(LD.$key.RD, $replace, $this->template);
+					$this->template = str_replace(LD.$variable.RD, $replace, $this->template);
+				}
 			}
 		}
 
@@ -572,6 +580,31 @@ class EE_Template {
 			$this->final_template = $this->template;
 			$this->_cleanup_layout_tags();
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generates the regex needed to grab all global template
+	 * partials/variables present on the page
+	 *
+	 * @return	string	Regex to grab globals
+	 */
+	private function getGlobalsRegex()
+	{
+		if ( ! isset($this->globals_regex))
+		{
+			$global_names = array_keys(ee()->config->_global_vars);
+
+			if (strpos(implode($global_names), '-') !== FALSE)
+			{
+				$global_names = array_map('preg_quote', $global_names);
+			}
+
+			$this->globals_regex = '/'.LD.'('.implode('|', $global_names).')'.RD.'/';
+		}
+
+		return $this->globals_regex;
 	}
 
 	// --------------------------------------------------------------------
@@ -3059,7 +3092,7 @@ class EE_Template {
 		$str = str_replace(LD.'lang'.RD, ee()->config->item('xml_lang'), $str);
 
 		// {doc_url}
-		$str = str_replace(LD.'doc_url'.RD, ee()->config->item('doc_url'), $str);
+		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
 
 		// {password_max_length}
 		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);

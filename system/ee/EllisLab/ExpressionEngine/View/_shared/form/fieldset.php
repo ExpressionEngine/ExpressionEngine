@@ -85,6 +85,9 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php if (isset($setting['desc_cont'])): ?>
 		<em><?=lang($setting['desc_cont'])?></em>
 		<?php endif; ?>
+		<?php if (isset($setting['example'])): ?>
+		<p><?=$setting['example']?></p>
+		<?php endif; ?>
 	</div>
 	<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
 		<?php

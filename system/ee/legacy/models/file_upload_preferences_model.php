@@ -120,11 +120,40 @@ class File_upload_preferences_model extends CI_Model
 		{
 			foreach ($result_array as $row)
 			{
-				$return_array[$row['id']] = $row;
+				$return_array[$row['id']] = $this->parse_upload_path_vars($row);
 			}
+		}
+		else {
+			$return_array = $this->parse_upload_path_vars($return_array);
 		}
 
 		return $return_array;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Upload paths may have a {base_url} or {base_path} in them, so we need
+	 * to parse those but also take into account when an upload destination
+	 * belongs to another site
+	 *
+	 * @param array $upload_destination Array of upload destination info
+	 * @return array Upload destination array with parsed variables
+	 */
+	private function parse_upload_path_vars($upload_destination)
+	{
+		$site_id = $upload_destination['site_id'];
+		$overrides = array();
+
+		if ($site_id != ee()->config->item('site_id'))
+		{
+			$overrides = ee()->config->get_cached_site_prefs($site_id);
+		}
+
+		$upload_destination['url'] = parse_config_variables($upload_destination['url'], $overrides);
+		$upload_destination['server_path'] = parse_config_variables($upload_destination['server_path'], $overrides);
+
+		return $upload_destination;
 	}
 
 	// --------------------------------------------------------------------

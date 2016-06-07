@@ -82,8 +82,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160603');
-		define('APP_VER',		'3.3.3');
+		define('APP_BUILD',		'20160523');
+		define('APP_VER',		'3.4.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -94,6 +94,7 @@ class EE_Core {
 		define('NL',			"\n");
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 		define('PASSWORD_MAX_LENGTH', 72);
+		define('DOC_URL',       'https://docs.expressionengine.com/v3/');
 
 		ee()->load->helper('language');
 		ee()->load->helper('string');

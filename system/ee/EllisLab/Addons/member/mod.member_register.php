@@ -607,7 +607,7 @@ class Member_register extends Member {
 			$query = $this->_do_form_query();
 
 			$site_name	= $query->row('board_label') ;
-			$return		= $query->row('board_forum_url') ;
+			$return		= parse_config_variables($query->row('board_forum_url'));
 		}
 		else
 		{
@@ -656,7 +656,7 @@ class Member_register extends Member {
 			$query = $this->_do_form_query();
 
 			$site_name	= $query->row('board_label') ;
-			$return		= $query->row('board_forum_url') ;
+			$return		= parse_config_variables($query->row('board_forum_url'));
 		}
 		else
 		{

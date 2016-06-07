@@ -8,7 +8,7 @@ if (isset($field['name']))
 $value = set_value($field_name);
 if ($value == '')
 {
-	$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
+	$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name, '', TRUE);
 }
 // Escape output
 if (is_string($value))

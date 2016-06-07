@@ -177,10 +177,30 @@ class Board extends Model {
 	protected $board_enable_rss;
 	protected $board_use_http_auth;
 
+	/**
+	 * Parses URL properties for any config variables
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return mixed The value of the property
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+
+		if ($name == 'board_forum_url' OR $name == 'board_upload_path')
+		{
+			$value = $this->parseConfigVars($value);
+		}
+
+		return $value;
+	}
+
 	public function validateUploadPath($key, $value, $params, $rule)
 	{
 		if ($value != '')
 		{
+			$value = $this->parseConfigVars($value);
+
 			if ( ! @is_dir($value))
 			{
 				return 'invalid_upload_path';
@@ -188,6 +208,26 @@ class Board extends Model {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * URLs and paths may have a {base_url} or {base_path} in them, so we need
+	 * to parse those but also take into account when a forum board belongs to
+	 * another site
+	 *
+	 * @param string $value Value of property to parse
+	 * @return string Upload path or URL with variables parsed
+	 */
+	private function parseConfigVars($value)
+	{
+		$overrides = array();
+
+		if ($this->getProperty('board_site_id') != ee()->config->item('site_id'))
+		{
+			$overrides = ee()->config->get_cached_site_prefs($this->getProperty('board_site_id'));
+		}
+
+		return parse_config_variables($value, $overrides);
 	}
 
 	public function validateForumTrigger($key, $value, $params, $rule)

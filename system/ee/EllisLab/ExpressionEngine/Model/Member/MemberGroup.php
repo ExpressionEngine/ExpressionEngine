@@ -25,6 +25,7 @@ class MemberGroup extends StructureModel {
 		'can_access_footer_report_bug'   => 'boolString',
 		'can_access_footer_new_ticket'   => 'boolString',
 		'can_access_footer_user_guide'   => 'boolString',
+		'can_view_homepage_news'         => 'boolString',
 		'can_access_files'               => 'boolString',
 		'can_access_design'              => 'boolString',
 		'can_access_addons'              => 'boolString',
@@ -206,6 +207,7 @@ class MemberGroup extends StructureModel {
 	protected $can_access_footer_report_bug;
 	protected $can_access_footer_new_ticket;
 	protected $can_access_footer_user_guide;
+	protected $can_view_homepage_news;
 	protected $can_access_files;
 	protected $can_access_design;
 	protected $can_access_addons;

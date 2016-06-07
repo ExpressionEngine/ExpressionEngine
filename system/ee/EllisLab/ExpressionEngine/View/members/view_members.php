@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box snap mb">
+<div class="box snap mb table-list-wrap">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<h1>

@@ -1,10 +1,5 @@
 <?php
 
-function is_really_writable($file)
-{
-	return is_writable($file);
-}
-
 require('bootstrap.php');
 require(APPPATH.'config/constants.php');
 require(BASEPATH.'helpers/string_helper.php');

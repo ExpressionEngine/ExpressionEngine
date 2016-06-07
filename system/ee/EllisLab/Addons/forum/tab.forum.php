@@ -281,7 +281,7 @@ class Forum_tab {
 				$title 	= $this->_convert_forum_tags($values['forum_title']);
 				$body 	= str_replace(
 					'{permalink}',
-					 $entry->Channel->comment_url.'/'.$entry->url_title.'/',
+					 parse_config_variables($entry->Channel->comment_url).'/'.$entry->url_title.'/',
 					 $values['forum_body']
 				);
 

@@ -965,6 +965,16 @@ class Groups extends Members\Members {
 								'value' => element('footer_helper_links', $values)
 							)
 						)
+					),
+					array(
+						'title'  => 'homepage_news',
+						'desc'   => 'homepage_news_desc',
+						'group'  => 'can_access_cp',
+						'fields' => array(
+							'can_view_homepage_news' => array(
+								'type' => 'yes_no'
+							)
+						)
 					)
 				),
 				'channels' => array(

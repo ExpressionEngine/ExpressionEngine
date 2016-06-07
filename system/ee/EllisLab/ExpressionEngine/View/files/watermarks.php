@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/default-nav-table'); ?>
 
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>

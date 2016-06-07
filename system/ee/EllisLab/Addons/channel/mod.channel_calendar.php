@@ -414,6 +414,9 @@ class Channel_calendar extends Channel {
 
 				foreach ($query->result_array() as $row)
 				{
+					$overrides = ee()->config->get_cached_site_prefs($row['entry_site_id']);
+					$row['channel_url']	= parse_config_variables($row['channel_url'], $overrides);
+					$row['comment_url']	= parse_config_variables($row['comment_url'], $overrides);
 
 					/** ----------------------------------------
 					/**  Define empty arrays and strings
