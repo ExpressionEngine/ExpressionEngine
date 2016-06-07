@@ -173,6 +173,102 @@ class Builder {
 	}
 
 	/**
+	 * Search for a value
+	 *
+	 * @param String  $properties  [Relationship.columnname, ...]
+	 * @param Mixed   $value       Value to search for
+	 * @return Query  $this
+	 */
+	public function search($properties, $value)
+	{
+		if ( ! is_array($properties))
+		{
+			$properties = array($properties);
+		}
+
+		$words = $this->prepSearch($value);
+
+		if (empty($words))
+		{
+			$this->markAsFutile();
+			return $this;
+		}
+
+		foreach ($properties as $property)
+		{
+			foreach ($words as $word)
+			{
+				if ($word[0] == '-')
+				{
+					$this->filter($property, 'NOT CONTAINS', substr($word, 1));
+				}
+				else
+				{
+					$this->orFilter($property, 'CONTAINS', $word);
+				}
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Prepare a value for search
+	 *
+	 * Here we handle grouping of:
+	 *    Single words
+	 *    Multiple words in quotes
+	 *    Negation of either of the above
+	 *
+	 * @param String $str Search string
+	 * @return Array of search terms, possibly prefixed with a - for negation
+	 */
+	private function prepSearch($str)
+	{
+		$length = strlen($str);
+		$words = array();
+
+		$word = '';
+		$quote = '';
+		$quoted = FALSE;
+
+		for ($i = 0; $i < $length; $i++)
+		{
+			$char = $str[$i];
+
+			if (($quoted == FALSE && $char == ' ') || ($quoted == TRUE && $char == $quote))
+			{
+				if (strlen($word) > 2)
+				{
+					$words[] = $word;
+				}
+
+				$quoted = FALSE;
+				$quote = '';
+				$word = '';
+
+				continue;
+			}
+
+			if ($quoted == FALSE && ($char == '"' || $char == "'") && ($word === '' || $word == '-'))
+			{
+				$quoted = TRUE;
+				$quote = $char;
+				continue;
+			}
+
+			$word .= $char;
+		}
+
+		if (strlen($word) > 2)
+		{
+			$words[] = $word;
+		}
+
+		return $words;
+	}
+
+	/**
 	 * Apply a filter
 	 *
 	 * @param String  $property  Relationship.columnname
