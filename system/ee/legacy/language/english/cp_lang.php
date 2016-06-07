@@ -299,6 +299,7 @@ $lang = array(
 'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 'btn_fix_errors' => 'Errors Found',
 'btn_save' => 'Save %s',
+'btn_save_and_close' => 'Save &amp; Close',
 'btn_saving' => 'Saving...',
 'no_found' => 'No <b>%s</b> found.',
 'filters' => 'filters',

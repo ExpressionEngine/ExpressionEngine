@@ -145,7 +145,20 @@
 			</div>
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
-				<?=cp_form_submit($button_text, lang('btn_saving'))?>
+				<?php
+					$class = 'btn';
+					$disabled = '';
+
+					if ((isset($errors) && $errors->isNotValid()))
+					{
+						$class = 'btn disable';
+						$disabled = 'disabled="disabled"';
+					}
+
+					$just_save = trim(sprintf(lang('btn_save'), ''));
+				?>
+				<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="edit" data-submit-text="<?=$just_save?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : $just_save?></button>
+				<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_save_and_close')?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : lang('btn_save_and_close')?></button>
 			</fieldset>
 		</form>
 	</div>
