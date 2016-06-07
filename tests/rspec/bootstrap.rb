@@ -55,6 +55,7 @@ Capybara::Webkit.configure do |config|
   config.allow_url 'ee.*'
   config.allow_url 'ellislab.com'
   config.allow_url 'google-analytics.com'
+  config.allow_url 'cdnjs.cloudflare.com'
 end
 
 # Configure hook to run after each example
