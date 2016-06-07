@@ -212,16 +212,19 @@ class EntryListing {
 
 		if ( ! empty($this->search_value))
 		{
-			$entries->filter('title', 'LIKE', '%' . $this->search_value . '%');
+			$search_fields = array('title');
+
+			if (isset($channel))
+			{
+				foreach ($channel->CustomFields as $cf)
+				{
+					$search_fields[] = 'field_id_'.$cf->getId();
+				}
+			}
+
+			$entries->search($search_fields, $this->search_value);
 		}
 
-		if (isset($channel) && ! empty($this->search_value))
-		{
-			foreach ($channel->CustomFields as $cf)
-			{
-				$entries->orFilter('field_id_'.$cf->getId(), 'LIKE', '%'.$this->search_value.'%');
-			}
-		}
 
 		$filter_values = $this->filters->values();
 
