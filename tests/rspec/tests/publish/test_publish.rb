@@ -73,7 +73,7 @@ feature 'Publish Page - Create' do
 
       @page.title.set 'File Field Test'
       @page.chosen_files.should have(2).items
-      @page.submit
+      @page.submit_buttons[1].click
 
       edit = EntryManager.new
       edit.load
