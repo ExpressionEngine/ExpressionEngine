@@ -178,14 +178,13 @@ class Edit extends AbstractPublishController {
 
 			$autosaves = $entry->Autosaves->count();
 
+			// Escape markup in title
+			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+
 			if ($can_edit)
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</a>';
-			}
-			else
-			{
-				$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+				$title = '<a href="' . $edit_link . '">' . $title . '</a>';
 			}
 
 			if ($autosaves)
