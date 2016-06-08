@@ -75,8 +75,8 @@ class Routes extends Design {
 		$vars = array();
 		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
 		$columns = array(
-			'template_name',
-			'group_name',
+			'template',
+			'group',
 			'route' => array('encode' => FALSE),
 			'segments_required' => array('encode' => FALSE)
 		);
@@ -148,8 +148,6 @@ class Routes extends Design {
 
 		$this->stdHeader();
 
-		ee()->view->cp_page_title = lang('template_manager');
-		ee()->view->cp_heading = lang('template_routes_header');
 		ee()->cp->render('design/routes/index', $vars);
 	}
 
