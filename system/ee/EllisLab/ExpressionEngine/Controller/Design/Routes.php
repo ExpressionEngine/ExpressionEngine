@@ -138,13 +138,15 @@ class Routes extends Design {
 		$table->setNoResultsText('no_template_routes');
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($this->base_url);
-		$vars['form_url'] = ee('CP/URL')->make('design/routes/update');
+		$vars = array(
+			'table'          => $table->viewData($this->base_url),
+			'form_url'       => ee('CP/URL')->make('design/routes/update'),
+			'cp_page_title'  => lang('template_manager'),
+			'cp_heading'     => lang('template_routes_header'),
+			'cp_sub_heading' => lang('template_routes_header_desc')
+		);
 
 		$this->stdHeader();
-
-		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/design/route_reorder');
 
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_routes_header');
