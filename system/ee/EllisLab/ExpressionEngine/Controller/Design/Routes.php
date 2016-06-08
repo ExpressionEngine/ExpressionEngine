@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controller\Design\Design;
+use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Routes extends Design {
+class Routes extends AbstractDesignController {
 
 	protected $base_url;
 
@@ -75,10 +75,13 @@ class Routes extends Design {
 		$vars = array();
 		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
 		$columns = array(
-			'template',
+			'template' => array('encode' => FALSE),
 			'group',
 			'route' => array('encode' => FALSE),
-			'segments_required' => array('encode' => FALSE)
+			'segments_required' => array('encode' => FALSE),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
 		);
 
 		$table->setColumns($columns);
@@ -110,7 +113,7 @@ class Routes extends Design {
 					'errors' => $errors
 				));
 
-			$route = ee('View')->make('_shared/form/field')
+			$route_field = ee('View')->make('_shared/form/field')
 				->render(array(
 					'field_name' => "routes[{$id}][route]",
 					'field' => array(
@@ -125,18 +128,78 @@ class Routes extends Design {
 				$template->template_name,
 				htmlentities($group->group_name, ENT_QUOTES, 'UTF-8'),
 				array(
-					'html' => $route,
+					'html' => $route_field,
 					'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
 				),
-				$required
+				$required,
+				array(
+					'name' => 'selection[]',
+					'value' => $route->route_id,
+					'data' => array(
+						'confirm' => lang('route') . ': <b>' . htmlentities($route->route, ENT_QUOTES, 'UTF-8') . '</b>'
+					)
+				)
 			);
 			$row['attrs']['class'] = 'setting-field';
 
 			$data[] = $row;
 		}
 
+		// Blank Row
+		$required = ee('View')->make('_shared/form/field')
+			->render(array(
+				'field_name' => "routes[new_route_0][required]",
+				'field' => array(
+					'type' => 'yes_no',
+					'value' => 'n'
+				),
+				'grid' => FALSE,
+				'errors' => $errors
+			));
+
+		$route_field = ee('View')->make('_shared/form/field')
+			->render(array(
+				'field_name' => "routes[new_route_0][route]",
+				'field' => array(
+					'type' => 'text',
+					'value' => ''
+				),
+				'grid' => FALSE,
+			));
+
+		$template_field = ee('View')->make('_shared/form/field')
+			->render(array(
+				'field_name' => "routes[new_route_0][template]",
+				'field' => array(
+					'type' => 'select',
+					'choices' => $this->getTemplatesWithoutRoutes($templates->pluck('template_id')),
+					'value' => ''
+				),
+				'grid' => FALSE,
+			));
+
+		$row = array();
+		$row['columns'] = array(
+			$template_field,
+			'',
+			array(
+				'html' => $route_field,
+				'error' => (isset($errors) && $errors->hasErrors("routes[new-0][route]")) ? implode('<br>', $errors->getErrors("routes[new-0][route]")) : NULL
+			),
+			$required,
+			array(
+				'name' => 'selection[]',
+				'value' => '0',
+				'disabled' => TRUE,
+			)
+		);
+		$row['attrs']['class'] = 'setting-field hidden';
+
+		$data[] = $row;
+
 		$table->setNoResultsText('no_template_routes');
 		$table->setData($data);
+		$table->addActionButton(ee('CP/URL', 'design/routes/create'), lang('new_route'));
 
 		$vars = array(
 			'table'          => $table->viewData($this->base_url),
@@ -147,6 +210,14 @@ class Routes extends Design {
 		);
 
 		$this->stdHeader();
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('route') . ': <b>### ' . lang('routes') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/confirm_remove',
+				'cp/design/routes'
+			),
+		));
 
 		ee()->cp->render('design/routes/index', $vars);
 	}
@@ -241,6 +312,44 @@ class Routes extends Design {
 
 			$this->index($templates, $errors);
 		}
+	}
+
+	/**
+	 * Gets a list of all the templates for the current site, grouped by
+	 * their template group name, that do not already have a route:
+	 *   array(
+	 *     'news' => array(
+	 *       1 => 'index',
+	 *       3 => 'about',
+	 *     )
+	 *   )
+	 *
+	 * @return array An associative array of templates
+	 */
+	private function getTemplatesWithoutRoutes(array $template_ids)
+	{
+		$existing_templates = array(
+			'0' => '-- ' . strtolower(lang('none')) . ' --'
+		);
+
+		$all_templates = ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('template_id', 'NOT IN', $template_ids)
+			->with('TemplateGroup')
+			->order('TemplateGroup.group_name')
+			->order('template_name')
+			->all();
+
+		foreach ($all_templates as $template)
+		{
+			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
+			{
+				$existing_templates[$template->TemplateGroup->group_name] = array();
+			}
+			$existing_templates[$template->TemplateGroup->group_name][$template->template_id] = $template->template_name;
+		}
+
+		return $existing_templates;
 	}
 }
 

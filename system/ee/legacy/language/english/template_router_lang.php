@@ -15,6 +15,7 @@ $lang = array(
 	'route' => 'Route',
 	'groupe' => 'Group',
 	'segments_required' => 'Segments Required?',
+	'new_route' => 'New route',
 );
 
 // EOF
