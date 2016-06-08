@@ -522,6 +522,7 @@ class Filepicker_mcp {
 		$vars['cp_page_title'] = lang('file_upload');
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
 		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
+		ee()->output->enable_profiler(FALSE);
 		ee()->output->_display($out);
 		exit();
 	}
