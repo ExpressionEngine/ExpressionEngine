@@ -75,8 +75,8 @@ class Routes extends Design {
 		$vars = array();
 		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
 		$columns = array(
-			'group_name',
 			'template_name',
+			'group_name',
 			'route' => array('encode' => FALSE),
 			'segments_required' => array('encode' => FALSE)
 		);
@@ -86,22 +86,16 @@ class Routes extends Design {
 
 		if (is_null($templates))
 		{
-			$templates = ee()->api->get('Template')
-				->with('TemplateGroup')
-				->with('TemplateRoute')
-				->filter('site_id', ee()->config->item('site_id'))
-				->order('TemplateGroup.group_name', 'asc')
-				->order('template_name', 'asc')
-				->all()
-				->sortBy(function($template) {
-					return ($template->TemplateRoute) ? $template->TemplateRoute->order : INF;
-				});
+			$templates = ee()->api->get('TemplateRoute')
+				->with(array('Template' => 'TemplateGroup'))
+				->filter('Template.site_id', ee()->config->item('site_id'))
+				->order('TemplateRoute.order', 'asc')
+				->all();
 		}
 
-		foreach($templates as $template)
+		foreach($templates as $route)
 		{
-			$route = $template->TemplateRoute;
-
+			$template = $route->Template;
 			$group = $template->TemplateGroup;
 			$id = $template->template_id;
 
@@ -110,7 +104,7 @@ class Routes extends Design {
 					'field_name' => "routes[{$id}][required]",
 					'field' => array(
 						'type' => 'yes_no',
-						'value' => (empty($route) || $route->route_required === FALSE) ? 'n' : 'y'
+						'value' => ($route->route_required === FALSE) ? 'n' : 'y'
 					),
 					'grid' => FALSE,
 					'errors' => $errors
@@ -121,15 +115,15 @@ class Routes extends Design {
 					'field_name' => "routes[{$id}][route]",
 					'field' => array(
 						'type' => 'text',
-						'value' => ($route && $route->route) ? $route->route : ''
+						'value' => $route->route ?: ''
 					),
 					'grid' => FALSE,
 				));
 
 			$row = array();
 			$row['columns'] = array(
-				htmlentities($group->group_name, ENT_QUOTES, 'UTF-8'),
 				$template->template_name,
+				htmlentities($group->group_name, ENT_QUOTES, 'UTF-8'),
 				array(
 					'html' => $route,
 					'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
