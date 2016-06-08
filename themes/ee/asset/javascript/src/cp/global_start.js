@@ -58,9 +58,9 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 
 	// Throw all errors
 	if ( ! _.has(options, 'error')) {
-		jqXHR.error(function(data) {
+		jqXHR.fail(function(xhr, status, error) {
 			_.defer(function() {
-				throw [data.statusText, data.responseText];
+				throw error;
 			});
 		});
 	}
