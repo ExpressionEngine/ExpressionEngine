@@ -39,6 +39,7 @@ class Builder {
 	protected $fields = array();
 	protected $orders = array();
 	protected $filters = array();
+	protected $search = array();
 
 	protected $filter_stack = array();
 	protected $lazy_constraints = array();
@@ -175,8 +176,8 @@ class Builder {
 	/**
 	 * Search for a value
 	 *
-	 * @param String  $properties  [Relationship.columnname, ...]
-	 * @param Mixed   $value       Value to search for
+	 * @param Mixed  $properties  Relationship.columnname [array|string]
+	 * @param Mixed   $value      Value to search for
 	 * @return Query  $this
 	 */
 	public function search($properties, $value)
@@ -196,20 +197,34 @@ class Builder {
 
 		foreach ($properties as $property)
 		{
+			$search = isset($this->search[$property]) ? $this->search[$property] : array();
+
 			foreach ($words as $word)
 			{
 				if ($word[0] == '-')
 				{
-					$this->filter($property, 'NOT CONTAINS', substr($word, 1));
+					$search[substr($word, 1)] = FALSE;
 				}
 				else
 				{
-					$this->orFilter($property, 'CONTAINS', $word);
+					$search[$word] = TRUE;
 				}
 			}
+
+			$this->search[$property] = $search;
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Get the current search data
+	 *
+	 * @return Array of search data [field1 => [word1 => include?, ...]]
+	 */
+	public function getSearch()
+	{
+		return $this->search;
 	}
 
 	/**
