@@ -11,14 +11,11 @@
  */
 
 $(document).ready(function () {
-	var newRouteCount = 0;
-
 	$('.tbl-action a.btn').click(function (e) {
 		e.preventDefault();
 
 		var blankRoute = $(this).closest('table').find('tr.last').eq(0);
 		var newRoute = blankRoute.clone();
-		newRouteCount++;
 
 		newRoute.removeClass('hidden');
 		newRoute.removeClass('last');
@@ -26,11 +23,12 @@ $(document).ready(function () {
 		newRoute.html(
 			newRoute.html().replace(
 				RegExp('new_route_[0-9]{1,}', 'g'),
-				'new_route_' + newRouteCount
+				'new_route_' + EE.new_route_index
 			)
 		);
 
 		blankRoute.before(newRoute);
+		EE.new_route_index++;
 	})
 
 	$('table').on('change', 'select', function (e) {

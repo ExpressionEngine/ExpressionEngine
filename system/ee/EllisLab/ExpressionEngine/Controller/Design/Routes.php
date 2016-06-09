@@ -121,10 +121,8 @@ class Routes extends AbstractDesignController {
 
 		$this->stdHeader();
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('route') . ': <b>### ' . lang('routes') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/confirm_remove',
 				'cp/design/routes'
 			),
 		));
@@ -201,6 +199,7 @@ class Routes extends AbstractDesignController {
 		);
 		$row['attrs']['class'] = 'setting-field';
 
+		ee()->javascript->set_global('new_route_index', $new_route_index);
 		return $row;
 	}
 
