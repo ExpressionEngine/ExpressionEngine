@@ -191,7 +191,6 @@ class Builder {
 
 		if (empty($words))
 		{
-			$this->markAsFutile();
 			return $this;
 		}
 
