@@ -64,11 +64,10 @@ class EE_Lang {
 	{
 		if (isset(ee()->session))
 		{
-			ee()->load->library('session');
 			return ee()->security->sanitize_filename(ee()->session->get_language());
 		}
 
-		return 'english';
+		return ee()->config->item('deft_lang') ?: 'english';
 	}
 
 	// --------------------------------------------------------------------
