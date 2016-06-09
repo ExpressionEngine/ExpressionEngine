@@ -71,7 +71,7 @@ class Routes extends AbstractDesignController {
 		$this->base_url = ee('CP/URL')->make('design/routes');
 	}
 
-	public function index($templates = NULL, $errors = NULL)
+	public function index($routes = NULL, $errors = NULL)
 	{
 		$vars = array();
 		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE, 'wrap' => FALSE));
@@ -88,110 +88,24 @@ class Routes extends AbstractDesignController {
 		));
 		$data = array();
 
-		if (is_null($templates))
+		if (is_null($routes))
 		{
-			$templates = ee()->api->get('TemplateRoute')
+			$routes = ee()->api->get('TemplateRoute')
 				->with(array('Template' => 'TemplateGroup'))
 				->filter('Template.site_id', ee()->config->item('site_id'))
 				->order('TemplateRoute.order', 'asc')
 				->all();
 		}
 
-		foreach($templates as $route)
+		$blank_row = $this->getRouteRow(ee('Model')->make('TemplateRoute'), $errors);
+		$blank_row['attrs']['class'] .= ' hidden';
+
+		foreach($routes as $route)
 		{
-			$template = $route->Template;
-			$group = $template->TemplateGroup;
-			$id = $template->template_id;
-
-			$required = ee('View')->make('_shared/form/field')
-				->render(array(
-					'field_name' => "routes[{$id}][required]",
-					'field' => array(
-						'type' => 'yes_no',
-						'value' => ($route->route_required === FALSE) ? 'n' : 'y'
-					),
-					'grid' => FALSE,
-					'errors' => $errors
-				));
-
-			$route_field = ee('View')->make('_shared/form/field')
-				->render(array(
-					'field_name' => "routes[{$id}][route]",
-					'field' => array(
-						'type' => 'text',
-						'value' => $route->route ?: ''
-					),
-					'grid' => FALSE,
-				));
-
-			$row = array();
-			$row['columns'] = array(
-				$template->template_name,
-				htmlentities($group->group_name, ENT_QUOTES, 'UTF-8'),
-				array(
-					'html' => $route_field,
-					'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
-				),
-				$required,
-				array('toolbar_items' => array(
-					'remove' => array(
-						'href' => '#',
-						'title' => lang('remove_route')
-					)
-				))
-			);
-			$row['attrs']['class'] = 'setting-field';
-
-			$data[] = $row;
+			$data[] = $this->getRouteRow($route, $errors);
 		}
 
-		// Blank Row
-		$required = ee('View')->make('_shared/form/field')
-			->render(array(
-				'field_name' => "routes[new_route_0][required]",
-				'field' => array(
-					'type' => 'yes_no',
-					'value' => 'n'
-				),
-				'grid' => FALSE,
-				'errors' => $errors
-			));
-
-		$route_field = ee('View')->make('_shared/form/field')
-			->render(array(
-				'field_name' => "routes[new_route_0][route]",
-				'field' => array(
-					'type' => 'text',
-					'value' => ''
-				),
-				'grid' => FALSE,
-			));
-
-		$template_field = ee('View')->make('_shared/form/field')
-			->render(array(
-				'field_name' => "routes[new_route_0][template]",
-				'field' => array(
-					'type' => 'select',
-					'choices' => $this->getTemplatesWithoutRoutes($templates->pluck('template_id')),
-					'value' => ''
-				),
-				'grid' => FALSE,
-			));
-
-		$row = array();
-		$row['columns'] = array(
-			$template_field,
-			'',
-			array(
-				'html' => $route_field,
-				'error' => (isset($errors) && $errors->hasErrors("routes[new-0][route]")) ? implode('<br>', $errors->getErrors("routes[new-0][route]")) : NULL
-			),
-			$required,
-			array('toolbar_items' => array()),
-		);
-		$row['attrs']['class'] = 'setting-field hidden';
-
-		$data[] = $row;
+		$data[] = $blank_row;
 
 		$table->setNoResultsText('no_template_routes');
 		$table->setData($data);
@@ -216,6 +130,78 @@ class Routes extends AbstractDesignController {
 		));
 
 		ee()->cp->render('design/routes/index', $vars);
+	}
+
+	private function getRouteRow($route, $errors)
+	{
+		static $new_route_index = 0;
+
+		$group_field = ($route->Template) ? htmlentities($route->Template->TemplateGroup->group_name, ENT_QUOTES, 'UTF-8') : '';
+
+		if ($route->isNew())
+		{
+			$id = 'new_route_' . $new_route_index;
+
+			$template_field = ee('View')->make('_shared/form/field')
+				->render(array(
+					'field_name' => "routes[{$id}][template]",
+					'field' => array(
+						'type' => 'select',
+						'choices' => $this->getTemplatesWithoutRoutes(),
+						'value' => ($route->Template) ? $route->Template->template_id : ''
+					),
+					'grid' => FALSE,
+				));
+
+				$new_route_index++;
+		}
+		else
+		{
+			$id = $route->Template->template_id;
+
+			$template_field = htmlentities($route->Template->template_name, ENT_QUOTES, 'UTF-8');
+		}
+
+		$required = ee('View')->make('_shared/form/field')
+			->render(array(
+				'field_name' => "routes[{$id}][required]",
+				'field' => array(
+					'type' => 'yes_no',
+					'value' => ($route->route_required === FALSE) ? 'n' : 'y'
+				),
+				'grid' => FALSE,
+				'errors' => $errors
+			));
+
+		$route_field = ee('View')->make('_shared/form/field')
+			->render(array(
+				'field_name' => "routes[{$id}][route]",
+				'field' => array(
+					'type' => 'text',
+					'value' => $route->route ?: ''
+				),
+				'grid' => FALSE,
+			));
+
+		$row = array();
+		$row['columns'] = array(
+			$template_field,
+			$group_field,
+			array(
+				'html' => $route_field,
+				'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
+			),
+			$required,
+			array('toolbar_items' => array(
+				'remove' => array(
+					'href' => '#',
+					'title' => lang('remove_route')
+				)
+			))
+		);
+		$row['attrs']['class'] = 'setting-field';
+
+		return $row;
 	}
 
 	public function update()
@@ -246,8 +232,15 @@ class Routes extends AbstractDesignController {
 
 			if (strpos($template_id, 'new_route_') === 0)
 			{
+				if (empty($data['template']))
+				{
+					continue;
+				}
+
 				$route = ee('Model')->make('TemplateRoute');
-				$route->template_id = $data['template'];
+				$route->Template = ee('Model')->get('Template', $data['template'])
+					->with('TemplateGroup')
+					->first();
 			}
 			else
 			{
@@ -263,6 +256,7 @@ class Routes extends AbstractDesignController {
 			$route->route = $data['route'];
 			$route->route_required = ($data['required'] == 'y') ? TRUE : FALSE;
 			$route->order = array_search($template_id, $order);
+			$routes[] = $route;
 
 			$result = $route->validate();
 			if ($result->isNotValid())
@@ -274,10 +268,6 @@ class Routes extends AbstractDesignController {
 						$errors->addFailed("routes[{$template_id}][route]", $rule);
 					}
 				}
-			}
-			else
-			{
-				$routes[] = $route;
 			}
 		}
 
@@ -310,8 +300,8 @@ class Routes extends AbstractDesignController {
 	}
 
 	/**
-	 * Gets a list of all the templates for the current site, grouped by
-	 * their template group name, that do not already have a route:
+	 * Gets a list of the templates for the current site that do not already
+	 * have a route, grouped by their template group name:
 	 *   array(
 	 *     'news' => array(
 	 *       1 => 'index',
@@ -321,11 +311,25 @@ class Routes extends AbstractDesignController {
 	 *
 	 * @return array An associative array of templates
 	 */
-	private function getTemplatesWithoutRoutes(array $template_ids)
+	private function getTemplatesWithoutRoutes()
 	{
+		static $existing_templates;
+
+		if ($existing_templates)
+		{
+			return $existing_templates;
+		}
+
 		$existing_templates = array(
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
+
+		$template_ids = ee()->api->get('TemplateRoute')
+			->fields('template_id')
+			->with('Template')
+			->filter('Template.site_id', ee()->config->item('site_id'))
+			->all()
+			->pluck('template_id');
 
 		$all_templates = ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
