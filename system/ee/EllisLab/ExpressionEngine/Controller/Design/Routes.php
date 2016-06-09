@@ -6,6 +6,7 @@ use ZipArchive;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -73,18 +74,18 @@ class Routes extends AbstractDesignController {
 	public function index($templates = NULL, $errors = NULL)
 	{
 		$vars = array();
-		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
-		$columns = array(
+		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE, 'wrap' => FALSE));
+
+		$table->setColumns(array(
 			'template' => array('encode' => FALSE),
 			'group',
 			'route' => array('encode' => FALSE),
 			'segments_required' => array('encode' => FALSE),
-			array(
-				'type'	=> Table::COL_CHECKBOX
+			'remove' => array(
+				'type' => Table::COL_TOOLBAR,
+				'label' => ''
 			)
-		);
-
-		$table->setColumns($columns);
+		));
 		$data = array();
 
 		if (is_null($templates))
@@ -132,13 +133,12 @@ class Routes extends AbstractDesignController {
 					'error' => (isset($errors) && $errors->hasErrors("routes[{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
 				),
 				$required,
-				array(
-					'name' => 'selection[]',
-					'value' => $route->route_id,
-					'data' => array(
-						'confirm' => lang('route') . ': <b>' . htmlentities($route->route, ENT_QUOTES, 'UTF-8') . '</b>'
+				array('toolbar_items' => array(
+					'remove' => array(
+						'href' => '#',
+						'title' => lang('remove_route')
 					)
-				)
+				))
 			);
 			$row['attrs']['class'] = 'setting-field';
 
@@ -187,11 +187,7 @@ class Routes extends AbstractDesignController {
 				'error' => (isset($errors) && $errors->hasErrors("routes[new-0][route]")) ? implode('<br>', $errors->getErrors("routes[new-0][route]")) : NULL
 			),
 			$required,
-			array(
-				'name' => 'selection[]',
-				'value' => '0',
-				'disabled' => TRUE,
-			)
+			array('toolbar_items' => array()),
 		);
 		$row['attrs']['class'] = 'setting-field hidden';
 
@@ -199,7 +195,7 @@ class Routes extends AbstractDesignController {
 
 		$table->setNoResultsText('no_template_routes');
 		$table->setData($data);
-		$table->addActionButton(ee('CP/URL', 'design/routes/create'), lang('new_route'));
+		$table->addActionButton('#', lang('new_route'));
 
 		$vars = array(
 			'table'          => $table->viewData($this->base_url),
@@ -224,57 +220,49 @@ class Routes extends AbstractDesignController {
 
 	public function update()
 	{
-		if (empty($_POST))
+		if (empty($_POST) || ! array_key_exists('routes', $_POST))
 		{
 			ee()->functions->redirect($this->base_url);
 		}
 
 		$errors = new ValidationResult;
-		$templates = ee()->api->get('Template')
-			->with('TemplateGroup')
-			->with('TemplateRoute')
-			->filter('site_id', ee()->config->item('site_id'))
+
+		$routes = new Collection(array());
+
+		$existing_routes = ee()->api->get('TemplateRoute')
+			->with(array('Template' => 'TemplateGroup'))
+			->filter('Template.site_id', ee()->config->item('site_id'))
 			->order('TemplateRoute.order', 'asc')
-			->order('TemplateGroup.group_name', 'asc')
-			->order('template_name', 'asc')
-			->all();
+			->all()
+			->indexBy('template_id');
 
 		$submitted = ee()->input->post('routes');
 
 		$order = array_keys($submitted);
 
-		foreach ($templates as $template)
+		foreach ($submitted as $template_id => $data)
 		{
-			$id = $template->template_id;
-			$submitted[$id]['route'] = trim($submitted[$id]['route']);
+			$data['route'] = trim($data['route']);
 
-			if (empty($submitted[$id]['route']))
+			if (strpos($template_id, 'new_route_') === 0)
 			{
-				if ($template->TemplateRoute)
+				$route = ee('Model')->make('TemplateRoute');
+				$route->template_id = $data['template'];
+			}
+			else
+			{
+				$route = $existing_routes[$template_id];
+
+				if (empty($data['route']))
 				{
-					$template->TemplateRoute = NULL;
-					$template->save();
+					$route->delete();
+					continue;
 				}
-				continue;
 			}
 
-			if ( ! $template->TemplateRoute)
-			{
-				$template->TemplateRoute = ee('Model')->make('TemplateRoute');
-			}
-
-			$route = $template->TemplateRoute;
-
-			// We default to not requiring all segments.
-			$route->route_required = FALSE;
-
-			if (isset($submitted[$id]['required']) && $submitted[$id]['required'] == 'y')
-			{
-				$route->route_required = TRUE;
-			}
-
-			$route->route = $submitted[$id]['route'];
-			$route->order = array_search($id, $order);
+			$route->route = $data['route'];
+			$route->route_required = ($data['required'] == 'y') ? TRUE : FALSE;
+			$route->order = array_search($template_id, $order);
 
 			$result = $route->validate();
 			if ($result->isNotValid())
@@ -283,15 +271,22 @@ class Routes extends AbstractDesignController {
 				{
 					foreach ($rules as $rule)
 					{
-						$errors->addFailed("routes[{$id}][route]", $rule);
+						$errors->addFailed("routes[{$template_id}][route]", $rule);
 					}
 				}
+			}
+			else
+			{
+				$routes[] = $route;
 			}
 		}
 
 		if ($errors->isValid())
 		{
-			$templates->save();
+			foreach($routes as $route)
+			{
+				$route->save();
+			}
 
 			ee('CP/Alert')->makeInline()
 				->asSuccess()
@@ -310,7 +305,7 @@ class Routes extends AbstractDesignController {
 				->addToBody(lang('template_routes_not_saved_desc'))
 				->now();
 
-			$this->index($templates, $errors);
+			$this->index($routes, $errors);
 		}
 	}
 

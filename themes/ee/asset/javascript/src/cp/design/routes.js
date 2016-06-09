@@ -45,4 +45,9 @@ $(document).ready(function () {
 			}
 		});
 	});
+
+	$('.toolbar .remove a').on('click', function(e) {
+		$(this).closest('tr').find('input[type=text]').val('');
+		$(this).closest('tr').hide();
+	});
 });
