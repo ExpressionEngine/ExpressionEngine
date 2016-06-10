@@ -39,6 +39,8 @@ class Settings extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee('DeprecationNotice');
+
 		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
 		{
 			show_error(lang('unauthorized_access'));

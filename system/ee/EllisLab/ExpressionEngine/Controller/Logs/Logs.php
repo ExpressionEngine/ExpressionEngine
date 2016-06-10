@@ -44,6 +44,8 @@ class Logs extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee('DeprecationNotice');
+
 		ee()->lang->loadfile('logs');
 
 		if ( ! ee()->cp->allowed_group('can_access_logs'))

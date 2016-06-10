@@ -31,6 +31,8 @@ class Homepage extends CP_Controller {
 
 	public function index()
 	{
+		ee('DeprecationNotice');
+		
 		$stats = ee('Model')->get('Stats')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();

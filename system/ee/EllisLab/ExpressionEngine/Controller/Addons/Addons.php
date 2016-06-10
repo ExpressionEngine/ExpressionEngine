@@ -46,6 +46,8 @@ class Addons extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee('DeprecationNotice');
+
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			// possible exception for FilePicker
