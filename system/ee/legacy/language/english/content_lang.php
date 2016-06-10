@@ -170,6 +170,10 @@ $lang = array(
 
 'edit_categories' => 'Edit Categories',
 
+'no_categories_assigned' => 'No Categories Assigned',
+
+'no_categories_assigned_desc' => 'There are no categories assigned to this channel. <a href="%s">Assign a category group.</a>',
+
 'revision' => 'Revision',
 
 'formatting' => 'Formatting:',
