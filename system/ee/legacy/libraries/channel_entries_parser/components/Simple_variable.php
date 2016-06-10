@@ -99,7 +99,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		if ($key == $prefix.'title')
 		{
 			$data['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $data['title']);
-			$data['title'] = ee()->typography->markdown($data['title'], array('no_paragraphs' => TRUE));
 
 			$tagdata = str_replace(
 				LD.$key.RD,

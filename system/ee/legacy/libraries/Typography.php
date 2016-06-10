@@ -1204,8 +1204,6 @@ class EE_Typography {
 	 *                           smartypants
 	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
 	 *                           the parsing of markup in Markdown
-	 *                         - no_paragraphs (TRUE/FALSE) set to TRUE to disable
-	 *                           wrapping text blocks in paragraphs
 	 * @return string          Parsed Markdown content
 	 */
 	public function markdown($str, $options = array())
@@ -1253,12 +1251,6 @@ class EE_Typography {
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
-
-		if (isset($options['no_paragraphs'])
-			&& get_bool_from_string($options['no_paragraphs']))
-		{
-			$str = str_replace(array('<p>', '</p>'), '', $str);
-		}
 
 		return $str;
 	}
