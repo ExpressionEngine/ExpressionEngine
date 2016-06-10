@@ -94,7 +94,7 @@ class ChannelEntry extends ContentModel {
 		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
-		'title'              => 'required',
+		'title'              => 'required|limitHtml[b,strong,i,em,span,sup,sub,code,ins,del]',
 		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
