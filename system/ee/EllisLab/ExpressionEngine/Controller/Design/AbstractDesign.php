@@ -329,7 +329,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$addons = array_keys(ee('Addon')->all());
 
 		$modules = ee('Model')->get('Module')->all()->pluck('module_name');
-		$plugins = ee('Model')->get('Plugin')->all()->pluck('plugin_name');
+		$plugins = ee('Model')->get('Plugin')->all()->pluck('plugin_package');
 
 		$modules = array_map('strtolower', $modules);
 		$plugins = array_map('strtolower', $plugins);

@@ -120,6 +120,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 	function serve()
 	{
 		$r = $this->parseRequest();
+
 		$payload  = '<?xml version="1.0" encoding="'.$this->xmlrpc_defencoding.'"?'.'>'."\n";
 		$payload .= $this->debug_msg;
 		$payload .= $r->prepare_response();
@@ -149,7 +150,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
 	function parseRequest($data='')
 	{
-		global $HTTP_RAW_POST_DATA;
+		// $HTTP_RAW_POST_DATA is deprecated in PHP 5.6 and removed in 7.0
 
 		//-------------------------------------
 		//  Get Data
@@ -157,7 +158,14 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
 		if ($data == '')
 		{
-			$data = $HTTP_RAW_POST_DATA;
+			static $raw_post_data;
+
+			if (empty($raw_post_data))
+			{
+				$raw_post_data = file_get_contents("php://input");
+			}
+
+			$data = $raw_post_data;
 		}
 
 		//-------------------------------------
@@ -167,13 +175,14 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 		$parser = xml_parser_create($this->xmlrpc_defencoding);
 		$parser_object = new XML_RPC_Message("filler");
 
-		$parser_object->xh[$parser]					= array();
-		$parser_object->xh[$parser]['isf']			= 0;
-		$parser_object->xh[$parser]['isf_reason']	= '';
-		$parser_object->xh[$parser]['params']		= array();
-		$parser_object->xh[$parser]['stack']		= array();
-		$parser_object->xh[$parser]['valuestack']	= array();
-		$parser_object->xh[$parser]['method']		= '';
+		$parser_name = (string) $parser;
+		$parser_object->xh[$parser_name]               = array();
+		$parser_object->xh[$parser_name]['isf']        = 0;
+		$parser_object->xh[$parser_name]['isf_reason'] = '';
+		$parser_object->xh[$parser_name]['params']     = array();
+		$parser_object->xh[$parser_name]['stack']      = array();
+		$parser_object->xh[$parser_name]['valuestack'] = array();
+		$parser_object->xh[$parser_name]['method']     = '';
 
 		xml_set_object($parser, $parser_object);
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
@@ -196,7 +205,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 				xml_get_current_line_number($parser)));
 			xml_parser_free($parser);
 		}
-		elseif($parser_object->xh[$parser]['isf'])
+		elseif($parser_object->xh[$parser_name]['isf'])
 		{
 			return new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
 		}
@@ -204,17 +213,17 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 		{
 			xml_parser_free($parser);
 
-			$m = new XML_RPC_Message($parser_object->xh[$parser]['method']);
+			$m = new XML_RPC_Message($parser_object->xh[$parser_name]['method']);
 			$plist='';
 
-			for($i=0; $i < count($parser_object->xh[$parser]['params']); $i++)
+			for($i=0; $i < count($parser_object->xh[$parser_name]['params']); $i++)
 			{
 				if ($this->debug === TRUE)
 				{
-					$plist .= "$i - " .  print_r(get_object_vars($parser_object->xh[$parser]['params'][$i]), TRUE). ";\n";
+					$plist .= "$i - " .  print_r(get_object_vars($parser_object->xh[$parser_name]['params'][$i]), TRUE). ";\n";
 				}
 
-				$m->addParam($parser_object->xh[$parser]['params'][$i]);
+				$m->addParam($parser_object->xh[$parser_name]['params'][$i]);
 			}
 
 			if ($this->debug === TRUE)
@@ -341,7 +350,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 				}
 				else
 				{
-					return $this->object->$method_parts['1']($m);
+					return $this->object->{$method_parts['1']}($m);
 					//return call_user_func(array(&$method_parts['0'],$method_parts['1']), $m);
 				}
 			}

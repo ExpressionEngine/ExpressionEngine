@@ -199,10 +199,18 @@ class GridInput extends Table {
 	 */
 	public function namespaceForGrid($search, $row_id = 'new_row_0')
 	{
-		return $this->namespaceInputs(
+		$str = $this->namespaceInputs(
 			$search,
 			'$1name="'.$this->config['field_name'].'[rows]['.$row_id.'][$2]$3"'
 		);
+
+		$str = preg_replace(
+			'/data-input-value=["\']([^"\'\[\]]+)([^"\']*)["\']/',
+			'data-input-value="'.$this->config['field_name'].'[rows]['.$row_id.'][$1]$2"',
+			$str
+		);
+
+		return $str;
 	}
 
 	/**

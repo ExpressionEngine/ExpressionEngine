@@ -9,9 +9,11 @@
 				<li>
 					<a class="has-sub" href=""><?=lang('auto_saved_entries')?></a>
 					<div class="sub-menu">
+						<?php if ($entry->getAutosaves()->count() >= 10): ?>
 						<fieldset class="filter-search">
-							<input type="text" value="" placeholder="<?=lang('filter_autosaves')?>">
+							<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=lang('filter_autosaves')?>">
 						</fieldset>
+						<?php endif; ?>
 						<div class="scroll-wrap">
 							<ul>
 								<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>
@@ -69,6 +71,7 @@
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
+			<?=$tab->renderAlert()?>
 			<?php foreach ($tab->getFields() as $field): ?>
 			<?php if ( ! $field->isRequired() && ! $field->isVisible()) continue; ?>
 				<?php
@@ -143,10 +146,20 @@
 			</div>
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
-				<?php if ($entry->Channel->enable_versioning): ?>
-				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>" data-submit-text="<?=lang('btn_save_revision')?>">
-				<?php endif; ?>
-				<?=cp_form_submit($button_text, lang('btn_saving'))?>
+				<?php
+					$class = 'btn';
+					$disabled = '';
+
+					if ((isset($errors) && $errors->isNotValid()))
+					{
+						$class = 'btn disable';
+						$disabled = 'disabled="disabled"';
+					}
+
+					$just_save = trim(sprintf(lang('btn_save'), ''));
+				?>
+				<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="edit" data-submit-text="<?=$just_save?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : $just_save?></button>
+				<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_save_and_close')?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : lang('btn_save_and_close')?></button>
 			</fieldset>
 		</form>
 	</div>

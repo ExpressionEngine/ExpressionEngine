@@ -1,0 +1,7 @@
+{
+	"label": "SEO Title",
+	"instructions": "Page title that will be added to browser titlebar/tab.",
+	"fmt": "none",
+	"search": "n",
+	"order": 5
+}

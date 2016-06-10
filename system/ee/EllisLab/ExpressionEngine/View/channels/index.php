@@ -1,10 +1,11 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/default-nav-table'); ?>
 
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<?php if ($show_new_channel_button): ?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action <?=$disable?>" href="<?=ee('CP/URL')->make('channels/create')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action <?=$disable?>" href="<?=ee('CP/URL')->make('channels/sets')?>"><?=lang('import')?></a>
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>

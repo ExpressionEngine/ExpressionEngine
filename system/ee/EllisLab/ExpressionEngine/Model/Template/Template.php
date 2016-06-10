@@ -36,13 +36,15 @@ class Template extends FileSyncedModel {
 	protected static $_primary_key = 'template_id';
 	protected static $_table_name = 'templates';
 
+	protected static $_hook_id = 'template';
+
 	protected static $_typed_columns = array(
 		'cache'              => 'boolString',
 		'enable_http_auth'   => 'boolString',
 		'allow_php'          => 'boolString',
 		'protect_javascript' => 'boolString',
 		'refresh'            => 'int',
-		'hit_counter'        => 'int',
+		'hits'               => 'int',
 	);
 
 	protected static $_relationships = array(
@@ -100,6 +102,10 @@ class Template extends FileSyncedModel {
 		'protect_javascript' => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterSave',
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -135,12 +141,17 @@ class Template extends FileSyncedModel {
 	 */
 	public function getFilePath()
 	{
+		static $group;
+
 		if (ee()->config->item('save_tmpl_files') != 'y')
 		{
 			return NULL;
 		}
 
-		$group = $this->getTemplateGroup();
+		if ( ! $group || $group->group_id != $this->group_id)
+		{
+			$group = $this->getTemplateGroup();
+		}
 
 		if ( ! isset($group))
 		{
@@ -258,6 +269,12 @@ class Template extends FileSyncedModel {
 		}
 
 		return TRUE;
+	}
+
+	public function onAfterSave()
+	{
+		parent::onAfterSave();
+		ee()->functions->clear_caching('all');
 	}
 }
 

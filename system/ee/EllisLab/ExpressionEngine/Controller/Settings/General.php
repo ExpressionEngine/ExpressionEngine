@@ -299,7 +299,7 @@ class General extends Settings {
 			if ($latest_version[0] > APP_VER)
 			{
 				$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
-				$instruct_url = ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html');
+				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');
 
 				$desc = sprintf(lang('version_update_inst'), $latest_version[0], $download_url, $instruct_url);
 

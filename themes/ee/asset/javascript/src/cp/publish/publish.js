@@ -101,7 +101,7 @@ $(document).ready(function () {
 	}
 
 	// Category management tools toggle
-	$('body').on('click', '.toggle-tools a.toggle', function (e) {
+	$('body').on('click', '.toggle-tools a.toggle-btn', function (e) {
 		var cat_container = $(this).parents('.nestable');
 
 		// On
@@ -131,7 +131,7 @@ $(document).ready(function () {
 		var modal_link = $(this),
 			modal_name = modal_link.attr('rel'),
 			modal = $('.' + modal_name),
-			isEditing = modal_link.parents('fieldset').find('a.toggle').hasClass('on'),
+			isEditing = modal_link.parents('fieldset').find('a.toggle-btn').hasClass('on'),
 			category_form_url = EE.publish.add_category.URL.replace('###', $(this).data('groupId'));
 
 		// If we're in an editing state, be sure to return to an editing state

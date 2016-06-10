@@ -207,7 +207,7 @@ class MemberImport extends Utilities {
 		}
 
 		$data = array(
-			'xml_file'   		=> ee()->input->post('xml_file'),
+			'xml_file'   		=> parse_config_variables(ee()->input->post('xml_file')),
 			'group_id' 			=> ee()->input->post('group_id'),
 			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : ee()->input->post('language'),
 			'timezones' 		=> ee()->input->post('timezones'),
@@ -279,7 +279,7 @@ class MemberImport extends Utilities {
 
 		$this->lang->loadfile('member_import');
 
-		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : $this->input->post('xml_file');
+		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : parse_config_variables($this->input->post('xml_file'));
 
 		//  Read XML file contents
 		$this->load->helper('file');
@@ -620,10 +620,10 @@ class MemberImport extends Utilities {
 		//  Set our optional default values
 		$this->default_fields['group_id']			= $this->input->post('group_id');
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
-		$this->default_fields['timezone']			= $this->input->post('timezones') ? $this->input->post('timezones') : $this->config->item('default_site_timezone');
-		$this->default_fields['date_format']		= $this->input->post('date_format');
-		$this->default_fields['time_format']		= $this->input->post('time_format');
-		$this->default_fields['include_seconds']	= $this->input->post('include_seconds');
+		$this->default_fields['timezone']			= $this->input->post('timezones') ?: NULL;
+		$this->default_fields['date_format']		= $this->input->post('date_format') ?: NULL;
+		$this->default_fields['time_format']		= $this->input->post('time_format') ?: NULL;
+		$this->default_fields['include_seconds']	= $this->input->post('include_seconds') ?: NULL;
 		$this->default_fields['ip_address']			= '0.0.0.0';
 		$this->default_fields['join_date']			= $this->localize->now;
 

@@ -620,7 +620,7 @@ class Member_auth extends Member {
 		}
 
 		// Build success message
-		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: $url;
+		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: parse_config_variables($url);
 		$name	= ( ! isset($url)) ? stripslashes(ee()->config->item('site_name'))	: $name;
 
 		$data = array(
@@ -645,7 +645,7 @@ class Member_auth extends Member {
  	 *
 	 * @param 	string 	pages to return back to
 	 */
-	public function forgot_password()
+	public function forgot_password($ret = '-3')
 	{
 		// If the user is logged in already, then send them away.  They have no
 		// business here.
@@ -734,7 +734,7 @@ class Member_auth extends Member {
 					->get('forum_boards');
 			}
 
-			$return		= $query->row('board_forum_url') ;
+			$return		= parse_config_variables($query->row('board_forum_url'));
 			$site_name	= $query->row('board_label') ;
 			$board_id	= $query->row('board_id') ;
 		}
@@ -770,8 +770,7 @@ class Member_auth extends Member {
 		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
 
 		// Kill old data from the reset_password field
-		$a_day_ago = time() - (60*60*24);
-		ee()->db->where('date <', $a_day_ago)
+		ee()->db->where('date <', $this->getTokenExpiration())
 			->delete('reset_password');
 
 		// Check flood control
@@ -862,10 +861,9 @@ class Member_auth extends Member {
 		}
 
 		// Make sure the token is valid and belongs to a member.
-		$a_day_ago = time() - (60*60*24);
 		$member_id_query = ee()->db->select('member_id')
 			->where('resetcode', $resetcode)
-			->where('date >', $a_day_ago)
+			->where('date >', $this->getTokenExpiration())
 			->get('reset_password');
 
 		if ($member_id_query->num_rows() === 0)
@@ -931,12 +929,12 @@ class Member_auth extends Member {
 
 		// We'll use this in a couple of places to determine whether a token is still valid
 		// or not.  Tokens expire after exactly 1 day.
-		$a_day_ago = time() - (60*60*24);
+		$expired = $this->getTokenExpiration();
 
 		// Make sure the token is valid and belongs to a member.
 		$member_id_query = ee()->db->select('member_id')
 			->where('resetcode', $resetcode)
-			->where('date >', $a_day_ago)
+			->where('date >', $expired)
 			->get('reset_password');
 
 		if ($member_id_query->num_rows() === 0)
@@ -983,7 +981,7 @@ class Member_auth extends Member {
 
 		// Invalidate the old token.  While we're at it, may as well wipe out expired
 		// tokens too, just to keep them from building up.
-		ee()->db->where('date <', $a_day_ago)
+		ee()->db->where('date <', $expired)
 			->or_where('member_id', $member_id_query->row('member_id'))
 			->delete('reset_password');
 
@@ -1010,7 +1008,7 @@ class Member_auth extends Member {
 				->get('forum_boards');
 
 			$site_name = $forum_query->row('board_label');
-			$return = $forum_query->row('board_forum_url');
+			$return = parse_config_variables($forum_query->row('board_forum_url'));
 		}
 		else
 		{
@@ -1043,6 +1041,14 @@ class Member_auth extends Member {
 		/* -------------------------------------------*/
 
 		ee()->output->show_message($data);
+	}
+
+	/**
+	 * Creates a timestamp for use in determinig a token's expiration
+	 */
+	private function getTokenExpiration()
+	{
+		return ee()->localize->now - (60*60); // One hour
 	}
 
 }

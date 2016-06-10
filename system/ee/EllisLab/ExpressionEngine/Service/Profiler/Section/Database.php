@@ -142,7 +142,7 @@ class Database extends ProfilerSection {
 		{
 			$duplicates[] = array(
 				'count' => $dupe_query['count'],
-				'query' => $this->highlightSql($dupe_query['query']),
+				'query' => $dupe_query['query'],
 				'location' => implode(' ', $dupe_query['locations'])
 			);
 		}
@@ -173,70 +173,12 @@ class Database extends ProfilerSection {
 				'formatted_memory'=> $this->formatMemoryString($memory),
 				'time_threshold' => $this->time_threshold,
 				'memory_threshold' => $this->memory_threshold,
-				'query' => $this->highlightSql($sql),
+				'query' => $sql,
 				'location' => $location
 			);
 		}
 
 		return $data;
-	}
-
-	/**
-	 * Format the memory to a sane byte format
-	 *
-	 * @param  string  $memory  the memory in bytes
-	 * @return string  the formatted memory string
-	 **/
-	private function formatMemoryString($memory)
-	{
-		$precision = 0;
-
-		if ($memory >= 1000000000)
-		{
-			$precision = 2;
-			$memory = round($memory / 1073741824, $precision);
-			$unit = lang('profiler_gigabytes');
-		}
-		elseif ($memory >= 1000000)
-		{
-			$precision = 1;
-			$memory = round($memory / 1048576, $precision);
-			$unit = lang('profiler_megabytes');
-		}
-		elseif ($memory >= 1000)
-		{
-			$memory = round($memory / 1024);
-			$unit = lang('profiler_kilobytes');
-		}
-		else
-		{
-			$unit = lang('profiler_bytes');
-		}
-
-		return number_format($memory, $precision).' '.$unit;
-	}
-
-	/**
-	 * Syntax highlight the SQL
-	 *
-	 * @param string	$sql	the query and location
-	 * @return string	syntax highlighted query
-	 **/
-	private function highlightSql($sql)
-	{
-		// Load the text helper so we can highlight the SQL
-		ee()->load->helper('text');
-		$highlighted = highlight_code($sql, ENT_QUOTES, 'UTF-8');
-
-		foreach ($this->keywords as $keyword)
-		{
-			$highlighted = str_replace($keyword, '<b>'.$keyword.'</b>', $highlighted);
-		}
-
-		// get rid of non-breaking spaces
-		$highlighted = str_replace('&nbsp;', ' ', $highlighted);
-
-		return $highlighted;
 	}
 }
 

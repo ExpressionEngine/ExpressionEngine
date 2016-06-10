@@ -8,7 +8,7 @@ require './bootstrap.rb'
 feature 'File Manager' do
 
 	before(:each) do
-		@upload_dir = File.expand_path('../../themes/ee/site/agile_records/images/uploads/')
+		@upload_dir = File.expand_path('../../images/about/')
 		@avatar_dir = File.expand_path('../../images/avatars')
 
 		cp_session
@@ -194,7 +194,7 @@ feature 'File Manager' do
 	it 'can view an image', :all_files => true do
 		@page.manage_actions[0].find('li.view a').click
 		@page.wait_until_view_modal_visible
-		@page.wait_for_view_modal_header
+		@page.wait_for_view_modal_header(5)
 		@page.view_modal.text.should include @page.title_names[0].find('em').text
 	end
 

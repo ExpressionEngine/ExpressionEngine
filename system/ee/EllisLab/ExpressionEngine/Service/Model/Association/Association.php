@@ -127,16 +127,22 @@ class Association {
     /**
      * Save any unsaved relations and then the related models.
      */
+    private $saving = FALSE;
+
     public function save()
     {
         $this->diff->commit();
 
-        if ($this->relation->canSaveAcross())
+        if ( ! $this->saving && $this->relation->canSaveAcross())
         {
+            $this->saving = TRUE;
+
             if (isset($this->related))
             {
                 $this->related->save();
             }
+
+            $this->saving = FALSE;
         }
     }
 

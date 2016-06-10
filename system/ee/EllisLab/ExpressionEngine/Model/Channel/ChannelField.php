@@ -32,6 +32,8 @@ class ChannelField extends FieldModel {
 	protected static $_primary_key = 'field_id';
 	protected static $_table_name = 'channel_fields';
 
+	protected static $_hook_id = 'channel_field';
+
 	protected static $_typed_columns = array(
 		'field_pre_populate'   => 'boolString',
 		'field_pre_channel_id' => 'int',
@@ -60,9 +62,10 @@ class ChannelField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-		'group_id'             => 'required|integer',
+//		'group_id'             => 'required|integer',
 		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved',
 		'field_label'          => 'required',
+		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
 		'field_pre_populate'   => 'enum[y,n]',
 		'field_pre_channel_id' => 'integer',
@@ -115,7 +118,7 @@ class ChannelField extends FieldModel {
 		return 'channel_data';
 	}
 
-	protected function getContentType()
+	public function getContentType()
 	{
 		return 'channel';
 	}
@@ -188,7 +191,7 @@ class ChannelField extends FieldModel {
 					{
 						if ($field_info['field'] == 'field_id_' . $this->field_id)
 						{
-							unset($field_layout[$i]['fields'][$j]);
+							array_splice($field_layout[$i]['fields'], $j, 1);
 							break 2;
 						}
 					}
@@ -200,6 +203,49 @@ class ChannelField extends FieldModel {
 		}
 	}
 
+	public function getCompatibleFieldtypes()
+	{
+		$fieldtypes = array();
+		$compatibility = array();
+
+		foreach (ee('Addon')->installed() as $addon)
+		{
+			if ($addon->hasFieldtype())
+			{
+				foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
+				{
+					if (isset($metadata['compatibility']))
+					{
+						$compatibility[$fieldtype] = $metadata['compatibility'];
+					}
+				}
+
+				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
+			}
+		}
+
+		if ($this->field_type)
+		{
+			if ( ! isset($compatibility[$this->field_type]))
+			{
+				return array($this->field_type => $fieldtypes[$this->field_type]);
+			}
+
+			$my_type = $compatibility[$this->field_type];
+
+			$compatible = array_filter($compatibility, function($v) use($my_type)
+			{
+				return $v == $my_type;
+			});
+
+			$fieldtypes = array_intersect_key($fieldtypes, $compatible);
+		}
+
+		asort($fieldtypes);
+
+		return $fieldtypes;
+	}
+
 	/**
 	 * Validate the field name to avoid variable name collisions
 	 */
@@ -208,6 +254,34 @@ class ChannelField extends FieldModel {
 		if (in_array($value, ee()->cp->invalid_custom_field_names()))
 		{
 			return lang('reserved_word');
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * If this entity is not new (an edit) then we cannot change this entity's
+	 * type to something incompatible with its initial type.
+	 */
+	public function validateIsCompatibleWithPreviousValue($key, $value, $params, $rule)
+	{
+		if ( ! $this->isNew() )
+		{
+			$previous_value = $this->getBackup('field_type');
+
+			if ($previous_value)
+			{
+				$compatibility = $this->getCompatibleFieldtypes();
+
+				// If what we are set to now is not compatible to what we were
+				// set to before the change, then we are invalid.
+				if ( ! isset($compatibility[$previous_value]))
+				{
+					// Reset it and return an error.
+					$this->field_type = $previous_value;
+					return lang('invalid_field_type');
+				}
+			}
 		}
 
 		return TRUE;

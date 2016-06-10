@@ -76,6 +76,30 @@ class Forum_mcp extends CP_Controller {
 			}
 		}
 
+		$aliases = $sidebar->addHeader(lang('forum_aliases'))
+			->withButton(lang('new'), ee('CP/URL')->make($this->base . 'create/alias'));
+
+		$alias_list = $aliases->addFolderList('aliases')
+			->withRemoveUrl(ee('CP/URL')->make($this->base . 'remove/alias', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
+			->withNoResultsText(sprintf(lang('no_found'), lang('forum_aliases')));
+
+		$all_aliases = ee('Model')->get('forum:Board')
+			->fields('board_id', 'board_alias_id', 'board_label')
+			->filter('board_alias_id', '>', 0)
+			->all();
+
+		if (count($all_aliases))
+		{
+			foreach ($all_aliases as $alias)
+			{
+				$item = $alias_list->addItem($alias->board_label, ee('CP/URL')->make($this->base . 'index/' . $alias->board_alias_id))
+					->withEditUrl(ee('CP/URL')->make($this->base . 'edit/alias/' . $alias->board_id))
+					->withRemoveConfirmation(lang('forum_alias') . ': <b>' . $alias->board_label . '</b>')
+					->identifiedBy($alias->board_id)
+					->isInactive();
+			}
+		}
+
 		$sidebar->addHeader(lang('templates'))
 			->withUrl(ee('CP/URL')->make('design/forums'));
 
@@ -430,7 +454,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board);
+				$this->saveBoardAndRedirect($board);
 			}
 		}
 
@@ -457,12 +481,12 @@ class Forum_mcp extends CP_Controller {
 			});
 		');
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
 			),
@@ -488,7 +512,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board);
+				$this->saveBoardAndRedirect($board);
 			}
 		}
 
@@ -508,12 +532,12 @@ class Forum_mcp extends CP_Controller {
 			'required' => TRUE
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -550,7 +574,7 @@ class Forum_mcp extends CP_Controller {
 		return $result;
 	}
 
-	private function saveBordAndRedirect($board)
+	private function saveBoardAndRedirect($board)
 	{
 		$action = ($board->isNew()) ? 'create' : 'edit';
 
@@ -636,7 +660,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_forum_url' => array(
 							'type' => 'text',
-							'value' => $board->board_forum_url,
+							'value' => $board->getRawProperty('board_forum_url'),
 							'required' => TRUE
 						)
 					)
@@ -654,11 +678,10 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'default_theme',
-					'desc' => 'default_theme_desc',
 					'fields' => array(
 						'board_default_theme' => array(
 							'type' => 'select',
-							'choices' => $this->getForumThemes(),
+							'choices' => ee('ee:Theme')->listThemes('forum'),
 							'value' => $board->board_default_theme,
 						)
 					)
@@ -717,13 +740,12 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_upload_path' => array(
 							'type' => 'text',
-							'value' => $board->board_upload_path,
+							'value' => $board->getRawProperty('board_upload_path'),
 						)
 					)
 				),
 				array(
 					'title' => 'allowed_file_types',
-					'desc' => 'allowed_file_types_desc',
 					'fields' => array(
 						'board_attach_types' => array(
 							'type' => 'select',
@@ -964,7 +986,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'board_html_formatting' => array(
 							'type' => 'select',
@@ -1203,6 +1224,275 @@ class Forum_mcp extends CP_Controller {
 
 	// --------------------------------------------------------------------
 
+	private function createAlias()
+	{
+		$errors = NULL;
+
+		$defaults = array(
+			'board_id'						=> '',
+			'board_label'					=> '',
+			'board_name'					=> '',
+			'board_enabled'					=> 'y',
+			'board_forum_trigger'			=> 'forums',
+			'board_site_id'					=> 1,
+			'board_alias_id'				=> 0,
+			'board_forum_url'				=> ee()->functions->create_url('forums'),
+			'board_default_theme'			=> 'default',
+			'board_forum_permissions'		=> $this->getDefaultForumPermissions(),
+		);
+
+		$alias = ee('Model')->make('forum:Board', $defaults);
+
+		$result = $this->validateAlias($alias);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveAliasAndRedirect($alias);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_forum_alias'),
+			'base_url' => ee('CP/URL')->make($this->base . 'create/alias'),
+			'save_btn_text' => 'btn_save_alias',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->getAliasForm($alias),
+			'errors' => $errors,
+			'required' => TRUE
+		);
+
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=board_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=board_name]");
+			});
+		');
+
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
+
+		$this->generateSidebar();
+
+		return array(
+			'body'       => $body,
+			'breadcrumb' => array(
+				ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
+			),
+			'heading'    => lang('create_forum_alias'),
+		);
+	}
+
+	private function editAlias($id)
+	{
+		$errors = NULL;
+
+		$alias = ee('Model')->get('forum:Board', $id)->first();
+		if ( ! $alias)
+		{
+			show_404();
+		}
+
+		$result = $this->validateAlias($alias);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveAliasAndRedirect($alias);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('edit_forum_board'), $alias->board_label),
+			'base_url' => ee('CP/URL')->make($this->base . 'edit/alias/' . $id),
+			'save_btn_text' => 'btn_save_alias',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->getAliasForm($alias),
+			'errors' => $errors,
+			'required' => TRUE
+		);
+
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
+
+		$this->generateSidebar($id);
+
+		return array(
+			'body'       => $body,
+			'breadcrumb' => array(
+				ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $alias->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+		);
+	}
+
+	private function validateAlias($alias)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($alias->isNew()) ? 'create' : 'edit';
+
+		$alias->set($_POST);
+		$result = $alias->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_forum_alias_error'))
+				->addToBody(lang($action . '_forum_alias_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveAliasAndRedirect($alias)
+	{
+		$action = ($alias->isNew()) ? 'create' : 'edit';
+
+		$alias->save();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_forum_alias_success'))
+			->addToBody(sprintf(lang($action . '_forum_alias_success_desc'), $alias->board_label))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $alias->board_alias_id));
+	}
+
+	private function getAliasForm($alias)
+	{
+		$boards = ee('Model')->get('forum:Board')
+			->fields('board_id', 'board_label')
+			->filter('board_alias_id', 0)
+			->all()
+			->getDictionary('board_id', 'board_label');
+
+		$sections = array(
+			array(
+				array(
+					'title' => 'enable_alias',
+					'desc' => 'enable_board_desc',
+					'fields' => array(
+						'board_enabled' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $alias->board_enabled,
+						)
+					)
+				),
+				array(
+					'title' => 'name',
+					'desc' => 'name_desc',
+					'fields' => array(
+						'board_label' => array(
+							'type' => 'text',
+							'value' => $alias->board_label,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'short_name',
+					'desc' => 'alphadash_desc',
+					'fields' => array(
+						'board_name' => array(
+							'type' => 'text',
+							'value' => $alias->board_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'alias_url',
+					'desc' => 'alias_url_desc',
+					'fields' => array(
+						'board_forum_url' => array(
+							'type' => 'text',
+							'value' => $alias->getRawProperty('board_forum_url'),
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'alias_url_segment',
+					'desc' => 'alias_url_segment_desc',
+					'fields' => array(
+						'board_forum_trigger' => array(
+							'type' => 'text',
+							'value' => $alias->board_forum_trigger,
+						)
+					)
+				),
+				array(
+					'title' => 'forum_board',
+					'desc' => 'forum_board_desc',
+					'fields' => array(
+						'board_alias_id' => array(
+							'type' => 'select',
+							'choices' => $boards,
+							'value' => $alias->board_alias_id,
+						)
+					)
+				),
+			)
+		);
+
+		return $sections;
+	}
+
+	private function removeAlias($id)
+	{
+		$alias = ee('Model')->get('forum:Board', $id)->first();
+
+		if ( ! $alias)
+		{
+			show_404();
+		}
+
+		$name = $alias->board_label;
+
+		$alias->delete();
+
+		ee('CP/Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('forum_alias_removed'))
+			->addToBody(sprintf(lang('forum_alias_removed_desc'), $name))
+			->defer();
+
+		$return = ee('CP/URL')->make($this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
+	}
+
+	// --------------------------------------------------------------------
+
 	private function createCategory($board_id)
 	{
 		$errors = NULL;
@@ -1258,12 +1548,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->categoryForm($category),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -1303,12 +1593,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->categoryForm($category),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($category->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -1420,8 +1710,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'reply_notifications',
-					'desc' => 'reply_notifications_desc',
+					'title' => 'reply_notification',
+					'desc' => 'reply_notification_desc',
 					'fields' => array(
 						'forum_enable_notify_emails_topics' => array(
 							'type' => 'inline_radio',
@@ -1522,12 +1812,12 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($category->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				$return->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -1597,12 +1887,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->forumForm($forum),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -1642,12 +1932,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->forumForm($forum),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($forum->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -1860,8 +2150,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'reply_notifications',
-					'desc' => 'reply_notifications_desc',
+					'title' => 'reply_notification',
+					'desc' => 'reply_notification_desc',
 					'fields' => array(
 						'forum_enable_notify_emails_topics' => array(
 							'type' => 'inline_radio',
@@ -1893,7 +2183,6 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'forum_html_formatting' => array(
 							'type' => 'select',
@@ -2106,12 +2395,12 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($forum->Board->board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				$return->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
@@ -2281,12 +2570,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->rankForm($rank),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar('ranks');
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'ranks')->compile() => lang('member_ranks')
 			),
@@ -2326,12 +2615,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->rankForm($rank),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar('ranks');
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'ranks')->compile() => lang('member_ranks')
 			),
@@ -2648,12 +2937,12 @@ class Forum_mcp extends CP_Controller {
 			)
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar($board_id);
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
@@ -2906,12 +3195,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->moderatorForm($moderator),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
 				ee('CP/URL')->make($this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
@@ -2956,12 +3245,12 @@ class Forum_mcp extends CP_Controller {
 			'sections' => $this->moderatorForm($moderator),
 		);
 
-		$body = ee('View')->make('ee:_shared/form')->render($vars);
+		$body = ee('View')->make('ee:_shared/form_with_box')->render($vars);
 
 		$this->generateSidebar();
 
 		return array(
-			'body'       => '<div class="box">' . $body . '</div>',
+			'body'       => $body,
 			'breadcrumb' => array(
 				ee('CP/URL')->make($this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
 				ee('CP/URL')->make($this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
@@ -3267,35 +3556,6 @@ class Forum_mcp extends CP_Controller {
 
 		$UPD = new Forum_upd();
 		return $UPD->forum_set_base_permissions();
-	}
-
-	/**
-	 * Gets a list of the forum themes available
-	 *
-	 * @return array An associateive array of theme directories
-	 */
-	private function getForumThemes()
-	{
-		$themes = array();
-		$path = PATH_THIRD_THEMES.'forum/';
-
-		if ( ! $fp = @opendir($path))
-		{
-			return $themes;
-		}
-
-		while (FALSE !== ($folder = readdir($fp)))
-		{
-			if (@is_dir($path . $folder) && substr($folder, 0, 1) != '.')
-			{
-				$themes[$folder] = ucwords(str_replace("_", " ", $folder));
-			}
-		}
-
-		closedir($fp);
-		ksort($themes);
-
-		return $themes;
 	}
 
 }

@@ -120,6 +120,21 @@ class Category extends ContentModel {
 		}
 	}
 
+	/**
+	 * Converts the fields into facades
+	 *
+	 * We're doing this here to properly set the format on a given field
+	 */
+	protected function addFacade($id, $info, $name_prefix = '')
+	{
+		if (array_key_exists('field_default_fmt', $info))
+		{
+			$info['field_fmt'] = $info['field_default_fmt'];
+		}
+
+		return parent::addFacade($id, $info, $name_prefix);
+	}
+
 }
 
 // EOF

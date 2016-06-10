@@ -341,14 +341,12 @@ class File_model extends CI_Model {
 		$dir_func = $this->_where_function($dir_id);
 		$this->db->$dir_func('upload_location_id', $dir_id);
 
-		// Collate does not work on the IN operator, so we cast to binary
 		if (is_array($file_name))
 		{
 			foreach($file_name as $key => $file)
 			{
-				$file_name[$key] = "binary $file";
+				ee()->db->or_where('file_name', $file);
 			}
-			$this->db->where_in('file_name', $file_name);
 		}
 		else
 		{

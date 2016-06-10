@@ -44,9 +44,9 @@ abstract class ListItem {
 	protected $url_is_external = FALSE;
 
 	/**
-	 * @var string $class The class of the item
+	 * @var array $class The class of the item
 	 */
-	protected $class = '';
+	protected $class = array();
 
 	/**
 	 * Constructor: sets the text and url properties of the item
@@ -94,14 +94,58 @@ abstract class ListItem {
 	}
 
 	/**
+	 * Adds a class to the class array
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	protected function addClass($class)
+	{
+		$this->class[$class] = TRUE;
+		return $this;
+	}
+
+	/**
+	 * Removes a class to the class array
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	protected function removeClass($class)
+	{
+		if (isset($this->class[$class]))
+		{
+			unset($this->class[$class]);
+		}
+		return $this;
+	}
+
+	/**
+	 * Converts the class array into a space delimited string.
+	 *
+	 * @return string All the classes separated by spaces.
+	 */
+	protected function getClass()
+	{
+		return implode(' ', array_keys($this->class));
+	}
+
+	/**
 	 * Marks the item as active
 	 *
 	 * @return self This returns a reference to itself
 	 */
 	public function isActive()
 	{
-		$this->class .= 'act ';
-		return $this;
+		return $this->addClass('act');
+	}
+
+	/**
+	 * Marks the item as inactive
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isInactive()
+	{
+		return $this->removeClass('act');
 	}
 
 }

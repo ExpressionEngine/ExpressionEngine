@@ -31,6 +31,7 @@ class Jquery {
 	 */
 	function __construct()
 	{
+		ee()->load->library('logger');
 		ee()->logger->deprecated('3.2.0');
 		if ( ! defined('PATH_JQUERY'))
 		{

@@ -250,7 +250,6 @@ class Channels extends AbstractChannelsController {
 			array(
 				array(
 					'title' => 'channel_title',
-					'desc' => 'channel_title_desc',
 					'fields' => array(
 						'channel_title' => array(
 							'type' => 'text',
@@ -292,7 +291,6 @@ class Channels extends AbstractChannelsController {
 			$alert,
 			array(
 				'title' => ucfirst(strtolower(lang('status_groups'))),
-				'desc' => 'status_groups_desc',
 				'fields' => array(
 					'status_group' => array(
 						'type' => 'select',
@@ -318,7 +316,6 @@ class Channels extends AbstractChannelsController {
 			),
 			array(
 				'title' => 'custom_field_group',
-				'desc' => 'custom_field_group_desc',
 				'fields' => array(
 					'field_group' => array(
 						'type' => 'select',
@@ -334,7 +331,6 @@ class Channels extends AbstractChannelsController {
 			),
 			array(
 				'title' => ucfirst(strtolower(lang('category_groups'))),
-				'desc' => 'category_groups_desc',
 				'fields' => array(
 					'cat_group' => array(
 						'type' => 'checkbox',
@@ -511,13 +507,6 @@ class Channels extends AbstractChannelsController {
 
 			$channel->save();
 
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
-			{
-				// Duplicate layouts
-				ee()->load->library('layout');
-				ee()->layout->duplicate_layout($dupe_id, $channel->channel_id);
-			}
-
 			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
 			// able to access it as well
@@ -572,6 +561,7 @@ class Channels extends AbstractChannelsController {
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		$live_look_template_options[0] = lang('no_live_look_template');
@@ -717,7 +707,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'channel_url' => array(
 							'type' => 'text',
-							'value' => $channel->channel_url
+							'value' => $channel->getRawProperty('channel_url')
 						)
 					)
 				),
@@ -727,7 +717,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'comment_url' => array(
 							'type' => 'text',
-							'value' => $channel->comment_url
+							'value' => $channel->getRawProperty('comment_url')
 						)
 					)
 				),
@@ -737,7 +727,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'search_results_url' => array(
 							'type' => 'text',
-							'value' => $channel->search_results_url
+							'value' => $channel->getRawProperty('search_results_url')
 						)
 					)
 				),
@@ -747,7 +737,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'rss_url' => array(
 							'type' => 'text',
-							'value' => $channel->rss_url
+							'value' => $channel->getRawProperty('rss_url')
 						)
 					)
 				),
@@ -821,7 +811,6 @@ class Channels extends AbstractChannelsController {
 			'publishing' => array(
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'channel_html_formatting' => array(
 							'type' => 'select',
@@ -1075,7 +1064,6 @@ class Channels extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'html_formatting',
-					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'comment_html_formatting' => array(
 							'type' => 'select',
@@ -1264,11 +1252,6 @@ class Channels extends AbstractChannelsController {
 		{
 			ee()->channel_model->clear_versioning_data($channel->getId());
 		}
-
-		// Only one possible is revisions- enabled or disabled.
-		// We treat as installed/not and delete the whole tab.
-		ee()->load->library('layout');
-		ee()->layout->sync_layout($_POST, $channel->getId());
 
 		// Make sure we only got the fields we asked for
 		foreach ($sections as $settings)

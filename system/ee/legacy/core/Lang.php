@@ -103,6 +103,8 @@ class EE_Lang {
 		$paths = array(
 			// Check custom languages first
 			SYSPATH.'user/language/'.$idiom.'/'.$langfile,
+			// Check if the user session language is English
+			BASEPATH.'language/'.$idiom.'/'.$langfile,
 			// Check their defined default language
 			SYSPATH.'user/language/'.$deft_lang.'/'.$langfile,
 			// Lastly render the english

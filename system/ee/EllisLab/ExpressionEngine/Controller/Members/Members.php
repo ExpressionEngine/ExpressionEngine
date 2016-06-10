@@ -808,7 +808,7 @@ class Members extends CP_Controller {
 
 			foreach ($members as $member)
 			{
-				$this->pendingMemberNotification($template, $member);
+				$this->pendingMemberNotification($template, $member, array('email' => $member->email));
 			}
 		}
 
@@ -820,7 +820,7 @@ class Members extends CP_Controller {
 		/*  - Additional processing when member(s) are validated in the CP
 		/*  - Added 1.5.2, 2006-12-28
 		*/
-			ee()->extensions->call('cp_members_validate_members');
+			ee()->extensions->call('cp_members_validate_members', $ids);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -887,7 +887,7 @@ class Members extends CP_Controller {
 		/*  - Additional processing when member(s) are validated in the CP
 		/*  - Added 1.5.2, 2006-12-28
 		*/
-			ee()->extensions->call('cp_members_validate_members');
+			ee()->extensions->call('cp_members_validate_members', $ids);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -941,7 +941,6 @@ class Members extends CP_Controller {
 		foreach ($members as $member)
 		{
 			$swap = array(
-				'username'  => $member->username,
 				'email'     => $member->email,
 				'activation_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$member->authcode
 			);
@@ -984,6 +983,7 @@ class Members extends CP_Controller {
 			'name'		=> $member->getMemberName(),
 			'site_name'	=> stripslashes(ee()->config->item('site_name')),
 			'site_url'	=> ee()->config->item('site_url'),
+			'username'	=> $member->username,
 			) + $extra_swap;
 
 		$email_title = ee()->functions->var_swap($template->data_title, $swap);
@@ -1153,6 +1153,10 @@ class Members extends CP_Controller {
 			$entries->Author = $heir;
 			$entries->save();
 
+			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
+			$entries->Author = $heir;
+			$entries->save();
+
 			$heir->updateAuthorStats();
 		}
 
@@ -1241,8 +1245,8 @@ class Members extends CP_Controller {
 	private function _member_delete_notifications($member_ids)
 	{
 		// Email notification recipients
-		$group_query = ee()->db->distinct('member_id')
-			->select('screen_name, email, mbr_delete_notify_emails')
+		$group_query = ee()->db->distinct()
+			->select('member_id, screen_name, email, mbr_delete_notify_emails')
 			->join('member_groups', 'members.group_id = member_groups.group_id', 'left')
 			->where('mbr_delete_notify_emails !=', '')
 			->where_in('member_id', $member_ids)

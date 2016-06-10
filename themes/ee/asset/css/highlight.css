@@ -1,0 +1,58 @@
+/* eecms highlighter styles */
+
+.hljs{
+	background-color: #ffffff;
+	color: #333333;
+	display: block;
+	overflow-x: auto;
+	padding: 20px;
+}
+
+.hljs-subst{ color: #333333; }
+
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-name{ color: #3672a4; }
+
+.hljs-built_in,
+.hljs-literal,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition{ color: #d56400; }
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo{ color: #3cbba8; }
+
+.hljs-type,
+.hljs-string,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion{ color: #c06e04; }
+
+.hljs-title,
+.hljs-section{ color: #3639a4; font-weight: bold; }
+
+.hljs-comment{ color: #999999; }
+
+.hljs-meta-keyword{ color: #1aa697; }
+
+.hljs-meta{ color: #808080; }
+
+.hljs-emphasis{ font-style: italic; }
+
+.hljs-strong{ font-weight: bold; }
+
+.hljs-function{ color: #3639a4; }
+
+.hljs-number{ color: #00904b; }
+
+.apache .hljs-attribute{ font-weight: bold; }

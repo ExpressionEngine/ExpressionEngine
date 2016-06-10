@@ -33,6 +33,8 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  */
 class Translate extends Utilities {
 
+	protected $languages_dir;
+
 	/**
 	 * Constructor
 	 */
@@ -45,7 +47,9 @@ class Translate extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
-		if ( ! is_really_writable(APPPATH.'translations/'))
+		$this->languages_dir = SYSPATH.'user/language/';
+
+		if ( ! is_really_writable($this->languages_dir))
 		{
 			$not_writeable = lang('translation_dir_unwritable');
 		}
@@ -126,7 +130,7 @@ class Translate extends Utilities {
 
 		foreach ($language_files as $file)
 		{
-			if ($file == 'email_data.php')
+			if ($file == 'email_data.php' OR $file == 'stopwords.php')
 			{
 				continue;
 			}
@@ -281,7 +285,7 @@ class Translate extends Utilities {
 		$vars['language'] = $language;
 		$vars['filename'] = $filename;
 
-		$dest_dir = APPPATH . 'translations/';
+		$dest_dir = $this->languages_dir . $language . '/';
 
 		require($path . $filename);
 
@@ -305,8 +309,9 @@ class Translate extends Utilities {
 			if ($key != '')
 			{
 				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
-				$keys[$key]['original'] = $val;
-				$keys[$key]['trans'] = $trans;
+				$keys[$key]['original'] = htmlentities($val);
+				$keys[$key]['trans'] = str_replace("'", "&#39;", $trans);
+				$keys[$key]['type'] = (strlen($val) > 100) ? 'textarea' : 'text';
 			}
 		}
 
@@ -327,13 +332,14 @@ class Translate extends Utilities {
 	{
 		$file = ee()->security->sanitize_filename($file);
 
-		$dest_dir = APPPATH . 'translations/';
+		$dest_dir = $this->languages_dir . $language . '/';
 		$filename =  $file . '_lang.php';
 		$dest_loc = $dest_dir . $filename;
 
 		$str = '<?php'."\n".'$lang = array('."\n\n\n";
 
-		ee()->load->library('form_validation');
+		ee()->lang->loadfile($file);
+
 		foreach ($_POST as $key => $val)
 		{
 			$val = str_replace('<script', '', $val);
@@ -341,15 +347,6 @@ class Translate extends Utilities {
 			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
 			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
-
-			ee()->form_validation->set_rules($key, 'lang:' . $key, 'required');
-		}
-
-		if (ee()->form_validation->run() === FALSE)
-		{
-			ee()->view->set_message('issue', lang('translate_error'), lang('translate_error_desc'));
-
-			return $this->edit($language, $file);
 		}
 
 		$str .= "''=>''\n);\n\n";
@@ -362,7 +359,6 @@ class Translate extends Utilities {
 
 			if ( ! is_really_writable($dest_loc))
 			{
-				exit($dest_loc);
 				ee()->view->set_message('issue', lang('trans_file_not_writable'), '', TRUE);
 				ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
 			}
@@ -372,11 +368,11 @@ class Translate extends Utilities {
 
 		if (write_file($dest_loc, $str))
 		{
-			ee()->view->set_message('success', lang('translations_saved'), str_replace('%s', $filename, lang('file_saved')), TRUE);
+			ee()->view->set_message('success', lang('translations_saved'), str_replace('%s', $dest_loc, lang('file_saved')), TRUE);
 		}
 		else
 		{
-			ee()->view->set_message('issue', lang('invalid_path'), '', TRUE);
+			ee()->view->set_message('issue', lang('invalid_path'), $dest_loc, TRUE);
 		}
 		ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
 	}

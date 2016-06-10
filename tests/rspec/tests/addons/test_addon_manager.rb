@@ -93,8 +93,8 @@ feature 'Add-On Manager' do
 
       @page.first_party_status_filter.text.should eq "status (uninstalled)"
       @page.should have_css 'tr.not-installed'
-      @page.all('tr.not-installed').count().should == 20
-      @page.should have(20).first_party_addons
+      @page.all('tr.not-installed').count().should == 19
+      @page.should have(19).first_party_addons
 
       # By 'needs updates'
       @page.first_party_status_filter.click
@@ -157,7 +157,7 @@ feature 'Add-On Manager' do
 
       @page.first_party_version_header[:class].should eq 'highlight'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
-      sorted_versions[-1].should == '1.0'
+      sorted_versions[-1].should == '1.0.0'
     end
 
     it 'retains filters on searching' do
@@ -294,7 +294,8 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (uninstalled)"
       @page.should have_first_party_alert
       @page.first_party_alert.text.should include "Add-Ons Installed"
-      @page.first_party_alert.text.should include addons.join(' ')
+      @page.first_party_alert.text.should include addons[0...4].join(' ')
+      @page.first_party_alert.text.should include "and #{addons[4..-1].count} others..."
       @page.should have_first_party_no_results
       @page.should_not have_first_party_pagination
       @page.should_not have_first_party_bulk_action
@@ -360,7 +361,8 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should have_first_party_alert
       @page.first_party_alert.text.should include "Add-Ons Uninstalled"
-      @page.first_party_alert.text.should include addons.join(' ')
+      @page.first_party_alert.text.should include addons[0...4].join(' ')
+      @page.first_party_alert.text.should include "and #{addons[4..-1].count} others..."
     end
 
     # The settings buttons "work" (200 response)
@@ -691,7 +693,8 @@ feature 'Add-On Manager' do
         @page.should_not have_first_party_alert
         @page.should have_third_party_alert
         @page.third_party_alert.text.should include "Add-Ons Installed"
-        @page.third_party_alert.text.should include addons.join(' ')
+        @page.third_party_alert.text.should include addons[0...4].join(' ')
+        @page.third_party_alert.text.should include "and #{addons[4..-1].count} others..."
       end
 
       it 'displays an itemized modal when attempting to uninstall 5 or less add-on', :install => true do
@@ -755,7 +758,8 @@ feature 'Add-On Manager' do
         @page.should_not have_first_party_alert
         @page.should have_third_party_alert
         @page.third_party_alert.text.should include "Add-Ons Uninstalled"
-        @page.third_party_alert.text.should include addons.join(' ')
+        @page.third_party_alert.text.should include addons[0...4].join(' ')
+        @page.third_party_alert.text.should include "and #{addons[4..-1].count} others..."
       end
 
       # The settings buttons "work" (200 response)

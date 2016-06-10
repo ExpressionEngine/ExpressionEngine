@@ -8,7 +8,7 @@
 #
 # Original Markdown
 # Copyright (c) 2004-2006 John Gruber
-# <http://daringfireball.net/projects/markdown/>
+# <https://daringfireball.net/projects/markdown/>
 #
 namespace Michelf;
 
@@ -32,5 +32,3 @@ interface MarkdownInterface {
   public function transform($text);
 
 }
-
-// EOF

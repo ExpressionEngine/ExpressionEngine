@@ -111,7 +111,7 @@ class Purchase extends Model {
 			->get('simple_commerce:Purchase')
 			->filter('item_id', $item_id)
 			->filter('subscription_end_date', 0)
-			->filter('paypal_subscriber_id', '!=', NULL)
+			->filter('paypal_subscriber_id', '!=', 'NULL')
 			->count();
 
 		$item->save();

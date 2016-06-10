@@ -198,7 +198,7 @@ class Layouts extends AbstractChannelsController {
 			),
 			array(
 				'field' => 'member_groups',
-				'label' => 'lang:member_groups',
+				'label' => 'lang:layout_member_groups',
 				'rules' => 'required'
 			),
 		));
@@ -277,6 +277,8 @@ class Layouts extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->removeStaleFields($channel_layout);
+
 		$channel = $channel_layout->Channel;
 
 		$entry = ee('Model')->make('ChannelEntry');
@@ -296,7 +298,7 @@ class Layouts extends AbstractChannelsController {
 			),
 			array(
 				'field' => 'member_groups',
-				'label' => 'lang:member_groups',
+				'label' => 'lang:layout_member_groups',
 				'rules' => 'required'
 			),
 		));
@@ -348,7 +350,6 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
 			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
-
 
 		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
 
@@ -419,8 +420,8 @@ class Layouts extends AbstractChannelsController {
 				)
 			),
 			array(
-				'title' => 'member_group(s)',
-				'desc' => 'member_group(s)_desc',
+				'title' => 'layout_member_groups',
+				'desc' => 'member_groups_desc',
 				'fields' => array(
 					'member_groups' => array(
 						'type' => 'checkbox',
@@ -475,6 +476,36 @@ class Layouts extends AbstractChannelsController {
 			->defer();
 	}
 
+	/**
+	 * Loops through the layout field data and removes any fields that are no
+	 * longer part of the channel.
+	 *
+	 * @param obj $channel_layout A ChannelLayout object
+	 * @return void
+	 */
+	private function removeStaleFields($channel_layout)
+	{
+		$field_layout = $channel_layout->field_layout;
+
+		$fields = $channel_layout->Channel->CustomFields->map(function($field) {
+			return "field_id_" . $field->field_id;
+		});
+
+		foreach ($field_layout as $i => $section)
+		{
+			foreach ($section['fields'] as $j => $field_info)
+			{
+				// Remove any fields that have since been deleted.
+				if (strpos($field_info['field'], 'field_id_') === 0
+					&& ! in_array($field_info['field'], $fields))
+				{
+					array_splice($field_layout[$i]['fields'], $j, 1);
+				}
+			}
+		}
+
+		$channel_layout->field_layout = $field_layout;
+	}
 }
 
 // EOF

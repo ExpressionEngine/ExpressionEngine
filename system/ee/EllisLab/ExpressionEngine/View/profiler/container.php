@@ -6,7 +6,7 @@
 	<div class="col-group">
 		<div class="col w-16">
 			<div class="box has-tabs">
-				<h1>Something</h1>
+				<h1><?=$uri?></h1>
 				<div class="tab-wrap">
 					<ul class="tabs">
 						<?php foreach ($sections as $i => $section): ?>
@@ -57,6 +57,28 @@
 		for (var i = 0; i < tabs.length; i++) {
 			tabs[i].addEventListener('click', handleTabClick, false);
 		}
+
+		var toggles = wrap.querySelectorAll('a.toggle');
+
+		var toggleVisibility = function(el) {
+			var detailElement = wrap.querySelector('.' + el.rel);
+			var visible = +detailElement.getAttribute('data-toggle');
+
+			el.innerHTML = ["hide details", "show more"][visible];
+
+			detailElement.style.display = ["block", "none"][visible];
+			detailElement.setAttribute('data-toggle', Math.abs(visible - 1));
+
+			return false;
+		}
+
+		for (var i = 0; i < toggles.length; i++) {
+			toggles[i].addEventListener('click', function(evt) { evt.preventDefault(); toggleVisibility(this); }, false);
+		}
 	}();
 	</script>
 <?php endif; ?>
+
+<link rel="stylesheet" href="<?=URL_THEMES_GLOBAL_ASSET?>css/highlight.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>

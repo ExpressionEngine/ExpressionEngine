@@ -24,13 +24,12 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.2.0';	// The version being installed
+	public $version           = '3.4.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	public $mylang            = 'english';// Set dynamically by the user when they run the installer
-	public $image_path        = ''; 		// URL path to the cp_global_images folder.  This is set dynamically
 	public $is_installed      = FALSE;	// Does an EE installation already exist?  This is set dynamically.
 	public $next_update       = FALSE;	// The next update file that needs to be loaded, when an update is performed.
 	public $remaining_updates = 0; 		// Number of updates remaining, in the event the user is updating from several back
@@ -86,12 +85,9 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	public $userdata = array(
 		'app_version'           => '',
-		'doc_url'               => 'https://ellislab.com/expressionengine/user-guide/',
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
-		'db_conntype'           => '0',
-		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -109,11 +105,10 @@ class Wizard extends CI_Controller {
 		'email_address'         => '',
 		'webmaster_email'       => '',
 		'deft_lang'             => 'english',
-		'theme'                 => '01',
+		'theme'                 => 'default',
 		'default_site_timezone' => '',
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
-		'image_path'            => '',
 		'cp_images'             => 'cp_images/',
 		'avatar_path'           => '../images/avatars/',
 		'avatar_url'            => 'images/avatars/',
@@ -128,16 +123,14 @@ class Wizard extends CI_Controller {
 		'install_default_theme' => 'n'
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the EE
-	// and CI config files are one in the same now we use this data when we write the
-	// initial config file using $this->write_config_data()
+	// These are the default values for the CodeIgniter config array.  Since the
+	// EE and CI config files are one in the same now we use this data when we
+	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
-		'uri_protocol'       => 'AUTO',
-		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
-		'encryption_key'     => '',
+		'encryption_key'     => NULL,
 
 		// Enabled for cleaner view files and compatibility
 		'rewrite_short_tags' => TRUE
@@ -159,9 +152,7 @@ class Wizard extends CI_Controller {
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
 
 		// Third party constants
-		define('PATH_ADDONS', SYSPATH.'ee/EllisLab/Addons/');
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
-		define('PATH_RTE',    EE_APPPATH . 'rte_tools/');
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -170,6 +161,8 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
+
+		$this->ci_config['encryption_key'] = sha1(uniqid(mt_rand(), TRUE));
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -185,6 +178,8 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('localize');
 		$this->load->library('cp');
+		$this->load->library('functions');
+		$this->load->driver('cache');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
 
@@ -195,7 +190,6 @@ class Wizard extends CI_Controller {
 		$this->load->library('update_notices');
 
 		// Set the theme URLs
-		$this->image_path = $this->set_path('themes/ee/cp_global_images/');
 		$this->load->add_theme_cascade(APPPATH.'views/');
 
 		// First try the current directory, if they are running the system with an admin.php file
@@ -376,7 +370,6 @@ class Wizard extends CI_Controller {
 			}
 
 			// set the image path and theme folder path
-			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
 
 			// At this point we are reasonably sure that this is a first time
@@ -445,7 +438,8 @@ class Wizard extends CI_Controller {
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
 			// Set the path to the site and CP
-			$host = 'http://';
+			$host = ($this->isSecure()) ? 'https://' : 'http://';
+
 			if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
 			{
 				$host .= $_SERVER['HTTP_HOST'].'/';
@@ -716,7 +710,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'install_default_theme',
 				'label' => 'lang:install_default_theme',
-				'rules' => ''
+				'rules' => 'callback_template_path_writeable'
 			),
 			array(
 				'field' => 'password',
@@ -755,8 +749,7 @@ class Wizard extends CI_Controller {
 			'username' => $this->userdata['db_username'],
 			'password' => $this->userdata['db_password'],
 			'database' => $this->userdata['db_name'],
-			'dbdriver' => $this->userdata['dbdriver'],
-			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'dbdriver' => 'mysqli',
 			'dbprefix' => $this->getDbPrefix(),
 			'swap_pre' => 'exp_',
 			'db_debug' => TRUE, // We show our own errors
@@ -777,7 +770,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Does the specified database schema type exist?
-		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php'))
+		if ( ! file_exists(APPPATH.'schema/mysqli_schema.php'))
 		{
 			$errors[] = lang('unreadable_dbdriver');
 		}
@@ -797,7 +790,7 @@ class Wizard extends CI_Controller {
 		$this->userdata['screen_name'] = $this->userdata['username'];
 
 		// Load the DB schema
-		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
+		require APPPATH.'schema/mysqli_schema.php';
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
@@ -909,6 +902,22 @@ class Wizard extends CI_Controller {
 
 		// Woo hoo! Success!
 		$this->show_success('install', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	public function template_path_writeable($radio)
+	{
+		if ( ! is_really_writable(PATH_TMPL))
+		{
+			ee()->form_validation->set_message(
+				'template_path_writeable',
+				lang('unwritable_templates')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -1026,7 +1035,8 @@ class Wizard extends CI_Controller {
 	private function assign_install_values()
 	{
 		// Set the path to the site and CP
-		$host = 'http://';
+		$host = ($this->isSecure()) ? 'https://' : 'http://';
+
 		if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
 		{
 			$host .= $_SERVER['HTTP_HOST'].'/';
@@ -1078,30 +1088,6 @@ class Wizard extends CI_Controller {
 
 		// Make sure the site_url has a trailing slash
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
-
-		// Set the checkbox values
-		$prefs = array(
-			'db_conntype'		=> array(
-				'persistent' => array('persistent', 'nonpersistent')
-			)
-		);
-
-		foreach ($prefs as $name => $value)
-		{
-			foreach ($value as $k => $v)
-			{
-				if ($this->userdata[$name] == $k)
-				{
-					$this->userdata[$v[0]] = 'checked="checked"';
-					$this->userdata[$v[1]] = '';
-				}
-				else
-				{
-					$this->userdata[$v[0]] = '';
-					$this->userdata[$v[1]] = 'checked="checked"';
-				}
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1127,6 +1113,9 @@ class Wizard extends CI_Controller {
 	{
 		// Make sure the current step is the correct number
 		$this->current_step = ($this->addon_step) ? 3 : 2;
+
+		// ensures the Installer_Extensions lib is loaded which prevents extension hooks from running
+		$this->load->library('extensions');
 
 		$this->load->library('javascript');
 
@@ -1462,7 +1451,6 @@ class Wizard extends CI_Controller {
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
-			'image_path'        => $this->image_path,
 			'javascript_path'   => $javascript_basepath.$javascript_dir,
 
 			'version'           => $this->version,
@@ -1541,287 +1529,20 @@ class Wizard extends CI_Controller {
 	 */
 	function install_site_theme()
 	{
-		$this->userdata['theme'] = (IS_CORE)
-			? 'agile_records_core'
-			: 'agile_records';
+		// Set the site_short_name as default_site since that's used when
+		// creating and saving template files
+		ee()->config->set_item('site_short_name', 'default_site');
 
-		$default_group = 'site';
-
-		$default_template_preferences = array(
-			'caching'       => 'n',
-			'cache_refresh' => 0,
-			'php_parsing'   => 'none', // none, input, output
-		);
-
-		// Uses the Labels of the default four groups, as it is easier than the
-		// Group IDs, let's be honest
-		$default_template_access = array(
-			'Banned'  => 'n',
-			'Guests'  => 'y',
-			'Members' => 'y',
-			'Pending' => 'y'
-		);
-
-		$template_access = array();
-		$template_preferences = array();
-
-		// --------------------------------------------------------------------
-
-		/**
-		 * Site Theme Overrides?
-		 */
-
-		if (file_exists($this->theme_path.$this->userdata['theme'].'/theme_preferences.php'))
+		if ($this->userdata['theme'] != ''&& $this->userdata['theme'] != 'none')
 		{
-			require $this->theme_path.$this->userdata['theme'].'/theme_preferences.php';
-		}
-
-		// --------------------------------------------------------------------
-
-		/**
-		 * Get the Default Preferences and Access Ready for Insert
-		 */
-
-		$default_preferences = array(
-			'allow_php'          => (in_array($default_template_preferences['php_parsing'], array('input', 'output'))) ? 'y' : 'n',
-			'php_parse_location' => ($default_template_preferences['php_parsing'] == 'input') ? 'i' : 'o',
-			'cache'              => ($default_template_preferences['caching'] == 'y') ? 'y' : 'n',
-			'refresh'            => (round((int) $default_template_preferences['cache_refresh']) > 0) ? round( (int) $default_template_preferences['cache_refresh']) : 0
-		);
-
-		$group_ids      = array();
-		$default_access = array();
-
-		ee()->db->select(array('group_title', 'group_id'));
-		$query = ee()->db->get_where('member_groups', array('site_id' => 1));
-
-		foreach($query->result_array() as $row)
-		{
-			// For use with Template Specific Access from Theme Preferences
-			$group_ids[$row['group_title']] = $row['group_id'];
-
-			// Like EE, a group is only denied access if they are specifically
-			// denied. Groups not in the list are granted access by default.
-			if (isset($default_template_access[$row['group_title']])
-				&& $default_template_access[$row['group_title']] == 'n')
-			{
-				$default_access[$row['group_id']] = $row['group_id'];
-			}
-		}
-
-		// --------------------------------------------------------------------
-
-		/**
-		 * Read and Install Template Groups and Templates
-		 */
-
-		$i = 0;
-		$template_groups = array();
-
-		$allowed_suffixes = array('html', 'webpage', 'php', 'css', 'xml', 'feed', 'rss', 'atom', 'static', 'txt', 'js');
-
-		$template_type_conversions = array(
-			'txt'  => 'static',
-			'rss'  => 'feed',
-			'atom' => 'feed',
-			'html' => 'webpage',
-			'php'  => 'webpage',
-		);
-
-		if ($this->userdata['theme'] != ''
-			&& $this->userdata['theme'] != 'none'
-			&& ($fp = opendir($this->theme_path.$this->userdata['theme'])))
-		{
-			while (FALSE !== ($folder = readdir($fp)))
-			{
-				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder)
-					&& substr($folder, -6) == '.group')
-				{
-					++$i;
-
-					$group = preg_replace("#[^a-zA-Z0-9_\-/\.]#i", '', substr($folder, 0, -6));
-
-					$data = array(
-						'group_id'        => $i,
-						'group_name'      => $group,
-						'group_order'     => $i,
-						'is_site_default' => ($default_group == $group) ? 'y' : 'n'
-					);
-
-					ee()->db->insert('template_groups', $data);
-
-					$template_groups[substr($folder, 0, -6)] = array();
-
-					$templates = array('index.html' => 'index.html');  // Required
-
-					if ($tgfp = opendir($this->theme_path.$this->userdata['theme'].'/'.$folder))
-					{
-						while (FALSE !== ($file = readdir($tgfp)))
-						{
-							if (@is_file($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file)
-								&& $file != '.DS_Store'
-								&& $file != '.htaccess')
-							{
-								$templates[$file] = $file;
-							}
-						}
-
-						@closedir($tgfp);
-					}
-
-					$done = array(); // Prevents duplicates with all of the possible suffixes allowed
-
-					foreach($templates as $file)
-					{
-						if (strpos($file, '.') === FALSE)
-						{
-							$name = $file;
-							$type = 'webpage';
-						}
-						else
-						{
-							$type = strtolower(ltrim(strrchr($file, '.'), '.'));
-							$name = preg_replace("#[^a-zA-Z0-9_\-/\.]#i", '', substr($file, 0, -(strlen($type) + 1)));
-
-							if ( ! in_array($type, $allowed_suffixes))
-							{
-								$type = 'html';
-							}
-
-							if (isset($template_type_conversions[$type]))
-							{
-								$type = $template_type_conversions[$type];;
-							}
-						}
-
-						if (in_array($name, $done))
-						{
-							continue;
-						}
-
-						$done[] = $name;
-
-						$data = array(
-							'group_id'       => $i,
-							'template_name'  => $name,
-							'template_type'  => $type,
-							'template_data'  => file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
-							'edit_date'      => $this->now,
-							'last_author_id' => 1
-						);
-
-						$data = array_merge($data, $default_preferences);
-
-						// Specific Template Preferences
-						if (isset($template_preferences[$group][$name]))
-						{
-							foreach($template_preferences[$group][$name] as $type => $value)
-							{
-								switch($type)
-								{
-									case 'caching':
-										$data['cache'] = ($value == 'y') ? 'y' : 'n';
-										break;
-									case 'cache_refresh':
-										$data['refresh'] = round((int) $value);
-										break;
-									case 'php_parsing':
-										switch($value)
-										{
-											case 'input':
-												$data['allow_php'] = 'y';
-												$data['php_parse_location'] = 'i';
-												break;
-											case 'output':
-												$data['allow_php'] = 'y';
-												$data['php_parse_location'] = 'o';
-												break;
-											case 'none':
-												$data['allow_php'] = 'n';
-												$data['php_parse_location'] = 'o';
-												break;
-										}
-										break;
-								}
-							}
-						}
-
-						ee()->db->insert('templates', $data);
-
-						$template_id = ee()->db->insert_id();
-
-						// Access.  Why, oh, why must this be so complicated?! Ugh...
-						$access = $default_access;
-
-						if (isset($template_access[$group][$name]))
-						{
-							foreach($template_access[$group][$name] as $group_title => $setting)
-							{
-								if ( ! isset($group_ids[$group_title])) continue;
-
-								if ($setting == 'y')
-								{
-									unset($access[$group_ids[$group_title]]);
-								}
-								else
-								{
-									$access[$group_ids[$group_title]] = $group_ids[$group_title];
-								}
-							}
-						}
-
-						foreach($access as $group_id)
-						{
-							ee()->db->insert('template_no_access',  array('template_id' => $template_id, 'member_group' => $group_id));
-						}
-					}
-				}
-			}
-
-			closedir($fp);
-
-			//
-			// read and create snippets and global variables, if they exist
-			//
-
-			foreach(array('snippets', 'global_variables') as $type)
-			{
-				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$type))
-				{
-					$this->load->helper('file');
-					$dir = rtrim(realpath($this->theme_path.$this->userdata['theme'].'/'.$type), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-					$vars = array();
-
-					// can't use get_filenames() since it doesn't read hidden files
-					if ($fp = opendir($dir))
-					{
-						while (FALSE !== ($file = readdir($fp)))
-						{
-							if (is_file($dir.$file) && $file != '.DS_Store')
-							{
-								$vars[$file] = read_file($dir.$file);
-							}
-						}
-					}
-
-					foreach ($vars as $name => $contents)
-					{
-						if ($type == 'snippets')
-						{
-							ee()->db->insert('snippets', array('snippet_name' => $name, 'snippet_contents' => $contents, 'site_id' => 1));
-						}
-						else
-						{
-							ee()->db->insert('global_variables', array('variable_name' => $name, 'variable_data' => $contents, 'site_id' => 1));
-						}
-					}
-				}
-			}
-
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content.php'))
+			if (file_exists($this->theme_path.$this->userdata['theme'].'/channel_set.json'))
 			{
-				require $this->theme_path.$this->userdata['theme'].'/default_content.php';
+				$theme = ee('ThemeInstaller');
+				$theme->setSiteURL($this->userdata['site_url']);
+				$theme->setThemePath($this->root_theme_path);
+				$theme->setThemeURL($this->set_path('themes'));
+				$theme->install($this->userdata['theme']);
 			}
 		}
 
@@ -1866,17 +1587,13 @@ class Wizard extends CI_Controller {
 			'db_username'               => $this->userdata['db_username'],
 			'db_password'               => $this->userdata['db_password'],
 			'db_database'               => $this->userdata['db_name'],
-			'db_dbdriver'               => $this->userdata['dbdriver'],
-			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
 			'debug'                     => '1',
-			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
 			'site_label'                => $this->userdata['site_label'],
 			'site_url'                  => $this->userdata['site_url'],
 			'theme_folder_url'          => $this->userdata['site_url'].'themes/',
-			'doc_url'                   => $this->userdata['doc_url'],
 			'webmaster_email'           => $this->userdata['email_address'],
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
@@ -2302,7 +2019,6 @@ class Wizard extends CI_Controller {
 				$data = str_replace('{'.$key.'}', $config[$key], $data);
 				unset($config[$key]);
 			}
-
 		}
 
 		// any unanticipated keys that aren't in our template?
@@ -2315,8 +2031,16 @@ class Wizard extends CI_Controller {
 			unset($config['site_label']);
 		}
 
+		// Create extra_config, unset defaults
+		$defaults = default_config_items();
 		foreach ($config as $key => $val)
 		{
+			// Bypass defaults and empty values
+			if (empty($val) || (isset($defaults[$key]) && $defaults[$key] == $val))
+			{
+				continue;
+			}
+
 			$extra_config .= "\$config['{$key}'] = '{$val}';\n";
 		}
 
@@ -2338,6 +2062,17 @@ class Wizard extends CI_Controller {
 		fwrite($fp, $data, strlen($data));
 		flock($fp, LOCK_UN);
 		fclose($fp);
+
+		// Clear any caches of the config file
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($this->config->config_path);
+		}
+
+		if (function_exists('apc_delete_file'))
+		{
+			@apc_delete_file($this->config->config_path) || apc_clear_cache();
+		}
 
 		return TRUE;
 	}
@@ -2451,6 +2186,22 @@ class Wizard extends CI_Controller {
 
 		// Move the directory
 		return @rename(APPPATH, $new_path);
+	}
+
+	/**
+	 * Is this an https:// connection?
+	 *
+	 * @return bool Is it https?
+	 */
+	private function isSecure()
+	{
+		if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+			|| $_SERVER['SERVER_PORT'] == '443')
+		{
+			return TRUE;
+}
+
+		return FALSE;
 	}
 }
 

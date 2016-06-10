@@ -68,6 +68,7 @@ class Comment extends Model {
 	protected static $_events = array(
 		'afterInsert',
 		'afterDelete',
+		'afterSave',
 	);
 
 	protected $comment_id;
@@ -87,17 +88,18 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->Author->updateAuthorStats();
+		if ($this->Author)
+		{
+			$this->Author->updateAuthorStats();
+		}
+
 		$this->updateCommentStats();
 	}
 
 	public function onAfterDelete()
 	{
-		if ( ! $this->Author)
+		if ($this->Author)
 		{
-			return;
-		}
-
 		// store the author and dissociate. otherwise saving the author will
 		// attempt to save this entry to ensure relationship integrity.
 		// TODO make sure everything is already dissociated when we hit this
@@ -105,7 +107,15 @@ class Comment extends Model {
 		$this->Author = NULL;
 
 		$last_author->updateAuthorStats();
+		}
+
 		$this->updateCommentStats();
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterSave()
+	{
+		ee()->functions->clear_caching('all');
 	}
 
 	private function updateCommentStats()
@@ -132,6 +142,12 @@ class Comment extends Model {
 		$stats->total_comments = $total_comments;
 		$stats->last_comment_date = $last_comment_date;
 		$stats->save();
+
+		// Update comment count for the entry
+		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
+
+		$this->Entry->comment_total = $total_entry_comments;
+		$this->Entry->save();
 	}
 
 }

@@ -16,18 +16,18 @@ class CropFile < FileManagerPage
   element :crop_submit_button, 'form div.t-0 fieldset.form-ctrls input[type="submit"]'
 
   # Rotate Form
-  element :rotate_right, 'form div.t-1 input[name="rotate"][value="270"]', visible: false
-  element :rotate_left, 'form div.t-1 input[name="rotate"][value="90"]', visible: false
-  element :flip_vertical, 'form div.t-1 input[name="rotate"][value="vrt"]', visible: false
-  element :flip_horizontal, 'form div.t-1 input[name="rotate"][value="hor"]', visible: false
-  element :rotate_image_preview, 'form div.t-1 figure.img-preview img', visible: false
-  element :rotate_submit_button, 'form div.t-1 fieldset.form-ctrls input[type="submit"]', visible: false
+  element :rotate_right, 'form div.t-1 input[name="rotate"][value="270"]'
+  element :rotate_left, 'form div.t-1 input[name="rotate"][value="90"]'
+  element :flip_vertical, 'form div.t-1 input[name="rotate"][value="vrt"]'
+  element :flip_horizontal, 'form div.t-1 input[name="rotate"][value="hor"]'
+  element :rotate_image_preview, 'form div.t-1 figure.img-preview img'
+  element :rotate_submit_button, 'form div.t-1 fieldset.form-ctrls input[type="submit"]'
 
   # Resize Form
-  element :resize_width_input, 'form div.t-2 input[name="resize_width"]', visible: false
-  element :resize_height_input, 'form div.t-2 input[name="resize_height"]', visible: false
-  element :resize_image_preview, 'form div.t-2 figure.img-preview img', visible: false
-  element :resize_submit_button, 'form div.t-2 fieldset.form-ctrls input[type="submit"]', visible: false
+  element :resize_width_input, 'form div.t-2 input[name="resize_width"]'
+  element :resize_height_input, 'form div.t-2 input[name="resize_height"]'
+  element :resize_image_preview, 'form div.t-2 figure.img-preview img'
+  element :resize_submit_button, 'form div.t-2 fieldset.form-ctrls input[type="submit"]'
 
   def load
     click_link 'Files'

@@ -207,11 +207,6 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_author_only'));
 		}
 
-		if (is_array($this->entry('category')))
-		{
-			$this->entry['categories'] = $this->entry('category');
-		}
-
 		$meta = $this->_build_meta_array();
 
 		//add hidden field data
@@ -410,7 +405,7 @@ class Channel_form_lib
 				ee()->load->library('channel_form/channel_form_category_tree');
 
 				$tree = ee()->channel_form_category_tree->create(
-					$this->channel('cat_group'), 'edit', '', $this->entry('categories')
+					$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
 				);
 
 				$this->parse_variables['category_menu'] = array(
@@ -474,7 +469,7 @@ class Channel_form_lib
 
 				elseif (preg_match('/^label:(.*)$/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_label'] : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_label : '';
 				}
 
 				elseif (preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) && ($field_type_match = $this->get_field_type($match[1])) &&
@@ -504,7 +499,7 @@ class Channel_form_lib
 
 				elseif (preg_match('/^instructions:(.*)$/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_instructions'] : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
 				}
 
 				elseif (preg_match('/^error:(.*)$/', $key, $match))
@@ -529,7 +524,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					else
+					elseif (strncmp($key, 'exp', 3) !== 0 && strncmp($key, 'embed=', 6) !== 0)
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}
@@ -1464,9 +1459,9 @@ GRID_FALLBACK;
 		// Reset categories if they weren't set above
 		if ($this->_meta['entry_id'] &&
 			ee()->input->post('category') === FALSE &&
-			$this->entry('categories'))
+			count($this->entry->Categories))
 		{
-			$_POST['category'] = $this->entry('categories');
+			$_POST['category'] = $this->entry->Categories->pluck('cat_id');
 		}
 
 		foreach ($this->custom_fields as $i => $field)
@@ -1489,20 +1484,7 @@ GRID_FALLBACK;
 				isset($_POST[$field->field_name.'_hidden_file'])
 			);
 
-			if ($this->edit || ! $isset)
-			{
-				if ($field->field_type == 'date')
-				{
-					$_POST['field_id_'.$field->field_id] = $_POST[$field->field_name] = ee()->localize->human_time($this->entry($field->field_name));
-				}
-				elseif ($field->field_required == 'y')
-				{
-					//add a dummy value to be removed later
-					//to get around _check_data_for_errors, a redundant check
-					$_POST['field_id_'.$field->field_id] = '1';
-				}
-			}
-			else
+			if ($isset)
 			{
 				$field_rules = array();
 
@@ -1659,6 +1641,8 @@ GRID_FALLBACK;
 			}
 		}
 
+		$id_to_name_map = array();
+
 		// CI's form validation rules can either throw an error, or be used as
 		// prepping functions. This is also the case for custom fields. Since our
 		// rules were set on the field short name and the channel entries api uses
@@ -1667,6 +1651,8 @@ GRID_FALLBACK;
 		{
 			$field_id = 'field_id_'.$field->field_id;
 			$field_name = $field->field_name;
+
+			$id_to_name_map[$field_id] = $field_name;
 
 			if (isset($_POST[$field_id]) && isset($_POST[$field_name]))
 			{
@@ -1700,6 +1686,7 @@ GRID_FALLBACK;
 					);
 
 					$this->entry->set($entry_data);
+					$this->entry->edit_date = ee()->localize->now;
 
 					$result = $this->entry->validate();
 
@@ -1722,6 +1709,13 @@ GRID_FALLBACK;
 
 						// only show the first error for each field to match CI's old behavior
 						$this->field_errors = array_map('current', $errors);
+						foreach($this->field_errors as $field => $error)
+						{
+							if (isset($id_to_name_map[$field]))
+							{
+								$this->field_errors[$id_to_name_map[$field]] = $error;
+							}
+						}
 					}
 				}
 				else
@@ -1833,8 +1827,14 @@ GRID_FALLBACK;
 
 			foreach ($this->field_errors as $field => $error)
 			{
-				$field = lang($field);
-				$field_errors[] = "<b>{$field}: </b>{$error}";
+				$label = lang($field);
+
+				if ($this->entry->hasCustomField($field))
+				{
+					$label = $this->entry->getCustomField($field)->getItem('field_label');
+				}
+
+				$field_errors[] = "<b>{$label}: </b>{$error}";
 			}
 
 			throw new Channel_form_exception(
@@ -2108,7 +2108,8 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$query = ee('Model')->get('Channel');
+		$query = ee('Model')->get('Channel')
+			->with('ChannelFormSettings');
 
 		if ($channel_id)
 		{
@@ -2188,6 +2189,31 @@ GRID_FALLBACK;
 		{
 			$this->entry = ee('Model')->make('ChannelEntry');
 			$this->entry->Channel = $this->channel;
+
+			$this->entry->ip_address = ee()->session->userdata['ip_address'];
+
+			// Assign defaults based on the channel
+			$this->entry->title = $this->channel->default_entry_title;
+			$this->entry->versioning_enabled = $this->channel->enable_versioning;
+			$this->entry->status = $this->channel->deft_status;
+			$this->entry->author_id = ee()->session->userdata('member_id');
+
+			if (isset($this->channel->deft_category))
+			{
+				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+				if ($cat)
+				{
+					$this->entry->Categories[] = $cat;
+				}
+			}
+
+			// Assign defaults based on the ChannelFormSettings
+			if ($this->channel->ChannelFormSettings)
+			{
+				$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
+				$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+			}
+
 			return;
 		}
 
@@ -2440,9 +2466,12 @@ GRID_FALLBACK;
 		// check to see if either exists and if it does make sure that the
 		// passed in version is the same as what we find in the database.
 		// If they are different (most likely it wasn't found in the
-		// database) then don't show them the form
+		// database) then don't show them the form.  We also double check it's
+		// in the correct channel
 
 		if (
+			($params['entry_id'] != '' && $this->channel('channel_id') != $this->entry('channel_id')) OR
+			($params['url_title'] != '' && $this->channel('channel_id') != $this->entry('channel_id')) OR
 			($params['entry_id'] != '' && $this->entry('entry_id') != $params['entry_id']) OR
 			($params['url_title'] != '' && $this->entry('url_title') != $params['url_title'])
 		)
@@ -2688,7 +2717,7 @@ GRID_FALLBACK;
 						continue;
 					}
 
-					$field_data = (is_array($this->entry($field_name))) ? $this->entry($field_name) : explode('|', $this->entry($field_name));
+					$field_data = (is_array($this->entry('field_id_' . $field->field_id))) ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
 
 					$options[] = array(
 						'option_value' => $row,
@@ -2707,7 +2736,7 @@ GRID_FALLBACK;
 				{
 					foreach ($field_settings['options'] as $option_value => $option_name)
 					{
-						$field_data = (is_array($this->entry($field_name))) ? $this->entry($field_name) : preg_split('/[\r\n]+/', $this->entry($field_name));
+						$field_data = (is_array($this->entry('field_id_' . $field->field_id))) ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
 
 						$options[] = array(
 							'option_value' => $option_value,

@@ -1,4 +1,6 @@
 class Publish < ControlPanelPage
+  set_url '/system/index.php?/cp/publish/create/{channel_id}'
+
   element :title, 'input[name=title]'
   element :url_title, 'input[name=url_title]'
 
@@ -8,10 +10,6 @@ class Publish < ControlPanelPage
   elements :tab_links, 'ul.tabs li'
   elements :tabs, '.tab-wrap div.tabs'
 
-  section :file_modal, FileModal, '.modal-file', visible: false
-  section :forum_tab, ForumTab, 'body', visible: false
-
-  def load
-    visit '/system/index.php?/cp/publish/create/1'
-  end
+  section :file_modal, FileModal, '.modal-file'
+  section :forum_tab, ForumTab, 'body'
 end

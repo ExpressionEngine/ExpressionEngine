@@ -1,7 +1,7 @@
 <div class="box mb">
 	<?php $this->embed('ee:_shared/form')?>
 </div>
-<div class="box snap">
+<div class="box snap table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open(ee('CP/URL')->make('addons/settings/rte/update_toolsets'))?>
 			<fieldset class="tbl-search right">

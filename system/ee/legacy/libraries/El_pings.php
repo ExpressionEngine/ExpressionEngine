@@ -49,7 +49,7 @@ class El_pings {
 			$class = ee()->router->fetch_class();
 			$method = ee()->router->fetch_method();
 
-			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_registration'))
+			if ($class == 'homepage' OR ($class == 'license' && $method == 'index'))
 			{
 				$payload = array(
 					'contact'			=> $license->getData('license_contact'),
@@ -60,7 +60,7 @@ class El_pings {
 					'php_version'		=> PHP_VERSION
 				);
 
-				if ( ! $registration = $this->_do_ping('http://ping.ellislab.com/register.php', $payload))
+				if ( ! $registration = $this->_do_ping('https://ping.ellislab.com/register.php', $payload))
 				{
 					// save the failed request for a day only
 					ee()->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
@@ -109,7 +109,7 @@ class El_pings {
 		{
 			$version_file = array();
 
-			if ( ! $version_info = $this->_do_ping('http://versions.ellislab.com/versions_ee3.txt'))
+			if ( ! $version_info = $this->_do_ping('https://versions.ellislab.com/versions_ee3.txt'))
 			{
 				$version_file['error'] = TRUE;
 			}

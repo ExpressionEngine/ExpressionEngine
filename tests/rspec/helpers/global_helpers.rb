@@ -25,6 +25,9 @@ end
 # Runs when a page is visted and after every example to ensure no
 # PHP or JavaScript errors are present
 def no_php_js_errors
+  # Open stack traces for screenshots
+  click_link('show') unless page.has_no_css?('.err-wrap h3 a.toggle')
+
   # Search for "on line" or "Line Number:" since they're in pretty much
   # in every PHP error
   if not page.current_url.include? 'logs/developer'
@@ -118,6 +121,7 @@ end
 # after cleaning the database
 #
 # @return [void]
+
 def clean_db
   $db.query(IO.read('sql/truncate_db.sql'))
   clear_db_result
@@ -129,6 +133,7 @@ end
 
 # Reset the DB to a clean slate and reset sessions
 def reset_db(test_file = '')
+
   clean_db do
     if test_file == 'updater'
       $db.query(IO.read('sql/database_2.10.1.sql'))
@@ -138,6 +143,7 @@ def reset_db(test_file = '')
       clear_db_result
     end
   end
+
 end
 
 # Clear the DB result so we can use the DB object again

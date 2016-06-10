@@ -28,11 +28,11 @@ class Layout {
 
 	function duplicate_layout($dupe_id, $channel_id)
 	{
-		ee()->load->model('member_model');
+		$layouts = ee('Model')->get('ChannelLayout')
+			->filter('channel_id', $dupe_id)
+			->all();
 
-		$layouts = ee()->member_model->get_all_group_layouts(array($dupe_id));
-
-		if (empty($layouts))
+		if ( ! $layouts)
 		{
 			return;
 		}
@@ -40,14 +40,12 @@ class Layout {
 		// open each one
 		foreach ($layouts as $layout)
 		{
-			$layout['field_layout'];
+			$data = $layout->getValues();
+			unset($data['layout_id']);
 
-			ee()->db->set("site_id", $layout['site_id']);
-			ee()->db->set("channel_id", $channel_id);
-			ee()->db->set("field_layout", $layout['field_layout']);
-			ee()->db->set("member_group", $layout['member_group']);
+			$data['channel_id'] = $channel_id;
 
-			ee()->db->insert('layout_publish');
+			ee('Model')->make('ChannelLayout', $data)->save();
 		}
 	}
 

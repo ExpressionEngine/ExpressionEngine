@@ -117,6 +117,8 @@ class EE_Session {
 
 		$this->cookie_ttl = $this->_setup_cookie_ttl();
 
+		$this->sess_crypt_key = ee()->config->item('encryption_key');
+
 		// Set Default Session Values
 		// Set USER-DATA as GUEST until proven otherwise
 		$this->_initialize_userdata();
@@ -356,9 +358,10 @@ class EE_Session {
 	 *
 	 * @param 	int 		member_id
 	 * @param 	boolean		admin session or not
+	 * @param 	boolen 		can this session see front-end debugging?
 	 * @return 	string 		Session ID
 	 */
-	public function create_new_session($member_id, $admin_session = FALSE)
+	public function create_new_session($member_id, $admin_session = FALSE, $can_debug = FALSE)
 	{
 		$member = ee('Model')->get('Member', $member_id)->first();
 
@@ -391,6 +394,7 @@ class EE_Session {
 		$this->sdata['last_activity']	= ee()->localize->now;
 		$this->sdata['sess_start']		= $this->sdata['last_activity'];
 		$this->sdata['fingerprint']		= $this->_create_fingerprint((string) $crypt_key);
+		$this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
 
 		$this->userdata['member_id']	= (int) $member_id;
 		$this->userdata['group_id']		= $member->MemberGroup->getId();
@@ -623,7 +627,7 @@ class EE_Session {
 		$this->userdata['display_photos'] = ee()->config->item('enable_photos');
 
 		//  Are users allowed to localize?
-		if (ee()->config->item('allow_member_localization') == 'n')
+		if (ee()->config->item('allow_member_localization') == 'n' OR empty($this->userdata['date_format']))
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
 			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';
@@ -703,7 +707,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
+		ee()->db->select('member_id, can_debug, admin_sess, last_activity, fingerprint, sess_start, login_state');
 		ee()->db->where('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions
@@ -723,6 +727,9 @@ class EE_Session {
 
 		// Assign member ID to session array
 		$this->sdata['member_id'] = (int) $query->row('member_id');
+
+		// Assign masquerader ID to session array
+		$this->sdata['can_debug'] = $query->row('can_debug');
 
 		// Is this an admin session?
 		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;

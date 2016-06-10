@@ -29,7 +29,7 @@ class File_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'File',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -181,10 +181,9 @@ class File_ft extends EE_Fieldtype {
 				->withImage($this->field_name);
 
 			// If we are showing a single directory respect its default modal view
-			if (count($allowed_file_dirs) == 1
-				&& (int) $allowed_file_dirs[0])
+			if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
 			{
-				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs[0])
+				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
 					->first();
 
 				switch ($dir->default_modal_view)
@@ -227,6 +226,7 @@ class File_ft extends EE_Fieldtype {
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
+				'is_image' => ($file && $file->isImage()),
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => $fp->getUrl(),
 				'fp_upload' => $fp_upload,
@@ -750,52 +750,29 @@ STYLIO;
 
 	function save_settings($data)
 	{
-		return array(
-			'field_content_type'	=> $data['field_content_type'],
-			'allowed_directories'	=> $data['allowed_directories'],
-			'show_existing'			=> $data['show_existing'],
-			'num_existing'			=> $data['num_existing'],
+		$defaults = array(
+			'field_content_type'	=> 'all',
+			'allowed_directories'	=> '',
+			'show_existing'			=> '',
+			'num_existing'			=> 0,
 			'field_fmt' 			=> 'none'
 		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Form Validation callback; makes sure there are file upload
-	 * directories available before allowing a new file field to be saved
+	 * Form Validation callback
 	 *
 	 * @return	boolean	Whether or not to pass validation
 	 */
 	public function _validate_file_settings($key, $value, $params, $rule)
 	{
-		// count upload dirs
-		if ( ! $this->_check_directories())
-		{
-			ee()->lang->load('fieldtypes');
-			return sprintf(
-				lang('file_ft_no_upload_directories'),
-				ee('CP/URL')->make('files/uploads/create')
-			);
-		}
-
 		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Tells us whether or not upload destinations exist
-	 *
-	 * This is public to allow for access from Form_validation, which
-	 * triggers the callbacks.
-	 *
-	 * @return	boolean	Whether or not upload destinations exist
-	 */
-	public function _check_directories()
-	{
-		// count upload dirs
-		return (ee('Model')->get('UploadDestination')->filter('module_id', 0)->count() !== 0);
 	}
 
 	// --------------------------------------------------------------------
@@ -807,6 +784,19 @@ STYLIO;
 	 * @return bool   Accepts all content types
 	 */
 	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
 	{
 		return TRUE;
 	}

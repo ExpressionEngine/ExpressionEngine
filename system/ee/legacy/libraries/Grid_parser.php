@@ -297,7 +297,7 @@ class Grid_parser {
 			if (! empty($relationships))
 			{
 				$relationship_parser = ee()->relationships_parser->create(
-					(isset($channel->rfields[config_item('site_id')]) ? $channel->rfields[config_item('site_id')] : array()),
+					$channel->rfields,
 					$row_ids, // array(#, #, #)
 					$tagdata,
 					$relationships, // field_name => field_id
@@ -650,7 +650,7 @@ class Grid_parser {
 		// Assign fieldtype column settings and any other information that will
 		// be helpful to be accessible by fieldtypes
 		$fieldtype->settings = array_merge(
-			$column['col_settings'],
+			(isset($column['col_settings'])) ? $column['col_settings'] : array(),
 			array(
 				'field_label'		=> $column['col_label'],
 				'field_required'	=> $column['col_required'],

@@ -1,0 +1,91 @@
+{
+	"channels": [
+		{
+			"channel_title": "About",
+			"status_group": "About",
+			"field_group": "common"
+		},
+		{
+			"channel_title": "Blog",
+			"field_group": "blog",
+			"cat_group": "Blog",
+			"channel_url": "{path='blog/entry'}"
+		},
+		{
+			"channel_title": "Contact",
+			"field_group": "common"
+		}
+	],
+	"status_groups": [
+		{
+			"name": "About",
+			"statuses": [
+				{
+					"status": "Default Page",
+					"highlight": "2051B3"
+				}
+			]
+		}
+	],
+	"category_groups": [
+		{
+			"name": "Blog",
+			"sort_order": "c",
+			"categories": [
+				"News",
+				"Personal",
+				"Photos",
+				"Videos",
+				"Music"
+			]
+		},
+		{
+			"name": "Slideshow",
+			"categories": ["Not Shown"]
+		}
+	],
+	"upload_destinations": [
+		{
+			"name": "Blog",
+			"path": "asset/img/blog/"
+		},
+		{
+			"name": "Common",
+			"path": "asset/img/common/"
+		},
+		{
+			"name": "Home",
+			"path": "asset/img/home/"
+		}
+	],
+	"config": {
+		"site_404": "home/404",
+		"strict_urls": "y",
+		"save_tmpl_files": "y",
+		"site_name": "Default Site",
+		"enable_comments": "y"
+	},
+	"template_preferences":
+	{
+		"home": {
+			"preferences": {
+				"is_site_default": true
+			}
+		},
+		"layout":
+		{
+			"index":
+			{
+				"access": {
+					"Banned": "n",
+					"Guests": "n",
+					"Members": "n",
+					"Pending": "n"
+				}
+			}
+		}
+	},
+	"modules": [
+		"email"
+	]
+}

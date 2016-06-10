@@ -8,10 +8,10 @@
 
 	<div class="toggle-tools">
 		<b><?=$manage_toggle_label?></b>
-		<a href="#" class="toggle <?=($editing) ? 'on' : 'off' ?>">
+		<?php $state = ($editing) ? 'on' : 'off' ?>
+		<a href="#" class="toggle-btn <?=$state?>" data-state="<?=$state?>">
 			<span class="slider"></span>
-			<span class="option"><b><?=lang('on')?></b></span>
-			<span class="option"><?=lang('off')?></span>
+			<span class="option"></span>
 		</a>
 	</div>
 </div><?php endif ?>

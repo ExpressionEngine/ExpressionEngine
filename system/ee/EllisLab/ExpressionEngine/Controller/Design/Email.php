@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
@@ -142,7 +143,7 @@ class Email extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
-			'base_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
+			'base_url' => ee('CP/URL', 'design/email/edit/' . $template_id),
 			'tabs' => array(
 				'edit' => $this->renderEditPartial($template, $errors),
 				'notes' => $this->renderNotesPartial($template, $errors),

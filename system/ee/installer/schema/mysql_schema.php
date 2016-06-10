@@ -11,7 +11,7 @@ class EE_Schema {
 	var $default_entry	= '';
 	var $theme_path		= '';
 
-	private $default_engine = 'MyISAM';
+	private $default_engine = 'InnoDB';
 
 	/**
 	 * Returns a platform-specific query that looks for EE tables
@@ -63,6 +63,7 @@ class EE_Schema {
 			fingerprint varchar(40) NOT NULL,
 			sess_start int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
+			can_debug char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
 			KEY `last_activity_idx` (`last_activity`)
@@ -333,10 +334,10 @@ class EE_Schema {
 			parse_smileys char(1) NOT NULL default 'y',
 			smart_notifications char(1) NOT NULL default 'y',
 			language varchar(50) NOT NULL,
-			timezone varchar(50) NOT NULL,
-			time_format char(2) DEFAULT '12' NOT NULL,
-			date_format varchar(8) DEFAULT '%n/%j/%Y' NOT NULL,
-			include_seconds char(1) DEFAULT 'n' NOT NULL,
+			timezone varchar(50) NULL DEFAULT NULL,
+			time_format char(2) NULL DEFAULT NULL,
+			date_format varchar(8) NULL DEFAULT NULL,
+			include_seconds char(1) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
 			forum_theme varchar(32) NULL DEFAULT NULL,
 			tracker text NULL,
@@ -392,13 +393,14 @@ class EE_Schema {
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`group_title` varchar(100) NOT NULL,
 			`group_description` text NOT NULL,
-			`is_locked` char(1) NOT NULL DEFAULT 'y',
+			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			`can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
 			`can_view_online_system` char(1) NOT NULL DEFAULT 'y',
 			`can_access_cp` char(1) NOT NULL DEFAULT 'y',
 			`can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
 			`can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
 			`can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
+			`can_view_homepage_news` char(1) NOT NULL DEFAULT 'y',
 			`can_access_files` char(1) NOT NULL DEFAULT 'n',
 			`can_access_design` char(1) NOT NULL DEFAULT 'n',
 			`can_access_addons` char(1) NOT NULL DEFAULT 'n',
@@ -808,7 +810,7 @@ class EE_Schema {
 			group_id int(4) unsigned NOT NULL,
 			status varchar(50) NOT NULL,
 			status_order int(3) unsigned NOT NULL,
-			highlight varchar(30) NOT NULL,
+			highlight varchar(30) NOT NULL default '000000',
 			PRIMARY KEY `status_id` (`status_id`),
 			KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
@@ -909,19 +911,6 @@ class EE_Schema {
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
 		)";
-
-		// Control panel search
-
-		$Q[] = "CREATE TABLE `exp_cp_search_index` (
-			`search_id` int(10) UNSIGNED NOT NULL auto_increment,
-			`controller` varchar(20) default NULL,
-			`method` varchar(50) default NULL,
-			`language` varchar(20) default NULL,
-			`access` varchar(50) default NULL,
-			`keywords` text,
-			PRIMARY KEY `search_id` (`search_id`),
-			FULLTEXT(`keywords`)
-		) ENGINE=MyISAM ";
 
 		// HTML buttons
 		// These are the buttons that appear on the PUBLISH page.
@@ -1471,14 +1460,16 @@ class EE_Schema {
 			array(
 				'group_title'                    => 'Super Admin',
 				'group_id'                       => 1,
+				'is_locked'                      => 'y',
 				'can_view_offline_system'        => 'y',
 				'can_access_cp'                  => 'y',
 				'can_access_footer_report_bug'   => 'y',
 				'can_access_footer_new_ticket'   => 'y',
 				'can_access_footer_user_guide'   => 'y',
-				'can_upload_new_files'          => 'y',
-				'can_edit_files'                => 'y',
-				'can_delete_files'              => 'y',
+				'can_view_homepage_news'         => 'y',
+				'can_upload_new_files'           => 'y',
+				'can_edit_files'                 => 'y',
+				'can_delete_files'               => 'y',
 				'can_upload_new_toolsets'        => 'y',
 				'can_edit_toolsets'              => 'y',
 				'can_delete_toolsets'            => 'y',
@@ -1515,7 +1506,7 @@ class EE_Schema {
 				'can_admin_mbr_groups'           => 'y',
 				'can_admin_mbr_templates'        => 'y',
 				'can_ban_users'                  => 'y',
-				'can_admin_addons'              => 'y',
+				'can_admin_addons'               => 'y',
 				'can_create_new_templates'       => 'y',
 				'can_edit_templates'             => 'y',
 				'can_delete_templates'           => 'y',
@@ -1546,12 +1537,20 @@ class EE_Schema {
 				'can_email_from_profile'         => 'y',
 				'can_view_profiles'              => 'y',
 				'can_edit_html_buttons'          => 'y',
+				'can_post_comments'              => 'y',
 				'can_delete_self'                => 'y',
 				'exclude_from_moderation'        => 'y',
 				'can_send_private_messages'      => 'y',
 				'can_attach_in_private_messages' => 'y',
 				'can_send_bulletins'             => 'y',
 				'include_in_authorlist'          => 'y',
+				'can_search'                     => 'y',
+				'can_create_entries'             => 'y',
+				'can_edit_self_entries'          => 'y',
+				'can_access_security_settings'   => 'y',
+				'can_access_translate'           => 'y',
+				'can_access_import'              => 'y',
+				'can_access_sql_manager'         => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(
@@ -1624,7 +1623,7 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
 
 		foreach($default_fts as $name)
 		{

@@ -5,7 +5,7 @@ return array(
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'Simple Commerce',
 	'description' => '',
-	'version'     => '2.2',
+	'version'     => '2.2.0',
 	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
 	'settings_exist' => TRUE,
 

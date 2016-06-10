@@ -7,5 +7,3 @@
 # in the Readme.php file if you want a simple autoloader setup.
 
 require_once dirname(__FILE__) . '/MarkdownInterface.php';
-
-// EOF

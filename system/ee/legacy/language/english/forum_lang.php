@@ -158,8 +158,6 @@ $lang = array(
 
 'register' => 'Register',
 
-'logged_in_as' => 'Logged in as:',
-
 'private_message' => 'Private Messages',
 
 'unread_pm' => 'Unread:',
@@ -502,8 +500,6 @@ $lang = array(
 
 'legend_old_topic' => 'Old Topic',
 
-'legend_hot_topic' => 'Hot Topic',
-
 'legend_new_posts' => 'New posts',
 
 'legend_no_new_posts' => 'No new posts',
@@ -581,8 +577,6 @@ $lang = array(
 'click_preview_to_attach' => 'To attach more than one item click preview after choosing a file',
 
 'file_name' => 'File Name',
-
-'file_size' => 'File Size',
 
 'remaining_space' => 'You have %x of attachment space remaining',
 
@@ -719,9 +713,6 @@ $lang = array(
 
 'older' =>
 'Older',
-
-'sort_results_by' =>
-'Sort Results by',
 
 'descending' =>
 'Descending',

@@ -700,6 +700,8 @@ class Comment {
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
 			$row['total_results']	= $total_results;
+			$row['channel_url']		= parse_config_variables($row['channel_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
+			$row['comment_url']		= parse_config_variables($row['comment_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
 
 			// If we do not paginate, then the total comments ARE the comments
 			// on the page
@@ -745,10 +747,8 @@ class Comment {
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
 
-			if (ee()->session->userdata['group_id'] == 1
-				OR ee()->session->userdata['can_edit_all_comments'] == 'y'
-				OR (ee()->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == ee()->session->userdata['member_id'])
-				)
+			if (ee('Permission')->has('can_edit_all_comments')
+				OR (ee('Permission')->has('can_edit_own_comments') && $row['entry_author_id'] == ee()->session->userdata['member_id']))
 			{
 				$cond['editable'] = TRUE;
 				$cond['can_moderate_comment'] = TRUE;
@@ -1124,7 +1124,17 @@ class Comment {
 					}
 					else
 					{
-						$tagdata = ee()->TMPL->swap_var_single($key, ee()->config->slash_item('avatar_url').$row['avatar_filename'], $tagdata);
+						$avatar_url = ee()->config->slash_item('avatar_url');
+			            $avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			            if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
+			            {
+			                $avatar_url .= 'default/';
+			            }
+
+			            $cur_avatar_url = $avatar_url.$row['avatar_filename'];
+
+						$tagdata = ee()->TMPL->swap_var_single($key, $cur_avatar_url, $tagdata);
 						$tagdata = ee()->TMPL->swap_var_single('avatar_image_width', $row['avatar_width'], $tagdata);
 						$tagdata = ee()->TMPL->swap_var_single('avatar_image_height', $row['avatar_height'], $tagdata);
 					}
@@ -1374,7 +1384,9 @@ class Comment {
 			return FALSE;
 		}
 
-		if ($query->row('allow_comments') == 'n' OR $query->row('comment_system_enabled') == 'n')
+		if ($query->row('allow_comments') == 'n'
+			OR $query->row('comment_system_enabled') == 'n'
+			OR ee()->config->item('enable_comments') != 'y')
 		{
 			$halt_processing = 'disabled';
 		}
@@ -1688,7 +1700,7 @@ class Comment {
 		// -------------------------------------------
 
 		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
-		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
+		$url = ee()->functions->fetch_site_index(TRUE).$uri_string;
 
 		$data = array(
 			'action'		=> reduce_double_slashes($url),
@@ -2091,7 +2103,7 @@ class Comment {
 		/**  Can the user post comments?
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['can_post_comments'] == 'n')
+		if ( ! ee('Permission')->has('can_post_comments'))
 		{
 			$error[] = ee()->lang->line('cmt_no_authorized_for_comments');
 
@@ -2299,8 +2311,9 @@ class Comment {
 		$comment_moderate		= (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$author_notify			= $query->row('comment_notify_authors') ;
 
-		$comment_url			= $query->row('comment_url');
-		$channel_url			= $query->row('channel_url');
+		$overrides = ee()->config->get_cached_site_prefs($query->row('site_id'));
+		$comment_url			= parse_config_variables($query->row('comment_url'), $overrides);
+		$channel_url			= parse_config_variables($query->row('channel_url'), $overrides);
 		$entry_id				= $query->row('entry_id');
 		$comment_site_id		= $query->row('site_id');
 
@@ -3151,10 +3164,10 @@ class Comment {
 		if ($query->num_rows() > 0)
 		{
 			// User is logged in and in a member group that can edit this comment.
-			if (ee()->session->userdata['group_id'] == 1
-				OR ee()->session->userdata['can_edit_all_comments'] == 'y'
-				OR (ee()->session->userdata['can_edit_own_comments'] == 'y'
+			if (ee('Permission')->has('can_edit_all_comments')
+            OR (ee('Permission')->has('can_edit_own_comments')
 					&& $query->row('entry_author_id') == ee()->session->userdata['member_id']))
+
 			{
 				$can_edit = TRUE;
 				$can_moderate = TRUE;

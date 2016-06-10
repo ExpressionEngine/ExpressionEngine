@@ -9,6 +9,8 @@ class MemberGroup extends StructureModel {
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'member_groups';
 
+	protected static $_hook_id = 'member_group';
+
 	protected static $_events = array(
 		'beforeInsert',
 		'afterInsert',
@@ -23,6 +25,7 @@ class MemberGroup extends StructureModel {
 		'can_access_footer_report_bug'   => 'boolString',
 		'can_access_footer_new_ticket'   => 'boolString',
 		'can_access_footer_user_guide'   => 'boolString',
+		'can_view_homepage_news'         => 'boolString',
 		'can_access_files'               => 'boolString',
 		'can_access_design'              => 'boolString',
 		'can_access_addons'              => 'boolString',
@@ -204,6 +207,7 @@ class MemberGroup extends StructureModel {
 	protected $can_access_footer_report_bug;
 	protected $can_access_footer_new_ticket;
 	protected $can_access_footer_user_guide;
+	protected $can_view_homepage_news;
 	protected $can_access_files;
 	protected $can_access_design;
 	protected $can_access_addons;
@@ -355,7 +359,7 @@ class MemberGroup extends StructureModel {
 	{
 		if ($this->isDirty('site_id'))
 		{
-			throw new LogicException('Cannot modify site_id.');
+			throw new \LogicException('Cannot modify site_id.');
 		}
 
 		$query->filter('site_id', $this->site_id);
@@ -393,6 +397,30 @@ class MemberGroup extends StructureModel {
 	public function getContentType()
 	{
 		return 'member';
+	}
+
+	/**
+	 * Assigns channels to this group for this site without destroying this
+	 * group's channel assignments on the other sites. The pivot table does not
+	 * take into account the site_id so we we'll do that here.
+	 *
+	 * @param  array  $channel_ids An array of channel ids for this group
+	 * @return void
+	 */
+	public function assignChannels(array $channel_ids)
+	{
+		// First, get the channel ids for all the other sites
+		$other_channels = $this->getModelFacade()->get('Channel')
+			->fields('channel_id')
+			->filter('site_id', '!=', $this->site_id)
+			->all()
+			->pluck('channel_id');
+
+		// Get all the assignments for the other sites
+		$current_assignments = array_values(array_intersect($other_channels, $this->AssignedChannels->pluck('channel_id')));
+
+		// Make the assignment!
+		$this->AssignedChannels = $this->getModelFacade()->get('Channel', array_merge($current_assignments, $channel_ids))->all();
 	}
 }
 

@@ -82,7 +82,12 @@ class Relationships_ft_cp {
 			$channel_choices = $channels->all()->getDictionary('channel_id', 'channel_title');
 		}
 
-		$this->all_channels = array('--' => lang('any_channel')) + $channel_choices;
+		$this->all_channels = array(
+			'--' => array(
+				'name' => lang('any_channel'),
+				'children' => $channel_choices
+			)
+		);
 
 		return $this->all_channels;
 	}
@@ -119,7 +124,14 @@ class Relationships_ft_cp {
 			$categories->filter('site_id', 1);
 		}
 
-		return $this->all_categories = array('--' => lang('any_category')) + $this->buildNestedCategoryArray($categories->all());
+		$this->all_categories = array(
+			'--' => array(
+				'name' => lang('any_category'),
+				'children' => $this->buildNestedCategoryArray($categories->all())
+			)
+		);
+
+		return $this->all_categories;
 	}
 
 	private function buildNestedCategoryArray($categories)
@@ -196,7 +208,7 @@ class Relationships_ft_cp {
 			$group_to_member[$m->group_id][] = $m;
 		}
 
-		$authors = array('--' => lang('any_author'));
+		$authors = array();
 
 		// Reoder by groups with subitems for authors
 		foreach ($groups as $group)
@@ -212,7 +224,14 @@ class Relationships_ft_cp {
 			}
 		}
 
-		return $this->all_authors = $authors;
+		$this->all_authors = array(
+			'--' => array(
+				'name' => lang('any_author'),
+				'children' => $authors
+			)
+		);
+
+		return $this->all_authors;
 	}
 
 	// --------------------------------------------------------------------
@@ -240,7 +259,7 @@ class Relationships_ft_cp {
 			$statuses->filter('site_id', 1);
 		}
 
-		$status_options = array('--' => lang('any_status'));
+		$status_options = array();
 
 		foreach ($statuses->all() as $status)
 		{
@@ -248,7 +267,14 @@ class Relationships_ft_cp {
 			$status_options[$status->status] = $status_name;
 		}
 
-		return $this->all_statuses = $status_options;
+		$this->all_statuses = array(
+			'--' => array(
+				'name' => lang('any_status'),
+				'children' => $status_options
+			)
+		);
+
+		return $this->all_statuses;
 	}
 
 	// --------------------------------------------------------------------

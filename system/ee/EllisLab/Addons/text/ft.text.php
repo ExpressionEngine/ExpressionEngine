@@ -29,7 +29,7 @@ class Text_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Text Input',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	// Parser Flag (preparse pairs?)
@@ -95,6 +95,40 @@ class Text_ft extends EE_Fieldtype {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save the field's value
+	 *
+	 * Mostly used to check it the value is empty when dealing with numeric
+	 * field content types
+	 *
+	 * @param  string $data The data submitted
+	 * @return mixed The cleaned data to be saved
+	 */
+	public function save($data)
+	{
+		if ( ! isset($this->field_content_types))
+		{
+			ee()->load->model('field_model');
+			$this->field_content_types = ee()->field_model->get_field_content_types();
+		}
+
+		$content_type = (isset($this->settings['field_content_type']))
+			? $this->settings['field_content_type']
+			: 'any';
+
+		if (in_array($content_type, $this->field_content_types['text']) && $content_type != 'any')
+		{
+			if ($data == '')
+			{
+				return NULL;
+			}
+		}
+
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
@@ -214,11 +248,21 @@ class Text_ft extends EE_Fieldtype {
 					'field_fmt' => array(
 						'type' => 'select',
 						'choices' => $format_options,
-						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
+						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[1]['fields']['field_fmt']['note']);
+		}
 
 		if ($this->content_type() != 'grid')
 		{
@@ -340,11 +384,16 @@ class Text_ft extends EE_Fieldtype {
 
 	function save_settings($data)
 	{
-		return array(
-			'field_maxl'				=> ee()->input->post('field_maxl'),
-			'field_content_type'		=> ee()->input->post('field_content_type'),
-			'field_show_file_selector'	=> ee()->input->post('field_show_file_selector')
+		$defaults = array(
+			'field_maxl'               => 256,
+			'field_content_type'       => '',
+			'field_show_smileys'       => 'n',
+			'field_show_file_selector' => 'n'
 		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	// --------------------------------------------------------------------
@@ -441,6 +490,12 @@ class Text_ft extends EE_Fieldtype {
 
 	function _format_number($data, $type = 'all', $decimals = FALSE)
 	{
+		// Numeric fields that have no data are stored as NULL
+		if ($data == NULL)
+		{
+			return '';
+		}
+
 		switch($type)
 		{
 			case 'numeric':	$data = rtrim(rtrim(sprintf('%F', $data), '0'), '.'); // remove trailing zeros up to decimal point and kill decimal point if no trailing zeros
@@ -461,6 +516,19 @@ class Text_ft extends EE_Fieldtype {
 		}
 
 		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 

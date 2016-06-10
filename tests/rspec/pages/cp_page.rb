@@ -1,17 +1,20 @@
 class ControlPanelPage < SitePrism::Page
 
   section :main_menu, MenuSection, 'section.menu-wrap'
-  elements :submit_buttons, '.form-ctrls input.btn'
+  elements :submit_buttons, '.form-ctrls .btn'
   element :fieldset_errors, '.invalid'
   element :settings_btn, '.dev-menu .settings > a'
   elements :error_messages, 'em.ee-form-error-message'
+
+  # Main Section
+  element :page_title, '.wrap .box h1'
 
   # Tables
   element :select_all, 'th.check-ctrl input'
   element :sort_col, 'table th.highlight'
   elements :sort_links, 'table a.sort'
-  element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
-  element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
+  element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+  element :action_submit_button, 'form fieldset.tbl-bulk-act .submit'
 
   # Pagination
   element :pagination, 'div.paginate'
@@ -39,6 +42,10 @@ class ControlPanelPage < SitePrism::Page
   element :tab_bar, 'div.tab-wrap'
   elements :tabs, 'div.tab-wrap ul.tabs li'
 
+  def is_404?
+    page_title.text.start_with? '404'
+  end
+
   def open_dev_menu
     main_menu.dev_menu.click
   end
@@ -48,8 +55,12 @@ class ControlPanelPage < SitePrism::Page
   end
 
   def submit_enabled?
-    submit_buttons[0].value != 'Errors Found' &&
-    submit_buttons[0][:disabled] != true
+    button_value = submit_buttons[0].value
+    if submit_buttons[0].tag_name == 'button' then
+      button_value = submit_buttons[0].text
+    end
+
+    return button_value.downcase != 'errors found' && submit_buttons[0][:disabled] != true
   end
 
   # Waits until the error message is gone before proceeding;
@@ -82,6 +93,11 @@ class ControlPanelPage < SitePrism::Page
       end
       sleep 0.01
       i += 1 # Prevent infinite loop
+    end
+
+    # Element is still there after our timeout? No good.
+    if element_count != count && i == (seconds * 100)
+      raise StandardError, "Wrong number of validation errors. Got #{element_count}, expected #{count}."
     end
   end
 end

@@ -284,6 +284,7 @@ class Delete extends Query {
 				$this->recursivePath($to_model, $subpath);
 			}
 		}
+
 	}
 
 	/**

@@ -26,7 +26,7 @@ class Select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Select Dropdown',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -35,7 +35,7 @@ class Select_ft extends EE_Fieldtype {
 	function validate($data)
 	{
 		$valid			= FALSE;
-		$field_options	= $this->_get_field_options($data);
+		$field_options	= $this->_get_field_options($data, '--');
 
 		if ($data == '')
 		{
@@ -80,7 +80,7 @@ class Select_ft extends EE_Fieldtype {
 
 		$field = form_dropdown(
 			$this->field_name,
-			$this->_get_field_options($data),
+			$this->_get_field_options($data, '--'),
 			$data,
 			$extra
 		);
@@ -148,6 +148,10 @@ class Select_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			),
@@ -157,6 +161,12 @@ class Select_ft extends EE_Fieldtype {
 				'fields' => array()
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[0]['fields']['field_fmt']['note']);
+		}
 
 		if ($this->content_type() == 'channel')
 		{
@@ -232,56 +242,6 @@ class Select_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function _get_field_options($data)
-	{
-		$field_options = array();
-
-		if ( ! isset($this->settings['field_pre_populate'])
-			OR $this->settings['field_pre_populate'] == 'n'
-				OR $this->settings['field_pre_populate'] == FALSE)
-		{
-			if ( ! is_array($this->settings['field_list_items']))
-			{
-				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
-				{
-					$v = trim($v);
-					$field_options[form_prep($v)] = form_prep($v);
-				}
-			}
-			else
-			{
-				$field_options = $this->settings['field_list_items'];
-			}
-		}
-		else
-		{
-			// We need to pre-populate this menu from an another channel custom field
-
-			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = ee()->db->get('channel_data');
-
-			$field_options[''] = '--';
-
-			if ($pop_query->num_rows() > 0)
-			{
-				foreach ($pop_query->result_array() as $prow)
-				{
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
-					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
-					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
-
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
-				}
-			}
-		}
-
-		return $field_options;
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -289,6 +249,19 @@ class Select_ft extends EE_Fieldtype {
 	 * @return bool   Accepts all content types
 	 */
 	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
 	{
 		return TRUE;
 	}

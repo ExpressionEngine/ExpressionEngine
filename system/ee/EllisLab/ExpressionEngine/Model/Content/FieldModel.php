@@ -73,8 +73,15 @@ abstract class FieldModel extends Model {
 
 	public function set(array $data = array())
 	{
+		// getField() requires that we have a field type, but we might be trying
+		// to set it! So, if we are, we'll do that first.
+		if (isset($data['field_type']))
+		{
+			$this->setProperty('field_type', $data['field_type']);
+		}
+
 		$field = $this->getField($this->getSettingsValues());
-		$data = array_merge($data, $field->saveSettingsForm($data));
+		$data = array_merge($field->saveSettingsForm($data), $data);
 
 		return parent::set($data);
 	}
@@ -153,14 +160,17 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterUpdate($changed)
 	{
-		if (isset($changed['field_type']))
+		$old_type = (isset($changed['field_type'])) ? $changed['field_type'] : $this->field_type;
+		$old_action = (isset($changed['field_type'])) ? 'delete' : 'get_info';
+
+		$old_ft = $this->getFieldtypeInstance($old_type, $changed);
+		$old_columns = $this->callSettingsModify($old_ft, $old_action, $changed);
+
+		$new_ft = $this->getFieldtypeInstance();
+		$new_columns = $this->callSettingsModify($new_ft, 'get_info');
+
+		if ( ! empty($old_columns) || ! empty($new_columns))
 		{
-			$old_ft = $this->getFieldtypeInstance($changed['field_type'], $changed);
-			$old_columns = $this->callSettingsModify($old_ft, 'delete', $changed);
-
-			$new_ft = $this->getFieldtypeInstance();
-			$new_columns = $this->callSettingsModify($new_ft, 'get_info');
-
 			$this->diffColumns($old_columns, $new_columns);
 		}
 	}

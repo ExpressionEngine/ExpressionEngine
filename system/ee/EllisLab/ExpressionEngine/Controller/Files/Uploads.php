@@ -189,7 +189,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'url' => array(
 							'type' => 'text',
-							'value' => $upload_destination->url ?: 'http://',
+							'value' => $upload_destination->getRawProperty('url') ?: 'http://',
 							'required' => TRUE
 						)
 					)
@@ -200,7 +200,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'server_path' => array(
 							'type' => 'text',
-							'value' => $upload_destination->server_path,
+							'value' => $upload_destination->getRawProperty('server_path'),
 							'required' => TRUE
 						)
 					)
@@ -635,12 +635,15 @@ class Uploads extends AbstractFilesController {
 
 		$validate = array();
 
-		foreach ($upload_destination->FileDimensions as $model)
+		if ( ! empty($image_sizes))
 		{
-			$row_id = 'row_id_'.$model->getId();
-			$model->set($image_sizes['rows'][$row_id]);
+			foreach ($upload_destination->FileDimensions as $model)
+			{
+				$row_id = 'row_id_'.$model->getId();
+				$model->set($image_sizes['rows'][$row_id]);
 
-			$validate[$row_id] = $model;
+				$validate[$row_id] = $model;
+			}
 		}
 
 		foreach ($new_sizes as $row_id => $columns)

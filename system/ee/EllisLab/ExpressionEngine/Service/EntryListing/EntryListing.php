@@ -253,7 +253,8 @@ class EntryListing {
 			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
 		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
-		$channel_filter->disableCustomValue(); // This may have to go
+		$channel_filter->setPlaceholder(lang('filter_channels'));
+		$channel_filter->useListFilter(); // disables custom values
 		return $channel_filter;
 	}
 
@@ -280,7 +281,8 @@ class EntryListing {
 		}
 
 		$categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
-		$categories->disableCustomValue();
+		$categories->setPlaceholder(lang('filter_categories'));
+		$categories->useListFilter(); // disables custom values
 		return $categories;
 	}
 

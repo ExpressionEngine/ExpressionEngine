@@ -200,6 +200,10 @@ Used in the control panel only.',
 
 'time_format' => 'Time Formatting',
 
+'include_seconds' => 'Show seconds?',
+
+'site_default' => 'Use site default',
+
 'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
 'change_password' => 'Change Password',

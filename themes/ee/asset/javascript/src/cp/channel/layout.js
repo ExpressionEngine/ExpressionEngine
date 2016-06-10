@@ -242,7 +242,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.html()) {
+		if (tabContents.html().trim()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}

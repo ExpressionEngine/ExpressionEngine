@@ -115,7 +115,7 @@ class EE_Stylesheet {
 	 */
 	private function _ee_channel_form_css()
 	{
-		$files[] = PATH_THEMES.'cp/default/css/channel_form.css';
+		$files[] = PATH_THEMES.'cform/css/eecms-cform.min.css';
 
 		$out = '';
 
@@ -127,12 +127,7 @@ class EE_Stylesheet {
 			}
 		}
 
-		$cp_theme  = ee()->config->item('cp_theme');
-		$cp_theme_url = URL_THEMES.'cp/'.$cp_theme.'/';
-
-		$out = str_replace('../images', $cp_theme_url.'images', $out);
-		$out = str_replace('<?=$cp_theme_url?>', $cp_theme_url, $out);
-
+		$out = str_replace('../../asset/', URL_THEMES_GLOBAL_ASSET, $out);
 
 		$this->_send_css($out, time());
 	}

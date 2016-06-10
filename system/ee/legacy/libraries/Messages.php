@@ -145,8 +145,7 @@ class EE_Messages {
 		$this->title = ee()->lang->line('private_messages');
 		$this->crumb = ee()->lang->line('private_messages');
 
-		$this->images_folder = URL_THEMES.'cp_global_images/';
-
+		$this->images_folder = URL_THEMES.'/asset/img/';
 		$this->single_parts['path']['image_url'] = $this->images_folder;
 
 		/** -----------------------------------
@@ -1459,10 +1458,10 @@ class EE_Messages {
 		if ($this->theme_path == '')
 		{
 			$theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
-			$this->theme_path = PATH_MBR_THEMES."{$theme}/";
+			$this->theme_path = ee('Theme')->getPath('member/'.$theme);
 		}
 
-		if ( ! file_exists($this->theme_path.$which.'.html'))
+		if ( ! file_exists($this->theme_path.'/'.$which.'.html'))
 		{
 			$data = array(	'title' 	=> ee()->lang->line('error'),
 							'heading'	=> ee()->lang->line('general_error'),
@@ -1474,7 +1473,7 @@ class EE_Messages {
 			return ee()->output->show_message($data, 0);
 		}
 
-		return $this->MS->_prep_element(trim(file_get_contents($this->theme_path.$which.'.html')));
+		return $this->MS->_prep_element(trim(file_get_contents($this->theme_path.'/'.$which.'.html')));
 	}
 
 
@@ -1890,7 +1889,6 @@ DOH;
 
 		$this->single_parts['image']['messages_graph']['width']		= '1';
 		$this->single_parts['image']['messages_graph']['height']	= '11';
-		$this->single_parts['image']['messages_graph']['url']		= $this->images_folder.'bar.gif';
 
 		/** ----------------------
 		/**  Calculate

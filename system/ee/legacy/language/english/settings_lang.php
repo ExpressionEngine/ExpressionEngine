@@ -8,8 +8,6 @@ $lang = array(
 
 'general_settings' => 'General Settings',
 
-'license_and_reg' => 'License & Registration',
-
 'url_path_settings' => 'URL and Path Settings',
 
 'outgoing_email' => 'Outgoing Email',
@@ -83,6 +81,8 @@ $lang = array(
 
 'date_time_settings' => 'Date &amp; Time Settings',
 
+'site_default' => 'Use site default',
+
 'timezone' => 'Timezone',
 
 'date_time_fmt' => 'Date &amp; time format',
@@ -142,6 +142,14 @@ $lang = array(
  */
 
 'url_path_settings_title' => '<abbr title="Uniform Resource Location">URL</abbr> and Path Settings',
+
+'base_url' => 'Default base URL',
+
+'base_url_desc' => 'Use <code>{base_url}</code> to build URLs in control panel URL fields.',
+
+'base_path' => 'Default base path',
+
+'base_path_desc' => 'Use <code>{base_path}</code> to build paths in control panel path fields.',
 
 'site_index' => 'Website index page',
 
@@ -247,11 +255,11 @@ $lang = array(
 
 'enable_errors' => 'Enable error reporting?',
 
-'enable_errors_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'When set to <b>enable</b>, super admins will see PHP/MySQL errors when they occur.',
 
 'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
@@ -429,8 +437,6 @@ $lang = array(
  * Word Censoring
  */
 
-'word_censorship' => 'Word Censorship',
-
 'enable_censoring' => 'Enable censorship?',
 
 'enable_censoring_desc' => 'When set to <b>enable</b>, words listed will be replaced with the specified replacement characters.',
@@ -491,23 +497,15 @@ $lang = array(
 
 'memberlist_order_by_desc' => 'Sorting type for the member listing.',
 
-'memberlist_order_by_opt_posts' => 'Total posts',
-
-'memberlist_order_by_opt_screenname' => 'Screen name',
-
 'memberlist_order_by_opt_entries' => 'Total entries',
-
-'memberlist_order_by_reg_date' => 'Registration date',
-
-'memberlist_order_by_opt_comments' => 'Total comments',
 
 'memberlist_sort_order' => 'Order by',
 
 'memberlist_sort_order_desc' => 'Sorting order for the member listing.',
 
-'memberlist_sort_order_opt_asc' => 'Ascending (A-Z)',
+'memberlist_sort_order_opt_asc' => 'Ascending (A-Z/Oldest-Newest)',
 
-'memberlist_sort_order_opt_desc' => 'Descending (Z-A)',
+'memberlist_sort_order_opt_desc' => 'Descending (Z-A/Newest-Oldest)',
 
 'memberlist_row_limit' => 'Total results',
 
@@ -517,7 +515,7 @@ $lang = array(
 
 'new_member_notification' => 'Enable new member notifications?',
 
-'new_member_notification_desc' => 'When set to <b>yes</b>, the following Email addresses will be notified anytime a new registration occurs.',
+'new_member_notification_desc' => 'When set to <b>enable</b>, the following Email addresses will be notified anytime a new registration occurs.',
 
 'mbr_notification_emails' => 'Notification recipients',
 
@@ -548,8 +546,6 @@ $lang = array(
 'prv_msg_upload_url' => 'Upload directory',
 
 'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
-
-'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
 'prv_msg_upload_path' => 'Upload path',
 
@@ -707,9 +703,9 @@ $lang = array(
 
 'name_of_dictionary_file' => 'Dictionary file',
 
-'name_of_dictionary_file_desc' => 'URL location of your <mark>dictionary</mark> file.',
+'name_of_dictionary_file_desc' => 'Name of your <mark>dictionary</mark> file in your config folder.',
 
-'form_security_settings' => 'Form Security Settings',
+'form_security_settings' => 'Content Submission Settings',
 
 'deny_duplicate_data' => 'Deny duplicate data?',
 
@@ -722,6 +718,10 @@ $lang = array(
 'xss_clean_uploads' => 'Apply <abbr title="Cross Site Scripting">XSS</abbr> filtering?',
 
 'xss_clean_uploads_desc' => 'When set to <b>yes</b>, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
+
+'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
+
+'enable_rank_denial_desc' => 'When set to <b>enable</b>, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',
 
 /**
  * Access Throttling
@@ -747,7 +747,7 @@ $lang = array(
 
 "lockout_time" => "Lockout time",
 
-"lockout_time_desc" => "The length of time a user should be locked out of your site if they exceed the limits.",
+"lockout_time_desc" => "The number of seconds a user should be locked out of your site if they exceed the limits.",
 
 'banishment_type' => 'Lock out action',
 

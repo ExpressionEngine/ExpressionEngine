@@ -34,6 +34,8 @@ class TemplateGroup extends Model {
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'template_groups';
 
+	protected static $_hook_id = 'template_group';
+
 	protected static $_typed_columns = array(
 		'is_site_default' => 'boolString'
 	);
@@ -181,8 +183,12 @@ class TemplateGroup extends Model {
 			return NULL;
 		}
 
-		$site = ee()->config->item('site_short_name');
-		return $basepath.$site.'/'.$this->group_name . '.group';
+		$site = $this->getFrontend()->get('Site')
+			->fields('site_name')
+			->filter('site_id', $this->site_id)
+			->first();
+
+		return $basepath.$site->site_name.'/'.$this->group_name . '.group';
 	}
 
 	/**

@@ -9,7 +9,7 @@ feature 'SQL Manager' do
     end
     clear_db_result
 
-    return tables
+    tables
   end
 
   before(:each) do
@@ -53,7 +53,7 @@ feature 'SQL Manager' do
     @page.search_field.set 'access'
     @page.search_btn.click
 
-    @page.should have_text 'Search Results we found 4 results for "access"'
+    @page.should have_text 'Search Results we found 3 results for "access"'
 
     @page.tables.map {|source| source.text}.should == tables.grep(/access/)
   end
@@ -66,7 +66,7 @@ feature 'SQL Manager' do
 
     @page.sort_links[0].click
 
-    @page.should have_text 'Search Results we found 4 results for "access"'
+    @page.should have_text 'Search Results we found 3 results for "access"'
 
     @page.tables.map {|source| source.text}.should == tables.grep(/access/).reverse
   end
@@ -115,18 +115,23 @@ feature 'SQL Manager' do
 
     tables = get_tables
 
-    @page.tables.map {|source| source.text}.should == tables
+    # This checks that the list of tables (@pages.table) _includes_ the list of
+    # tables we retrieved earlier. The `*` in front of `tables` is a splat
+    # operator that takes the array and returns the values as agruments
+    # https://endofline.wordpress.com/2011/01/21/the-strange-ruby-splat/
+
+    @page.tables.map(&:text).should include(*tables)
 
     # Go ahead and test sorting
     @page.sort_links[0].click
     no_php_js_errors
-    @page.tables.map {|source| source.text}.should == tables.reverse
+    @page.tables.map(&:text).should include(*tables.reverse)
 
     # And search
     @page.search_field.set 'category'
     @page.search_btn.click
 
-    @page.tables.map {|source| source.text}.should == ['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse
+    @page.tables.map(&:text).should include(*['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse)
   end
 
   it 'should allow viewing of table contents' do
@@ -134,12 +139,12 @@ feature 'SQL Manager' do
 
     results = QueryResults.new
     no_php_js_errors
-    results.should have_text 'SQL Managerexp_accessories Table' # How Capybara sees the breadcrumb
-    results.should have_text 'exp_accessories Table'
-    results.should have(2).rows
+    results.should have_text 'SQL Managerexp_actions Table' # How Capybara sees the breadcrumb
+    results.should have_text 'exp_actions Table'
+    results.should have(22).rows
 
     # Make sure breadcrumb info persists in base URL
     results.sort_links[0].click
-    results.should have_text 'SQL Managerexp_accessories Table'
+    results.should have_text 'SQL Managerexp_actions Table'
   end
 end

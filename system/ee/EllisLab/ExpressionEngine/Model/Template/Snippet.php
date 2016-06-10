@@ -40,6 +40,10 @@ class Snippet extends FileSyncedModel {
 		)
 	);
 
+	protected static $_events = array(
+		'afterSave',
+	);
+
 	protected $snippet_id;
 	protected $site_id;
 	protected $snippet_name;
@@ -231,6 +235,12 @@ class Snippet extends FileSyncedModel {
 		}
 
 		return $snippets;
+	}
+
+	public function onAfterSave()
+	{
+		parent::onAfterSave();
+		ee()->functions->clear_caching('all');
 	}
 }
 

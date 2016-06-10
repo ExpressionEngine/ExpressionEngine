@@ -66,7 +66,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	/**
 	 * Isset implementation, also required for empty() to work
 	 */
-	function __isset($name)
+	public function __isset($name)
 	{
 		return $this->hasGetterFor($name) OR ($this->hasProperty($name) && $this->getRawProperty($name) !== NULL);
 	}
@@ -245,11 +245,29 @@ abstract class Entity extends MixableImpl implements Publisher {
 	{
 		foreach ($data as $k => $v)
 		{
-			if ($this->hasProperty($k))
-			{
-				$v = $this->filter('fill', $v, $k);
-				$this->$k = $v;
-			}
+			$this->fillProperty($k, $v);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Fill a value without passing through a getter
+	 *
+	 * This exists so that we can override it for variable columns. Attempting
+	 * to fill by setting `$this->$k` on a variable column results in a call to
+	 * __set otherwise and that marks the column as dirty, which we don't want.
+	 *
+	 * @param String $k Key to fill
+	 * @param Mixed  $v Value of fill
+	 * @return $this
+	 */
+	public function fillProperty($k, $v)
+	{
+		if ($this->hasProperty($k))
+		{
+			$v = $this->filter('fill', $v, $k);
+			$this->$k = $v;
 		}
 
 		return $this;
@@ -449,7 +467,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	}
 
 	/**
-	 * Get a property directly, bypassing the getter. This method should
+	 * Set a property directly, bypassing the setter. This method should
 	 * not be extended with additional logic, it should be treated as a
 	 * way to bypass __set() and all that comes with it.
 	 *

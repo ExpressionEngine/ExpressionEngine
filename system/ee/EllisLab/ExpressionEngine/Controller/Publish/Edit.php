@@ -3,8 +3,10 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use Mexitek\PHPColors\Color;
 
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -58,7 +60,6 @@ class Edit extends AbstractPublishController {
 
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
-		$channel_title = '';
 
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
@@ -88,27 +89,42 @@ class Edit extends AbstractPublishController {
 			'sort_col' => 'column_entry_date',
 		));
 
-		$table->setColumns(
-			array(
-				'column_entry_id',
-				'column_title' => array(
-					'encode' => FALSE
-				),
-				'column_comment_total' => array(
-					'encode' => FALSE
-				),
-				'column_entry_date',
-				'column_status' => array(
-					'type'	=> Table::COL_STATUS
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
+		$columns = array(
+			'column_entry_id',
+			'column_title' => array(
+				'encode' => FALSE
 			)
 		);
+
+		$show_comments_column = (
+			ee()->config->item('enable_comments') == 'y' OR
+			ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count() > 0);
+
+		if ($show_comments_column)
+		{
+			$columns = array_merge($columns, array(
+				'column_comment_total' => array(
+					'encode' => FALSE
+				)
+			));
+		}
+
+		$columns = array_merge($columns, array(
+			'column_entry_date',
+			'column_status' => array(
+				'type'	=> Table::COL_STATUS
+			),
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setColumns($columns);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
 		if ($channel_id)
@@ -131,6 +147,10 @@ class Edit extends AbstractPublishController {
 		$data = array();
 
 		$entry_id = ee()->session->flashdata('entry_id');
+
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		foreach ($entries->all() as $entry)
 		{
@@ -158,14 +178,13 @@ class Edit extends AbstractPublishController {
 
 			$autosaves = $entry->Autosaves->count();
 
+			// Escape markup in title
+			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+
 			if ($can_edit)
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</a>';
-			}
-			else
-			{
-				$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+				$title = '<a href="' . $edit_link . '">' . $title . '</a>';
 			}
 
 			if ($autosaves)
@@ -173,7 +192,7 @@ class Edit extends AbstractPublishController {
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
 
 			if ($entry->comment_total > 0)
 			{
@@ -228,12 +247,34 @@ class Edit extends AbstractPublishController {
 
 			$disabled_checkbox = ! $can_delete;
 
+			// Display status highlight if one exists
+			$status = $statuses->filter('group_id', $entry->Channel->status_group)
+				->filter('status', $entry->status)
+				->first();
+
+			if ($status)
+			{
+				$highlight = new Color($status->highlight);
+				$color = ($highlight->isLight())
+					? $highlight->darken(100)
+					: $highlight->lighten(100);
+
+				$status = array(
+					'content'          => $status->status,
+					'color'            => $color,
+					'background-color' => $status->highlight
+				);
+			}
+			else
+			{
+				$status = $entry->status;
+			}
+
 			$column = array(
 				$entry->entry_id,
 				$title,
-				$comments,
 				ee()->localize->human_time($entry->entry_date),
-				$entry->status,
+				$status,
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
@@ -244,6 +285,11 @@ class Edit extends AbstractPublishController {
 					)
 				)
 			);
+
+			if ($show_comments_column)
+			{
+				array_splice($column, 2, 0, array($comments));
+			}
 
 			$attrs = array();
 
@@ -294,7 +340,10 @@ class Edit extends AbstractPublishController {
 		}
 		else
 		{
-			$vars['cp_heading'] = sprintf(lang('all_channel_entries'), $channel_title);
+			$vars['cp_heading'] = sprintf(
+				lang('all_channel_entries'),
+				(isset($channel->channel_title)) ? $channel->channel_title : ''
+			);
 		}
 
 		if (AJAX_REQUEST)
@@ -308,10 +357,15 @@ class Edit extends AbstractPublishController {
 		ee()->cp->render('publish/edit/index', $vars);
 	}
 
-	public function entry($id, $autosave_id = NULL)
+	public function entry($id = NULL, $autosave_id = NULL)
 	{
+		if ( ! $id)
+		{
+			show_404();
+		}
+
 		$entry = ee('Model')->get('ChannelEntry', $id)
-			->with('Channel', 'Versions')
+			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -377,81 +431,6 @@ class Edit extends AbstractPublishController {
 			}
 		}
 
-		if (count($_POST))
-		{
-			if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
-			{
-				unset($_POST['author_id']);
-			}
-
-			$entry->set($_POST);
-
-			// if categories are not in POST, then they've unchecked everything
-			// and we need to clear them out
-			if ( ! isset($_POST['categories']))
-			{
-				$entry->categories = array();
-			}
-
-			$result = $entry->validate();
-
-			if (AJAX_REQUEST)
-			{
-				$field = ee()->input->post('ee_fv_field');
-				// Remove any namespacing to run validation for the parent field
-				$field = preg_replace('/\[.+?\]/', '', $field);
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
-			}
-
-			if ($result->isValid())
-			{
-				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
-				{
-					$entry->saveVersion();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('revision_saved'))
-						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
-				}
-				else
-				{
-					$entry->edit_date = ee()->localize->now;
-					$entry->save();
-
-					ee('CP/Alert')->makeInline('entry-form')
-						->asSuccess()
-						->withTitle(lang('edit_entry_success'))
-						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
-						->defer();
-
-					ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
-				}
-			}
-			else
-			{
-				$vars['errors'] = $result;
-
-				ee('CP/Alert')->makeInline('entry-form')
-					->asIssue()
-					->withTitle(lang('edit_entry_error'))
-					->addToBody(lang('edit_entry_error_desc'))
-					->now();
-			}
-		}
-
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $entry->channel_id)
@@ -459,10 +438,21 @@ class Edit extends AbstractPublishController {
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
 
-		$vars = array_merge($vars, array(
-			'entry' => $entry,
-			'layout' => $entry->getDisplay($channel_layout),
-		));
+		$vars['layout'] = $entry->getDisplay($channel_layout);
+
+		$result = $this->validateEntry($entry, $vars['layout']);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$vars['errors'] = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveEntryAndRedirect($entry);
+			}
+		}
+
+		$vars['entry'] = $entry;
 
 		$this->setGlobalJs($entry, TRUE);
 

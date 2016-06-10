@@ -828,7 +828,8 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 
-		return (strpos($permission_array[$item], '|'.ee()->session->userdata('group_id').'|') === FALSE) ? FALSE : TRUE;
+		$groups = explode('|', $permission_array[$item]);
+		return in_array(ee()->session->userdata('group_id'), $groups);
 	}
 
 	// --------------------------------------------------------------------
@@ -1179,6 +1180,7 @@ class Forum_Core extends Forum {
 
 			if ( ! preg_match("/^[0-9_]+$/i", $feed_id))
 			{
+				ee()->db->_reset_select();
 				return $this->trigger_error('no_feed_specified');
 			}
 
@@ -3598,7 +3600,15 @@ class Forum_Core extends Forum {
 				$row['avatar_filename'] != '' &&
 				ee()->session->userdata('display_avatars') == 'y' )
 			{
-				$avatar_path	= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
+				$avatar_url = ee()->config->slash_item('avatar_url');
+				$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+				if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
+				{
+					$avatar_url .= 'default/';
+				}
+
+				$avatar_path	= $avatar_url.$row['avatar_filename'];
 				$avatar_width	= $row['avatar_width'];
 				$avatar_height	= $row['avatar_height'];
 
@@ -5172,7 +5182,8 @@ class Forum_Core extends Forum {
 			return $this->submission_error = lang('unable_to_recieve_attach');
 		}
 
-		if ( ! @is_dir($query->row('board_upload_path') ) OR ! is_really_writable($query->row('board_upload_path') ))
+		$board_upload_path = parse_config_variables($query->row('board_upload_path'));
+		if ( ! @is_dir($board_upload_path) OR ! is_really_writable($board_upload_path))
 		{
 			return $this->submission_error = lang('unable_to_recieve_attach');
 		}
@@ -5241,7 +5252,7 @@ class Forum_Core extends Forum {
 		$filehash = ee()->functions->random('alnum', 20);
 
 		// Upload the image
-		$server_path = $query->row('board_upload_path');
+		$server_path = $board_upload_path;
 
 		// Upload the image
 		$config = array(
@@ -5298,7 +5309,7 @@ class Forum_Core extends Forum {
 					'image_library'		=> ee()->config->item('image_resize_protocol'),
 					'library_path'		=> ee()->config->item('image_library_path'),
 					'maintain_ratio'	=> TRUE,
-					'new_image'			=> $query->row('board_upload_path').$filehash.'_t'.$upload_data['file_ext'],
+					'new_image'			=> $board_upload_path.$filehash.'_t'.$upload_data['file_ext'],
 					'master_dim'		=> 'height',
 					'thumb_marker'		=> '_t',
 					'source_image'		=> $upload_data['full_path'],
@@ -5310,7 +5321,7 @@ class Forum_Core extends Forum {
 
 				if (ee()->image_lib->resize())
 				{
-					$props = ee()->image_lib->get_image_properties($query->row('board_upload_path').$filehash.'_t'.$upload_data['file_ext'], TRUE);
+					$props = ee()->image_lib->get_image_properties($board_upload_path.$filehash.'_t'.$upload_data['file_ext'], TRUE);
 
 					$t_width  = $props['width'];
 					$t_height = $props['height'];
@@ -10576,7 +10587,7 @@ class Forum_Core extends Forum {
 				// parse {forum_url}
 				if ($key == 'forum_url')
 				{
-					$tagdata = ee()->TMPL->swap_var_single($key, $row['board_forum_url'], $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, parse_config_variables($row['board_forum_url']), $tagdata);
 				}
 
 				// parse profile path
@@ -10604,7 +10615,7 @@ class Forum_Core extends Forum {
 				{
 					$tagdata = ee()->TMPL->swap_var_single(
 														$key,
-														reduce_double_slashes($row['board_forum_url'].'/viewthread/'.$row['topic_id'].'/'),
+														reduce_double_slashes(parse_config_variables($row['board_forum_url']).'/viewthread/'.$row['topic_id'].'/'),
 														$tagdata
 													 );
 				}

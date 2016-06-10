@@ -29,7 +29,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Textarea',
-		'version'	=> '1.0'
+		'version'	=> '1.0.0'
 	);
 
 	var $has_array_data = FALSE;
@@ -60,48 +60,43 @@ class Textarea_ft extends EE_Fieldtype {
 
 			foreach ($buttons as $button)
 			{
+				// Don't let markItUp handle this button
+				if ($button->classname == 'html-upload')
+				{
+					$button->tag_open = '';
+				}
 				$markItUp['markupSet'][] = $button->prepForJSON();
 			}
 
 			ee()->javascript->set_global('markitup.settings', $markItUp);
 			ee()->cp->add_js_script(array('plugin' => array('markitup')));
-			ee()->javascript->output('$("textarea[data-markitup]").markItUp(EE.markitup.settings);');
+			ee()->javascript->output('
+				$("textarea[data-markitup]")
+					.not(".grid-textarea textarea")
+					.markItUp(EE.markitup.settings);
+
+				$("li.html-upload").addClass("m-link").attr({
+					rel: "modal-file",
+					href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+				});
+
+				Grid.bind("textarea", "display", function(cell)
+				{
+					$("textarea[data-markitup]", cell).markItUp(EE.markitup.settings);
+
+					$("li.html-upload", cell).addClass("m-link").attr({
+						rel: "modal-file",
+						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+					});
+				});
+			');
 
 			ee()->session->set_cache(__CLASS__, 'markitup_initialized', TRUE);
 		}
 
-		// Set a boolean telling if we're in Grid AND this textarea has
-		// markItUp enabled
-		$grid_markitup = ($this->content_type() == 'grid' &&
-			isset($this->settings['show_formatting_buttons']) &&
-			$this->settings['show_formatting_buttons'] == 1);
-
-		if ($grid_markitup)
-		{
-			// Load the Grid cell display binding only once
-			if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
-			{
-				ee()->javascript->output('
-					Grid.bind("textarea", "display", function(cell)
-					{
-						var textarea = $("textarea.markItUp", cell);
-
-						// Only apply file browser trigger if a field was found
-						if (textarea.size())
-						{
-							textarea.markItUp(EE.markitup.settings);
-							EE.publish.file_browser.textarea(cell);
-						}
-					});
-				');
-
-				ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
-			}
-		}
-
 		if (REQ == 'CP')
 		{
-			$class = ($grid_markitup) ? 'markItUp' : '';
+			$class = '';
 
 			$toolbar = FALSE;
 
@@ -157,8 +152,10 @@ class Textarea_ft extends EE_Fieldtype {
 				'smileys'         => $smileys
 			);
 
-			if (isset($this->settings['field_show_file_selector'])
-				&& $this->settings['field_show_file_selector'] == 'y')
+			if ((isset($this->settings['field_show_file_selector'])
+				&& $this->settings['field_show_file_selector'] == 'y') OR
+				(isset($this->settings['field_show_formatting_btns'])
+				&& $this->settings['field_show_formatting_btns'] == 'y'))
 			{
 				$fp = new FilePicker();
 				$fp->inject(ee()->view);
@@ -177,8 +174,7 @@ class Textarea_ft extends EE_Fieldtype {
 			'name'     => $this->name(),
 			'value'    => $data,
 			'rows'     => $this->settings['field_ta_rows'],
-			'dir'      => $this->settings['field_text_direction'],
-			'class'    => ($grid_markitup) ? 'markItUp' : ''
+			'dir'      => $this->settings['field_text_direction']
 		);
 
 		if ($this->get_setting('field_disabled'))
@@ -252,10 +248,20 @@ class Textarea_ft extends EE_Fieldtype {
 						'type' => 'select',
 						'choices' => $format_options,
 						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
+						'note' => form_label(
+							form_checkbox('update_formatting', 'y')
+							.lang('update_existing_fields')
+						)
 					)
 				)
 			)
 		);
+
+		// Only show the update existing fields note when editing.
+		if ( ! $this->field_id)
+		{
+			unset($settings[1]['fields']['field_fmt']['note']);
+		}
 
 		if ($this->content_type() != 'grid')
 		{
@@ -364,6 +370,19 @@ class Textarea_ft extends EE_Fieldtype {
 		$all = array_merge($defaults, $data);
 
 		return array_intersect_key($all, $defaults);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the fieldtype
+	 *
+	 * @param string $version The version being updated to
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function update($version)
+	{
+		return TRUE;
 	}
 }
 
