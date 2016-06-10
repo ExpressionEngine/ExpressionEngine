@@ -323,6 +323,12 @@ class Routes extends AbstractDesignController {
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
 
+		$all_templates = ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->with('TemplateGroup')
+			->order('TemplateGroup.group_name')
+			->order('template_name');
+
 		$template_ids = ee()->api->get('TemplateRoute')
 			->fields('template_id')
 			->with('Template')
@@ -330,15 +336,12 @@ class Routes extends AbstractDesignController {
 			->all()
 			->pluck('template_id');
 
-		$all_templates = ee('Model')->get('Template')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('template_id', 'NOT IN', $template_ids)
-			->with('TemplateGroup')
-			->order('TemplateGroup.group_name')
-			->order('template_name')
-			->all();
+		if ($template_ids)
+		{
+			$all_templates->filter('template_id', 'NOT IN', $template_ids);
+		}
 
-		foreach ($all_templates as $template)
+		foreach ($all_templates->all() as $template)
 		{
 			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
 			{
