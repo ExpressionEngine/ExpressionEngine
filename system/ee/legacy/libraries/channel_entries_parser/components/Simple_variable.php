@@ -100,6 +100,18 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$data['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $data['title']);
 
+			// Strip unsafe HTML and attributes from title
+			// Preserve old HTML format, because yay singletons
+			$existing_format = ee()->typography->html_format;
+			ee()->typography->html_format = 'safe';
+			$data['title'] = ee()->typography->format_html($data['title']);
+
+			// format_html() turns safe HTML into BBCode
+			$data['title'] = ee()->typography->decode_bbcode($data['title']);
+
+			// Put back old format
+			ee()->typography->html_format = $existing_format;
+
 			$tagdata = str_replace(
 				LD.$key.RD,
 				ee()->typography->format_characters($data['title']),
