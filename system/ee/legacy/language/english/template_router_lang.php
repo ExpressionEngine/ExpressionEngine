@@ -13,7 +13,7 @@ $lang = array(
 	'template_routes_header' => 'Template Routes',
 	'template_routes_header_desc' => 'Routes are listed in the order that the Template Router will match your templates.',
 	'route' => 'Route',
-	'groupe' => 'Group',
+	'group' => 'Group',
 	'segments_required' => 'Segments Required?',
 	'new_route' => 'New route',
 );
