@@ -10,6 +10,7 @@ $lang = array(
 // Develop Menu
 //----------------------------
 
+'nav_developer'  => 'Developer',
 'nav_developer_tools'  => 'Developer Tools',
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',

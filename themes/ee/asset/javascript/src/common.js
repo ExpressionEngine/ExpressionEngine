@@ -105,34 +105,45 @@ $(document).ready(function(){
 	// =========
 
 		// listen for clicks on elements with a class of has-sub
-		$('body').on('click', '.has-sub', function(){
+		$('.nav-has-sub').on('click',function(){
 			// close OTHER open sub menus
 			// when clicking THIS sub menu trigger
 			// thanks me :D
-			$('.open').not(this)
+			$('.nav-open').not(this)
 				// remove the class of open
-				.removeClass('open')
+				.removeClass('nav-open')
 				// hide all siblings of open with a class of sub-menu
-				.siblings('.sub-menu').hide();
+				.siblings('.nav-sub-menu').hide();
 
 			// toggles THIS sub menu
 			// thanks pascal
 			$(this)
 				// toggle of siblings of THIS
 				// with a class of sub-menu
-				.siblings('.sub-menu').toggle()
+				.siblings('.nav-sub-menu').toggle()
 				// go back to THIS and...
 				.end()
 				// toggle a class of open on THIS
-				.toggleClass('open');
+				.toggleClass('nav-open');
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
-
-			// Give filter text boxes focus on open
-			$(this).siblings('.sub-menu').find('input.autofocus').focus();
-
 			return false;
+		});
+
+		// listen for clicks to the document
+		$(document).on('click',function(e){
+			// check to see if we are inside a sub-menu or not.
+			if(!$(e.target).closest('.nav-sub-menu').length){
+				// close OTHER open sub menus
+				// when clicking outside ANY sub menu trigger
+				// thanks me :D
+				$('.nav-open')
+					// remove the class of open
+					.removeClass('nav-open')
+					// hide all siblings of open with a class of sub-menu
+					.siblings('.nav-sub-menu').hide();
+			}
 		});
 
 		// listen for clicks to the document
