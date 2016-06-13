@@ -180,7 +180,7 @@ class Builder {
 	 * @param Mixed   $value     Value to compare to
 	 * @return Query  $this
 	 */
-	public function filter($property, $operator, $value = NULL)
+	public function filter($property, $operator, $value = FALSE)
 	{
 		$this->addFilter($property, $operator, $value, 'and');
 		return $this;
@@ -194,7 +194,7 @@ class Builder {
 	 * @param Mixed   $value     Value to compare to
 	 * @return Query  $this
 	 */
-	public function orFilter($property, $operator, $value = NULL)
+	public function orFilter($property, $operator, $value = FALSE)
 	{
 		$this->addFilter($property, $operator, $value, 'or');
 		return $this;
@@ -205,7 +205,7 @@ class Builder {
 	 */
 	protected function addFilter($property, $operator, $value, $connective)
 	{
-		if ( ! isset($value))
+		if ($value === FALSE)
 		{
 			$value = $operator;
 			$operator = '==';

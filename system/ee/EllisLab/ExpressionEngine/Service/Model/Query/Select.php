@@ -266,7 +266,25 @@ class Select extends Query {
 			$fn = 'or_'.$fn;
 		}
 
-		$query->$fn("{$property} {$operator}", $value);
+		if (is_null($value) || strtoupper($value) == 'NULL')
+		{
+			switch ($operator)
+			{
+				case '!=':
+					$operator = 'IS NOT';
+					break;
+				case '==':
+				case '':
+					$operator = 'IS';
+					break;
+			}
+
+			$query->$fn("{$property} {$operator} NULL");
+		}
+		else
+		{
+			$query->$fn("{$property} {$operator}", $value);
+		}
 	}
 
 	/**
