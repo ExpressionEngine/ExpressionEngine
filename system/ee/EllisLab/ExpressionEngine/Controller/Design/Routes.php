@@ -123,7 +123,11 @@ class Routes extends AbstractDesignController {
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/design/routes'
+				'cp/design/routes',
+				'cp/design/route_reorder'
+			),
+			'plugin' => array(
+				'ee_table_reorder',
 			),
 		));
 

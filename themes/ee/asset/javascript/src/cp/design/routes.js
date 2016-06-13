@@ -11,6 +11,9 @@
  */
 
 $(document).ready(function () {
+	$('table').eeTableReorder({});
+	$('table tbody').sortable('option', 'helper', 'original');
+
 	$('.tbl-action a.btn').click(function (e) {
 		e.preventDefault();
 
