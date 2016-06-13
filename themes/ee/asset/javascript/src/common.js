@@ -125,6 +125,10 @@ $(document).ready(function(){
 				.end()
 				// toggle a class of open on THIS
 				.toggleClass('nav-open');
+
+			// focus the filter box if one exists
+			$(this).siblings('.nav-sub-menu').find('.autofocus').focus()
+
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
