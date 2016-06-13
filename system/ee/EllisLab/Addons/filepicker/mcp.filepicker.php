@@ -278,7 +278,12 @@ class Filepicker_mcp {
 	{
 		if ($search = ee()->input->get('search'))
 		{
-			$files->filter('file_name', 'LIKE', '%'.$search.'%');
+			$files
+				->filterGroup()
+				->filter('title', 'LIKE', '%' . $search . '%')
+				->orFilter('file_name', 'LIKE', '%' . $search . '%')
+				->orFilter('mime_type', 'LIKE', '%' . $search . '%')
+				->endFilterGroup();
 		}
 	}
 
