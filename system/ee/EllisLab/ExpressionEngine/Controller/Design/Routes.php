@@ -241,19 +241,30 @@ class Routes extends AbstractDesignController {
 			$route->route = $data['route'];
 			$route->route_required = ($data['required'] == 'y') ? TRUE : FALSE;
 			$route->order = array_search($template_id, $order);
-			$routes[] = $route;
 
-			$result = $route->validate();
-			if ($result->isNotValid())
-			{
-				foreach ($result->getFailed() as $field => $rules)
+			$field = "routes[rows][{$template_id}][route]";
+
+			$validator = ee('Validation')->make(array(
+				'route' => 'uniqueRoute'
+			));
+
+			$validator->defineRule('uniqueRoute', function($key, $value, $parameters) use ($routes, $route) {
+				foreach ($routes as $r)
 				{
-					foreach ($rules as $rule)
+					if (($r->route == $route->route)
+						&& ($r->route_required == $route->route_required))
 					{
-						$errors->addFailed("routes[rows][{$template_id}][route]", $rule);
+						return 'duplicate_route';
 					}
 				}
-			}
+
+				return TRUE;
+			});
+
+			$errors = $this->transferErrors($field, $validator->validate($route->getValues()), $errors);
+			$errors = $this->transferErrors($field, $route->validate(), $errors);
+
+			$routes[] = $route;
 		}
 
 		if ($errors->isValid())
@@ -343,6 +354,22 @@ class Routes extends AbstractDesignController {
 		}
 
 		return $existing_templates;
+	}
+
+	private function transferErrors($field, ValidationResult $result, ValidationResult $errors)
+	{
+		if ($result->isNotValid())
+		{
+			foreach ($result->getFailed() as $rules)
+			{
+				foreach ($rules as $rule)
+				{
+					$errors->addFailed($field, $rule);
+				}
+			}
+		}
+
+		return $errors;
 	}
 }
 
