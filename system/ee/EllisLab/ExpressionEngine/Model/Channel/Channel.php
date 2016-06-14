@@ -111,6 +111,7 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'enum[y,n]',
 		'comment_notify_authors'     => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
+		'max_entries'                => 'isNatural',
 	);
 
 	protected static $_events = array(
@@ -175,6 +176,7 @@ class Channel extends StructureModel {
 	protected $title_field_label;
 	protected $url_title_prefix;
 	protected $live_look_template;
+	protected $max_entries;
 
 	/**
 	 * Parses URL properties for any config variables
