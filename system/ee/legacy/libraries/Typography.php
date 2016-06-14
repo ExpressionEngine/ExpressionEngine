@@ -1404,7 +1404,12 @@ class EE_Typography {
 						}
 						$tag .= ">";
 
-						$str = str_replace($tag_match[0], $tag, $str);
+						$val = (is_array($val)) ? $val['tag'] : $val;
+						$str = str_replace(
+							array($tag_match[0], '[/'.$key.']'),
+							array($tag, '</'.$val.'>'),
+							$str
+						);
 					}
 				}
 			}
