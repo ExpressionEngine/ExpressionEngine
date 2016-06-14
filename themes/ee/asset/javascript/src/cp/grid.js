@@ -213,7 +213,11 @@ Grid.Publish.prototype = {
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
-		this.rowContainer.append(el);
+		if (this.tableActions) {
+			this.tableActions.before(el);
+		} else {
+			this.rowContainer.append(el);
+		}
 
 		// Make sure empty field message is hidden
 		this.emptyField.hide();
