@@ -11,28 +11,10 @@
  */
 
 $(document).ready(function () {
-	$('table').eeTableReorder({});
-	$('table tbody').sortable('option', 'helper', 'original');
+	$('.grid-publish').find('.toolbar .add a').parents('ul.toolbar').remove();
+	$('.grid-publish').removeClass('grid-publish');
+	$('.grid-input-form').removeClass('grid-input-form');
 
-	$('.tbl-action a.btn').click(function (e) {
-		e.preventDefault();
-
-		var blankRoute = $(this).closest('table').find('tr.last').eq(0);
-		var newRoute = blankRoute.clone();
-
-		newRoute.removeClass('hidden');
-		newRoute.removeClass('last');
-
-		newRoute.html(
-			newRoute.html().replace(
-				RegExp('new_route_[0-9]{1,}', 'g'),
-				'new_route_' + EE.new_route_index
-			)
-		);
-
-		blankRoute.before(newRoute);
-		EE.new_route_index++;
-	})
 
 	$('table').on('change', 'select', function (e) {
 		var group = $('option:selected', this).closest('optgroup').attr('label');
@@ -47,8 +29,7 @@ $(document).ready(function () {
 		});
 	});
 
-	$('.toolbar .remove a').on('click', function(e) {
-		$(this).closest('tr').find('input[type=text]').val('');
-		$(this).closest('tr').hide();
+	$('#routes').on('grid:addRow', function(e, el) {
+		$(el).addClass('setting-field');
 	});
 });
