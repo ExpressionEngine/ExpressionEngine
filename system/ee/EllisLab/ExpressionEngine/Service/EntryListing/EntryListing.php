@@ -287,10 +287,10 @@ class EntryListing {
 		{
 			$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
 			$this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
-			->fields('channel_id', 'channel_title', 'field_group')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('channel_title', 'asc')
-			->all();
+				->fields('channel_id', 'channel_title', 'field_group')
+				->filter('site_id', ee()->config->item('site_id'))
+				->order('channel_title', 'asc')
+				->all();
 		}
 
 		return $this->channels;
