@@ -178,6 +178,7 @@ Grid.Publish.prototype = {
 		this.root.parents('.grid-publish')
 			.find('.toolbar .add a')
 			.add('.no-results .btn', this.root)
+			.add('.tbl-action .btn.add', this.root)
 			.on('click', function(event) {
 				event.preventDefault();
 
