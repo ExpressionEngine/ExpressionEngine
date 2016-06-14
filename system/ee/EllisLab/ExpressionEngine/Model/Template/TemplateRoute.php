@@ -50,7 +50,7 @@ class TemplateRoute extends Model {
 
 	protected static $_validation_rules = array(
 		'template_id'    => 'required|isNatural',
-		'route'          => 'validateRouteIsValid[route_required]|validateRouteIsUnique[route_required]',
+		'route'          => 'required|validateRouteIsValid[route_required]|validateRouteIsUnique[route_required]',
 		'route_required' => 'enum[y,n]',
 	);
 
