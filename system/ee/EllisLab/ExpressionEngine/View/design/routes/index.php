@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav-table'); ?>
 
-<div class="tbl-ctrls">
+<div class="tbl-ctrls grid-publish">
 	<?=form_open($form_url)?>
 		<h1>
 			<?=$cp_heading?><br>
