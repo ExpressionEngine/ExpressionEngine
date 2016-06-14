@@ -81,10 +81,10 @@ class Routes extends AbstractDesignController {
 		$grid->loadAssets();
 
 		$grid->setColumns(array(
-			'template' => array('encode' => FALSE),
+			'template',
 			'group',
-			'route' => array('encode' => FALSE),
-			'segments_required' => array('encode' => FALSE),
+			'route',
+			'segments_required',
 		));
 		$data = array();
 
