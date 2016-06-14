@@ -97,11 +97,6 @@ class Routes extends AbstractDesignController {
 				->all();
 		}
 
-		$blank_row = $this->getRouteRow(ee('Model')->make('TemplateRoute'), $errors);
-		$blank_row['attrs']['class'] .= ' hidden';
-
-		$grid->setBlankRow($blank_row['columns']);
-
 		foreach($routes as $route)
 		{
 			$data[] = $this->getRouteRow($route, $errors);
@@ -109,6 +104,10 @@ class Routes extends AbstractDesignController {
 
 		$grid->setNoResultsText('no_template_routes');
 		$grid->setData($data);
+
+		$blank_row = $this->getRouteRow(ee('Model')->make('TemplateRoute'), $errors);
+		$grid->setBlankRow($blank_row['columns']);
+
 		$grid->addActionButton('#', lang('new_route'), 'add');
 
 		$vars = array(
@@ -136,6 +135,7 @@ class Routes extends AbstractDesignController {
 		$row = array();
 
 		$group_field = ($route->Template) ? htmlentities($route->Template->TemplateGroup->group_name, ENT_QUOTES, 'UTF-8') : '';
+		$new_route_index++;
 
 		if ($route->isNew())
 		{
@@ -151,8 +151,6 @@ class Routes extends AbstractDesignController {
 					),
 					'grid' => TRUE,
 				));
-
-				$new_route_index++;
 		}
 		else
 		{
@@ -188,7 +186,7 @@ class Routes extends AbstractDesignController {
 			$group_field,
 			array(
 				'html' => $route_field,
-				'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[{$id}][route]")) : NULL
+				'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : NULL
 			),
 			$required,
 		);
