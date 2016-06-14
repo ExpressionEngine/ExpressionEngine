@@ -30,6 +30,11 @@ if ($wrap): ?>
 				// Don't do reordering logic if the table is empty
 				$reorder = $reorder && ! empty($data);
 				$colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+				if ($grid_input)
+				{
+					$colspan++;
+				}
+				
 				if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder"></span></th>
 				<?php elseif ($reorder): ?>
