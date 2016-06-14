@@ -43,6 +43,7 @@ Grid.Publish = function(field, settings) {
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
+	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.children('tbody');
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
@@ -164,7 +165,7 @@ Grid.Publish.prototype = {
 	 * @return	{int}	Number of rows
 	 */
 	_getRows: function() {
-		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField));
+		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField).add(this.tableActions));
 	},
 
 	/**
