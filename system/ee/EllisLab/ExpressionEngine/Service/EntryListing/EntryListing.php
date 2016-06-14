@@ -181,8 +181,8 @@ class EntryListing {
 			{
 				$entries->filter('channel_id', $channel_id);
 				$channel = ee('Model')->get('Channel', $channel_id)
-					->with('CustomFields')
 					->first();
+
 				$channel_name = $channel->channel_title;
 			}
 			else
