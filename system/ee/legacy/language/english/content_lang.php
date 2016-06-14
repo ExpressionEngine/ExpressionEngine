@@ -27,6 +27,10 @@ $lang = array(
 
 'btn_search_entries' => 'Search Entries',
 
+'entry_limit_reached' => 'Channel limit reached',
+
+'entry_limit_reached_desc' => 'This channel is limited to %d entries.',
+
 'by' => 'by',
 'in' => 'in',
 
