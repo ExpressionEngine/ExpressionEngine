@@ -140,6 +140,7 @@ class Routes extends AbstractDesignController {
 		if ($route->isNew())
 		{
 			$id = 'new_row_' . $new_route_index;
+			$row['attrs']['row_id'] = $id;
 
 			$template_field = ee('View')->make('_shared/form/field')
 				->render(array(
