@@ -63,8 +63,6 @@ class EE_Menu {
 			$menu['custom'] = $custom;
 		}
 
-		// CP-TODO: Add back cp_menu_array hook?
-
 		return $menu;
 	}
 
