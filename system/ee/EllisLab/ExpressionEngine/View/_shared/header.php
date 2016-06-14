@@ -134,7 +134,39 @@
 					<?php endif; ?>
 				</div>
 			</nav>
+		<?php $custom = $cp_main_menu['custom']; ?>
+		<?php if ($custom && $custom->hasItems()): ?>
+			<nav class="nav-custom">
+				<hr>
+				<?php foreach ($custom->getItems() as $item): ?>
+					<?php if ($item->isSubmenu()) :?>
+						<div class="nav-item-sub">
+							<a class="nav-has-sub" href=""><?=lang($item->title)?></a>
+							<div class="nav-sub-menu">
+								<?php if ($item->hasFilter()): ?>
+								<form class="nav-filter">
+									<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
+								</form>
+								<?php endif; ?>
+								<ul>
+									<?php foreach ($item->getItems() as $sub): ?>
+									<li><a href="<?=$sub->url?>"><?=lang($sub->title)?></a></li>
+									<?php endforeach; ?>
+									<?php if ($item->hasAddLink()): ?>
+									<li><a class="nav-add" href="<?=$item->addlink->url?>"><i class="icon-add"></i><?=lang($item->addlink->title)?></a></li>
+									<?php endif; ?>
+								</ul>
+							</div>
+						</div>
+					<?php else: ?>
+						<a class="nav-item" href="<?=$item->url?>"><?=lang($item->title)?></a>
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</nav>
+		<?php endif; ?>
+
 		</div>
 		<section class="wrap">
+
 
 <?php
