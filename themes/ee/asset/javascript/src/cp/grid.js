@@ -214,7 +214,7 @@ Grid.Publish.prototype = {
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
-		if (this.tableActions) {
+		if (this.tableActions.length) {
 			this.tableActions.before(el);
 		} else {
 			this.rowContainer.append(el);
