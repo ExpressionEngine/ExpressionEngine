@@ -82,6 +82,11 @@ class EntryListing {
 	protected $filters;
 
 	/**
+	 * @var Collection of channel models
+	 */
+	protected $channels;
+
+	/**
 	 * Constructor
 	 * @param int $site_id Current site ID
 	 * @param boolean $is_admin Whether or not a Super Admin is making this
@@ -177,6 +182,7 @@ class EntryListing {
 				$entries->filter('channel_id', $channel_id);
 				$channel = ee('Model')->get('Channel', $channel_id)
 					->first();
+
 				$channel_name = $channel->channel_title;
 			}
 			else
@@ -212,8 +218,31 @@ class EntryListing {
 
 		if ( ! empty($this->search_value))
 		{
-			$entries->filter('title', 'LIKE', '%' . $this->search_value . '%');
+			$search_fields = array('title');
+
+			if (isset($channel))
+			{
+				$custom_fields = $channel->CustomFields;
+			}
+			else
+			{
+				$channels = $this->getChannels();
+				$field_groups = $channels->pluck('field_group');
+
+				$custom_fields = ee('Model')->get('ChannelField')
+					->fields('field_id')
+					->filter('group_id', 'IN', $field_groups)
+					->all();
+			}
+
+			foreach ($custom_fields as $cf)
+			{
+				$search_fields[] = 'field_id_'.$cf->getId();
+			}
+
+			$entries->search($search_fields, $this->search_value);
 		}
+
 
 		$filter_values = $this->filters->values();
 
@@ -240,22 +269,31 @@ class EntryListing {
 	 */
 	public function createChannelFilter()
 	{
-		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
-		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
-			->fields('channel_id', 'channel_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('channel_title', 'asc')
-			->all();
+		$channels = $this->getChannels();
+		$channel_filter_options = $channels->getDictionary('channel_id', 'channel_title');
 
-		$channel_filter_options = array();
-		foreach ($channels as $channel)
-		{
-			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
-		}
 		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
 		$channel_filter->setPlaceholder(lang('filter_channels'));
 		$channel_filter->useListFilter(); // disables custom values
 		return $channel_filter;
+	}
+
+	/**
+	 * Get the allowed channels
+	 */
+	protected function getChannels()
+	{
+		if ( ! isset($this->channels))
+		{
+			$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
+			$this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
+				->fields('channel_id', 'channel_title', 'field_group')
+				->filter('site_id', ee()->config->item('site_id'))
+				->order('channel_title', 'asc')
+				->all();
+		}
+
+		return $this->channels;
 	}
 
 	/**

@@ -706,22 +706,28 @@ class Status extends AbstractChannelsController {
 	{
 		if (AJAX_REQUEST)
 		{
-			$color = ee()->input->post('color');
+			$color = ee()->input->post('highlight');
 		}
 		else if ($color == '')
 		{
 			throw new \InvalidArgumentException();
 		}
 
-		$background = new Color($color);
-		$foreground = ($background->isLight())
-			? $background->darken(100)
-			: $background->lighten(100);
+		try
+		{
+			$background = new Color($color);
+			$foreground = ($background->isLight())
+				? $background->darken(100)
+				: $background->lighten(100);
+		}
+		catch (\Exception $e)
+		{
+			$foreground = 'ffffff';
+		}
 
 		if (AJAX_REQUEST)
 		{
-			echo $foreground;
-			exit;
+			ee()->output->send_ajax_response($foreground);
 		}
 
 		return $foreground;
