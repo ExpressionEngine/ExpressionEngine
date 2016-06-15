@@ -64,7 +64,7 @@ if ($wrap): ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
-								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
+								<span class="grid-instruct"><?=lang($settings['desc'])?></span>
 							<?php endif ?>
 							<?php if ($sortable && $settings['sort'] && $base_url != NULL): ?>
 								<?php
