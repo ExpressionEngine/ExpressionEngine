@@ -713,15 +713,21 @@ class Status extends AbstractChannelsController {
 			throw new \InvalidArgumentException();
 		}
 
-		$background = new Color($color);
-		$foreground = ($background->isLight())
-			? $background->darken(100)
-			: $background->lighten(100);
+		try
+		{
+			$background = new Color($color);
+			$foreground = ($background->isLight())
+				? $background->darken(100)
+				: $background->lighten(100);
+		}
+		catch (\Exception $e)
+		{
+			$foreground = 'ffffff';
+		}
 
 		if (AJAX_REQUEST)
 		{
-			echo $foreground;
-			exit;
+			ee()->output->send_ajax_response($foreground);
 		}
 
 		return $foreground;

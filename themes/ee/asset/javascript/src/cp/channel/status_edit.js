@@ -37,7 +37,8 @@ $(document).ready(function() {
 				{highlight: value},
 				function (data) {
 					$status_tag.css('color', '#'+data);
-				}
+				},
+				'json'
 			);
 		}
 	});
