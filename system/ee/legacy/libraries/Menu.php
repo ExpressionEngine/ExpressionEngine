@@ -108,7 +108,7 @@ class EE_Menu {
 		// Custom query to more efficiently get the total number of
 		// entries per channel to properly set navigation links based
 		// on the max_entries setting of a channel
-		$channels = ee('db')->select('channels.channel_id, channel_title, max_entries, count(exp_channel_titles.entry_id) as total_entries')
+		$channels_query = ee('db')->select('channels.channel_id, channel_title, max_entries, count(exp_channel_titles.entry_id) as total_entries')
 			->join('channel_titles', 'channel_titles.channel_id = channels.channel_id', 'left')
 			->group_by('channel_title')
 			->where('channels.site_id', ee()->config->item('site_id'))
@@ -117,18 +117,14 @@ class EE_Menu {
 		$allowed_channels = ee()->session->userdata('assigned_channels');
 		if (count($allowed_channels))
 		{
-			$channels = $channels->where_in('channel_title', $allowed_channels)
+			$channels = $channels_query->where_in('channel_title', $allowed_channels)
 				->get('channels');
-		}
-		else
-		{
-			$channels = FALSE;
 		}
 
 		$menu['create'] = array();
 		$menu['edit'] = array();
 
-		if ($channels)
+		if (isset($channels))
 		{
 			foreach($channels->result() as $channel)
 			{
