@@ -144,7 +144,7 @@ class Routes extends AbstractDesignController {
 
 			$template_field = ee('View')->make('_shared/form/field')
 				->render(array(
-					'field_name' => "template",
+					'field_name' => "template_id",
 					'field' => array(
 						'type' => 'select',
 						'choices' => $this->getTemplatesWithoutRoutes(),
@@ -183,7 +183,10 @@ class Routes extends AbstractDesignController {
 			));
 
 		$row['columns'] = array(
-			$template_field,
+			array(
+				'html' => $template_field,
+				'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][template_id]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][template_id]")) : NULL
+			),
 			$group_field,
 			array(
 				'html' => $route_field,
@@ -229,13 +232,8 @@ class Routes extends AbstractDesignController {
 
 			if (strpos($template_id, 'new_') === 0)
 			{
-				if (empty($data['template']))
-				{
-					continue;
-				}
-
 				$route = ee('Model')->make('TemplateRoute');
-				$route->Template = ee('Model')->get('Template', $data['template'])
+				$route->Template = ee('Model')->get('Template', $data['template_id'])
 					->with('TemplateGroup')
 					->first();
 			}
@@ -248,7 +246,7 @@ class Routes extends AbstractDesignController {
 			$route->route_required = ($data['required'] == 'y') ? TRUE : FALSE;
 			$route->order = array_search($template_id, $order);
 
-			$field = "routes[rows][{$template_id}][route]";
+			$field_prefix = "routes[rows][{$template_id}]";
 
 			$validator = ee('Validation')->make(array(
 				'route' => 'uniqueRoute'
@@ -267,8 +265,8 @@ class Routes extends AbstractDesignController {
 				return TRUE;
 			});
 
-			$errors = $this->transferErrors($field, $validator->validate(compact('route')), $errors);
-			$errors = $this->transferErrors($field, $route->validate(), $errors);
+			$errors = $this->transferErrors($field_prefix, $validator->validate(compact('route')), $errors);
+			$errors = $this->transferErrors($field_prefix, $route->validate(), $errors);
 
 			$routes[] = $route;
 		}
@@ -367,15 +365,15 @@ class Routes extends AbstractDesignController {
 		return $existing_templates;
 	}
 
-	private function transferErrors($field, ValidationResult $result, ValidationResult $errors)
+	private function transferErrors($field_prefix, ValidationResult $result, ValidationResult $errors)
 	{
 		if ($result->isNotValid())
 		{
-			foreach ($result->getFailed() as $rules)
+			foreach ($result->getFailed() as $field_name => $rules)
 			{
 				foreach ($rules as $rule)
 				{
-					$errors->addFailed($field, $rule);
+					$errors->addFailed($field_prefix . '[' . $field_name . ']', $rule);
 				}
 			}
 		}
