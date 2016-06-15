@@ -198,7 +198,7 @@ class Routes extends AbstractDesignController {
 
 	public function update()
 	{
-		if (empty($_POST) || ! array_key_exists('routes', $_POST))
+		if (ee('Request')->method() != 'POST')
 		{
 			ee()->functions->redirect($this->base_url);
 		}
@@ -215,6 +215,11 @@ class Routes extends AbstractDesignController {
 			->indexBy('template_id');
 
 		$submitted = ee()->input->post('routes');
+
+		if ( ! $submitted || ! array_key_exists('rows', $submitted))
+		{
+			$submitted = array('rows' => array());
+		}
 
 		$order = array_keys($submitted['rows']);
 
@@ -275,11 +280,16 @@ class Routes extends AbstractDesignController {
 				$route->save();
 			}
 
-			ee('Model')->get('TemplateRoute')
+			$to_delete = ee('Model')->get('TemplateRoute')
 				->with('Template')
-				->filter('Template.site_id', ee()->config->item('site_id'))
-				->filter('route_id', 'NOT IN', $routes->pluck('route_id'))
-				->delete();
+				->filter('Template.site_id', ee()->config->item('site_id'));
+
+			if (count($routes) > 0)
+			{
+				$to_delete->filter('route_id', 'NOT IN', $routes->pluck('route_id'));
+			}
+
+			$to_delete->delete();
 
 			ee('CP/Alert')->makeInline()
 				->asSuccess()
