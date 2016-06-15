@@ -34,7 +34,7 @@ $(document).ready(function() {
 			// Get foreground color
 			$.post(
 				EE.status.foreground_color_url,
-				{color: value},
+				{highlight: value},
 				function (data) {
 					$status_tag.css('color', '#'+data);
 				}

@@ -706,7 +706,7 @@ class Status extends AbstractChannelsController {
 	{
 		if (AJAX_REQUEST)
 		{
-			$color = ee()->input->post('color');
+			$color = ee()->input->post('highlight');
 		}
 		else if ($color == '')
 		{
