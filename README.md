@@ -5,10 +5,12 @@
 [Working with Git](#working-with-git)
 * [Naming Branches](#naming-branches)
 * [Commit Messages](#commit-messages)
+
 [Development Installs](#development-installs)
 * [Configuration](#configuration)
 * [Installing from the Repo](#installing-from-the-repo)
 * [Updating from the Repo](#updating-from-the-repo)
+
 [Testing](#testing)
 * [Unit Testing](#unit-testing)
 
