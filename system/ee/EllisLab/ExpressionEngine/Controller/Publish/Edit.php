@@ -132,7 +132,7 @@ class Edit extends AbstractPublishController {
 			$channel = ee('Model')->get('Channel', $channel_id)->first();
 			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
-			if ($channel->max_entries >= $count)
+			if ($channel->max_entries !== '0' && $channel->max_entries >= $count)
 			{
 				ee('CP/Alert')->makeInline()
 					->asWarning()
