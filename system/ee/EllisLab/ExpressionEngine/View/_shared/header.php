@@ -45,12 +45,12 @@
 								<li><a class="nav-add" href="<?=ee('CP/URL', 'msm/create')?>"><i class="icon-add"></i><?=lang('new_site')?></a></li>
 							<?php endif ?>
 						</ul>
+					</div>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
 						<a class="nav-no-name" href="<?=ee('CP/URL', 'settings')?>" class="no-name"><i class="icon-settings"></i><?=lang('name_your_site')?></a>
 					<?php else: ?>
 						<a class="nav-site" href="<?=ee()->config->item('site_url')?>" rel="external"><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
-					</div>
 				</div>
 				<div class="nav-global-user">
 					<a class="nav-logout" href="<?=ee('CP/URL', 'login/logout')?>"><i class="icon-logout"></i><span class="nav-txt-collapse"><?=lang('log_out')?></span></a>
