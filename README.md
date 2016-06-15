@@ -2,6 +2,12 @@
 
 **These repositories must remain private and all work under NDA.**
 
+- [Naming Branches](#naming-branches)
+- [Installing/Getting up and Running](#installing--getting-up-and-running)
+- [Development Configuration](#development-configuration)
+- [Updating from the Repo](#updating-from-the-repo)
+- [Unit Testing](#unit-testing)
+
 ## Naming Branches
 
 ExpressionEngine follows the Git Flow naming conventions. The primary branches are:
