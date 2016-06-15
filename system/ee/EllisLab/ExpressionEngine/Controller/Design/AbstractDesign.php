@@ -40,7 +40,7 @@ abstract class AbstractDesign extends CP_Controller {
 	{
 		parent::__construct();
 
-		ee('DeprecationNotice');
+		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 
 		if ( ! $this->cp->allowed_group('can_access_design'))

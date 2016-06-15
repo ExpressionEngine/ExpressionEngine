@@ -39,7 +39,7 @@ class Settings extends CP_Controller {
 	{
 		parent::__construct();
 
-		ee('DeprecationNotice');
+		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
 		{

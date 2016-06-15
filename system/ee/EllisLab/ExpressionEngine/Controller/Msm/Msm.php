@@ -38,7 +38,7 @@ class Msm extends CP_Controller {
 	{
 		parent::__construct();
 
-		ee('DeprecationNotice');
+		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		if (ee()->config->item('multiple_sites_enabled') !== 'y')
         {

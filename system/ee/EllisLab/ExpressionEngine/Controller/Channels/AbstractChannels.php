@@ -38,7 +38,7 @@ abstract class AbstractChannels extends CP_Controller {
 	{
 		parent::__construct();
 
-		ee('DeprecationNotice');
+		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		// Allow AJAX requests for category editing
 		if (AJAX_REQUEST && in_array(ee()->router->method, array('createCat', 'editCat')))

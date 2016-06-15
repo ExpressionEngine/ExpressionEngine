@@ -44,7 +44,7 @@ class Logs extends CP_Controller {
 	{
 		parent::__construct();
 
-		ee('DeprecationNotice');
+		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		ee()->lang->loadfile('logs');
 

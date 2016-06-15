@@ -161,31 +161,6 @@ return array(
 			$userdata = ee()->session->userdata;
 			return new Permission\Permission($userdata);
 		},
-
-		'DeprecationNotice' => function($ee)
-		{
-			if (ee()->session->userdata('group_id') != 1)
-			{
-				return;
-			}
-
-			$count = $ee->make('Model')->get('DeveloperLog')
-				->filter('viewed', 'n')
-				->count();
-
-			if ($count)
-			{
-				$lang_key = ($count == 1) ? 'developer_one_log' : 'developer_logs';
-
-				ee()->lang->loadfile('admin');
-				$url = $ee->make('CP/URL', 'logs/developer');
-				$ee->make('CP/Alert')->makeStandard('deprecation-notice')
-					->asWarning()
-					->withTitle(lang('deprecation_notice'))
-					->addToBody(sprintf(lang($lang_key), $count, $url))
-					->now();
-			}
-		},
 	),
 
 	'services.singletons' => array(
