@@ -166,7 +166,7 @@ return array(
 		{
 			$userdata = ee()->session->userdata;
 			return new Permission\Permission($userdata);
-		}
+		},
 	),
 
 	'services.singletons' => array(

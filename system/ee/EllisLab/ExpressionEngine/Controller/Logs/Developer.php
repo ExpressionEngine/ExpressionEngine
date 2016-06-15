@@ -54,7 +54,7 @@ class Developer extends Logs {
 			}
 		}
 
-		ee('Model')->get('DeveloperLog')->set('viewed', 'y');
+		ee('Model')->get('DeveloperLog')->set('viewed', 'y')->update();
 
 		$this->base_url->path = 'logs/developer';
 		ee()->view->cp_page_title = lang('view_developer_log');
