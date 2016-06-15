@@ -254,7 +254,7 @@ class Routes extends AbstractDesignController {
 				'route' => 'uniqueRoute'
 			));
 
-			$validator->defineRule('uniqueRoute', function($key, $value, $parameters) use ($routes, $route) {
+			$validator->defineRule('uniqueRoute', function($key, $route, $parameters) use ($routes) {
 				foreach ($routes as $r)
 				{
 					if (($r->route == $route->route)
@@ -267,7 +267,7 @@ class Routes extends AbstractDesignController {
 				return TRUE;
 			});
 
-			$errors = $this->transferErrors($field, $validator->validate($route->getValues()), $errors);
+			$errors = $this->transferErrors($field, $validator->validate(compact('route')), $errors);
 			$errors = $this->transferErrors($field, $route->validate(), $errors);
 
 			$routes[] = $route;
