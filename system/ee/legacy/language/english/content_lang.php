@@ -31,6 +31,8 @@ $lang = array(
 
 'entry_limit_reached_desc' => 'This channel is limited to %d entries.',
 
+'entry_limit_reached_one_desc' => 'This channel is limited to one entry.',
+
 'by' => 'by',
 'in' => 'in',
 
