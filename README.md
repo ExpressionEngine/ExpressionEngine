@@ -3,6 +3,7 @@
 **These repositories must remain private and all work under NDA.**
 
 * [Naming Branches](#naming-branches)
+* [Commit Messages](#commit-messages)
 * [Installing/Getting up and Running](#installing--getting-up-and-running)
 * [Development Configuration](#development-configuration)
 * [Updating from the Repo](#updating-from-the-repo)
@@ -26,6 +27,21 @@ When code for a release is frozen, or development on a non-patch version is star
 
 * `release/2.9.0`
 * `release/2.22.0-dp.15+intrepid-earwig`
+
+# Commit Messages
+
+* Limit the first line to 72 characters or less
+* Reference issues and pull requests liberally
+* When only changing documentation, include [ci skip] in the commit description
+* Consider starting the commit message with an applicable emoji:
+    * :art: `:art:` when improving the format/structure of the code
+    * :racehorse: `:racehorse:` when improving performance
+    * :memo: `:memo:` when writing docs
+    * :bug: `:bug:` when fixing a bug
+    * :fire: `:fire:` when removing code or files
+    * :green_heart: `:green_heart:` when fixing the CI build
+    * :white_check_mark: `:white_check_mark:` when adding tests
+    * :lock: `:lock:` when dealing with security
 
 ## Installing / Getting up and running
 
