@@ -105,30 +105,24 @@ class EE_Menu {
 	 */
 	private function _channels_menu()
 	{
-		if (ee()->session->userdata('group_id') != 1)
-		{
-			$allowed_channels = ee()->session->userdata('assigned_channels');
-			if (count($allowed_channels))
-			{
-				$channels = ee()->db->where_in('channel_title', $allowed_channels);
-			}
-			else
-			{
-				$channels = FALSE;
-			}
-		}
-
 		// Custom query to more efficiently get the total number of
 		// entries per channel to properly set navigation links based
 		// on the max_entries setting of a channel
-		if ( ! isset($channels) OR $channels !== FALSE)
+		$channels = ee('db')->select('channels.channel_id, channel_title, max_entries, count(exp_channel_titles.entry_id) as total_entries')
+			->join('channel_titles', 'channel_titles.channel_id = channels.channel_id', 'left')
+			->group_by('channel_title')
+			->where('channels.site_id', ee()->config->item('site_id'))
+			->order_by('channel_title');
+
+		$allowed_channels = ee()->session->userdata('assigned_channels');
+		if (count($allowed_channels))
 		{
-			$channels = ee()->db->select('channels.channel_id, channel_title, max_entries, count(exp_channel_titles.entry_id) as total_entries')
-				->join('channel_titles', 'channel_titles.channel_id = channels.channel_id', 'left')
-				->group_by('channel_title')
-				->where('channels.site_id', ee()->config->item('site_id'))
-				->order_by('channel_title')
+			$channels = $channels->where_in('channel_title', $allowed_channels)
 				->get('channels');
+		}
+		else
+		{
+			$channels = FALSE;
 		}
 
 		$menu['create'] = array();
