@@ -266,7 +266,7 @@ class Select extends Query {
 			$fn = 'or_'.$fn;
 		}
 
-		if (is_null($value) || strtoupper($value) == 'NULL')
+		if (is_null($value) || (is_string($value) && strtoupper($value) == 'NULL'))
 		{
 			switch ($operator)
 			{
