@@ -131,6 +131,17 @@ class Edit extends AbstractPublishController {
 		{
 			$channel = ee('Model')->get('Channel', $channel_id)->first();
 			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
+
+			if ($channel->max_entries !== '0' && $count >= $channel->max_entries)
+			{
+				$desc_key = ($channel->max_entries === '1')
+					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
+				ee('CP/Alert')->makeInline()
+					->asWarning()
+					->withTitle(lang('entry_limit_reached'))
+					->addToBody(sprintf(lang($desc_key), $channel->max_entries))
+					->now();
+			}
 		}
 		else
 		{
