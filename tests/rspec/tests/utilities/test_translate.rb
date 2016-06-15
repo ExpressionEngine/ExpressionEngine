@@ -43,6 +43,7 @@ feature 'Translate Tool' do
 
   after(:all) do
     FileUtils.remove_dir(language_path + 'rspeclingo/', true)
+    FileUtils.remove_dir(language_path + 'english/', true)
     FileUtils.rm Dir.glob(translations_path + '*.php')
   end
 
