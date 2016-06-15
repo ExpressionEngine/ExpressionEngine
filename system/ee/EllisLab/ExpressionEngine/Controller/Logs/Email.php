@@ -47,6 +47,8 @@ class Email extends Logs {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
 		if (ee()->input->post('delete'))
 		{
 			$this->delete('EmailConsoleCache', lang('email_log'));
