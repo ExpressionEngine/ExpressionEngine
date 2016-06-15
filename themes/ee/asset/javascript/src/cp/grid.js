@@ -43,6 +43,7 @@ Grid.Publish = function(field, settings) {
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
+	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.children('tbody');
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
@@ -164,7 +165,7 @@ Grid.Publish.prototype = {
 	 * @return	{int}	Number of rows
 	 */
 	_getRows: function() {
-		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField));
+		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField).add(this.tableActions));
 	},
 
 	/**
@@ -177,6 +178,7 @@ Grid.Publish.prototype = {
 		this.root.parents('.grid-publish')
 			.find('.toolbar .add a')
 			.add('.no-results .btn', this.root)
+			.add('.tbl-action .btn.add', this.root)
 			.on('click', function(event) {
 				event.preventDefault();
 
@@ -212,7 +214,11 @@ Grid.Publish.prototype = {
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
-		this.rowContainer.append(el);
+		if (this.tableActions.length) {
+			this.tableActions.before(el);
+		} else {
+			this.rowContainer.append(el);
+		}
 
 		// Make sure empty field message is hidden
 		this.emptyField.hide();
