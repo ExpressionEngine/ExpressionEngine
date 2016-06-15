@@ -2,17 +2,17 @@
 
 **These repositories must remain private and all work under NDA.**
 
-- [Naming Branches](#naming-branches)
-- [Installing/Getting up and Running](#installing--getting-up-and-running)
-- [Development Configuration](#development-configuration)
-- [Updating from the Repo](#updating-from-the-repo)
-- [Unit Testing](#unit-testing)
+* [Naming Branches](#naming-branches)
+* [Installing/Getting up and Running](#installing--getting-up-and-running)
+* [Development Configuration](#development-configuration)
+* [Updating from the Repo](#updating-from-the-repo)
+* [Unit Testing](#unit-testing)
 
 ## Naming Branches
 
-ExpressionEngine follows the Git Flow naming conventions. The primary branches are:
+We have two base branches:
 
-* `stability` - development for bug fixes (next minor release)
+* `stability` - for bug fixes, always releasable (next minor version)
 * `master` - no development, matches the last release
 
 Feature development should take place in feature branches. These should be prefixed with `feature/`:
@@ -20,9 +20,9 @@ Feature development should take place in feature branches. These should be prefi
 * `feature/commerce`
 * `feature/pandora-accessory`
 
-Feature branches should be turned into pull-requests before they are merged into develop.
+Feature branches should be turned into pull-requests before they are merged into stability. Large pull requests should target a release branch instead of stability.
 
-When code for a release is frozen, a branch prefixed with `release/` should be created. Version numbers should follow [semver](http://semver.org) conventions.
+When code for a release is frozen, or development on a non-patch version is started, a branch prefixed with `release/` should be created. Version numbers should follow [semver](http://semver.org) conventions.
 
 * `release/2.9.0`
 * `release/2.22.0-dp.15+intrepid-earwig`
