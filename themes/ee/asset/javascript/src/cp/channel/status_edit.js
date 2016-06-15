@@ -36,7 +36,6 @@ $(document).ready(function() {
 				EE.status.foreground_color_url,
 				{color: value},
 				function (data) {
-					console.log('#'+data);
 					$status_tag.css('color', '#'+data);
 				}
 			);
