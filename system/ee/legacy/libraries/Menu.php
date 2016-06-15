@@ -138,11 +138,30 @@ class EE_Menu {
 		{
 			foreach($channels->result() as $channel)
 			{
+				$filtered_by_channel = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
+
 				// Create link
 				$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
+
+				// Is there a max entries setting and are we at the limit?
+				if ($channel->max_entries !== '0' && $channel->total_entries >= $channel->max_entries)
+				{
+					// Point folks trying to publish to the edit listing
+					$menu['create'][$channel->channel_title] = $filtered_by_channel;
+
+					// If there's a limit of 1, just send them to the edit screen for that entry
+					if ($channel->total_entries === '1' && $channel->max_entries === '1')
+					{
+						$entry = ee('Model')->get('ChannelEntry')
+							->filter('channel_id', $channel->channel_id)
+							->first();
+
+						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+					}
+				}
 			}
 		}
 
