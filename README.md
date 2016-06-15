@@ -69,15 +69,12 @@ $config['debug'] = '2';
 
 ### Installing from the Repo
 
-Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
+Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60:
 
 ```php
+// from
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
-
-to
-
-```php
+// to
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
@@ -87,15 +84,12 @@ if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 
 ### Updating from the repo
 
-Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
+Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60:
 
 ```php
+// from
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
-
-to
-
-```php
+// to
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
