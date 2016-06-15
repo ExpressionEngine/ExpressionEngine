@@ -277,7 +277,25 @@ class Select extends Query {
 				$operator = '';
 		}
 
-		$query->$fn("{$property} {$operator}", $value);
+		if (is_null($value) || (is_string($value) && strtoupper($value) == 'NULL'))
+		{
+			switch ($operator)
+			{
+				case '!=':
+					$operator = 'IS NOT';
+					break;
+				case '==':
+				case '':
+					$operator = 'IS';
+					break;
+			}
+
+			$query->$fn("{$property} {$operator} NULL");
+		}
+		else
+		{
+			$query->$fn("{$property} {$operator}", $value);
+		}
 	}
 
 	/**
@@ -308,26 +326,6 @@ class Select extends Query {
 
 			$query->end_like_group();
 		}
-	}
-
-	/**
-	 * Identify search operators, they will need LIKE queries with
-	 * approriate escaping.
-	 *
-	 * @param String $op Operator
-	 * @return Bool Is search operator?
-	 */
-	private function isSearchOperator($op)
-	{
-		return (
-			$op == 'STARTS WITH'
-		 || $op == 'CONTAINS'
-		 || $op == 'NOT CONTAINS'
-		 || $op == 'ENDS WITH'
-	 	 || $op == '^='
-	 	 || $op == '*='
-		 || $op == '$='
-	 	);
 	}
 
 	/**

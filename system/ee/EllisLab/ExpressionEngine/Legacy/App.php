@@ -201,7 +201,6 @@ class App {
 	{
 		$BM = load_class('Benchmark', 'core');
 		$BM->mark('total_execution_time_start');
-		$BM->mark('loading_time:_base_classes_start');
 	}
 
 	/**
