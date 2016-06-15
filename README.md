@@ -2,14 +2,19 @@
 
 **These repositories must remain private and all work under NDA.**
 
+[Working with Git](#working-with-git)
 * [Naming Branches](#naming-branches)
 * [Commit Messages](#commit-messages)
-* [Installing/Getting up and Running](#installing--getting-up-and-running)
-* [Development Configuration](#development-configuration)
+[Development Installs](#development-installs)
+* [Configuration](#configuration)
+* [Installing from the Repo](#installing-from-the-repo)
 * [Updating from the Repo](#updating-from-the-repo)
+[Testing](#testing)
 * [Unit Testing](#unit-testing)
 
-## Naming Branches
+## Working with Git
+
+### Naming Branches
 
 We have two base branches:
 
@@ -28,7 +33,7 @@ When code for a release is frozen, or development on a non-patch version is star
 * `release/2.9.0`
 * `release/2.22.0-dp.15+intrepid-earwig`
 
-# Commit Messages
+### Commit Messages
 
 * Limit the first line to 72 characters or less
 * Reference issues and pull requests liberally
@@ -43,7 +48,24 @@ When code for a release is frozen, or development on a non-patch version is star
     * :white_check_mark: `:white_check_mark:` when adding tests
     * :lock: `:lock:` when dealing with security
 
-## Installing / Getting up and running
+## Development Installs
+
+### Configuration
+
+Force MySQL strict mode:
+
+```php
+$config['database']['expressionengine']['stricton'] = TRUE;
+```
+
+Turn debug on:
+
+```php
+$debug = 1;
+$config['debug'] = '2';
+```
+
+### Installing from the Repo
 
 Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
@@ -59,24 +81,9 @@ if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 
 1. Create an empty `config.php` file in `/system/user/config/`
 2. Run the installer.
-3. Set the development configuration items below.
+3. Set the development configuration items above.
 
-## Development Configuration
-
-Force MySQL strict mode:
-
-```php
-$config['database']['expressionengine']['stricton'] = TRUE;
-```
-
-Turn debug on:
-
-```php
-$debug = 1;
-$config['debug'] = '2';
-```
-
-## Updating from the repo
+### Updating from the repo
 
 Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
@@ -104,8 +111,9 @@ $config['app_version'] = '2.9.0';
 
 Run updater, login.
 
+## Testing
 
-## Unit Testing
+### Unit Testing
 
 In order to run unit tests you will need Composer and PHPUnit. In the system/Tests directory run:
 
