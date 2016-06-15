@@ -210,18 +210,21 @@ feature 'Translate Tool' do
   end
 
   it 'displays a flash message after saving a translation', :edit => true do
+    FileUtils.mkdir(language_path + 'english')
+    FileUtils.cp_r(Dir.glob(english_path + '*'), language_path + 'english/')
+    FileUtils.chmod 0777, language_path + 'english/addons_lang.php'
+
     @edit_page.items[1].find('input').set('Rspeced!')
     @edit_page.submit_button.click
     no_php_js_errors
 
     @edit_page.should have_alert
     @edit_page.should have_css('div.alert.success')
-    File.exists?(translations_path + 'addons_lang.php')
+    File.exists?(language_path + 'english/addons_lang.php')
   end
 
   it 'displays an error when it cannot write to the translations directory (update a translation)', :edit => true do
-    t_stat = File::Stat.new(translations_path)
-    FileUtils.chmod 0000, translations_path
+    FileUtils.chmod 0000, language_path + 'english/addons_lang.php'
 
     @edit_page.items[1].find('input').set('Rspeced!')
     @edit_page.submit_button.click
@@ -230,7 +233,7 @@ feature 'Translate Tool' do
     @edit_page.should have_alert
     @edit_page.should have_css('div.alert.issue')
 
-    FileUtils.chmod t_stat.mode, translations_path
+    FileUtils.chmod 0777, language_path + 'english/addons_lang.php'
   end
 
   it 'displays an error when trying to edit a file that is not readable', :edit => true do
