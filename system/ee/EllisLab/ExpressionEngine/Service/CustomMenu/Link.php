@@ -17,7 +17,7 @@ namespace EllisLab\ExpressionEngine\Service\CustomMenu;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Database Connection
+ * ExpressionEngine Custom Menu Link
  *
  * @package		ExpressionEngine
  * @subpackage	CP\CustomMenu
