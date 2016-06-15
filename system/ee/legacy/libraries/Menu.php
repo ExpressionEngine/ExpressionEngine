@@ -54,8 +54,14 @@ class EE_Menu {
 		$menu['sites']    = $this->_site_menu();
 		$menu['channels'] = $this->_channels_menu();
 		$menu['develop']  = $this->_develop_menu();
+		$menu['custom']   = NULL;
 
-		// CP-TODO: Add back cp_menu_array hook?
+		if (ee()->extensions->active_hook('cp_custom_menu'))
+		{
+			$custom = ee('CP/CustomMenu');
+			ee()->extensions->call('cp_custom_menu', $custom);
+			$menu['custom'] = $custom;
+		}
 
 		return $menu;
 	}
