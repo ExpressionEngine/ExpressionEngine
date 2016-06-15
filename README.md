@@ -99,15 +99,12 @@ to
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
-Modify config version variable in `system/user/config/config.php` around line 14 from:
+Modify the `app_version` config item in `system/user/config/config.php` around line 14 to a previous version. For example:
 
 ```php
+// from
 $config['app_version'] = '3.0.0';
-```
-
-to
-
-```php
+// to
 $config['app_version'] = '2.9.0';
 ```
 
