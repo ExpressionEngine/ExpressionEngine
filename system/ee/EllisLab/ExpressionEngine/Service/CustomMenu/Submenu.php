@@ -107,7 +107,7 @@ class Submenu extends Menu {
 	 */
 	public function setTitle($title)
 	{
-		$this->title = $title;
+		$this->title = htmlspecialchars($title);
 		return $this;
 	}
 }

@@ -38,7 +38,7 @@ class Link {
 	 */
 	public function __construct($title, $url)
 	{
-		$this->title = $title;
+		$this->title = htmlspecialchars($title);
 		$this->url = $url;
 	}
 
