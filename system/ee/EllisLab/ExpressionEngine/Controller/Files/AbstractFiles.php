@@ -8,6 +8,8 @@ use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\ExpressionEngine\Model\File\File;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
+use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -367,6 +369,49 @@ abstract class AbstractFiles extends CP_Controller {
 			)
 		);
 
+		$cat_groups = ee('Model')->get('CategoryGroup')
+			->filter('group_id', 'IN', explode('|', $file->UploadDestination->cat_group))
+			->all();
+
+		foreach ($cat_groups as $cat_group)
+		{
+			$editable = FALSE;
+			$deletable = FALSE;
+
+			$metadata = array(
+				'field_id'				=> 'categories',
+				'group_id'				=> $cat_group->getId(),
+				'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('categories_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'checkboxes',
+				'field_list_items'      => '',
+				'field_maxl'			=> 100,
+				'editable'				=> $editable,
+				'editing'				=> FALSE, // Not currently in editing state
+				'deletable'				=> $deletable,
+				'populateCallback'		=> array($this, 'populateCategories'),
+				'manage_toggle_label'	=> lang('manage_categories'),
+				'content_item_label'	=> lang('category')
+			);
+
+			$facade = new FieldFacade('categories[cat_group_id_'.$cat_group->getId().']', $metadata);
+			$field = new FieldDisplay($facade);
+
+			$sections[0][] = array(
+				'title' => $field->getLabel(),
+				'desc' => $field->getInstructions(),
+				'fields' => array(
+					$facade->getId() => array(
+						'type' => 'html',
+						'content' => $field->getForm()
+					)
+				)
+			);
+		}
+
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('_shared/form/section')
@@ -374,6 +419,60 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		return $html;
+	}
+
+	public function populateCategories($field)
+	{
+		$categories = ee('Model')->get('Category')
+			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
+			->with('CategoryGroup')
+			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
+			->filter('Category.parent_id', 0)
+			->all();
+
+		// Sorting alphabetically or custom?
+		$sort_column = 'cat_order';
+		if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a')
+		{
+			$sort_column = 'cat_name';
+		}
+
+		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
+		$field->setItem('field_list_items', $category_list);
+
+		// $set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
+		// $field->setData(implode('|', $set_categories));
+	}
+
+	/**
+	 * Turn the categories collection into a nested array of ids => names
+	 *
+	 * @param	Collection	$categories		Top level categories to construct tree out of
+	 * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
+	 *	categories by the given column
+	 */
+	protected function buildCategoryList($categories, $sort_column)
+	{
+		$list = array();
+
+		foreach ($categories as $category)
+		{
+			$children = $category->Children->sortBy($sort_column);
+
+			if (count($children))
+			{
+				$list[$category->cat_id] = array(
+					'name' => $category->cat_name,
+					'children' => $this->buildCategoryList($children, $sort_column)
+				);
+
+				continue;
+			}
+
+			$list[$category->cat_id] = $category->cat_name;
+		}
+
+		return $list;
 	}
 
 	protected function validateFile(File $file)
