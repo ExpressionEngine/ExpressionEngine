@@ -489,7 +489,7 @@ class Msm extends CP_Controller {
 			'fields' => array(
 				'site_label' => array(
 					'type' => 'text',
-					'value' => $site->site_label,
+					'value' => $site->site_label ?: '',
 					'required' => TRUE,
 					'disabled' => $disabled
 				)
@@ -503,7 +503,7 @@ class Msm extends CP_Controller {
 			'fields' => array(
 				'site_name' => array(
 					'type' => 'text',
-					'value' => $site->site_name,
+					'value' => $site->site_name ?: '',
 					'required' => TRUE,
 					'disabled' => $disabled
 				)
