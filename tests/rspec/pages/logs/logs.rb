@@ -32,8 +32,13 @@ class Logs < ControlPanelPage
   end
 
   def load
+    # Close the deprecation notice alert if it is there.
+    begin
+      find('div.alert.standard a.close').click
+    rescue
+    end
     open_dev_menu
     click_link 'Logs'
-    click_link @menu_item
+    click_link @menu_item, :href => /cp\/log/
   end
 end
