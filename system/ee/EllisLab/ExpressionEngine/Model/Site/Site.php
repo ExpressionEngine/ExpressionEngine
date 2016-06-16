@@ -151,7 +151,7 @@ class Site extends Model {
 
 	public function onBeforeInsert()
 	{
-		$current_number_of_sites = $this->getFrontend()->get('Site')->count();
+		$current_number_of_sites = $this->getModelFacade()->get('Site')->count();
 
 		$can_add = ee('License')->getEELicense()
 			->canAddSites($current_number_of_sites);
@@ -167,13 +167,13 @@ class Site extends Model {
     {
         $this->setId($this->group_id);
 
-		$already_done = $this->getFrontend()->get('MemberGroup')
+		$already_done = $this->getModelFacade()->get('MemberGroup')
 			->fields('site_id')
 			->filter('group_id', $this->group_id)
 			->all()
 			->pluck('site_id');
 
-        $todo = $this->getFrontend()->get('Site')
+        $todo = $this->getModelFacade()->get('Site')
 			->fields('site_id')
             ->filter('site_id', 'NOT IN', $already_done)
             ->all();
@@ -184,7 +184,7 @@ class Site extends Model {
             {
                 $data = $this->getValues();
                 $data['site_id'] = (int) $site_id;
-                $this->getFrontend()->make('MemberGroup', $data)->save();
+                $this->getModelFacade()->make('MemberGroup', $data)->save();
             }
         }
     }
