@@ -291,6 +291,30 @@ class AlertCollection {
 		return $this->make($name, 'standard');
 	}
 
+	public function makeDeprecationNotice()
+	{
+		$alert = $this->makeStandard('deprecation-notice')
+			->asWarning();
+
+		if ($this->session->userdata('group_id') == 1)
+		{
+			$count = ee('Model')->get('DeveloperLog')
+				->filter('viewed', 'n')
+				->count();
+
+			if ($count)
+			{
+				$lang_key = ($count == 1) ? 'developer_one_log' : 'developer_logs';
+
+				$this->lang->loadfile('admin');
+				$url = ee('CP/URL', 'logs/developer');
+				$alert->withTitle(lang('deprecation_notice'))
+					->addToBody(sprintf(lang($lang_key), $count, $url));
+			}
+		}
+
+		return $alert;
+	}
 }
 
 // EOF

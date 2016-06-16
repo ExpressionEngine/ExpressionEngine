@@ -52,6 +52,8 @@ class Search extends Logs {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
 		if (ee()->input->post('delete'))
 		{
 			$this->delete('SearchLog', lang('search_log'));

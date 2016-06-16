@@ -214,12 +214,12 @@ $.fn.fuzzyFilter = function() {
 		$(this).data('fuzzyFilterActive', true);
 
 		var input = $(this);
-		var list = $(this).closest('.sub-menu').find('ul');
+		var list = $(this).closest('.sub-menu, .nav-sub-menu').find('ul');
 		var scrollWrap = list.closest('.scroll-wrap');
 
 		var focusBar = new ListFocus(list);
 		var fuzzyList = new FuzzyListSearch(list, {
-			keep: '.last:has(.add)'
+			keep: ':has(.add, .nav-add)'
 		});
 
 		// the input gains focus when it becomes visible. at this point
@@ -263,7 +263,7 @@ $.fn.fuzzyFilter = function() {
 };
 
 $.fuzzyFilter = function() {
-	$('.filter input, .filters input[data-fuzzy-filter=true]').fuzzyFilter();
+	$('.nav-filter input, .filters input[data-fuzzy-filter=true]').fuzzyFilter();
 };
 
 // and create the defaults, third parties can call this to "refresh"

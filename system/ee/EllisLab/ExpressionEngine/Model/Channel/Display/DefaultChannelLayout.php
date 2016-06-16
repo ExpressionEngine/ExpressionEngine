@@ -202,6 +202,27 @@ class DefaultChannelLayout extends DefaultLayout {
 
 		return $layout;
 	}
+
+	public function transform(array $fields)
+	{
+		$display = parent::transform($fields);
+
+		$tab = $display->getTab('categories');
+		$fields = $tab->getFields();
+		if (count($fields) == 0)
+		{
+			$url = ee('CP/URL', 'channels/edit/' . $this->channel_id)->compile();
+			$alert = ee('CP/Alert')->makeInline('empty-category-tab')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('no_categories_assigned'))
+				->addToBody(sprintf(lang('no_categories_assigned_desc'), $url));
+
+			$tab->setAlert($alert);
+		}
+
+		return $display;
+	}
 }
 
 // EOF
