@@ -362,6 +362,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 	protected function getCategoryForm(File $file, $errors)
 	{
+		ee()->lang->loadfile('content');
 		$html = '';
 
 		$sections = array(
