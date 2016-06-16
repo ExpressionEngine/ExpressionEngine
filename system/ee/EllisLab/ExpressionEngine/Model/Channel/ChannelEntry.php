@@ -824,7 +824,7 @@ class ChannelEntry extends ContentModel {
 						'manage_toggle_label'	=> lang('manage_categories'),
 						'content_item_label'	=> lang('category')
 					);
-				};
+				}
 
 				if ( ! $this->Channel->comment_system_enabled)
 				{
