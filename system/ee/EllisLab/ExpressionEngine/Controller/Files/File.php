@@ -78,6 +78,7 @@ class File extends AbstractFilesController {
 		$errors = NULL;
 
 		$file = ee('Model')->get('File', $id)
+			->with('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
