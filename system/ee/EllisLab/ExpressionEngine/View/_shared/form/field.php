@@ -31,6 +31,10 @@ if (isset($field['maxlength']))
 {
 	$attrs .= ' maxlength="'.(int) $field['maxlength'].'"';
 }
+if (isset($field['placeholder']))
+{
+	$attrs .= ' placeholder="'.$field['placeholder'].'"';
+}
 $has_note = isset($field['note']);
 
 $no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&

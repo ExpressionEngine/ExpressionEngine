@@ -45,8 +45,11 @@ $(document).ready(function () {
 
 	// Selecting a channel filter
 	$('body').on('click', 'form > .filters .sub-menu a, .filters .filter-clear a, .paginate ul li a', function(event) {
+
+		var search = $('input[name="search"]').serialize();
+
 		$.ajax({
-			url: $(this).attr('href'),
+			url: $(this).attr('href') + '&' + search,
 			type: 'GET',
 			dataType: 'json',
 			success: replaceData

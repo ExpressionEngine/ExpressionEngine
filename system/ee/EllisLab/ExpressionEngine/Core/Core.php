@@ -114,8 +114,6 @@ abstract class Core {
 			$this->legacy->loadController($routing);
 		}
 
-		$this->legacy->markBenchmark('loading_time:_base_classes_end');
-
 		return $routing;
 	}
 
@@ -181,7 +179,6 @@ abstract class Core {
 		$class::_setFacade($this->legacy->getFacade());
 
 		$controller_name = substr($class, strpos($class, 'Controller\\') + 11);
-		$this->legacy->markBenchmark('controller_('.$controller_name.' :: '.$method.')_start');
 
 		// here we go!
 		// Catch anything that might bubble up from inside our app
@@ -211,8 +208,6 @@ abstract class Core {
 		{
 			ee('Response')->setBody($result);
 		}
-
-		$this->legacy->markBenchmark('controller_('.$controller_name.' :: '.$method.')_end');
 	}
 
 	/**

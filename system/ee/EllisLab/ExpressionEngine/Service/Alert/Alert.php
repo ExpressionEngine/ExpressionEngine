@@ -122,6 +122,18 @@ class Alert {
 	}
 
 	/**
+	 * Checks to see if the alert has any contents
+	 *
+	 * @return bool TRUE if there are no contents; FALSE otherwise
+	 */
+	public function isEmpty()
+	{
+		return (empty($this->title)
+				&& empty($this->body)
+				&& is_null($this->sub_alert));
+	}
+
+	/**
 	 * Adds content to the body of the alert.
 	 *
 	 * @param string|array $item The item to display. If it's an array it will
@@ -259,7 +271,7 @@ class Alert {
 	 */
 	public function render()
 	{
-		return $this->view->render(array('alert' => $this));
+		return ($this->isEmpty()) ? '' : $this->view->render(array('alert' => $this));
 	}
 
 	/**
@@ -269,7 +281,10 @@ class Alert {
 	 */
 	public function defer()
 	{
-		$this->collection->defer($this);
+		if ( ! $this->isEmpty())
+		{
+			$this->collection->defer($this);
+		}
 		return $this;
 	}
 
@@ -280,7 +295,10 @@ class Alert {
 	 */
 	public function now()
 	{
-		$this->collection->save($this);
+		if ( ! $this->isEmpty())
+		{
+			$this->collection->save($this);
+		}
 		return $this;
 	}
 }

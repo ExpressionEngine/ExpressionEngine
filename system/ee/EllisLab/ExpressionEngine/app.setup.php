@@ -7,6 +7,7 @@ use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
+use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
@@ -36,6 +37,11 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'CP/CustomMenu' => function($ee)
+		{
+			return new CustomMenu\Menu;
+		},
 
 		'CP/EntryListing' => function($ee, $search_value)
 		{
@@ -160,7 +166,7 @@ return array(
 		{
 			$userdata = ee()->session->userdata;
 			return new Permission\Permission($userdata);
-		}
+		},
 	),
 
 	'services.singletons' => array(
