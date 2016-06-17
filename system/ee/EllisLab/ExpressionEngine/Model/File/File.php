@@ -335,6 +335,54 @@ class File extends Model {
 
 		return $list;
 	}
+
+	/**
+	 * Category setter for convenience to intercept the
+	 * 'categories' post array.
+	 */
+	public function setCategoriesFromPost($categories)
+	{
+		// Currently cannot get multiple category groups through relationships
+		$cat_groups = array();
+
+		if ($this->UploadDestination->cat_group)
+		{
+			$cat_groups = explode('|', $this->UploadDestination->cat_group);
+		}
+
+		if (empty($categories))
+		{
+			$this->Categories = NULL;
+
+			return;
+		}
+
+		$set_cats = array();
+
+		// Set the data on the fields in case we come back from a validation error
+		foreach ($cat_groups as $cat_group)
+		{
+			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
+			{
+				$group_cats = $categories['cat_group_id_'.$cat_group];
+
+				$cats = implode('|', $group_cats);
+
+				$group_cat_objects = $this->getModelFacade()
+					->get('Category')
+					->filter('site_id', ee()->config->item('site_id'))
+					->filter('cat_id', 'IN', $group_cats)
+					->all();
+
+				foreach ($group_cat_objects as $cat)
+				{
+					$set_cats[] = $cat;
+				}
+			}
+		}
+
+		$this->Categories = $set_cats;
+	}
 }
 
 // EOF

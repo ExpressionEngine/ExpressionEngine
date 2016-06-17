@@ -399,6 +399,8 @@ abstract class AbstractFiles extends CP_Controller {
 			);
 
 			$facade = new FieldFacade('categories[cat_group_id_'.$cat_group->getId().']', $metadata);
+			$facade->setName('categories[cat_group_id_'.$cat_group->getId().']');
+
 			$field = new FieldDisplay($facade);
 
 			$sections[0][] = array(
@@ -433,6 +435,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$file->set($_POST);
 		$file->title = (ee()->input->post('title')) ?: $file->file_name;
+		$file->setCategoriesFromPost($_POST['categories']);
 
 		$result = $file->validate();
 
