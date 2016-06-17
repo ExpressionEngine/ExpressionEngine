@@ -103,6 +103,7 @@ abstract class AbstractPublish extends CP_Controller {
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
+		ee()->cp->add_js_script('file', 'cp/categories');
 
 		ee()->javascript->set_global(array(
 			'lang.add_new_html_button'			=> lang('add_new_html_button'),
@@ -111,11 +112,8 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
 			'publish.autosave.URL'				=> ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
-			'publish.add_category.URL'			=> ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
-			'publish.edit_category.URL'			=> ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
-			'publish.reorder_categories.URL'	=> ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
-			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
+			'publish.default_entry_title'		=> $entry->Channel->default_entry_title,
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
 			'publish.foreignChars'				=> $foreign_characters,
 			'publish.lang.no_member_groups'		=> lang('no_member_groups'),
@@ -125,14 +123,17 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.markitup.foo'				=> FALSE,
 			'publish.smileys'					=> $smileys_enabled,
 			'publish.field.URL'                 => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
-			'publish.auto_assign_cat_parents'	=> ee()->config->item('auto_assign_cat_parents'),
-			// 'publish.url_title_prefix'			=> $this->_channel_data['url_title_prefix'],
+			'publish.url_title_prefix'			=> $entry->Channel->url_title_prefix,
 			'publish.which'						=> ($entry_id) ? 'edit' : 'new',
 			'publish.word_separator'			=> ee()->config->item('word_separator') != "dash" ? '_' : '-',
 			'user.can_edit_html_buttons'		=> ee()->cp->allowed_group('can_edit_html_buttons'),
 			'user.foo'							=> FALSE,
 			'user_id'							=> ee()->session->userdata('member_id'),
 			// 'upload_directories'				=> $this->_file_manager['file_list'],
+			'category.add.URL'             => ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
+			'category.edit.URL'            => ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
+			'category.reorder.URL'         => ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
+			'category.auto_assign_parents' => ee()->config->item('auto_assign_cat_parents'),
 		));
 
 		// -------------------------------------------
