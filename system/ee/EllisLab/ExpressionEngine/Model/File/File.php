@@ -282,60 +282,6 @@ class File extends Model {
 		$this->setRawProperty('location', $this->stripAndTrim($value));
 	}
 
-	public function populateCategories($field)
-	{
-		$categories = ee('Model')->get('Category')
-			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
-			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
-			->filter('Category.parent_id', 0)
-			->all();
-
-		// Sorting alphabetically or custom?
-		$sort_column = 'cat_order';
-		if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a')
-		{
-			$sort_column = 'cat_name';
-		}
-
-		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
-		$field->setItem('field_list_items', $category_list);
-
-		$set_categories = $this->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
-		$field->setData(implode('|', $set_categories));
-	}
-
-	/**
-	 * Turn the categories collection into a nested array of ids => names
-	 *
-	 * @param	Collection	$categories		Top level categories to construct tree out of
-	 * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
-	 *	categories by the given column
-	 */
-	protected function buildCategoryList($categories, $sort_column)
-	{
-		$list = array();
-
-		foreach ($categories as $category)
-		{
-			$children = $category->Children->sortBy($sort_column);
-
-			if (count($children))
-			{
-				$list[$category->cat_id] = array(
-					'name' => $category->cat_name,
-					'children' => $this->buildCategoryList($children, $sort_column)
-				);
-
-				continue;
-			}
-
-			$list[$category->cat_id] = $category->cat_name;
-		}
-
-		return $list;
-	}
-
 	/**
 	 * Category setter for convenience to intercept the
 	 * 'categories' post array.

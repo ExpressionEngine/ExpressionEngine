@@ -376,27 +376,13 @@ abstract class AbstractFiles extends CP_Controller {
 
 		foreach ($cat_groups as $cat_group)
 		{
-			$editable = FALSE;
-			$deletable = FALSE;
+			$metadata = $cat_group->getFieldMetadata();
+			$metadata['categorized_object'] = $file;
 
-			$metadata = array(
-				'field_id'				=> 'categories',
-				'group_id'				=> $cat_group->getId(),
-				'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('categories_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'checkboxes',
-				'field_list_items'      => '',
-				'field_maxl'			=> 100,
-				'editable'				=> $editable,
-				'editing'				=> FALSE, // Not currently in editing state
-				'deletable'				=> $deletable,
-				'populateCallback'		=> array($file, 'populateCategories'),
-				'manage_toggle_label'	=> lang('manage_categories'),
-				'content_item_label'	=> lang('category')
-			);
+			if ($cat_groups->count() == 1)
+			{
+				$metadata['field_label'] = lang('categories');
+			}
 
 			$facade = new FieldFacade('categories[cat_group_id_'.$cat_group->getId().']', $metadata);
 			$facade->setName('categories[cat_group_id_'.$cat_group->getId().']');
