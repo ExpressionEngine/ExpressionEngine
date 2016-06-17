@@ -894,33 +894,21 @@ class Cat extends AbstractChannelsController {
 	 */
 	private function categoryGroupPublishField($group_id, $editing = FALSE)
 	{
+		$group = ee('Model')->get('CategoryGroup', $group_id)->first();
+
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->Categories = NULL;
+
 		// Initialize a new category group field so we can return its publish form
-		$category_group_field = array(
-			'field_id'				=> 'categories',
-			'group_id'				=> $group_id,
-			'field_label'			=> lang('categories'),
-			'field_required'		=> 'n',
-			'field_show_fmt'		=> 'n',
-			'field_instructions'	=> lang('categories_desc'),
-			'field_text_direction'	=> 'ltr',
-			'field_type'			=> 'checkboxes',
-			'string_override'		=> '',
-			'field_list_items'      => '',
-			'field_maxl'			=> 100,
-			'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
-			'editing'				=> $editing,
-			'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
-			'manage_toggle_label'	=> lang('manage_categories'),
-			'content_item_label'	=> lang('category')
-		);
+		$category_group_field = $group->getFieldMetadata();
+		$category_group_field['editing'] = $editing;
+		$category_group_field['categorized_object'] = $entry;
 
 		$field_id = 'categories[cat_group_id_'.$group_id.']';
 		$field = new FieldFacade($field_id, $category_group_field);
 		$field->setName($field_id);
 
-		$entry = ee('Model')->make('ChannelEntry');
-		$entry->Categories = NULL;
-		$entry->populateCategories($field);
+		$group->populateCategories($field);
 
 		// Reset the categories they already have selected
 		$selected_cats = ee('Model')->get('Category')->filter('cat_id', 'IN', ee()->input->post('categories'))->all();
