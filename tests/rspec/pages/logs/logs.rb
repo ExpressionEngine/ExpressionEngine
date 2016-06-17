@@ -34,7 +34,8 @@ class Logs < ControlPanelPage
   def load
     # Close the deprecation notice alert if it is there.
     begin
-      find('div.alert.standard a.close').click
+      find('div.alert.standard a.close')
+      click_link 'Developer Log'
     rescue
     end
     open_dev_menu
