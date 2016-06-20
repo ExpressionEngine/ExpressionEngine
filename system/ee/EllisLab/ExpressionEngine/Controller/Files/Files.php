@@ -183,6 +183,7 @@ class Files extends AbstractFilesController {
 		}
 
 		$file = ee('Model')->make('File');
+		$file->UploadDestination = $dir;
 
 		$result = $this->validateFile($file);
 
