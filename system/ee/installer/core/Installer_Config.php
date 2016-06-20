@@ -129,11 +129,7 @@ class MSM_Config extends EE_Config
 	{
 		parent::__construct();
 
-		// for version 2 updates that might be processed, we need to point to the legacy config file
-		if (version_compare($this->config['app_version'], '3.0.0', '<'))
-		{
-			$this->config_path = EE_APPPATH.'config/config.php';
-		}
+		$this->config_path = EE_APPPATH.'config/config.php';
 
 		ee()->load->helper('language_helper');
 	}
