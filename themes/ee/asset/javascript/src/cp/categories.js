@@ -11,8 +11,6 @@
  */
 
 $(document).ready(function () {
-	$('.choice .toolbar.hidden').hide();
-
 	// Auto-assign category parents if configured to do so
 	if (EE.category.auto_assign_parents == 'y') {
 		$('body').on('click', 'input[name^="categories"]:checkbox', function(){
