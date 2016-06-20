@@ -185,6 +185,11 @@ class Export {
 
 		$this->category_groups[] = $result;
 
+		foreach ($group->CategoryFields as $field)
+		{
+			$this->exportField($field, $group->group_name, 'category');
+		}
+
 		return $result;
 	}
 
@@ -226,27 +231,31 @@ class Export {
 	 * @param String $group Group name
 	 * @return void
 	 */
-	private function exportField($field, $group)
+	private function exportField($field, $group, $type = 'custom')
 	{
-		$file = '/custom_fields/'.$group.'/'.$field->field_name.'.'.$field->field_type;
+		$file = '/' . $type . '_fields/'.$group.'/'.$field->field_name.'.'.$field->field_type;
 
 		$result = new StdClass();
 
 		$result->label = $field->field_label;
-		$result->instructions = $field->field_instructions;
 		$result->order = $field->field_order;
+
+		if ($field->hasProperty('field_instructions'))
+		{
+			$result->instructions = $field->field_instructions;
+		}
 
 		if ($field->field_required)
 		{
 			$result->required = 'y';
 		}
 
-		if ($field->field_search)
+		if ($field->hasProperty('field_search') && $field->field_search)
 		{
 			$result->search = 'y';
 		}
 
-		if ($field->field_is_hidden)
+		if ($field->hasProperty('field_is_hidden') && $field->field_is_hidden)
 		{
 			$result->is_hidden = 'y';
 		}
@@ -256,12 +265,12 @@ class Export {
 			$result->show_fmt = 'n';
 		}
 
-		if ($field->field_fmt != 'xhtml')
+		if ($field->hasProperty('field_fmt') && $field->field_fmt != 'xhtml')
 		{
 			$result->fmt = $field->field_fmt;
 		}
 
-		if ($field->field_content_type != 'any')
+		if ($field->hasProperty('field_content_type') && $field->field_content_type != 'any')
 		{
 			$result->content_type = $field->field_content_type;
 		}
@@ -271,7 +280,7 @@ class Export {
 			$result->list_items = explode("\n", trim($field->field_list_items));
 		}
 
-		if ($field->field_pre_populate)
+		if ($field->hasProperty('field_pre_populate') && $field->field_pre_populate)
 		{
 			$result->pre_populate   = 'y';
 			$result->pre_channel_id = $field->field_pre_channel_id;
