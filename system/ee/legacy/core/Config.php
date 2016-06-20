@@ -800,8 +800,14 @@ class EE_Config {
 		$this->_check_paths($new_values);
 
 		// Let's get this shindig started
+		$msm_values = $new_values;
 		foreach ($site_ids as $site_id)
 		{
+			// If we don't do this, then only the first site will have the new changes.
+			// On the last loop, $new_values will still contain any leftovers that need
+			// to go to the config file.
+			$new_values = $msm_values;
+
 			$this->_category_trigger_check($site_id, $new_values);
 			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
