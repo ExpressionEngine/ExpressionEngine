@@ -7,7 +7,7 @@ module CacheManager
   attr_accessor :button
 
   def self.visit
-    find('.dev-menu .has-sub').click
+    click_link 'Developer'
     click_link 'Utilities'
     click_link 'Cache Manager'
     no_php_js_errors

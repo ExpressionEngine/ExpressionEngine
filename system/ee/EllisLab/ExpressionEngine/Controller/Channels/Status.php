@@ -562,7 +562,7 @@ class Status extends AbstractChannelsController {
 		$status_style = '';
 		if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
 		{
-			$foreground = $this->getForegroundColor($status->highlight);
+			$foreground = $this->calculateForegroundFor($status->highlight);
 			$status_style = "style='background-color: {$status->highlight}; border-color: {$status->highlight}; color: {$foreground};'";
 		}
 
@@ -700,22 +700,26 @@ class Status extends AbstractChannelsController {
 	 * Retrieve the foreground color for a given status color
 	 *
 	 * @param string $color The hex color for the background
-	 * @return string The hex color best suited for the background color
+	 * @return void
 	 */
 	public function getForegroundColor($color = '')
 	{
-		if (AJAX_REQUEST)
-		{
-			$color = ee()->input->post('highlight');
-		}
-		else if ($color == '')
-		{
-			throw new \InvalidArgumentException();
-		}
+		$color = ee()->input->post('highlight');
+		$foreground = $this->calculateForegroundFor($color);
+		ee()->output->send_ajax_response($foreground);
+	}
 
+	/**
+	 * Retrieve the foreground color for a given status color
+	 *
+	 * @param string $color The hex color for the background
+	 * @return string The hex color best suited for the background color
+	 */
+	protected function calculateForegroundFor($background)
+	{
 		try
 		{
-			$background = new Color($color);
+			$background = new Color($background);
 			$foreground = ($background->isLight())
 				? $background->darken(100)
 				: $background->lighten(100);
@@ -723,11 +727,6 @@ class Status extends AbstractChannelsController {
 		catch (\Exception $e)
 		{
 			$foreground = 'ffffff';
-		}
-
-		if (AJAX_REQUEST)
-		{
-			ee()->output->send_ajax_response($foreground);
 		}
 
 		return $foreground;
