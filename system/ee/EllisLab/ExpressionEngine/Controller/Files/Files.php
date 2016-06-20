@@ -221,6 +221,7 @@ class Files extends AbstractFilesController {
 		}
 
 		$vars = array(
+			'required' => TRUE,
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
 			'base_url' => ee('CP/URL')->make('files/upload/' . $dir_id),

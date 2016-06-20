@@ -105,6 +105,7 @@ class File extends AbstractFilesController {
 		}
 
 		$vars = array(
+			'required' => TRUE,
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('files/file/edit/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
