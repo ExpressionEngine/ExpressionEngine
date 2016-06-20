@@ -818,7 +818,6 @@ class EE_Config {
 			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
 		}
 
-
 		// Add the CI pref items to the new values array if needed
 		if (count($ci_config) > 0)
 		{
