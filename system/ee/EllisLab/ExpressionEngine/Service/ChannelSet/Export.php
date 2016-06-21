@@ -201,7 +201,23 @@ class Export {
 	 */
 	private function exportCategory($category)
 	{
-		return $category->cat_name;
+		$fields = $category->getCustomFields();
+
+		if (empty($fields))
+		{
+			return $category->cat_name;
+		}
+
+		$cat = new StdClass();
+		$cat->cat_name = $category->cat_name;
+
+		foreach ($fields as $field)
+		{
+			$field_name = $field->getShortName();
+			$cat->$field_name = $field->getData();
+		}
+
+		return $cat;
 	}
 
 	/**
