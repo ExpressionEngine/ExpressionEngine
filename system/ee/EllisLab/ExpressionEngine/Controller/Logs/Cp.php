@@ -40,6 +40,8 @@ class Cp extends Logs {
 	 */
 	public function index()
 	{
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
 		if (ee()->input->post('delete'))
 		{
 			$this->delete('CpLog', lang('cp_log'));

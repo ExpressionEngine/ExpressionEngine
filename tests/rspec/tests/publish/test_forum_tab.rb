@@ -53,7 +53,7 @@ feature 'Forum Tab' do
     @page.title.set 'Second Forum Tab Test'
     @page.tab_links[4].click
     @page.forum_tab.forum_topic_id.set 1
-    @page.submit
+    @page.submit_buttons[1].click
 
     $db.query('SELECT count(entry_id) as count FROM exp_channel_titles WHERE forum_topic_id = 1').each do |row|
       row['count'].should == 1
@@ -131,7 +131,7 @@ feature 'Forum Tab' do
     @page.tab_links[4].click
     @page.forum_tab.forum_title.set title
     @page.forum_tab.forum_body.set body
-    @page.submit
+    @page.submit_buttons[1].click
 
     @page.all_there?.should == false
     @page.alert.has_content?("The entry #{title} has been created.").should == true

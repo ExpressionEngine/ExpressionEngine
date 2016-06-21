@@ -290,6 +290,16 @@ class Channels extends AbstractChannelsController {
 		$vars['sections']['channel_publishing_options'] = array(
 			$alert,
 			array(
+				'title' => 'channel_max_entries',
+				'desc' => 'channel_max_entries_desc',
+				'fields' => array(
+					'max_entries' => array(
+						'type' => 'text',
+						'value' => $channel->max_entries ?: ''
+					)
+				)
+			),
+			array(
 				'title' => ucfirst(strtolower(lang('status_groups'))),
 				'fields' => array(
 					'status_group' => array(
@@ -356,7 +366,12 @@ class Channels extends AbstractChannelsController {
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
 				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
-			)
+			),
+			array(
+				'field' => 'max_entries',
+				'label' => 'lang:channel_max_entries',
+				'rules' => 'is_natural'
+			),
 		));
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
@@ -472,6 +487,11 @@ class Channels extends AbstractChannelsController {
 		$channel->field_group = ($channel->field_group !== FALSE &&
 			$channel->field_group != '')
 			? $channel->field_group : NULL;
+
+		if ($channel->max_entries == '')
+		{
+			$channel->max_entries = 0;
+		}
 
 		// Create Channel
 		if ($channel->isNew())

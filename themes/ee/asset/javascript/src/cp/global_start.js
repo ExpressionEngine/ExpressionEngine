@@ -58,9 +58,9 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 
 	// Throw all errors
 	if ( ! _.has(options, 'error')) {
-		jqXHR.error(function(data) {
+		jqXHR.fail(function(xhr, status, error) {
 			_.defer(function() {
-				throw [data.statusText, data.responseText];
+				throw error;
 			});
 		});
 	}
@@ -144,7 +144,6 @@ $(document).ready(function () {
 
 	EE.cp.cleanUrls();
 	EE.cp.bindCpMessageClose();
-	EE.cp.channelMenuFilter();
 	EE.cp.bindSortableFolderLists();
 	EE.cp.addLastToChecklists();
 });
@@ -158,40 +157,6 @@ EE.cp.addLastToChecklists = function() {
 
 	$('ul.nested-list').each(function(){
 		$('li:last-child', this).not('ul.toolbar li').last().addClass('last');
-	});
-}
-
-// Binds the channel filter text boxes in Create and Edit menus
-EE.cp.channelMenuFilter = function() {
-
-	var filters = $('.menu-wrap form.filter input, .filter-search input');
-
-	// Bail if no filters
-	if (filters.size() == 0) {
-		return;
-	}
-
-	// Create a style element where we'll input the CSS needed
-	// to filter the table
-	var searchStyle = $('<style/>');
-	$('body').append(searchStyle);
-
-	// Watch the filter input on keyup and then filter the results
-	filters.bind('keyup', function()
-	{
-		// Text box blank? Reset table to show all results
-		if ( ! this.value)
-		{
-			searchStyle.html('');
-			return;
-		}
-
-		// Grab the class of the list to make sure we filter the right one
-		var listClass = $(this).parent().siblings('ul').attr('class');
-
-		// Data is indexed via a data attribute, create a CSS
-		// selector to filter the table
-		searchStyle.html('ul.'+listClass+' li.search-channel:not([data-search*="' + this.value.toLowerCase() + '"]) { display: none; }');
 	});
 }
 

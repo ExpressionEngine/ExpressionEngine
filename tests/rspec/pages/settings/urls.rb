@@ -5,7 +5,6 @@ class UrlsSettings < ControlPanelPage
   element :cp_url, 'input[name=cp_url]'
   element :theme_folder_url, 'input[name=theme_folder_url]'
   element :theme_folder_path, 'input[name=theme_folder_path]'
-  element :doc_url, 'input[name=doc_url]'
   element :profile_trigger, 'input[name=profile_trigger]'
   element :category_segment_trigger, 'input[name=reserved_category_word]'
   elements :use_category_name, 'input[name=use_category_name]'

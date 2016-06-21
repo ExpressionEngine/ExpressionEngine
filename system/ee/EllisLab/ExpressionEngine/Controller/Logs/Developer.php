@@ -54,6 +54,8 @@ class Developer extends Logs {
 			}
 		}
 
+		ee('Model')->get('DeveloperLog')->set('viewed', 'y')->update();
+
 		$this->base_url->path = 'logs/developer';
 		ee()->view->cp_page_title = lang('view_developer_log');
 
@@ -161,6 +163,7 @@ class Developer extends Logs {
 		);
 
 		$logs = $logs->order('timestamp', 'desc')
+			->order('log_id', 'desc')
 			->limit($this->params['perpage'])
 			->offset($offset)
 			->all();

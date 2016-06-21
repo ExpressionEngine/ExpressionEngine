@@ -36,7 +36,8 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'add_can_view_homepage_news_permission'
+				'add_can_view_homepage_news_permission',
+				'add_channel_max_entries_column',
 			)
 		);
 
@@ -59,6 +60,24 @@ class Updater {
 					'default'    => 'y',
 					'null'       => FALSE
 				)
+			)
+		);
+	}
+
+	/**
+	 * Adds the max_entries column to the exp_channels table
+	 */
+	private function add_channel_max_entries_column()
+	{
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'max_entries'      => array(
+					'type'         => 'int',
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
+				),
 			)
 		);
 	}

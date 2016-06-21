@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<fieldset class="tbl-search right">
@@ -13,15 +13,15 @@
 			</ul>
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		</h1>
-	
+
 		<?=ee('CP/Alert')->getAllInlines()?>
-	
+
 		<?php if (isset($filters)) echo $filters; ?>
-	
+
 		<?= ee('View')->make('ee:_shared/table')->render($table); ?>
-	
+
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
-	
+
 		<?php if ( ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">

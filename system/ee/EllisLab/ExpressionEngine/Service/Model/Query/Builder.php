@@ -39,6 +39,7 @@ class Builder {
 	protected $fields = array();
 	protected $orders = array();
 	protected $filters = array();
+	protected $search = array();
 
 	protected $filter_stack = array();
 	protected $lazy_constraints = array();
@@ -173,6 +174,115 @@ class Builder {
 	}
 
 	/**
+	 * Search for a value
+	 *
+	 * @param Mixed  $properties  Relationship.columnname [array|string]
+	 * @param Mixed   $value      Value to search for
+	 * @return Query  $this
+	 */
+	public function search($properties, $value)
+	{
+		if ( ! is_array($properties))
+		{
+			$properties = array($properties);
+		}
+
+		$words = $this->prepSearch($value);
+
+		if (empty($words))
+		{
+			return $this;
+		}
+
+		foreach ($properties as $property)
+		{
+			$search = isset($this->search[$property]) ? $this->search[$property] : array();
+
+			foreach ($words as $word)
+			{
+				if ($word[0] == '-')
+				{
+					$search[substr($word, 1)] = FALSE;
+				}
+				else
+				{
+					$search[$word] = TRUE;
+				}
+			}
+
+			$this->search[$property] = $search;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Get the current search data
+	 *
+	 * @return Array of search data [field1 => [word1 => include?, ...]]
+	 */
+	public function getSearch()
+	{
+		return $this->search;
+	}
+
+	/**
+	 * Prepare a value for search
+	 *
+	 * Here we handle grouping of:
+	 *    Single words
+	 *    Multiple words in quotes
+	 *    Negation of either of the above
+	 *
+	 * @param String $str Search string
+	 * @return Array of search terms, possibly prefixed with a - for negation
+	 */
+	private function prepSearch($str)
+	{
+		$length = strlen($str);
+		$words = array();
+
+		$word = '';
+		$quote = '';
+		$quoted = FALSE;
+
+		for ($i = 0; $i < $length; $i++)
+		{
+			$char = $str[$i];
+
+			if (($quoted == FALSE && $char == ' ') || ($quoted == TRUE && $char == $quote))
+			{
+				if (strlen($word) > 2)
+				{
+					$words[] = $word;
+				}
+
+				$quoted = FALSE;
+				$quote = '';
+				$word = '';
+
+				continue;
+			}
+
+			if ($quoted == FALSE && ($char == '"' || $char == "'") && ($word === '' || $word == '-'))
+			{
+				$quoted = TRUE;
+				$quote = $char;
+				continue;
+			}
+
+			$word .= $char;
+		}
+
+		if (strlen($word) > 2)
+		{
+			$words[] = $word;
+		}
+
+		return $words;
+	}
+
+	/**
 	 * Apply a filter
 	 *
 	 * @param String  $property  Relationship.columnname
@@ -180,7 +290,7 @@ class Builder {
 	 * @param Mixed   $value     Value to compare to
 	 * @return Query  $this
 	 */
-	public function filter($property, $operator, $value = NULL)
+	public function filter($property, $operator, $value = FALSE)
 	{
 		$this->addFilter($property, $operator, $value, 'and');
 		return $this;
@@ -194,7 +304,7 @@ class Builder {
 	 * @param Mixed   $value     Value to compare to
 	 * @return Query  $this
 	 */
-	public function orFilter($property, $operator, $value = NULL)
+	public function orFilter($property, $operator, $value = FALSE)
 	{
 		$this->addFilter($property, $operator, $value, 'or');
 		return $this;
@@ -205,7 +315,7 @@ class Builder {
 	 */
 	protected function addFilter($property, $operator, $value, $connective)
 	{
-		if ( ! isset($value))
+		if ($value === FALSE)
 		{
 			$value = $operator;
 			$operator = '==';

@@ -296,6 +296,7 @@ abstract class AbstractPublish extends CP_Controller {
 					{
 						$_POST[$field_name] = NULL;
 					}
+
 				}
 			}
 		}
@@ -306,13 +307,6 @@ abstract class AbstractPublish extends CP_Controller {
 		}
 
 		$entry->set($_POST);
-
-		// if categories are not in POST, then they've unchecked everything
-		// and we need to clear them out
-		if ( ! isset($_POST['categories']))
-		{
-			$entry->categories = array();
-		}
 
 		$result = $entry->validate();
 
@@ -350,7 +344,14 @@ abstract class AbstractPublish extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+		if (ee()->input->post('submit') == 'finish')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id));
+		}
 	}
 
 	/**

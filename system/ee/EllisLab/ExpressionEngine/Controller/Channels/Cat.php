@@ -1301,6 +1301,11 @@ class Cat extends AbstractChannelsController {
 			{
 				$cat_field->save();
 
+				if (isset($_POST['update_formatting']) && $_POST['update_formatting'] == 'y')
+				{
+					$cat_field->updateFormattingOnExisting();
+				}
+
 				if (is_null($field_id))
 				{
 					ee()->session->set_flashdata('highlight_id', $cat_field->getId());

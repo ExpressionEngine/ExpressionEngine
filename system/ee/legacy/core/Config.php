@@ -39,6 +39,8 @@ class EE_Config {
 	public $_global_vars        = array(); // The global vars from path.php (deprecated but usable for other purposes now)
 	public $_config_path_errors = array();
 
+	protected $defaults = array();
+
 	/**
 	 * Constructor
 	 */
@@ -48,6 +50,8 @@ class EE_Config {
 
 		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
 		$this->config_path = SYSPATH.'user/config/config.php';
+
+		$this->defaults = default_config_items();
 
 		$this->_initialize();
 	}
@@ -351,21 +355,21 @@ class EE_Config {
 		}
 
 		// lowercase version charset to use in HTML output
-		$config['output_charset'] = strtolower($this->config['charset']);
+		$config['output_charset'] = strtolower($this->item('charset'));
 
 		if ($mutating)
 		{
 			$this->config = $config;
 
-			// master tracking override?
-			if ($this->item('disable_all_tracking') == 'y')
-			{
-				$this->disable_tracking();
-			}
+		// master tracking override?
+		if ($this->item('disable_all_tracking') == 'y')
+		{
+			$this->disable_tracking();
+		}
 
-			// If we just reloaded, then we reset a few things automatically
-			$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
-			ee('Database')->getLog()->saveQueries($save_queries);
+		// If we just reloaded, then we reset a few things automatically
+		$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		ee('Database')->getLog()->saveQueries($save_queries);
 		}
 		else
 		{
@@ -419,12 +423,18 @@ class EE_Config {
 	{
 		if ($index == '')
 		{
-			if ( ! isset($this->config[$item]))
+			if (isset($this->config[$item]))
+			{
+				$pref = $this->config[$item];
+			}
+			else if (isset($this->defaults[$item]))
+			{
+				$pref = $this->defaults[$item];
+			}
+			else
 			{
 				return FALSE;
 			}
-
-			$pref = $this->config[$item];
 		}
 		else
 		{
@@ -790,8 +800,14 @@ class EE_Config {
 		$this->_check_paths($new_values);
 
 		// Let's get this shindig started
+		$msm_values = $new_values;
 		foreach ($site_ids as $site_id)
 		{
+			// If we don't do this, then only the first site will have the new changes.
+			// On the last loop, $new_values will still contain any leftovers that need
+			// to go to the config file.
+			$new_values = $msm_values;
+
 			$this->_category_trigger_check($site_id, $new_values);
 			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
@@ -1342,7 +1358,6 @@ class EE_Config {
 				'caching_driver'         => array('f', 'caching_driver'),
 				'max_caches'             => array('i', '', 'numeric'),
 				'new_version_check'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'doc_url'                => array('i', '', 'strip_tags|trim|valid_xss_check'),
 			),
 
 			'db_cfg'			=>	array(

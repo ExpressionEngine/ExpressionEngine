@@ -56,6 +56,10 @@ class Status extends Model {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'highlight'			=> 'required',
+	);
+
 	protected static $_events = array(
 		'beforeInsert'
 	);
@@ -66,6 +70,17 @@ class Status extends Model {
 	protected $status;
 	protected $status_order;
 	protected $highlight;
+
+	/**
+	 * Ensures the highlight field has a default value
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return str The value of the property
+	 */
+	protected function get__highlight()
+	{
+		return $this->highlight ?: '000000';
+	}
 
 	/**
 	 * New statuses get appended

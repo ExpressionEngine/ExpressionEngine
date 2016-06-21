@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box table-list-wrap">
 	<?=form_open($form_url, 'class="tbl-ctrls"')?>
 		<h1><?=sprintf(lang('create_new_item_step'), 1)?><br><i><?=lang('create_new_item_step_desc')?></i></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
