@@ -213,6 +213,7 @@ class Set {
 			$this->loadFieldsAndGroups();
 			$this->loadStatusGroups($data->status_groups);
 			$this->loadCategoryGroups($data->category_groups);
+			$this->loadCategoryFields();
 			$this->loadChannels($data->channels);
 		}
 		catch (\Exception $e)
@@ -412,6 +413,35 @@ class Set {
 		}
 	}
 
+	private function loadCategoryFields()
+	{
+		if ( ! is_dir($this->path.'/category_fields'))
+		{
+			return;
+		}
+
+		$it = new \RecursiveDirectoryIterator(
+			$this->path.'/category_fields',
+			\FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS
+		);
+
+		foreach ($it as $item)
+		{
+			if ($item->isDir())
+			{
+				$category_group = $this->category_groups[$it->getFilename()];
+
+				foreach ($it->getChildren() as $field)
+				{
+					if ($field->isFile())
+					{
+						$category_group->CategoryFields[] = $this->loadCategoryField($field);
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Instantiate the field and field group models
 	 *
@@ -465,7 +495,7 @@ class Set {
 		{
 			if ($field->isFile())
 			{
-				$group->ChannelFields[] = $this->loadField($field);
+				$group->ChannelFields[] = $this->loadChannelField($field);
 			}
 		}
 
@@ -478,7 +508,7 @@ class Set {
 	 * @param SplFileInfo $file File instance for the field.fieldtype file
 	 * @return ChannelFieldModel
 	 */
-	private function loadField(\SplFileInfo $file)
+	private function loadChannelField(\SplFileInfo $file)
 	{
 		$name = $file->getFilename();
 
@@ -536,6 +566,55 @@ class Set {
 		if ($type == 'relationship')
 		{
 			$field_data = $this->importRelationshipField($field, $field_data);
+		}
+
+		$field->set($field_data);
+
+		$this->applyOverrides($field, $name);
+
+		return $field;
+	}
+
+	/**
+	 * Instantiate a field model
+	 *
+	 * @param SplFileInfo $file File instance for the field.fieldtype file
+	 * @return ChannelFieldModel
+	 */
+	private function loadCategoryField(\SplFileInfo $file)
+	{
+		$name = $file->getFilename();
+
+		if (substr_count($name, '.') !== 1)
+		{
+			throw new ImportException("Invalid field definition: {$name}");
+		}
+
+		list($name, $type) = explode('.', $name);
+
+		$data = json_decode(file_get_contents($file->getRealPath()), TRUE);
+
+		// unusual item that has no defaults
+		if ( ! isset($data['list_items']))
+		{
+			$data['list_items'] = '';
+		}
+
+		$field = ee('Model')->make('CategoryField');
+		$field->site_id = $this->site_id;
+		$field->field_name = $name;
+		$field->field_type = $type;
+
+		$field_data = array();
+
+		foreach ($data as $key => $value)
+		{
+			if ($key == 'list_items' && is_array($value))
+			{
+				$value = implode("\n", $value);
+			}
+
+			$field_data['field_'.$key] = $value;
 		}
 
 		$field->set($field_data);
