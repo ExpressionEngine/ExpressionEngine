@@ -82,15 +82,38 @@
 			e.preventDefault();
 			$(this).parents('div.box').load($(this).attr('href'));
 		});
-		$('.modal-file').on('click', '.tbl-search a', function(e) {
+		// Capture form submission
+		$('.modal-file').on('submit', 'form', function(e) {
+			var url = $(this).attr('action'),
+				payload_elements = $('input[name=search], input[name=perpage]', this);
+
+			// Only do this if we're on the file listing screen
+			if (payload_elements.size() == 0) {
+				return;
+			}
+
+			e.preventDefault();
+
+			$(this).parents('div.box').load(url+'&'+payload_elements.serialize());
+		});
+		$('.modal-file').on('click', '.tbl-action .action', function(e) {
 			e.preventDefault();
 			$('div.box', modal).html("<iframe></iframe>");
-			$('iframe', modal).css('border', 'none');
-			$('iframe', modal).css('width', '100%');
-			$('iframe', modal).load(function (e) {
+
+			var frame = $('iframe', modal);
+			frame.css('border', 'none');
+			frame.css('width', '100%');
+
+			// bind an unload event on the frame that hides it
+			// this prevents a flash of json when uploading
+			var bindFrameUnload = function() {
+				$(frame[0].contentWindow).on('unload', function() {
+					frame.hide();
+				});
+			};
+
+			frame.load(function (e) {
 				var response = $(this).contents().find('body');
-				var responseWindow = response;
-				responseWindow.hide();
 
 				if ($(response).find('pre').length)
 				{
@@ -103,13 +126,17 @@
 					response  = JSON.parse(response);
 					callback(response);
 				} catch(e) {
-					responseWindow.show();
+					frame.show();
+					bindFrameUnload();
+
 					var height = $(this).contents().find('body').height();
 					$('.box', modal).height(height);
-			    	$(this).height(height);
+					$(this).height(height);
 				}
 			});
-			$('iframe', modal).attr('src', $(this).attr('href'));
+
+			frame.attr('src', $(this).attr('href'));
+			bindFrameUnload();
 		});
 	};
 

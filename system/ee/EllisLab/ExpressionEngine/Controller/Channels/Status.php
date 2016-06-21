@@ -562,7 +562,7 @@ class Status extends AbstractChannelsController {
 		$status_style = '';
 		if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
 		{
-			$foreground = $this->getForegroundColor($status->highlight);
+			$foreground = $this->calculateForegroundFor($status->highlight);
 			$status_style = "style='background-color: {$status->highlight}; border-color: {$status->highlight}; color: {$foreground};'";
 		}
 
@@ -593,7 +593,8 @@ class Status extends AbstractChannelsController {
 						'highlight' => array(
 							'type' => 'text',
 							'attrs' => 'class="color-picker"',
-							'value' => $status->highlight ?: '000000'
+							'value' => $status->highlight ?: '000000',
+							'required' => TRUE
 						)
 					)
 				)
@@ -632,7 +633,7 @@ class Status extends AbstractChannelsController {
 			array(
 				'field' => 'highlight',
 				'label' => 'lang:highlight_color',
-				'rules' => 'strip_tags|trim|valid_xss_check|callback_validateHex'
+				'rules' => 'strip_tags|trim|required|valid_xss_check|callback_validateHex'
 			)
 		));
 
@@ -699,28 +700,33 @@ class Status extends AbstractChannelsController {
 	 * Retrieve the foreground color for a given status color
 	 *
 	 * @param string $color The hex color for the background
-	 * @return string The hex color best suited for the background color
+	 * @return void
 	 */
 	public function getForegroundColor($color = '')
 	{
-		if (AJAX_REQUEST)
-		{
-			$color = ee()->input->post('color');
-		}
-		else if ($color == '')
-		{
-			throw new \InvalidArgumentException();
-		}
+		$color = ee()->input->post('highlight');
+		$foreground = $this->calculateForegroundFor($color);
+		ee()->output->send_ajax_response($foreground);
+	}
 
-		$background = new Color($color);
-		$foreground = ($background->isLight())
-			? $background->darken(100)
-			: $background->lighten(100);
-
-		if (AJAX_REQUEST)
+	/**
+	 * Retrieve the foreground color for a given status color
+	 *
+	 * @param string $color The hex color for the background
+	 * @return string The hex color best suited for the background color
+	 */
+	protected function calculateForegroundFor($background)
+	{
+		try
 		{
-			echo $foreground;
-			exit;
+			$background = new Color($background);
+			$foreground = ($background->isLight())
+				? $background->darken(100)
+				: $background->lighten(100);
+		}
+		catch (\Exception $e)
+		{
+			$foreground = 'ffffff';
 		}
 
 		return $foreground;

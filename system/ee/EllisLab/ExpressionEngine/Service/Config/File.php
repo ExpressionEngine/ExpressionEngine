@@ -25,9 +25,9 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       https://ellislab.com
  */
-class File implements Config {
+class File extends ConfigWithDefaults {
 
-	protected $config = array();
+	protected $config   = array();
 
 	/**
 	 * Create a new Config\File object
@@ -43,6 +43,8 @@ class File implements Config {
 		{
 			$this->config = $config;
 		}
+
+		$this->defaults = default_config_items();
 	}
 
 	/**

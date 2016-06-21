@@ -97,7 +97,7 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'member_groups' => 'Member group(s)?',
+'layout_member_groups' => 'Member group(s)?',
 
 'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
@@ -165,6 +165,10 @@ $lang = array(
 
 'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom field groups to collect any data other than title, and date.',
 'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom field groups</a>, first.',
+
+'channel_max_entries' => 'Maximum number of entries',
+
+'channel_max_entries_desc' => 'Leave blank to make unlimited &infin;.',
 
 'default_status_group' => 'Default Statuses',
 

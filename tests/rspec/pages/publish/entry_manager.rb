@@ -1,4 +1,4 @@
-class Edit < ControlPanelPage
+class EntryManager < ControlPanelPage
   set_url '/system/index.php?/cp/publish/edit{&perpage}'
 
   elements :entry_rows, '.w-16 .tbl-ctrls form table tbody tr'

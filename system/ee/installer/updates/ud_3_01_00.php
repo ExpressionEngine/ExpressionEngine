@@ -255,7 +255,7 @@ class Updater {
 
 	private function fix_table_collations()
 	{
-		$tables = ee()->db->list_tables();
+		$tables = ee()->db->list_tables(TRUE);
 
 		foreach ($tables as $table)
 		{

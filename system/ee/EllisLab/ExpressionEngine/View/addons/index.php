@@ -1,9 +1,9 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
 <?php if (isset($tables['third'])): ?>
-<div class="box mb">
+<div class="box mb table-list-wrap">
 <?php else: ?>
-<div class="box">
+<div class="box table-list-wrap">
 <?php endif; ?>
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
@@ -26,7 +26,7 @@
 	</div>
 </div>
 <?php if (isset($tables['third'])): ?>
-<div class="box">
+<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<h1><?=$cp_heading['third']?></h1>

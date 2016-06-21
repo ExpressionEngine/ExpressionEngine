@@ -7,6 +7,7 @@ $lang['alpha_dash_period']	= "This field may only contain alpha-numeric characte
 $lang['alpha_numeric']		= "This field may only contain alpha-numeric characters.";
 $lang['boolean']			= "This field must be a boolean value.";
 $lang['enum']				= "This field must be one of: %s.";
+$lang['limithtml']			= "This field can only contain the following HTML tags: %s.";
 $lang['exact_length']		= "This field must be exactly %s characters in length.";
 $lang['file_exists']		= "The path you submitted is not valid.";
 $lang['hex_color']			= "This field must contain a valid hex color code.";

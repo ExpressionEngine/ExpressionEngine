@@ -61,7 +61,7 @@ class Performance extends ProfilerSection {
 	 **/
 	public function setData($benchmarks)
 	{
-		$this->total_time = end($benchmarks);
+		$this->total_time = end($benchmarks['benchmarks']);
 
 		$data = array();
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
@@ -73,7 +73,9 @@ class Performance extends ProfilerSection {
 			$data[lang('profiler_memory')] = lang('profiler_no_memory_usage');
 		}
 
-		$data = $data + $benchmarks;
+		$data[lang('profiler_query_time')] = $benchmarks['database'];
+
+		$data = $data + $benchmarks['benchmarks'];
 		$this->data = array('performance' => $data);
 	}
 }

@@ -1235,6 +1235,18 @@ class EE_Email {
 	// --------------------------------------------------------------------
 
 	/**
+	 * this is very unusual to need, but could be necessary if using the
+	 * send_email extension hook, as the message and headers would need
+	 * to be rebuilt.
+	 *
+	 * @return	void
+	 */
+	public function build_message()
+	{
+		$this->_build_message();
+	}
+
+	/**
 	 * Build Final Body and attachments
 	 *
 	 * @return	void

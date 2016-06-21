@@ -399,7 +399,6 @@ class Updater {
 
 		$installer_config = ee()->config;
 
-		require_once(APPPATH . 'libraries/Extensions.php');
 		ee()->load->model('template_model');
 
 		$sites = ee()->db->select('site_id')

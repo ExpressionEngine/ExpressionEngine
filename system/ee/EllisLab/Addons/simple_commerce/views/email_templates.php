@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box table-list-wrap">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/create-template')?>"><?=lang('create_new')?></a>

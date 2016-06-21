@@ -203,54 +203,70 @@ ListFocus.prototype = {
 
 var keys = { 'enter': 13, 'escape': 27, 'up': 38, 'right': 39, 'down': 40 };
 
-$('.filter input, .filters input[data-fuzzy-filter=true]').each(function() {
+$.fn.fuzzyFilter = function() {
 
-	var input = $(this);
-	var list = $(this).closest('.sub-menu').find('ul');
-	var scrollWrap = list.closest('.scroll-wrap');
+	return this.each(function() {
 
-	var focusBar = new ListFocus(list);
-	var fuzzyList = new FuzzyListSearch(list, {
-		keep: '.last:has(.add)'
-	});
-
-	// the input gains focus when it becomes visible. at this point
-	// we want to make sure that our menu isn't going to shrink horizontally
-	// as longer words are filtered out.
-	input.on('focus', function() {
-		scrollWrap.width(scrollWrap.width());
-	});
-
-	input.on('keydown', function(evt) {
-		focusBar.setLength(fuzzyList.length);
-
-		switch (evt.keyCode)
-		{
-			case keys.enter:
-				evt.preventDefault();
-
-				focusBar.getCurrent()[0].click();
-				break;
-			case keys.escape:
-				input.val('');
-				break;
-			case keys.up:
-				focusBar.up();
-				break;
-			case keys.down:
-				focusBar.down();
-				break;
-			default:
-				return;
+		if ($(this).data('fuzzyFilterActive')) {
+			return;
 		}
 
-		evt.preventDefault();
-	});
+		$(this).data('fuzzyFilterActive', true);
 
-	input.on('interact', function() {
-		fuzzyList.filter(input.val());
-		focusBar.setCurrent(0);
+		var input = $(this);
+		var list = $(this).closest('.sub-menu, .nav-sub-menu').find('ul');
+		var scrollWrap = list.closest('.scroll-wrap');
+
+		var focusBar = new ListFocus(list);
+		var fuzzyList = new FuzzyListSearch(list, {
+			keep: ':has(.add, .nav-add)'
+		});
+
+		// the input gains focus when it becomes visible. at this point
+		// we want to make sure that our menu isn't going to shrink horizontally
+		// as longer words are filtered out.
+		input.on('focus', function() {
+			scrollWrap.width(scrollWrap.width());
+		});
+
+		input.on('keydown', function(evt) {
+			focusBar.setLength(fuzzyList.length);
+
+			switch (evt.keyCode)
+			{
+				case keys.enter:
+					evt.preventDefault();
+
+					focusBar.getCurrent()[0].click();
+					break;
+				case keys.escape:
+					input.val('');
+					break;
+				case keys.up:
+					focusBar.up();
+					break;
+				case keys.down:
+					focusBar.down();
+					break;
+				default:
+					return;
+			}
+
+			evt.preventDefault();
+		});
+
+		input.on('interact', function() {
+			fuzzyList.filter(input.val());
+			focusBar.setCurrent(0);
+		});
 	});
-});
+};
+
+$.fuzzyFilter = function() {
+	$('.nav-filter input, .filters input[data-fuzzy-filter=true]').fuzzyFilter();
+};
+
+// and create the defaults, third parties can call this to "refresh"
+$.fuzzyFilter();
 
 })(jQuery);

@@ -213,7 +213,8 @@ class Validator {
 				// empty values are ok (because optional) anything else is not.
 				if (is_string($value) && trim($value) !== '' ||
 					(is_array($value) && ! empty($value)) ||
-					is_numeric($value))
+					is_numeric($value) ||
+					is_object($value))
 				{
 					$result->addFailed($key, $rule);
 				}

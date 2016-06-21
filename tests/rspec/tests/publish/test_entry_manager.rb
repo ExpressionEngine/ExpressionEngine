@@ -3,7 +3,7 @@ require './bootstrap.rb'
 feature 'Entry Manager' do
   before :each do
     cp_session
-    @page = Edit.new
+    @page = EntryManager.new
     @page.load
     no_php_js_errors
   end

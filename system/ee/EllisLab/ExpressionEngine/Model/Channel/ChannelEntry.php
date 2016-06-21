@@ -92,7 +92,7 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_validation_rules = array(
 		'author_id'          => 'required|isNatural|validateAuthorId',
-		'channel_id'         => 'required',
+		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
 		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
@@ -195,6 +195,30 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Validate entry count for this channel against channel's
+	 * max_entries setting
+	 */
+	public function validateMaxEntries($key, $value, $params, $rule)
+	{
+		if ($this->Channel->max_entries === '0')
+		{
+			return TRUE;
+		}
+
+		$total_entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'title')
+			->filter('channel_id', $value)
+			->count();
+
+		if ($total_entries >= $this->Channel->max_entries)
+		{
+			return sprintf(lang('entry_limit_reached_desc'), $this->Channel->max_entries);
+		}
+
+		return TRUE;
 	}
 
 	/**
@@ -1050,7 +1074,7 @@ class ChannelEntry extends ContentModel {
 
 	public function getAuthorName()
 	{
-		return ($this->author_id) ? $this->Author->getMemberName() : '';
+		return ($this->author_id && $this->Author) ? $this->Author->getMemberName() : '';
 	}
 }
 
