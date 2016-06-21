@@ -146,6 +146,7 @@ $(document).ready(function () {
 	EE.cp.bindCpMessageClose();
 	EE.cp.bindSortableFolderLists();
 	EE.cp.addLastToChecklists();
+	EE.updater.init();
 });
 
 /**
@@ -676,5 +677,69 @@ EE.cp.broadcastEvents = (function() {
 
 })();
 
+
+EE.updater = {
+
+	init: function() {
+		this._bindUpdateButton($('p.update-btn a.submit'));console.log(EE.BASE);
+	},
+
+	_bindUpdateButton: function(button) {
+		var that = this;
+
+		button.on('click', function(event) {
+			event.preventDefault();
+
+			that._presentOverlay();
+		});
+	},
+
+	_presentOverlay: function() {
+		$('.update-overlay').addClass('update-open');
+		$('.update-status1').fadeIn(100);
+
+		this._requestUpdate();
+	},
+
+	_requestUpdate: function(step) {
+		var that = this,
+			action = EE.BASE + '&C=updater';
+
+		if (step !== undefined) {
+			action += '&step='+step;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: action,
+			dataType: 'json',
+			success: function(result) {console.log(result);
+				if (result.messageType == 'success') {
+					that._updateStatus(result.message);
+					if (result.nextStep !== undefined && result.nextStep !== false) {
+						that._requestUpdate(result.nextStep);
+					}
+				}
+				if (result.messageType == 'error') {
+					that._updateStatus(result.message);
+				}
+			},
+			error: function(data) {
+				alert(data.message);
+			}
+		});
+	},
+
+	_updateStatus: function(message) {
+		var process_container = $('.update-overlay .update-process'),
+			current_message = $('p:visible', process_container),
+			next_message = $('p:hidden', process_container);
+
+		next_message.html(message);
+
+		current_message.fadeOut(100);
+		next_message.fadeIn(100);
+	}
+}
 
 })(jQuery);

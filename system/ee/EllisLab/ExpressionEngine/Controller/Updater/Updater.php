@@ -34,14 +34,64 @@ class Updater extends CP_Controller {
 	/**
 	 * Request end-point for updater tasks
 	 */
-	public function index($step = '')
+	public function index()
 	{
-		// Temporary for testing; final controller implementation will probably
-		// allow you to step through download steps individually via AJAX
-		$updater = ee('Updater\Downloader')->getUpdate();
-
 		// TODO: Can we catch a PHP timeout and report that to the user?
 		// TODO: Prolly just restrict super admins to auto-updating
+
+		$step = ee()->input->get('step');
+
+		if ($step === FALSE OR $step == 'undefined')
+		{
+			$step = 'preflight';
+		}
+
+		$step_groups = [
+			'preflight' => [
+				'preflight'
+			],
+			'download' => [
+				'downloadPackage'
+			],
+			'unpack' => [
+				'unzipPackage',
+				'verifyExtractedPackage',
+				'checkRequirements',
+				'moveUpdater'
+			]
+		];
+
+		foreach ($step_groups[$step] as $sub_step)
+		{
+			try
+			{
+				ee('Updater\Downloader')->$sub_step();
+			}
+			catch (\Exception $e)
+			{
+				return [
+					'messageType' => 'error',
+					'message' => $e->getMessage()
+				];
+			}
+		}
+
+		$messages = [
+			'preflight' => 'Downloading update<span>...</span>',
+			'download' => 'Unpacking update<span>...</span>',
+			'unpack' => 'Updating files<span>...</span>'
+		];
+		$next_step = [
+			'preflight' => 'download',
+			'download' => 'unpack',
+			'unpack' => FALSE
+		];
+
+		return [
+			'messageType' => 'success',
+			'message' => $messages[$step],
+			'nextStep' => $next_step[$step]
+		];
 	}
 }
 // EOF

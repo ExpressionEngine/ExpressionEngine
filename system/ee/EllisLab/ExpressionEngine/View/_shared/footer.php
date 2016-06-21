@@ -32,9 +32,11 @@
 								<em><?=lang('build') . ' ' . $new_version['build']?></em>
 							</p>
 								<a href="" class="close">&#10006;</a>
+								<p class="update-btn"><a class="btn submit" href="">Update Now</a></p>
 								<div class="status out"><?=lang('out_of_date')?></div>
 							<?php else: ?>
 								<a href="" class="close">&#10006;</a>
+								<p class="update-btn"><a class="btn submit" href="">Update Now</a></p>
 								<div class="status"><?=lang('current')?></div>
 							<?php endif ?>
 						</div>
@@ -89,6 +91,30 @@
 			</section>
 		</section>
 		<div class="overlay"></div>
+
+		<div class="update-overlay">
+			<div class="update-content">
+				<small>Updating <b>[site_name]</b> from <b>3</b>.0.1 to <b>4</b>.0</small>
+				<div class="update-process">
+					<p class="update-status1">Requesting update<span>...</span></p>
+					<p class="update-status2"></p>
+				</div>
+			</div>
+		</div>
+		<div class="update-success-overlay">
+			<div class="update-content">
+				<small>Site updated!</small>
+				<p>Congrats!</p>
+				<p><a class="btn action update-close" href="#">Check it out</a></p>
+			</div>
+		</div>
+		<div class="update-issue-overlay">
+			<div class="update-content">
+				<small>Update stopped</small>
+				<p>Don't Panic!</p>
+				<p><a class="btn action update-close" href="#">Roll back to version <b>3</b>.0.1</a></p>
+			</div>
+		</div>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>
