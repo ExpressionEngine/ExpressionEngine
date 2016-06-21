@@ -93,8 +93,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testPreflight()
 	{
-		$this->config->shouldReceive('set')->with('is_system_on', 'n');
-
 		$this->config->shouldReceive('get')
 			->with('cache_path')
 			->andReturn('cache/path/');
@@ -590,6 +588,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			SYSPATH . '/ee/updater/hash-manifest',
 			'system/ee/installer/updater'
 		)->once();
+
+		$this->config->shouldReceive('set')->with('is_system_on', 'n')->once();
 
 		$next_step = $this->downloader->moveUpdater();
 		$this->assertEquals(FALSE, $next_step);

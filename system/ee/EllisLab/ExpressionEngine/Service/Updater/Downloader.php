@@ -119,7 +119,6 @@ class Downloader {
 		$this->cleanUpOldUpgrades();
 		$this->checkDiskSpace();
 		$this->checkPermissions();
-		$this->takeSiteOffline();
 
 		return 'downloadPackage';
 	}
@@ -190,7 +189,7 @@ class Downloader {
 			{
 				continue;
 			}
-			
+
 			if ( ! $this->filesystem->isWritable($path))
 			{
 				throw new UpdaterException('Path not writable: ' . $path, 15);
@@ -366,6 +365,9 @@ class Downloader {
 			$this->filesystem->deleteDir(SYSPATH.'ee/updater');
 			throw new UpdaterException($e->getMessage(), $e->getCode());
 		}
+
+		// Got here? Take the site offline, we're ready to update
+		$this->takeSiteOffline();
 
 		// No further steps needed, Updater app will take over
 		return FALSE;
