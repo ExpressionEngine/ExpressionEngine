@@ -338,10 +338,33 @@ class Set {
 				: 'a';
 			$cat_group->group_name = $group_name;
 
-			foreach ($category_group_data->categories as $index => $category_name)
+			foreach ($category_group_data->categories as $index => $category_data)
 			{
 				$category = ee('Model')->make('Category');
 				$category->site_id = $this->site_id;
+
+				if (is_string($category_data))
+				{
+					$category_name = $category_data;
+				}
+				else
+				{
+					$category_name = $category_data->cat_name;
+
+					$fn = function() use ($category, $category_data)
+					{
+						$fields = get_object_vars($category_data);
+
+						foreach ($category->CategoryGroup->CategoryFields as $field)
+						{
+							$property = 'field_id_' . $field->getId();
+							$category->$property = $category_data->{$field->field_name};
+						}
+					};
+
+					$category->on('beforeInsert', $fn);
+				}
+
 				$category->cat_name = $category_name;
 				$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
 				$category->parent_id = 0;
