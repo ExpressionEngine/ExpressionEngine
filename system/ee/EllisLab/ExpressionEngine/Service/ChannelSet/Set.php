@@ -342,14 +342,24 @@ class Set {
 			{
 				$category = ee('Model')->make('Category');
 				$category->site_id = $this->site_id;
+				$category->parent_id = 0;
 
 				if (is_string($category_data))
 				{
-					$category_name = $category_data;
+					$category->cat_name = $category_name;
+					$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
+
+					if ($cat_group->sort_order == 'c')
+					{
+						$category->cat_order = $index + 1;
+					}
 				}
 				else
 				{
-					$category_name = $category_data->cat_name;
+					$category->cat_name = $category_data->cat_name;
+					$category->cat_url_title = $category_data->cat_url_title;
+					$category->cat_description = $category_data->cat_description;
+					$category->cat_order = $category_data->cat_order;
 
 					$fn = function() use ($category, $category_data)
 					{
@@ -363,15 +373,6 @@ class Set {
 					};
 
 					$category->on('beforeInsert', $fn);
-				}
-
-				$category->cat_name = $category_name;
-				$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
-				$category->parent_id = 0;
-
-				if ($cat_group->sort_order == 'c')
-				{
-					$category->cat_order = $index + 1;
 				}
 
 				$cat_group->Categories[] = $category;
