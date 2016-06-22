@@ -63,7 +63,8 @@
 
 			newText = newTextTemp;
 
-			newText = newText.replace('/<(.*?)>/g', '');
+			newText = newText.replace(/<(.*?)>/g, '');
+			newText = newText.replace(/&[a-zA-Z]+;/g, '');
 			newText = newText.replace(/\s+/g, separator);
 			newText = newText.replace(/\//g, separator);
 			newText = newText.replace(/[^a-z0-9\-\._]/g, '');
