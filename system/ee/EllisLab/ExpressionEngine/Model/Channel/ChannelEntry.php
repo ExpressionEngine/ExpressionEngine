@@ -283,7 +283,7 @@ class ChannelEntry extends ContentModel {
 			if (defined('REQ') && REQ == 'CP')
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
+				return sprintf(lang('url_title_not_unique'), $edit_link, htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 			}
 
 			return lang('url_title_not_unique_frontend');
