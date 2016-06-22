@@ -201,7 +201,7 @@ class EE_Typography {
 			'quote'      => 'blockquote',
 			'QUOTE'      => 'blockquote',
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
-			'sup'        => 'sub',
+			'sup'        => 'sup',
 			'sub'        => 'sub'
 		);
 
