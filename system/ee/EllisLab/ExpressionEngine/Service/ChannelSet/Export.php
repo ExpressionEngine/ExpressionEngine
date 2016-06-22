@@ -203,13 +203,11 @@ class Export {
 	{
 		$fields = $category->getCustomFields();
 
-		if (empty($fields))
-		{
-			return $category->cat_name;
-		}
-
 		$cat = new StdClass();
 		$cat->cat_name = $category->cat_name;
+		$cat->cat_url_title = $category->cat_url_title;
+		$cat->cat_description = $category->cat_description;
+		$cat->cat_order = $category->cat_order;
 
 		foreach ($fields as $field)
 		{
