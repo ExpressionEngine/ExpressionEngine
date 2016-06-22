@@ -375,6 +375,17 @@ class Edit extends AbstractPublishController {
 			show_404();
 		}
 
+		// If an entry or channel on a different site is requested, try
+		// to switch sites and reload the publish form
+		$site_id = (int) ee()->input->get_post('site_id');
+		if ($site_id != 0 && $site_id != ee()->config->item('site_id') && empty($_POST))
+		{
+			ee()->cp->switch_site(
+				$site_id,
+				ee('CP/URL')->make('publish/edit/entry/'.$id)
+			);
+		}
+
 		$entry = ee('Model')->get('ChannelEntry', $id)
 			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))

@@ -237,7 +237,7 @@ class EE_Channel_data_parser {
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
 			$row['cp_edit_entry_url']	= ee('CP/URL')
 				->make('publish/edit/entry/'.$row['entry_id'],
-					array(),
+					array('site_id' => $row['site_id']),
 					ee()->config->item('cp_url')
 			);
 
