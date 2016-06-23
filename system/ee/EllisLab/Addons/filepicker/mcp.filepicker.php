@@ -404,6 +404,7 @@ class Filepicker_mcp {
 		$file->UploadDestination = $dir;
 
 		$vars = array(
+			'required' => TRUE,
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
 			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
