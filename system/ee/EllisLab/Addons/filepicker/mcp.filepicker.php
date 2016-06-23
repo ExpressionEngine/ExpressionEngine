@@ -464,10 +464,12 @@ class Filepicker_mcp {
 				$file->upload_location_id = $dir_id;
 				$file->site_id = ee()->config->item('site_id');
 
+				$file->set($_POST);
 				$file->title = (ee()->input->post('title')) ?: $file->file_name;
-				$file->description = ee()->input->post('description');
-				$file->credit = ee()->input->post('credit');
-				$file->location = ee()->input->post('location');
+				if (array_key_exists('categories', $_POST))
+				{
+					$file->setCategoriesFromPost($_POST['categories']);
+				}
 
 				$file->uploaded_by_member_id = ee()->session->userdata('member_id');
 				$file->upload_date = ee()->localize->now;
