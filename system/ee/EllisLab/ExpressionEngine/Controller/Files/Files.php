@@ -228,8 +228,8 @@ class Files extends AbstractFilesController {
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
-				'file_data' => $this->getFileDataForm($file, $errors),
-				'categories' => $this->getCategoryForm($file, $errors),
+				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
+				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
 			),
 			'sections' => array(),
 		);

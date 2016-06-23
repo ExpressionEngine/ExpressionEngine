@@ -250,7 +250,7 @@ class Filepicker_mcp {
 			// Display Upload button if we can
 			if (isset($vars['upload']) && is_numeric($vars['dir']))
 			{
-				$table->addActionButton($vars['upload'], lang('upload_new_file'), 'btn action');
+				$table->addActionButton($vars['upload'], lang('upload_new_file'));
 			}
 
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
@@ -354,6 +354,8 @@ class Filepicker_mcp {
 
 	public function upload()
 	{
+		$errors = NULL;
+
 		$dir_id = ee()->input->get('directory');
 
 		if (empty($dir_id))
@@ -398,57 +400,20 @@ class Filepicker_mcp {
 				->now();
 		}
 
+		$file = ee('Model')->make('File');
+		$file->UploadDestination = $dir;
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
 			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
-			'sections' => array(
-				array(
-					array(
-						'title' => 'file',
-						'fields' => array(
-							'file' => array(
-								'type' => 'file',
-								'required' => TRUE
-							)
-						)
-					),
-					array(
-						'title' => 'title',
-						'fields' => array(
-							'title' => array(
-								'type' => 'text',
-							)
-						)
-					),
-					array(
-						'title' => 'description',
-						'fields' => array(
-							'description' => array(
-								'type' => 'textarea',
-							)
-						)
-					),
-					array(
-						'title' => 'credit',
-						'fields' => array(
-							'credit' => array(
-								'type' => 'text',
-							)
-						)
-					),
-					array(
-						'title' => 'location',
-						'fields' => array(
-							'location' => array(
-								'type' => 'text',
-							)
-						)
-					),
-				)
-			)
+			'tabs' => array(
+				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
+				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
+			),
+			'sections' => array(),
 		);
 
 		ee()->load->library('form_validation');
