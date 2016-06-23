@@ -111,7 +111,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array('1234567890.123456789', NULL, 'TOOMANYLETTERS', ''),
 			array('1234567890.123456789', NULL, 'TF', ''),
-			array('1234567890.123456789', NULL, 'FOO', ''),
 		);
 	}
 
