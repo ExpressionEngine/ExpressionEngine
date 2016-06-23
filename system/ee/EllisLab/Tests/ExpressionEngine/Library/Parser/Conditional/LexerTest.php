@@ -76,9 +76,9 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider badDataProvider
 	 */
-	public function testBadDataProvider($description, $str_in, $code)
+	public function testBadDataProvider($description, $str_in)
 	{
-		$this->setExpectedException('EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException', $code);
+		$this->setExpectedException('EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException');
 		$this->lexer->tokenize($str_in);
 	}
 
@@ -194,23 +194,12 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 	public function badDataProvider()
 	{
 		return array(
-			array('Unclosed String (single quotes)',	"{if string == 'ee}out{/if}", 30),
-			array('Unclosed String (double quotes)',	'{if string == "ee}out{/if}', 30),
-			array('If as a Prefix', 					'{if:foo}', 20),
-			array('Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}', 20),
-			array('Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}', 20),
-			array('Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}', 20),
-		//	array('Unclosed Conditional', 				'{if string == "ee"}out', 21),
-		//	array('Unterminated Conditional', 			'{if string == "ee"out{/if}', 30),
-		//	array('NUMBER + :', 						'{if 1:2}out{/if}', 10),
-		//	array('OK + :',	 							'{if :foo}out{/if}', 10),
-		//	array('OK + :',	 							'{if "foo":bar}out{/if}', 10),
-		//	array('OK + :',	 							"{if 'foo':bar}out{/if}", 10),
-		//	array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
-		//	array('Simple Backticks',					'{if `echo hello`}out{/if}', 5),
-		//	array('Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}', 5),
-		//	array('Simple Comments',					'{if php/* test == 5*/info(); }out{/if}', 5),
-		//	array('Splitting Comments',					'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', 5),
+			array('Unclosed String (single quotes)',	"{if string == 'ee}out{/if}"),
+			array('Unclosed String (double quotes)',	'{if string == "ee}out{/if}'),
+			array('If as a Prefix', 					'{if:foo}'),
+			array('Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}'),
+			array('Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}'),
+			array('Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
 		);
 	}
 
