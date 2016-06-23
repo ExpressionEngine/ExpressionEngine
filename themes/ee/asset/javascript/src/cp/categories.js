@@ -36,6 +36,7 @@ $(document).ready(function () {
 
 	// Category management tools toggle
 	$('body').on('click', '.toggle-tools a.toggle-btn', function (e) {
+		e.preventDefault();
 		var cat_container = $(this).parents('.nestable');
 
 		// On
