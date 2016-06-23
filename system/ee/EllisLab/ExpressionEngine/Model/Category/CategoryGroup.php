@@ -165,7 +165,6 @@ class CategoryGroup extends StructureModel {
 		if ( ! $object->isNew())
 		{
 			$set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
-			var_dump($field->getItem('group_id'), $object->getValues(), $set_categories);
 			$field->setData(implode('|', $set_categories));
 		}
 	}
