@@ -425,7 +425,10 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$file->set($_POST);
 		$file->title = (ee()->input->post('title')) ?: $file->file_name;
-		$file->setCategoriesFromPost($_POST['categories']);
+		if (array_key_exists('categories', $_POST))
+		{
+			$file->setCategoriesFromPost($_POST['categories']);
+		}
 
 		$result = $file->validate();
 
