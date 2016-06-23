@@ -122,7 +122,7 @@ return array(
 
 		'Format' => function($ee)
 		{
-			return new Formatter\FormatterFactory($ee, ee()->lang);
+			return new Formatter\FormatterFactory(ee()->lang);
 		},
 
 		'Curl' => function($ee)

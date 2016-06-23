@@ -35,19 +35,13 @@ class FormatterFactory {
 	private $lang;
 
 	/**
-	 * @var object $provider EllisLab\ExpressionEngine\Core\Provider
-	 **/
-	private $provider;
-
-	/**
 	 * Constructor
 	 *
 	 * @param object EllisLab\ExpressionEngine\Core\Provider
 	 * @param object EE_Lang
 	 */
-	public function __construct(Provider $provider, EE_Lang $lang)
+	public function __construct(EE_Lang $lang)
 	{
-		$this->provider = $provider;
 		$this->lang = $lang;
 	}
 
@@ -66,7 +60,7 @@ class FormatterFactory {
 
 		if (class_exists($class))
 		{
-			return new $class($content, $this->provider, $this->lang);
+			return new $class($content, $this->lang);
 		}
 
 		throw new \Exception("Unknown formatter: `{$formatter_name}`.");

@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Service\Formatter;
 
 use EE_Lang;
-use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -40,21 +39,14 @@ class Formatter {
 	protected $lang;
 
 	/**
-	 * @var object $provider EllisLab\ExpressionEngine\Core\Provider
-	 **/
-	protected $provider;
-
-	/**
 	 * Constructor
 	 *
 	 * @param mixed $content Content to be formatted, typically a string or int
-	 * @param object EllisLab\ExpressionEngine\Core\Provider
 	 * @param object EE_Lang
 	 */
-	public function __construct($content, Provider $provider, EE_Lang $lang)
+	public function __construct($content, EE_Lang $lang)
 	{
 		$this->content = $content;
-		$this->provider = $provider;
 		$this->lang = $lang;
 		$this->lang->load('formatter');
 	}
