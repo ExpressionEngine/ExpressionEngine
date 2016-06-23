@@ -24,6 +24,34 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected, $number);
 	}
 
+	/**
+	 * @dataProvider currencyProvider
+	 */
+	public function testCurrency($content, $locale, $currency_code, $expected)
+	{
+		// fake the server's locale setting
+		$locale = ($locale) ?: 'en_US';
+		ini_set('intl.default_locale', $locale);
+
+		$this->lang->shouldReceive('load')->once();
+		$currency = (string) $this->factory->make('Number', $content)->currency($currency_code);
+		$this->assertEquals($expected, $currency);
+	}
+
+	/**
+	 * @dataProvider badCurrencyProvider
+	 * @expectedException LengthException
+	 */
+	public function testBadCurrency($content, $locale, $currency_code, $expected)
+	{
+		// fake the server's locale setting
+		$locale = ($locale) ?: 'en_US';
+		ini_set('intl.default_locale', $locale);
+
+		$this->lang->shouldReceive('load')->once();
+		$currency = (string) $this->factory->make('Number', $content)->currency($currency_code);
+	}
+
 	public function byteProvider()
 	{
 		// sets the byte() parameters and expected lang key suffix
@@ -59,6 +87,32 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		return $data;
+	}
+
+	public function currencyProvider()
+	{
+		return array(
+			// one float for good measure, thought the content will typically be a string
+			array(1234567890.123456789, NULL, 'USD', '$1,234,567,890.12'),
+			array('1234567890.123456789', NULL, 'USD', '$1,234,567,890.12'),
+			array('1234567890.123456789', NULL, 'TRY', 'TRY1,234,567,890.12'),
+			array('1234567890.123456789', NULL, 'EUR', '€1,234,567,890.12'),
+			array('1234567890.123456789', NULL, 'JPY', '¥1,234,567,890'),
+			array('1234567890.123456789', 'en_GB', 'USD', 'US$1,234,567,890.12'),
+			array('1234567890.123456789', 'en_GB', 'GBP', '£1,234,567,890.12'),
+			array('1234567890.123456789', 'TR', 'TRY', '1.234.567.890,12 ₺'),
+			array('1234567890.123456789', 'ak_GH', 'GHS', 'GH₵1,234,567,890.12'),
+			array('1234567890.123456789', NULL, 'FOO', 'FOO1,234,567,890.12'),
+		);
+	}
+
+	public function badCurrencyProvider()
+	{
+		return array(
+			array('1234567890.123456789', NULL, 'TOOMANYLETTERS', ''),
+			array('1234567890.123456789', NULL, 'TF', ''),
+			array('1234567890.123456789', NULL, 'FOO', ''),
+		);
 	}
 
 	public function tearDown()
