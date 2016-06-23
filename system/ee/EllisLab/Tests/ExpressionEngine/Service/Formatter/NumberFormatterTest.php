@@ -11,7 +11,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	{
 		$provider = m::mock('EllisLab\ExpressionEngine\Core\Provider');
 		$this->lang = m::mock('EE_Lang');
-		$this->factory = new FormatterFactory($provider, $this->lang);
+		$this->factory = new FormatterFactory($this->lang);
 	}
 
 	/**
