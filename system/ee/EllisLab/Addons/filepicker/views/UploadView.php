@@ -24,10 +24,7 @@
 	</head>
 	<body id="top">
 		<div class="box"><?=$content?></div>
-		<?=ee()->javascript->get_global()?>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>
-		<?=ee()->view->script_tag('jquery/plugins/nestable.js')?>
-		<?=ee()->view->script_tag('cp/categories.js')?>
 	</body>
 </html>
