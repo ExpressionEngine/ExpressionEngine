@@ -183,6 +183,7 @@ class EE_Typography {
 			'blockquote',
 			'abbr' => array('property' => 'title'),
 			'span' => array('property' => 'class'),
+			'span',
 			'sup',
 			'sub'
 		);
@@ -1055,11 +1056,11 @@ class EE_Typography {
 		{
 			if ( ! is_numeric($key) && isset($val['property']))
 			{
-				if (preg_match("/<".$key.".*?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
+				if (preg_match("/<".$key."\b\s?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
 				{
 					$property = ee('Security/XSS')->clean($matches[2]);
 					$str = preg_replace(
-						"/<".$key.".*?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
+						"/<".$key."\b\s?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
 						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
 						$str
 					);
@@ -1413,7 +1414,9 @@ class EE_Typography {
 					}
 				}
 			}
-			else
+
+			// Does this tag pair exist without attributes? Replace it
+			if (preg_match_all('/\['.$key.']?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
 			{
 				$val = (is_array($val)) ? $val['tag'] : $val;
 				$str = str_ireplace(
