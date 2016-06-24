@@ -1056,11 +1056,11 @@ class EE_Typography {
 		{
 			if ( ! is_numeric($key) && isset($val['property']))
 			{
-				if (preg_match("/<".$key."\b\s?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
+				if (preg_match("/<".$key."\s+".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
 				{
 					$property = ee('Security/XSS')->clean($matches[2]);
 					$str = preg_replace(
-						"/<".$key."\b\s?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
+						"/<".$key."\s+".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
 						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
 						$str
 					);
