@@ -2178,23 +2178,25 @@ class CI_DB_active_record extends CI_DB_driver {
 	function _reset_select()
 	{
 		$ar_reset_items = array(
-			'ar_select'         => array(),
-			'ar_from'           => array(),
-			'ar_join'           => array(),
-			'ar_where'          => array(),
-			'ar_like'           => array(),
-			'ar_groupby'        => array(),
-			'ar_having'         => array(),
-			'ar_orderby'        => array(),
-			'ar_wherein'        => array(),
-			'ar_aliased_tables' => array(),
-			'ar_no_escape'      => array(),
-			'ar_distinct'       => FALSE,
-			'ar_limit'          => FALSE,
-			'ar_offset'         => FALSE,
-			'ar_order'          => FALSE,
-			'ar_empty_group'    => empty($this->ar_cache_where),
-			'ar_group_count'    => 0
+			'ar_select'           => array(),
+			'ar_from'             => array(),
+			'ar_join'             => array(),
+			'ar_where'            => array(),
+			'ar_like'             => array(),
+			'ar_groupby'          => array(),
+			'ar_having'           => array(),
+			'ar_orderby'          => array(),
+			'ar_wherein'          => array(),
+			'ar_aliased_tables'   => array(),
+			'ar_no_escape'        => array(),
+			'ar_distinct'         => FALSE,
+			'ar_limit'            => FALSE,
+			'ar_offset'           => FALSE,
+			'ar_order'            => FALSE,
+			'ar_empty_group'      => empty($this->ar_cache_where),
+			'ar_empty_like_group' => empty($this->ar_cache_like),
+			'ar_group_count'      => 0,
+			'ar_like_group_count' => 0
 		);
 
 		$this->_reset_run($ar_reset_items);
@@ -2213,16 +2215,18 @@ class CI_DB_active_record extends CI_DB_driver {
 	function _reset_write()
 	{
 		$ar_reset_items = array(
-			'ar_set'         => array(),
-			'ar_from'        => array(),
-			'ar_where'       => array(),
-			'ar_like'        => array(),
-			'ar_orderby'     => array(),
-			'ar_keys'        => array(),
-			'ar_limit'       => FALSE,
-			'ar_order'       => FALSE,
-			'ar_empty_group' => empty($this->ar_cache_where),
-			'ar_group_count' => 0
+			'ar_set'         	  => array(),
+			'ar_from'        	  => array(),
+			'ar_where'       	  => array(),
+			'ar_like'        	  => array(),
+			'ar_orderby'     	  => array(),
+			'ar_keys'        	  => array(),
+			'ar_limit'       	  => FALSE,
+			'ar_order'       	  => FALSE,
+			'ar_empty_group'      => empty($this->ar_cache_where),
+			'ar_empty_like_group' => empty($this->ar_cache_like),
+			'ar_group_count'      => 0,
+			'ar_like_group_count' => 0
 		);
 
 		$this->_reset_run($ar_reset_items);
