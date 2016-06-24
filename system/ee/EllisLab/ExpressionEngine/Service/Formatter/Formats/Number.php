@@ -81,25 +81,6 @@ class Number extends Formatter {
 		$this->content = number_format($memory, $precision).$unit;
 		return $this;
 	}
-
-	/**
-	 * Format number as currency
-	 *
-	 * @param  string $currency_code 3-letter ISO 4217 currency code
-	 * @return self This returns a reference to itself
-	 **/
-	public function currency($currency_code = 'USD')
-	{
-		if (strlen($currency_code) != 3)
-		{
-			throw new \LengthException('Currency code must be a valid 3-letter ISO 4217 currency code: '.htmlentities($currency_code).' provided.');
-		}
-
-		$locale = (Locale::getDefault() == 'en_US_POSIX') ? 'en_US' : Locale::getDefault();
-		$fmt = new NumberFormatter($locale, NumberFormatter::CURRENCY);
-		$this->content = $fmt->formatCurrency($this->content, $currency_code);
-		return $this;
-	}
 }
 
 // EOF
