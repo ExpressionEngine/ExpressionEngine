@@ -63,9 +63,9 @@ class Upload {
 			)
 		);
 
-		if ($file->isNew())
+		if ( ! $file->isNew())
 		{
-			unset($sections[0][0][0]);
+			unset($sections[0][0]);
 		}
 
 		foreach ($sections as $name => $settings)
