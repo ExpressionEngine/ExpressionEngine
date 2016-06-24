@@ -41,7 +41,8 @@
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<li><a href="<?=$link?>"><?=$site_name?></a></li>
 							<?php endforeach ?>
-							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
+							<?php if (ee()->cp->allowed_group('can_admin_sites')
+									  && ee('License')->getEELicense()->canAddSites(ee('Model')->get('Site')->count())): ?>
 								<li><a class="nav-add" href="<?=ee('CP/URL', 'msm/create')?>"><i class="icon-add"></i><?=lang('new_site')?></a></li>
 							<?php endif ?>
 						</ul>
