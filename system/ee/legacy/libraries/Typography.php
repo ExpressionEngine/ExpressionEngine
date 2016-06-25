@@ -17,6 +17,9 @@ use EllisLab\ExpressionEngine\Core\Autoloader;
 
 // ------------------------------------------------------------------------
 
+define('HTML_BRACKETS', 1);
+define('BBCODE_BRACKETS', 2);
+
 /**
  * ExpressionEngine Core Typography Class
  *
@@ -179,11 +182,10 @@ class EE_Typography {
 			'ins',
 			'strong',
 			'pre',
-			'code',
+			'code' => array('properties' => array('class', 'data-language')),
 			'blockquote',
-			'abbr' => array('property' => 'title'),
-			'span' => array('property' => 'class'),
-			'span',
+			'abbr' => array('properties' => array('title')),
+			'span' => array('properties' => array('class')),
 			'sup',
 			'sub'
 		);
@@ -196,7 +198,7 @@ class EE_Typography {
 			'ins'        => 'ins',
 			'strong'     => 'strong',
 			'pre'        => 'pre',
-			'code'       => 'code',
+			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
@@ -1054,16 +1056,30 @@ class EE_Typography {
 		// Convert allowed HTML to BBCode
 		foreach($this->safe_encode as $key => $val)
 		{
-			if ( ! is_numeric($key) && isset($val['property']))
+			if ( ! is_numeric($key) && isset($val['properties']))
 			{
-				if (preg_match("/<".$key."\s+".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
+				// grab tag blocks, plus we need to match the full open tag
+				$matches = $this->matchFullTags($key, $str, HTML_BRACKETS);
+
+				foreach ($matches as $match)
 				{
-					$property = ee('Security/XSS')->clean($matches[2]);
-					$str = preg_replace(
-						"/<".$key."\s+".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
-						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
-						$str
-					);
+					$tag_params = '';
+
+					// inside the opening tag block $match[1], grab all parameters
+					$param_matches = $this->matchTagAttributes($match[1]);
+
+					foreach ($param_matches as $p_match)
+					{
+						// only keep the ones we allow, ditch the rest
+						if (in_array($p_match[1], $val['properties']))
+						{
+							$attr_content = ee('Security/XSS')->clean($p_match[3]);
+							$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
+						}
+					}
+
+					$bbcode_open_tag = "[${key}${tag_params}]";
+					$str = str_replace($match[0], $bbcode_open_tag.$match[2]."[/${key}]", $str);
 				}
 			}
 			elseif (stristr($str, $val.'>') !== FALSE)
@@ -1105,6 +1121,49 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Match Full Tags
+	 *
+	 * @param string $name the tag name
+	 * @param string $string the text to match against
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @return array preg_match_all() array of all <name> tags in $string
+	 **/
+	private function matchFullTags($name, $string, $bracket_style = HTML_BRACKETS)
+	{
+		switch ($bracket_style)
+		{
+			case BBCODE_BRACKETS:
+				$ob = '\[';
+				$cb = '\]';
+				break;
+			case HTML_BRACKETS:
+			default:
+				$ob = '<';
+				$cb = '>';
+		}
+
+		preg_match_all("/(${ob}${name}.*?${cb})(.*?)${ob}\/${name}${cb}/is", $string, $matches, PREG_SET_ORDER);
+
+		return $matches;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Match Tag Attributes
+	 *
+	 * @param string $open_tag the full open tag, e.g. <name foo="bar" bat="bag">
+	 * @return array preg_match_all() array of all tag parameters in $open_tag
+	 **/
+	private function matchTagAttributes($open_tag)
+	{
+		preg_match_all("/(\S+?)\s*=\s*(\"|\')([^\\2]*?)\\2/is", $open_tag, $attr_matches, PREG_SET_ORDER);
+		return $attr_matches;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Clean bbcode from Markdown style code blocks
 	 *
 	 * @param  String $str The string to pre-process
@@ -1118,6 +1177,15 @@ class EE_Typography {
 				array('&#91;', '&#93;'),
 				$matches[2]
 			);
+
+			// no choice, if Safe HTML format, we need to parse code blocks
+			// with our bbcode, or any brackets in Markdown code blocks will be
+			// double encoded, e.g. -&amp;gt;
+			if ($this->html_format = 'safe')
+			{
+				return '[code]'.$code.'[/code]';
+			}
+
 			return $matches[1].$code.$matches[1];
 		};
 
@@ -1378,20 +1446,23 @@ class EE_Typography {
 		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 
+		// Abbr shorthand, the special snowflake:
+		// [abbr="some title"]ST[/abbr]
+		// we will let the standard properties whitelist below sanitize
+		if (strpos($str, '[abbr=') !== FALSE)
+		{
+			$str = preg_replace("/\[abbr=(\"|\')(.*?)\\1\](.*?)\[\/abbr\]/si", "[abbr title=\"\\2\"]\\3[/abbr]", $str);
+		}
+
 		// Decode BBCode array map
 		foreach($this->safe_decode as $key => $val)
 		{
 			if (is_array($val)
 				&& isset($val['properties'])
-				&& preg_match_all('/\['.$key.'=[\'"]?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
+				&& $matches = $this->matchFullTags($key, $str, BBCODE_BRACKETS))
 			{
 				foreach ($matches as $tag_match)
 				{
-					// Clean up the contents of the property
-					$tag_match[1] = htmlspecialchars(
-						ee('Security/XSS')->clean($tag_match[1])
-					);
-
 					// If there's any evidence of XSS then don't add anything
 					if (stripos($tag_match[0], '[removed]') !== FALSE)
 					{
@@ -1399,18 +1470,26 @@ class EE_Typography {
 					}
 					else
 					{
-						$tag = "<{$val['tag']}";
-						foreach ($val['properties'] as $property)
-						{
-							$tag .= " {$property}='{$tag_match[1]}'";
-						}
-						$tag .= ">";
+						$tag_params = '';
 
-						$str = str_replace(
-							array($tag_match[0], '[/'.$key.']'),
-							array($tag, '</'.$val['tag'].'>'),
-							$str
-						);
+						// inside the opening tag block $tag_match[1], grab all parameters
+						$param_matches = $this->matchTagAttributes($tag_match[1]);
+
+						foreach ($param_matches as $p_match)
+						{
+							// only keep the ones we allow, ditch the rest
+							if (in_array($p_match[1], $val['properties']))
+							{
+								$attr_content = htmlspecialchars(
+									ee('Security/XSS')->clean($p_match[3])
+								);
+
+								$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
+							}
+						}
+
+						$open_tag = "<${key}${tag_params}>";
+						$str = str_replace($tag_match[0], $open_tag.$tag_match[2]."</${key}>", $str);
 					}
 				}
 			}
