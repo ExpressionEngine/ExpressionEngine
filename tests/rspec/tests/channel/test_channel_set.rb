@@ -118,7 +118,14 @@ feature 'Channel Sets' do
       channel_set['category_groups'].size.should == 1
       channel_set['category_groups'][0]['name'].should == 'News Categories'
       channel_set['category_groups'][0]['sort_order'].should == 'a'
-      channel_set['category_groups'][0]['categories'].should == %w(News Bands)
+      channel_set['category_groups'][0]['categories'][0]['cat_name'].should == 'News'
+      channel_set['category_groups'][0]['categories'][0]['cat_url_title'].should == 'news'
+      channel_set['category_groups'][0]['categories'][0]['cat_description'].should == ''
+      channel_set['category_groups'][0]['categories'][0]['cat_order'].should == '2'
+      channel_set['category_groups'][0]['categories'][1]['cat_name'].should == 'Bands'
+      channel_set['category_groups'][0]['categories'][1]['cat_url_title'].should == 'bands'
+      channel_set['category_groups'][0]['categories'][1]['cat_description'].should == ''
+      channel_set['category_groups'][0]['categories'][1]['cat_order'].should == '3'
       channel_set['upload_destinations'].size.should == 0
 
       expected_files.sort.should == found_files.sort.map(&:name)
@@ -414,6 +421,15 @@ feature 'Channel Sets' do
   context 'when importing channel sets' do
     it 'imports a channel set' do
       import_channel_set 'simple'
+
+      $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row|
+        channel_title_field_label = row['count']
+        channel_title_field_label.should == 1
+      end
+    end
+
+    it 'imports a 3.3.x channel set' do
+      import_channel_set 'simple-3.3'
 
       $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row|
         channel_title_field_label = row['count']
