@@ -17,9 +17,6 @@ use EllisLab\ExpressionEngine\Core\Autoloader;
 
 // ------------------------------------------------------------------------
 
-define('HTML_BRACKETS', 1);
-define('BBCODE_BRACKETS', 2);
-
 /**
  * ExpressionEngine Core Typography Class
  *
@@ -88,6 +85,10 @@ class EE_Typography {
 	// A marker used to hide quotes in text
 	// before it is passed through the parser.
 	private $quote_marker    = NULL;
+
+	// tag bracket constants for use in Safe HTML / BBcode parsing
+	const HTML_BRACKETS = 1;
+	const BBCODE_BRACKETS = 2;
 
 	/**
 	 * Constructor
@@ -1059,7 +1060,7 @@ class EE_Typography {
 			if ( ! is_numeric($key) && isset($val['properties']))
 			{
 				// grab tag blocks, plus we need to match the full open tag
-				$matches = $this->matchFullTags($key, $str, HTML_BRACKETS);
+				$matches = $this->matchFullTags($key, $str, self::HTML_BRACKETS);
 
 				foreach ($matches as $match)
 				{
@@ -1128,15 +1129,15 @@ class EE_Typography {
 	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
 	 * @return array preg_match_all() array of all <name> tags in $string
 	 **/
-	private function matchFullTags($name, $string, $bracket_style = HTML_BRACKETS)
+	private function matchFullTags($name, $string, $bracket_style = self::HTML_BRACKETS)
 	{
 		switch ($bracket_style)
 		{
-			case BBCODE_BRACKETS:
+			case self::BBCODE_BRACKETS:
 				$ob = '\[';
 				$cb = '\]';
 				break;
-			case HTML_BRACKETS:
+			case self::HTML_BRACKETS:
 			default:
 				$ob = '<';
 				$cb = '>';
@@ -1457,9 +1458,10 @@ class EE_Typography {
 		// Decode BBCode array map
 		foreach($this->safe_decode as $key => $val)
 		{
+
 			if (is_array($val)
 				&& isset($val['properties'])
-				&& $matches = $this->matchFullTags($key, $str, BBCODE_BRACKETS))
+				&& $matches = $this->matchFullTags($key, $str, self::BBCODE_BRACKETS))
 			{
 				foreach ($matches as $tag_match)
 				{
@@ -2239,6 +2241,8 @@ while (--j >= 0)
 			}
 			else
 			{
+				// known, unsupported edge case:
+				// [code class="foo"]...[/code]
 				$str = str_replace(
 					array('[code]', '[/code]'),
 					array('<pre><code>', '</code></pre>'),
