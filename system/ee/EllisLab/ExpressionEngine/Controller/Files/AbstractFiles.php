@@ -449,9 +449,9 @@ abstract class AbstractFiles extends CP_Controller {
 		return $result;
 	}
 
-	protected function saveFileAndRedirect(File $file)
+	protected function saveFileAndRedirect(File $file, $is_new = FALSE)
 	{
-		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
+		$action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
 
 		if ($file->isNew())
 		{

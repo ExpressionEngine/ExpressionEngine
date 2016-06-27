@@ -215,7 +215,7 @@ class Files extends AbstractFilesController {
 					// Validate handles setting properties...
 					$this->validateFile($file);
 
-					$this->saveFileAndRedirect($file);
+					$this->saveFileAndRedirect($file, TRUE);
 				}
 			}
 		}
