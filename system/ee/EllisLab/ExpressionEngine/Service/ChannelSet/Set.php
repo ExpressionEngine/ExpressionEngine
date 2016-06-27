@@ -346,8 +346,8 @@ class Set {
 
 				if (is_string($category_data))
 				{
-					$category->cat_name = $category_name;
-					$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
+					$category->cat_name = $category_data;
+					$category->cat_url_title = strtolower(str_replace(' ', '-', $category_data));
 
 					if ($cat_group->sort_order == 'c')
 					{
