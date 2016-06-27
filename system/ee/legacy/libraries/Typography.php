@@ -1181,7 +1181,7 @@ class EE_Typography {
 			// no choice, if Safe HTML format, we need to parse code blocks
 			// with our bbcode, or any brackets in Markdown code blocks will be
 			// double encoded, e.g. -&amp;gt;
-			if ($this->html_format = 'safe')
+			if ($this->html_format == 'safe')
 			{
 				return '[code]'.$code.'[/code]';
 			}
