@@ -681,7 +681,10 @@ EE.cp.broadcastEvents = (function() {
 EE.updater = {
 
 	init: function() {
-		this._bindUpdateButton($('p.update-btn a.submit'));console.log(EE.BASE);
+		this._overlay = $('.update-overlay');
+		this._success_overlay = $('.update-success-overlay');
+		this._issue_overlay = $('.update-issue-overlay');
+		this._bindUpdateButton($('p.update-btn a.submit'));
 	},
 
 	_bindUpdateButton: function(button) {
@@ -695,7 +698,7 @@ EE.updater = {
 	},
 
 	_presentOverlay: function() {
-		$('.update-overlay').addClass('update-open');
+		this._overlay.addClass('update-open');
 		$('.update-status1').fadeIn(100);
 
 		this._requestUpdate();
@@ -713,7 +716,7 @@ EE.updater = {
 			type: 'POST',
 			url: action,
 			dataType: 'json',
-			success: function(result) {console.log(result);
+			success: function(result) {
 				if (result.messageType == 'success') {
 					that._updateStatus(result.message);
 					if (result.nextStep !== undefined && result.nextStep !== false) {
@@ -721,17 +724,17 @@ EE.updater = {
 					}
 				}
 				if (result.messageType == 'error') {
-					that._updateStatus(result.message);
+					that._showError(result.message);
 				}
 			},
 			error: function(data) {
-				alert(data.message);
+				that._showError(data.message);
 			}
 		});
 	},
 
 	_updateStatus: function(message) {
-		var process_container = $('.update-overlay .update-process'),
+		var process_container = $('.update-process', this._overlay),
 			current_message = $('p:visible', process_container),
 			next_message = $('p:hidden', process_container);
 
@@ -739,6 +742,14 @@ EE.updater = {
 
 		current_message.fadeOut(100);
 		next_message.fadeIn(100);
+	},
+
+	_showError: function(message) {
+		this._overlay.removeClass('update-open');
+
+		$('p', this._issue_overlay).first().html(message);
+
+		this._issue_overlay.addClass('update-open');
 	}
 }
 

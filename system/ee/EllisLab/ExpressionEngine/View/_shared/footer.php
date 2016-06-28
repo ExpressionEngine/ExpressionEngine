@@ -94,7 +94,7 @@
 
 		<div class="update-overlay">
 			<div class="update-content">
-				<small>Updating <b>[site_name]</b> from <b>3</b>.0.1 to <b>4</b>.0</small>
+				<small>Updating <b><?=ee()->config->item('site_name')?></b> from <?=$formatted_version?> to <?=isset($new_version['version']) ? $new_version['version'] : '?'?></small>
 				<div class="update-process">
 					<p class="update-status1">Requesting update<span>...</span></p>
 					<p class="update-status2"></p>
