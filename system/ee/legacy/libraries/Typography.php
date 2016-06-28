@@ -1064,24 +1064,9 @@ class EE_Typography {
 
 				foreach ($matches as $match)
 				{
-					$tag_params = array();
-
-					// inside the opening tag block $match[1], grab all parameters
-					$param_matches = $this->matchTagAttributes($match[1]);
-
-					foreach ($param_matches as $p_match)
-					{
-						// only keep the ones we allow, ditch the rest
-						if (in_array($p_match[1], $val['properties']))
-						{
-							$attr_content = ee('Security/XSS')->clean($p_match[3]);
-							$tag_params[$p_match[1]] = array('value' => $attr_content, 'quote' => $p_match[2]);
-						}
-					}
-
 					$str = str_replace(
 						$match[0],
-						$this->buildTag($key, $tag_params, $match[2], self::BBCODE_BRACKETS),
+						$this->buildTag($key, $val['properties'], $match[1], $match[2], self::BBCODE_BRACKETS),
 						$str
 					);
 				}
@@ -1128,41 +1113,34 @@ class EE_Typography {
 	 * Build Tag
 	 *
 	 * @param string $name the tag name
-	 * @param array $attributes array of tag attributes to apply
-	 *              [
-	 *              	'attribute_name' =>
-	 *              	[
-	 *              		'value' => 'The attribute value',
-	 *              		'quote' => '"' // or "'"
-	 *              	]
-	 *              ]
-	 *              or
-	 *              [
-	 *              	'attribute_name' => 'The attribute value'
-	 *              ]
-	 * @param string $tagdata the tags inner contents
-	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @param array $allowed_attributes array of tag attributes to allow
+	 * @param string $attribute_str a string of tag attributes, e.g. foo="bar" bat="bag"
+	 * @param string $tagdata the tag's inner contents
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS, to use in the tags
 	 * @return string
 	 **/
-	private function buildTag($name, $attributes = array(), $tagdata = '', $bracket_style = self::HTML_BRACKETS)
+	private function buildTag($name, $allowed_attributes = array(), $attribute_str = '', $tagdata = '', $bracket_style = self::HTML_BRACKETS)
 	{
-		$attr_string = '';
+		$tag_params = '';
 
-		foreach ($attributes as $attribute => $value)
+		// inside the opening tag block $tag_match[1], grab all parameters
+		$param_matches = $this->matchTagAttributes($attribute_str);
+
+		foreach ($param_matches as $p_match)
 		{
-			if (is_array($value) && isset($value['value']))
+			// only keep the ones we allow, ditch the rest
+			if (in_array($p_match[1], $allowed_attributes))
 			{
-				$quote = (isset($value['quote'])) ? $value['quote'] : '"';
-				$attr_string .= ' '.$attribute.'='.$quote.$value['value'].$quote;
-			}
-			elseif (is_string($value))
-			{
-				$attr_string .= ' '.$attribute.'="'.$value.'"';
+				$attr_content = htmlspecialchars(
+					ee('Security/XSS')->clean($p_match[3])
+				);
+
+				$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
 			}
 		}
 
 		list($ob, $cb) = $this->getBracketsByStyle($bracket_style);
-		return $ob.$name.$attr_string.$cb.$tagdata.$ob.'/'.$name.$cb;
+		return $ob.$name.$tag_params.$cb.$tagdata.$ob.'/'.$name.$cb;
 	}
 
 	// --------------------------------------------------------------------
@@ -1533,27 +1511,9 @@ class EE_Typography {
 					}
 					else
 					{
-						$tag_params = array();
-
-						// inside the opening tag block $tag_match[1], grab all parameters
-						$param_matches = $this->matchTagAttributes($tag_match[1]);
-
-						foreach ($param_matches as $p_match)
-						{
-							// only keep the ones we allow, ditch the rest
-							if (in_array($p_match[1], $val['properties']))
-							{
-								$attr_content = htmlspecialchars(
-									ee('Security/XSS')->clean($p_match[3])
-								);
-
-								$tag_params[$p_match[1]] = array('value' => $attr_content, 'quote' => $p_match[2]);
-							}
-						}
-
 						$str = str_replace(
 							$tag_match[0],
-							$this->buildTag($key, $tag_params, $tag_match[2], self::HTML_BRACKETS),
+							$this->buildTag($key, $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
 							$str
 						);
 					}
