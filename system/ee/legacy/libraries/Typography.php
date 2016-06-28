@@ -1064,23 +1064,11 @@ class EE_Typography {
 
 				foreach ($matches as $match)
 				{
-					$tag_params = '';
-
-					// inside the opening tag block $match[1], grab all parameters
-					$param_matches = $this->matchTagAttributes($match[1]);
-
-					foreach ($param_matches as $p_match)
-					{
-						// only keep the ones we allow, ditch the rest
-						if (in_array($p_match[1], $val['properties']))
-						{
-							$attr_content = ee('Security/XSS')->clean($p_match[3]);
-							$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
-						}
-					}
-
-					$bbcode_open_tag = "[${key}${tag_params}]";
-					$str = str_replace($match[0], $bbcode_open_tag.$match[2]."[/${key}]", $str);
+					$str = str_replace(
+						$match[0],
+						$this->buildTag($key, $val['properties'], $match[1], $match[2], self::BBCODE_BRACKETS),
+						$str
+					);
 				}
 			}
 			elseif (stristr($str, $val.'>') !== FALSE)
@@ -1122,6 +1110,68 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Build Tag
+	 *
+	 * @param string $name the tag name
+	 * @param array $allowed_attributes array of tag attributes to allow
+	 * @param string $attribute_str a string of tag attributes, e.g. foo="bar" bat="bag"
+	 * @param string $tagdata the tag's inner contents
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS, to use in the tags
+	 * @return string
+	 **/
+	private function buildTag($name, $allowed_attributes = array(), $attribute_str = '', $tagdata = '', $bracket_style = self::HTML_BRACKETS)
+	{
+		$tag_params = '';
+
+		// inside the opening tag block $tag_match[1], grab all parameters
+		$param_matches = $this->matchTagAttributes($attribute_str);
+
+		foreach ($param_matches as $p_match)
+		{
+			// only keep the ones we allow, ditch the rest
+			if (in_array($p_match[1], $allowed_attributes))
+			{
+				$attr_content = htmlspecialchars(
+					ee('Security/XSS')->clean($p_match[3])
+				);
+
+				$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
+			}
+		}
+
+		list($ob, $cb) = $this->getBracketsByStyle($bracket_style);
+		return $ob.$name.$tag_params.$cb.$tagdata.$ob.'/'.$name.$cb;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Brackets By Style
+	 *
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @param bool $preg_quote Whether to return a preg_quoted version of the bracket
+	 * @return array [opening bracket, closing bracket]
+	 **/
+	private function getBracketsByStyle($bracket_style = self::HTML_BRACKETS, $preg_quote = FALSE)
+	{
+		switch ($bracket_style)
+		{
+			case self::BBCODE_BRACKETS:
+				$ob = ($preg_quote) ? '\[' : '[';
+				$cb = ($preg_quote) ? '\]' : ']';
+				break;
+			case self::HTML_BRACKETS:
+			default:
+				$ob = '<';
+				$cb = '>';
+		}
+
+		return array($ob, $cb);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Match Full Tags
 	 *
 	 * @param string $name the tag name
@@ -1131,18 +1181,7 @@ class EE_Typography {
 	 **/
 	private function matchFullTags($name, $string, $bracket_style = self::HTML_BRACKETS)
 	{
-		switch ($bracket_style)
-		{
-			case self::BBCODE_BRACKETS:
-				$ob = '\[';
-				$cb = '\]';
-				break;
-			case self::HTML_BRACKETS:
-			default:
-				$ob = '<';
-				$cb = '>';
-		}
-
+		list($ob, $cb) = $this->getBracketsByStyle($bracket_style, TRUE);
 		preg_match_all("/(${ob}${name}.*?${cb})(.*?)${ob}\/${name}${cb}/is", $string, $matches, PREG_SET_ORDER);
 
 		return $matches;
@@ -1472,26 +1511,11 @@ class EE_Typography {
 					}
 					else
 					{
-						$tag_params = '';
-
-						// inside the opening tag block $tag_match[1], grab all parameters
-						$param_matches = $this->matchTagAttributes($tag_match[1]);
-
-						foreach ($param_matches as $p_match)
-						{
-							// only keep the ones we allow, ditch the rest
-							if (in_array($p_match[1], $val['properties']))
-							{
-								$attr_content = htmlspecialchars(
-									ee('Security/XSS')->clean($p_match[3])
-								);
-
-								$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
-							}
-						}
-
-						$open_tag = "<${key}${tag_params}>";
-						$str = str_replace($tag_match[0], $open_tag.$tag_match[2]."</${key}>", $str);
+						$str = str_replace(
+							$tag_match[0],
+							$this->buildTag($key, $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
+							$str
+						);
 					}
 				}
 			}
