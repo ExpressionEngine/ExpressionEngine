@@ -91,7 +91,7 @@ class Pagination {
 		$this->per_page = (int) $per_page;
 		if ($this->per_page < 1)
 		{
-			throw new \InvalidArgumentException("The arugment to perPage must be greater than 0. \"{$per_page}\" was passed.");
+			throw new \InvalidArgumentException("The argument to perPage must be greater than 0. \"{$per_page}\" was passed.");
 		}
 		return $this;
 	}
@@ -107,7 +107,7 @@ class Pagination {
 		$this->current_page = (int) $current_page;
 		if ($this->current_page < 1)
 		{
-			throw new \InvalidArgumentException("The arugment to currentPage must be greater than 0. \"{$current_page}\" was passed.");
+			throw new \InvalidArgumentException("The argument to currentPage must be greater than 0. \"{$current_page}\" was passed.");
 		}
 		return $this;
 	}
@@ -135,7 +135,7 @@ class Pagination {
 		$this->pages_to_display = (int) $pages_to_display;
 		if ($this->pages_to_display < 1)
 		{
-			throw new \InvalidArgumentException("The arugment to displayPageLinks must be greater than 0. \"{$pages_to_display}\" was passed.");
+			throw new \InvalidArgumentException("The argument to displayPageLinks must be greater than 0. \"{$pages_to_display}\" was passed.");
 		}
 		return $this;
 	}
