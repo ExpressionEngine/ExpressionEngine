@@ -714,18 +714,24 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE exp_field_groups (
 			group_id int(4) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			group_name varchar(50) NOT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channel_field_groups_pivot (
+			channel_id int(4) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`)
 		)";
 
 		// Channel Custom Field Definitions
 
 		$Q[] = "CREATE TABLE exp_channel_fields (
 			field_id int(6) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_id int(4) unsigned NOT NULL,
+			site_id INT(4) UNSIGNED NULL DEFAULT 1,
+			group_id int(4) unsigned NULL,
 			field_name varchar(32) NOT NULL,
 			field_label varchar(50) NOT NULL,
 			field_instructions TEXT NULL,
@@ -749,6 +755,12 @@ class EE_Schema {
 			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channel_fields_pivot (
+			channel_id int(4) unsigned NOT NULL,
+			field_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_field_id` (`channel_id`, `field_id`)
 		)";
 
 		// Frontend Channel Form Settings
