@@ -29,10 +29,11 @@ class Channel extends StructureModel {
 
 	protected static $_relationships = array(
 		'FieldGroup' => array(
-			'type' => 'belongsTo',
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelFieldGroup',
-			'from_key' => 'field_group',
-			'to_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'channel_field_groups_pivot'
+			),
 			'weak' => TRUE,
 		),
 		'StatusGroup' => array(
@@ -42,10 +43,11 @@ class Channel extends StructureModel {
 			'weak' => TRUE
 		),
 		'CustomFields' => array(
-			'type' => 'hasMany',
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelField',
-			'from_key' => 'field_group',
-			'to_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'channel_fields_pivot'
+			),
 			'weak' => TRUE
 		),
 		'Entries' => array(
@@ -480,6 +482,21 @@ class Channel extends StructureModel {
 		}
 
 		return TRUE;
+	}
+
+	public function getCustomFields()
+	{
+		$fields = $this->CustomFields;
+
+		foreach ($this->FieldGroup as $field_group)
+		{
+			foreach($field_group->ChannelFields as $field)
+			{
+				$fields[] = $field;
+			}
+		}
+
+		return $fields;
 	}
 }
 

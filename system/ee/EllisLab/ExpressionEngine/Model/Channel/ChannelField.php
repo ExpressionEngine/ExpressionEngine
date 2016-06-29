@@ -53,9 +53,10 @@ class ChannelField extends FieldModel {
 			'type' => 'belongsTo'
 		),
 		'Channel' => array(
-			'type' => 'belongsTo',
-			'from_key' => 'group_id',
-			'to_key' => 'field_group',
+			'type' => 'hasAndBelongsToMany',
+			'pivot' => array(
+				'table' => 'channel_fields_pivot'
+			),
 			'weak' => TRUE
 		),
 	);
