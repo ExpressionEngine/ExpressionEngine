@@ -147,7 +147,7 @@ class Members extends CP_Controller {
 		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
 
 		$state = array(
-			'sort'	=> array($table->config['sort_col'] => $table->config['sort_dir']),
+			'sort'	=> array($table->sort_col => $table->sort_dir),
 			'offset' => ! empty($page) ? ($page - 1) * $table->config['limit'] : 0
 		);
 

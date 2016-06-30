@@ -5018,10 +5018,9 @@ class Forum_Core extends Forum {
 			ee()->session->cache['forum']['submission_error'] = $this->submission_error;
 
 			ee()->TMPL->run_template_engine();
-
-			return;
 		}
 	}
+
 	// ----------------------------------------------------------------------
 
 	/**
@@ -5798,7 +5797,11 @@ class Forum_Core extends Forum {
 			$spam = ee('Spam')->isSpam($text);
 		}
 
-		$this->display_errors();
+		if (ee()->input->post('preview') !== FALSE OR $this->submission_error != '')
+		{
+			return $this->display_errors();
+		}
+
 		$announcement = 'n';
 
 		if (ee()->input->get_post('announcement') == 'y')
@@ -6045,7 +6048,7 @@ class Forum_Core extends Forum {
 			ee('Spam')->moderate(__FILE__, 'Forum Post', 'moderate_post', NULL, $args, $text);
 
 			$this->submission_error = lang('spam');
-			$this->display_errors();
+			return $this->display_errors();
 		}
 
 		// Fetch/Set the "topic tracker" cookie
