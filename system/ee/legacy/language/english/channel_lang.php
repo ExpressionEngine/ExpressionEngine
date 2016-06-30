@@ -178,6 +178,8 @@ $lang = array(
 
 'custom_field_group' => 'Custom field group',
 
+'custom_field_groups' => 'Custom field groups',
+
 'custom_field_groups_not_found' => 'No <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',

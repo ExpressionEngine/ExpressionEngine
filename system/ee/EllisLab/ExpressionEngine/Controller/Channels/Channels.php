@@ -178,7 +178,7 @@ class Channels extends AbstractChannelsController {
 		}
 		else
 		{
-			$channel = ee('Model')->get('Channel')->filter('channel_id', (int) $channel_id)->first();
+			$channel = ee('Model')->get('Channel', (int) $channel_id)->first();
 
 			if ( ! $channel)
 			{
@@ -224,15 +224,19 @@ class Channels extends AbstractChannelsController {
 		}
 
 		// Field group options
-		$field_group_options[''] = lang('none');
-		$field_groups = ee('Model')->get('ChannelFieldGroup')
+		$field_group_options = ee('Model')->get('ChannelFieldGroup')
+			->fields('group_id', 'group_name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
-			->all();
-		foreach ($field_groups as $group)
-		{
-			$field_group_options[$group->group_id] = $group->group_name;
-		}
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$custom_field_options = ee('Model')->get('ChannelField')
+			->fields('field_id', 'field_label')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('field_label')
+			->all()
+			->getDictionary('field_id', 'field_label');
 
 		// Alert to show only for new channels
 		$alert = '';
@@ -325,17 +329,29 @@ class Channels extends AbstractChannelsController {
 				)
 			),
 			array(
-				'title' => 'custom_field_group',
+				'title' => 'custom_field_groups',
 				'fields' => array(
-					'field_group' => array(
-						'type' => 'select',
+					'field_groups' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
 						'choices' => $field_group_options,
-						'value' => $channel->field_group,
+						'value' => $channel->FieldGroups->pluck('group_id'),
 						'no_results' => array(
 							'text' => 'custom_field_groups_not_found',
 							'link_text' => 'create_new_field_group',
 							'link_href' => ee('CP/URL')->make('channels/groups/create')
 						)
+					)
+				)
+			),
+			array(
+				'title' => 'custom_fields',
+				'fields' => array(
+					'custom_fields' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $custom_field_options,
+						'value' => $channel->CustomFields->pluck('field_id'),
 					)
 				)
 			),
@@ -480,13 +496,13 @@ class Channels extends AbstractChannelsController {
 
 		$channel->set($_POST);
 
+		$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
+		$channel->CustomFields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))->all();
+
 		// Make sure these are the correct NULL value if they are not set.
 		$channel->status_group = ($channel->status_group !== FALSE
 			&& $channel->status_group != '')
 			? $channel->status_group : NULL;
-		$channel->field_group = ($channel->field_group !== FALSE &&
-			$channel->field_group != '')
-			? $channel->field_group : NULL;
 
 		if ($channel->max_entries == '')
 		{
@@ -501,20 +517,6 @@ class Channels extends AbstractChannelsController {
 			$channel->channel_url = ee()->functions->fetch_site_index();
 			$channel->channel_lang = ee()->config->item('xml_lang');
 			$channel->site_id = ee()->config->item('site_id');
-
-			// Assign field group if there is only one
-			if ($dupe_id != ''
-				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
-			{
-				$field_groups = ee('Model')->get('ChannelFieldGroup')
-					->filter('site_id', $channel->site_id)
-					->all();
-
-				if (count($field_groups) === 1)
-				{
-					$channel->field_group = $field_groups[0]->group_id;
-				}
-			}
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
@@ -639,9 +641,7 @@ class Channels extends AbstractChannelsController {
 			}
 		}
 
-		$channel_fields = ee('Model')->get('ChannelField')
-			->filter('ChannelField.group_id', $channel->field_group)
-			->all();
+		$channel_fields = $channel->getCustomFields();
 
 		$search_excerpt_options = array();
 
