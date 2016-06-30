@@ -135,83 +135,7 @@ class EE_Extensions {
 		{
 			foreach ($calls as $class => $metadata)
 			{
-				// Determine Path of Extension
-				$class_name = ucfirst($class);
-				$name = ee()->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
-
-				$path = ee()->addons->_packages[$name]['extension']['path'];
-				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
-
-				// Check to see if we need to automatically load the path
-				$automatically_load_path = (array_search($path, ee()->load->get_package_paths()) === FALSE);
-
-				if ($automatically_load_path)
-				{
-					if ( ! file_exists($extension_path))
-					{
-						$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
-						return ee()->output->fatal_error($error);
-					}
-
-					ee()->load->add_package_path($path, FALSE);
-				}
-
-				// Include File
-				if ( ! class_exists($class_name))
-				{
-					require $extension_path;
-				}
-
-				// A Bit of Meta
-				$method	= $metadata['0'];
-
-				// Unserializing and serializing is relatively slow, so we
-				// cache the settings just in case multiple hooks are calling the
-				// same extension multiple times during a single page load.
-				// Thus, speeding it all up a bit.
-				if (isset($this->s_cache[$class_name]))
-				{
-					$settings = $this->s_cache[$class_name];
-				}
-				else
-				{
-					$settings = ($metadata['1'] == '') ? '' : strip_slashes(unserialize($metadata['1']));
-					$this->s_cache[$class_name] = $settings;
-				}
-
-				$version = $metadata['2'];
-
-
-				//  Call the class(s)
-				//  Each method could easily have its own settings,
-				//  so we have to send the settings each time
-				$obj = new $class_name($settings);
-
-				// Update Extension First?
-				if (version_compare($obj->version, $this->version_numbers[$class_name], '>') && method_exists($obj, 'update_extension') === TRUE)
-				{
-					$update = call_user_func(array($obj, 'update_extension'), $this->version_numbers[$class_name]);
-
-					$this->version_numbers[$class_name] = $obj->version;  // reset master
-				}
-
-				//  Call Method and Store Returned Data
-				//  We put this in a class variable so that any extensions
-				//  called after this one can retrieve the returned data from
-				//  previous methods and view/maniuplate that returned data
-				//  opposed to any original arguments the hook sent. In theory...
-				if (isset(ee()->TMPL) && is_object(ee()->TMPL) && method_exists(ee()->TMPL, 'log_item'))
-				{
-					ee()->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
-				}
-
-
-				$this->last_call = call_user_func_array(array($obj, $method), $args);
-
-				if ($automatically_load_path)
-				{
-					ee()->load->remove_package_path($path);
-				}
+				$this->call_class($class, $which, $metadata, $args);
 
 				// A ee()->extensions->end_script value of TRUE means that the
 				// called method wishes us to stop the calling of the main
@@ -235,6 +159,93 @@ class EE_Extensions {
 
 		$this->in_progress = '';
 		return $this->last_call;
+	}
+
+	/**
+	 * Call an extension on a single item in the extensions array
+	 */
+	public function call_class($class, $which, $metadata, $args = array())
+	{
+		ee()->load->library('addons');
+		ee()->addons->is_package('');
+
+		// Determine Path of Extension
+		$class_name = ucfirst($class);
+		$name = ee()->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
+
+		$path = ee()->addons->_packages[$name]['extension']['path'];
+		$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
+
+		// Check to see if we need to automatically load the path
+		$automatically_load_path = (array_search($path, ee()->load->get_package_paths()) === FALSE);
+
+		if ($automatically_load_path)
+		{
+			if ( ! file_exists($extension_path))
+			{
+				$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
+				return ee()->output->fatal_error($error);
+			}
+
+			ee()->load->add_package_path($path, FALSE);
+		}
+
+		// Include File
+		if ( ! class_exists($class_name))
+		{
+			require $extension_path;
+		}
+
+		// A Bit of Meta
+		$method	= $metadata['0'];
+
+		// Unserializing and serializing is relatively slow, so we
+		// cache the settings just in case multiple hooks are calling the
+		// same extension multiple times during a single page load.
+		// Thus, speeding it all up a bit.
+		if (isset($this->s_cache[$class_name]))
+		{
+			$settings = $this->s_cache[$class_name];
+		}
+		else
+		{
+			$settings = ($metadata['1'] == '') ? '' : strip_slashes(unserialize($metadata['1']));
+			$this->s_cache[$class_name] = $settings;
+		}
+
+		$version = $metadata['2'];
+
+
+		//  Call the class(s)
+		//  Each method could easily have its own settings,
+		//  so we have to send the settings each time
+		$obj = new $class_name($settings);
+
+		// Update Extension First?
+		if (version_compare($obj->version, $this->version_numbers[$class_name], '>') && method_exists($obj, 'update_extension') === TRUE)
+		{
+			$update = call_user_func(array($obj, 'update_extension'), $this->version_numbers[$class_name]);
+
+			$this->version_numbers[$class_name] = $obj->version;  // reset master
+		}
+
+		//  Call Method and Store Returned Data
+		//  We put this in a class variable so that any extensions
+		//  called after this one can retrieve the returned data from
+		//  previous methods and view/maniuplate that returned data
+		//  opposed to any original arguments the hook sent. In theory...
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL) && method_exists(ee()->TMPL, 'log_item'))
+		{
+			ee()->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
+		}
+
+
+		$this->last_call = call_user_func_array(array($obj, $method), $args);
+
+		if ($automatically_load_path)
+		{
+			ee()->load->remove_package_path($path);
+		}
 	}
 
 	// --------------------------------------------------------------------
