@@ -50,7 +50,11 @@ class ChannelField extends FieldModel {
 
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
-			'type' => 'belongsTo'
+			'type' => 'hasAndBelongsToMany',
+			'pivot' => array(
+				'table' => 'channel_field_groups_fields'
+			),
+			'weak' => TRUE
 		),
 		'Channel' => array(
 			'type' => 'hasAndBelongsToMany',

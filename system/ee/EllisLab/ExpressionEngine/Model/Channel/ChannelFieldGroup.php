@@ -21,8 +21,12 @@ class ChannelFieldGroup extends Model {
 			),
 		),
 		'ChannelFields' => array(
-			'type' => 'hasMany',
-			'model' => 'ChannelField'
+			'weak' => TRUE,
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelField',
+			'pivot' => array(
+				'table' => 'channel_field_groups_fields'
+			)
 		)
 	);
 
