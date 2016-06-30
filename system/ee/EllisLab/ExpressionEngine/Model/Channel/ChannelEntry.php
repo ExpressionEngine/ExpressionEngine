@@ -902,7 +902,7 @@ class ChannelEntry extends ContentModel {
 
 		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_group', $this->Channel->field_group)
+			// ->filter('field_group', $this->Channel->field_group)
 			->fields('channel_id', 'channel_title')
 			->all()
 			->getDictionary('channel_id', 'channel_title');

@@ -143,7 +143,6 @@ class Channel extends StructureModel {
 	protected $cat_group;
 	protected $status_group;
 	protected $deft_status;
-	protected $field_group;
 	protected $search_excerpt;
 	protected $deft_category;
 	protected $deft_comments;

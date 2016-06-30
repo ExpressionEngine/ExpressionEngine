@@ -67,7 +67,6 @@ class ChannelField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-//		'group_id'             => 'required|integer',
 		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved',
 		'field_label'          => 'required',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
@@ -92,7 +91,6 @@ class ChannelField extends FieldModel {
 
 	protected $field_id;
 	protected $site_id;
-	protected $group_id;
 	protected $field_name;
 	protected $field_label;
 	protected $field_instructions;
