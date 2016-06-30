@@ -370,6 +370,10 @@ return array(
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
 
+			// ..\Menu
+			'MenuSet' => 'Model\Menu\MenuSet',
+			'MenuItem' => 'Model\Menu\MenuItem',
+
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',
 
