@@ -763,6 +763,12 @@ class EE_Schema {
 			PRIMARY KEY `channel_id_field_id` (`channel_id`, `field_id`)
 		)";
 
+		$Q[] = "CREATE TABLE channel_field_groups_fields (
+			field_id int(6) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `field_id_group_id` (`field_id`, `group_id`)
+		)";
+
 		// Frontend Channel Form Settings
 
 		$Q[] = "CREATE TABLE `exp_channel_form_settings` (

@@ -50,6 +50,7 @@ class Updater {
 
 	private function emancipate_the_fields()
 	{
+		// Fields can span Sites and do not need Groups
 		ee()->smartforge->modify_column('channel_fields', array(
 			'site_id' => array(
 				'type'     => 'int',
@@ -63,6 +64,7 @@ class Updater {
 			),
 		));
 
+		// Field groups can span Sites
 		ee()->smartforge->modify_column('field_groups', array(
 			'site_id' => array(
 				'type'     => 'int',
@@ -71,6 +73,7 @@ class Updater {
 			),
 		));
 
+		// Add the Many-to-Many tables
 		ee()->dbforge->add_field(
 			array(
 				'channel_id' => array(
@@ -87,6 +90,7 @@ class Updater {
 				)
 			)
 		);
+		ee()->dbforge->add_key(array('channel_id', 'group_id'), TRUE);
 		ee()->smartforge->create_table('channel_field_groups_pivot');
 
 		ee()->dbforge->add_field(
@@ -105,22 +109,66 @@ class Updater {
 				)
 			)
 		);
+		ee()->dbforge->add_key(array('channel_id', 'field_id'), TRUE);
 		ee()->smartforge->create_table('channel_fields_pivot');
 
-		$channels = ee()->db->select('channel_id, field_group')
-			->where('field_group IS NOT NULL')
-			->get('channels')
-			->result();
+		ee()->dbforge->add_field(
+			array(
+				'field_id' => array(
+					'type'       => 'int',
+					'constraint' => 6,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'group_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('field_id', 'group_id'), TRUE);
+		ee()->smartforge->create_table('channel_field_groups_fields');
 
-		foreach ($channels as $channel)
+		// Convert the one-to-one channel to field group assignment to the
+		// many-to-many structure
+		if (ee()->db->field_exists('field_group', 'channels'))
 		{
-			ee()->db->insert('channel_field_groups_pivot', array(
-				'channel_id' => $channel->channel_id,
-				'group_id' => $channel->field_group
-			));
+			$channels = ee()->db->select('channel_id, field_group')
+				->where('field_group IS NOT NULL')
+				->get('channels')
+				->result();
+
+			foreach ($channels as $channel)
+			{
+				ee()->db->insert('channel_field_groups_pivot', array(
+					'channel_id' => $channel->channel_id,
+					'group_id' => $channel->field_group
+				));
+			}
+
+			ee()->smartforge->drop_column('channels', 'field_group');
 		}
 
-		ee()->smartforge->drop_column('channels', 'field_group');
+		// Convert the one-to-one field to field group assignment to the
+		// many-to-many structure
+		if (ee()->db->field_exists('group_id', 'channel_fields'))
+		{
+			$fields = ee()->db->select('field_id, group_id')
+				->get('channel_fields')
+				->result();
+
+			foreach ($fields as $field)
+			{
+				ee()->db->insert('channel_field_groups_fields', array(
+					'field_id' => $field->field_id,
+					'group_id' => $field->group_id
+				));
+			}
+
+			ee()->smartforge->drop_column('channel_fields', 'group_id');
+		}
 	}
 
 }
