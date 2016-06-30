@@ -720,7 +720,7 @@ class EE_Schema {
 			KEY `site_id` (`site_id`)
 		)";
 
-		$Q[] = "CREATE TABLE exp_channel_field_groups_pivot (
+		$Q[] = "CREATE TABLE exp_channels_channel_field_groups (
 			channel_id int(4) unsigned NOT NULL,
 			group_id int(4) unsigned NOT NULL,
 			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`)
@@ -757,7 +757,7 @@ class EE_Schema {
 			KEY `site_id` (`site_id`)
 		)";
 
-		$Q[] = "CREATE TABLE exp_channel_fields_pivot (
+		$Q[] = "CREATE TABLE exp_channels_channel_fields (
 			channel_id int(4) unsigned NOT NULL,
 			field_id int(6) unsigned NOT NULL,
 			PRIMARY KEY `channel_id_field_id` (`channel_id`, `field_id`)

@@ -55,7 +55,7 @@ class ChannelField extends FieldModel {
 		'Channel' => array(
 			'type' => 'hasAndBelongsToMany',
 			'pivot' => array(
-				'table' => 'channel_fields_pivot'
+				'table' => 'channels_channel_fields'
 			),
 			'weak' => TRUE
 		),

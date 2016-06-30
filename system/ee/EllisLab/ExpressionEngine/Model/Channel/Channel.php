@@ -32,7 +32,7 @@ class Channel extends StructureModel {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelFieldGroup',
 			'pivot' => array(
-				'table' => 'channel_field_groups_pivot'
+				'table' => 'channels_channel_field_groups'
 			),
 			'weak' => TRUE,
 		),
@@ -46,7 +46,7 @@ class Channel extends StructureModel {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelField',
 			'pivot' => array(
-				'table' => 'channel_fields_pivot'
+				'table' => 'channels_channel_fields'
 			),
 			'weak' => TRUE
 		),

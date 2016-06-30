@@ -17,7 +17,7 @@ class ChannelFieldGroup extends Model {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Channel',
 			'pivot' => array(
-				'table' => 'channel_field_groups_pivot'
+				'table' => 'channels_channel_field_groups'
 			),
 		),
 		'ChannelFields' => array(

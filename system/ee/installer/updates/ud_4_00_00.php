@@ -91,7 +91,7 @@ class Updater {
 			)
 		);
 		ee()->dbforge->add_key(array('channel_id', 'group_id'), TRUE);
-		ee()->smartforge->create_table('channel_field_groups_pivot');
+		ee()->smartforge->create_table('channels_channel_field_groups');
 
 		ee()->dbforge->add_field(
 			array(
@@ -110,7 +110,7 @@ class Updater {
 			)
 		);
 		ee()->dbforge->add_key(array('channel_id', 'field_id'), TRUE);
-		ee()->smartforge->create_table('channel_fields_pivot');
+		ee()->smartforge->create_table('channels_channel_fields');
 
 		ee()->dbforge->add_field(
 			array(
@@ -142,7 +142,7 @@ class Updater {
 
 			foreach ($channels as $channel)
 			{
-				ee()->db->insert('channel_field_groups_pivot', array(
+				ee()->db->insert('channels_channel_field_groups', array(
 					'channel_id' => $channel->channel_id,
 					'group_id' => $channel->field_group
 				));
