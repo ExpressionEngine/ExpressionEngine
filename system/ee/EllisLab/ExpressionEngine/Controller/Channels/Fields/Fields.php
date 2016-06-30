@@ -70,7 +70,7 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$fields = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0))
 			->filter('field_id', 'IN', $group->ChannelFields->pluck('field_id'));
 
 		$table = $this->buildTableFromChannelFieldsQuery($fields, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
@@ -114,7 +114,7 @@ class Fields extends AbstractChannelsController {
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost(
-				ee('Model')->make('ChannelField', compact($group_id))
+				ee('Model')->make('ChannelField')
 			);
 			$result = $field->validate();
 
@@ -158,7 +158,6 @@ class Fields extends AbstractChannelsController {
 			'save_btn_text_working' => 'btn_saving',
 			'form_hidden' => array(
 				'field_id' => NULL,
-			'group_id' => $group_id,
 				'site_id' => ee()->config->item('site_id')
 			),
 		);
@@ -184,7 +183,6 @@ class Fields extends AbstractChannelsController {
 		}
 
 		$field = ee('Model')->get('ChannelField', $id)
-			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $field)
@@ -194,7 +192,6 @@ class Fields extends AbstractChannelsController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -228,7 +225,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/' . $field->group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
 			}
 			else
 			{
@@ -251,7 +248,6 @@ class Fields extends AbstractChannelsController {
 			'save_btn_text_working' => 'btn_saving',
 			'form_hidden' => array(
 				'field_id' => $id,
-				'group_id' => $field->group_id,
 				'site_id' => ee()->config->item('site_id')
 			),
 		);
@@ -264,7 +260,6 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
-		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 
@@ -375,6 +370,23 @@ class Fields extends AbstractChannelsController {
 				),
 			),
 		);
+
+		if (ee()->config->item('multiple_sites_enabled') == 'y')
+		{
+			$sections[0][] = array(
+				'title' => 'enable_on_all_sites',
+				'desc' => 'enable_on_all_sites_desc',
+				'fields' => array(
+					'site_id' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'0' => 'enable',
+							ee()->config->item('site_id') => 'disable'
+						)
+					)
+				)
+			);
+		}
 
 		$field_options = $field->getSettingsForm();
 		if (is_array($field_options) && ! empty($field_options))
