@@ -28,7 +28,7 @@ class Channel extends StructureModel {
 	);
 
 	protected static $_relationships = array(
-		'FieldGroup' => array(
+		'FieldGroups' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelFieldGroup',
 			'pivot' => array(
@@ -487,7 +487,7 @@ class Channel extends StructureModel {
 	{
 		$fields = $this->CustomFields;
 
-		foreach ($this->FieldGroup as $field_group)
+		foreach ($this->FieldGroups as $field_group)
 		{
 			foreach($field_group->ChannelFields as $field)
 			{

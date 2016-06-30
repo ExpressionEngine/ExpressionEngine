@@ -99,9 +99,9 @@ class Export {
 			$result->status_group = $group->name;
 		}
 
-		if ($channel->FieldGroup)
+		if ($channel->FieldGroups)
 		{
-			$result->field_group = $this->exportFieldGroup($channel->FieldGroup);
+			$result->field_group = $this->exportFieldGroup($channel->FieldGroups);
 		}
 
 		if ($channel->CategoryGroups)

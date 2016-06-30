@@ -298,7 +298,7 @@ class Set {
 
 			if (isset($channel_data->field_group))
 			{
-				$channel->FieldGroup = $this->field_groups[$channel_data->field_group];
+				$channel->FieldGroups = $this->field_groups[$channel_data->field_group];
 			}
 
 			if (isset($channel_data->status_group))
