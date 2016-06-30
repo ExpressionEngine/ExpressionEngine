@@ -204,7 +204,7 @@ class Channels extends AbstractChannelsController {
 		// Category group options
 		$cat_group_options = array();
 		$category_groups = ee('Model')->get('CategoryGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0))
 			->order('group_name')
 			->all();
 		foreach ($category_groups as $group)
@@ -215,7 +215,7 @@ class Channels extends AbstractChannelsController {
 		// Status group options
 		$status_group_options[''] = lang('none');
 		$status_groups = ee('Model')->get('StatusGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0))
 			->order('group_name')
 			->all();
 		foreach ($status_groups as $group)
