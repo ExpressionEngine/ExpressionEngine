@@ -59,7 +59,7 @@ class Groups extends AbstractChannelsController {
 		}
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0));
 
 		$vars = array(
 			'create_url' => ee('CP/URL')->make('channels/fields/groups/create')
@@ -214,7 +214,7 @@ class Groups extends AbstractChannelsController {
 
 	private function setWithPost(ChannelFieldGroup $field_group)
 	{
-		$field_group->group_name = ee()->input->post('group_name');
+		$field_group->set($_POST);
 		return $field_group;
 	}
 
@@ -240,6 +240,23 @@ class Groups extends AbstractChannelsController {
 				)
 			)
 		);
+
+		if (ee()->config->item('multiple_sites_enabled') == 'y')
+		{
+			$sections[0][] = array(
+				'title' => 'enable_on_all_sites',
+				'desc' => 'enable_on_all_sites_desc',
+				'fields' => array(
+					'site_id' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'0' => 'enable',
+							ee()->config->item('site_id') => 'disable'
+						)
+					)
+				)
+			);
+		}
 
 		return $sections;
 	}
