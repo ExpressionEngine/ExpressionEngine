@@ -30,6 +30,8 @@ $lang = array(
 
 'word_censoring' => 'Word Censoring',
 
+'menu_manager' => 'Menu Manager',
+
 'members' => 'Members',
 
 'messages' => 'Messages',
@@ -520,6 +522,45 @@ $lang = array(
 'mbr_notification_emails' => 'Notification recipients',
 
 'mbr_notification_emails_desc' => 'Separate multiple Emails with a comma.',
+
+/**
+ * Menu Manager
+ */
+
+'menu_sets' => 'Menu Sets',
+'menu_set' => 'Menu Set',
+'edit_menu_set' => 'Edit Menu Set',
+'create_menu_set' => 'Create Menu Set',
+'menu_set_updated' => 'Menu Set Updated',
+'menu_set_created' => 'Menu Set Created',
+'menu_set_created_desc' => 'The menu set <b>%s</b> has been updated.',
+'menu_set_updated_desc' => 'The menu set <b>%s</b> has been updated.',
+'menu_sets_removed' => 'Menu Sets removed',
+'menu_sets_removed_desc' => '%d menu sets were removed.',
+'no_menu_items' => 'No menu items',
+'create_menu_item' => 'Create Menu Item',
+'set_name' => 'Name',
+'set_assigned' => 'Assigned',
+'assigned_to' => 'assigned to',
+'set_member_groups' => 'Member group(s)?',
+'set_member_groups_desc' => 'Choose the member group(s) to apply this menu to.',
+'menu_options' => 'Menu Options',
+'menu_items' => 'Menu Items',
+'menu_items_desc' => 'Manage this menu sets contents',
+'menu_type' => 'Type',
+'menu_addon' => 'Add-On',
+'menu_single' => 'Single Link',
+'menu_dropdown' => 'Dropdown',
+'submenu' => 'Submenu',
+'submenu_desc' => 'Links in dropdown',
+'menu_label' => 'Name',
+'menu_label_desc' => 'Link label',
+'menu_url' => '<abbr title="Uniform Resource Locator">URL</abbr>',
+'menu_url_desc' => 'Link <abbr title="Uniform Resource Locator">URL</abbr>',
+'menu_addon' => 'Add-On',
+'menu_addon_desc' => 'Navigation from installed Add-Ons',
+'edit_menu_item' => 'Edit Menu Item',
+'add_menu_item' => 'Add Menu Item',
 
 /**
  * Messages
