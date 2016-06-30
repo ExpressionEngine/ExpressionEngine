@@ -137,7 +137,7 @@ class EE_Menu {
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode()));
+					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id);
 				}
 			}
 		}

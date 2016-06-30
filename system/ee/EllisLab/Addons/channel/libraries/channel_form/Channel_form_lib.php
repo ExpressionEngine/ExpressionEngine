@@ -1562,6 +1562,18 @@ GRID_FALLBACK;
 						$_POST[$field] = ee()->localize->human_time();
 					}
 				}
+				// Prevent a DateTime object from going into POST
+				elseif ($field == 'recent_comment_date')
+				{
+					if ($this->entry($field) && $this->entry($field)->getTimestamp() !== 1)
+					{
+						$_POST[$field] = $this->entry($field)->getTimestamp();
+					}
+					else
+					{
+						$_POST[$field] = 0;
+					}
+				}
 				elseif ($field == 'versioning_enabled' AND $this->channel('enable_versioning') == 'y')
 				{
 					$_POST[$field] = 'y';

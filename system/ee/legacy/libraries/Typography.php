@@ -2179,12 +2179,21 @@ while (--j >= 0)
 			return $str;
 		}
 
+		static $pre;
+		static $post;
+
+		if ( ! isset($pre))
+		{
+			$pre  = (string) ee()->config->item('code_block_pre');
+			$post = (string) ee()->config->item('code_block_post');
+		}
+
 		return preg_replace_callback(
 			"/(\<pre\>\<code.*?\>)(.*?)(\<\/code\>\<\/pre\>)/is",
-			function ($matches) {
+			function ($matches) use ($pre, $post) {
 				$code = $matches[2];
 				$code = ee()->functions->encode_ee_tags($code, TRUE);
-				return $matches[1].$this->encode_tags($code).$matches[3];
+				return $pre.$matches[1].$this->encode_tags($code).$matches[3].$post;
 			},
 			$str
 		);
