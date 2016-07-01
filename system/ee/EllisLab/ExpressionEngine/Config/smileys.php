@@ -12,7 +12,8 @@
 |
 */
 
-$smileys = array(
+// $smileys =
+return array(
 
 //	smiley			image name						width	height	alt
 

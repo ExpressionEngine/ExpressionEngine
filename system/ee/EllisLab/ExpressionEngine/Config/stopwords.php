@@ -26,7 +26,8 @@
  * @link		https://ellislab.com
  */
 
-$ignore = array(
+// $ignore =
+return array(
 	'a',
 	'about',
 	'an',

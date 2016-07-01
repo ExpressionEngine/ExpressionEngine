@@ -78,13 +78,7 @@ class Ip_to_nation {
 	{
 		if ( ! isset(ee()->session->cache['ip_to_nation']['countries']))
 		{
-			if ( ! include_once(APPPATH.'config/countries.php'))
-			{
-				ee()->TMPL->log_item("IP to Nation Module Error: Countries library file not found");
-				return 'Unknown';
-			}
-
-			ee()->session->cache['ip_to_nation']['countries'] = $countries;
+			ee()->session->cache['ip_to_nation']['countries'] = ee()->config->loadFile('countries');
 		}
 
 		if ( ! isset(ee()->session->cache['ip_to_nation']['countries'][$which]))

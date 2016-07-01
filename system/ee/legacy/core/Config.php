@@ -48,7 +48,7 @@ class EE_Config {
 	{
 		$this->config =& get_config();
 
-		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
+		$this->_config_paths = array(SYSPATH.'user/');
 		$this->config_path = SYSPATH.'user/config/config.php';
 
 		$this->defaults = default_config_items();
@@ -188,7 +188,7 @@ class EE_Config {
 		$file = ($file == '') ? 'config' : str_replace('.php', '', $file);
 		$loaded = FALSE;
 
-		foreach($this->_config_paths as $path)
+		foreach ($this->_config_paths as $path)
 		{
 			$file_path = $path.'config/'.$file.'.php';
 
@@ -247,6 +247,28 @@ class EE_Config {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Load a single config file
+	 */
+	public function loadFile($file)
+	{
+		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
+		$userpath = SYSPATH.'user/config/'.$file.'.php';
+		$out = array();
+
+		if (file_exists($syspath))
+		{
+			$out = include $syspath;
+		}
+		if (file_exists($userpath))
+		{
+			$userout = include $userpath;
+			$out = array_replace_recursive($out, $userout);
+		}
+
+		return $out;
 	}
 
 	// --------------------------------------------------------------------

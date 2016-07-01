@@ -22,7 +22,9 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-$countries = array(
+
+// $countries =
+return array(
 					'af' => 'Afghanistan',
 					'ax' => 'Aland Islands',
 					'al' => 'Albania',

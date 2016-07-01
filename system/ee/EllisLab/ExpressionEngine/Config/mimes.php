@@ -28,7 +28,8 @@
  * @link		https://ellislab.com
  */
 
-$whitelist = array(
+// $whitelist =
+return array(
 	'application/csv', // .csv
 	'application/epub+zip', // .epub
 	'application/excel', // .csv, .xl, .xls

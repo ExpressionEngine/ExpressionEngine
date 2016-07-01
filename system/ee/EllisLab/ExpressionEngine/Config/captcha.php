@@ -22,7 +22,9 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-$words = array(
+
+// $words =
+return array(
 				'able',
 				'about',
 				'above',

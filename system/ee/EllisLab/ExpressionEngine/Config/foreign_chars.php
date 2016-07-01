@@ -7,7 +7,9 @@
 | conversion used by the Text helper
 |
 */
-$foreign_characters = array(
+
+// $foreign_chars = 
+return array(
 	'223'	=>	"ss", // ß
 	'224'	=>  "a",
 	'225'	=>  "a",

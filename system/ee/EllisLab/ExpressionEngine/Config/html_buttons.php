@@ -23,9 +23,13 @@
  * @link		https://ellislab.com
  */
 
-$installation_defaults = array('bold', 'italic', 'blockquote', 'anchor', 'picture');
 
-$predefined_buttons = array(
+// $installation_defaults
+// $predefined_buttons
+
+return array(
+	'defaults' => array('bold', 'italic', 'blockquote', 'anchor', 'picture'),
+	'buttons' => array(
 							'bold' 		=> array(
 												'tag_name'  => lang('html_btn_bold'),
 												'tag_open'  => '<strong>',
@@ -89,6 +93,7 @@ $predefined_buttons = array(
 												'accesskey' => '',
 												'classname'	 => 'html-upload'
 												),
-							);
+							)
+);
 
 // EOF

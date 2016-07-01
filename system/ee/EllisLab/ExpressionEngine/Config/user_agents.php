@@ -10,7 +10,8 @@
 |
 */
 
-$platforms = array (
+return array(
+	'platforms' => array (
 					'windows nt 6.1' 	=> 'Windows 7',
     				'windows nt 6.0' 	=> 'Windows Vista',
 					'windows nt 5.2'	=> 'Windows 2003',
@@ -43,12 +44,12 @@ $platforms = array (
 					'openbsd'			=> 'OpenBSD',
 					'gnu'				=> 'GNU/Linux',
 					'unix'				=> 'Unknown Unix OS'
-				);
+				),
 
 
 // The order of this array should NOT be changed. Many browsers return
 // multiple browser types so we want to identify the sub-type first.
-$browsers = array(
+	'browsers' => array(
 					'Flock'				=> 'Flock',
 					'OPR'				=> 'Opera',
 					'Chrome'			=> 'Chrome',
@@ -72,9 +73,9 @@ $browsers = array(
 					'hotjava'			=> 'HotJava',
 					'amaya'				=> 'Amaya',
 					'IBrowse'			=> 'IBrowse'
-				);
+				),
 
-$mobiles = array(
+	'mobiles' => array(
 					// legacy array, old values commented out
 					'mobileexplorer'	=> 'Mobile Explorer',
 //					'openwave'			=> 'Open Wave',
@@ -161,10 +162,10 @@ $mobiles = array(
 					'up.browser'			=> "Generic Mobile",
 					'smartphone'			=> "Generic Mobile",
 					'cellphone'				=> "Generic Mobile"
-				);
+				),
 
 // There are hundreds of bots but these are the most common.
-$robots = array(
+	'robots' => array(
 					'googlebot'			=> 'Googlebot',
 					'msnbot'			=> 'MSNBot',
 					'slurp'				=> 'Inktomi Slurp',
@@ -173,6 +174,7 @@ $robots = array(
 					'fastcrawler'		=> 'FastCrawler',
 					'infoseek'			=> 'InfoSeek Robot 1.0',
 					'lycos'				=> 'Lycos'
-				);
+				)
+);
 
 // EOF

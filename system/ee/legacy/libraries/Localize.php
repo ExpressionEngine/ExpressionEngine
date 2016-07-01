@@ -557,17 +557,7 @@ EOF;
 			return $this->_countries;
 		}
 
-		$countries_path = APPPATH.'config/countries.php';
-
-		if ( ! file_exists($countries_path))
-		{
-			$countries_path = EE_APPPATH.'config/countries.php';
-		}
-
-		if ( ! include($countries_path))
-		{
-			show_error(lang('countryfile_missing'));
-		}
+		$countries = ee()->config->loadFile('countries');
 
 		if ($return_timezones)
 		{

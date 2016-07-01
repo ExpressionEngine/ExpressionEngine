@@ -22,7 +22,8 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-$languages = array(
+// $languages =
+return array(
 					'Afar'				=>	'aa',
 					'Abkhazian'			=>	'ab',
 					'Afrikaans'			=>	'af',
