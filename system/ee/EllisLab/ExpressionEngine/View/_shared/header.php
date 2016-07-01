@@ -85,10 +85,10 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<?php if (ee()->cp->allowed_group('can_create_channels')): ?>
-								<li><a class="nav-add" href="<?=ee('CP/URL', 'channels/create')?>"><i class="icon-add"></i><?=lang('new_channel')?></a></li>
-								<?php endif; ?>
 							</ul>
+							<?php if (ee()->cp->allowed_group('can_create_channels')): ?>
+							<a class="nav-add" href="<?=ee('CP/URL', 'channels/create')?>"><i class="icon-add"></i><?=lang('new_channel')?></a>
+							<?php endif; ?>
 						</div>
 					</div>
 					<?php endif; ?>
@@ -99,10 +99,11 @@
 							<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
 								<form class="nav-filter">
 									<input type="text" class="autofocus" value="" placeholder="<?=lang('filter_channels')?>">
+									<hr>
+									<a class="reset" href="<?=ee('CP/URL', 'publish/edit')?>"><b><?= lang('view_all') ?></b></a>
 								</form>
 							<?php endif ?>
 							<ul>
-								<li><a class="reset" href="<?=ee('CP/URL', 'publish/edit')?>"><b><?= lang('view_all') ?></b></a></li>
 								<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
@@ -137,33 +138,34 @@
 			</nav>
 		<?php $custom = $cp_main_menu['custom']; ?>
 		<?php if ($custom && $custom->hasItems()): ?>
-			<nav class="nav-custom">
-				<hr>
-				<?php foreach ($custom->getItems() as $item): ?>
-					<?php if ($item->isSubmenu()) :?>
-						<div class="nav-item-sub">
-							<a class="nav-has-sub" href=""><?=lang($item->title)?></a>
-							<div class="nav-sub-menu">
-								<?php if ($item->hasFilter()): ?>
-								<form class="nav-filter">
-									<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
-								</form>
-								<?php endif; ?>
-								<ul>
-									<?php foreach ($item->getItems() as $sub): ?>
-									<li><a href="<?=$sub->url?>"><?=lang($sub->title)?></a></li>
-									<?php endforeach; ?>
-									<?php if ($item->hasAddLink()): ?>
-									<li><a class="nav-add" href="<?=$item->addlink->url?>"><i class="icon-add"></i><?=lang($item->addlink->title)?></a></li>
+			<div class="nav-custom-wrap">
+				<nav class="nav-custom">
+					<?php foreach ($custom->getItems() as $item): ?>
+						<?php if ($item->isSubmenu()) :?>
+							<div class="nav-item-sub">
+								<a class="nav-has-sub" href=""><?=lang($item->title)?></a>
+								<div class="nav-sub-menu">
+									<?php if ($item->hasFilter()): ?>
+									<form class="nav-filter">
+										<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
+									</form>
 									<?php endif; ?>
-								</ul>
+									<ul>
+										<?php foreach ($item->getItems() as $sub): ?>
+										<li><a href="<?=$sub->url?>"><?=lang($sub->title)?></a></li>
+										<?php endforeach; ?>
+									</ul>
+									<?php if ($item->hasAddLink()): ?>
+									<a class="nav-add" href="<?=$item->addlink->url?>"><i class="icon-add"></i><?=lang($item->addlink->title)?></a>
+									<?php endif; ?>
+								</div>
 							</div>
-						</div>
-					<?php else: ?>
-						<a class="nav-item" href="<?=$item->url?>"><?=lang($item->title)?></a>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			</nav>
+						<?php else: ?>
+							<a class="nav-item" href="<?=$item->url?>"><?=lang($item->title)?></a>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</nav>
+			</div>
 		<?php endif; ?>
 
 		</div>

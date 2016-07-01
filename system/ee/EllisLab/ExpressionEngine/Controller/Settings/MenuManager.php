@@ -110,7 +110,7 @@ class MenuManager extends Settings {
 				)
 			);
 
-			if ($set->name == 'Default')
+			if ($set->getId() == 1)
 			{
 				$checkbox['disabled'] = "disabled";
 			}
@@ -191,17 +191,16 @@ class MenuManager extends Settings {
 			$assigned = ee('Request')->post('member_groups');
 			$set->MemberGroups = ee('Model')->get('MemberGroup', (array) $assigned)->all();
 
-			$kids = $set->Items;
-			$sort = (array) ee('Request')->post('sort');
+			$sort = (array) ee('Request')->post('sort', array());
+			$kids = ee('Model')->get('MenuItem', $sort)->all();
 
-			if (count($kids) && count($sort))
+			if (count($sort))
 			{
-				$kids = $kids->indexBy('item_id');
+				$sort = array_flip($sort);
 
-				foreach ($sort as $k => $i)
+				foreach ($kids as $kid)
 				{
-					$kid = $kids[$i];
-					$kid->sort = $k;
+					$kid->sort = $sort[$kid->getId()];
 				}
 			}
 
@@ -215,6 +214,7 @@ class MenuManager extends Settings {
 			if ($result->isValid())
 			{
 				$set->save();
+				$kids->save();
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -320,6 +320,11 @@ class MenuManager extends Settings {
 
 	private function reorderList(MenuSet $set, $html_only = FALSE)
 	{
+		// annoying model issue where partial sets are not fully reloaded
+		// which can happen with submenus. Need to fix that in the model code,
+		// but for now ...
+		$set = ee('Model')->get('MenuSet', $set->getId())->first();
+
 		$out = ee('View')->make('settings/menu-manager/reorder')->render(array(
 			'field_name'          => 'fieldname',
 			'options'             => $set->Items->filter('parent_id', 0)->sortBy('sort'),
@@ -486,7 +491,8 @@ class MenuManager extends Settings {
 				'group' => 'link',
 				'fields' => array(
 					'url' => array(
-						'type' => 'text'
+						'type' => 'text',
+						'value' => ($item->type == 'link') ? $item->data : NULL
 					)
 				)
 			),
