@@ -203,13 +203,31 @@ class EE_Exceptions {
 		set_status_header($status_code);
 
 		$message = $exception->getMessage();
-		$location =  $exception->getFile() . ':' . $exception->getLine();
+
+		// Replace system path
+		$filepath = str_replace("\\", "/", $exception->getFile());
+		$filepath = str_replace(SYSPATH, '', $filepath);
+		$location =  $filepath . ':' . $exception->getLine();
+
 		$trace = explode("\n", $exception->getTraceAsString());
 
+		// Replace the system paths in the stack trace
 		foreach ($trace as &$line)
 		{
-			$path = preg_quote(SYSPATH, '/');
-			$line = preg_replace('/^(#\d+\s+)'.$path.'/', '$1', $line);
+			$path = SYSPATH;
+
+			// Go back a few directory levels from the system directory  in case
+			// we need to replace paths in a file not in the system directory
+			$i = 0;
+			while ($i < 3 && $path !== '/')
+			{
+				// Make sure we have a trailing slash for the replace
+				$path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+				$quoted_path = preg_quote($path, '/');
+				$line = preg_replace('/^(#\d+\s+)'.$quoted_path.'/', '$1', $line);
+				$path = dirname($path);
+				$i++;
+			}
 		}
 
 		$debug = DEBUG;
