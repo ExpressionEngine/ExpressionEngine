@@ -356,6 +356,11 @@ class Channels extends AbstractChannelsController {
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
 				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
+			),
+			array(
+				'field' => 'title_field_label',
+				'label' => 'lang:title_field_label',
+				'rules' => 'valid_xss_check'
 			)
 		));
 
