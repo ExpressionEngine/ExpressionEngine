@@ -306,7 +306,13 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => $return_url->encode())),
+						'href' => '#',
+						'data-post-url' => ee('CP/URL')->make(
+							'addons/install/' . $info['package'],
+							array(
+								'return' => $return_url->encode()
+							)
+						),
 						'title' => lang('install'),
 						'content' => lang('install'),
 						'type' => 'txt-only',
@@ -350,7 +356,13 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => $return_url->encode())),
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make(
+								'addons/update/' . $info['package'],
+								array(
+									'return' => $return_url->encode()
+								)
+							),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -484,7 +496,8 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee()->input->server('REQUEST_METHOD') !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -645,7 +658,8 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee()->input->server('REQUEST_METHOD') !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
