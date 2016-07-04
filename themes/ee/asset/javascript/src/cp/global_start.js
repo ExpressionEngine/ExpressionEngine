@@ -147,7 +147,29 @@ $(document).ready(function () {
 	EE.cp.channelMenuFilter();
 	EE.cp.bindSortableFolderLists();
 	EE.cp.addLastToChecklists();
+	EE.cp.bindPostLinks();
 });
+
+/**
+ * Finds links with a data-post-url attribute and on click, fires off a POST
+ * request to that URL via a form submission. This is so that certain actions
+ * can have the protection from CSRF but still be regular links in the UI.
+ */
+EE.cp.bindPostLinks = function() {
+	$('body').on('click', 'a[data-post-url]', function(event) {
+		event.preventDefault();
+
+		var form = $('<form/>', {
+			action: $(this).data('postUrl'),
+			method: 'post'
+		});
+		form.append($('<input/>', {
+			name: 'csrf_token',
+			value: EE.CSRF_TOKEN
+		}));
+		form.appendTo('body').submit();
+	});
+}
 
 /**
  * For nested checklists, the very last item that APPEARS in the list
