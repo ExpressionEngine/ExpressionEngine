@@ -497,7 +497,7 @@ class Addons extends CP_Controller {
 	public function update($addons)
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
-			ee()->input->server('REQUEST_METHOD') !== 'POST')
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -659,7 +659,7 @@ class Addons extends CP_Controller {
 	public function install($addons)
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
-			ee()->input->server('REQUEST_METHOD') !== 'POST')
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
