@@ -423,12 +423,14 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
+		if ( ! array_key_exists('categories', $_POST))
+		{
+			$_POST['categories'] = NULL;
+		}
+
 		$file->set($_POST);
 		$file->title = (ee()->input->post('title')) ?: $file->file_name;
-		if (array_key_exists('categories', $_POST))
-		{
-			$file->setCategoriesFromPost($_POST['categories']);
-		}
+		$file->setCategoriesFromPost($_POST['categories']);
 
 		$result = $file->validate();
 
