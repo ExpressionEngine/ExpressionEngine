@@ -167,7 +167,7 @@ EE.cp.bindPostLinks = function() {
 			name: 'csrf_token',
 			value: EE.CSRF_TOKEN
 		}));
-		form.submit();
+		form.appendTo('body').submit();
 	});
 }
 
