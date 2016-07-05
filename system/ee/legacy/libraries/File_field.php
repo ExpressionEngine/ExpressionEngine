@@ -659,7 +659,8 @@ class File_field {
 
 				$dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
 
-				$size = filesize($upload_dir['server_path'].'_'.$manipulation->short_name.'/'.$file['file_name']);
+				$manip_path = $upload_dir['server_path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
+				$size = file_exists($manip_path) ? filesize($manip_path) : 0;
 
 				$file['file_size:'.$manipulation->short_name] = $size;
 				$file['file_size:'.$manipulation->short_name.':human'] = (string) ee('Format')->make('Number', $size)->bytes();
