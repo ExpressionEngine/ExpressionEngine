@@ -184,7 +184,8 @@ class EE_Typography {
 			'strong',
 			'pre',
 			'code' => array('properties' => array('class', 'data-language')),
-			'blockquote',
+			'blockquote' => array('properties' => array('author', 'date')),
+			'quote' => array('properties' => array('author', 'date')),
 			'abbr' => array('properties' => array('title')),
 			'span' => array('properties' => array('class')),
 			'sup',
@@ -201,9 +202,8 @@ class EE_Typography {
 			'pre'        => 'pre',
 			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
-			'blockquote' => 'blockquote',
-			'quote'      => 'blockquote',
-			'QUOTE'      => 'blockquote',
+			'blockquote' => array('tag' => 'blockquote', 'properties' => array('author', 'date')),
+			'quote'      => array('tag' => 'blockquote', 'properties' => array('author', 'date')),
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
 			'sup'        => 'sup',
 			'sub'        => 'sub'
@@ -1132,7 +1132,9 @@ class EE_Typography {
 			if (in_array($p_match[1], $allowed_attributes))
 			{
 				$attr_content = htmlspecialchars(
-					ee('Security/XSS')->clean($p_match[3])
+					ee('Security/XSS')->clean($p_match[3]),
+					ENT_QUOTES,
+					'UTF-8'
 				);
 
 				$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
@@ -1483,6 +1485,7 @@ class EE_Typography {
 	 */
 	public function decode_bbcode($str)
 	{
+
 		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 
@@ -1513,7 +1516,7 @@ class EE_Typography {
 					{
 						$str = str_replace(
 							$tag_match[0],
-							$this->buildTag($key, $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
+							$this->buildTag($val['tag'], $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
 							$str
 						);
 					}
@@ -1537,38 +1540,6 @@ class EE_Typography {
 		/** -------------------------------------*/
 
 		$str = $this->_decode_code_tags($str);
-
-		/** -------------------------------------
-		/**  Decode color tags
-		/** -------------------------------------*/
-
-		if (strpos($str, '[color=') !== FALSE)
-		{
-			if ($this->use_span_tags == TRUE)
-			{
-				$str = preg_replace("/\[color=(.*?)\](.*?)\[\/color\]/si", "<span style=\"color:\\1;\">\\2</span>",$str);
-			}
-			else
-			{
-				$str = preg_replace("/\[color=(.*?)\](.*?)\[\/color\]/si", "<font color=\"\\1\">\\2</font>", $str);
-			}
-		}
-
-		/** -------------------------------------
-		/**  Decode size tags
-		/** -------------------------------------*/
-
-		if (strpos($str, '[size=') !== FALSE)
-		{
-			if ($this->use_span_tags == TRUE)
-			{
-				$str = preg_replace_callback("/\[size=(.*?)\](.*?)\[\/size\]/si", array($this, "font_matrix"),$str);
-			}
-			else
-			{
-				$str = preg_replace("/\[size=(.*?)\](.*?)\[\/size\]/si", "<font color=\"\\1\">\\2</font>", $str);
-			}
-		}
 
 		/** -------------------------------------
 		/**  Convert [url] tags to links
@@ -1718,6 +1689,32 @@ class EE_Typography {
 		}
 
 		/** -------------------------------------
+		/**  Decode color tags
+		/** -------------------------------------*/
+
+		if (strpos($str, '[color=') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\[color=(.*?)\](.*?)\[\/color\]/si",
+				array($this, 'cleanBBCodeAttributesColor'),
+				$str
+			);
+		}
+
+		/** -------------------------------------
+		/**  Decode size tags
+		/** -------------------------------------*/
+
+		if (strpos($str, '[size=') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\[size=(.*?)\](.*?)\[\/size\]/si",
+				array($this, 'cleanBBCodeAttributesSize'),
+				$str
+			);
+		}
+
+		/** -------------------------------------
 		/**  Style tags
 		/** -------------------------------------*/
 
@@ -1725,24 +1722,58 @@ class EE_Typography {
 
 		if (strpos($str, '[style=') !== FALSE)
 		{
-			$str = preg_replace("/\[style=(.*?)\](.*?)\[\/style\]/si", "<span class=\"\\1\">\\2</span>", $str);
-		}
-
-		/** ---------------------------------------
-		/**  Attributed quotes, used in the Forum module
-		/** ---------------------------------------*/
-
-		// [quote author="Brett" date="11231189803874"]...[/quote]
-
-		if (stripos($str, '[quote') !== FALSE)
-		{
-			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
+			$str = preg_replace_callback(
+				"/\[style=(.*?)\](.*?)\[\/style\]/si",
+				array($this, 'cleanBBCodeAttributesStyle'),
+				$str
+			);
 		}
 
 		return $str;
 	}
 
 	// --------------------------------------------------------------------
+
+	private function cleanBBCodeAttributesSize($matches)
+	{
+		switch($matches['1'])
+		{
+			case 1  : $size = '9px';
+				break;
+			case 2  : $size = '11px';
+				break;
+			case 3  : $size = '14px';
+				break;
+			case 4  : $size = '16px';
+				break;
+			case 5  : $size = '18px';
+				break;
+			case 6  : $size = '20px';
+				break;
+			default : $size = '11px';
+				break;
+		}
+
+		return '<span style="font-size:'.$size.';">'.$matches['2'].'</span>';
+	}
+
+	private function cleanBBCodeAttributesColor($matches)
+	{
+		return '<span style="color:'.
+			preg_replace('/[^a-z]/is', '', $matches[1]).
+			';">'.
+			$matches[2].
+			'</span>';
+	}
+
+	private function cleanBBCodeAttributesStyle($matches)
+	{
+		return '<span class="'.
+			preg_replace('/[^ \w\-]/is', '', $matches[1]).
+			'">'.
+			$matches[2].
+			'</span>';
+	}
 
 	/**
 	 * Replace [div class="codeblock"] with <div class="codeblock">
@@ -1858,25 +1889,10 @@ class EE_Typography {
 	 */
 	public function font_matrix($matches)
 	{
-		switch($matches['1'])
-		{
-			case 1  : $size = '9px';
-				break;
-			case 2  : $size = '11px';
-				break;
-			case 3  : $size = '14px';
-				break;
-			case 4  : $size = '16px';
-				break;
-			case 5  : $size = '18px';
-				break;
-			case 6  : $size = '20px';
-				break;
-			default : $size = '11px';
-				break;
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.4.0');
 
-		return "<span style=\"font-size:".$size.";\">".$matches['2']."</span>";
+		return $this->cleanBBCodeAttributesSize($matches);
 	}
 
 	// --------------------------------------------------------------------
