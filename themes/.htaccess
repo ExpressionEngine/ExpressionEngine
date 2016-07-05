@@ -1,4 +1,4 @@
-# Allow Glyphicons to be used across domains and subdomains
+# Allow font assets to be used across domains and subdomains
 <FilesMatch "\.(ttf|otf|eot|woff)$">
   <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "*"
