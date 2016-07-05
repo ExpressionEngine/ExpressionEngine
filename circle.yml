@@ -12,6 +12,7 @@ dependencies:
     - "cd tests/rspec && bundle install --without development --deployment"
     - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
   post:
+    - sudo echo "sql_mode = ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION" >> /etc/mysql/my.cnf
     - cp tests/circleci/circleci-apache /etc/apache2/sites-available
     - a2ensite circleci-apache
     - sudo service apache2 restart
