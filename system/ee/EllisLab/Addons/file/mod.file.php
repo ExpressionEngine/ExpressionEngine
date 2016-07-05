@@ -497,9 +497,9 @@ class File {
 
 					$row['height:'.$data['name']] = $size_data['height'];
 					$row['width:'.$data['name']] = $size_data['width'];
-					$row['file_size:'.$data['name']] = $size_data['size'];
-					$row['file_size:'.$data['name'].':human'] = (string) ee('Format')->make('Number', $size_data['size'])->bytes();
-					$row['file_size:'.$data['name'].':human_long'] = (string) ee('Format')->make('Number', $size_data['size'])->bytes(FALSE);
+					$row['file_size:'.$data['name']] = (int) $size_data['size'];
+					$row['file_size:'.$data['name'].':human'] = (string) ee('Format')->make('Number', (int) $size_data['size'])->bytes();
+					$row['file_size:'.$data['name'].':human_long'] = (string) ee('Format')->make('Number', (int) $size_data['size'])->bytes(FALSE);
 
 					// backwards compat variables
 					foreach($size_data as $k => $v)
@@ -507,7 +507,8 @@ class File {
 						$row[$data['name'].'_'.$k] = $v;
 					}
 				}
-				elseif ( ! isset($row[$data['name'].'_height']))
+				// if the file doesn't exist this key is null, and fails isset(), so use array_key_exists
+				elseif ( ! array_key_exists($data['name'].'_height', $row))
 				{
 					$row['url:'.$data['name']]                     = '';
 					$row['height:'.$data['name']]                  = '';
