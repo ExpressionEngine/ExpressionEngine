@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
 
-use Locale;
-use NumberFormatter;
 use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
 
 /**

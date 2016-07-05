@@ -9,7 +9,6 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$provider = m::mock('EllisLab\ExpressionEngine\Core\Provider');
 		$this->lang = m::mock('EE_Lang');
 		$this->factory = new FormatterFactory($this->lang);
 	}
