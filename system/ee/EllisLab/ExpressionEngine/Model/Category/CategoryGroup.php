@@ -96,6 +96,12 @@ class CategoryGroup extends StructureModel {
 		);
 	}
 
+	/**
+	 * Generates the metadata needed to hand off to the old channel field API
+	 * in order to instantiate a field.
+	 *
+	 * @return array An associative array.
+	 */
 	public function getFieldMetadata()
 	{
 		$can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
@@ -142,6 +148,9 @@ class CategoryGroup extends StructureModel {
 		return $metadata;
 	}
 
+	/**
+	 * Sets a field's data based on which categories are selected
+	 */
 	public function populateCategories($field)
 	{
 		$categories = ee('Model')->get('Category')
