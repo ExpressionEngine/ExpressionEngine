@@ -60,7 +60,6 @@ function didLoad()
 			if ($.type(result) === 'string') {
 				$('div.box', modal).html(result.body);
 			} else {
-				console.log(result);
 				if (result.reorder_list) {
 					$('.nestable').replaceWith(result.reorder_list);
 					didLoad();
