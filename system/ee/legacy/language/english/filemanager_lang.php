@@ -86,6 +86,8 @@ $lang = array(
 'size_gb' => '<abbr title="Gigabyte">gb</abbr>',
 'size_tb' => '<abbr title="Terabyte">tb</abbr>',
 
+'file_categories_desc' => 'Categorize this file.',
+
 'success' => 'Success',
 
 'files_removed_desc' => 'The following files were removed',
