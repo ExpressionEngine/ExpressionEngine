@@ -219,7 +219,7 @@ class MenuManager extends Settings {
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('menu_set_'.$alert_key))
-					->addToBody(sprintf(lang('menu_set_'.$alert_key.'_desc'), $set->name))
+					->addToBody(sprintf(lang('menu_set_'.$alert_key.'_desc'), htmlentities($set->name)))
 					->defer();
 			}
 
@@ -449,6 +449,7 @@ class MenuManager extends Settings {
 			{
 				$item->save();
 			}
+			
 			ee()->output->send_ajax_response(array(
 				'reorder_list' => $this->reorderList($set, TRUE)
 			));

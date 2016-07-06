@@ -33,7 +33,7 @@ class MenuSet extends Model {
 	protected static $_table_name = 'menu_sets';
 
 	protected static $_validation_rules = array(
-		'name' => 'required|unique'
+		'name' => 'required|noHtml|unique'
 	);
 
 	protected static $_relationships = array(

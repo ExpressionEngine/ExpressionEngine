@@ -34,7 +34,7 @@ class MenuItem extends Model {
 
 	protected static $_validation_rules = array(
 		'type' => 'required|enum[link,addon,submenu]',
-		'name' => 'validateWhenTypeIs[link,submenu]|required',
+		'name' => 'validateWhenTypeIs[link,submenu]|noHtml|required',
 		'data' => 'required'
 	);
 
