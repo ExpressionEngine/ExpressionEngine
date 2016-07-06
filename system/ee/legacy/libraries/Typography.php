@@ -184,8 +184,7 @@ class EE_Typography {
 			'strong',
 			'pre',
 			'code' => array('properties' => array('class', 'data-language')),
-			'blockquote' => array('properties' => array('author', 'date')),
-			'quote' => array('properties' => array('author', 'date')),
+			'blockquote',
 			'abbr' => array('properties' => array('title')),
 			'span' => array('properties' => array('class')),
 			'sup',
@@ -202,8 +201,8 @@ class EE_Typography {
 			'pre'        => 'pre',
 			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
-			'blockquote' => array('tag' => 'blockquote', 'properties' => array('author', 'date')),
-			'quote'      => array('tag' => 'blockquote', 'properties' => array('author', 'date')),
+			'blockquote' => 'blockquote',
+			'quote'      => 'blockquote',
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
 			'sup'        => 'sup',
 			'sub'        => 'sub'
@@ -1729,11 +1728,47 @@ class EE_Typography {
 			);
 		}
 
+		/** -------------------------------------
+		/**  Attributed quotes, used in the Forum module
+		/** -------------------------------------*/
+
+		// [quote author="Brett" date="11231189803874"]...[/quote]
+
+		if (stripos($str, '[quote ') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				'/\[quote\s+author="(.*?)"\s+date="(.*?)"]/si',
+				array($this, 'cleanBBCodeAttributesQuote'),
+				$str
+			);
+		}
+
 		return $str;
 	}
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Clean BBCode Attributes from [quote]
+	 *
+	 * @param array $matches preg_match of the valid opening [quote author="foo" date="12345678"]
+	 * @return string HTML blockquote open tag
+	 **/
+	private function cleanBBCodeAttributesQuote($matches)
+	{
+		$author = htmlentities($matches[1], ENT_QUOTES, 'UTF-8');
+		$date = filter_var($matches[2], FILTER_SANITIZE_NUMBER_INT);
+		return "<blockquote author=\"${author}\" date=\"${date}\">";
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [size]
+	 *
+	 * @param array $matches preg_match of a valid [size=3]text[/size]
+	 * @return string HTML span tag with a font-size applied
+	 **/
 	private function cleanBBCodeAttributesSize($matches)
 	{
 		switch($matches['1'])
@@ -1757,6 +1792,14 @@ class EE_Typography {
 		return '<span style="font-size:'.$size.';">'.$matches['2'].'</span>';
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [color]
+	 *
+	 * @param array $matches preg_match of a valid [color=red]text[/color]
+	 * @return string HTML span tag with color applied
+	 **/
 	private function cleanBBCodeAttributesColor($matches)
 	{
 		return '<span style="color:'.
@@ -1766,6 +1809,14 @@ class EE_Typography {
 			'</span>';
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [style=some_class]
+	 *
+	 * @param array $matches preg_match of valid [style=some_class]text[/style]
+	 * @return string HTML span tag with a class attributed applied
+	 **/
 	private function cleanBBCodeAttributesStyle($matches)
 	{
 		return '<span class="'.
@@ -1774,6 +1825,8 @@ class EE_Typography {
 			$matches[2].
 			'</span>';
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Replace [div class="codeblock"] with <div class="codeblock">
