@@ -655,8 +655,6 @@ class MenuManager extends Settings {
 			'reorder'    => TRUE
 		));
 
-		$grid->loadAssets();
-
 		$grid->setColumns(
 			array(
 				'name' => array(
