@@ -320,7 +320,6 @@ class MenuManager extends Settings {
 				'fields' => array(
 					'member_groups' => array(
 						'type' => 'checkbox',
-						'required' => TRUE,
 						'choices' => $member_groups,
 						'disabled_choices' => $disabled_choices,
 						'value' => $selected_member_groups,
