@@ -105,6 +105,17 @@ class Upload {
 			->filter('group_id', 'IN', explode('|', $file->UploadDestination->cat_group))
 			->all();
 
+		if (count($cat_groups) == 0)
+		{
+			$url = ee('CP/URL', 'files/uploads/edit/' . $file->UploadDestination->getId())->compile();
+			return ee('CP/Alert')->makeInline('empty-category-tab')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('no_categories_assigned'))
+				->addToBody(sprintf(lang('no_categories_assigned_file_desc'), $url))
+				->render();
+		}
+
 		foreach ($cat_groups as $cat_group)
 		{
 			$metadata = $cat_group->getFieldMetadata();

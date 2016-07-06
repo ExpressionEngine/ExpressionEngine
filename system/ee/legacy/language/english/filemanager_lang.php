@@ -88,6 +88,8 @@ $lang = array(
 
 'file_categories_desc' => 'Categorize this file.',
 
+'no_categories_assigned_file_desc' => 'There are no categories assigned to this file. <a href="%s">Assign a category group.</a>',
+
 'success' => 'Success',
 
 'files_removed_desc' => 'The following files were removed',
