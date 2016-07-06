@@ -116,7 +116,7 @@ class EE_Menu {
 		// on the max_entries setting of a channel
 		$channels_query = ee('db')->select('channels.channel_id, channel_title, max_entries, count(exp_channel_titles.entry_id) as total_entries')
 			->join('channel_titles', 'channel_titles.channel_id = channels.channel_id', 'left')
-			->group_by('channels.channel_id, channel_title')
+			->group_by('channels.channel_id, channel_title, max_entries')
 			->where('channels.site_id', ee()->config->item('site_id'))
 			->order_by('channel_title');
 
