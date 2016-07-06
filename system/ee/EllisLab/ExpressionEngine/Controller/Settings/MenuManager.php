@@ -59,6 +59,13 @@ class MenuManager extends Settings {
 		ee()->cp->render('settings/menu-manager/index', $vars);
 	}
 
+	/**
+	 * Given a built query of menu sets, create a table listing an return
+	 * the table instance.
+	 *
+	 * @param QueryBuilder $sets
+	 * @return CP/Table
+	 */
 	protected function buildSetTable(Builder $sets)
 	{
 		$table = ee('CP/Table');
@@ -135,7 +142,6 @@ class MenuManager extends Settings {
 		return $table;
 	}
 
-
 	public function createSet()
 	{
 		return $this->form();
@@ -161,6 +167,9 @@ class MenuManager extends Settings {
 		ee()->functions->redirect(ee('CP/URL')->make('settings/menu-manager'));
 	}
 
+	/**
+	 * Show the create/edit form for a menu set.
+	 */
 	private function form($set_id = NULL)
 	{
 		if (is_null($set_id))
@@ -259,6 +268,12 @@ class MenuManager extends Settings {
 		ee()->cp->render('settings/form', $vars);
 	}
 
+	/**
+	 * Show the upper half of the create/edit form for a menu set. This includes
+	 * the name and selected member groups.
+	 *
+	 * @return Array of shared form sections
+	 */
 	private function mainForm(MenuSet $set)
 	{
 		$disabled_choices = array();
@@ -317,6 +332,11 @@ class MenuManager extends Settings {
 		return $section;
 	}
 
+	/**
+	 * Create the nested list of menu items for a given set
+	 *
+	 * @return Array of form sections or the rendered html
+	 */
 	private function reorderList(MenuSet $set, $html_only = FALSE)
 	{
 		// annoying model issue where partial sets are not fully reloaded
@@ -401,6 +421,9 @@ class MenuManager extends Settings {
 		));
 	}
 
+	/**
+	 * Render the create/edit MenuItem form. Typically shown in a side modal.
+	 */
 	private function itemForm($set = NULL, $item = NULL)
 	{
 		if ( ! AJAX_REQUEST)
@@ -449,7 +472,7 @@ class MenuManager extends Settings {
 			{
 				$item->save();
 			}
-			
+
 			ee()->output->send_ajax_response(array(
 				'reorder_list' => $this->reorderList($set, TRUE)
 			));
@@ -541,6 +564,9 @@ class MenuManager extends Settings {
 		return $vars;
 	}
 
+	/**
+	 * Handle data for an add-on menu item
+	 */
 	private function processAddon($set, $item, $class)
 	{
 		$addons = $this->getAvailableAddons($set);
@@ -552,6 +578,9 @@ class MenuManager extends Settings {
 		}
 	}
 
+	/**
+	 * Handle data for a dropdown menu item
+	 */
 	private function processGrid($set, $item, $post)
 	{
 		$children = $item->Children->indexBy('item_id');
@@ -581,6 +610,9 @@ class MenuManager extends Settings {
 		}
 	}
 
+	/**
+	 * Fetch valid add-ons for the custom menu hook
+	 */
 	private function getAvailableAddons($set)
 	{
 		$addons = ee('Addon')->installed();
@@ -614,6 +646,9 @@ class MenuManager extends Settings {
 		return $result;
 	}
 
+	/**
+	 * Prepare the grid for the submenu form
+	 */
 	private function getSubmenuGrid($set, $item)
 	{
 		$grid = ee('CP/GridInput', array(
@@ -657,6 +692,9 @@ class MenuManager extends Settings {
 		return $grid;
 	}
 
+	/**
+	 * Create a single grid row
+	 */
 	private function getGridRow($item)
 	{
 		return array(
