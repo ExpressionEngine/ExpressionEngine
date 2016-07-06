@@ -622,9 +622,11 @@ class MenuManager extends Settings {
 		$grid->setColumns(
 			array(
 				'name' => array(
+					'label' => 'menu_label',
 					'desc'  => 'menu_label_desc'
 				),
 				'data' => array(
+					'label' => 'menu_url',
 					'desc'  => 'menu_url_desc'
 				)
 			)
