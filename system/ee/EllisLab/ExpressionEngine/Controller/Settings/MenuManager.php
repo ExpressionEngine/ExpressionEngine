@@ -233,7 +233,6 @@ class MenuManager extends Settings {
 			$vars['sections']['menu_options'] = $this->reorderList($set);
 		}
 
-		// Image manipulations Grid
 		$grid = ee('CP/GridInput', array(
 			'field_name' => 'submenu',
 			'reorder'    => TRUE
@@ -245,7 +244,7 @@ class MenuManager extends Settings {
 			'item_create_url' =>
 			ee('CP/URL')->make('settings/menu-manager/create-item/'.$set_id)->compile(),
 			'item_edit_url' =>
-			ee('CP/URL')->make('settings/menu-manager/edit-item/')->compile(),
+			ee('CP/URL')->make('settings/menu-manager/edit-item/'.$set_id.'/')->compile(),
 		));
 
 		ee()->cp->add_js_script('plugin', 'nestable');
@@ -372,15 +371,15 @@ class MenuManager extends Settings {
 		return ee('View')->make('_shared/form')->render($vars);
 	}
 
-	public function editItem($item_id)
+	public function editItem($set_id, $item_id)
 	{
 		$item = ee('Model')->get('MenuItem', $item_id)->first();
-		$set = $item->Set;
+		$set = ee('Model')->get('MenuSet', $set_id)->first();
 
 		$vars = $this->itemForm($set, $item);
 
 		$vars['cp_page_title'] = lang('edit_menu_item');
-		$vars['base_url']  = ee('CP/URL')->make('settings/menu-manager/edit-item/'.$item_id);
+		$vars['base_url']  = ee('CP/URL')->make('settings/menu-manager/edit-item/'.$set_id.'/'.$item_id);
 
 		return ee('View')->make('_shared/form')->render($vars);
 	}
@@ -450,13 +449,25 @@ class MenuManager extends Settings {
 			{
 				$item->save();
 			}
-
 			ee()->output->send_ajax_response(array(
 				'reorder_list' => $this->reorderList($set, TRUE)
 			));
 		}
 
 		$grid = $this->getSubmenuGrid($set, $item);
+
+		$type_options = array(
+			'link' => lang('menu_single')
+		);
+
+		if ((int) $item->parent_id == 0)
+		{
+			$type_options = array(
+				'addon' => lang('menu_addon'),
+				'link' => lang('menu_single'),
+				'submenu' => lang('menu_dropdown')
+			);
+		}
 
 		$vars = array('sections' => array());
 		$vars['sections'][] = array(
@@ -465,11 +476,7 @@ class MenuManager extends Settings {
 				'fields' => array(
 					'type' => array(
 						'type' => 'select',
-						'choices' => array(
-							'addon' => lang('menu_addon'),
-							'link' => lang('menu_single'),
-							'submenu' => lang('menu_dropdown')
-						),
+						'choices' => $type_options,
 						'value' => $item->type
 					)
 				)
@@ -545,6 +552,11 @@ class MenuManager extends Settings {
 	{
 		$children = $item->Children->indexBy('item_id');
 
+		if ( ! isset($post['rows']) || empty($post['rows']))
+		{
+			return;
+		}
+
 		foreach ($post['rows'] as $row_id => $columns)
 		{
 			if (strpos($row_id, 'row_id_') !== FALSE)
@@ -600,7 +612,6 @@ class MenuManager extends Settings {
 
 	private function getSubmenuGrid($set, $item)
 	{
-		// Image manipulations Grid
 		$grid = ee('CP/GridInput', array(
 			'field_name' => 'submenu',
 			'reorder'    => TRUE

@@ -1,6 +1,15 @@
 <div class="nestable">
 	<ul class="nested-list managed">
 		<?php $this->embed('settings/menu-manager/item'); ?>
+		<?php if (count($options) == 0): ?>
+		<li>
+			<div class="tbl-row no-results">
+				<div class="none">
+					<p><?=lang('no_menu_items')?></p>
+				</div>
+			</div>
+		</li>
+		<?php endif; ?>
 	</ul>
 </div>
 
