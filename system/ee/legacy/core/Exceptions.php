@@ -98,6 +98,9 @@ class EE_Exceptions {
 		$filepath = str_replace("\\", "/", $filepath);
 		$filepath = str_replace(SYSPATH, '', $filepath);
 
+		$message = str_replace("\\", "/", $message);
+		$message = str_replace(SYSPATH, '', $message);
+
 		if (ob_get_level() > $this->ob_level + 1)
 		{
 			ob_end_flush();
