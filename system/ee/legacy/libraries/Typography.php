@@ -1293,6 +1293,38 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Formats an entry title for front-end presentation; things like converting
+	 * EE tag brackets, filtering for safe HTML, and converting characters to
+	 * their fancy alternatives
+	 *
+	 * @param String	Entry title
+	 * @return String	Formatted entry title
+	 */
+	public function formatTitle($title)
+	{
+		$title = str_replace(array('{', '}'), array('&#123;', '&#125;'), $title);
+
+		// Strip unsafe HTML and attributes from title
+		// Preserve old HTML format, because yay singletons
+		$existing_format = $this->html_format;
+		$this->html_format = 'safe';
+		$title = $this->format_html($title);
+
+		// format_html() turns safe HTML into BBCode
+		$title = $this->decode_bbcode($title);
+
+		// Put back old format
+		$this->html_format = $existing_format;
+
+		// and finally some basic curly quotes, em dashes, etc.
+		$title = $this->format_characters($title);
+
+		return $title;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Markdown Post Process
 	 *
 	 * The markdown library tries to be clever and encodes & to &amp;, but we've

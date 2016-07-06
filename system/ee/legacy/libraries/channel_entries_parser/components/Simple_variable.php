@@ -100,7 +100,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$tagdata = str_replace(
 				LD.$key.RD,
-				$this->formatTitle($data['title']),
+				ee()->typography->formatTitle($data['title']),
 				$tagdata
 			);
 		}
@@ -157,59 +157,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		}
 
 		return $tagdata;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Formats an entry title for front-end presentation; things like converting
-	 * EE tag brackets, filtering for safe HTML, and converting characters to
-	 * their fancy alternatives
-	 *
-	 * @param String	Entry title
-	 * @return String	Formatted entry title
-	 */
-	protected function formatTitle($title)
-	{
-		$title = str_replace(array('{', '}'), array('&#123;', '&#125;'), $title);
-
-		// Strip unsafe HTML and attributes from title
-		// Preserve old HTML format, because yay singletons
-		$existing_format = ee()->typography->html_format;
-		ee()->typography->html_format = 'safe';
-		$title = ee()->typography->format_html($title);
-
-		// format_html() turns safe HTML into BBCode
-		$title = ee()->typography->decode_bbcode($title);
-
-		// Put back old format
-		ee()->typography->html_format = $existing_format;
-
-		// We also want to convert quotes into curly quotes, but before we do, we need to
-		// preserve any safe HTML present so their quotes do not get converted
-		if (strpos($title, '<') !== FALSE)
-		{
-			$tags = array();
-			$title = preg_replace_callback('/<\/?.+?>/', function($match) use (&$tags)
-			{
-				// We'll replace each HTML tag with a token
-				$token = ':'.md5($match[0]).':';
-				$tags[$token] = $match[0];
-				return $token;
-			}, $title);
-
-			// Convert quotes while HTML is tokenized
-			$title = ee()->typography->format_characters($title);
-
-			// Finally, put back original HTML
-			$title = str_replace(array_keys($tags), array_values($tags), $title);
-		}
-		else
-		{
-			$title = ee()->typography->format_characters($title);
-		}
-
-		return $title;
 	}
 
 	// ------------------------------------------------------------------------
