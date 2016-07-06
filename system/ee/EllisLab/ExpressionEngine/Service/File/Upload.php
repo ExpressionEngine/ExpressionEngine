@@ -8,6 +8,13 @@ use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 class Upload {
 
+	/**
+	 * Creates and returns the HTML to add or edit a file.
+	 *
+	 * @param obj $file A File Model object
+	 * @param array $errors An array of errors
+	 * @return string HTML
+	 */
 	public function getFileDataForm(FileModel $file, $errors)
 	{
 		$html = '';
@@ -77,6 +84,13 @@ class Upload {
 		return $html;
 	}
 
+	/**
+	 * Creates and returns the HTML to add or edit a file's categories.
+	 *
+	 * @param obj $file A File Model object
+	 * @param array $errors An array of errors
+	 * @return string HTML
+	 */
 	public function getCategoryForm(FileModel $file, $errors)
 	{
 		ee()->lang->loadfile('content');
@@ -133,6 +147,9 @@ class Upload {
 		return $html;
 	}
 
+	/**
+	 * Adds the JS scripts and variables the category UX needs.
+	 */
 	protected function addCategoryJS()
 	{
 		ee()->cp->add_js_script('plugin', 'nestable');
