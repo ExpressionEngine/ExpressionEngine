@@ -512,7 +512,10 @@ class MenuManager extends Settings {
 					'addon' => array(
 						'type' => 'radio',
 						'choices' => $this->getAvailableAddons($set),
-						'value' => ($item->type == 'addon') ? $item->data : NULL
+						'value' => ($item->type == 'addon') ? $item->data : NULL,
+						'no_results' => array(
+							'text' => lang('menu_no_addons')
+						)
 					)
 				)
 			),

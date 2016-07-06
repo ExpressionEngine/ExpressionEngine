@@ -559,6 +559,7 @@ $lang = array(
 'menu_url_desc' => 'Link <abbr title="Uniform Resource Locator">URL</abbr>',
 'menu_addon' => 'Add-On',
 'menu_addon_desc' => 'Navigation from installed Add-Ons',
+'menu_no_addons' => 'No Add-Ons Found',
 'edit_menu_item' => 'Edit Menu Item',
 'add_menu_item' => 'Add Menu Item',
 
