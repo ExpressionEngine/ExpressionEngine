@@ -350,7 +350,7 @@ class Channels extends AbstractChannelsController {
 			array(
 				'field' => 'channel_title',
 				'label' => 'lang:channel_title',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'strip_tags|trim|valid_xss_check|required'
 			),
 			array(
 				'field' => 'channel_name',
