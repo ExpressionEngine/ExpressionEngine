@@ -67,12 +67,15 @@ $(document).ready(function () {
 			modal_name = modal_link.attr('rel'),
 			modal = $('.' + modal_name),
 			isEditing = modal_link.parents('fieldset').find('a.toggle-btn').hasClass('on'),
-			category_form_url = EE.category.add.URL.replace('###', $(this).data('groupId'));
+			category_form_url,
+			category_form_url_qs = $(this).data('groupId');
 
 		// If we're in an editing state, be sure to return to an editing state
 		if (isEditing) {
-			category_form_url = category_form_url + '/editing';
+			category_form_url_qs = category_form_url_qs + '/editing';
 		}
+
+		category_form_url = EE.category.add.URL.replace('###', category_form_url_qs)
 
 		// Clear out modal from last request
 		$('div.box', modal).html('<p align="center"><a class="btn work" href="">Loading</a></p>');
