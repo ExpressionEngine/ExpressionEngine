@@ -74,7 +74,7 @@ function didLoad()
 }
 
 function loadEditModal(id) {
-	var url = EE.item_edit_url + '/' + id;
+	var url = EE.item_edit_url.replace('###', id);
 	$('div.box', modal).load(url, didLoad);
 }
 

@@ -253,7 +253,7 @@ class MenuManager extends Settings {
 			'item_create_url' =>
 			ee('CP/URL')->make('settings/menu-manager/create-item/'.$set_id)->compile(),
 			'item_edit_url' =>
-			ee('CP/URL')->make('settings/menu-manager/edit-item/'.$set_id.'/')->compile(),
+			ee('CP/URL')->make('settings/menu-manager/edit-item/'.$set_id.'/###/')->compile(), // ### is replaced in JS. Can't append to S= urls
 		));
 
 		ee()->cp->add_js_script('plugin', 'nestable');
