@@ -126,7 +126,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'user_id'                        => ee()->session->userdata('member_id'),
 		));
 
-		$this->addCategoryJS();
+		ee('Category')->addCategoryJS();
 
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
