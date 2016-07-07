@@ -7,7 +7,7 @@ class Factory {
 	/**
 	 * Adds the JS scripts and variables the category UX needs.
 	 */
-	protected function addCategoryJS()
+	public function addCategoryJS()
 	{
 		ee()->cp->add_js_script('plugin', 'nestable');
 		ee()->cp->add_js_script('file', 'cp/categories');
@@ -23,7 +23,7 @@ class Factory {
 	/**
 	 * Adds modals for the category add/edit form and category removal confirmation
 	 */
-	protected function addCategoryModals()
+	public function addCategoryModals()
 	{
 		// Don't bother adding modals to DOM if they don't have permission
 		if ( ! ee()->cp->allowed_group_any(
