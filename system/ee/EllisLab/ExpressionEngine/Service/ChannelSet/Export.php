@@ -104,11 +104,11 @@ class Export {
 			$result->field_group = $this->exportFieldGroup($channel->FieldGroup);
 		}
 
-		if ($channel->CategoryGroups)
+		if ($channel->getCategoryGroups())
 		{
 			$result->cat_groups = array();
 
-			foreach ($channel->CategoryGroups as $group)
+			foreach ($channel->getCategoryGroups() as $group)
 			{
 				$group = $this->exportCategoryGroup($group);
 				$result->cat_groups[] = $group->name;
