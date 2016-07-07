@@ -70,6 +70,7 @@ class Upload {
 			)
 		);
 
+		// Remove the file field when we are editing
 		if ( ! $file->isNew())
 		{
 			unset($sections[0][0]);
