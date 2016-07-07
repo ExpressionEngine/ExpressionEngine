@@ -217,7 +217,7 @@ class Communicate extends Utilities {
 		$_POST['total_gl_recipients'] = count($groups);
 
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('subject', 'lang:subject', 'required');
+		ee()->form_validation->set_rules('subject', 'lang:subject', 'required|valid_xss_check');
 		ee()->form_validation->set_rules('message', 'lang:message', 'required');
 		ee()->form_validation->set_rules('from', 'lang:from', 'required|valid_email');
 		ee()->form_validation->set_rules('cc', 'lang:cc', 'valid_emails');
@@ -756,8 +756,12 @@ class Communicate extends Utilities {
 		$data = array();
 		foreach ($emails as $email)
 		{
+			// Prepare the $email object for use in the modal
+			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
+			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
+
 			$data[] = array(
-				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
+				$email->subject,
 				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
@@ -780,10 +784,6 @@ class Communicate extends Utilities {
 					)
 				)
 			);
-
-			// Prepare the $email object for use in the modal
-			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
 
 			ee()->load->library('typography');
 			ee()->typography->initialize(array(
