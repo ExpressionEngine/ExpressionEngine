@@ -62,8 +62,12 @@ class EE_Lang {
 	 */
 	protected function getIdiom()
 	{
-		ee()->load->library('session');
-		return ee()->security->sanitize_filename(ee()->session->get_language());
+		if (isset(ee()->session))
+		{
+			return ee()->security->sanitize_filename(ee()->session->get_language());
+		}
+
+		return ee()->config->item('deft_lang') ?: 'english';
 	}
 
 	// --------------------------------------------------------------------

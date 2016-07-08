@@ -296,6 +296,7 @@ class Uploads extends AbstractFilesController {
 				'fields' => array(
 					'upload_member_groups' => array(
 						'type' => 'checkbox',
+						'wrap' => TRUE,
 						'choices' => $member_groups,
 						'value' => $allowed_groups
 					)
@@ -326,6 +327,7 @@ class Uploads extends AbstractFilesController {
 			'fields' => array(
 				'cat_group' => array(
 					'type' => 'checkbox',
+					'wrap' => TRUE,
 					'choices' => $cat_group_options,
 					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
 				)
