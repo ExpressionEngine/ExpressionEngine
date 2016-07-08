@@ -27,10 +27,6 @@ feature 'Messaging Settings' do
   end
 
   it 'should validate the form' do
-    invalid_path = 'The path you submitted is not valid.'
-    not_writable = 'The path you submitted is not writable.'
-    integer_error = 'This field must contain an integer.'
-
     @page.prv_msg_max_chars.set 'sdfsdfsd'
     @page.submit
 
@@ -44,41 +40,41 @@ feature 'Messaging Settings' do
     @page.prv_msg_max_chars.set 'sdfsdfsd'
     @page.prv_msg_max_chars.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.prv_msg_max_chars, integer_error)
+    should_have_error_text(@page.prv_msg_max_chars, $integer_error)
     should_have_form_errors(@page)
 
     @page.prv_msg_upload_path.set '/dfffds/'
     @page.prv_msg_upload_path.trigger 'blur'
     @page.wait_for_error_message_count(2)
-    should_have_error_text(@page.prv_msg_upload_path, invalid_path)
+    should_have_error_text(@page.prv_msg_upload_path, $invalid_path)
     should_have_form_errors(@page)
 
     @page.prv_msg_upload_path.set File.expand_path('support/tmp')
     @page.prv_msg_upload_path.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    
+
     @page.prv_msg_upload_path.set '/'
     @page.prv_msg_upload_path.trigger 'blur'
     @page.wait_for_error_message_count(2)
-    should_have_error_text(@page.prv_msg_upload_path, not_writable)
+    should_have_error_text(@page.prv_msg_upload_path, $not_writable)
     should_have_form_errors(@page)
 
     @page.prv_msg_max_attachments.set 'sdfsdfsd'
     @page.prv_msg_max_attachments.trigger 'blur'
     @page.wait_for_error_message_count(3)
-    should_have_error_text(@page.prv_msg_max_attachments, integer_error)
+    should_have_error_text(@page.prv_msg_max_attachments, $integer_error)
     should_have_form_errors(@page)
 
     @page.prv_msg_attach_maxsize.set 'sdfsdfsd'
     @page.prv_msg_attach_maxsize.trigger 'blur'
     @page.wait_for_error_message_count(4)
-    should_have_error_text(@page.prv_msg_attach_maxsize, integer_error)
+    should_have_error_text(@page.prv_msg_attach_maxsize, $integer_error)
     should_have_form_errors(@page)
 
     @page.prv_msg_attach_total.set 'sdfsdfsd'
     @page.prv_msg_attach_total.trigger 'blur'
     @page.wait_for_error_message_count(5)
-    should_have_error_text(@page.prv_msg_attach_total, integer_error)
+    should_have_error_text(@page.prv_msg_attach_total, $integer_error)
     should_have_form_errors(@page)
 
     # Fix everything
@@ -116,7 +112,7 @@ feature 'Messaging Settings' do
   it 'should reject XSS' do
     @page.prv_msg_upload_path.set $xss_vector
     @page.submit
-    
+
     should_have_error_text(@page.prv_msg_upload_path, $xss_error)
     should_have_form_errors(@page)
   end
