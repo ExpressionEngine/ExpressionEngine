@@ -29,7 +29,7 @@ $lang['valid_ip']			= "This field must contain a valid IP.";
 $lang['valid_url']			= "This field must contain a valid URL.";
 $lang['invalid_xss_check']  = 'The data you submitted did not pass our security check. If you did not intend to submit this form, please <a href="%s">click here</a> and no settings will be changed.';
 $lang['no_html']  			= 'This field cannot contain HTML.';
-$lang['invalid_path']		= 'This path is either invalid or not writeable.';
+$lang['invalid_path']		= 'This path is either invalid or not writable.';
 
 // Legacy form validation lib
 $lang['file_exists']		= $lang['invalid_path'];
