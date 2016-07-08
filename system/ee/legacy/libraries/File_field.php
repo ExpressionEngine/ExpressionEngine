@@ -619,6 +619,8 @@ class File_field {
 
 		$upload_dir = $upload_dir[$file['upload_location_id']];
 
+		// save the file name for use in the file system as well as the URL
+		$fs_file_name = $file['file_name'];
 		$file['file_name'] = rawurlencode($file['file_name']);
 
 		// Set additional data based on what we've gathered
@@ -659,7 +661,8 @@ class File_field {
 
 				$dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
 
-				$manip_path = $upload_dir['server_path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
+				$manip_path = $upload_dir['server_path'].'_'.$manipulation->short_name.'/'.$fs_file_name;
+
 				$size = file_exists($manip_path) ? filesize($manip_path) : 0;
 
 				$file['file_size:'.$manipulation->short_name] = $size;
