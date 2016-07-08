@@ -113,7 +113,7 @@ abstract class Filter {
 			$value = $_GET[$this->name];
 		}
 
-		return htmlentities($value, ENT_QUOTES, 'UTF-8');
+		return is_null($value) ? NULL : htmlentities($value, ENT_QUOTES, 'UTF-8');
 	}
 
 	/**
