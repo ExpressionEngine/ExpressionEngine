@@ -111,8 +111,16 @@ class Groups extends Members\Members {
 
 		$data = array();
 		$groupData = array();
-		$total = ee()->api->get('MemberGroup')->count();
-		$groups = ee()->api->get('MemberGroup')->order($sort_col, $sort_dir)->limit($perpage)->offset($offset);
+		$total = ee()->api->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count();
+
+		$groups = ee()->api->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order($sort_col, $sort_dir)
+			->limit($perpage)
+			->offset($offset);
+
 		$search = ee()->input->post('search');
 
 		if ( ! empty($search))
