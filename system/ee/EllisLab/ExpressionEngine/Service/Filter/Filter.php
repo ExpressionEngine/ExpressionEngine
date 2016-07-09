@@ -208,7 +208,7 @@ abstract class Filter {
 		{
 			$url = clone $base_url;
 			$url->setQueryStringVariable($this->name, $show);
-			$options[$url->compile()] = $label;
+			$options[$url->compile()] = htmlentities($label, ENT_QUOTES, 'UTF-8');
 		}
 		return $options;
 	}
