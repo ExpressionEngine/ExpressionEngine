@@ -55,7 +55,7 @@
 					<ul class="quick-links sub-menu">
 						<a href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<?php foreach($cp_quicklinks as $link): ?>
-						<a href="<?=$link['link']?>"><?=$link['title']?></a>
+						<a href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a>
 						<?php endforeach ?>
 						<a class="last add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
 					</ul>
