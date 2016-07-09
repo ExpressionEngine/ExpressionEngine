@@ -33,7 +33,7 @@ feature 'Messaging Settings' do
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'Attention: Settings not saved'
-    @page.should have_text integer_error
+    @page.should have_text $integer_error
 
     # AJAX validation
     @page.load
