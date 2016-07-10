@@ -188,6 +188,11 @@ class Fields extends Members\Members {
 
 		$fields = ee('Model')->get('MemberField', $field_ids)->all();
 		$field_names = $fields->pluck('field_label');
+		$field_names = array_map(function($field_name)
+		{
+			return htmlentities($field_name, ENT_QUOTES, 'UTF-8');
+		}, $field_names);
+		
 		$fields->delete();
 
 		ee('CP/Alert')->makeInline('fields')

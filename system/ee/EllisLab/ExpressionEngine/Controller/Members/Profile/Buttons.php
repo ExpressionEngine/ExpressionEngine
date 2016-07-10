@@ -70,11 +70,12 @@ class Buttons extends Settings {
 		foreach ($buttons as $button)
 		{
 			$name = (strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
+			$encoded_name = lang(htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'));
 
 			$preview = array('toolbar_items' => array(
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('members/profile/buttons/edit/' . $button->id, $this->query_string),
-					'title' => lang($button->tag_name),
+					'title' => $encoded_name,
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
@@ -87,14 +88,14 @@ class Buttons extends Settings {
 
 			$columns = array(
 				'preview' => $preview,
-				'tag_name' => lang($button->tag_name),
+				'tag_name' => $encoded_name,
 				'accesskey' => $button->accesskey,
 				$toolbar,
 				array(
 					'name' => 'selection[]',
 					'value' => $button->id,
 					'data'	=> array(
-						'confirm' => lang('html_button') . ': <b>' . htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8') . '</b>'
+						'confirm' => lang('html_button') . ': <b>' . $encoded_name . '</b>'
 					)
 				)
 			);

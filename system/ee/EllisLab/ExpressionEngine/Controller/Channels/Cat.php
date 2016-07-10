@@ -1201,6 +1201,7 @@ class Cat extends AbstractChannelsController {
 
 			$cat_field = ee('Model')->make('CategoryField');
 			$cat_field->setCategoryGroup($cat_group);
+			$cat_field->site_id = ee()->config->item('site_id');
 			$cat_field->field_type = 'text';
 
 			$alert_key = 'created';

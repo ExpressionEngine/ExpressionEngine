@@ -27,14 +27,14 @@
 			<?php if ($editable): ?>
 				<span class="list-reorder" <?php if ( ! $editing): ?>style="margin-left:-50px"<?php endif ?>></span>
 			<?php endif ?>
-			<?=form_checkbox($field_name.'[]', $key, $checked, $extra ? 'disabled="disabled"' : '')?> <?=$value?>
+			<?=form_checkbox($field_name.'[]', $key, $checked, $extra ? 'disabled="disabled"' : '')?> <?=htmlentities($value)?>
 			<?php if ($editable OR $deletable): ?>
 				<ul class="toolbar<?php if ( ! $editing): ?> hidden<?php endif ?>">
 					<?php if ($editable): ?>
 						<li class="edit"><a class="m-link" rel="modal-checkboxes-edit" data-group-id="<?=$group_id?>" data-content-id="<?=$key?>" href=""></a></li>
 					<?php endif ?>
 					<?php if ($deletable): ?>
-						<li class="remove"><a class="m-link" rel="modal-checkboxes-confirm-remove" data-confirm="<?='<b>'.$content_item_label.'</b>: '.$value?>" data-content-id="<?=$key?>" href=""></a></li>
+						<li class="remove"><a class="m-link" rel="modal-checkboxes-confirm-remove" data-confirm="<?=form_prep('<b>'.$content_item_label.'</b>: '.htmlentities($value))?>" data-content-id="<?=$key?>" href=""></a></li>
 					<?php endif ?>
 				</ul>
 			<?php endif ?>

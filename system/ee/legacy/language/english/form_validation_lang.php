@@ -9,7 +9,6 @@ $lang['boolean']			= "This field must be a boolean value.";
 $lang['enum']				= "This field must be one of: %s.";
 $lang['limithtml']			= "This field can only contain the following HTML tags: %s. If you want to use angle brackets < in your text, but not HTML please try &amp;lt; to replace < and &amp;gt; to replace >.";
 $lang['exact_length']		= "This field must be exactly %s characters in length.";
-$lang['file_exists']		= "The path you submitted is not valid.";
 $lang['hex_color']			= "This field must contain a valid hex color code.";
 $lang['integer']			= "This field must contain an integer.";
 $lang['is_natural']			= "This field must contain only positive numbers.";
@@ -30,9 +29,13 @@ $lang['unique_email']		= "This field must contain a unique email address.";
 $lang['valid_emails']		= "This field must contain all valid email addresses.";
 $lang['valid_ip']			= "This field must contain a valid IP.";
 $lang['valid_url']			= "This field must contain a valid URL.";
-$lang['writable']			= "The path you submitted is not writable.";
 $lang['invalid_xss_check']  = 'The data you submitted did not pass our security check. If you did not intend to submit this form, please <a href="%s">click here</a> and no settings will be changed.';
 $lang['no_html']  			= 'This field cannot contain HTML.';
+$lang['invalid_path']		= 'This path is either invalid or not writable.';
+
+// Legacy form validation lib
+$lang['file_exists']		= $lang['invalid_path'];
+$lang['writable']			= $lang['invalid_path'];
 
 // special and legacy things
 $lang['isset']				= "The %s field must have a value.";
