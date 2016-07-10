@@ -108,14 +108,15 @@ class Communicate extends Utilities {
 			foreach ($groups as $group)
 			{
 				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
+				$group_title = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
 
-				$vars['member_groups'][$group->group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
-				$vars['member_groups'][$group->group_title]['members'] = ee('Model')->get('Member')
+				$vars['member_groups'][$group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
+				$vars['member_groups'][$group_title]['members'] = ee('Model')->get('Member')
 					->filter('group_id', $group->group_id)
 					->count();
-				if ($vars['member_groups'][$group->group_title]['members'] == 0)
+				if ($vars['member_groups'][$group_title]['members'] == 0)
 				{
-					$vars['member_groups'][$group->group_title]['attrs']['disabled'] = 'disabled';
+					$vars['member_groups'][$group_title]['attrs']['disabled'] = 'disabled';
 				}
 			}
 		}
