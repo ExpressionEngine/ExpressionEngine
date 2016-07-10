@@ -27,6 +27,9 @@ do
 			# Prevent "MySQL server has gone away" error
 			echo -e "[mysqld]\nmax_allowed_packet=128M" | sudo sh -c "cat >> /etc/mysql/my.cnf"
 			sudo service mysql restart
+
+			# Upgrade databases
+			sudo mysql_upgrade -u ubuntu -p --force
 		fi
 
 		# Switch PHP version with phpenv and reload the Apache module
