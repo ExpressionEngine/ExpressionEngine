@@ -15,10 +15,24 @@ for PHPVERSION in ${PHP_VERSIONS_ARRAY[@]}
 do
 	if [ $(($i % $CIRCLE_NODE_TOTAL)) -eq $CIRCLE_NODE_INDEX ]
 	then
+
+		# Install MySQL 5.7 when we're testing PHP 7
+		PHP_VERSION_ASPLODE=(${PHPVERSION//./ })
+		PHP_MAJOR_VERSION=${PHP_VERSION_ASPLODE[0]}
+		if [[ $PHP_MAJOR_VERSION -eq 7 ]]
+		then
+			# Script provided by CircleCI
+			curl -sSL https://s3.amazonaws.com/circle-downloads/install-mysql5.7-circleci.sh | sh
+
+			# Prevent "MySQL server has gone away" error
+			echo -e "[mysqld]\nmax_allowed_packet=128M" | sudo sh -c "cat >> /etc/mysql/my.cnf"
+			sudo service mysql restart
+		fi
+
 		# Switch PHP version with phpenv and reload the Apache module
 		printf "Testing under PHP ${PHPVERSION}\n\n"
 		phpenv global $PHPVERSION
-		echo "LoadModule php5_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp5.so" > /etc/apache2/mods-available/php5.load
+		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
 		sudo service apache2 restart
 
 		# We'll store our build artifacts under the name of the current PHP version
