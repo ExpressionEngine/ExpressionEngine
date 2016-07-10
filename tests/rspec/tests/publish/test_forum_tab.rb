@@ -44,7 +44,7 @@ feature 'Forum Tab' do
 
     create_entry
 
-    $db.query('SELECT entry_id, count(entry_id) as count FROM exp_channel_titles WHERE forum_topic_id = 1').each do |row|
+    $db.query('SELECT entry_id, count(entry_id) as count FROM exp_channel_titles WHERE forum_topic_id = 1 GROUP BY entry_id').each do |row|
       row['count'].should == 1
       first_entry = row['entry_id']
     end
