@@ -29,7 +29,7 @@ do
 			sudo service mysql restart
 
 			# Upgrade databases
-			sudo mysql_upgrade -u ubuntu -p --force
+			sudo mysql_upgrade -u ubuntu --force
 		fi
 
 		# Switch PHP version with phpenv and reload the Apache module

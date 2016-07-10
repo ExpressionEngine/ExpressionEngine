@@ -29,7 +29,7 @@ feature 'Category Groups' do
     $db.query('SELECT group_name, count(exp_categories.cat_id)
       FROM exp_category_groups
       LEFT JOIN exp_categories ON exp_categories.group_id = exp_category_groups.group_id
-      GROUP BY group_name, exp_categories.cat_id
+      GROUP BY group_name, exp_category_groups.group_id
       ORDER BY exp_category_groups.group_id ASC').each(:as => :array) do |row|
       groups << row[0] + ' ('+row[1].to_s+')'
     end
