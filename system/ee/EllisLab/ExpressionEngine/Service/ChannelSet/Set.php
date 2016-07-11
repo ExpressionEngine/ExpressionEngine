@@ -309,9 +309,22 @@ class Set {
 
 			if (isset($channel_data->cat_groups))
 			{
+				$cat_groups = $this->category_groups;
+				$fn = function() use ($channel, $channel_data, $cat_groups)
+				{
+					$cat_groups = array();
+					foreach ($this->category_groups as $cat_group)
+					{
+						$cat_groups[] = $cat_group->getId();
+					}
+
+					$channel->cat_group = implode('|', $cat_groups);
+					$channel->save();
+				};
+
 				foreach ($channel_data->cat_groups as $cat_group)
 				{
-					$channel->CategoryGroups[] = $this->category_groups[$cat_group];
+					$this->category_groups[$cat_group]->on('afterInsert', $fn);
 				}
 			}
 
