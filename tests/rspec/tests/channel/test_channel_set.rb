@@ -131,6 +131,35 @@ feature 'Channel Sets' do
       expected_files.sort.should == found_files.sort.map(&:name)
     end
 
+    it 'exports all category groups for the channel' do
+      # First add a second category to the News channel
+      @channel = ChannelCreate.new
+      @channel.load_edit_for_channel(1)
+      @channel.cat_group[0].click
+      @channel.submit
+
+      @page.load
+      download_channel_set(1)
+
+      # Check to see if the file exists
+      name = @page.channel_names[0].text
+      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      File.exist?(path).should == true
+      no_php_js_errors
+
+      found_files = []
+      Zip::File.open(path) do |zipfile|
+        zipfile.each do |file|
+          found_files << file
+        end
+      end
+
+      channel_set = JSON.parse(found_files[3].get_input_stream.read)
+      channel_set['category_groups'].size.should == 2
+      channel_set['category_groups'][1]['name'].should == 'About'
+      channel_set['category_groups'][0]['name'].should == 'News Categories'
+    end
+
     context 'with relationships' do
       it 'exports relationship fields with selected channels' do
         @importer.relationships_specified_channels
