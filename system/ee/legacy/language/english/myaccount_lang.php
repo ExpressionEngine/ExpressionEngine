@@ -501,8 +501,6 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
 
-'link_avatar' => ' Link to avatar',
-
 'rte_settings' => 'RTE Settings',
 
 'rte_enabled' => 'Enable Rich Text Editor?',
