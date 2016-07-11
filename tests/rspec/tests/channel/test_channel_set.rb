@@ -466,6 +466,15 @@ feature 'Channel Sets' do
       end
     end
 
+    it 'imports a channel set with 2 category groups' do
+      import_channel_set 'two-cat-groups'
+
+      $db.query("SELECT cat_group FROM exp_channels WHERE channel_title = 'Test'").each do |row|
+        channel_title_field_label = row['cat_group']
+        channel_title_field_label.should == '3|4'
+      end
+    end
+
     it 'imports a channel set with duplicate names' do
       import_channel_set 'simple-duplicate', method: 'issue_duplicate'
 
