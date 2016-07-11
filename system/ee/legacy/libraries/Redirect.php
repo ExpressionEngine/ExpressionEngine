@@ -44,7 +44,14 @@ $host = ( ! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'],0
 
 $force_redirect = ($request_type != 'CP' && config_item('force_redirect') == TRUE) ? TRUE: FALSE;
 
-$link = "<a rel=\"nofollow\" href='".$_GET['URL']."'>".$_GET['URL']."</a>";
+$url = $_GET['URL'];
+
+if (function_exists('idn_to_ascii'))
+{
+	$url = idn_to_ascii($url);
+}
+
+$link = "<a rel=\"nofollow\" href='".$url."'>".$url."</a>";
 
 if ( $link !== ee('Security/XSS')->clean($link) )
 {
@@ -58,7 +65,7 @@ if ($force_redirect == TRUE OR ( ! isset($_SERVER['HTTP_REFERER']) OR ! stristr(
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not
 	$str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<meta name='robots' content='none'>\n<title>Redirect</title>\n</head>\n<body>".
-			"<p>To proceed to the URL you have requested, click the link below:</p>".
+			"<p>Warning: You are about to visit an external link that is not part of ".config_item('site_url').". Please take a moment to verify the URL and that you have requested this action. To proceed to the URL, click the link below:</p>".
 			"<p>$link</p>\n</body>\n</html>";
 }
 else
