@@ -114,8 +114,7 @@ $(document).ready(function () {
 
 	makeTabsDroppable();
 
-	// Sorting the fields
-	sheets.sortable({
+	var sortable_options_for_sheets = {
 		appendTo: "div.box.publish",
 		connectWith: "div.tab",
 		cursor: "move",
@@ -145,7 +144,10 @@ $(document).ready(function () {
 			$('fieldset.sortable').removeClass('last');
 			$('fieldset.sortable:last-child').addClass('last');
 		}
-	});
+	};
+
+	// Sorting the fields
+	sheets.sortable(sortable_options_for_sheets);
 
 	// Saving the on/off state of tabs
 	$('.tab-on, .tab-off').on('click', function(e) {
@@ -216,6 +218,7 @@ $(document).ready(function () {
 
 				// Update tabs
 				sheets = $('.wrap div.tab');
+				sheets.eq(-1).sortable(sortable_options_for_sheets);
 
 				$('.modal-add-new-tab .m-close').trigger('click');
 			}

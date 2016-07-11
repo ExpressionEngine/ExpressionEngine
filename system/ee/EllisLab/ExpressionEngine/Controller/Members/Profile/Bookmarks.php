@@ -75,7 +75,7 @@ class Bookmarks extends Settings {
 			$link = 'javascript:'.urlencode($link);
 
 			$links[] = array(
-				'name' => "<a href='$link'>{$bookmark->name}</a>",
+				'name' => "<a href='$link'>".htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8')."</a>",
 				$toolbar,
 				array(
 					'name' => 'selection[]',

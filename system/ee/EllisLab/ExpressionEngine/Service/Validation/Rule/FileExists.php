@@ -52,7 +52,7 @@ class FileExists extends ValidationRule {
 
 	public function getLanguageKey()
 	{
-		return 'file_exists';
+		return 'invalid_path';
 	}
 
 	protected function getFilesystem()

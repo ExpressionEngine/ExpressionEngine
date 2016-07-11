@@ -848,6 +848,12 @@ class Forum {
 		// Grab theme.  Can be from a cookie or user pref
 		$forum_theme = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('forum_theme') : '';
 
+		// or overridden with a tag param in the template
+		if (is_object(ee()->TMPL))
+		{
+			$forum_theme = (ee()->TMPL->fetch_param('theme')) ?: $forum_theme;
+		}
+
 		// Maybe the theme is in a cookie?
 		if ($forum_theme == '')
 		{

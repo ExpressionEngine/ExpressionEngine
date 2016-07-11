@@ -132,8 +132,12 @@ class Edit extends AbstractPublishController {
 			$channel = ee('Model')->get('Channel', $channel_id)->first();
 			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
+			// Have we reached the max entries limit for this channel?
 			if ($channel->max_entries !== '0' && $count >= $channel->max_entries)
 			{
+				// Don't show create button
+				$vars['create_button'] = '';
+
 				$desc_key = ($channel->max_entries === '1')
 					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
 				ee('CP/Alert')->makeInline()
@@ -375,6 +379,17 @@ class Edit extends AbstractPublishController {
 			show_404();
 		}
 
+		// If an entry or channel on a different site is requested, try
+		// to switch sites and reload the publish form
+		$site_id = (int) ee()->input->get_post('site_id');
+		if ($site_id != 0 && $site_id != ee()->config->item('site_id') && empty($_POST))
+		{
+			ee()->cp->switch_site(
+				$site_id,
+				ee('CP/URL')->make('publish/edit/entry/'.$id)
+			);
+		}
+
 		$entry = ee('Model')->get('ChannelEntry', $id)
 			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -402,7 +417,7 @@ class Edit extends AbstractPublishController {
 			}
 		// -------------------------------------------
 
-		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		$form_attributes = array(
 			'class' => 'settings ajax-validate',

@@ -80,7 +80,12 @@
 
 		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
 			e.preventDefault();
-			$(this).parents('div.box').load($(this).attr('href'));
+			var new_url = $(this).attr('href');
+
+			$(this).parents('div.box').load(new_url);
+			if ($(options.source).hasClass('markItUpButton') || $(options.source).hasClass('rte-upload')) {
+				$('.publish .toolbar.rte li.m-link[rel="modal-file"], .publish .toolbar.html-btns li.m-link[rel="modal-file"]').attr('href', new_url);
+			}
 		});
 		// Capture form submission
 		$('.modal-file').on('submit', 'form', function(e) {

@@ -67,7 +67,7 @@
 				$chosen = $entry;
 			}
 		?>
-		<label class="<?=$class?>" data-channel-id="<?=$entry->Channel->channel_id?>" data-channel-title="<?=$entry->Channel->channel_title?>" data-entry-title="<?=$entry->title?>">
+		<label class="<?=$class?>" data-channel-id="<?=$entry->Channel->channel_id?>" data-channel-title="<?=$entry->Channel->channel_title?>" data-entry-title="<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?>">
 			<?php
 				if ($multiple)
 				{
@@ -79,7 +79,7 @@
 					echo form_radio($field_name.'[data][]', $entry->entry_id, $checked);
 				}
 			?>
-			<?=$entry->title?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
+			<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
 		</label>
 		<?php endforeach; ?>
 		<?php
@@ -98,7 +98,7 @@
 		<div class="relate-wrap-chosen">
 			<?php if($chosen): ?>
 			<label class="choice block chosen relate-manage">
-				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$chosen->title?> <i>&mdash; <?=$chosen->Channel->channel_title?></i>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=htmlentities($chosen->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$chosen->Channel->channel_title?></i>
 			</label>
 			<?php endif; ?>
 			<label class="choice <?=($chosen) ? "hidden" : "block"?>">
@@ -118,7 +118,7 @@
 			<?php foreach ($related as $entry): ?>
 			<label class="choice block chosen relate-manage" data-entry-id="<?=$entry->entry_id?>">
 				<span class="relate-reorder"></span>
-				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=$entry->title?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
 			</label>
 			<?php endforeach; ?>
 		<?php else: ?>
