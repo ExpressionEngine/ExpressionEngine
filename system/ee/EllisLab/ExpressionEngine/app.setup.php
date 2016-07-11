@@ -13,6 +13,7 @@ use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
@@ -119,6 +120,11 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
+		'Format' => function($ee)
+		{
+			return new Formatter\FormatterFactory(ee()->lang);
+		},
+
 		'Curl' => function($ee)
 		{
 			return new Curl\RequestFactory();
@@ -159,7 +165,7 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
 		},
 
 		'Permission' => function($ee)

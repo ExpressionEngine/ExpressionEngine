@@ -437,17 +437,16 @@ class File {
 			$row_prefs = $upload_prefs[$row['upload_location_id']];
 
 			//  More Variables, Mostly for Conditionals
-			$row['absolute_count']	= (int) ee()->TMPL->fetch_param('limit') + $count + 1;
-			$row['logged_in']		= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
-			$row['logged_out']		= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
-			$row['entry_date']		= $row['upload_date'];
-			$row['edit_date']		= $row['modified_date'];
-			$row['directory_id']	= $row['id'];
-			$row['directory_title']	= $row['name'];
-			$row['entry_id']		= $row['file_id'];
-			$row['file_url']		= rtrim($row_prefs['url'], '/').'/'.$row['file_name'];
-			$row['filename']		= $row['file_name'];
-			$row['viewable_image']	= $this->is_viewable_image($row['file_name']);
+			$row['absolute_count']  = (int) ee()->TMPL->fetch_param('limit') + $count + 1;
+			$row['logged_in']       = (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+			$row['logged_out']      = (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
+			$row['directory_id']    = $row['id'];
+			$row['directory_title'] = $row['name'];
+			$row['entry_id']        = $row['file_id'];
+			$row['extension']       = substr(strrchr($row['file_name'], '.'), 1);
+			$row['path']            = $row_prefs['url'];
+			$row['url']             = rtrim($row_prefs['url'], '/').'/'.$row['file_name'];
+			$row['viewable_image']  = $this->is_viewable_image($row['file_name']);
 
 			// Add in the path variable
 			$row['id_path'] = array('/'.$row['file_id'], array('path_variable' => TRUE));
@@ -465,9 +464,12 @@ class File {
 				)
 			);
 
-			// Caption is now called Description, but keep supporting
-			// caption so it doesn't break on upgrade
-			$row['caption'] = $row['description'];
+			// Backwards compatible support for some old variables
+			$row['caption']    = $row['description'];
+			$row['entry_date'] = $row['upload_date'];
+			$row['edit_date']  = $row['modified_date'];
+			$row['filename']   = $row['file_name'];
+			$row['file_url']   = $row['url'];
 
 			// Get File Size/H/W data
 			$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/'.$row['filename']));
@@ -477,27 +479,48 @@ class File {
 				$row[$k] = $v;
 			}
 
-			// Thumbnail data
+			$row['file_size'] = $row['size'];
+			$row['file_size:human'] = (string) ee('Format')->make('Number', $row['size'])->bytes();
+			$row['file_size:human_long'] = (string) ee('Format')->make('Number', $row['size'])->bytes(FALSE);
+
 			foreach ($this->valid_thumbs as $data)
 			{
 				if ($row['viewable_image'] && $row['id'] == $data['dir'])
 				{
 					$size_data = array();
 
-					$row[$data['name'].'_file_url'] = rtrim($row_prefs['url'], '/').'/_'.$data['name'].'/'.$row['file_name'];
+					$row['url:'.$data['name']] = rtrim($row_prefs['url'], '/').'/_'.$data['name'].'/'.$row['file_name'];
+					// backwards compat variable
+					$row[$data['name'].'_file_url'] = $row['url:'.$data['name']];
 
 					$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/_'.$data['name'].'/'.$row['file_name']));
 
+					$row['height:'.$data['name']] = $size_data['height'];
+					$row['width:'.$data['name']] = $size_data['width'];
+					$row['file_size:'.$data['name']] = (int) $size_data['size'];
+					$row['file_size:'.$data['name'].':human'] = (string) ee('Format')->make('Number', (int) $size_data['size'])->bytes();
+					$row['file_size:'.$data['name'].':human_long'] = (string) ee('Format')->make('Number', (int) $size_data['size'])->bytes(FALSE);
+
+					// backwards compat variables
 					foreach($size_data as $k => $v)
 					{
 						$row[$data['name'].'_'.$k] = $v;
 					}
 				}
-				elseif ( ! isset($row[$data['name'].'_height']))
+				// if the file doesn't exist this key is null, and fails isset(), so use array_key_exists
+				elseif ( ! array_key_exists($data['name'].'_height', $row))
 				{
-					$row[$data['name'].'_height'] = '';
-					$row[$data['name'].'_width'] = '';
-					$row[$data['name'].'_size'] = '';
+					$row['url:'.$data['name']]                     = '';
+					$row['height:'.$data['name']]                  = '';
+					$row['width:'.$data['name']]                   = '';
+					$row['file_size:'.$data['name']]               = '';
+					$row['file_size:'.$data['name'].':human']      = '';
+					$row['file_size:'.$data['name'].':human_long'] = '';
+
+					// backwards compat
+					$row[$data['name'].'_height']   = '';
+					$row[$data['name'].'_width']    = '';
+					$row[$data['name'].'_size']     = '';
 					$row[$data['name'].'_file_url'] = '';
 				}
 			}
