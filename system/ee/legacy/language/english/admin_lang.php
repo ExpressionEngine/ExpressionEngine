@@ -602,10 +602,6 @@ $lang = array(
 
 "url_explanation" => "This is the directory containing your site index file.",
 
-"doc_url" => "URL to Documentation Directory",
-
-"doc_url_explanation" => "Root directory only, with trailing slash",
-
 "site_index" => "Name of your site's index page",
 
 "system_path" => "Absolute path to your %x folder",
@@ -1055,7 +1051,11 @@ $lang = array(
 
 'illegal_characters' => 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
 
+'deprecation_notice' => 'Deprecation Notice',
+
 'developer_logs' => 'You have %d unviewed items in the <a href="%s">Developer Log</a>.',
+
+'developer_one_log' => 'You have %d unviewed item in the <a href="%s">Developer Log</a>.',
 
 ''=>''
 );

@@ -307,7 +307,44 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 			array('test < br >', FALSE),
 			array('<br/>test', FALSE),
 			array('</br>test', FALSE),
+			array('<a href="test">test', FALSE),
 			array('<a href="test">test</a>', FALSE)
+		);
+	}
+
+	/**
+	 * @dataProvider limitHtmlDataProvider
+	 */
+	public function testLimitHtml($value, $expected)
+	{
+		$this->validator->setRules(array(
+			'somefield' => 'limitHtml[i,b,em,strong,code,sup,sub,span,br]'
+		));
+
+		$result = $this->validator->validate(array('somefield' => $value));
+		$this->assertEquals($expected, $result->isValid());
+	}
+
+	public function limitHtmlDataProvider()
+	{
+		return array(
+			// good!
+			array('test', TRUE),
+			array('<b>test<strong>', TRUE),
+			array('<b>test</b>', TRUE),
+			array('<i>test</i>', TRUE),
+			array('<em>test</em>', TRUE),
+			array('<strong>test</strong>', TRUE),
+			array('<code>test</code>', TRUE),
+			array('e=mc<sup>2</sup>', TRUE),
+			array('<sub>sub</sub>script', TRUE),
+			array('here is a <span test="test">span</span>', TRUE),
+			array('xhtml linebreak <br/>', TRUE),
+
+			// bad!
+			array('check out my sweet <blink>blog post</blink>', FALSE),
+			array('<script>fun javascript</script>', FALSE),
+			array('other <bad> tags', FALSE),
 		);
 	}
 }

@@ -163,4 +163,28 @@ class BuilderTest extends \PHPUnit_Framework_TestCase {
 			$builder->getWiths()
 		);
 	}
+
+	public function testSearch()
+	{
+		$builder = new Builder('Test');
+
+		$builder->search('words', 'hello world');
+		$builder->search('wordnotword', 'hello -world');
+		$builder->search('phrase', '"hello world"');
+		$builder->search('phraseword', '"hello world" people');
+		$builder->search('notphraseword', '-"hello world" people');
+		$builder->search('apostrophe', "hello world's people");
+
+		$this->assertEquals(
+			array(
+				'words' => array('hello' => TRUE, 'world' => TRUE),
+				'wordnotword' => array('hello' => TRUE, 'world' => FALSE),
+				'phrase' => array('hello world' => TRUE),
+				'phraseword' => array('hello world' => TRUE, 'people' => TRUE),
+				'notphraseword' => array('hello world' => FALSE, 'people' => TRUE),
+				'apostrophe' => array('hello' => TRUE, "world's" => TRUE, 'people' => TRUE),
+			),
+			$builder->getSearch()
+		);
+	}
 }

@@ -44,10 +44,15 @@
 				.first();
 
 			var label = $(this).closest('label');
+
+			// jQuery will decode encoded HTML in a data attribute,
+			// so we'll use this trick to keep it encoded
+			var encoded_title = $('<div/>').text(label.data('entry-title')).html();
+
 			var chosen = $(this).closest('.scroll-wrap')
 				.data('template')
 			.replace(/{entry-id}/g, $(this).val())
-			.replace(/{entry-title}/g, label.data('entry-title'))
+			.replace(/{entry-title}/g, encoded_title)
 			.replace(/{channel-title}/g, label.data('channel-title'));
 
 			// If the checkbox was unchecked run the remove event
@@ -61,7 +66,7 @@
 			relationship.find('.scroll-wrap').first().append(chosen);
 			relationship.find('.scroll-wrap label')
 				.last()
-				.data('entry-title', label.data('entry-title'))
+				.data('entry-title', encoded_title)
 				.data('channel-id', label.data('channel-id'))
 				.data('channel-title', label.data('channel-title'))
 				.prepend('<span class="relate-reorder"></span>');

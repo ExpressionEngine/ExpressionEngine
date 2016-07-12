@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.3.3';	// The version being installed
+	public $version           = '3.4.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -85,12 +85,9 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	public $userdata = array(
 		'app_version'           => '',
-		'doc_url'               => 'https://docs.expressionengine.com/v3/',
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
-		'db_conntype'           => '0',
-		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -126,12 +123,10 @@ class Wizard extends CI_Controller {
 		'install_default_theme' => 'n'
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the EE
-	// and CI config files are one in the same now we use this data when we write the
-	// initial config file using $this->write_config_data()
+	// These are the default values for the CodeIgniter config array.  Since the
+	// EE and CI config files are one in the same now we use this data when we
+	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
-		'uri_protocol'       => 'AUTO',
-		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
@@ -754,8 +749,7 @@ class Wizard extends CI_Controller {
 			'username' => $this->userdata['db_username'],
 			'password' => $this->userdata['db_password'],
 			'database' => $this->userdata['db_name'],
-			'dbdriver' => $this->userdata['dbdriver'],
-			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'dbdriver' => 'mysqli',
 			'dbprefix' => $this->getDbPrefix(),
 			'swap_pre' => 'exp_',
 			'db_debug' => TRUE, // We show our own errors
@@ -776,7 +770,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Does the specified database schema type exist?
-		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php'))
+		if ( ! file_exists(APPPATH.'schema/mysqli_schema.php'))
 		{
 			$errors[] = lang('unreadable_dbdriver');
 		}
@@ -796,7 +790,7 @@ class Wizard extends CI_Controller {
 		$this->userdata['screen_name'] = $this->userdata['username'];
 
 		// Load the DB schema
-		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
+		require APPPATH.'schema/mysqli_schema.php';
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
@@ -1094,30 +1088,6 @@ class Wizard extends CI_Controller {
 
 		// Make sure the site_url has a trailing slash
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
-
-		// Set the checkbox values
-		$prefs = array(
-			'db_conntype'		=> array(
-				'persistent' => array('persistent', 'nonpersistent')
-			)
-		);
-
-		foreach ($prefs as $name => $value)
-		{
-			foreach ($value as $k => $v)
-			{
-				if ($this->userdata[$name] == $k)
-				{
-					$this->userdata[$v[0]] = 'checked="checked"';
-					$this->userdata[$v[1]] = '';
-				}
-				else
-				{
-					$this->userdata[$v[0]] = '';
-					$this->userdata[$v[1]] = 'checked="checked"';
-				}
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1617,17 +1587,13 @@ class Wizard extends CI_Controller {
 			'db_username'               => $this->userdata['db_username'],
 			'db_password'               => $this->userdata['db_password'],
 			'db_database'               => $this->userdata['db_name'],
-			'db_dbdriver'               => $this->userdata['dbdriver'],
-			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
 			'debug'                     => '1',
-			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
 			'site_label'                => $this->userdata['site_label'],
 			'site_url'                  => $this->userdata['site_url'],
 			'theme_folder_url'          => $this->userdata['site_url'].'themes/',
-			'doc_url'                   => $this->userdata['doc_url'],
 			'webmaster_email'           => $this->userdata['email_address'],
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
@@ -2053,7 +2019,6 @@ class Wizard extends CI_Controller {
 				$data = str_replace('{'.$key.'}', $config[$key], $data);
 				unset($config[$key]);
 			}
-
 		}
 
 		// any unanticipated keys that aren't in our template?
@@ -2066,8 +2031,16 @@ class Wizard extends CI_Controller {
 			unset($config['site_label']);
 		}
 
+		// Create extra_config, unset defaults
+		$defaults = default_config_items();
 		foreach ($config as $key => $val)
 		{
+			// Bypass defaults and empty values
+			if (empty($val) || (isset($defaults[$key]) && $defaults[$key] == $val))
+			{
+				continue;
+			}
+
 			$extra_config .= "\$config['{$key}'] = '{$val}';\n";
 		}
 

@@ -1511,12 +1511,16 @@ class Comment_mcp {
 
 				$action_id	= ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
-				ee()->db->select('channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
+				ee()->db->select('channel_titles.site_id, channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
 				ee()->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id', 'left');
 				ee()->db->where('channel_titles.entry_id', $entry_id);
 				$results = ee()->db->get('channel_titles');
 
-				$com_url = ($results->row('comment_url')  == '') ? $results->row('channel_url')	 : $results->row('comment_url');
+				$overrides = ee()->config->get_cached_site_prefs($results->row('site_id'));
+				$channel_url = parse_config_variables($results->row('channel_url'), $overrides);
+				$comment_url = parse_config_variables($results->row('comment_url'), $overrides);
+
+				$com_url = ($comment_url  == '') ? $channel_url : $comment_url;
 
 
 				// Create an array of comments to add to the email

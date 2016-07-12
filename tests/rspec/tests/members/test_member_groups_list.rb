@@ -347,7 +347,7 @@ feature 'Member Group List' do
     end
 
     click_link 'Site Manager'
-    find('.sidebar a[href$="cp/msm/create"]').click
+    find('a[href$="cp/msm/create"]').click
 
     find('input[name="site_label"]').set 'Second Site'
     find('input[name="site_name"]').set 'second_site'

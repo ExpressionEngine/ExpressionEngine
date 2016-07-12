@@ -341,10 +341,17 @@ abstract class AbstractPublish extends CP_Controller {
 		ee('CP/Alert')->makeInline('entry-form')
 			->asSuccess()
 			->withTitle(lang($action . '_entry_success'))
-			->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
+			->addToBody(sprintf(lang($action . '_entry_success_desc'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8')))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+		if (ee()->input->post('submit') == 'finish')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id));
+		}
 	}
 
 	/**

@@ -370,7 +370,6 @@ class EE_Validate {
 			/** -------------------------------------
 			/**  Is email banned?
 			/** -------------------------------------*/
-
 			if (ee()->session->ban_check('email', $this->email))
 			{
 				return $this->errors[] = ee()->lang->line('email_taken');
@@ -379,10 +378,7 @@ class EE_Validate {
 			/** -------------------------------------
 			/**  Duplicate emails?
 			/** -------------------------------------*/
-
-			$query = ee()->db->query("SELECT COUNT(*) as count FROM exp_members WHERE email = '".ee()->db->escape_str($this->email)."'");
-
-			if ($query->row('count')  > 0)
+			if ( ! ee('Validation')->check('uniqueEmail', $this->email))
 			{
 				$this->errors[] = ee()->lang->line('email_taken');
 			}

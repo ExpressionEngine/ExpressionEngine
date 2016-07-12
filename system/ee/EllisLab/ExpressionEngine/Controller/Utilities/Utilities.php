@@ -39,6 +39,8 @@ class Utilities extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
 		if ( ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));

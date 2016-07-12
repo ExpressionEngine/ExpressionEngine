@@ -31,10 +31,11 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 class FileExists extends ValidationRule {
 
 	protected $fs;
+	protected $all_values = array();
 
 	public function validate($key, $value)
 	{
-		if ($this->getFilesystem()->exists($value))
+		if ($this->getFilesystem()->exists(parse_config_variables($value, $this->all_values)))
 		{
 			return TRUE;
 		}
@@ -51,7 +52,7 @@ class FileExists extends ValidationRule {
 
 	public function getLanguageKey()
 	{
-		return 'file_exists';
+		return 'invalid_path';
 	}
 
 	protected function getFilesystem()
@@ -64,6 +65,10 @@ class FileExists extends ValidationRule {
 		return $this->fs;
 	}
 
+	public function setAllValues(array $values)
+	{
+		$this->all_values = $values;
+	}
 }
 
 // EOF

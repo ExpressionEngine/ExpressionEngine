@@ -30,6 +30,11 @@ if ($wrap): ?>
 				// Don't do reordering logic if the table is empty
 				$reorder = $reorder && ! empty($data);
 				$colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+				if ($grid_input)
+				{
+					$colspan++;
+				}
+				
 				if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder"></span></th>
 				<?php elseif ($reorder): ?>
@@ -64,7 +69,7 @@ if ($wrap): ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
-								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
+								<span class="grid-instruct"><?=lang($settings['desc'])?></span>
 							<?php endif ?>
 							<?php if ($sortable && $settings['sort'] && $base_url != NULL): ?>
 								<?php
@@ -142,11 +147,11 @@ if ($wrap): ?>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td>
 									<input
-										name="<?=$column['name']?>"
-										value="<?=$column['value']?>"
+										name="<?=form_prep($column['name'])?>"
+										value="<?=form_prep($column['value'])?>"
 										<?php if (isset($column['data'])):?>
 											<?php foreach ($column['data'] as $key => $value): ?>
-												data-<?=$key?>="<?=$value?>"
+												data-<?=$key?>="<?=form_prep($value)?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
 										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>

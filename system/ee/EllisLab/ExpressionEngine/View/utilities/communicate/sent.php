@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/default-nav-table'); ?>
 
 <div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
@@ -37,7 +37,7 @@
 							<ul class="checklist mb">
 								<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date->format('U'))?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
 							</ul>
-							<?=$email->message?>
+							<?=ee('Security/XSS')->clean($email->message)?>
 						</div>
 					</div>
 				</div>

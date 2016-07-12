@@ -49,6 +49,9 @@ class CI_DB_active_record extends CI_DB_driver {
 	protected $ar_group_count 	= 0;
 	protected $ar_empty_group	= TRUE;
 
+	protected $ar_like_group_count 	= 0;
+	protected $ar_empty_like_group	= TRUE;
+
 	// Active Record Caching variables
 	var $ar_caching				= FALSE;
 	var $ar_cache_exists		= array();
@@ -543,7 +546,8 @@ class CI_DB_active_record extends CI_DB_driver {
 		}
 
 		// The str_repeat() is just for pretty spacing and readable queries.
-		$this->ar_where[] = $boolean_operator . str_repeat(' ', ++$this->ar_group_count) . ' ( ';
+		$this->ar_where[] = $boolean_operator . ' ( ';
+		$this->ar_group_count++;
 
 		// We now have an empty group again and don't need the next boolean operator.  Used by _where().
 		$this->ar_empty_group = TRUE;
@@ -558,12 +562,82 @@ class CI_DB_active_record extends CI_DB_driver {
 	 */
 	public function end_group()
 	{
-		$this->ar_where[] = str_repeat(' ', --$this->ar_group_count) . ' ) ';
+		$this->ar_group_count--;
+		$this->ar_where[] = ') ';
 
 		// Unless the user opens a group and immediately closes it, this should
 		// be superfluous.  ar_empty_group should already be FALSE from a previous
 		// call to _where().  But just in case...
 		$this->ar_empty_group = FALSE;
+		return $this;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Starts a new group by adding an opening parenthesis to the WHERE clause
+	 * of the query
+	 *
+	 * @return CI_DB_active_record The active record object
+	 */
+	public function start_like_group()
+	{
+		return $this->_start_like_group('AND');
+	}
+
+	/**
+	 * Starts a new group by adding an opening parenthesis to the WHERE clause
+	 * of the query, prefixing it with OR
+	 *
+	 * @return CI_DB_active_record The active record object
+	 */
+	public function or_start_like_group()
+	{
+		return $this->_start_like_group('OR');
+	}
+
+	/**
+	 * Start the query group
+	 *
+	 * @param string $boolean_operator Either AND or OR
+	 * @return CI_DB_active_record The active record object
+	 */
+	protected function _start_like_group($boolean_operator = 'AND')
+	{
+		// If we're starting with a group, then we don't need the boolean operator.  Any other time, we do.
+		$boolean_operator = (count($this->ar_like) == 0 AND count($this->ar_cache_like) == 0) ? '' : $boolean_operator;
+
+		// Sometimes you start a group and then immediately start another group, in those cases
+		// we do not want an operator
+		if ($this->ar_empty_like_group)
+		{
+			$boolean_operator = '';
+		}
+
+		// The str_repeat() is just for pretty spacing and readable queries.
+		$this->ar_like[] = str_repeat(' ', $this->ar_like_group_count).$boolean_operator . ' (';
+		$this->ar_like_group_count++;
+
+		// We now have an empty group again and don't need the next boolean operator.  Used by _where().
+		$this->ar_empty_like_group = TRUE;
+		return $this;
+	}
+
+	/**
+	 * End the current group by adding a closing parenthesis to the WHERE clause
+	 * of the query
+	 *
+	 * @return CI_DB_active_record The active record object
+	 */
+	public function end_like_group()
+	{
+		$this->ar_like_group_count--;
+		$this->ar_like[] = str_repeat(' ', $this->ar_like_group_count).')';
+
+		// Unless the user opens a group and immediately closes it, this should
+		// be superfluous.  ar_empty_group should already be FALSE from a previous
+		// call to _where().  But just in case...
+		$this->ar_empty_like_group = FALSE;
 		return $this;
 	}
 
@@ -807,7 +881,8 @@ class CI_DB_active_record extends CI_DB_driver {
 		{
 			$k = $this->_protect_identifiers($k);
 
-			$prefix = (count($this->ar_like) == 0) ? '' : $type;
+			$prefix = ($this->ar_empty_like_group) ? '' : $type;
+			$this->ar_empty_like_group = FALSE;
 
 			$v = $this->escape_like_str($v);
 
@@ -830,7 +905,7 @@ class CI_DB_active_record extends CI_DB_driver {
 				$like_statement = $like_statement.sprintf($this->_like_escape_str, $this->_like_escape_chr);
 			}
 
-			$this->ar_like[] = $like_statement;
+			$this->ar_like[] = str_repeat('  ', $this->ar_like_group_count) . $like_statement;
 			if ($this->ar_caching === TRUE)
 			{
 				$this->ar_cache_like[] = $like_statement;
@@ -2178,23 +2253,25 @@ class CI_DB_active_record extends CI_DB_driver {
 	function _reset_select()
 	{
 		$ar_reset_items = array(
-			'ar_select'         => array(),
-			'ar_from'           => array(),
-			'ar_join'           => array(),
-			'ar_where'          => array(),
-			'ar_like'           => array(),
-			'ar_groupby'        => array(),
-			'ar_having'         => array(),
-			'ar_orderby'        => array(),
-			'ar_wherein'        => array(),
-			'ar_aliased_tables' => array(),
-			'ar_no_escape'      => array(),
-			'ar_distinct'       => FALSE,
-			'ar_limit'          => FALSE,
-			'ar_offset'         => FALSE,
-			'ar_order'          => FALSE,
-			'ar_empty_group'    => empty($this->ar_cache_where),
-			'ar_group_count'    => 0
+			'ar_select'           => array(),
+			'ar_from'             => array(),
+			'ar_join'             => array(),
+			'ar_where'            => array(),
+			'ar_like'             => array(),
+			'ar_groupby'          => array(),
+			'ar_having'           => array(),
+			'ar_orderby'          => array(),
+			'ar_wherein'          => array(),
+			'ar_aliased_tables'   => array(),
+			'ar_no_escape'        => array(),
+			'ar_distinct'         => FALSE,
+			'ar_limit'            => FALSE,
+			'ar_offset'           => FALSE,
+			'ar_order'            => FALSE,
+			'ar_empty_group'      => empty($this->ar_cache_where),
+			'ar_empty_like_group' => empty($this->ar_cache_like),
+			'ar_group_count'      => 0,
+			'ar_like_group_count' => 0
 		);
 
 		$this->_reset_run($ar_reset_items);
@@ -2213,16 +2290,18 @@ class CI_DB_active_record extends CI_DB_driver {
 	function _reset_write()
 	{
 		$ar_reset_items = array(
-			'ar_set'         => array(),
-			'ar_from'        => array(),
-			'ar_where'       => array(),
-			'ar_like'        => array(),
-			'ar_orderby'     => array(),
-			'ar_keys'        => array(),
-			'ar_limit'       => FALSE,
-			'ar_order'       => FALSE,
-			'ar_empty_group' => empty($this->ar_cache_where),
-			'ar_group_count' => 0
+			'ar_set'         	  => array(),
+			'ar_from'        	  => array(),
+			'ar_where'       	  => array(),
+			'ar_like'        	  => array(),
+			'ar_orderby'     	  => array(),
+			'ar_keys'        	  => array(),
+			'ar_limit'       	  => FALSE,
+			'ar_order'       	  => FALSE,
+			'ar_empty_group'      => empty($this->ar_cache_where),
+			'ar_empty_like_group' => empty($this->ar_cache_like),
+			'ar_group_count'      => 0,
+			'ar_like_group_count' => 0
 		);
 
 		$this->_reset_run($ar_reset_items);

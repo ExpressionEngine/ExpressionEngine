@@ -1,4 +1,4 @@
 class MenuSection < SitePrism::Section
-  element :dev_menu, '.dev-menu .has-sub'
-  element :members_btn, '.author-menu li:last-child'
+  element :dev_menu, '.nav-main-develop .nav-tools .nav-has-sub'
+  element :members_btn, '.nav-main-author .nav-members'
 end

@@ -92,9 +92,9 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_validation_rules = array(
 		'author_id'          => 'required|isNatural|validateAuthorId',
-		'channel_id'         => 'required',
+		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
-		'title'              => 'required',
+		'title'              => 'required|limitHtml[b,strong,i,em,span,sup,sub,code,ins,del]',
 		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
@@ -198,6 +198,30 @@ class ChannelEntry extends ContentModel {
 	}
 
 	/**
+	 * Validate entry count for this channel against channel's
+	 * max_entries setting
+	 */
+	public function validateMaxEntries($key, $value, $params, $rule)
+	{
+		if ($this->Channel->max_entries === '0')
+		{
+			return TRUE;
+		}
+
+		$total_entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'title')
+			->filter('channel_id', $value)
+			->count();
+
+		if ($total_entries >= $this->Channel->max_entries)
+		{
+			return sprintf(lang('entry_limit_reached_desc'), $this->Channel->max_entries);
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Validate the author ID for permissions
 	 */
 	public function validateAuthorId($key, $value, $params, $rule)
@@ -259,7 +283,7 @@ class ChannelEntry extends ContentModel {
 			if (defined('REQ') && REQ == 'CP')
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				return sprintf(lang('url_title_not_unique'), $edit_link, $entry->title);
+				return sprintf(lang('url_title_not_unique'), $edit_link, htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 			}
 
 			return lang('url_title_not_unique_frontend');
@@ -460,7 +484,10 @@ class ChannelEntry extends ContentModel {
 	{
 		$layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
 
-		$this->getCustomField('title')->setItem('field_label', $this->Channel->title_field_label);
+		$this->getCustomField('title')->setItem(
+			'field_label',
+			htmlentities($this->Channel->title_field_label, ENT_QUOTES, 'UTF-8')
+		);
 
 		$this->usesCustomFields();
 

@@ -96,6 +96,7 @@ class Pages_tab {
 
 		if ($templates->num_rows() === 0)
 		{
+			ee()->lang->load('design');
 			$no_templates = ee('View')->make('ee:_shared/form/no_results')->render(array(
 				'text' => sprintf(lang('no_found'), lang('pages_templates')),
 				'link_text' => lang('create_new_template'),

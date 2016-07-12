@@ -88,9 +88,9 @@ class App {
 
 		require BASEPATH.'core/Controller.php';
 
-		if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php'))
+		if (file_exists(APPPATH.'core/'.$CFG->item('subclass_prefix').'Controller.php'))
 		{
-			require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
+			require APPPATH.'core/'.$CFG->item('subclass_prefix').'Controller.php';
 		}
 	}
 
@@ -201,7 +201,6 @@ class App {
 	{
 		$BM = load_class('Benchmark', 'core');
 		$BM->mark('total_execution_time_start');
-		$BM->mark('loading_time:_base_classes_start');
 	}
 
 	/**

@@ -21,7 +21,13 @@ class XSSTest extends \PHPUnit_Framework_TestCase {
 	public function testXssClean()
 	{
 		$testArray = array(
-			'"><script>alert(\'stored xss\')<%2fscript>' => '">[removed]alert&#40;\'stored xss\'&#41;[removed]'
+			'"><script>alert(\'stored xss\')<%2fscript>' => '">[removed]alert&#40;\'stored xss\'&#41;[removed]',
+			'"><a onload=alert(1);>' => '"><a >',
+			'"><a/onload=alert(1);>' => '"><a>',
+			'"><img onload=alert(1);>' => '"><img >',
+			'"><img/onload=alert(1);>' => '"><img>',
+			'"><svg onload=alert(1);>' => '"><svg >',
+			'"><svg/onload=alert(1);>' => '"><svg>'
 		);
 
 		foreach ($testArray as $before => $after) {

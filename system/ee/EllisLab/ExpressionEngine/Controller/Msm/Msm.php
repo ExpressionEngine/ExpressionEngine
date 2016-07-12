@@ -38,6 +38,8 @@ class Msm extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
 		if (ee()->config->item('multiple_sites_enabled') !== 'y')
         {
 			show_404();
@@ -46,26 +48,6 @@ class Msm extends CP_Controller {
 		ee()->lang->loadfile('sites');
 
 		$this->stdHeader();
-		$this->sidebarMenu();
-	}
-
-	protected function sidebarMenu($active = NULL)
-	{
-		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
-
-		$sidebar = ee('CP/Sidebar')->make();
-
-		$sidebar->addHeader(lang('sites'), ee('CP/URL')->make('msm'))
-			->withButton(lang('new'), ee('CP/URL')->make('msm/create'))
-			->isActive();
-
-		$sites = $sidebar->addHeader(lang('switch_to'))
-			->addBasicList();
-
-		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
-		{
-			$sites->addItem($site->site_label, ee('CP/URL')->make('msm/switch_to/' . $site->site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode())));
-		}
 	}
 
 	protected function stdHeader()
@@ -512,15 +494,7 @@ class Msm extends CP_Controller {
 			show_404();
 		}
 
-		$redirect = '';
-
-		$page = ee()->input->get_post('page');
-		if ($page)
-		{
-			$redirect = ee('CP/URL')->decodeUrl($page);
-		}
-
-		ee()->cp->switch_site($site_id, $redirect);
+		ee()->cp->switch_site($site_id);
 	}
 
 	private function remove($site_ids)

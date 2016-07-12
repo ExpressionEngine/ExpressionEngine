@@ -50,7 +50,7 @@ class TemplateRoute extends Model {
 
 	protected static $_validation_rules = array(
 		'template_id'    => 'required|isNatural',
-		'route'          => 'validateRouteIsValid[route_required]|validateRouteIsUnique[route_required]',
+		'route'          => 'required|validateRouteIsValid[route_required]|validateRouteIsUnique[route_required]',
 		'route_required' => 'enum[y,n]',
 	);
 
@@ -185,7 +185,7 @@ class TemplateRoute extends Model {
 
 		// Get a list of template IDs for the current site excluding the
 		// template ID for this route.
-		$template_ids = $this->getFrontend()->get('Template')
+		$template_ids = $this->getModelFacade()->get('Template')
 			->fields('template_id')
 			->filter('template_id', '!=', $this->template_id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -198,10 +198,9 @@ class TemplateRoute extends Model {
 		}
 
 		// Get all non-empty routes based on the template IDs we just grabbed
-		$routes = $this->getFrontend()->get('TemplateRoute')
+		$routes = $this->getModelFacade()->get('TemplateRoute')
 			->fields('route')
 			->filter('template_id', 'IN', $template_ids)
-			->filter('route', '!=', 'NULL')
 			->all()
 			->pluck('route');
 
