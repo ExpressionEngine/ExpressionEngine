@@ -313,7 +313,7 @@ class Set {
 				$fn = function() use ($channel, $channel_data, $cat_groups)
 				{
 					$cat_groups = array();
-					foreach ($this->category_groups as $cat_group)
+					foreach ($cat_groups as $cat_group)
 					{
 						$cat_groups[] = $cat_group->getId();
 					}
