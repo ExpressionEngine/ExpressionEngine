@@ -312,13 +312,13 @@ class Set {
 				$cat_groups = $this->category_groups;
 				$fn = function() use ($channel, $channel_data, $cat_groups)
 				{
-					$cat_groups = array();
+					$cat_group_ids = array();
 					foreach ($cat_groups as $cat_group)
 					{
-						$cat_groups[] = $cat_group->getId();
+						$cat_group_ids[] = $cat_group->getId();
 					}
 
-					$channel->cat_group = implode('|', $cat_groups);
+					$channel->cat_group = implode('|', $cat_group_ids);
 					$channel->save();
 				};
 
