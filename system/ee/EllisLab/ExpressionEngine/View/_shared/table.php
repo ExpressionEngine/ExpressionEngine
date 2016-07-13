@@ -147,11 +147,11 @@ if ($wrap): ?>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td>
 									<input
-										name="<?=$column['name']?>"
-										value="<?=$column['value']?>"
+										name="<?=form_prep($column['name'])?>"
+										value="<?=form_prep($column['value'])?>"
 										<?php if (isset($column['data'])):?>
 											<?php foreach ($column['data'] as $key => $value): ?>
-												data-<?=$key?>="<?=$value?>"
+												data-<?=$key?>="<?=form_prep($value)?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
 										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>

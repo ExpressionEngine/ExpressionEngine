@@ -341,7 +341,7 @@ abstract class AbstractPublish extends CP_Controller {
 		ee('CP/Alert')->makeInline('entry-form')
 			->asSuccess()
 			->withTitle(lang($action . '_entry_success'))
-			->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
+			->addToBody(sprintf(lang($action . '_entry_success_desc'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8')))
 			->defer();
 
 		if (ee()->input->post('submit') == 'finish')
