@@ -102,38 +102,31 @@ abstract class AbstractPublish extends CP_Controller {
 			ee()->cp->add_to_foot(smiley_js());
 		}
 
-		ee()->cp->add_js_script('plugin', 'nestable');
-
 		ee()->javascript->set_global(array(
-			'lang.add_new_html_button'			=> lang('add_new_html_button'),
-			'lang.close' 						=> lang('close'),
-			'lang.confirm_exit'					=> lang('confirm_exit'),
-			'lang.loading'						=> lang('loading'),
-			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
-			'publish.autosave.URL'				=> ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
-			'publish.add_category.URL'			=> ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
-			'publish.edit_category.URL'			=> ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
-			'publish.reorder_categories.URL'	=> ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
-			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
-			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
-			// 'publish.field_group'				=> $this->_channel_data['field_group'],
-			'publish.foreignChars'				=> $foreign_characters,
-			'publish.lang.no_member_groups'		=> lang('no_member_groups'),
-			'publish.lang.refresh_layout'		=> lang('refresh_layout'),
-			'publish.lang.tab_count_zero'		=> lang('tab_count_zero'),
-			'publish.lang.tab_has_req_field'	=> lang('tab_has_req_field'),
-			'publish.markitup.foo'				=> FALSE,
-			'publish.smileys'					=> $smileys_enabled,
-			'publish.field.URL'                 => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
-			'publish.auto_assign_cat_parents'	=> ee()->config->item('auto_assign_cat_parents'),
-			// 'publish.url_title_prefix'			=> $this->_channel_data['url_title_prefix'],
-			'publish.which'						=> ($entry_id) ? 'edit' : 'new',
-			'publish.word_separator'			=> ee()->config->item('word_separator') != "dash" ? '_' : '-',
-			'user.can_edit_html_buttons'		=> ee()->cp->allowed_group('can_edit_html_buttons'),
-			'user.foo'							=> FALSE,
-			'user_id'							=> ee()->session->userdata('member_id'),
-			// 'upload_directories'				=> $this->_file_manager['file_list'],
+			'lang.add_new_html_button'       => lang('add_new_html_button'),
+			'lang.close'                     => lang('close'),
+			'lang.confirm_exit'              => lang('confirm_exit'),
+			'lang.loading'                   => lang('loading'),
+			'publish.autosave.interval'      => (int) $autosave_interval_seconds,
+			'publish.autosave.URL'           => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
+			'publish.foreignChars'           => $foreign_characters,
+			'publish.lang.no_member_groups'  => lang('no_member_groups'),
+			'publish.lang.refresh_layout'    => lang('refresh_layout'),
+			'publish.lang.tab_count_zero'    => lang('tab_count_zero'),
+			'publish.lang.tab_has_req_field' => lang('tab_has_req_field'),
+			'publish.markitup.foo'           => FALSE,
+			'publish.smileys'                => $smileys_enabled,
+			'publish.field.URL'              => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.url_title_prefix'       => $entry->Channel->url_title_prefix,
+			'publish.which'                  => ($entry_id) ? 'edit' : 'new',
+			'publish.word_separator'         => ee()->config->item('word_separator') != "dash" ? '_' : '-',
+			'user.can_edit_html_buttons'     => ee()->cp->allowed_group('can_edit_html_buttons'),
+			'user.foo'                       => FALSE,
+			'user_id'                        => ee()->session->userdata('member_id'),
 		));
+
+		ee('Category')->addCategoryJS();
 
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -231,38 +224,6 @@ abstract class AbstractPublish extends CP_Controller {
 		$table->setData($data);
 
 		return ee('View')->make('_shared/table')->render($table->viewData(''));
-	}
-
-	/**
-	 * Adds modals for the category add/edit form and category removal confirmation
-	 */
-	protected function addCategoryModals()
-	{
-		// Don't bother adding modals to DOM if they don't have permission
-		if ( ! ee()->cp->allowed_group_any(
-			'can_create_categories',
-			'can_edit_categories',
-			'can_delete_categories'
-		))
-		{
-			return;
-		}
-
-		$cat_form_modal = ee('View')->make('ee:_shared/modal')->render(array(
-			'name'		=> 'modal-checkboxes-edit',
-			'contents'	=> '')
-		);
-		ee('CP/Modal')->addModal('modal-checkboxes-edit', $cat_form_modal);
-
-		$cat_remove_modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render(array(
-			'name'		=> 'modal-checkboxes-confirm-remove',
-			'form_url'	=> ee('CP/URL')->make('channels/cat/removeCat'),
-			'hidden'	=> array(
-				'bulk_action'	=> 'remove',
-				'categories[]'	=> ''
-			)
-		));
-		ee('CP/Modal')->addModal('modal-checkboxes-confirm-remove', $cat_remove_modal);
 	}
 
 	protected function validateEntry(ChannelEntry $entry, $layout)

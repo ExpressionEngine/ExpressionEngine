@@ -5,8 +5,11 @@ namespace EllisLab\ExpressionEngine\Controller\Files;
 use CP_Controller;
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
+use EllisLab\ExpressionEngine\Model\File\File;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
+use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -286,6 +289,69 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		return $table;
+	}
+
+	protected function validateFile(File $file)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
+
+		$file->set($_POST);
+		$file->title = (ee()->input->post('title')) ?: $file->file_name;
+
+		$cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
+		$file->setCategoriesFromPost($cats);
+
+		$result = $file->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_error'))
+				->addToBody(lang($action . '_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	protected function saveFileAndRedirect(File $file, $is_new = FALSE)
+	{
+		$action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
+
+		if ($file->isNew())
+		{
+			$file->uploaded_by_member_id = ee()->session->userdata('member_id');
+			$file->upload_date = ee()->localize->now;
+		}
+
+		$file->modified_by_member_id = ee()->session->userdata('member_id');
+		$file->modified_date = ee()->localize->now;
+
+		$file->save();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_success'))
+			->addToBody(sprintf(lang($action . '_success_desc'), $file->title))
+			->defer();
+
+		if ($action == 'upload_filedata')
+		{
+			ee()->session->set_flashdata('file_id', $file->file_id);
+		}
+
+		ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 	}
 
 	protected function listingsPage($files, $base_url)

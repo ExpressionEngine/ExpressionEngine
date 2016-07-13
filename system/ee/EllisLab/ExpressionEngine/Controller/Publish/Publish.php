@@ -255,7 +255,7 @@ class Publish extends AbstractPublishController {
 
 		if ($entry->Channel->CategoryGroups)
 		{
-			$this->addCategoryModals();
+			ee('Category')->addCategoryModals();
 		}
 
 		ee()->cp->render('publish/entry', $vars);

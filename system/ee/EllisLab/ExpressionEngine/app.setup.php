@@ -5,6 +5,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
@@ -38,6 +39,11 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'Category' => function($ee)
+		{
+			return new Category\Factory;
+		},
 
 		'CP/CustomMenu' => function($ee)
 		{

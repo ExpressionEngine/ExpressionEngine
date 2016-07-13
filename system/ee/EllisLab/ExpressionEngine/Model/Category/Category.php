@@ -49,6 +49,15 @@ class Category extends ContentModel {
 				'right' => 'entry_id'
 			)
 		),
+		'Files' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'File',
+			'pivot' => array(
+				'table' => 'file_categories',
+				'left' => 'cat_id',
+				'right' => 'file_id'
+			)
+		),
 		'Parent' => array(
 			'type' => 'belongsTo',
 			'model' => 'Category',
