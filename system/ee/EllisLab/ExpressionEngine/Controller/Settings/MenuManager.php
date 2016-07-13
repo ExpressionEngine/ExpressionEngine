@@ -451,7 +451,7 @@ class MenuManager extends Settings {
 				case 'link':
 					$item->type = 'link';
 					$item->name = ee('Request')->post('name');
-					$item->data = ee('Request')->post('url');
+					$item->data = $this->processURL(ee('Request')->post('url'));
 					break;
 				case 'submenu':
 					$item->type = 'submenu';
@@ -578,6 +578,53 @@ class MenuManager extends Settings {
 	}
 
 	/**
+	 * Preprocess urls to deal with copy-pasted data. We don't want to store
+	 * full cp urls if it can be avoided.
+	 *
+	 * @param String $url The pasted url
+	 */
+	private function processURL($url)
+	{
+		$cp_url = ee()->config->item('cp_url');
+		$base_url = ee()->config->item('base_url');
+
+		if (strpos($url, $cp_url) === 0)
+		{
+			$url = str_replace($cp_url, '', $url);
+		}
+
+		// not a cp url - treat as external
+		if (strpos($url, '://') !== FALSE)
+		{
+			if (strpos($url, $base_url) === 0)
+			{
+				return $url;
+			}
+
+			return ee()->cp->masked_url($url);
+		}
+
+		$url = trim($url, ' ?/');
+		parse_str($url, $qs);
+
+		$out = '';
+
+		// ditch session ids
+		unset($qs['S']);
+
+		// first key will be cp/whatever => ""
+		// we'll remove that so that http_build_query doesn't encode the slash
+		if (current($qs) == '')
+		{
+			$out = key($qs).'&';
+			array_shift($qs);
+		}
+
+		$out .= http_build_query($qs);
+		return trim($out, '&');
+	}
+
+	/**
 	 * Handle data for a dropdown menu item
 	 */
 	private function processGrid($set, $item, $post)
@@ -589,6 +636,8 @@ class MenuManager extends Settings {
 			return;
 		}
 
+		$i = 1;
+
 		foreach ($post['rows'] as $row_id => $columns)
 		{
 			if (strpos($row_id, 'row_id_') !== FALSE)
@@ -596,14 +645,16 @@ class MenuManager extends Settings {
 				$sub = $children[str_replace('row_id_', '', $row_id)];
 				$sub->type = 'link';
 				$sub->name = $columns['name'];
-				$sub->data = $columns['url'];
+				$sub->data = $this->processURL($columns['url']);
+				$sub->sort = $i++;
 			}
 			else
 			{
 				$sub = ee('Model')->make('MenuItem');
 				$sub->type = 'link';
 				$sub->name = $columns['name'];
-				$sub->data = $columns['url'];
+				$sub->data = $this->processURL($columns['url']);
+				$sub->sort = $i++;
 				$item->Children[] = $sub;
 			}
 		}
