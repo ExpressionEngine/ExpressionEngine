@@ -108,7 +108,7 @@ class CategoryGroup extends StructureModel {
 		$editable = FALSE;
 
 		if (ee()->session->userdata['group_id'] == 1
-			|| (ee()->session->userdata['can_edit_categories']
+			|| (ee()->session->userdata['can_edit_categories'] == 'y'
 				&& in_array(ee()->session->userdata['group_id'], $can_edit)
 				))
 			{
@@ -119,7 +119,7 @@ class CategoryGroup extends StructureModel {
 		$deletable = FALSE;
 
 		if (ee()->session->userdata['group_id'] == 1
-			|| (ee()->session->userdata['can_delete_categories']
+			|| (ee()->session->userdata['can_delete_categories'] =='y'
 				&& in_array(ee()->session->userdata['group_id'], $can_delete)
 				))
 			{
