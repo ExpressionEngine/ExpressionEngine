@@ -257,12 +257,14 @@ class EE_Config {
 		$file = str_replace('..', '', $file);
 		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
 		$userpath = SYSPATH.'user/config/'.$file.'.php';
+
 		$out = array();
 
 		if (file_exists($syspath))
 		{
 			$out = include $syspath;
 		}
+
 		if (file_exists($userpath))
 		{
 			$userout = include $userpath;
