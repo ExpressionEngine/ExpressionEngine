@@ -9,8 +9,15 @@ class Factory {
 	 */
 	public function addCategoryJS()
 	{
-		ee()->cp->add_js_script('plugin', 'nestable');
-		ee()->cp->add_js_script('file', 'cp/categories');
+		ee()->cp->add_js_script(array(
+			'plugin' => array(
+				'nestable',
+				'ee_url_title'
+			),
+			'file' => array(
+				'cp/categories'
+			)
+		));
 
 		ee()->javascript->set_global(array(
 			'category.add.URL'             => ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
