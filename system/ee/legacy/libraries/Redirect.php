@@ -51,7 +51,7 @@ if (function_exists('idn_to_ascii'))
 	$url = idn_to_ascii($url);
 }
 
-$link = "<a rel=\"nofollow\" href='".$url."'>".$url."</a>";
+$link = "<a rel=\"nofollow\" href='".$url."'>Continue to the new page</a>";
 
 if ( $link !== ee('Security/XSS')->clean($link) )
 {
@@ -65,8 +65,8 @@ if ($force_redirect == TRUE OR ( ! isset($_SERVER['HTTP_REFERER']) OR ! stristr(
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not
 	$str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<meta name='robots' content='none'>\n<title>Redirect</title>\n</head>\n<body>".
-			"<p>Warning: You are about to visit an external link that is not part of ".config_item('site_url').". Please take a moment to verify the URL and that you have requested this action. To proceed to the URL, click the link below:</p>".
-			"<p>$link</p>\n</body>\n</html>";
+			"<p>Warning: You’re opening a new web page ($url) that is not part of ".config_item('site_label').". Double check that the web page address is correct.</p>".
+			"<p>Would you like to $link or <a href='".config_item('site_url')."'>Stay put</a>?</p>\n</body>\n</html>";
 }
 else
 {
