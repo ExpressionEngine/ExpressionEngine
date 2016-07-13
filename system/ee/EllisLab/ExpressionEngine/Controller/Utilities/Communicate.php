@@ -108,14 +108,15 @@ class Communicate extends Utilities {
 			foreach ($groups as $group)
 			{
 				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
+				$group_title = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
 
-				$vars['member_groups'][$group->group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
-				$vars['member_groups'][$group->group_title]['members'] = ee('Model')->get('Member')
+				$vars['member_groups'][$group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
+				$vars['member_groups'][$group_title]['members'] = ee('Model')->get('Member')
 					->filter('group_id', $group->group_id)
 					->count();
-				if ($vars['member_groups'][$group->group_title]['members'] == 0)
+				if ($vars['member_groups'][$group_title]['members'] == 0)
 				{
-					$vars['member_groups'][$group->group_title]['attrs']['disabled'] = 'disabled';
+					$vars['member_groups'][$group_title]['attrs']['disabled'] = 'disabled';
 				}
 			}
 		}
@@ -217,7 +218,7 @@ class Communicate extends Utilities {
 		$_POST['total_gl_recipients'] = count($groups);
 
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('subject', 'lang:subject', 'required');
+		ee()->form_validation->set_rules('subject', 'lang:subject', 'required|valid_xss_check');
 		ee()->form_validation->set_rules('message', 'lang:message', 'required');
 		ee()->form_validation->set_rules('from', 'lang:from', 'required|valid_email');
 		ee()->form_validation->set_rules('cc', 'lang:cc', 'valid_emails');
@@ -756,8 +757,12 @@ class Communicate extends Utilities {
 		$data = array();
 		foreach ($emails as $email)
 		{
+			// Prepare the $email object for use in the modal
+			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
+			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
+
 			$data[] = array(
-				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
+				$email->subject,
 				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
@@ -780,10 +785,6 @@ class Communicate extends Utilities {
 					)
 				)
 			);
-
-			// Prepare the $email object for use in the modal
-			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
 
 			ee()->load->library('typography');
 			ee()->typography->initialize(array(

@@ -610,7 +610,7 @@ feature 'Channel Sets' do
         check_success
 
         upload_dir_id = 0
-        $db.query("SELECT id, count(*) AS count FROM exp_upload_prefs WHERE name = 'Uploads'").each do |row|
+        $db.query("SELECT id, count(id) AS count FROM exp_upload_prefs WHERE name = 'Uploads' GROUP BY id").each do |row|
           upload_dir_id = row['id']
           new_upload_directory_count = row['count']
           new_upload_directory_count.should == 1

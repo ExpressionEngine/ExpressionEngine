@@ -60,7 +60,7 @@
 						<ul class="nav-sub-menu">
 							<li><a href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a></li>
 							<?php foreach($cp_quicklinks as $link): ?>
-							<li><a href="<?=$link['link']?>"><?=$link['title']?></a></li>
+							<li><a href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a></li>
 							<?php endforeach ?>
 							<li><a class="nav-add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="icon-add"></i><?=lang('new_link')?></a></li>
 						</ul>

@@ -86,6 +86,10 @@ class EE_Typography {
 	// before it is passed through the parser.
 	private $quote_marker    = NULL;
 
+	// tag bracket constants for use in Safe HTML / BBcode parsing
+	const HTML_BRACKETS = 1;
+	const BBCODE_BRACKETS = 2;
+
 	/**
 	 * Constructor
 	 */
@@ -179,9 +183,12 @@ class EE_Typography {
 			'ins',
 			'strong',
 			'pre',
-			'code',
+			'code' => array('properties' => array('class', 'data-language')),
 			'blockquote',
-			'abbr' => array('property' => 'title')
+			'abbr' => array('properties' => array('title')),
+			'span' => array('properties' => array('class')),
+			'sup',
+			'sub'
 		);
 
 		$this->safe_decode = array(
@@ -192,10 +199,14 @@ class EE_Typography {
 			'ins'        => 'ins',
 			'strong'     => 'strong',
 			'pre'        => 'pre',
+			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
-			'QUOTE'      => 'blockquote'
+			'QUOTE'      => 'blockquote',
+			'span'       => array('tag' => 'span', 'properties' => array('class')),
+			'sup'        => 'sup',
+			'sub'        => 'sub'
 		);
 
 		// enable quote protection within braces for EE {variable="attributes"}
@@ -1046,14 +1057,16 @@ class EE_Typography {
 		// Convert allowed HTML to BBCode
 		foreach($this->safe_encode as $key => $val)
 		{
-			if ( ! is_numeric($key) && isset($val['property']))
+			if ( ! is_numeric($key) && isset($val['properties']))
 			{
-				if (preg_match("/<".$key.".*?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
+				// grab tag blocks, plus we need to match the full open tag
+				$matches = $this->matchFullTags($key, $str, self::HTML_BRACKETS);
+
+				foreach ($matches as $match)
 				{
-					$property = ee('Security/XSS')->clean($matches[2]);
-					$str = preg_replace(
-						"/<".$key.".*?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
-						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
+					$str = str_replace(
+						$match[0],
+						$this->buildTag($key, $val['properties'], $match[1], $match[2], self::BBCODE_BRACKETS),
 						$str
 					);
 				}
@@ -1097,6 +1110,100 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Build Tag
+	 *
+	 * @param string $name the tag name
+	 * @param array $allowed_attributes array of tag attributes to allow
+	 * @param string $attribute_str a string of tag attributes, e.g. foo="bar" bat="bag"
+	 * @param string $tagdata the tag's inner contents
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS, to use in the tags
+	 * @return string
+	 **/
+	private function buildTag($name, $allowed_attributes = array(), $attribute_str = '', $tagdata = '', $bracket_style = self::HTML_BRACKETS)
+	{
+		$tag_params = '';
+
+		// inside the opening tag block $tag_match[1], grab all parameters
+		$param_matches = $this->matchTagAttributes($attribute_str);
+
+		foreach ($param_matches as $p_match)
+		{
+			// only keep the ones we allow, ditch the rest
+			if (in_array($p_match[1], $allowed_attributes))
+			{
+				$attr_content = htmlspecialchars(
+					ee('Security/XSS')->clean($p_match[3])
+				);
+
+				$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
+			}
+		}
+
+		list($ob, $cb) = $this->getBracketsByStyle($bracket_style);
+		return $ob.$name.$tag_params.$cb.$tagdata.$ob.'/'.$name.$cb;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Brackets By Style
+	 *
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @param bool $preg_quote Whether to return a preg_quoted version of the bracket
+	 * @return array [opening bracket, closing bracket]
+	 **/
+	private function getBracketsByStyle($bracket_style = self::HTML_BRACKETS, $preg_quote = FALSE)
+	{
+		switch ($bracket_style)
+		{
+			case self::BBCODE_BRACKETS:
+				$ob = ($preg_quote) ? '\[' : '[';
+				$cb = ($preg_quote) ? '\]' : ']';
+				break;
+			case self::HTML_BRACKETS:
+			default:
+				$ob = '<';
+				$cb = '>';
+		}
+
+		return array($ob, $cb);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Match Full Tags
+	 *
+	 * @param string $name the tag name
+	 * @param string $string the text to match against
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @return array preg_match_all() array of all <name> tags in $string
+	 **/
+	private function matchFullTags($name, $string, $bracket_style = self::HTML_BRACKETS)
+	{
+		list($ob, $cb) = $this->getBracketsByStyle($bracket_style, TRUE);
+		preg_match_all("/(${ob}${name}.*?${cb})(.*?)${ob}\/${name}${cb}/is", $string, $matches, PREG_SET_ORDER);
+
+		return $matches;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Match Tag Attributes
+	 *
+	 * @param string $open_tag the full open tag, e.g. <name foo="bar" bat="bag">
+	 * @return array preg_match_all() array of all tag parameters in $open_tag
+	 **/
+	private function matchTagAttributes($open_tag)
+	{
+		preg_match_all("/(\S+?)\s*=\s*(\"|\')([^\\2]*?)\\2/is", $open_tag, $attr_matches, PREG_SET_ORDER);
+		return $attr_matches;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Clean bbcode from Markdown style code blocks
 	 *
 	 * @param  String $str The string to pre-process
@@ -1110,6 +1217,15 @@ class EE_Typography {
 				array('&#91;', '&#93;'),
 				$matches[2]
 			);
+
+			// no choice, if Safe HTML format, we need to parse code blocks
+			// with our bbcode, or any brackets in Markdown code blocks will be
+			// double encoded, e.g. -&amp;gt;
+			if ($this->html_format == 'safe')
+			{
+				return '[code]'.$code.'[/code]';
+			}
+
 			return $matches[1].$code.$matches[1];
 		};
 
@@ -1370,20 +1486,24 @@ class EE_Typography {
 		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 
+		// Abbr shorthand, the special snowflake:
+		// [abbr="some title"]ST[/abbr]
+		// we will let the standard properties whitelist below sanitize
+		if (strpos($str, '[abbr=') !== FALSE)
+		{
+			$str = preg_replace("/\[abbr=(\"|\')(.*?)\\1\](.*?)\[\/abbr\]/si", "[abbr title=\"\\2\"]\\3[/abbr]", $str);
+		}
+
 		// Decode BBCode array map
 		foreach($this->safe_decode as $key => $val)
 		{
+
 			if (is_array($val)
 				&& isset($val['properties'])
-				&& preg_match_all('/\['.$key.'=[\'"]?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
+				&& $matches = $this->matchFullTags($key, $str, self::BBCODE_BRACKETS))
 			{
 				foreach ($matches as $tag_match)
 				{
-					// Clean up the contents of the property
-					$tag_match[1] = htmlspecialchars(
-						ee('Security/XSS')->clean($tag_match[1])
-					);
-
 					// If there's any evidence of XSS then don't add anything
 					if (stripos($tag_match[0], '[removed]') !== FALSE)
 					{
@@ -1391,18 +1511,17 @@ class EE_Typography {
 					}
 					else
 					{
-						$tag = "<{$val['tag']}";
-						foreach ($val['properties'] as $property)
-						{
-							$tag .= " {$property}='{$tag_match[1]}'";
-						}
-						$tag .= ">";
-
-						$str = str_replace($tag_match[0], $tag, $str);
+						$str = str_replace(
+							$tag_match[0],
+							$this->buildTag($key, $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
+							$str
+						);
 					}
 				}
 			}
-			else
+
+			// Does this tag pair exist without attributes? Replace it
+			if (preg_match_all('/\['.$key.']?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
 			{
 				$val = (is_array($val)) ? $val['tag'] : $val;
 				$str = str_ireplace(
@@ -2146,6 +2265,8 @@ while (--j >= 0)
 			}
 			else
 			{
+				// known, unsupported edge case:
+				// [code class="foo"]...[/code]
 				$str = str_replace(
 					array('[code]', '[/code]'),
 					array('<pre><code>', '</code></pre>'),

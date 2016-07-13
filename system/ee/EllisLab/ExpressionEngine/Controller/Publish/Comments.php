@@ -272,7 +272,7 @@ class Comments extends AbstractPublishController {
 			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
 		);
 
-		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
+		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
@@ -281,7 +281,7 @@ class Comments extends AbstractPublishController {
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), $entry->title);
+			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 		}
 
 		$vars['can_delete'] = ee()->cp->allowed_group_any(
