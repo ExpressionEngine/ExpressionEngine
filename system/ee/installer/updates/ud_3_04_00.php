@@ -38,6 +38,7 @@ class Updater {
 			array(
 				'add_can_view_homepage_news_permission',
 				'add_channel_max_entries_column',
+				'add_missing_default_status_groups'
 			)
 		);
 
@@ -80,6 +81,18 @@ class Updater {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Loops through all our sites and adds the default status group to any
+	 * site that does not already have one.
+	 */
+	private function add_missing_default_status_groups()
+	{
+		foreach (ee('Model')->get('Site')->all() as $site)
+		{
+			$site->createDefaultStatuses();
+		}
 	}
 }
 

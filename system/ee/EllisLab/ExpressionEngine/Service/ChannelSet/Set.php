@@ -409,10 +409,7 @@ class Set {
 
 			if ($group_name == 'Default')
 			{
-				$status_group = ee('Model')->get('StatusGroup')
-					->filter('group_name', 'Default')
-					->filter('site_id', $this->site_id)
-					->first();
+				$status_group = $this->getDefaultStatusGroup();
 			}
 			else
 			{
@@ -477,6 +474,29 @@ class Set {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Gets the default status group for this site, and if it isn't there we'll
+	 * create it
+	 *
+	 * @return obj A Status Group object
+	 */
+	private function getDefaultStatusGroup()
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('group_name', 'Default')
+			->filter('site_id', $this->site_id)
+			->first();
+
+		if ( ! $status_group)
+		{
+			$site = ee('Model')->get('Site', $this->site_id)->first();
+			$site->createDefaultStatuses();
+			return $this->getDefaultStatusGroup(); // recursion FTW!
+		}
+
+		return $status_group;
 	}
 
 	/**
