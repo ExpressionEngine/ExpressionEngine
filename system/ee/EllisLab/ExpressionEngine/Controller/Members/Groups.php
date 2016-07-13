@@ -111,8 +111,16 @@ class Groups extends Members\Members {
 
 		$data = array();
 		$groupData = array();
-		$total = ee()->api->get('MemberGroup')->count();
-		$groups = ee()->api->get('MemberGroup')->order($sort_col, $sort_dir)->limit($perpage)->offset($offset);
+		$total = ee()->api->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count();
+
+		$groups = ee()->api->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order($sort_col, $sort_dir)
+			->limit($perpage)
+			->offset($offset);
+
 		$search = ee()->input->post('search');
 
 		if ( ! empty($search))
@@ -140,7 +148,7 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = ee('Model')->get('Member')->filter('group_id', $group->group_id)->count();
 			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
-			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+			$title = '<a href="' . $edit_link . '">' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</a>';
 
 			if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 			{
@@ -324,6 +332,10 @@ class Groups extends Members\Members {
 		}
 
 		$group_names = $group_info->pluck('group_title');
+		$group_names = array_map(function($group_name)
+		{
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $group_names);
 
 
 		if (is_array($groups))

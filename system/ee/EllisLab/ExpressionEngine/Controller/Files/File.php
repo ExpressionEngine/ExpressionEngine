@@ -53,15 +53,11 @@ class File extends AbstractFilesController {
 		ee()->load->library('image_lib');
 		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
 
-		// Adapted from http://jeffreysambells.com/2012/10/25/human-readable-filesize-php
-		$size   = array('b', 'kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb');
-		$factor = floor((strlen($file->file_size) - 1) / 3);
-
 		$vars = array(
 			'file' => $file,
 			'height' => $info['height'],
 			'width' => $info['width'],
-			'size' => sprintf("%d", $file->file_size / pow(1024, $factor)) . lang('size_' . @$size[$factor])
+			'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes()
 		);
 
 		ee()->cp->render('files/view', $vars);

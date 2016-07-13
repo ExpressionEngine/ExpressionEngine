@@ -29,17 +29,14 @@ feature 'Template Settings' do
   end
 
   it 'should validate the form' do
-    max_revs_error = 'This field must contain an integer.'
-    invalid_path = 'The path you submitted is not valid.'
-
     @page.max_tmpl_revisions.set 'sdfsdfsd'
     @page.submit
 
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'Attention: Settings not saved'
-    @page.should have_text max_revs_error
-    @page.should have_no_text invalid_path
+    @page.should have_text $integer_error
+    @page.should have_no_text $invalid_path
 
     # AJAX validation
     @page.load
@@ -47,7 +44,7 @@ feature 'Template Settings' do
     @page.max_tmpl_revisions.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_form_errors(@page)
-    @page.should have_text max_revs_error
+    @page.should have_text $integer_error
 
     @page.max_tmpl_revisions.set '100'
     @page.max_tmpl_revisions.trigger 'blur'
