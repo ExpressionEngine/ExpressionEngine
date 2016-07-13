@@ -557,7 +557,9 @@ EOF;
 			return $this->_countries;
 		}
 
-		$countries = ee()->config->loadFile('countries');
+		$conf = ee()->config->loadFile('countries');
+		$countries = $conf['countries'];
+		$timezones = $conf['timezones'];
 
 		if ($return_timezones)
 		{

@@ -465,7 +465,8 @@ class Ip_to_nation_mcp {
 	 */
 	function _country_names()
 	{
-		return $countries = ee()->config->loadFile('countries');
+		$conf = ee()->config->loadFile('countries');
+		return $conf['countries'];
 	}
 
 	// ----------------------------------------------------------------------

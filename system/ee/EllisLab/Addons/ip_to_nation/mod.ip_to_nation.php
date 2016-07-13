@@ -78,7 +78,8 @@ class Ip_to_nation {
 	{
 		if ( ! isset(ee()->session->cache['ip_to_nation']['countries']))
 		{
-			ee()->session->cache['ip_to_nation']['countries'] = ee()->config->loadFile('countries');
+			$conf = ee()->config->loadFile('countries');
+			ee()->session->cache['ip_to_nation']['countries'] = $conf['countries'];
 		}
 
 		if ( ! isset(ee()->session->cache['ip_to_nation']['countries'][$which]))

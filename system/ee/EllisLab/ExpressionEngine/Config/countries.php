@@ -24,7 +24,9 @@
  */
 
 // $countries =
+// $timezones =
 return array(
+	'countries' => array(
 					'af' => 'Afghanistan',
 					'ax' => 'Aland Islands',
 					'al' => 'Albania',
@@ -275,9 +277,9 @@ return array(
 					'ye' => 'Yemen',
 					'zm' => 'Zambia',
 					'zw' => 'Zimbabwe'
-);
+	),
 
-$timezones = array(
+'timezones' => array(
 	'af' =>
 	array(
 		0 => 'Asia/Kabul',
@@ -1443,6 +1445,7 @@ $timezones = array(
 	array(
 		0 => 'Africa/Harare',
 	),
+)
 );
 
 // EOF
