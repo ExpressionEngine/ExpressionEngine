@@ -481,6 +481,12 @@ class Channel extends StructureModel {
 
 		return TRUE;
 	}
+
+	public function getCategoryGroups()
+	{
+		$groups = explode('|', $this->cat_group);
+		return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
+	}
 }
 
 // EOF
