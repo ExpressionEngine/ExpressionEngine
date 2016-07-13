@@ -119,6 +119,11 @@ function bindToolbar() {
 			$.post(this.action, $(this).serialize(), function(result) {
 				modal.trigger('modal:close');
 
+				// reset the form button
+				var button = $('.form-ctrls input.btn, .form-ctrls button.btn', modal);
+				button.removeClass('work');
+				button.val(button.data('submit-text'));
+
 				if (result.reorder_list) {
 					$('.nestable').replaceWith(result.reorder_list);
 					didLoad();
