@@ -254,6 +254,7 @@ class EE_Config {
 	 */
 	public function loadFile($file)
 	{
+		$file = str_replace('..', '', $file);
 		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
 		$userpath = SYSPATH.'user/config/'.$file.'.php';
 		$out = array();
