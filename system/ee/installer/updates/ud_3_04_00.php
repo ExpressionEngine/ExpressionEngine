@@ -95,7 +95,7 @@ class Updater {
 					'type'         => 'int',
 					'null'         => FALSE,
 					'unsigned'     => TRUE,
-					'default'      => 0
+					'default'      => 1
 				),
 			)
 		);
