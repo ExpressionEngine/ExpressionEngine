@@ -639,8 +639,9 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		//  Check discrete privileges
-		if (AJAX_REQUEST)
+		//  Check discrete privileges when editig (we have no discrete create
+		//  permissions)
+		if (AJAX_REQUEST && $editing)
 		{
 			$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
 
