@@ -13,7 +13,7 @@
 		}
 ?>
 	<label class="<?=$class?>">
-		<?=form_checkbox($field_name . '[]', form_prep($key), $checked, $extra)?> <?=form_prep($value)?>
+		<?=form_checkbox($field_name . '[]', $key, $checked, $extra)?> <?=form_prep($value)?>
 	</label>
 	<?php $class = 'choice block'; ?>
 <?php endforeach; ?>

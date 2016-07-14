@@ -85,7 +85,7 @@ class Radio_ft extends EE_Fieldtype {
 
 	function grid_display_field($data)
 	{
-		return $this->_display_field(form_prep($data), 'grid');
+		return $this->_display_field($data, 'grid');
 	}
 
 	// --------------------------------------------------------------------

@@ -81,7 +81,7 @@ class Select_ft extends EE_Fieldtype {
 
 		foreach ($options as $k => $v)
 		{
-			$prepped_options[form_prep($k)] = form_prep($v);
+			$prepped_options[$k] = $v;
 		}
 
 		$field = form_dropdown(
@@ -98,7 +98,7 @@ class Select_ft extends EE_Fieldtype {
 
 	function grid_display_field($data)
 	{
-		return $this->display_field(form_prep($data));
+		return $this->display_field($data);
 	}
 
 	// --------------------------------------------------------------------
