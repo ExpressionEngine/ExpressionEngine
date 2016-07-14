@@ -4683,7 +4683,7 @@ class Channel {
 			'entry_id'						=> $query->row('entry_id'),
 			'id_path'						=> array($query->row('entry_id'), array('path_variable' => TRUE)),
 			'path'							=> array($query->row('url_title'), array('path_variable' => TRUE)),
-			'title'							=> $title,
+			'title'							=> ee()->typography->formatTitle($title),
 			'url_title'						=> $query->row('url_title'),
 			'channel_short_name'			=> $query->row('channel_name'),
 			'channel'						=> $query->row('channel_title'),

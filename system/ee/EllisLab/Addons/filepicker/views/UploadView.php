@@ -8,7 +8,7 @@
 		<?php endif;?>
 
 		<?=ee()->view->head_link('css/common.min.css'); ?>
-		
+
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
@@ -24,5 +24,10 @@
 	</head>
 	<body id="top">
 		<div class="box"><?=$content?></div>
+		<?=ee()->javascript->inline('var EE = window.parent.EE;');?>
+		<?=ee()->view->script_tag('jquery/jquery.js')?>
+		<?=ee()->view->script_tag('common.js')?>
+		<?=ee()->view->script_tag('jquery/plugins/nestable.js')?>
+		<?=ee()->view->script_tag('cp/categories.js')?>
 	</body>
 </html>

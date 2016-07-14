@@ -203,7 +203,6 @@ class EE_Typography {
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
-			'QUOTE'      => 'blockquote',
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
 			'sup'        => 'sup',
 			'sub'        => 'sub'
@@ -1132,7 +1131,9 @@ class EE_Typography {
 			if (in_array($p_match[1], $allowed_attributes))
 			{
 				$attr_content = htmlspecialchars(
-					ee('Security/XSS')->clean($p_match[3])
+					ee('Security/XSS')->clean($p_match[3]),
+					ENT_QUOTES,
+					'UTF-8'
 				);
 
 				$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
@@ -1290,6 +1291,38 @@ class EE_Typography {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Formats an entry title for front-end presentation; things like converting
+	 * EE tag brackets, filtering for safe HTML, and converting characters to
+	 * their fancy alternatives
+	 *
+	 * @param String	Entry title
+	 * @return String	Formatted entry title
+	 */
+	public function formatTitle($title)
+	{
+		$title = str_replace(array('{', '}'), array('&#123;', '&#125;'), $title);
+
+		// Strip unsafe HTML and attributes from title
+		// Preserve old HTML format, because yay singletons
+		$existing_format = $this->html_format;
+		$this->html_format = 'safe';
+		$title = $this->format_html($title);
+
+		// format_html() turns safe HTML into BBCode
+		$title = $this->decode_bbcode($title);
+
+		// Put back old format
+		$this->html_format = $existing_format;
+
+		// and finally some basic curly quotes, em dashes, etc.
+		$title = $this->format_characters($title);
+
+		return $title;
+	}
+
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Markdown Post Process
@@ -1483,6 +1516,7 @@ class EE_Typography {
 	 */
 	public function decode_bbcode($str)
 	{
+
 		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 
@@ -1513,7 +1547,7 @@ class EE_Typography {
 					{
 						$str = str_replace(
 							$tag_match[0],
-							$this->buildTag($key, $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
+							$this->buildTag($val['tag'], $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
 							$str
 						);
 					}
@@ -1537,38 +1571,6 @@ class EE_Typography {
 		/** -------------------------------------*/
 
 		$str = $this->_decode_code_tags($str);
-
-		/** -------------------------------------
-		/**  Decode color tags
-		/** -------------------------------------*/
-
-		if (strpos($str, '[color=') !== FALSE)
-		{
-			if ($this->use_span_tags == TRUE)
-			{
-				$str = preg_replace("/\[color=(.*?)\](.*?)\[\/color\]/si", "<span style=\"color:\\1;\">\\2</span>",$str);
-			}
-			else
-			{
-				$str = preg_replace("/\[color=(.*?)\](.*?)\[\/color\]/si", "<font color=\"\\1\">\\2</font>", $str);
-			}
-		}
-
-		/** -------------------------------------
-		/**  Decode size tags
-		/** -------------------------------------*/
-
-		if (strpos($str, '[size=') !== FALSE)
-		{
-			if ($this->use_span_tags == TRUE)
-			{
-				$str = preg_replace_callback("/\[size=(.*?)\](.*?)\[\/size\]/si", array($this, "font_matrix"),$str);
-			}
-			else
-			{
-				$str = preg_replace("/\[size=(.*?)\](.*?)\[\/size\]/si", "<font color=\"\\1\">\\2</font>", $str);
-			}
-		}
 
 		/** -------------------------------------
 		/**  Convert [url] tags to links
@@ -1718,6 +1720,32 @@ class EE_Typography {
 		}
 
 		/** -------------------------------------
+		/**  Decode color tags
+		/** -------------------------------------*/
+
+		if (strpos($str, '[color=') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\[color=(.*?)\](.*?)\[\/color\]/si",
+				array($this, 'cleanBBCodeAttributesColor'),
+				$str
+			);
+		}
+
+		/** -------------------------------------
+		/**  Decode size tags
+		/** -------------------------------------*/
+
+		if (strpos($str, '[size=') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\[size=(.*?)\](.*?)\[\/size\]/si",
+				array($this, 'cleanBBCodeAttributesSize'),
+				$str
+			);
+		}
+
+		/** -------------------------------------
 		/**  Style tags
 		/** -------------------------------------*/
 
@@ -1725,21 +1753,109 @@ class EE_Typography {
 
 		if (strpos($str, '[style=') !== FALSE)
 		{
-			$str = preg_replace("/\[style=(.*?)\](.*?)\[\/style\]/si", "<span class=\"\\1\">\\2</span>", $str);
+			$str = preg_replace_callback(
+				"/\[style=(.*?)\](.*?)\[\/style\]/si",
+				array($this, 'cleanBBCodeAttributesStyle'),
+				$str
+			);
 		}
 
-		/** ---------------------------------------
+		/** -------------------------------------
 		/**  Attributed quotes, used in the Forum module
-		/** ---------------------------------------*/
+		/** -------------------------------------*/
 
 		// [quote author="Brett" date="11231189803874"]...[/quote]
 
-		if (stripos($str, '[quote') !== FALSE)
+		if (stripos($str, '[quote ') !== FALSE)
 		{
-			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
+			$str = preg_replace_callback(
+				'/\[quote\s+author="(.*?)"\s+date="(.*?)"]/si',
+				array($this, 'cleanBBCodeAttributesQuote'),
+				$str
+			);
 		}
 
 		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [quote]
+	 *
+	 * @param array $matches preg_match of the valid opening [quote author="foo" date="12345678"]
+	 * @return string HTML blockquote open tag
+	 **/
+	private function cleanBBCodeAttributesQuote($matches)
+	{
+		$author = htmlentities($matches[1], ENT_QUOTES, 'UTF-8');
+		$date = filter_var($matches[2], FILTER_SANITIZE_NUMBER_INT);
+		return "<blockquote author=\"${author}\" date=\"${date}\">";
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [size]
+	 *
+	 * @param array $matches preg_match of a valid [size=3]text[/size]
+	 * @return string HTML span tag with a font-size applied
+	 **/
+	private function cleanBBCodeAttributesSize($matches)
+	{
+		switch($matches['1'])
+		{
+			case 1  : $size = '9px';
+				break;
+			case 2  : $size = '11px';
+				break;
+			case 3  : $size = '14px';
+				break;
+			case 4  : $size = '16px';
+				break;
+			case 5  : $size = '18px';
+				break;
+			case 6  : $size = '20px';
+				break;
+			default : $size = '11px';
+				break;
+		}
+
+		return '<span style="font-size:'.$size.';">'.$matches['2'].'</span>';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [color]
+	 *
+	 * @param array $matches preg_match of a valid [color=red]text[/color]
+	 * @return string HTML span tag with color applied
+	 **/
+	private function cleanBBCodeAttributesColor($matches)
+	{
+		return '<span style="color:'.
+			preg_replace('/[^a-z]/is', '', $matches[1]).
+			';">'.
+			$matches[2].
+			'</span>';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [style=some_class]
+	 *
+	 * @param array $matches preg_match of valid [style=some_class]text[/style]
+	 * @return string HTML span tag with a class attributed applied
+	 **/
+	private function cleanBBCodeAttributesStyle($matches)
+	{
+		return '<span class="'.
+			preg_replace('/[^ \w\-]/is', '', $matches[1]).
+			'">'.
+			$matches[2].
+			'</span>';
 	}
 
 	// --------------------------------------------------------------------
@@ -1858,25 +1974,10 @@ class EE_Typography {
 	 */
 	public function font_matrix($matches)
 	{
-		switch($matches['1'])
-		{
-			case 1  : $size = '9px';
-				break;
-			case 2  : $size = '11px';
-				break;
-			case 3  : $size = '14px';
-				break;
-			case 4  : $size = '16px';
-				break;
-			case 5  : $size = '18px';
-				break;
-			case 6  : $size = '20px';
-				break;
-			default : $size = '11px';
-				break;
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.4.0');
 
-		return "<span style=\"font-size:".$size.";\">".$matches['2']."</span>";
+		return $this->cleanBBCodeAttributesSize($matches);
 	}
 
 	// --------------------------------------------------------------------

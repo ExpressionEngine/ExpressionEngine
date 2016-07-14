@@ -155,6 +155,14 @@ class Publish extends AbstractPublishController {
 			show_error(lang('no_channel_exists'));
 		}
 
+		// Redirect to edit listing if we've reached max entries for this channel
+		if ($channel->max_entries !== '0' && $channel->total_records >= $channel->max_entries)
+		{
+			ee()->functions->redirect(
+				ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $channel_id))
+			);
+		}
+
 		$entry = ee('Model')->make('ChannelEntry');
 		$entry->Channel = $channel;
 		$entry->site_id =  ee()->config->item('site_id');
@@ -255,7 +263,7 @@ class Publish extends AbstractPublishController {
 
 		if ($entry->Channel->CategoryGroups)
 		{
-			$this->addCategoryModals();
+			ee('Category')->addCategoryModals();
 		}
 
 		ee()->cp->render('publish/entry', $vars);

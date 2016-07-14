@@ -60,6 +60,22 @@ class File extends Model {
 			'model'    => 'Member',
 			'from_key' => 'modified_by_member_id'
 		),
+		'Categories' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Category',
+			'pivot' => array(
+				'table' => 'file_categories',
+				'left' => 'file_id',
+				'right' => 'cat_id'
+			)
+		),
+	);
+
+	protected static $_validation_rules = array(
+		'title'       => 'xss',
+		'description' => 'xss',
+		'credit'      => 'xss',
+		'location'    => 'xss',
 	);
 
 	protected $file_id;
@@ -235,6 +251,84 @@ class File extends Model {
 		return is_writable($this->getAbsolutePath());
 	}
 
+	/**
+	 * Cleans the values by stripping tags and trimming
+	 *
+	 * @param string $str The string to be cleaned
+	 * @return string A clean string
+	 */
+	private function stripAndTrim($str)
+	{
+		return trim(strip_tags($str));
+	}
+
+	public function set__title($value)
+	{
+		$this->setRawProperty('title', $this->stripAndTrim($value));
+	}
+
+	public function set__description($value)
+	{
+		$this->setRawProperty('description', $this->stripAndTrim($value));
+	}
+
+	public function set__credit($value)
+	{
+		$this->setRawProperty('credit', $this->stripAndTrim($value));
+	}
+
+	public function set__location($value)
+	{
+		$this->setRawProperty('location', $this->stripAndTrim($value));
+	}
+
+	/**
+	 * Category setter for convenience to intercept the
+	 * 'categories' post array.
+	 */
+	public function setCategoriesFromPost($categories)
+	{
+		// Currently cannot get multiple category groups through relationships
+		$cat_groups = array();
+
+		if ($this->UploadDestination->cat_group)
+		{
+			$cat_groups = explode('|', $this->UploadDestination->cat_group);
+		}
+
+		if (empty($categories))
+		{
+			$this->Categories = NULL;
+
+			return;
+		}
+
+		$set_cats = array();
+
+		// Set the data on the fields in case we come back from a validation error
+		foreach ($cat_groups as $cat_group)
+		{
+			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
+			{
+				$group_cats = $categories['cat_group_id_'.$cat_group];
+
+				$cats = implode('|', $group_cats);
+
+				$group_cat_objects = $this->getModelFacade()
+					->get('Category')
+					->filter('site_id', ee()->config->item('site_id'))
+					->filter('cat_id', 'IN', $group_cats)
+					->all();
+
+				foreach ($group_cat_objects as $cat)
+				{
+					$set_cats[] = $cat;
+				}
+			}
+		}
+
+		$this->Categories = $set_cats;
+	}
 }
 
 // EOF

@@ -186,9 +186,15 @@ class Sets extends AbstractChannelsController {
 		{
 			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
-			foreach ($model_errors['Channel Field'][0][2] as $error)
+			foreach (array('Channel Field', 'Category') as $type)
 			{
-				$errors[] = $error->getLanguageKey();
+				if (isset($model_errors[$type]))
+				{
+					foreach ($model_errors[$type][0][2] as $error)
+					{
+						$errors[] = $error->getLanguageKey();
+					}
+				}
 			}
 
 			ee('CP/Alert')->makeInline('shared-form')

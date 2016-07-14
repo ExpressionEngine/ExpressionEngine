@@ -156,20 +156,13 @@ class EE_Menu {
 	 */
 	private function _channels_menu()
 	{
-		// Custom query to more efficiently get the total number of
-		// entries per channel to properly set navigation links based
-		// on the max_entries setting of a channel
-		$channels_query = ee('db')->select('channels.channel_id, channel_title, max_entries, count(exp_channel_titles.entry_id) as total_entries')
-			->join('channel_titles', 'channel_titles.channel_id = channels.channel_id', 'left')
-			->group_by('channels.channel_id, channel_title, max_entries')
-			->where('channels.site_id', ee()->config->item('site_id'))
-			->order_by('channel_title');
+		$channels_query = ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_title', 'max_entries', 'total_records');
 
 		$allowed_channels = ee()->session->userdata('assigned_channels');
 		if (count($allowed_channels))
 		{
-			$channels = $channels_query->where_in('channel_title', $allowed_channels)
-				->get('channels');
+			$channels = $channels_query->filter('channel_title', 'IN', $allowed_channels);
 		}
 
 		$menu['create'] = array();
@@ -177,7 +170,7 @@ class EE_Menu {
 
 		if (isset($channels))
 		{
-			foreach($channels->result() as $channel)
+			foreach($channels->all() as $channel)
 			{
 				$filtered_by_channel = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 
@@ -188,13 +181,13 @@ class EE_Menu {
 				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
 
 				// Is there a max entries setting and are we at the limit?
-				if ($channel->max_entries !== '0' && $channel->total_entries >= $channel->max_entries)
+				if ($channel->max_entries !== '0' && $channel->total_records >= $channel->max_entries)
 				{
 					// Point folks trying to publish to the edit listing
 					$menu['create'][$channel->channel_title] = $filtered_by_channel;
 
 					// If there's a limit of 1, just send them to the edit screen for that entry
-					if ($channel->total_entries === '1' && $channel->max_entries === '1')
+					if ($channel->total_records === '1' && $channel->max_entries === '1')
 					{
 						$entry = ee('Model')->get('ChannelEntry')
 							->filter('channel_id', $channel->channel_id)
