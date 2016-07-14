@@ -38,6 +38,7 @@ class Updater {
 			array(
 				'add_can_view_homepage_news_permission',
 				'add_channel_max_entries_columns',
+				'fix_channel_total_entries_count',
 				'add_missing_default_status_groups'
 			)
 		);
@@ -96,6 +97,19 @@ class Updater {
 			),
 			'total_entries'
 		);
+	}
+
+	/**
+	 * The total_entries column in the Channel table has been calculated
+	 * incorrectly. This loops through each channel and ensures its correct
+	 * and also populates our new total_records column.
+	 */
+	private function fix_channel_total_entries_count()
+	{
+		foreach (ee('Model')->get('Channel')->all() as $channel)
+		{
+			$channel->updateEntryStats();
+		}
 	}
 
 	/**

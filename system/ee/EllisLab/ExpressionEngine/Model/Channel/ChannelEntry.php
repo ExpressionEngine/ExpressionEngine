@@ -297,6 +297,8 @@ class ChannelEntry extends ContentModel {
 		parent::onAfterSave();
 		$this->Autosaves->delete();
 
+		$this->updateEntryStats();
+
 		// Some Tabs might call ee()->api_channel_fields
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
@@ -346,7 +348,6 @@ class ChannelEntry extends ContentModel {
 	public function onAfterInsert()
 	{
 		$this->Author->updateAuthorStats();
-		$this->updateEntryStats();
 
 		if ($this->Channel->channel_notify == 'y' && $this->Channel->channel_notify_emails != '')
 		{
@@ -456,14 +457,7 @@ class ChannelEntry extends ContentModel {
 		$stats->last_entry_date = $last_entry_date;
 		$stats->save();
 
-		// Channel gets unfiltered stats, just literal count of entries
-		$channel_entry_count = $this->getModelFacade()->get('ChannelEntry')
-			->filter('channel_id', $this->channel_id)
-			->count();
-
-		$channel = $this->getModelFacade()->get('Channel')->filter('channel_id', $this->channel_id)->first();
-		$channel->total_entries = $channel_entry_count;
-		$channel->save();
+		$this->Channel->updateEntryStats();
 	}
 
 	/**

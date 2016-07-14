@@ -488,6 +488,35 @@ class Channel extends StructureModel {
 		$groups = explode('|', $this->cat_group);
 		return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
 	}
+
+	/**
+	 * Updates total_records, total_entries, and last_entry_date
+	 */
+	public function updateEntryStats()
+	{
+		$entries = $this->getModelFacade()->get('ChannelEntry')
+			->fields('entry_id', 'entry_date')
+			->filter('channel_id', $this->getId());
+
+		// Total records is unfiltered
+		$this->setProperty('total_records', $entries->count());
+
+		// Total entries should only account for open, non-expired entries
+		$entries = $entries->filter('entry_date', '<=', ee()->localize->now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', ee()->localize->now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$last_entry = $entries->first();
+
+		$this->setProperty('total_entries', $entries->count());
+		$last_entry_date = ($last_entry) ? $last_entry->entry_date : 0;
+		$this->setProperty('last_entry_date', $last_entry_date);
+		$this->save();
+	}
 }
 
 // EOF
