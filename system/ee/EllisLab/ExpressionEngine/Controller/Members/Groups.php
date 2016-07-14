@@ -586,6 +586,10 @@ class Groups extends Members\Members {
 							$choices = array_keys($options['choices']);
 							$deselected = array_diff($choices, $submitted);
 
+							// Validate submitted against choices to prevent
+							// arbitrary properties from being set
+							$submitted = array_intersect($choices, $submitted);
+
 							foreach ($submitted as $item)
 							{
 								$group->$item = 'y';

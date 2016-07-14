@@ -535,7 +535,7 @@ class Uploads extends AbstractFilesController {
 		$member_groups = array();
 		foreach ($groups as $group)
 		{
-			$member_groups[$group->group_id] = $group->group_title;
+			$member_groups[$group->group_id] = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
 		}
 
 		if ( ! empty($_POST))

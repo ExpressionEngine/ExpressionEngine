@@ -748,7 +748,7 @@ class Members extends CP_Controller {
 						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
 						<b>'.lang('last_visit').'</b>: '.$last_visit.'
 					</span>',
-					'member_group' => $group
+					'member_group' => htmlentities($group, ENT_QUOTES, 'UTF-8')
 				),
 				'attrs' => $attributes
 			);
