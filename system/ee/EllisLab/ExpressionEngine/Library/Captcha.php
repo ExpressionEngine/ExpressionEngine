@@ -85,11 +85,11 @@ class Captcha {
 		$img_width	= 140;	// Image width
 		$img_height	= 30;	// Image height
 
+
 		if ($img_path == '' OR
 			$img_url == '' OR
 			! @is_dir($img_path) OR
 			! is_really_writable($img_path) OR
-			! file_exists(APPPATH.'config/captcha.php') OR
 			! extension_loaded('gd'))
 		{
 			return FALSE;
@@ -129,7 +129,7 @@ class Captcha {
 		// Fetch and insert word
 		if ($old_word == '')
 		{
-			require APPPATH.'config/captcha.php';
+			$words = ee()->config->loadFile('captcha');
 			$word = $words[array_rand($words)];
 
 			if (ee()->config->item('captcha_rand') == 'y')

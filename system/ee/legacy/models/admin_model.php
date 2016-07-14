@@ -34,22 +34,8 @@ class Admin_model extends CI_Model {
 	 */
 	function get_xml_encodings()
 	{
-		static $encodings;
-
-		if ( ! isset($encodings))
-		{
-			$file = APPPATH.'config/languages.php';
-
-			if ( ! file_exists($file))
-			{
-				return FALSE;
-			}
-
-			require_once $file;
-
-			$encodings = array_flip($languages);
-			unset($languages);
-		}
+		$languages = ee()->config->loadFile('languages');
+		$encodings = array_flip($languages);
 
 		return $encodings;
 	}

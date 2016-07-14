@@ -253,24 +253,14 @@ if ( ! function_exists('doctype'))
 {
 	function doctype($type = 'xhtml1-strict')
 	{
-		global $_doctypes;
+		$doctypes = ee()->config->loadFile('doctypes');
 
-		if ( ! is_array($_doctypes))
+		if (isset($doctypes[$type]))
 		{
-			if ( ! require_once(APPPATH.'config/doctypes.php'))
-			{
-				return FALSE;
-			}
+			return $doctypes[$type];
 		}
 
-		if (isset($_doctypes[$type]))
-		{
-			return $_doctypes[$type];
-		}
-		else
-		{
-			return FALSE;
-		}
+		return FALSE;
 	}
 }
 

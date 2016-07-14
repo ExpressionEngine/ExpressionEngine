@@ -26,6 +26,8 @@
 // The left side of the array is the text that appears in the link
 // The right side is the tag or entity to be inserted
 
+ee()->logger->developer('The glossary config file has been deprecated and will be removed.', TRUE, 604800);
+
 $glossary[1][] = array('anchor',			"&lt;a href=''&gt;&lt;/a&gt;");
 $glossary[1][] = array('image_link',		"&lt;img src='' /&gt;");
 $glossary[1][] = array('blockquote',		'&lt;blockquote&gt;&lt;/blockquote&gt;');

@@ -40,19 +40,9 @@ class Mime_type {
 	{
 		$this->mime_type = new MimeType();
 
-		// Load the whitelisted mimes from disk
-		$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
-		$mime_file = $path.'config/mimes.php';
-		if (file_exists($mime_file) && is_readable($mime_file))
-		{
-			include($mime_file);
-			$this->mime_type->addMimeTypes($whitelist);
-			unset($whitelist);
-		}
-		else
-		{
-			show_error(sprintf(lang('missing_mime_config'), $mime_file));
-		}
+		$whitelist = ee()->config->loadFile('mimes');
+
+		$this->mime_type->addMimeTypes($whitelist);
 
 		// Add any mime types from the config
 		$extra_mimes = ee()->config->item('mime_whitelist_additions');

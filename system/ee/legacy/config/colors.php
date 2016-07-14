@@ -22,6 +22,8 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
+ee()->logger->developer('The colors config file has been deprecated and will be removed.', TRUE, 604800);
+
 $colors = array(
 				'aliceblue'				=> '#f0f8ff',
 				'aqua' 					=> '#00ffff',

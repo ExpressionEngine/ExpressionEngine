@@ -3338,7 +3338,7 @@ GRID_FALLBACK;
 		$word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
 
 		// Foreign Character Conversion Javascript
-		include(APPPATH.'config/foreign_chars.php');
+		$foreign_characters = ee()->config->loadFile('foreign_chars');
 
 		/* -------------------------------------
 		/*  'foreign_character_conversion_array' hook.

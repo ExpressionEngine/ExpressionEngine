@@ -1636,7 +1636,10 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'open', '1', '009933')";
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'closed', '2', '990000')";
 
-		include(EE_APPPATH.'config/html_buttons.php');
+		$button_config = ee()->config->loadFile('html_buttons');
+
+		$installation_defaults = $button_config['defaults'];
+		$predefined_buttons = $button_config['buttons'];
 
 		$buttoncount = 1;
 
