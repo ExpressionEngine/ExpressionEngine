@@ -422,7 +422,7 @@ class ChannelEntry extends ContentModel {
 		$data = array(
 			'entry_id'     => $this->entry_id,
 			'channel_id'   => $this->channel_id,
-			'author_id'    => $this->author_id,
+			'author_id'    => $this->author_id ?: 1,
 			'version_date' => ee()->localize->now,
 			'version_data' => $this->getValues()
 		);
