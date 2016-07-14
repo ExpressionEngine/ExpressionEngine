@@ -37,7 +37,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'add_can_view_homepage_news_permission',
-				'add_channel_max_entries_column',
+				'add_channel_max_entries_columns',
 				'add_missing_default_status_groups'
 			)
 		);
@@ -66,9 +66,10 @@ class Updater {
 	}
 
 	/**
-	 * Adds the max_entries column to the exp_channels table
+	 * Adds the max_entries and total_records column to the exp_channels table
+	 * for the new Max Entries feature for Channels
 	 */
-	private function add_channel_max_entries_column()
+	private function add_channel_max_entries_columns()
 	{
 		ee()->smartforge->add_column(
 			'channels',
@@ -80,6 +81,20 @@ class Updater {
 					'default'      => 0
 				),
 			)
+		);
+
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'total_records'    => array(
+					'type'         => 'mediumint',
+					'constraint'   => 8,
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
+				),
+			),
+			'total_entries'
 		);
 	}
 

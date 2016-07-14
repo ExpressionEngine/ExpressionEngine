@@ -570,6 +570,7 @@ class EE_Schema {
 			channel_description varchar(255) NULL DEFAULT NULL,
 			channel_lang varchar(12) NOT NULL,
 			total_entries mediumint(8) default '0' NOT NULL,
+			total_entries mediumint(8) unsigned NOT NULL DEFAULT '0',
 			total_comments mediumint(8) default '0' NOT NULL,
 			last_entry_date int(10) unsigned default '0' NOT NULL,
 			last_comment_date int(10) unsigned default '0' NOT NULL,

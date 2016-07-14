@@ -177,6 +177,7 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template;
 	protected $max_entries;
+	protected $total_records;
 
 	/**
 	 * Parses URL properties for any config variables
