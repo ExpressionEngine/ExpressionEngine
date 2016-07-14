@@ -135,6 +135,7 @@ class Channel extends StructureModel {
 	protected $channel_description;
 	protected $channel_lang;
 	protected $total_entries;
+	protected $total_records;
 	protected $total_comments;
 	protected $last_entry_date;
 	protected $last_comment_date;
@@ -177,7 +178,6 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template;
 	protected $max_entries;
-	protected $total_records;
 
 	/**
 	 * Parses URL properties for any config variables
