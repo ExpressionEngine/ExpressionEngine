@@ -108,7 +108,6 @@ class Settings extends Profile {
 
 		$directories = ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
-			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->indexBy('name');
 
@@ -160,11 +159,6 @@ class Settings extends Profile {
 				)
 			);
 		}
-
-		$avatar_choices['link'] = array(
-			'label' => 'link_avatar',
-			'html' => form_input('link_avatar', 'http://')
-		);
 
 		$avatar_choose_lang_desc = lang('change_avatar_desc');
 		if (count($avatar_choices) == 1)
@@ -338,9 +332,6 @@ class Settings extends Profile {
 				$choice = ee()->input->post('avatar_filename');
 				$this->member->avatar_filename = $choice;
 				break;
-			case "link":
-				$this->member->avatar_filename = $this->uploadRemoteAvatar();
-				break;
 		}
 
 		return parent::saveSettings($settings);
@@ -408,46 +399,6 @@ class Settings extends Profile {
 
 		unlink($original);
 		$result = (array) ee()->upload;
-
-		return $filename;
-	}
-
-	private function uploadRemoteAvatar()
-	{
-		$url = ee()->input->post('link_avatar');
-		$directory = ee('Model')->get('UploadDestination')
-			->filter('name', 'Avatars')
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
-
-		if ( ! $directory)
-		{
-			return FALSE;
-		}
-
-    	$ch = curl_init($url);
-    	curl_setopt($ch, CURLOPT_HEADER, 0);
-    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    	curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
-    	$file = curl_exec($ch);
-    	curl_close($ch);
-
-		ee()->load->library('filemanager');
-
-		$file_path = ee()->filemanager->clean_filename(
-			basename($url),
-			$directory->id,
-			array('ignore_dupes' => FALSE)
-		);
-		$filename = basename($file_path);
-
-		// Upload the file
-		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
-
-		if (ee()->upload->raw_upload($filename, $file) === FALSE)
-		{
-			return FALSE;
-		}
 
 		return $filename;
 	}

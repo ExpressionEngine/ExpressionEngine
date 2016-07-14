@@ -214,8 +214,29 @@ class Sets extends AbstractChannelsController {
 
 	private function createAliasForm($set, $result)
 	{
+		ee()->lang->loadfile('filemanager');
 		$vars = array();
 		$vars['sections'] = array();
+		$vars['errors'] = new \EllisLab\ExpressionEngine\Service\Validation\Result;
+
+		$hidden = array();
+		foreach ($_POST as $model => $ident)
+		{
+			foreach ($ident as $field => $properties)
+			{
+				foreach ($properties as $property => $value)
+				{
+					// Not sure what was submitted here.
+					if (is_array($value))
+					{
+						continue;
+					}
+
+					$key = "{$model}[{$field}][{$property}]";
+					$hidden[$key] = $value;
+				}
+			}
+		}
 
 		foreach ($result->getRecoverableErrors() as $section => $errors)
 		{
@@ -235,18 +256,21 @@ class Sets extends AbstractChannelsController {
 				// you really want to edit the long name as well, so we'll show it.
 				if (isset($long_field))
 				{
+					$key = $model_name.'['.$ident.']['.$long_field.']';
 					$vars['sections'][$section.': '.$model->$title_field][] = array(
 						'title' => $long_field,
 						'fields' => array(
-							$model_name.'['.$ident.']['.$long_field.']' => array(
+							$key => array(
 								'type' => 'text',
 								'value' => $model->$long_field,
-								'required' => TRUE
+								// 'required' => TRUE
 							)
 						)
 					);
+					unset($hidden[$key]);
 				}
 
+				$key = $model_name.'['.$ident.']['.$field.']';
 				$vars['sections'][$section.': '.$model->$title_field][] = array(
 					'title' => $field,
 					'fields' => array(
@@ -257,7 +281,19 @@ class Sets extends AbstractChannelsController {
 						)
 					)
 				);
+
+				unset($hidden[$key]);
+
+				foreach ($rule as $r)
+				{
+					$vars['errors']->addFailed($model_name.'['.$ident.']['.$field.']', $r);
+				}
 			}
+		}
+
+		if ( ! empty($hidden))
+		{
+			$vars['form_hidden'] = $hidden;
 		}
 
 		// Final view variables we need to render the form

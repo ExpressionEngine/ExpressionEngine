@@ -42,7 +42,6 @@ feature 'URL and Path Settings' do
 
   it 'should validate the form' do
     field_required = "This field is required."
-    theme_path_invalid = 'The path you submitted is not valid.'
 
     @page.site_url.set ''
     @page.submit
@@ -108,7 +107,7 @@ feature 'URL and Path Settings' do
     should_have_error_text(@page.cp_url, field_required)
     should_have_error_text(@page.theme_folder_url, field_required)
     # TODO: Uncomment when this stops fluking out
-    #should_have_error_text(@page.theme_folder_path, theme_path_invalid)
+    #should_have_error_text(@page.theme_folder_path, $invalid_path)
   end
 
   it 'should reject XSS' do

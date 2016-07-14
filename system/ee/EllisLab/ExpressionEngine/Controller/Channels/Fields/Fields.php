@@ -314,7 +314,6 @@ class Fields extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'name',
-					'desc' => 'name_desc',
 					'fields' => array(
 						'field_label' => array(
 							'type' => 'text',

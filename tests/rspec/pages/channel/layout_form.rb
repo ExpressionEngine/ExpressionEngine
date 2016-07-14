@@ -20,9 +20,9 @@ class ChannelLayoutForm < ControlPanelPage
   elements :member_groups, 'form fieldset input[name="member_groups[]"]'
   element :submit_button, 'form fieldset.form-ctrls input[type=submit]'
 
-  element :add_tab_modal, 'div.modal-add-new-tab', visible: false
-  element :add_tab_modal_tab_name, 'div.modal-add-new-tab input[name="tab_name"]', visible: false
-  element :add_tab_modal_submit_button, 'div.modal-add-new-tab .form-ctrls .btn', visible: false
+  element :add_tab_modal, 'div.modal-add-new-tab'
+  element :add_tab_modal_tab_name, 'div.modal-add-new-tab input[name="tab_name"]'
+  element :add_tab_modal_submit_button, 'div.modal-add-new-tab .form-ctrls .btn'
 
   def move_tool(node)
     return node.find('.layout-tools .toolbar .move a')

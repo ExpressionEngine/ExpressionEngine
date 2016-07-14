@@ -239,6 +239,7 @@ class GlobalVariable extends FileSyncedModel {
 
 	public function onAfterSave()
 	{
+		parent::onAfterSave();
 		ee()->functions->clear_caching('all');
 	}
 }

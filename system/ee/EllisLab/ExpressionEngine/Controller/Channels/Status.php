@@ -577,7 +577,8 @@ class Status extends AbstractChannelsController {
 					'fields' => array(
 						'highlight' => array(
 							'type' => 'text',
-							'value' => $status->highlight ?: '000000'
+							'value' => $status->highlight ?: '000000',
+							'required' => TRUE
 						)
 					)
 				)
@@ -616,7 +617,7 @@ class Status extends AbstractChannelsController {
 			array(
 				'field' => 'highlight',
 				'label' => 'lang:highlight_color',
-				'rules' => 'strip_tags|trim|valid_xss_check|callback_validateHex'
+				'rules' => 'strip_tags|trim|required|valid_xss_check|callback_validateHex'
 			)
 		));
 

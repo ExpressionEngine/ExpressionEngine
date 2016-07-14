@@ -37,6 +37,11 @@ class Writable extends ValidationRule {
 		return $this->getFilesystem()->isWritable($value);
 	}
 
+	public function getLanguageKey()
+	{
+		return 'invalid_path';
+	}
+
 	protected function getFilesystem()
 	{
 		if ( ! isset($this->fs))

@@ -198,7 +198,7 @@ class Layouts extends AbstractChannelsController {
 			),
 			array(
 				'field' => 'member_groups',
-				'label' => 'lang:member_groups',
+				'label' => 'lang:layout_member_groups',
 				'rules' => 'required'
 			),
 		));
@@ -298,7 +298,7 @@ class Layouts extends AbstractChannelsController {
 			),
 			array(
 				'field' => 'member_groups',
-				'label' => 'lang:member_groups',
+				'label' => 'lang:layout_member_groups',
 				'rules' => 'required'
 			),
 		));
@@ -420,7 +420,7 @@ class Layouts extends AbstractChannelsController {
 				)
 			),
 			array(
-				'title' => 'member_groups',
+				'title' => 'layout_member_groups',
 				'desc' => 'member_groups_desc',
 				'fields' => array(
 					'member_groups' => array(

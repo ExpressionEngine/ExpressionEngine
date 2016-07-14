@@ -62,8 +62,12 @@ class EE_Lang {
 	 */
 	protected function getIdiom()
 	{
-		ee()->load->library('session');
-		return ee()->security->sanitize_filename(ee()->session->get_language());
+		if (isset(ee()->session))
+		{
+			return ee()->security->sanitize_filename(ee()->session->get_language());
+		}
+
+		return ee()->config->item('deft_lang') ?: 'english';
 	}
 
 	// --------------------------------------------------------------------
@@ -103,6 +107,8 @@ class EE_Lang {
 		$paths = array(
 			// Check custom languages first
 			SYSPATH.'user/language/'.$idiom.'/'.$langfile,
+			// Check if the user session language is English
+			BASEPATH.'language/'.$idiom.'/'.$langfile,
 			// Check their defined default language
 			SYSPATH.'user/language/'.$deft_lang.'/'.$langfile,
 			// Lastly render the english

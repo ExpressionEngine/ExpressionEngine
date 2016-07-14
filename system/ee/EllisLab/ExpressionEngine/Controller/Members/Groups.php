@@ -140,7 +140,7 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = ee('Model')->get('Member')->filter('group_id', $group->group_id)->count();
 			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
-			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+			$title = '<a href="' . $edit_link . '">' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</a>';
 
 			if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 			{
@@ -324,6 +324,10 @@ class Groups extends Members\Members {
 		}
 
 		$group_names = $group_info->pluck('group_title');
+		$group_names = array_map(function($group_name)
+		{
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $group_names);
 
 
 		if (is_array($groups))
@@ -523,7 +527,7 @@ class Groups extends Members\Members {
 	private function save($sections)
 	{
 		$this->index_url = 'members/groups';
-		$allowed_channels = ee()->input->post('allowed_channels');
+		$allowed_channels = ee()->input->post('allowed_channels') ?: array();
 		$allowed_template_groups = ee()->input->post('allowed_template_groups');
 		$allowed_addons = ee()->input->post('addons_access');
 		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
@@ -542,7 +546,7 @@ class Groups extends Members\Members {
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
-			$group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
+			$group->assignChannels($allowed_channels);
 		}
 
 		foreach ($sections as $section)
@@ -573,6 +577,10 @@ class Groups extends Members\Members {
 						{
 							$choices = array_keys($options['choices']);
 							$deselected = array_diff($choices, $submitted);
+
+							// Validate submitted against choices to prevent
+							// arbitrary properties from being set
+							$submitted = array_intersect($choices, $submitted);
 
 							foreach ($submitted as $item)
 							{

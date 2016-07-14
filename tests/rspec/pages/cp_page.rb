@@ -6,11 +6,14 @@ class ControlPanelPage < SitePrism::Page
   element :settings_btn, '.dev-menu .settings > a'
   elements :error_messages, 'em.ee-form-error-message'
 
+  # Main Section
+  element :page_title, '.wrap .box h1'
+
   # Tables
   element :select_all, 'th.check-ctrl input'
   element :sort_col, 'table th.highlight'
   elements :sort_links, 'table a.sort'
-  element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
+  element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :action_submit_button, 'form fieldset.tbl-bulk-act .submit'
 
   # Pagination
@@ -38,6 +41,10 @@ class ControlPanelPage < SitePrism::Page
   # Tabs
   element :tab_bar, 'div.tab-wrap'
   elements :tabs, 'div.tab-wrap ul.tabs li'
+
+  def is_404?
+    page_title.text.start_with? '404'
+  end
 
   def open_dev_menu
     main_menu.dev_menu.click
@@ -86,7 +93,7 @@ class ControlPanelPage < SitePrism::Page
 
     # Element is still there after our timeout? No good.
     if element_count != count && i == (seconds * 100)
-      raise StandardError, "Error message did not disappear"
+      raise StandardError, "Wrong number of validation errors. Got #{element_count}, expected #{count}."
     end
   end
 end

@@ -147,7 +147,7 @@ class Members extends CP_Controller {
 		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
 
 		$state = array(
-			'sort'	=> array($table->config['sort_col'] => $table->config['sort_dir']),
+			'sort'	=> array($table->sort_col => $table->sort_dir),
 			'offset' => ! empty($page) ? ($page - 1) * $table->config['limit'] : 0
 		);
 
@@ -585,7 +585,8 @@ class Members extends CP_Controller {
 					if (ee()->cp->allowed_group('can_edit_members'))
 					{
 						$toolbar['approve'] = array(
-							'href' => ee('CP/URL')->make('members/approve/' . $member->member_id),
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member->member_id),
 							'title' => strtolower(lang('approve'))
 						);
 					}
@@ -708,10 +709,14 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'pending';
-					$toolbar['toolbar_items']['approve'] = array(
-						'href' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
-						'title' => strtolower(lang('approve'))
-					);
+					if (ee()->cp->allowed_group('can_edit_members'))
+					{
+						$toolbar['toolbar_items']['approve'] = array(
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
+							'title' => strtolower(lang('approve'))
+						);
+					}
 					break;
 				default:
 					$group = $groups[$member['group_id']];
@@ -743,7 +748,7 @@ class Members extends CP_Controller {
 						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
 						<b>'.lang('last_visit').'</b>: '.$last_visit.'
 					</span>',
-					'member_group' => $group
+					'member_group' => htmlentities($group, ENT_QUOTES, 'UTF-8')
 				),
 				'attrs' => $attributes
 			);
@@ -786,7 +791,8 @@ class Members extends CP_Controller {
 	 */
 	public function approve($ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		if ( ! ee()->cp->allowed_group('can_edit_members') OR
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1150,6 +1156,10 @@ class Members extends CP_Controller {
 			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
 
 			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
+			$entries->Author = $heir;
+			$entries->save();
+
+			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
 			$entries->Author = $heir;
 			$entries->save();
 

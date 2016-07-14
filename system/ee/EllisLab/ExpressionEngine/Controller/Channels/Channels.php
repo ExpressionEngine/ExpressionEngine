@@ -350,12 +350,17 @@ class Channels extends AbstractChannelsController {
 			array(
 				'field' => 'channel_title',
 				'label' => 'lang:channel_title',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'strip_tags|trim|valid_xss_check|required'
 			),
 			array(
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
 				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
+			),
+			array(
+				'field' => 'title_field_label',
+				'label' => 'lang:title_field_label',
+				'rules' => 'valid_xss_check'
 			)
 		));
 
@@ -561,6 +566,7 @@ class Channels extends AbstractChannelsController {
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		$live_look_template_options[0] = lang('no_live_look_template');

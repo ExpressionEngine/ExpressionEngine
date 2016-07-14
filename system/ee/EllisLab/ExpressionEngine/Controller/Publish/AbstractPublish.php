@@ -296,6 +296,7 @@ abstract class AbstractPublish extends CP_Controller {
 					{
 						$_POST[$field_name] = NULL;
 					}
+
 				}
 			}
 		}
@@ -306,13 +307,6 @@ abstract class AbstractPublish extends CP_Controller {
 		}
 
 		$entry->set($_POST);
-
-		// if categories are not in POST, then they've unchecked everything
-		// and we need to clear them out
-		if ( ! isset($_POST['categories']))
-		{
-			$entry->categories = array();
-		}
 
 		$result = $entry->validate();
 
@@ -336,37 +330,21 @@ abstract class AbstractPublish extends CP_Controller {
 	protected function saveEntryAndRedirect($entry)
 	{
 		$action = ($entry->isNew()) ? 'create' : 'edit';
+		$entry->edit_date = ee()->localize->now;
+		$entry->save();
 
-		if ($entry->versioning_enabled && ee()->input->post('save_revision'))
+		if ($action == 'create')
 		{
-			$entry->saveVersion();
-
-			ee('CP/Alert')->makeInline('entry-form')
-				->asSuccess()
-				->withTitle(lang('revision_saved'))
-				->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
+			ee()->session->set_flashdata('entry_id', $entry->entry_id);
 		}
-		else
-		{
-			$entry->edit_date = ee()->localize->now;
-			$entry->save();
 
-			if ($action == 'create')
-			{
-				ee()->session->set_flashdata('entry_id', $entry->entry_id);
-			}
+		ee('CP/Alert')->makeInline('entry-form')
+			->asSuccess()
+			->withTitle(lang($action . '_entry_success'))
+			->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
+			->defer();
 
-			ee('CP/Alert')->makeInline('entry-form')
-				->asSuccess()
-				->withTitle(lang($action . '_entry_success'))
-				->addToBody(sprintf(lang($action . '_entry_success_desc'), $entry->title))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
-		}
+		ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 	}
 
 	/**

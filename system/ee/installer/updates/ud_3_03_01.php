@@ -36,7 +36,8 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'use_site_default_localization_settings'
+				'use_site_default_localization_settings',
+				'set_encryption_key'
 			)
 		);
 
@@ -90,6 +91,21 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Create a valid Encryption Key
+	 */
+	private function set_encryption_key()
+	{
+		$encryption_key = ee()->config->item('encryption_key');
+		if (empty($encryption_key))
+		{
+			ee()->config->update_site_prefs(
+				array('encryption_key' => sha1(uniqid(mt_rand(), TRUE))),
+				'all'
+			);
+		}
 	}
 
 

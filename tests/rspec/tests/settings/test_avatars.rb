@@ -31,24 +31,20 @@ feature 'Avatar Settings' do
   end
 
   it 'should validate the form' do
-    invalid_path = 'The path you submitted is not valid.'
-    not_writable = 'The path you submitted is not writable.'
-    integer_error = 'This field must contain an integer.'
-
     @page.avatar_path.set 'sdfsdfsd'
     @page.submit
 
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'Attention: Settings not saved'
-    @page.should have_text invalid_path
+    @page.should have_text $invalid_path
 
     # AJAX validation
     @page.load
     @page.avatar_path.set 'sdfsdfsd'
     @page.avatar_path.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.avatar_path, invalid_path)
+    should_have_error_text(@page.avatar_path, $invalid_path)
     should_have_form_errors(@page)
 
     @page.avatar_path.set @upload_path
@@ -58,25 +54,25 @@ feature 'Avatar Settings' do
     @page.avatar_path.set '/'
     @page.avatar_path.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.avatar_path, not_writable)
+    should_have_error_text(@page.avatar_path, $not_writable)
     should_have_form_errors(@page)
 
     @page.avatar_max_width.set 'dfsd'
     @page.avatar_max_width.trigger 'blur'
     @page.wait_for_error_message_count(2)
-    should_have_error_text(@page.avatar_max_width, integer_error)
+    should_have_error_text(@page.avatar_max_width, $integer_error)
     should_have_form_errors(@page)
 
     @page.avatar_max_height.set 'dsfsd'
     @page.avatar_max_height.trigger 'blur'
     @page.wait_for_error_message_count(3)
-    should_have_error_text(@page.avatar_max_height, integer_error)
+    should_have_error_text(@page.avatar_max_height, $integer_error)
     should_have_form_errors(@page)
 
     @page.avatar_max_kb.set 'sdfsdfsd'
     @page.avatar_max_kb.trigger 'blur'
     @page.wait_for_error_message_count(4)
-    should_have_error_text(@page.avatar_max_kb, integer_error)
+    should_have_error_text(@page.avatar_max_kb, $integer_error)
     should_have_form_errors(@page)
 
     # Fix everything

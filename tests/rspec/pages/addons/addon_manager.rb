@@ -13,7 +13,7 @@ class AddonManager < ControlPanelPage
   element :first_party_heading, first_party_prefix + 'form h1'
 
   element :first_party_status_filter, first_party_prefix + 'div.filters ul li:first-child'
-  element :first_party_status_filter_menu, first_party_prefix + 'div.filters ul li:first-child div.sub-menu ul', visible: false
+  element :first_party_status_filter_menu, first_party_prefix + 'div.filters ul li:first-child div.sub-menu ul'
 
   element :first_party_alert, first_party_prefix + 'div.alert'
 
@@ -32,7 +32,7 @@ class AddonManager < ControlPanelPage
   element :first_party_pagination, first_party_prefix + 'div.paginate'
   elements :first_party_pages, first_party_prefix + 'div.paginate ul li a'
 
-  element :first_party_bulk_action, first_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
+  element :first_party_bulk_action, first_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :first_party_action_submit_button, first_party_prefix + 'form fieldset.tbl-bulk-act button.submit'
 
   # Third Party Add-Ons
@@ -42,10 +42,10 @@ class AddonManager < ControlPanelPage
   element :third_party_heading, third_party_prefix + 'form h1'
 
   element :third_party_status_filter, third_party_prefix + 'div.filters ul li:first-child'
-  element :third_party_status_filter_menu, third_party_prefix + 'div.filters ul li:first-child div.sub-menu ul', visible: false
+  element :third_party_status_filter_menu, third_party_prefix + 'div.filters ul li:first-child div.sub-menu ul'
 
   element :third_party_developer_filter, third_party_prefix + 'div.filters ul li:nth-child(2)'
-  element :third_party_developer_filter_menu, third_party_prefix + 'div.filters ul li:nth-child(2) div.sub-menu ul', visible: false
+  element :third_party_developer_filter_menu, third_party_prefix + 'div.filters ul li:nth-child(2) div.sub-menu ul'
 
   element :third_party_alert, third_party_prefix + 'div.alert'
 
@@ -64,7 +64,7 @@ class AddonManager < ControlPanelPage
   element :third_party_pagination, third_party_prefix + 'div.paginate'
   elements :third_party_pages, third_party_prefix + 'div.paginate ul li a'
 
-  element :third_party_bulk_action, third_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
+  element :third_party_bulk_action, third_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :third_party_action_submit_button, third_party_prefix + 'form fieldset.tbl-bulk-act button.submit'
 
   def load

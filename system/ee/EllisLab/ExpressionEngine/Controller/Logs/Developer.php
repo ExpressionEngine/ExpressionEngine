@@ -161,6 +161,7 @@ class Developer extends Logs {
 		);
 
 		$logs = $logs->order('timestamp', 'desc')
+			->order('log_id', 'desc')
 			->limit($this->params['perpage'])
 			->offset($offset)
 			->all();

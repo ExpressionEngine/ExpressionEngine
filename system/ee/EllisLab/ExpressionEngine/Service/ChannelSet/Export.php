@@ -289,6 +289,12 @@ class Export {
 		}
 
 		// fieldtype specific stuff
+		// start by defining any that exist- then overwrite special cases
+		if (isset($field->field_settings))
+		{
+			$result->settings = $field->field_settings;
+		}
+
 		if ($field->field_type == 'file')
 		{
 			$result->settings = $this->exportFileFieldSettings($field);
@@ -307,38 +313,6 @@ class Export {
 		if (in_array($field->field_type, array('textarea', 'rte')))
 		{
 			$result->ta_rows = $field->field_ta_rows;
-		}
-
-		if ($field->field_type == 'toggle')
-		{
-			$result->settings['field_default_value'] = $field->field_settings['field_default_value'];
-		}
-
-		if (in_array($field->field_type, array('textarea', 'text')))
-		{
-			if ($field->field_settings['field_show_smileys'])
-			{
-				$result->settings['field_show_smileys'] = $field->field_settings['field_show_smileys'];
-			}
-
-			if ($field->field_settings['field_show_file_selector'])
-			{
-				$result->settings['field_show_file_selector'] = $field->field_settings['field_show_file_selector'];
-			}
-		}
-
-		if ($field->field_type == 'textarea')
-		{
-			if ($field->field_settings['field_show_formatting_btns'])
-			{
-				$result->settings['field_show_formatting_btns'] = $field->field_settings['field_show_formatting_btns'];
-			}
-		}
-
-		if ($field->field_type == 'url')
-		{
-			$result->settings['url_scheme_placeholder'] = $field->field_settings['url_scheme_placeholder'];
-			$result->settings['allowed_url_schemes'] = $field->field_settings['allowed_url_schemes'];
 		}
 
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);

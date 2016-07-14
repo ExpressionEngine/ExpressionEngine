@@ -306,7 +306,13 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => $return_url->encode())),
+						'href' => '#',
+						'data-post-url' => ee('CP/URL')->make(
+							'addons/install/' . $info['package'],
+							array(
+								'return' => $return_url->encode()
+							)
+						),
 						'title' => lang('install'),
 						'content' => lang('install'),
 						'type' => 'txt-only',
@@ -350,7 +356,13 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => $return_url->encode())),
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make(
+								'addons/update/' . $info['package'],
+								array(
+									'return' => $return_url->encode()
+								)
+							),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -484,7 +496,8 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -645,7 +658,8 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -865,12 +879,6 @@ class Addons extends CP_Controller {
 			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
 		);
 
-		ee()->view->header = array(
-			'title' => lang('addon_manager'),
-			'form_url' => ee('CP/URL')->make('addons'),
-			'search_button_value' => lang('search_addons_button')
-		);
-
 		if (is_null($method))
 		{
 			$method = (ee()->input->get_post('method') !== FALSE) ? ee()->input->get_post('method') : 'index';
@@ -882,6 +890,15 @@ class Addons extends CP_Controller {
 		{
 			$data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
+			$addon_header = (isset(ee()->cp->header)) ? ee()->cp->header : ee()->view->header;
+			$header = array('title' => $module['name']);
+
+			if (isset($addon_header['toolbar_items']))
+			{
+				$header['toolbar_items'] = $addon_header['toolbar_items'];
+			}
+
+			ee()->view->header = $header;
 			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 
 			if (is_array($data))
@@ -986,8 +1003,8 @@ class Addons extends CP_Controller {
 			'name'        => $info->getName(),
 			'version'     => $this->formatVersionNumber($info->getVersion()),
 			'author'      => $info->getAuthor(),
-			'author_url'  => $info->get('author_url'),
-			'docs_url'    => $info->get('docs_url'),
+			'author_url'  => ee()->cp->masked_url($info->get('author_url')),
+			'docs_url'    => ee()->cp->masked_url($info->get('docs_url')),
 			'description' => $info->get('description')
 		);
 
@@ -997,6 +1014,9 @@ class Addons extends CP_Controller {
 		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
 		$parser = new MarkdownExtra;
+		$parser->url_filter_func = function ($url) {
+		    return ee()->cp->masked_url($url);
+		};
 		$readme = $parser->transform($readme);
 
 		// Some post-processing
@@ -1365,9 +1385,9 @@ class Addons extends CP_Controller {
 			}
 
 			// Get some details on the extension
-			$Extension = new $class_name();
+			$ext_obj = new $class_name($extension->settings);
 			if (version_compare($info->getVersion(), $extension->version, '>')
-				&& method_exists($Extension, 'update_extension') === TRUE)
+				&& method_exists($ext_obj, 'update_extension') === TRUE)
 			{
 				$data['update'] = $info->getVersion();
 			}
@@ -1641,7 +1661,7 @@ class Addons extends CP_Controller {
 		$current = strip_slashes($extension_model->settings);
 
 		$class_name = $extension['class'];
-		$OBJ = new $class_name();
+		$OBJ = new $class_name($current);
 
 		if (method_exists($OBJ, 'settings_form') === TRUE)
 		{

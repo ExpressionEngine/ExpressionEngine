@@ -34,23 +34,20 @@ feature 'CAPTCHA Settings' do
   end
 
   it 'should validate the form' do
-    invalid_path = 'The path you submitted is not valid.'
-    not_writable = 'The path you submitted is not writable.'
-
     @page.captcha_path.set 'sdfsdfsd'
     @page.submit
 
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'Attention: Settings not saved'
-    should_have_error_text(@page.captcha_path, invalid_path)
+    should_have_error_text(@page.captcha_path, $invalid_path)
 
     # AJAX validation
     @page.load
     @page.captcha_path.set 'sdfsdfsd'
     @page.captcha_path.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.captcha_path, invalid_path)
+    should_have_error_text(@page.captcha_path, $invalid_path)
     should_have_form_errors(@page)
 
     @page.captcha_path.set @upload_path
@@ -60,7 +57,7 @@ feature 'CAPTCHA Settings' do
     @page.captcha_path.set '/'
     @page.captcha_path.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.captcha_path, not_writable)
+    should_have_error_text(@page.captcha_path, $not_writable)
     should_have_form_errors(@page)
   end
 

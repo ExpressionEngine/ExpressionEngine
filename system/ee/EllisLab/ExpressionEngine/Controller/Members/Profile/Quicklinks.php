@@ -308,7 +308,7 @@ class Quicklinks extends Settings {
 			));
 
 			$links[] = array(
-				'<a href="' . $edit_url . '">' . $quicklink['title'] . '</a>' . form_hidden('order[]', $quicklink['order']),
+				'<a href="' . $edit_url . '">' . htmlentities($quicklink['title'], ENT_QUOTES, 'UTF-8') . '</a>' . form_hidden('order[]', $quicklink['order']),
 				$toolbar,
 				array(
 					'name' => 'selection[]',

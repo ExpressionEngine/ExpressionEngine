@@ -314,6 +314,8 @@ class EE_Upload {
 			}
 		}
 
+		@chmod($this->upload_path.$this->file_name, FILE_WRITE_MODE);
+
 		/*
 		 * Set the finalized image dimensions
 		 * This sets the image width/height (assuming the

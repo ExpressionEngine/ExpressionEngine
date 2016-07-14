@@ -146,10 +146,12 @@ class Comment extends Model {
 		// Update comment count for the entry
 		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
 
-		// Query builder while a Model bug gets sorted
-		ee()->db->set('comment_total', $total_entry_comments)
-			->where('entry_id',  $this->entry_id)
-			->update('channel_titles');
+		// entry won't exist if we deleted comments because we deleted the entry
+		if ($this->Entry)
+		{
+			$this->Entry->comment_total = $total_entry_comments;
+			$this->Entry->save();
+		}
 	}
 
 }

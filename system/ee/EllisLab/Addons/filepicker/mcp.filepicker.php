@@ -108,12 +108,17 @@ class Filepicker_mcp {
 
 		$directories = $dirs->indexBy('id');
 		$files = NULL;
+		$vars['search_allowed'] = FALSE;
 
 		if ($requested == 'all')
 		{
 			$files = ee('Model')->get('File')
 				->filter('upload_location_id', 'IN', $dirs->getIds())
 				->filter('site_id', ee()->config->item('site_id'));
+
+			$this->search($files);
+			$this->sort($files);
+			$vars['search_allowed'] = TRUE;
 
 			$total_files = $files->count();
 
@@ -144,6 +149,10 @@ class Filepicker_mcp {
 					->filter('upload_location_id', $dir->getId())
 					->filter('site_id', ee()->config->item('site_id'));
 
+				$this->search($files);
+				$this->sort($files);
+				$vars['search_allowed'] = TRUE;
+
 				$total_files = $files->count();
 			}
 
@@ -156,6 +165,9 @@ class Filepicker_mcp {
 		$base_url->setQueryStringVariable('directories', $show);
 		$base_url->setQueryStringVariable('directory', $requested);
 		$base_url->setQueryStringVariable('type', $type);
+
+		$vars['search'] = ee()->input->get('search');
+		$base_url->setQueryStringVariable('search', $vars['search']);
 
 		if ($has_filters !== '0')
 		{
@@ -189,6 +201,7 @@ class Filepicker_mcp {
 
 			$perpage = $filters->values();
 			$perpage = $perpage['perpage'];
+			$base_url->setQueryStringVariable('perpage', $perpage);
 
 			$page = ((int) ee()->input->get('page')) ?: 1;
 			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
@@ -215,6 +228,14 @@ class Filepicker_mcp {
 			$files = new \LimitIterator($files, $offset, $perpage);
 		}
 
+		if (ee()->input->get('hasUpload') !== '0')
+		{
+			$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
+			$vars['upload']->setQueryStringVariable('directory', $requested);
+		}
+
+		$vars['dir'] = $requested;
+
 		if ($this->images || $type == 'thumb')
 		{
 			$vars['type'] = 'thumb';
@@ -226,6 +247,12 @@ class Filepicker_mcp {
 		{
 			$table = $this->picker->buildTableFromFileCollection($files, $perpage, ee()->input->get_post('selected'));
 
+			// Display Upload button if we can
+			if (isset($vars['upload']) && is_numeric($vars['dir']))
+			{
+				$table->addActionButton($vars['upload'], lang('upload_new_file'), 'btn action');
+			}
+
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
@@ -233,14 +260,6 @@ class Filepicker_mcp {
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
-
-		if (ee()->input->get('hasUpload') !== '0')
-		{
-			$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload");
-			$vars['upload']->setQueryStringVariable('directory', $requested);
-		}
-
-		$vars['dir'] = $requested;
 
 		$vars['pagination'] = ee('CP/Pagination', $total_files)
 			->perPage($perpage)
@@ -250,6 +269,38 @@ class Filepicker_mcp {
 		$vars['cp_heading'] = $requested == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
 		return ee('View')->make('filepicker:ModalView')->render($vars);
+	}
+
+	/**
+	 * Applies a search filter to a Files builder object
+	 */
+	private function search($files)
+	{
+		if ($search = ee()->input->get('search'))
+		{
+			$files
+				->filterGroup()
+				->filter('title', 'LIKE', '%' . $search . '%')
+				->orFilter('file_name', 'LIKE', '%' . $search . '%')
+				->orFilter('mime_type', 'LIKE', '%' . $search . '%')
+				->endFilterGroup();
+		}
+	}
+
+	/**
+	 * Applies sort to a Files builder object
+	 */
+	private function sort($files)
+	{
+		if ($sort_col = ee()->input->get('sort_col'))
+		{
+			$sort_map = array(
+				'title_or_name' => 'file_name',
+				'file_type' => 'mime_type',
+				'date_added' => 'upload_date'
+			);
+			$files->order($sort_map[$sort_col], ee()->input->get('sort_dir'));
+		}
 	}
 
 	public function modal()
@@ -476,6 +527,7 @@ class Filepicker_mcp {
 		$vars['cp_page_title'] = lang('file_upload');
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
 		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
+		ee()->output->enable_profiler(FALSE);
 		ee()->output->_display($out);
 		exit();
 	}

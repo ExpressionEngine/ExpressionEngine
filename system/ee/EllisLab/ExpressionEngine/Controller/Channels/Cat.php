@@ -1201,6 +1201,7 @@ class Cat extends AbstractChannelsController {
 
 			$cat_field = ee('Model')->make('CategoryField');
 			$cat_field->setCategoryGroup($cat_group);
+			$cat_field->site_id = ee()->config->item('site_id');
 			$cat_field->field_type = 'text';
 
 			$alert_key = 'created';
@@ -1300,6 +1301,11 @@ class Cat extends AbstractChannelsController {
 			if ($result->isValid())
 			{
 				$cat_field->save();
+
+				if (isset($_POST['update_formatting']) && $_POST['update_formatting'] == 'y')
+				{
+					$cat_field->updateFormattingOnExisting();
+				}
 
 				if (is_null($field_id))
 				{

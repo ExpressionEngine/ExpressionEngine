@@ -252,6 +252,8 @@ $lang = array(
 
 'fast_reply' => 'Fast Reply',
 
+'no_topics' => 'There are no topics in this forum yet',
+
 'title' => 'Title',
 
 'new_topic' => 'Post a New Topic',

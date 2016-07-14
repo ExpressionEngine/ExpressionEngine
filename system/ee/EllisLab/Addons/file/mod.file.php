@@ -194,8 +194,6 @@ class File {
 			}
 		}
 
-		ee()->db->stop_cache();
-
 		// Set the limit
 		$limit = (int) ee()->TMPL->fetch_param('limit', 0);
 		$offset = (int) ee()->TMPL->fetch_param('offset', 0);
@@ -220,8 +218,15 @@ class File {
 		$random			= ($order_by == 'random') ? TRUE : FALSE;
 		$sort			= strtolower(ee()->TMPL->fetch_param('sort', 'desc'));
 		$sort			= ($random) ? 'random' : $sort;
+
+		if ( ! $random)
+		{
+			ee()->db->select($order_by);
+		}
+
 		ee()->db->order_by($order_by, $sort);
 
+		ee()->db->stop_cache();
 		// Run the query and pass it to the final query
 		$query = ee()->db->get();
 		ee()->db->flush_cache();
