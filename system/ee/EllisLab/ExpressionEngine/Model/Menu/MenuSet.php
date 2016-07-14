@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Session;
+namespace EllisLab\ExpressionEngine\Model\Menu;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
@@ -12,14 +12,14 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
  * @link		https://ellislab.com
- * @since		Version 3.0
+ * @since		Version 3.4
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Session Model
+ * ExpressionEngine Menu Set Model
  *
  * @package		ExpressionEngine
  * @subpackage	Session
@@ -27,31 +27,29 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Session extends Model {
+class MenuSet extends Model {
 
-	protected static $_primary_key = 'session_id';
-	protected static $_table_name = 'sessions';
+	protected static $_primary_key = 'set_id';
+	protected static $_table_name = 'menu_sets';
 
-	protected static $_typed_columns = array(
-		'can_debug' => 'boolString'
+	protected static $_validation_rules = array(
+		'name' => 'required|noHtml|unique'
 	);
 
 	protected static $_relationships = array(
-		'Member' => array(
-			'type' => 'BelongsTo'
-		)
+		'Items' => array(
+			'model' => 'MenuItem',
+			'type' => 'HasMany'
+		),
+		'MemberGroups' => array(
+			'model' => 'MemberGroup',
+			'type' => 'HasMany',
+			'to_key' => 'menu_set_id',
+			'weak' => TRUE
+		),
 	);
 
-	protected $session_id;
-	protected $member_id;
-	protected $admin_sess;
-	protected $ip_address;
-	protected $user_agent;
-	protected $fingerprint;
-	protected $sess_start;
-	protected $last_activity;
-	protected $can_debug;
+	protected $set_id;
+	protected $name;
 
 }
-
-// EOF

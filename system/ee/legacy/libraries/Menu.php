@@ -56,12 +56,57 @@ class EE_Menu {
 		$menu['develop']  = $this->_develop_menu();
 		$menu['custom']   = NULL;
 
-		if (ee()->extensions->active_hook('cp_custom_menu'))
+		$custom = ee('CP/CustomMenu');
+
+		// prep the hook data
+		$which = 'cp_custom_menu';
+
+		$byclass = array();
+		$active = ee()->extensions->active_hook($which);
+		$hooks = ee()->extensions->get_active_hook_info($which) ?: array();
+
+		foreach ($hooks as $priority => $calls)
 		{
-			$custom = ee('CP/CustomMenu');
-			ee()->extensions->call('cp_custom_menu', $custom);
-			$menu['custom'] = $custom;
+			foreach ($calls as $class => $metadata)
+			{
+				$byclass[$class][] = $metadata;
+			}
 		}
+
+		$args = array($custom);
+		$items = ee('Model')->get('MenuItem')
+			->fields('MenuItem.*', 'Children.*')
+			->with(array('Set' => 'MemberGroups'), 'Children')
+			->filter('MemberGroups.group_id', ee()->session->userdata('group_id'))
+			->order('MenuItem.sort')
+			->order('Children.sort')
+			->all();
+
+		foreach ($items as $item)
+		{
+			if ($active && $item->type == 'addon' && isset($byclass[$item->data]))
+			{
+				foreach ($byclass[$item->data] as $metadata)
+				{
+					ee()->extensions->call_class($item->data, $which, $metadata, $args);
+				}
+			}
+			elseif ($item->type == 'submenu')
+			{
+				$sub = $custom->addSubmenu($item->name);
+
+				foreach ($item->Children as $child)
+				{
+					$sub->addItem($child->name, $child->data);
+				}
+			}
+			elseif ($item->parent_id == 0)
+			{
+				$custom->addItem($item->name, $item->data);
+			}
+		}
+
+		$menu['custom'] = $custom;
 
 		return $menu;
 	}
