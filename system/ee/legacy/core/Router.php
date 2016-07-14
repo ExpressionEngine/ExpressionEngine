@@ -87,8 +87,15 @@ class EE_Router {
 		}
 
 		// Load the routes.php file.
-		$route = ee()->config->loadFile('routes');
-		
+		if (defined('EE_APPPATH'))
+		{
+			require_once APPPATH.'config/routes.php';
+		}
+		else
+		{
+			$route = ee()->config->loadFile('routes');
+		}
+
 		$this->routes = ( ! isset($route) OR ! is_array($route)) ? array() : $route;
 		unset($route);
 
@@ -138,6 +145,7 @@ class EE_Router {
 		{
 			show_error("Unable to determine what should be displayed. A default route has not been specified in the routing file.");
 		}
+
 		// Is the method being specified?
 		if (strpos($this->default_controller, '/') !== FALSE)
 		{
