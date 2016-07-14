@@ -79,27 +79,43 @@ class Create extends Members {
 				array(
 					'title' => 'username',
 					'fields' => array(
-						'username' => array('type' => 'text', 'required' => TRUE)
+						'username' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'maxlength' => USERNAME_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'mbr_email_address',
 					'fields' => array(
-						'email' => array('type' => 'text', 'required' => TRUE)
+						'email' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'maxlength' => USERNAME_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'password',
 					'desc' => 'password_desc',
 					'fields' => array(
-						'password' => array('type' => 'password', 'required' => TRUE)
+						'password' => array(
+							'type' => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'password_confirm',
 					'desc' => 'password_confirm_desc',
 					'fields' => array(
-						'confirm_password' => array('type' => 'password', 'required' => TRUE)
+						'confirm_password' => array(
+							'type' => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)

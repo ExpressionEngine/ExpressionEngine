@@ -3094,6 +3094,9 @@ class EE_Template {
 		// {doc_url}
 		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
 
+		// {username_max_length}
+		$str = str_replace(LD.'username_max_length'.RD, USERNAME_MAX_LENGTH, $str);
+
 		// {password_max_length}
 		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
 

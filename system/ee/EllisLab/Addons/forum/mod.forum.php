@@ -1258,6 +1258,7 @@ class Forum {
 				'path:theme_css'           => ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
 				'path:theme_js'            => ee('Theme')->getUrl('forum/'.$this->theme.'/theme/javascript/'),
 				'site_url'                 => ee()->config->item('site_url'),
+				'username_max_length'      => USERNAME_MAX_LENGTH,
 				'password_max_length'      => PASSWORD_MAX_LENGTH
 			)
 		);

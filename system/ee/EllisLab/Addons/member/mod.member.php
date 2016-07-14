@@ -2341,6 +2341,7 @@ class Member {
 				'site_name'               => stripslashes(ee()->config->item('site_name')),
 				'path:theme_css'          => $this->css_file_path,
 				'current_request'         => $this->request,
+				'username_max_length'     => USERNAME_MAX_LENGTH,
 				'password_max_length'     => PASSWORD_MAX_LENGTH
 			)
 		);
