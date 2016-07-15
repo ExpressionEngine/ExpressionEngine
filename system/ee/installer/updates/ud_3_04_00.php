@@ -37,7 +37,6 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'add_can_view_homepage_news_permission',
-				'add_channel_max_entries_column',
 				'add_menu_tables',
 				'add_channel_max_entries_columns',
 				'fix_channel_total_entries_count',
