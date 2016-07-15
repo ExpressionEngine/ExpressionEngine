@@ -26,37 +26,8 @@
  * @link		https://ellislab.com
  */
 
-$ignore = array(
-	'a',
-	'about',
-	'an',
-	'and',
-	'are',
-	'as',
-	'at',
-	'be',
-	'by',
-	'but',
-	'from',
-	'how',
-	'i',
-	'in',
-	'is',
-	'it',
-	'of',
-	'on',
-	'or',
-	'that',
-	'the',
-	'this',
-	'to',
-	'was',
-	'we',
-	'what',
-	'when',
-	'where',
-	'which',
-	'with'	// no comma after last item
-);
+ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
+
+$ignore = ee()->config->loadFile('stopwords');
 
 // EOF

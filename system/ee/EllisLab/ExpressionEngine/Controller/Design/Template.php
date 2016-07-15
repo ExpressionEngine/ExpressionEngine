@@ -970,6 +970,10 @@ class Template extends AbstractDesignController {
 			->filter('group_id', '!=', 1)
 			->all();
 
+		$member_group_options = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups->getDictionary('group_id', 'group_title'));
+
 		$allowed_member_groups = array_diff(
 			$member_groups->pluck('group_id'),
 			$template->getNoAccess()->pluck('group_id')
@@ -985,7 +989,7 @@ class Template extends AbstractDesignController {
 						'allowed_member_groups' => array(
 							'type' => 'checkbox',
 							'wrap' => TRUE,
-							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
+							'choices' => $member_group_options,
 							'value' => $allowed_member_groups
 						)
 					)

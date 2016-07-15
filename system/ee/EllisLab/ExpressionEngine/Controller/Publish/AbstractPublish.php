@@ -79,7 +79,7 @@ abstract class AbstractPublish extends CP_Controller {
 										60 : ee()->config->item('autosave_interval_seconds');
 
 		//	Create Foreign Character Conversion JS
-		include(APPPATH.'config/foreign_chars.php');
+		$foreign_characters = ee()->config->loadFile('foreign_chars');
 
 		/* -------------------------------------
 		/*  'foreign_character_conversion_array' hook.

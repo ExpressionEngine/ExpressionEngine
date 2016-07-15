@@ -752,6 +752,7 @@ CREATE TABLE `exp_member_fields` (
 CREATE TABLE `exp_member_groups` (
     `group_id` smallint(4) unsigned NOT NULL,
     `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+    `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
     `group_title` varchar(100) NOT NULL,
     `group_description` text NOT NULL,
     `is_locked` char(1) NOT NULL DEFAULT 'n',
@@ -1453,7 +1454,23 @@ CREATE TABLE `exp_upload_prefs` (
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
-
+CREATE TABLE `exp_menu_sets` (
+  `set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+    
+CREATE TABLE `exp_menu_items` (
+  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) NOT NULL DEFAULT '0',
+  `set_id` int(10) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `data` varchar(255) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `sort` int(5) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`),
+  KEY `set_id` (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;

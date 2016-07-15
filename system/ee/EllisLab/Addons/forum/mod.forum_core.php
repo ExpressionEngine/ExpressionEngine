@@ -8815,10 +8815,11 @@ class Forum_Core extends Forum {
 
 			$this->keywords = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->keywords) : $this->keywords;
 
+			$ignore = ee()->config->loadFile('stopwords');
+
 			// Remove "ignored" words
 			if (isset($_POST['search_criteria']) &&
-				$_POST['search_criteria'] != 'exact' &&
-				@include_once(APPPATH.'config/stopwords.php'))
+				$_POST['search_criteria'] != 'exact')
 			{
 				foreach ($ignore as $badword)
 				{

@@ -831,7 +831,6 @@ class File_field {
 		if ( ! isset($this->_manipulations[$dir_id]))
 		{
 			$this->_manipulations[$dir_id] = ee('Model')->get('FileDimension')
-			->filter('site_id', ee()->config->item('site_id'))
 			->filter('upload_location_id', $dir_id)
 			->all();
 		}

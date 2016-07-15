@@ -32,7 +32,7 @@ class RememberMe extends Model {
 	protected static $_primary_key = 'remember_me_id';
 	protected static $_table_name = 'remember_me';
 
-	protected static $relationships = array(
+	protected static $_relationships = array(
 		'Member' => array(
 			'type' => 'BelongsTo'
 		),

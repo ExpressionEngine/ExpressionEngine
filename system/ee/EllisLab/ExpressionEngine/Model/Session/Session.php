@@ -36,7 +36,7 @@ class Session extends Model {
 		'can_debug' => 'boolString'
 	);
 
-	protected static $relationships = array(
+	protected static $_relationships = array(
 		'Member' => array(
 			'type' => 'BelongsTo'
 		)

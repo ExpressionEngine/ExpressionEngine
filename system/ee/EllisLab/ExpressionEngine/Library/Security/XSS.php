@@ -466,7 +466,7 @@ class XSS {
 			// replace illegal attribute strings that are inside an html tag
 			if (count($attribs) > 0)
 			{
-				$str = preg_replace("/<(\/?[^><]+?)([^A-Za-z<>\-])(.*?)(".implode('|', $attribs).")(.*?)([\s><])([><]*)/i", '<$1 $3$5$6$7', $str, -1, $count);
+				$str = preg_replace("/<(\/?[^><]+?)([^A-Za-z<>\-])(.*?)(".implode('|', $attribs).")(.*?)([\s><]*)([><]*)/i", '<$1 $3$5$6$7', $str, -1, $count);
 			}
 
 		} while ($count);
