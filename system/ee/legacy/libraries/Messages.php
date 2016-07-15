@@ -1230,6 +1230,7 @@ class EE_Messages {
 			$data			= $row;
 			$message_ids[]	= $row['message_id'];
 
+			$data['message_subject'] = htmlentities($data['message_subject'], ENT_QUOTES, 'UTF-8');
 			$data['msg_id']				= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
 			$data['message_date']		= ee()->localize->human_time($data['message_date']);
 			$data['style']				= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
@@ -2879,7 +2880,7 @@ DOH;
 		// Load the XML Helper
 		ee()->load->helper('xml');
 
-		$this->single_parts['include']['subject']				= $data['subject'];
+		$this->single_parts['include']['subject']				= htmlentities($data['subject'], ENT_QUOTES, 'UTF-8');
 		$this->single_parts['include']['body']					= $data['body'];
 		$this->single_parts['include']['recipients']			= xml_convert($this->convert_recipients($data['recipients'], 'string', 'screen_name'));
 		$this->single_parts['include']['cc']					= ($data['cc'] == '') ? '' : xml_convert($this->convert_recipients($data['cc'], 'string', 'screen_name'));
