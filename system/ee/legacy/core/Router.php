@@ -93,7 +93,7 @@ class EE_Router {
 		}
 		else
 		{
-			$route = ee()->config->loadFile('routes');
+			$route = $this->config->loadFile('routes');
 		}
 
 		$this->routes = ( ! isset($route) OR ! is_array($route)) ? array() : $route;
