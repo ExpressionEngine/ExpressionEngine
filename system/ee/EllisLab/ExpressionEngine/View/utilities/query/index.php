@@ -8,7 +8,7 @@
 	<?php if (isset($invalid_query)): ?>
 		<div class="alert inline issue">
 			<h3><?=lang('query_form_error')?></h3>
-			<p><?=$invalid_query?></p>
+			<p><?=htmlentities($invalid_query, ENT_QUOTES, 'UTF-8')?></p>
 		</div>
 	<?php endif ?>
 	<?=ee('CP/Alert')->getAllInlines()?>
