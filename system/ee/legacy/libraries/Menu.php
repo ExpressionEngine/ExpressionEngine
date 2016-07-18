@@ -162,7 +162,7 @@ class EE_Menu {
 		$allowed_channels = ee()->session->userdata('assigned_channels');
 		if (count($allowed_channels))
 		{
-			$channels = $channels_query->filter('channel_title', 'IN', $allowed_channels);
+			$channels = $channels_query->filter('channel_id', 'IN', array_keys($allowed_channels));
 		}
 
 		$menu['create'] = array();
