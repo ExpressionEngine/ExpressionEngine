@@ -16,9 +16,23 @@
 		<div class="setting-txt col w-16">
 			<h3><?=lang('common_queries')?></h3>
 			<em><?=lang('common_queries_desc')?><br>
-				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW STATUS'))))?>">SHOW STATUS</a>,
-				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW VARIABLES'))))?>">SHOW VARIABLES</a>,
-				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST'))))?>">SHOW PROCESSLIST</a></em>
+				<?php
+				$status_query =	array(
+					'thequery' => rawurlencode(base64_encode('SHOW STATUS')),
+					'signature' => ee()->encrypt->sign('SHOW STATUS')
+				);
+				$variables_query = array(
+					'thequery' => rawurlencode(base64_encode('SHOW VARIABLES')),
+					'signature' => ee()->encrypt->sign('SHOW VARIABLES')
+				);
+				$process_query = array(
+					'thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST')),
+					'signature' => ee()->encrypt->sign('SHOW PROCESSLIST')
+				);
+				?>
+				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $status_query)?>">SHOW STATUS</a>,
+				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $variables_query)?>">SHOW VARIABLES</a>,
+				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $process_query)?>">SHOW PROCESSLIST</a></em>
 		</div>
 	</fieldset>
 	<fieldset class="col-group required <?=form_error_class('thequery')?> last">

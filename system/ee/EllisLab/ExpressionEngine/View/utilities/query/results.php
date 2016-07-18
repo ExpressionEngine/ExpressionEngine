@@ -4,7 +4,7 @@
 	<h1><?=lang('sql_query_abbr')?></h1>
 	<div class="txt-wrap">
 		<ul class="checklist">
-			<li><?=$thequery?></li>
+			<li><?=htmlentities($thequery, ENT_QUOTES, 'UTF-8');?></li>
 			<li class="last">
 				<?php if ($write): ?>
 					<b><?=lang('affected_rows')?>:</b> <?=$affected?>
