@@ -20,7 +20,7 @@
 		<?=form_open($table['base_url'])?>
 			<?php if ( ! $write): ?>
 				<fieldset class="tbl-search right">
-					<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+					<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 					<input class="btn submit" type="submit" value="<?=lang('search_table')?>">
 				</fieldset>
 			<?php endif ?>
