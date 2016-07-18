@@ -76,17 +76,9 @@ class Select_ft extends EE_Fieldtype {
 			$extra .= ' disabled';
 		}
 
-		// form prep
-		$options = $this->_get_field_options($data, '--');
-
-		foreach ($options as $k => $v)
-		{
-			$prepped_options[$k] = $v;
-		}
-
 		$field = form_dropdown(
 			$this->field_name,
-			$prepped_options,
+			$this->_get_field_options($data, '--'),
 			$data,
 			$extra
 		);
