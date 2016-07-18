@@ -42,8 +42,6 @@ class Select_ft extends EE_Fieldtype {
 			return TRUE;
 		}
 
-		$data = form_prep($data);
-
 		foreach($field_options as $key => $val)
 		{
 			if (is_array($val))
@@ -92,7 +90,7 @@ class Select_ft extends EE_Fieldtype {
 
 	function grid_display_field($data)
 	{
-		return $this->display_field(form_prep($data));
+		return $this->display_field($data);
 	}
 
 	// --------------------------------------------------------------------
