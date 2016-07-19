@@ -165,6 +165,8 @@ class EE_Menu {
 			$channels = $channels_query->filter('channel_id', 'IN', array_keys($allowed_channels));
 		}
 
+		$channels->order('channel_title', 'ASC');
+
 		$menu['create'] = array();
 		$menu['edit'] = array();
 
