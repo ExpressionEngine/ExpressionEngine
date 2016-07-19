@@ -6443,7 +6443,7 @@ class Forum_Core extends Forum {
 			if ($val == '')
 				continue;
 
-			$temp['answer']	= $val;
+			$temp['answer']	= ee('Security/XSS')->clean($val);
 			$temp['votes']	= (isset($_POST['votes'][$key]) AND is_numeric($_POST['votes'][$key])) ? $_POST['votes'][$key] : 0;
 
 			$answers[]	= $temp;
@@ -6452,7 +6452,7 @@ class Forum_Core extends Forum {
 		}
 
 
-		$data['poll_question']	= $_POST['poll_question'];
+		$data['poll_question']	= ee('Security/XSS')->clean($_POST['poll_question']);
 		$data['poll_answers']	= serialize($answers);
 
 
