@@ -2036,7 +2036,12 @@ class Forum {
 	 */
 	public function set_theme()
 	{
-		$theme = ee()->input->get('theme');
+		if (empty($_POST))
+		{
+			return $this->trigger_error();
+		}
+
+		$theme = ee()->input->post('theme');
 
 		if ( ! preg_match("/^[a-z0-9\s_-]+$/i", $theme))
 		{
