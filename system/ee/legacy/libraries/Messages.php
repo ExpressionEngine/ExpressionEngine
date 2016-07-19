@@ -1610,7 +1610,7 @@ DOH;
 		$this->title = '';
 		$this->crumb = '';
 
-		$which_field = ( ! ee()->input->get_post('which_field')) ? 'recipients' : ee()->input->get_post('which_field');
+		$which_field = ( ! ee()->input->get_post('which_field')) ? 'recipients' : ee('Security/XSS')->clean(ee()->input->get_post('which_field'));
 
 		if ($this->allegiance == 'cp')
 		{
