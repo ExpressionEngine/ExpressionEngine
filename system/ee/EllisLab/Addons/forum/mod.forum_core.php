@@ -4491,11 +4491,11 @@ class Forum_Core extends Forum {
 			}
 
 			// Swap the vars...
-			$str = str_replace('{sticky_checked}', (($data['sticky'] == 'y' OR ee()->input->get_post('sticky') == 'y') ? ' checked="checked" ' : ''), $str);
-			$str = str_replace('{status_checked}', (($data['status'] == 'c' OR ee()->input->get_post('status') == 'c') ? ' checked="checked" ' : ''), $str);
-			$str = str_replace('{announce_checked}', (($data['announcement'] != 'n' OR ee()->input->get_post('announcement') != FALSE) ? ' checked="checked" ' : ''), $str);
-			$str = str_replace('{type_all_checked}', (($data['announcement'] == 'n' OR $data['announcement'] == 'a' OR ee()->input->get_post('ann_type') == 'a') ? ' checked="checked" ' : ''), $str);
-			$str = str_replace('{type_one_checked}', (($data['announcement'] == 't' OR ee()->input->get_post('ann_type') == 't') ? ' checked="checked" ' : ''), $str);
+			$str = str_replace('{sticky_checked}', (($data['sticky'] == 'y' OR ee()->input->post('sticky') == 'y') ? ' checked="checked" ' : ''), $str);
+			$str = str_replace('{status_checked}', (($data['status'] == 'c' OR ee()->input->post('status') == 'c') ? ' checked="checked" ' : ''), $str);
+			$str = str_replace('{announce_checked}', (($data['announcement'] != 'n' OR ee()->input->post('announcement') != FALSE) ? ' checked="checked" ' : ''), $str);
+			$str = str_replace('{type_all_checked}', (($data['announcement'] == 'n' OR $data['announcement'] == 'a' OR ee()->input->post('ann_type') == 'a') ? ' checked="checked" ' : ''), $str);
+			$str = str_replace('{type_one_checked}', (($data['announcement'] == 't' OR ee()->input->post('ann_type') == 't') ? ' checked="checked" ' : ''), $str);
 
 			$str = $this->allow_if('is_topic', $str);
 			$str = $this->deny_if('is_post', $str);
@@ -4588,15 +4588,15 @@ class Forum_Core extends Forum {
 		// As a first step we'll grab the attachment IDs so
 		// we can generate the list of attachments later on.
 
-		if (count($this->attachments) == 0 && ee()->input->get_post('attach') != '')
+		if (count($this->attachments) == 0 && ee()->input->post('attach') != '')
 		{
-			if (strpos(ee()->input->get_post('attach'), '|') === FALSE)
+			if (strpos(ee()->input->post('attach'), '|') === FALSE)
 			{
-				$this->attachments[] = ee()->input->get_post('attach');
+				$this->attachments[] = ee()->input->post('attach');
 			}
 			else
 			{
-				foreach (explode("|", ee()->input->get_post('attach')) as $val)
+				foreach (explode("|", ee()->input->post('attach')) as $val)
 				{
 					$this->attachments[] = $val;
 				}
@@ -4789,10 +4789,10 @@ class Forum_Core extends Forum {
 		// Parse the template
 		ee()->load->helper('form');
 
-		$body = ( ! ee()->input->get_post('body'))	? $data['body']  : form_prep(ee()->input->get_post('body'));
+		$body = ( ! ee()->input->post('body'))	? $data['body']  : form_prep(ee()->input->post('body'));
 		$body = $this->convert_forum_tags(ee()->functions->encode_ee_tags($body, TRUE));
 
-		$title = ( ! ee()->input->get_post('title'))  ? form_prep($data['title']) : stripslashes(form_prep(ee()->input->get_post('title')));
+		$title = ( ! ee()->input->post('title'))  ? form_prep($data['title']) : stripslashes(form_prep(ee()->input->post('title')));
 		$title = $this->convert_forum_tags(ee()->functions->encode_ee_tags($title, TRUE));
 
 		$maxchars = $data['forum_max_post_chars'];
@@ -4912,7 +4912,7 @@ class Forum_Core extends Forum {
 		$this->form_actions['forum:submit_post']['forum_id'] = $meta[$this->current_id]['forum_id'];
 		$this->form_actions['forum:submit_post']['smileys'] = 'y';
 
-		$notify = (ee()->session->userdata('notify_by_default') == 'y' OR ee()->input->get_post('notify') == 'y') ? ' checked="checked" ' : '';
+		$notify = (ee()->session->userdata('notify_by_default') == 'y' OR ee()->input->post('notify') == 'y') ? ' checked="checked" ' : '';
 
 		$template = $this->load_element('fast_reply_form');
 
@@ -5052,7 +5052,7 @@ class Forum_Core extends Forum {
 	 */
 	function preview_post()
 	{
-		if (ee()->input->post('preview') === FALSE OR ee()->input->get_post('body') == '' OR $this->preview_override == TRUE)
+		if (ee()->input->post('preview') === FALSE OR ee()->input->post('body') == '' OR $this->preview_override == TRUE)
 		{
 			return '';
 		}
@@ -5128,7 +5128,7 @@ class Forum_Core extends Forum {
 				break;
 		}
 
-		$body = str_replace('{include:', '&#123;include:', ee()->input->get_post('body'));
+		$body = str_replace('{include:', '&#123;include:', ee()->input->post('body'));
 		$body = str_replace('{path:', '&#123;path:', $body);
 		$body = str_replace('{lang:', '&#123;lang:', $body);
 
@@ -5145,7 +5145,7 @@ class Forum_Core extends Forum {
 
 								);
 
-		$title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->get_post('title')));
+		$title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->post('title')));
 
 		return $this->var_swap($this->load_element('preview_post'),
 								array(
@@ -5194,15 +5194,15 @@ class Forum_Core extends Forum {
 
 		$attach_ids = array();
 
-		if (ee()->input->get_post('attach') != '')
+		if (ee()->input->post('attach') != '')
 		{
-			if (strpos(ee()->input->get_post('attach'), '|') === FALSE)
+			if (strpos(ee()->input->post('attach'), '|') === FALSE)
 			{
-				$attach_ids[] = ee()->input->get_post('attach');
+				$attach_ids[] = ee()->input->post('attach');
 			}
 			else
 			{
-				foreach (explode("|", ee()->input->get_post('attach')) as $val)
+				foreach (explode("|", ee()->input->post('attach')) as $val)
 				{
 					$attach_ids[] = $val;
 				}
@@ -5545,13 +5545,13 @@ class Forum_Core extends Forum {
 			}
 		}
 
-		if ($type == 'topic' AND trim(ee()->input->get_post('title')) == '')
+		if ($type == 'topic' AND trim(ee()->input->post('title')) == '')
 		{
 			$this->submission_error = lang('empty_title_field');
 		}
 
 		// Is the body blank?
-		if (trim(ee()->input->get_post('body')) == '')
+		if (trim(ee()->input->post('body')) == '')
 		{
 			$this->submission_error = lang('empty_body_field');
 		}
@@ -5718,16 +5718,16 @@ class Forum_Core extends Forum {
 		// Do we allow duplicate data?
 		if ($this->current_request != 'edittopic' AND $this->current_request != 'editreply')
 		{
-			if (ee()->config->item('deny_duplicate_data') == 'y' AND ee()->session->userdata['group_id'] != 1 AND ee()->input->get_post('body') != '')
+			if (ee()->config->item('deny_duplicate_data') == 'y' AND ee()->session->userdata['group_id'] != 1 AND ee()->input->post('body') != '')
 			{
-				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE body = '".ee()->db->escape_str(ee()->input->get_post('body'))."'");
+				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE body = '".ee()->db->escape_str(ee()->input->post('body'))."'");
 
 				if ($query->row('count')  > 0)
 				{
 					$this->submission_error = lang('duplicate_data_warning');
 				}
 
-				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE body = '".ee()->db->escape_str(ee()->input->get_post('body'))."'");
+				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE body = '".ee()->db->escape_str(ee()->input->post('body'))."'");
 
 				if ($query->row('count')  > 0)
 				{
@@ -5739,7 +5739,7 @@ class Forum_Core extends Forum {
 		// Is the post too big?
 		$maxchars = ($fdata['forum_max_post_chars'] == 0) ? $this->max_chars :  $fdata['forum_max_post_chars'];
 
-		if (strlen(ee()->input->get_post('body')) > $maxchars)
+		if (strlen(ee()->input->post('body')) > $maxchars)
 		{
 			$this->submission_error = str_replace("%x", $maxchars, lang('post_too_big'));
 		}
@@ -5791,8 +5791,8 @@ class Forum_Core extends Forum {
 		$spam = FALSE;
 		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
 		{
-			$body = ee()->input->get_post('body');
-			$title = ee()->input->get_post('title');
+			$body = ee()->input->post('body');
+			$title = ee()->input->post('title');
 			$text = "$title $body";
 			$spam = ee('Spam')->isSpam($text);
 		}
@@ -5804,12 +5804,12 @@ class Forum_Core extends Forum {
 
 		$announcement = 'n';
 
-		if (ee()->input->get_post('announcement') == 'y')
+		if (ee()->input->post('announcement') == 'y')
 		{
 			unset($_POST['sticky']);
 			unset($_POST['status']);
 
-			if (ee()->input->get_post('ann_type') == 'a')
+			if (ee()->input->post('ann_type') == 'a')
 			{
 				$announcement = 'a';
 			}
@@ -5837,14 +5837,14 @@ class Forum_Core extends Forum {
 			case 'edittopic'	:
 
 					// Security fix
-					$title = $this->convert_forum_tags(ee()->input->get_post('title'));
-					$body = $this->convert_forum_tags(ee()->input->get_post('body'));
+					$title = $this->convert_forum_tags(ee()->input->post('title'));
+					$body = $this->convert_forum_tags(ee()->input->post('body'));
 
 					$data = array(
 									'title'			=> ee('Security/XSS')->clean($title),
 									'body'			=> ee('Security/XSS')->clean($body),
-									'sticky'		=> (ee()->input->get_post('sticky') == 'y') ? 'y' : 'n',
-									'status'		=> (ee()->input->get_post('status') == 'c') ? 'c' : 'o',
+									'sticky'		=> (ee()->input->post('sticky') == 'y') ? 'y' : 'n',
+									'status'		=> (ee()->input->post('status') == 'c') ? 'c' : 'o',
 									'announcement'	=> $announcement,
 									'poll'			=> (isset($_POST['poll_question']) AND $_POST['poll_question'] != '' AND $announcement != 'y') ? 'y' : 'n',
 									'parse_smileys'	=> (isset($_POST['smileys'])) ? 'y' : 'n'
@@ -5931,7 +5931,7 @@ class Forum_Core extends Forum {
 						$data['topic_edit_author']	= ee()->session->userdata['member_id'];
 						$data['topic_edit_date']	= ee()->localize->now;
 
-						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->get_post('topic_id')));
+						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->post('topic_id')));
 
 						if ( ! $spam)
 						{
@@ -5973,11 +5973,11 @@ class Forum_Core extends Forum {
 
 
 					// Security fix
-					$body = $this->convert_forum_tags(ee()->input->get_post('body'));
+					$body = $this->convert_forum_tags(ee()->input->post('body'));
 
 					$data = array(
-									'topic_id'		=> ee()->db->escape_str(ee()->input->get_post('topic_id')),
-									'forum_id'		=> ee()->input->get_post('forum_id'),
+									'topic_id'		=> ee()->db->escape_str(ee()->input->post('topic_id')),
+									'forum_id'		=> ee()->input->post('forum_id'),
 									'body'			=> ee('Security/XSS')->clean($body),
 									'parse_smileys'	=> (isset($_POST['smileys'])) ? 'y' : 'n'
 								 );
@@ -6003,7 +6003,7 @@ class Forum_Core extends Forum {
 						$this->_update_topic_stats($data['topic_id']);
 
 						// Update the forum stats
-						$this->_update_post_stats(ee()->input->get_post('forum_id'));
+						$this->_update_post_stats(ee()->input->post('forum_id'));
 						$this->_update_global_stats();
 
 						// Update member post total
@@ -6018,7 +6018,7 @@ class Forum_Core extends Forum {
 					}
 					else // Update an existing post
 					{
-						$data['post_id'] = ee()->input->get_post('post_id');
+						$data['post_id'] = ee()->input->post('post_id');
 						$data['post_edit_author']	= ee()->session->userdata['member_id'];
 						$data['post_edit_date']		= ee()->localize->now;
 
@@ -6064,15 +6064,15 @@ class Forum_Core extends Forum {
 		}
 
 		// Is there an attachment to finalize
-		if (ee()->input->get_post('attach') != '')
+		if (ee()->input->post('attach') != '')
 		{
-			if (strpos(ee()->input->get_post('attach'), '|') === FALSE)
+			if (strpos(ee()->input->post('attach'), '|') === FALSE)
 			{
-				$this->attachments[] = ee()->input->get_post('attach');
+				$this->attachments[] = ee()->input->post('attach');
 			}
 			else
 			{
-				foreach (explode("|", ee()->input->get_post('attach')) as $val)
+				foreach (explode("|", ee()->input->post('attach')) as $val)
 				{
 					$this->attachments[] = $val;
 				}
@@ -6099,7 +6099,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Manage subscriptions
-		if (ee()->input->get_post('notify') == 'y')
+		if (ee()->input->post('notify') == 'y')
 		{
 			ee()->db->select('COUNT(*) as count');
 			ee()->db->where('topic_id', $data['topic_id']);
