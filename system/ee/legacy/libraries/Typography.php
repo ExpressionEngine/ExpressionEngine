@@ -1348,15 +1348,17 @@ class EE_Typography {
 			$matches[6] = $punc_match[1];
 		}
 
-		return	$matches['1'].'[url=http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].']http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].'[/url]'.
-				$end.
-				$matches['7'];
+		$url = 'http'.
+			   $matches['4'].'://'.
+			   $matches['5'].
+			   $matches['6'];
+
+		if (function_exists('idn_to_ascii'))
+		{
+			$url = idn_to_ascii($url);
+		}
+
+	   return $matches['1'].'[url='.$url.']'.$url.'[/url]'.$end.$matches['7'];
 	}
 
 	// --------------------------------------------------------------------
