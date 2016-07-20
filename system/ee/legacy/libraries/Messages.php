@@ -1555,7 +1555,20 @@ DOH;
 	}
 
 
-
+	/**
+	 * Determines which field to use from a list of valid fields defaults to
+	 * 'recipients'.
+	 *
+	 * @param string $input The requested field
+	 * @param string $default The default value if the $input is invalid
+	 * @return string One of the valid fields
+	 */
+	private function which_field($input, $default = 'recipients')
+	{
+		$valid_fields = array('recipients', 'cc');
+		$default = (in_array($default, $valid_fields)) ? $default : 'recipients';
+		return (in_array($input, $valid_fields)) ? $input : $default;
+	}
 
 
 	/** -----------------------------------
@@ -1568,7 +1581,7 @@ DOH;
 
 		if ($this->allegiance == 'cp')
 		{
-			$which_field = ( ! ee()->input->get_post('field')) ? 'recipients' : strip_tags(ee()->input->get_post('field'));
+			$which_field = $this->which_field(ee()->input->get_post('field'));
 		}
 		else
 		{
@@ -1610,7 +1623,7 @@ DOH;
 		$this->title = '';
 		$this->crumb = '';
 
-		$which_field = ( ! ee()->input->get_post('which_field')) ? 'recipients' : strip_tags(ee()->input->get_post('which_field'));
+		$which_field = $this->which_field(ee()->input->get_post('which_field'));
 
 		if ($this->allegiance == 'cp')
 		{
