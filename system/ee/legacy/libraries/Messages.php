@@ -1568,7 +1568,7 @@ DOH;
 
 		if ($this->allegiance == 'cp')
 		{
-			$which_field = ( ! ee()->input->get_post('field')) ? 'recipients' : ee()->input->get_post('field');
+			$which_field = ( ! ee()->input->get_post('field')) ? 'recipients' : strip_tags(ee()->input->get_post('field'));
 		}
 		else
 		{
@@ -1610,7 +1610,7 @@ DOH;
 		$this->title = '';
 		$this->crumb = '';
 
-		$which_field = ( ! ee()->input->get_post('which_field')) ? 'recipients' : ee('Security/XSS')->clean(ee()->input->get_post('which_field'));
+		$which_field = ( ! ee()->input->get_post('which_field')) ? 'recipients' : strip_tags(ee()->input->get_post('which_field'));
 
 		if ($this->allegiance == 'cp')
 		{
