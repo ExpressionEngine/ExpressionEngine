@@ -1,11 +1,15 @@
 <div id="footer">
 
 	{if in_forum}
+	<form method="post" action="{path:set_theme}">
+	<input type="hidden" name="csrf_token" value="{csrf_token}" />
+
 	<div id="switcher">{lang:select_theme}
-		<select name="theme_switcher" class="select" onchange="if (this.value != '') location.href=this.value">
+		<select name="theme" class="select" onchange="if (this.value != '') this.form.submit()">
 			{include:theme_option_list}
 		</select>
 	</div><!--switcher-->
+	</form>
 	{/if}
 
 	<ul class="credits">
