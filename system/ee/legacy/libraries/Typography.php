@@ -2236,6 +2236,50 @@ while (--j >= 0)
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * If present we'll run `idn_to_ascii` on the the URL to protect against
+	 * homograph attacks.
+	 *
+	 * @param string $url A URL
+	 * @return string A decoded URL
+	 */
+	public function decodeIDN($url)
+	{
+		if ( ! function_exists('idn_to_ascii'))
+		{
+			return $url;
+		}
+
+		// Amazingly, this will parse if passed 'http://example.com is fun!'
+		// but will not parse if passed 'I really like http://example.com'
+		$parts = parse_url($url);
+
+		// According to http://php.net/idn_to_ascii this should only be run
+		// on the domain and not the entire string.
+		if (isset($parts['host']))
+		{
+			$parts['host'] = idn_to_ascii($parts['host']);
+		}
+
+		return $this->unparse_url($parts);
+	}
+
+	/**
+	 * Copied from http://php.net/manual/en/function.parse-url.php#106731
+	 */
+	private function unparse_url($parsed_url) {
+	  $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+	  $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+	  $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+	  $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+	  $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+	  $pass     = ($user || $pass) ? "$pass@" : '';
+	  $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+	  $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+	  $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+	  return "$scheme$user$pass$host$port$path$query$fragment";
+	}
+
 }
 // END CLASS
 
