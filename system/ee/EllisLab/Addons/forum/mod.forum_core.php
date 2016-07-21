@@ -3259,7 +3259,7 @@ class Forum_Core extends Forum {
 
 			$template = $this->var_swap($template,
 									array(
-											'poll_question'	=> ee()->typography->filter_censored_words($question),
+											'poll_question'	=> $this->_convert_special_chars(ee()->typography->filter_censored_words($question)),
 											'include:poll_answer_rows' => $rows,
 											'total_votes' => $total_votes,
 											'lang:voter_message' => (ee()->session->userdata('member_id') == 0) ? lang('must_be_logged_to_vote') : lang('you_have_voted')
