@@ -1,13 +1,15 @@
-
 <div id="footer">
 
 {if in_forum}
+<form method="post" action="{path:set_theme}">
+<input type="hidden" name="csrf_token" value="{csrf_token}" />
 <div class="itempadbig">
-<select name="theme_switcher" class="select" onchange="if (this.value != '') location.href=this.value">
+<select name="theme" class="select" onchange="if (this.value != '') this.form.submit()">
 <option value="">{lang:select_theme}</option>
 {include:theme_option_list}
 </select>
 </div>
+</form>
 {/if}
 
 <a href="https://ellislab.com/">Powered By ExpressionEngine</a><br />
