@@ -1214,11 +1214,16 @@ class EE_Typography {
 			str_repeat('(?>[^()]+|\(', 4).
 			str_repeat('(?>\)))*', 4);
 
-		if (preg_match_all('/\[.*?\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all('/\[(.*?)\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
 		{
 			foreach ($matches as $match)
 			{
-				$str = str_replace($match[1], str_replace(' ', '%20', $match[1]), $str);
+				// It felt too heavy handed to do a global replace of all URLs
+				// that matched, so (for now) we'll only replace the URLs that
+				// the REGEX matched. (that's why the '[]' are being
+				// concatenated)
+				$str = str_replace('['.$match[1].']', '['.$this->decodeIDN($match[1]).']', $str);
+				$str = str_replace($match[2], str_replace(' ', '%20', $match[2]), $str);
 			}
 		}
 
@@ -1353,10 +1358,7 @@ class EE_Typography {
 			   $matches['5'].
 			   $matches['6'];
 
-		if (function_exists('idn_to_ascii'))
-		{
-			$url = idn_to_ascii($url);
-		}
+	   $url = $this->decodeIDN($url);
 
 	   return $matches['1'].'[url='.$url.']'.$url.'[/url]'.$end.$matches['7'];
 	}
@@ -1558,7 +1560,7 @@ class EE_Typography {
 						$url = urlencode($url);
 					}
 
-					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$matches['2'][$i]."</a>", $str);
+					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$this->decodeIDN($matches['2'][$i])."</a>", $str);
 				}
 			}
 		}
