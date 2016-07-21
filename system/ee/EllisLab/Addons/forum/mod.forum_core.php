@@ -7109,8 +7109,15 @@ class Forum_Core extends Forum {
 	 */
 	public function subscribe()
 	{
+		$topic_id = ee()->input->post('topic_id');
+
+		if ( ! $topic_id)
+		{
+			return $this->trigger_error();
+		}
+
 		// Do we have a valid topic ID?
-		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$this->current_id}'");
+		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$topic_id}'");
 
 		if ($query->num_rows() == 0)
 		{
@@ -7119,26 +7126,26 @@ class Forum_Core extends Forum {
 
 		$title = $this->_convert_special_chars($query->row('title') );
 
-		$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_subscriptions WHERE topic_id = '{$this->current_id}' AND member_id = '".ee()->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_subscriptions WHERE topic_id = '{$topic_id}' AND member_id = '".ee()->session->userdata('member_id')."'");
 
 		if ($query->row('count')  > 1)
 		{
-			ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$this->current_id}' AND member_id = '".ee()->session->userdata('member_id')."'");
+			ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$topic_id}' AND member_id = '".ee()->session->userdata('member_id')."'");
 			$query->set_row('count', 0);
 		}
 		if ($query->row('count')  == 0)
 		{
 			$rand = ee()->session->userdata('member_id').ee()->functions->random('alnum', 8);
-			ee()->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$this->current_id}', '{$this->preferences['board_id']}', '".ee()->session->userdata('member_id')."', '".ee()->localize->now."', '{$rand}')");
+			ee()->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$topic_id}', '{$this->preferences['board_id']}', '".ee()->session->userdata('member_id')."', '".ee()->localize->now."', '{$rand}')");
 		}
 
 
 		$data = array(	'title' 	=> lang('thank_you'),
 						'heading'	=> lang('thank_you'),
 						'content'	=> lang('you_have_been_subscribed').'<br /><br /><b>'.$title.'</b>',
-						'redirect'	=> $this->forum_path('/viewthread/'.$this->current_id.'/'),
+						'redirect'	=> $this->forum_path('/viewthread/'.$topic_id.'/'),
 						'rate'		=> 3,
-						'link'		=> array($this->forum_path('/viewthread/'.$this->current_id.'/'), '')
+						'link'		=> array($this->forum_path('/viewthread/'.$topic_id.'/'), '')
 					 );
 
 		return ee()->output->show_message($data);
@@ -7151,8 +7158,15 @@ class Forum_Core extends Forum {
 	 */
 	public function unsubscribe()
 	{
+		$topic_id = ee()->input->post('topic_id');
+
+		if ( ! $topic_id)
+		{
+			return $this->trigger_error();
+		}
+
 		// Do we have a valid topic ID?
-		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$this->current_id}'");
+		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$topic_id}'");
 
 		if ($query->num_rows() == 0)
 
@@ -7162,14 +7176,14 @@ class Forum_Core extends Forum {
 
 		$title = $this->_convert_special_chars($query->row('title') );
 
-		ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$this->current_id}' AND member_id = '".ee()->session->userdata('member_id')."'");
+		ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$topic_id}' AND member_id = '".ee()->session->userdata('member_id')."'");
 
 		$data = array(	'title' 	=> lang('thank_you'),
 						'heading'	=> lang('thank_you'),
 						'content'	=> lang('you_have_been_unsubscribed').'<br /><br /><b>'.$title.'</b>',
-						'redirect'	=> $this->forum_path('/viewthread/'.$this->current_id.'/'),
+						'redirect'	=> $this->forum_path('/viewthread/'.$topic_id.'/'),
 						'rate'		=> 3,
-						'link'		=> array($this->forum_path('/viewthread/'.$this->current_id.'/'), '')
+						'link'		=> array($this->forum_path('/viewthread/'.$topic_id.'/'), '')
 					 );
 
 		return ee()->output->show_message($data);
