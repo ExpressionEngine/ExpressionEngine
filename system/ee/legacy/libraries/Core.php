@@ -281,7 +281,7 @@ class EE_Core {
 			exit;
 		}
 
-		// Throttle and Blacklist Check
+		// Security Checks: Throttle, Blacklist, File Integrity, and iFraming
 		if (REQ != 'CP')
 		{
 			ee()->load->library('throttling');
@@ -292,6 +292,8 @@ class EE_Core {
 
 			ee()->load->library('file_integrity');
 			ee()->file_integrity->create_bootstrap_checksum();
+
+			$this->setFrameHeaders();
 		}
 
 		ee()->load->library('remember');
@@ -764,6 +766,34 @@ class EE_Core {
 				ee()->newrelic->set_appname();
 				ee()->newrelic->name_transaction($transaction_name);
 			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set iFrame Headers
+	 *
+	 * A security precaution to prevent iFraming of the site to protect
+	 * against clickjacking. By default we use SAMEORIGIN so that iframe
+	 * designs are still possible.
+	 *
+	 * @return	void
+	 */
+	private function setFrameHeaders()
+	{
+		$frame_options = ee()->config->item('x_frame_options');
+		$frame_options = strtoupper($frame_options);
+
+		// if not specified or invalid value, default to SAMEORIGIN
+		if ( ! in_array($frame_options, array('DENY', 'SAMEORIGIN', 'NONE')))
+		{
+			$frame_options = 'SAMEORIGIN';
+		}
+
+		if ($frame_options != 'NONE')
+		{
+			ee()->output->set_header('X-Frame-Options: '.$frame_options);
 		}
 	}
 
