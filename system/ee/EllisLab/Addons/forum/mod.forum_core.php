@@ -7111,10 +7111,12 @@ class Forum_Core extends Forum {
 	{
 		$topic_id = ee()->input->post('topic_id');
 
-		if ( ! $topic_id)
+		if ( ! $topic_id || ! is_numeric($topic_id))
 		{
 			return $this->trigger_error();
 		}
+
+		$topic_id = (int) $topic_id;
 
 		// Do we have a valid topic ID?
 		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$topic_id}'");
@@ -7160,10 +7162,12 @@ class Forum_Core extends Forum {
 	{
 		$topic_id = ee()->input->post('topic_id');
 
-		if ( ! $topic_id)
+		if ( ! $topic_id || ! is_numeric($topic_id))
 		{
 			return $this->trigger_error();
 		}
+
+		$topic_id = (int) $topic_id;
 
 		// Do we have a valid topic ID?
 		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$topic_id}'");
