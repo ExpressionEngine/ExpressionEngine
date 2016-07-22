@@ -207,16 +207,25 @@ class Delete extends Query {
 		$this->delete_list = array();
 		$this->recursivePath($model, array());
 
+		// This list is processed bottom to top.
+		// Sort the branches by length, with the longest on the bottom, to
+		// create a depth-first delete.
+		// The main deletes are sandwiched by the weak and recursive deletes.
+		// Sort weak deletes to the bottom since we may disconnect on the side
+		// we end up deleting and while that is a bit redundant it is also the
+		// safest way to disconnect.
+		// Sort recursion to the top so that we handle those last and don't
+		// recurse continually before actually getting to work.
 		usort($this->delete_list, function($a, $b) {
 
 			if ($a[1] instanceOf \Closure)
 			{
-				return 5e10;
+				return ($a[2] == 'weak') ? 5e5 : -5e5;
 			}
 
 			if ($b[1] instanceOf \Closure)
 			{
-				return -5e10;
+				return ($b[2] == 'weak') ? -5e5 : 5e5;
 			}
 
 			return count($a[1]) - count($b[1]);
@@ -239,7 +248,7 @@ class Delete extends Query {
 				$final[1] = $this->nest($final[1]);
 			}
 		}
-
+		
 		return array_reverse($this->delete_list);
 	}
 
@@ -262,7 +271,7 @@ class Delete extends Query {
 				$subpath = $path;
 				$subpath[] = $to_name;
 
-				$this->delete_list[] = array($to_model, $this->weak($inverse, $subpath));
+				$this->delete_list[] = array($to_model, $this->weak($inverse, $subpath), 'weak');
 				continue;
 			}
 
@@ -274,7 +283,7 @@ class Delete extends Query {
 				// check for recursion
 				if ($to_model == $model && $to_name == end($path))
 				{
-					$this->delete_list[] = array($to_model, $this->recursive($relation, $path));
+					$this->delete_list[] = array($to_model, $this->recursive($relation, $path), 'recursive');
 					continue;
 				}
 
