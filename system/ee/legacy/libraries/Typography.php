@@ -2252,9 +2252,25 @@ while (--j >= 0)
 			return $url;
 		}
 
+		// If we have a relative URL and are in PHP 5.3 temporarily add a
+		// schema to fix a bug in 5.3's parse_url
+		$fix_relative_domains = FALSE;
+
+		if (version_compare(PHP_VERSION, '5.4', '<')
+			&& strpos('//', $url) === 0)
+		{
+			$fix_relative_domains = TRUE;
+			$url = 'http:' . $url;
+		}
+
 		// Amazingly, this will parse if passed 'http://example.com is fun!'
 		// but will not parse if passed 'I really like http://example.com'
 		$parts = parse_url($url);
+
+		if ($fix_relative_domains)
+		{
+			unset($parts['scheme']);
+		}
 
 		// According to http://php.net/idn_to_ascii this should only be run
 		// on the domain and not the entire string.
