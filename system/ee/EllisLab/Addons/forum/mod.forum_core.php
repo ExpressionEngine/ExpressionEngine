@@ -554,7 +554,8 @@ class Forum_Core extends Forum {
 				'member', 'smileys', 'search', 'member_search', 'new_topic_search',
 				'active_topic_search', 'view_pending_topics', 'search_results',
 				'search_thread', 'ban_member', 'do_ban_member', 'spellcheck',
-				'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member'
+				'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member',
+				'mark_all_read'
 			);
 
 		// Is the member area trigger changed?
@@ -7087,6 +7088,14 @@ class Forum_Core extends Forum {
 	 */
 	public function mark_all_read()
 	{
+		// Check CSRF Token
+		$token = ee()->uri->segment(3);
+
+		if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
+		{
+			return $this->trigger_error('not_authorized');
+		}
+
 		if (ee()->session->userdata('member_id') != 0)
 		{
 			ee()->db->query("UPDATE exp_members SET last_visit = '".ee()->localize->now."' WHERE member_id = '".ee()->session->userdata('member_id')."'");
