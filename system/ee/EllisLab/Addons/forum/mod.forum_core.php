@@ -3259,7 +3259,7 @@ class Forum_Core extends Forum {
 
 			$template = $this->var_swap($template,
 									array(
-											'poll_question'	=> ee()->typography->filter_censored_words($question),
+											'poll_question'	=> $this->_convert_special_chars(ee()->typography->filter_censored_words($question)),
 											'include:poll_answer_rows' => $rows,
 											'total_votes' => $total_votes,
 											'lang:voter_message' => (ee()->session->userdata('member_id') == 0) ? lang('must_be_logged_to_vote') : lang('you_have_voted')
@@ -6443,7 +6443,7 @@ class Forum_Core extends Forum {
 			if ($val == '')
 				continue;
 
-			$temp['answer']	= $val;
+			$temp['answer']	= ee('Security/XSS')->clean($val);
 			$temp['votes']	= (isset($_POST['votes'][$key]) AND is_numeric($_POST['votes'][$key])) ? $_POST['votes'][$key] : 0;
 
 			$answers[]	= $temp;
@@ -6452,7 +6452,7 @@ class Forum_Core extends Forum {
 		}
 
 
-		$data['poll_question']	= $_POST['poll_question'];
+		$data['poll_question']	= ee('Security/XSS')->clean($_POST['poll_question']);
 		$data['poll_answers']	= serialize($answers);
 
 
