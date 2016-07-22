@@ -1214,11 +1214,16 @@ class EE_Typography {
 			str_repeat('(?>[^()]+|\(', 4).
 			str_repeat('(?>\)))*', 4);
 
-		if (preg_match_all('/\[.*?\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all('/\[(.*?)\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
 		{
 			foreach ($matches as $match)
 			{
-				$str = str_replace($match[1], str_replace(' ', '%20', $match[1]), $str);
+				// It felt too heavy handed to do a global replace of all URLs
+				// that matched, so (for now) we'll only replace the URLs that
+				// the REGEX matched. (that's why the '[]' are being
+				// concatenated)
+				$str = str_replace('['.$match[1].']', '['.$this->decodeIDN($match[1]).']', $str);
+				$str = str_replace($match[2], str_replace(' ', '%20', $match[2]), $str);
 			}
 		}
 
@@ -1348,15 +1353,14 @@ class EE_Typography {
 			$matches[6] = $punc_match[1];
 		}
 
-		return	$matches['1'].'[url=http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].']http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].'[/url]'.
-				$end.
-				$matches['7'];
+		$url = 'http'.
+			   $matches['4'].'://'.
+			   $matches['5'].
+			   $matches['6'];
+
+	   $url = $this->decodeIDN($url);
+
+	   return $matches['1'].'[url='.$url.']'.$url.'[/url]'.$end.$matches['7'];
 	}
 
 	// --------------------------------------------------------------------
@@ -1556,7 +1560,7 @@ class EE_Typography {
 						$url = urlencode($url);
 					}
 
-					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$matches['2'][$i]."</a>", $str);
+					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$this->decodeIDN($matches['2'][$i])."</a>", $str);
 				}
 			}
 		}
@@ -2233,6 +2237,66 @@ while (--j >= 0)
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * If present we'll run `idn_to_ascii` on the the URL to protect against
+	 * homograph attacks.
+	 *
+	 * @param string $url A URL
+	 * @return string A decoded URL
+	 */
+	public function decodeIDN($url)
+	{
+		if ( ! function_exists('idn_to_ascii'))
+		{
+			return $url;
+		}
+
+		// If we have a relative URL and are in PHP 5.3 temporarily add a
+		// schema to fix a bug in 5.3's parse_url
+		$fix_relative_domains = FALSE;
+
+		if (version_compare(PHP_VERSION, '5.4', '<')
+			&& strpos('//', $url) === 0)
+		{
+			$fix_relative_domains = TRUE;
+			$url = 'http:' . $url;
+		}
+
+		// Amazingly, this will parse if passed 'http://example.com is fun!'
+		// but will not parse if passed 'I really like http://example.com'
+		$parts = parse_url($url);
+
+		if ($fix_relative_domains)
+		{
+			unset($parts['scheme']);
+		}
+
+		// According to http://php.net/idn_to_ascii this should only be run
+		// on the domain and not the entire string.
+		if (isset($parts['host']))
+		{
+			$parts['host'] = idn_to_ascii($parts['host']);
+		}
+
+		return $this->unparse_url($parts);
+	}
+
+	/**
+	 * Copied from http://php.net/manual/en/function.parse-url.php#106731
+	 */
+	private function unparse_url($parsed_url) {
+	  $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+	  $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+	  $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+	  $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+	  $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+	  $pass     = ($user || $pass) ? "$pass@" : '';
+	  $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+	  $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+	  $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+	  return "$scheme$user$pass$host$port$path$query$fragment";
+	}
 
 }
 // END CLASS
