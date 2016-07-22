@@ -7089,7 +7089,7 @@ class Forum_Core extends Forum {
 	public function mark_all_read()
 	{
 		// Check CSRF Token
-		$token = ee()->uri->segment(3);
+		$token = end(ee()->uri->segments);
 
 		if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
 		{
