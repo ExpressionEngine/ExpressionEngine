@@ -1237,7 +1237,7 @@ class Forum {
 				'path:view_new_topics'     => $this->forum_path('/new_topic_search'),
 				'path:view_active_topics'  => $this->forum_path('/active_topic_search'),
 				'path:view_pending_topics' => $this->forum_path('/view_pending_topics'),
-				'path:mark_all_read'       => $this->forum_path('/mark_all_read/'),
+				'path:mark_all_read'       => rtrim($this->forum_path('/mark_all_read/' . CSRF_TOKEN), '/'),
 				'path:do_search'           => $this->forum_path('/do_search/'),
 				'path:smileys'             => $this->forum_path('/smileys/'),
 				'path:rss'                 => $this->forum_path('/rss/'.$this->feed_ids),
