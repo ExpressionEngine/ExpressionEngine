@@ -5,7 +5,7 @@
 	$class = 'choice block';
 
 	foreach ($options as $key => $value):
-		$checked = (in_array(form_prep($key), $values)) ? TRUE : FALSE;
+		$checked = (in_array($key, $values) OR in_array(form_prep($key), $values));
 
 		if ($checked)
 		{
@@ -13,7 +13,7 @@
 		}
 ?>
 	<label class="<?=$class?>">
-		<?=form_checkbox($field_name . '[]', $key, $checked, $extra)?> <?=$value?>
+		<?=form_checkbox($field_name . '[]', $key, $checked, $extra)?> <?=form_prep($value)?>
 	</label>
 	<?php $class = 'choice block'; ?>
 <?php endforeach; ?>

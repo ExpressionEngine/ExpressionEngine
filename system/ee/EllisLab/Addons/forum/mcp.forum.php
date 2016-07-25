@@ -1072,6 +1072,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$sections = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -1780,6 +1784,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$vars['sections'] = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -2296,6 +2304,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$vars['sections'] = array(
 			array(
@@ -2902,6 +2914,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -3289,6 +3305,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$sections = array(
 			array(

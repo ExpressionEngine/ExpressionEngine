@@ -44,18 +44,14 @@ $host = ( ! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'],0
 
 $force_redirect = ($request_type != 'CP' && config_item('force_redirect') == TRUE) ? TRUE: FALSE;
 
-$url = $_GET['URL'];
+ee()->load->library('typography');
 
-if (function_exists('idn_to_ascii'))
-{
-	$url = idn_to_ascii($url);
-}
+$url = ee()->typography->decodeIDN($_GET['URL']);
 
 $link = "<a rel=\"nofollow\" href='".$url."'>Continue to the new page</a>";
 
 if ( $link !== ee('Security/XSS')->clean($link) )
 {
-	ee()->load->library('typography');
 	show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
 
