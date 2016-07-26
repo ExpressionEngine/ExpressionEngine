@@ -97,6 +97,10 @@ class Member extends ContentModel {
 			'model' => 'Stats',
 			'to_key' => 'recent_member_id',
 			'weak' => TRUE
+		),
+		'CommentSubscriptions' => array(
+			'type' => 'hasMany',
+			'model' => 'CommentSubscription'
 		)
 	);
 

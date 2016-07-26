@@ -87,6 +87,10 @@ class ChannelEntry extends ContentModel {
 		'Comments' => array(
 			'type' => 'hasMany',
 			'model' => 'Comment'
+		),
+		'CommentSubscriptions' => array(
+			'type' => 'hasMany',
+			'model' => 'CommentSubscription'
 		)
 	);
 
