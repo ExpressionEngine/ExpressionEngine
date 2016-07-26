@@ -1,5 +1,7 @@
 class UrlsSettings < ControlPanelPage
 
+  element :base_url, 'input[name=base_url]'
+  element :base_path, 'input[name=base_path]'
   element :site_index, 'input[name=site_index]'
   element :site_url, 'input[name=site_url]'
   element :cp_url, 'input[name=cp_url]'
