@@ -68,7 +68,9 @@ class Parser extends AbstractParser {
 
 		$this->expect('EOS');
 
-		return $this->closeBuffer();
+		$out = $this->closeBuffer(FALSE);
+
+		return preg_replace('/^\n?(.*?)\n?$/is', '$1', $out);
 	}
 
 	/**
@@ -483,11 +485,11 @@ class Parser extends AbstractParser {
 	/**
 	 * Close and flush the current output buffer
 	 */
-	protected function closeBuffer()
+	protected function closeBuffer($trim = TRUE)
 	{
 		$out = array_pop($this->output_buffers);
 		$this->initBuffer();
-		return trim($out);
+		return $trim ? trim($out) : $out;
 	}
 
 	/**
