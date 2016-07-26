@@ -1543,6 +1543,7 @@ class Wizard extends CI_Controller {
 			{
 				$theme = ee('ThemeInstaller');
 				$theme->setSiteURL($this->userdata['site_url']);
+				$theme->setBasePath($this->base_path);
 				$theme->setThemePath($this->root_theme_path);
 				$theme->setThemeURL($this->set_path('themes'));
 				$theme->install($this->userdata['theme']);
