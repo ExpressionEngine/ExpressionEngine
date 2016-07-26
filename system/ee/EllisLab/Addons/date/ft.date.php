@@ -236,6 +236,7 @@ class Date_ft extends EE_Fieldtype {
 			'value' => $custom_date,
 			'localize_option_name' => $date_local,
 			'localized' => $localized,
+			'date_format' => ee()->localize->get_date_format(),
 			'disabled' => $this->get_setting('field_disabled')
 		));
 	}
