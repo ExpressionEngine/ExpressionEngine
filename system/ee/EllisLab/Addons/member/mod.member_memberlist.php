@@ -544,6 +544,11 @@ class Member_memberlist extends Member {
 
 		$query = ee()->db->query($p_sql.$sql);
 
+		if ( ! in_array($sort_order, array('asc', 'desc')))
+		{
+			$sort_order = 'desc';
+		}
+
 		if ($order_by == 'total_posts')
 		{
 			$sql .= " ORDER BY ".$order_by." ".$sort_order;
