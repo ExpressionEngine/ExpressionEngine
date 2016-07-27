@@ -25,11 +25,11 @@ do
 			curl -sSL https://s3.amazonaws.com/circle-downloads/install-mysql5.7-circleci.sh | sh
 
 			# Prevent "MySQL server has gone away" error
-			echo -e "[mysqld]\nmax_allowed_packet=256M\nwait_timeout=100" | sudo sh -c "cat >> /etc/mysql/my.cnf"
+			echo -e "[mysqld]\nmax_allowed_packet=256M\nwait_timeout=300\ninteractive_timeout=300" | sudo sh -c "cat >> /etc/mysql/my.cnf"
 
 			# Upgrade databases
 			sudo mysql_upgrade -u ubuntu --force
-			
+
 			sudo service mysql restart
 		fi
 
