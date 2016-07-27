@@ -205,74 +205,74 @@ feature 'Query Form' do
   end
 
   # SHOW queries sorting, paging and searching are handled by the Table library
-  # it 'should search SHOW query results' do
-  #   @page.click_link 'SHOW STATUS'
-  #
-  #   no_php_js_errors
-  #   results = QueryResults.new
-  #   results.should have(6).pages
-  #   results.should have(25).rows
-  #
-  #   results.search_field.set 'alter'
-  #   results.search_btn.click
-  #
-  #   status = show_status
-  #   searched = status.sort.grep(/alter/)
-  #
-  #   no_php_js_errors
-  #   results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
-  #   results.search_field.value.should eq 'alter'
-  #   results.should have(0).pages
-  #   results.should have(searched.count).rows
-  #   results.first_column.map {|source| source.text}.should == searched
-  #
-  #   # Make sure we can still sort and maintain search results
-  #   results.sort_links[0].click
-  #   results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
-  #   results.search_field.value.should eq 'alter'
-  #   results.should have(0).pages
-  #   results.should have(searched.count).rows
-  #   results.first_column.map {|source| source.text}.should == searched.reverse
-  # end
-  #
-  # it 'should paginate SHOW query results' do
-  #   # Generate random data that will paginate
-  #   @page.click_link 'SHOW STATUS'
-  #
-  #   status = show_status
-  #
-  #   no_php_js_errors
-  #   results = QueryResults.new
-  #   results.should have(25).rows
-  #   results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
-  #   results.first_column.map {|source| source.text}.should == status.sort[0..24]
-  #   click_link "Next"
-  #
-  #   no_php_js_errors
-  #   results.should have(25).rows
-  #   results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
-  #   results.first_column.map {|source| source.text}.should == status.sort[25..49]
-  # end
-  #
-  # it 'should paginate sorted SHOW query results' do
-  #   @page.click_link 'SHOW STATUS'
-  #
-  #   status = show_status
-  #
-  #   no_php_js_errors
-  #   results = QueryResults.new
-  #   results.sort_links[0].click
-  #   no_php_js_errors
-  #
-  #   results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
-  #   results.first_column.map {|source| source.text}.should == status.sort.reverse[0..24]
-  #
-  #   no_php_js_errors
-  #   click_link "Next"
-  #
-  #   results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
-  #   results.first_column.map {|source| source.text}.should == status.sort.reverse[25..49]
-  # end
+  it 'should search SHOW query results' do
+    @page.click_link 'SHOW STATUS'
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.should have(6).pages
+    results.should have(25).rows
+
+    results.search_field.set 'alter'
+    results.search_btn.click
+
+    status = show_status
+    searched = status.sort.grep(/alter/)
+
+    no_php_js_errors
+    results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
+    results.search_field.value.should eq 'alter'
+    results.should have(0).pages
+    results.should have(searched.count).rows
+    results.first_column.map {|source| source.text}.should == searched
+
+    # Make sure we can still sort and maintain search results
+    results.sort_links[0].click
+    results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
+    results.search_field.value.should eq 'alter'
+    results.should have(0).pages
+    results.should have(searched.count).rows
+    results.first_column.map {|source| source.text}.should == searched.reverse
+  end
+
+  it 'should paginate SHOW query results' do
+    # Generate random data that will paginate
+    @page.click_link 'SHOW STATUS'
+
+    status = show_status
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.should have(25).rows
+    results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort[0..24]
+    click_link "Next"
+
+    no_php_js_errors
+    results.should have(25).rows
+    results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort[25..49]
+  end
+
+  it 'should paginate sorted SHOW query results' do
+    @page.click_link 'SHOW STATUS'
+
+    status = show_status
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.sort_links[0].click
+    no_php_js_errors
+
+    results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort.reverse[0..24]
+
+    no_php_js_errors
+    click_link "Next"
+
+    results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort.reverse[25..49]
+  end
 
   it 'should show no results when there are no results' do
     @page.query_form.set 'select * from exp_channels where channel_id = 1000'
