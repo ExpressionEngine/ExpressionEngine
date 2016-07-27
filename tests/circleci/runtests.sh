@@ -37,6 +37,10 @@ do
 		printf "Testing under PHP ${PHPVERSION}\n\n"
 		phpenv global $PHPVERSION
 		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
+
+		# Disable opcode cache
+		echo -e "\n[opcache]\nopcache.enable=0" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
+
 		sudo service apache2 restart
 
 		# We'll store our build artifacts under the name of the current PHP version
