@@ -465,12 +465,8 @@ class Ip_to_nation_mcp {
 	 */
 	function _country_names()
 	{
-		if ( ! include(APPPATH.'config/countries.php'))
-		{
-			show_error(lang('countryfile_missing'));
-		}
-
-		return $countries;
+		$conf = ee()->config->loadFile('countries');
+		return $conf['countries'];
 	}
 
 	// ----------------------------------------------------------------------

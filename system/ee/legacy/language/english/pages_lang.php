@@ -70,8 +70,6 @@ $lang = array(
 
 'page_settings' => 'Page Settings',
 
-'none' => 'None',
-
 'template' => 'Template',
 
 'parent_page' => 'Parent Page',

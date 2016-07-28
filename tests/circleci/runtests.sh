@@ -4,6 +4,32 @@
 # exit with that status at the end
 STATUS=0
 
+# Script provided by CircleCI, modified for 0.7.3.1 instead of 0.5.3.1
+# curl -sSL https://s3.amazonaws.com/circle-downloads/install-mysql5.7-circleci.sh | sh
+installmysql() {
+	set -x
+	# set -e
+
+ 	sudo rm /etc/apt/sources.list.d/mysql.list
+	export DEBIAN_FRONTEND=noninteractive
+	curl -LO https://dev.mysql.com/get/mysql-apt-config_0.7.3-1_all.deb
+	echo mysql-apt-config mysql-apt-config/select-product          select Apply              | sudo debconf-set-selections
+	echo mysql-apt-config mysql-apt-config/select-server           select mysql-5.7          | sudo debconf-set-selections
+	echo mysql-apt-config mysql-apt-config/select-connector-python select none               | sudo debconf-set-selections
+	echo mysql-apt-config mysql-apt-config/select-workbench        select none               | sudo debconf-set-selections
+	echo mysql-apt-config mysql-apt-config/select-utilities        select none               | sudo debconf-set-selections
+	echo mysql-apt-config mysql-apt-config/select-connector-odbc   select connector-odbc-x.x | sudo debconf-set-selections
+	sudo -E dpkg -i mysql-apt-config_0.7.3-1_all.deb
+	sudo apt-get update
+	echo mysql-community-server mysql-community-server/re-root-pass password ${mysql_root_password} | sudo debconf-set-selections
+	echo mysql-community-server mysql-community-server/root-pass    password ${mysql_root_password} | sudo debconf-set-selections
+	sudo -E apt-get -y install mysql-server
+
+	echo "Checking installed version....."
+	mysql -D mysql -e "SELECT version()"
+	echo "Done!!"
+}
+
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
@@ -15,10 +41,32 @@ for PHPVERSION in ${PHP_VERSIONS_ARRAY[@]}
 do
 	if [ $(($i % $CIRCLE_NODE_TOTAL)) -eq $CIRCLE_NODE_INDEX ]
 	then
+
+		# Install MySQL 5.7 when we're testing PHP 7
+		PHP_VERSION_ASPLODE=(${PHPVERSION//./ })
+		PHP_MAJOR_VERSION=${PHP_VERSION_ASPLODE[0]}
+		if [[ $PHP_MAJOR_VERSION -eq 7 ]]
+		then
+			# Script provided by CircleCI
+			installmysql
+
+			# Prevent "MySQL server has gone away" error
+			echo -e "[mysqld]\nmax_allowed_packet=256M\nwait_timeout=300\ninteractive_timeout=300" | sudo sh -c "cat >> /etc/mysql/my.cnf"
+
+			# Upgrade databases
+			sudo mysql_upgrade -u ubuntu --force
+
+			sudo service mysql restart
+		fi
+
 		# Switch PHP version with phpenv and reload the Apache module
 		printf "Testing under PHP ${PHPVERSION}\n\n"
 		phpenv global $PHPVERSION
-		echo "LoadModule php5_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp5.so" > /etc/apache2/mods-available/php5.load
+		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
+
+		# Disable opcode cache
+		echo -e "\n[opcache]\nopcache.enable=0" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
+
 		sudo service apache2 restart
 
 		# We'll store our build artifacts under the name of the current PHP version

@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav', array(), array('outer_box')); ?>
 
 <?php foreach ($results as $result): ?>
-	<div class="box mb">
+	<div class="box mb table-list-wrap">
 		<div class="tbl-ctrls">
 			<h1><?=$result['heading']?></h1>
 			<?php $this->embed('_shared/table', $result['table']); ?>

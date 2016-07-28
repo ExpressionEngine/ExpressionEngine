@@ -61,19 +61,21 @@ class Performance extends ProfilerSection {
 	 **/
 	public function setData($benchmarks)
 	{
-		$this->total_time = end($benchmarks);
+		$this->total_time = end($benchmarks['benchmarks']);
 
 		$data = array();
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
 		{
-			$data[lang('profiler_memory')] = $this->formatMemoryString($usage).' of '.ini_get('memory_limit');
+			$data[lang('profiler_memory')] = $this->fmt_factory->make('Number', $usage)->bytes().' of '.ini_get('memory_limit');
 		}
 		else
 		{
 			$data[lang('profiler_memory')] = lang('profiler_no_memory_usage');
 		}
 
-		$data = $data + $benchmarks;
+		$data[lang('profiler_query_time')] = $benchmarks['database'];
+
+		$data = $data + $benchmarks['benchmarks'];
 		$this->data = array('performance' => $data);
 	}
 }

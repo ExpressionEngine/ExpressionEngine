@@ -39,6 +39,8 @@ class Settings extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
 		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -102,6 +104,7 @@ class Settings extends CP_Controller {
 		}
 
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
+		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
 
 		if (ee()->cp->allowed_group('can_access_members', 'can_admin_mbr_groups'))
 		{

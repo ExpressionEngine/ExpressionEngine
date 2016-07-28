@@ -810,7 +810,7 @@ class Metaweblog_api {
 		foreach($query->result_array() as $row)
 		{
 			$convert_breaks = 'none';
-			$link = reduce_double_slashes($this->comment_url.'/'.$query->row('url_title') .'/');
+			$link = reduce_double_slashes(parse_config_variables($this->comment_url).'/'.$query->row('url_title') .'/');
 
 			// Fields:  Textarea and Text Input Only
 
@@ -1324,7 +1324,7 @@ class Metaweblog_api {
 			{
 				$cat = array();
 
-				$link = reduce_double_slashes($this->channel_url.'/C'.$row['cat_id'].'/');
+				$link = reduce_double_slashes(parse_config_variables($this->channel_url).'/C'.$row['cat_id'].'/');
 
 				$cat['categoryId']		= array($row['cat_id'],'string');
 		 		$cat['description']		= array(($row['cat_description'] == '') ? $row['cat_name'] : $row['cat_description'],'string');
@@ -1414,8 +1414,8 @@ class Metaweblog_api {
 		}
 
 		$this->channel_id		= $query->row('channel_id');
-		$this->channel_url		= $query->row('channel_url');
-		$this->comment_url		= $query->row('comment_url');
+		$this->channel_url		= parse_config_variables($query->row('channel_url'));
+		$this->comment_url		= parse_config_variables($query->row('comment_url'));
 		$this->deft_category	= $query->row('deft_category');
 		$this->html_format		= $query->row('channel_html_formatting');
 		$this->site_id			= $query->row('site_id');
@@ -1757,7 +1757,7 @@ class Metaweblog_api {
 		{
 			$channel = array(array(
 									"url" =>
-									array($row['channel_url'],"string"),
+									array(parse_config_variables($row['channel_url']),"string"),
 									"blogid" =>
 									array($row['channel_id'], "string"),
 									"blogName" =>

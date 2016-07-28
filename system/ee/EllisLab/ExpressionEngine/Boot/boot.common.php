@@ -216,21 +216,90 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 // ------------------------------------------------------------------------
 
 /**
+ * Returns the default config items
+ *
+ * @access public
+ * @return array Associative array of default config items
+ */
+	function default_config_items()
+	{
+		return array(
+			'allow_extensions'   => 'y',
+			'cache_driver'       => 'file',
+			'cache_path'         => '',
+			'charset'            => 'UTF-8',
+			'cookie_httponly'    => 'y',
+			'debug'              => 1,
+			'encryption_key'     => '',
+			'is_system_on'       => 'y',
+			'log_date_format'    => 'Y-m-d H:i:s',
+			'log_threshold'      => 0,
+			'rewrite_short_tags' => TRUE,
+			'subclass_prefix'    => 'EE_',
+			'uri_protocol'       => 'AUTO',
+		);
+	}
+
+// ------------------------------------------------------------------------
+
+/**
 * Returns the specified config item
 *
 * @access	public
+* @param	string	$item		Name of config item
+* @param	string	$raw_value	When TRUE, does not run through parse_config_variables
 * @return	mixed
 */
-	function config_item($item)
+	function config_item($item, $raw_value = FALSE)
 	{
 		$config =& get_config();
 
 		if ( ! isset($config[$item]))
 		{
+			$defaults = default_config_items();
+
+			if (isset($defaults[$item]))
+			{
+				return $defaults[$item];
+			}
+
 			return FALSE;
 		}
 
-		return $config[$item];
+		return $raw_value ? $config[$item] : parse_config_variables($config[$item]);
+	}
+
+// ------------------------------------------------------------------------
+
+/**
+* Parses select variables in a config value's string
+*
+* @access	public
+* @param	string	$value		Config value containing variables needing parsed
+* @param	string	$variables	Optional override variables, like when a parsed value
+*   relies on something in POST
+* @return	mixed
+*/
+	function parse_config_variables($value, $variables = array())
+	{
+		if (is_string($value) && strpos($value, '{') !== FALSE)
+		{
+			foreach (array('base_path', 'base_url') as $variable)
+			{
+				// Get the variable's value but prevent a possible infinite loop
+				// by getting the raw config value; will need to revisit if we
+				// allow nested variables later on
+				$var_value = isset($variables[$variable]) ? $variables[$variable] : config_item($variable, TRUE);
+
+				// Replace the variable
+				$value = str_replace('{'.$variable.'}', $var_value, $value);
+
+				// Reduce double slashes
+				$value = preg_replace("#([^/:])/+#", "\\1/", $value);
+			}
+		}
+
+		return $value;
 	}
 
 // ------------------------------------------------------------------------

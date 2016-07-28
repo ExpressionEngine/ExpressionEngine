@@ -205,6 +205,7 @@ class Channels extends AbstractChannelsController {
 		$cat_group_options = array();
 		$category_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
 			->order('group_name')
 			->all();
 		foreach ($category_groups as $group)
@@ -290,6 +291,16 @@ class Channels extends AbstractChannelsController {
 		$vars['sections']['channel_publishing_options'] = array(
 			$alert,
 			array(
+				'title' => 'channel_max_entries',
+				'desc' => 'channel_max_entries_desc',
+				'fields' => array(
+					'max_entries' => array(
+						'type' => 'text',
+						'value' => $channel->max_entries ?: ''
+					)
+				)
+			),
+			array(
 				'title' => ucfirst(strtolower(lang('status_groups'))),
 				'fields' => array(
 					'status_group' => array(
@@ -356,6 +367,11 @@ class Channels extends AbstractChannelsController {
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
 				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
+			),
+			array(
+				'field' => 'max_entries',
+				'label' => 'lang:channel_max_entries',
+				'rules' => 'is_natural'
 			),
 			array(
 				'field' => 'title_field_label',
@@ -477,6 +493,11 @@ class Channels extends AbstractChannelsController {
 		$channel->field_group = ($channel->field_group !== FALSE &&
 			$channel->field_group != '')
 			? $channel->field_group : NULL;
+
+		if ($channel->max_entries == '')
+		{
+			$channel->max_entries = 0;
+		}
 
 		// Create Channel
 		if ($channel->isNew())
@@ -712,7 +733,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'channel_url' => array(
 							'type' => 'text',
-							'value' => $channel->channel_url
+							'value' => $channel->getRawProperty('channel_url')
 						)
 					)
 				),
@@ -722,7 +743,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'comment_url' => array(
 							'type' => 'text',
-							'value' => $channel->comment_url
+							'value' => $channel->getRawProperty('comment_url')
 						)
 					)
 				),
@@ -732,7 +753,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'search_results_url' => array(
 							'type' => 'text',
-							'value' => $channel->search_results_url
+							'value' => $channel->getRawProperty('search_results_url')
 						)
 					)
 				),
@@ -742,7 +763,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'rss_url' => array(
 							'type' => 'text',
-							'value' => $channel->rss_url
+							'value' => $channel->getRawProperty('rss_url')
 						)
 					)
 				),

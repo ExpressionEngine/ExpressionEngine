@@ -213,6 +213,7 @@ class Set {
 			$this->loadFieldsAndGroups();
 			$this->loadStatusGroups($data->status_groups);
 			$this->loadCategoryGroups($data->category_groups);
+			$this->loadCategoryFields();
 			$this->loadChannels($data->channels);
 		}
 		catch (\Exception $e)
@@ -308,9 +309,22 @@ class Set {
 
 			if (isset($channel_data->cat_groups))
 			{
+				$cat_groups = $this->category_groups;
+				$fn = function() use ($channel, $channel_data, $cat_groups)
+				{
+					$cat_group_ids = array();
+					foreach ($cat_groups as $cat_group)
+					{
+						$cat_group_ids[] = $cat_group->getId();
+					}
+
+					$channel->cat_group = implode('|', $cat_group_ids);
+					$channel->save();
+				};
+
 				foreach ($channel_data->cat_groups as $cat_group)
 				{
-					$channel->CategoryGroups[] = $this->category_groups[$cat_group];
+					$this->category_groups[$cat_group]->on('afterInsert', $fn);
 				}
 			}
 
@@ -337,17 +351,41 @@ class Set {
 				: 'a';
 			$cat_group->group_name = $group_name;
 
-			foreach ($category_group_data->categories as $index => $category_name)
+			foreach ($category_group_data->categories as $index => $category_data)
 			{
 				$category = ee('Model')->make('Category');
 				$category->site_id = $this->site_id;
-				$category->cat_name = $category_name;
-				$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
 				$category->parent_id = 0;
 
-				if ($cat_group->sort_order == 'c')
+				if (is_string($category_data))
 				{
-					$category->cat_order = $index + 1;
+					$category->cat_name = $category_data;
+					$category->cat_url_title = strtolower(str_replace(' ', '-', $category_data));
+
+					if ($cat_group->sort_order == 'c')
+					{
+						$category->cat_order = $index + 1;
+					}
+				}
+				else
+				{
+					$category->cat_name = $category_data->cat_name;
+					$category->cat_url_title = $category_data->cat_url_title;
+					$category->cat_description = $category_data->cat_description;
+					$category->cat_order = $category_data->cat_order;
+
+					$fn = function() use ($category, $category_data)
+					{
+						$fields = get_object_vars($category_data);
+
+						foreach ($category->CategoryGroup->CategoryFields as $field)
+						{
+							$property = 'field_id_' . $field->getId();
+							$category->$property = $category_data->{$field->field_name};
+						}
+					};
+
+					$category->on('beforeInsert', $fn);
 				}
 
 				$cat_group->Categories[] = $category;
@@ -371,10 +409,7 @@ class Set {
 
 			if ($group_name == 'Default')
 			{
-				$status_group = ee('Model')->get('StatusGroup')
-					->filter('group_name', 'Default')
-					->filter('site_id', $this->site_id)
-					->first();
+				$status_group = $this->getDefaultStatusGroup();
 			}
 			else
 			{
@@ -410,6 +445,58 @@ class Set {
 
 			$this->status_groups[$group_name] = $status_group;
 		}
+	}
+
+	private function loadCategoryFields()
+	{
+		if ( ! is_dir($this->path.'/category_fields'))
+		{
+			return;
+		}
+
+		$it = new \RecursiveDirectoryIterator(
+			$this->path.'/category_fields',
+			\FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS
+		);
+
+		foreach ($it as $item)
+		{
+			if ($item->isDir())
+			{
+				$category_group = $this->category_groups[$it->getFilename()];
+
+				foreach ($it->getChildren() as $field)
+				{
+					if ($field->isFile())
+					{
+						$category_group->CategoryFields[] = $this->loadCategoryField($field);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets the default status group for this site, and if it isn't there we'll
+	 * create it
+	 *
+	 * @return obj A Status Group object
+	 */
+	private function getDefaultStatusGroup()
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('group_name', 'Default')
+			->filter('site_id', $this->site_id)
+			->first();
+
+		if ( ! $status_group)
+		{
+			$site = ee('Model')->get('Site', $this->site_id)->first();
+			$site->createDefaultStatuses();
+			return $this->getDefaultStatusGroup(); // recursion FTW!
+		}
+
+		return $status_group;
 	}
 
 	/**
@@ -465,7 +552,7 @@ class Set {
 		{
 			if ($field->isFile())
 			{
-				$group->ChannelFields[] = $this->loadField($field);
+				$group->ChannelFields[] = $this->loadChannelField($field);
 			}
 		}
 
@@ -478,7 +565,7 @@ class Set {
 	 * @param SplFileInfo $file File instance for the field.fieldtype file
 	 * @return ChannelFieldModel
 	 */
-	private function loadField(\SplFileInfo $file)
+	private function loadChannelField(\SplFileInfo $file)
 	{
 		$name = $file->getFilename();
 
@@ -536,6 +623,55 @@ class Set {
 		if ($type == 'relationship')
 		{
 			$field_data = $this->importRelationshipField($field, $field_data);
+		}
+
+		$field->set($field_data);
+
+		$this->applyOverrides($field, $name);
+
+		return $field;
+	}
+
+	/**
+	 * Instantiate a field model
+	 *
+	 * @param SplFileInfo $file File instance for the field.fieldtype file
+	 * @return ChannelFieldModel
+	 */
+	private function loadCategoryField(\SplFileInfo $file)
+	{
+		$name = $file->getFilename();
+
+		if (substr_count($name, '.') !== 1)
+		{
+			throw new ImportException("Invalid field definition: {$name}");
+		}
+
+		list($name, $type) = explode('.', $name);
+
+		$data = json_decode(file_get_contents($file->getRealPath()), TRUE);
+
+		// unusual item that has no defaults
+		if ( ! isset($data['list_items']))
+		{
+			$data['list_items'] = '';
+		}
+
+		$field = ee('Model')->make('CategoryField');
+		$field->site_id = $this->site_id;
+		$field->field_name = $name;
+		$field->field_type = $type;
+
+		$field_data = array();
+
+		foreach ($data as $key => $value)
+		{
+			if ($key == 'list_items' && is_array($value))
+			{
+				$value = implode("\n", $value);
+			}
+
+			$field_data['field_'.$key] = $value;
 		}
 
 		$field->set($field_data);

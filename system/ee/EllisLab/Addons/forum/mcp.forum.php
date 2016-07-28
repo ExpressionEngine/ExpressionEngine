@@ -660,7 +660,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_forum_url' => array(
 							'type' => 'text',
-							'value' => $board->board_forum_url,
+							'value' => $board->getRawProperty('board_forum_url'),
 							'required' => TRUE
 						)
 					)
@@ -740,7 +740,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_upload_path' => array(
 							'type' => 'text',
-							'value' => $board->board_upload_path,
+							'value' => $board->getRawProperty('board_upload_path'),
 						)
 					)
 				),
@@ -1434,7 +1434,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_forum_url' => array(
 							'type' => 'text',
-							'value' => $alias->board_forum_url,
+							'value' => $alias->getRawProperty('board_forum_url'),
 							'required' => TRUE
 						)
 					)

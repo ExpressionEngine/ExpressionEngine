@@ -700,6 +700,8 @@ class Comment {
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
 			$row['total_results']	= $total_results;
+			$row['channel_url']		= parse_config_variables($row['channel_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
+			$row['comment_url']		= parse_config_variables($row['comment_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
 
 			// If we do not paginate, then the total comments ARE the comments
 			// on the page
@@ -2309,8 +2311,9 @@ class Comment {
 		$comment_moderate		= (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$author_notify			= $query->row('comment_notify_authors') ;
 
-		$comment_url			= $query->row('comment_url');
-		$channel_url			= $query->row('channel_url');
+		$overrides = ee()->config->get_cached_site_prefs($query->row('site_id'));
+		$comment_url			= parse_config_variables($query->row('comment_url'), $overrides);
+		$channel_url			= parse_config_variables($query->row('channel_url'), $overrides);
 		$entry_id				= $query->row('entry_id');
 		$comment_site_id		= $query->row('site_id');
 

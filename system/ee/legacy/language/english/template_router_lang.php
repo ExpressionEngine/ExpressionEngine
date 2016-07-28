@@ -11,8 +11,11 @@ $lang = array(
 	'validation_failed' => 'Validation failed.',
 	'variable_in_use' => 'Segment variable already in use: ',
 	'template_routes_header' => 'Template Routes',
+	'template_routes_header_desc' => 'Routes are listed in the order that the Template Router will match your templates.',
 	'route' => 'Route',
-	'segments_required' => 'Require all Variables?',
+	'group' => 'Group',
+	'segments_required' => 'Segments Required?',
+	'new_route' => 'New route',
 );
 
 // EOF

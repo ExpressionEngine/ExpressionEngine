@@ -628,13 +628,8 @@ class EE_Form_validation {
 				return FALSE;
 			}
 
-
 			// Duplicate emails?
-
-			ee()->db->where('email', $str);
-			$count = ee()->db->count_all_results('members');
-
-			if ($count > 0)
+			if ( ! ee('Validation')->check('uniqueEmail', $str))
 			{
 				$this->set_message('valid_user_email', ee()->lang->line('email_taken'));
 				return FALSE;
@@ -696,7 +691,7 @@ class EE_Form_validation {
 	 */
 	public function file_exists($file)
 	{
-		return file_exists($file);
+		return file_exists(parse_config_variables($file, $_POST));
 	}
 
 	// --------------------------------------------------------------------
@@ -711,7 +706,7 @@ class EE_Form_validation {
 	 */
 	public function writable($path)
 	{
-		return is_really_writable($path);
+		return is_really_writable(parse_config_variables($path, $_POST));
 	}
 
 	// --------------------------------------------------------------------

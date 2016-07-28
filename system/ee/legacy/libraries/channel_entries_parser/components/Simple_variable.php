@@ -73,6 +73,10 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
+		$overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);
+		$data['channel_url'] = parse_config_variables($data['channel_url'], $overrides);
+		$data['comment_url'] = parse_config_variables($data['comment_url'], $overrides);
+
 		// I decided to split the huge if statement into educated guesses
 		// so we spend less time doing silly comparisons
 		if (strpos($tag, '_path') !== FALSE OR strpos($tag, 'permalink') !== FALSE)
@@ -94,11 +98,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse {title}
 		if ($key == $prefix.'title')
 		{
-			$data['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $data['title']);
-
 			$tagdata = str_replace(
 				LD.$key.RD,
-				ee()->typography->format_characters($data['title']),
+				ee()->typography->formatTitle($data['title']),
 				$tagdata
 			);
 		}

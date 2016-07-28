@@ -85,6 +85,16 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php if (isset($setting['desc_cont'])): ?>
 		<em><?=lang($setting['desc_cont'])?></em>
 		<?php endif; ?>
+		<?php if (isset($setting['example'])): ?>
+		<p><?=$setting['example']?></p>
+		<?php endif; ?>
+		<?php if (isset($setting['button'])): ?>
+		<?php
+			$button = $setting['button'];
+			$rel = isset($button['rel']) ? $button['rel'] : '';
+		?>
+		<p><button class="btn action submit mf-link" type="button" rel="<?=$rel?>"><?=lang($button['text'])?></button></p>
+		<?php endif; ?>
 	</div>
 	<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
 		<?php

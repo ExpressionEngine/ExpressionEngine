@@ -1352,7 +1352,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'sc_public_certificate' => array(
 							'type' => 'text',
-							'value' => (ee()->config->item('sc_public_certificate') === FALSE OR ee()->config->item('sc_public_certificate') == '') ? $base.'public_certificate.pem' : ee()->config->item('sc_public_certificate')
+							'value' => (ee()->config->item('sc_public_certificate') === FALSE OR ee()->config->item('sc_public_certificate') == '') ? $base.'public_certificate.pem' : ee()->config->item('sc_public_certificate', '', TRUE)
 						)
 					)
 				),
@@ -1362,7 +1362,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'sc_private_key' => array(
 							'type' => 'text',
-							'value' => (ee()->config->item('sc_private_key') === FALSE OR ee()->config->item('sc_private_key') == '') ? $base.'private_key.pem' : ee()->config->item('sc_private_key')
+							'value' => (ee()->config->item('sc_private_key') === FALSE OR ee()->config->item('sc_private_key') == '') ? $base.'private_key.pem' : ee()->config->item('sc_private_key', '', TRUE)
 						)
 					)
 				),
@@ -1372,7 +1372,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'sc_paypal_certificate' => array(
 							'type' => 'text',
-							'value' => (ee()->config->item('sc_paypal_certificate') === FALSE OR ee()->config->item('sc_paypal_certificate') == '') ? $base.'paypal_certificate.pem' : ee()->config->item('sc_paypal_certificate')
+							'value' => (ee()->config->item('sc_paypal_certificate') === FALSE OR ee()->config->item('sc_paypal_certificate') == '') ? $base.'paypal_certificate.pem' : ee()->config->item('sc_paypal_certificate', '', TRUE)
 						)
 					)
 				),

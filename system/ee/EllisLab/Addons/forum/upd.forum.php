@@ -26,7 +26,13 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.21';
+	var $version;
+
+	function __construct()
+	{
+		$addon = ee('Addon')->get('forum');
+		$this->version = $addon->getVersion();
+	}
 
 	function tabs()
 	{

@@ -134,7 +134,7 @@ class MSM_Config extends EE_Config
 		ee()->load->helper('language_helper');
 	}
 
-	function site_prefs($site_name, $site_id = 1)
+	function site_prefs($site_name, $site_id = 1, $mutating = TRUE)
 	{
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
@@ -159,7 +159,7 @@ class MSM_Config extends EE_Config
 		{
 			if ($site_name == '' && $site_id != 1)
 			{
-				$this->site_prefs('', 1);
+				$this->site_prefs('', 1, $mutating);
 				return;
 			}
 

@@ -1,14 +1,15 @@
 <?php
 
-function is_really_writable($file)
-{
-	return is_writable($file);
-}
-
 require('bootstrap.php');
-require(APPPATH.'config/constants.php');
 require(BASEPATH.'helpers/string_helper.php');
 require(BASEPATH.'core/Config.php');
+
+$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+
+foreach ($constants as $k => $v)
+{
+	define($k, $v);
+}
 
 ee()->config = new EE_Config();
 

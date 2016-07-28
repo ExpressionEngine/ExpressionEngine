@@ -8,7 +8,7 @@ if (isset($field['name']))
 $value = set_value($field_name);
 if ($value == '')
 {
-	$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
+	$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name, '', TRUE);
 }
 // Escape output
 if (is_string($value))
@@ -30,6 +30,10 @@ if (isset($field['group_toggle']))
 if (isset($field['maxlength']))
 {
 	$attrs .= ' maxlength="'.(int) $field['maxlength'].'"';
+}
+if (isset($field['placeholder']))
+{
+	$attrs .= ' placeholder="'.$field['placeholder'].'"';
 }
 $has_note = isset($field['note']);
 

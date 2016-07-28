@@ -126,6 +126,22 @@ class Database
 	}
 
 	/**
+	 * Returns current db execution time
+	 *
+	 * @return int the total time currently spent on querying the database
+	 */
+	public function currentExecutionTime()
+	{
+		$time = 0;
+		foreach ($this->log->getQueries() as $query)
+		{
+			// time is array key 2 in this numerically indexed array
+			$time += $query[2];
+		}
+		return $time;
+	}
+
+	/**
 	 * Create a default connection object
 	 *
 	 * @return Connection A Connection object

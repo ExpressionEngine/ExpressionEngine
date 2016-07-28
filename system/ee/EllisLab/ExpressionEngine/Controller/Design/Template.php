@@ -288,15 +288,15 @@ class Template extends AbstractDesignController {
 				array(
 					'name' => 'submit',
 					'type' => 'submit',
-					'value' => 'update',
-					'text' => sprintf(lang('btn_save'), lang('template')),
+					'value' => 'edit',
+					'text' => trim(sprintf(lang('btn_save'), '')),
 					'working' => 'btn_saving'
 				),
 				array(
 					'name' => 'submit',
 					'type' => 'submit',
 					'value' => 'finish',
-					'text' => 'btn_update_and_finish_editing',
+					'text' => 'btn_save_and_close',
 					'working' => 'btn_saving'
 				),
 			),

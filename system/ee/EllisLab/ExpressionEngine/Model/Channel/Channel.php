@@ -111,6 +111,7 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'enum[y,n]',
 		'comment_notify_authors'     => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
+		'max_entries'                => 'isNatural',
 	);
 
 	protected static $_events = array(
@@ -134,6 +135,7 @@ class Channel extends StructureModel {
 	protected $channel_description;
 	protected $channel_lang;
 	protected $total_entries;
+	protected $total_records;
 	protected $total_comments;
 	protected $last_entry_date;
 	protected $last_comment_date;
@@ -175,7 +177,32 @@ class Channel extends StructureModel {
 	protected $title_field_label;
 	protected $url_title_prefix;
 	protected $live_look_template;
+	protected $max_entries;
 
+	/**
+	 * Parses URL properties for any config variables
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return mixed The value of the property
+	 */
+	public function __get($name)
+	{
+		$value = parent::__get($name);
+
+		if (in_array($name, array('channel_url', 'comment_url', 'search_results_url', 'rss_url')))
+		{
+			$overrides = array();
+
+			if ($this->getProperty('site_id') != ee()->config->item('site_id'))
+			{
+				$overrides = ee()->config->get_cached_site_prefs($this->getProperty('site_id'));
+			}
+
+			$value = parse_config_variables((string) $value, $overrides);
+		}
+
+		return $value;
+	}
 
 	public function getContentType()
 	{
@@ -454,6 +481,41 @@ class Channel extends StructureModel {
 		}
 
 		return TRUE;
+	}
+
+	public function getCategoryGroups()
+	{
+		$groups = explode('|', $this->cat_group);
+		return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
+	}
+
+	/**
+	 * Updates total_records, total_entries, and last_entry_date
+	 */
+	public function updateEntryStats()
+	{
+		$entries = $this->getModelFacade()->get('ChannelEntry')
+			->fields('entry_id', 'entry_date')
+			->filter('channel_id', $this->getId());
+
+		// Total records is unfiltered
+		$this->setProperty('total_records', $entries->count());
+
+		// Total entries should only account for open, non-expired entries
+		$entries = $entries->filter('entry_date', '<=', ee()->localize->now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', ee()->localize->now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$last_entry = $entries->first();
+
+		$this->setProperty('total_entries', $entries->count());
+		$last_entry_date = ($last_entry) ? $last_entry->entry_date : 0;
+		$this->setProperty('last_entry_date', $last_entry_date);
+		$this->save();
 	}
 }
 

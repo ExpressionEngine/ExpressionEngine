@@ -382,7 +382,6 @@ feature 'Add-On Manager' do
       no_php_js_errors
 
       @page.find('ul.toolbar li.manual a').click
-      no_php_js_errors
     end
 
     # @TODO - Test updating a single add-on

@@ -27,6 +27,12 @@ $lang = array(
 
 'btn_search_entries' => 'Search Entries',
 
+'entry_limit_reached' => 'Channel limit reached',
+
+'entry_limit_reached_desc' => 'This channel is limited to %d entries.',
+
+'entry_limit_reached_one_desc' => 'This channel is limited to one entry.',
+
 'by' => 'by',
 'in' => 'in',
 
@@ -169,6 +175,10 @@ $lang = array(
 'calendar' => 'Calendar',
 
 'edit_categories' => 'Edit Categories',
+
+'no_categories_assigned' => 'No Categories Assigned',
+
+'no_categories_assigned_desc' => 'There are no categories assigned to this channel. <a href="%s">Assign a category group.</a>',
 
 'revision' => 'Revision',
 
@@ -448,12 +458,6 @@ $lang = array(
 'title' => 'Title',
 
 'newline_format' => 'Formatting:',
-
-'none' => 'None',
-
-'xhtml' => 'XHTML',
-
-'auto_br' => 'Auto &lt;br /&gt;',
 
 'link' => 'Link',
 

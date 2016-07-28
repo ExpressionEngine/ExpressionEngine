@@ -46,8 +46,9 @@ class Buttons extends Settings {
 		}
 
 		// load the predefined buttons
-		include_once(APPPATH.'config/html_buttons.php');
-		$this->predefined = $predefined_buttons;
+		$button_config = ee()->config->loadFile('html_buttons');
+
+		$this->predefined = $button_config['buttons'];
 
 		$this->index_url = $this->base_url;
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);

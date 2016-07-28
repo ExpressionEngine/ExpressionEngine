@@ -461,6 +461,12 @@ STYLIO;
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
+		// Make sure we have file_info to work with
+		if ($tagdata !== FALSE && $file_info === FALSE)
+		{
+			$tagdata = ee()->TMPL->parse_variables($tagdata, array());
+		}
+
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
@@ -473,37 +479,17 @@ STYLIO;
 			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
 		}
 
+		$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
+
 		// Make sure we have file_info to work with
-		if ($tagdata !== FALSE AND $file_info === FALSE)
+		if ($tagdata !== FALSE)
 		{
-			$tagdata = ee()->functions->prep_conditionals($tagdata, array());
+			return ee()->TMPL->parse_variables($tagdata, array($file_info));
 		}
-		else if ($tagdata !== FALSE)
-		{
-			$tagdata = ee()->functions->prep_conditionals($tagdata, $file_info);
 
-			$date_vars = array(
-				'upload_date' => $file_info['upload_date'],
-				'modified_date' => $file_info['modified_date']
-			);
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $date_vars);
-
-			// ---------------
-			// Parse the rest!
-			// ---------------
-			$tagdata = ee()->functions->var_swap($tagdata, $file_info);
-
-			// More an example than anything else - not particularly useful in this context
-			if (isset($params['backspace']))
-			{
-				$tagdata = substr($tagdata, 0, - $params['backspace']);
-			}
-
-			return $tagdata;
-		}
-		else if ( ! empty($file_info['path'])
-			AND ! empty($file_info['filename'])
-			AND $file_info['extension'] !== FALSE)
+		if ( ! empty($file_info['path'])
+			&& ! empty($file_info['filename'])
+			&& $file_info['extension'] !== FALSE)
 		{
 			$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
 
