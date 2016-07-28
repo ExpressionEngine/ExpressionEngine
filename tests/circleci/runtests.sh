@@ -8,7 +8,7 @@ STATUS=0
 # curl -sSL https://s3.amazonaws.com/circle-downloads/install-mysql5.7-circleci.sh | sh
 installmysql() {
 	set -x
-	set -e
+	# set -e
 
  	sudo rm /etc/apt/sources.list.d/mysql.list
 	export DEBIAN_FRONTEND=noninteractive
