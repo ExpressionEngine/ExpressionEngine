@@ -10,6 +10,7 @@ installmysql() {
 	set -x
 	set -e
 
+ 	sudo rm /etc/apt/sources.list.d/mysql.list
 	export DEBIAN_FRONTEND=noninteractive
 	curl -LO https://dev.mysql.com/get/mysql-apt-config_0.7.3-1_all.deb
 	echo mysql-apt-config mysql-apt-config/select-product          select Apply              | sudo debconf-set-selections
@@ -22,7 +23,7 @@ installmysql() {
 	sudo apt-get update
 	echo mysql-community-server mysql-community-server/re-root-pass password ${mysql_root_password} | sudo debconf-set-selections
 	echo mysql-community-server mysql-community-server/root-pass    password ${mysql_root_password} | sudo debconf-set-selections
-	sudo -E apt-get -y install mysql-community-server
+	sudo -E apt-get -y install mysql-server
 
 	echo "Checking installed version....."
 	mysql -D mysql -e "SELECT version()"
