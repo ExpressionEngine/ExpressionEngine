@@ -28,7 +28,9 @@ $lang = array(
 
 'your_current_un_pw' => 'Your existing username and password',
 
-'access_notice' => 'Important notice: The administrator has changed the access requirements for this site as follows:',
+'new_requirements' => 'New Access Requirements',
+
+'access_notice' => 'The administrator has changed the access requirements for this site.',
 
 'choose_new_un' => 'Please choose a new username',
 
