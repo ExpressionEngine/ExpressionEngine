@@ -55,6 +55,8 @@ class Parser extends AbstractParser {
 
 	protected $last_conditional_annotation;
 
+	private $ignore_whitespace = FALSE;
+
 	public function parse()
 	{
 		$this->openBuffer();
@@ -217,6 +219,7 @@ class Parser extends AbstractParser {
 	protected function skipConditionalBody()
 	{
 		$conditional_depth = 0;
+		$this->ignore_whitespace = TRUE;
 
 		do
 		{
@@ -254,6 +257,8 @@ class Parser extends AbstractParser {
 			$this->next(FALSE);
 		}
 		while ($this->valid());
+
+		$this->ignore_whitespace = FALSE;
 	}
 
 	/**
@@ -467,7 +472,7 @@ class Parser extends AbstractParser {
 	 */
 	protected function whitespace()
 	{
-		if (substr($this->output, -1) != ' ')
+		if ( ! $this->ignore_whitespace && substr($this->output, -1) != ' ')
 		{
 			$this->output(' ');
 		}
