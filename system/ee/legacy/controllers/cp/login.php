@@ -296,14 +296,12 @@ class Login extends CP_Controller {
 		{
 			$data['new_username_required'] = TRUE;
 			$data['required_changes'][] = sprintf(lang('un_len'), $uml);
-			$data['required_changes'][] = sprintf(lang('yun_len'), $ulen);
 		}
 
 		if ($plen < $pml)
 		{
 			$data['new_password_required'] = TRUE;
 			$data['required_changes'][] = sprintf(lang('pw_len'), $pml);
-			$data['required_changes'][] = sprintf(lang('ypw_len'), $plen);
 		}
 
 		return ee('View')->make('account/update_un_pw')->render($data);

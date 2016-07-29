@@ -17,7 +17,7 @@
 		<?php if ($new_username_required):?>
 			<fieldset>
 				<?=lang('choose_new_un', 'new_username')?>
-				<?=form_input(array('dir' => 'ltr', 'name' => "new_username", 'id' => "new_username", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<?=form_input(array('dir' => 'ltr', 'name' => "new_username", 'value'=> $username, 'id' => "new_username", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</fieldset>
 		<?php endif;?>
 		<?php if ($new_username_required AND ! $new_password_required): ?>
@@ -41,7 +41,7 @@
 			</fieldset>
 		<?php endif; ?>
 		<fieldset class="form-ctrls">
-			<?=form_submit('submit', 'Change Password', 'class="btn" data-work-text="updating..."')?>
+			<?=form_submit('submit', lang('update'), 'class="btn" data-work-text="updating..."')?>
 		</fieldset>
 	<?=form_close()?>
 </div>
