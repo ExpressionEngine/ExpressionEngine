@@ -407,7 +407,7 @@ class EE_Upload {
 		{
 			// Try to figure out if we already have a file we've renamed, then
 			// we can pick up where we left off, and reduce the guessing.
-			rsort($files);
+			rsort($files, SORT_NATURAL);
 			$number = str_replace(array($filename, $this->file_ext), '', $files[0]);
 			if (strpos($number, '_') === 0)
 			{
