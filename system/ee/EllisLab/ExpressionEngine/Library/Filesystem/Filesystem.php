@@ -452,13 +452,10 @@ class Filesystem {
 			return $path;
 		}
 
-		$parts = explode('.', $path);
-		$extension = '.' . end($parts);
-		unset($parts); // We'll not use this again.
+		$extension = $this->extension($path);
+		$filename  = $this->filename($path);
 
-		$filename = str_replace($extension, '', $path);
-
-		$files = glob($filename . '*'. $this->file_ext);
+		$files = glob($filename . '_*'. $this->file_ext);
 
 		if ( ! empty($files))
 		{
