@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box table-list-wrap">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
 			<div class="filters">

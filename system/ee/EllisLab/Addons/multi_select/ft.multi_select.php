@@ -31,6 +31,46 @@ class Multi_select_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
+	function __construct()
+	{
+		parent::__construct();
+		ee()->load->helper('custom_field');
+	}
+
+	// --------------------------------------------------------------------
+
+	function validate($data)
+	{
+		$selected = decode_multi_field($data);
+		$selected = empty($selected) ? array() : (array) $selected;
+
+		// in case another field type was here
+		$field_options = $this->_get_field_options($data);
+
+		if ($selected)
+		{
+			if ( ! is_array($selected))
+			{
+				$selected = array($selected);
+			}
+
+			$unknown = array_diff($selected, array_keys($field_options));
+
+			if (count($unknown) > 0)
+			{
+				return 'Invalid Selection';
+			}
+		}
+
+		return TRUE;
+	}
+
+
 	function display_field($data)
 	{
 		ee()->load->helper('custom_field');

@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.3.4';	// The version being installed
+	public $version           = '3.4.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -35,6 +35,7 @@ class Wizard extends CI_Controller {
 	public $remaining_updates = 0; 		// Number of updates remaining, in the event the user is updating from several back
 	public $refresh           = FALSE;	// Whether to refresh the page for the next update.  Set dynamically
 	public $refresh_url       = '';		// The URL where the refresh should go to.  Set dynamically
+	public $base_path         = '';
 	public $theme_path        = '';
 	public $root_theme_path   = '';
 
@@ -85,12 +86,9 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	public $userdata = array(
 		'app_version'           => '',
-		'doc_url'               => 'https://docs.expressionengine.com/v3/',
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
-		'db_conntype'           => '0',
-		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -126,12 +124,10 @@ class Wizard extends CI_Controller {
 		'install_default_theme' => 'n'
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the EE
-	// and CI config files are one in the same now we use this data when we write the
-	// initial config file using $this->write_config_data()
+	// These are the default values for the CodeIgniter config array.  Since the
+	// EE and CI config files are one in the same now we use this data when we
+	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
-		'uri_protocol'       => 'AUTO',
-		'charset'            => 'UTF-8',
 		'subclass_prefix'    => 'EE_',
 		'log_threshold'      => 0,
 		'log_date_format'    => 'Y-m-d H:i:s',
@@ -198,11 +194,11 @@ class Wizard extends CI_Controller {
 		$this->load->add_theme_cascade(APPPATH.'views/');
 
 		// First try the current directory, if they are running the system with an admin.php file
-		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
+		$this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
 
-		if (is_dir($this->theme_path.'themes'))
+		if (is_dir($this->base_path.'themes'))
 		{
-			$this->theme_path .= 'themes/';
+			$this->theme_path = $this->base_path.'themes/';
 		}
 		else
 		{
@@ -210,9 +206,11 @@ class Wizard extends CI_Controller {
 			// current folder. Replace only the LAST occurance of the system
 			// folder name with nil incase the system folder name appears more
 			// than once in the path.
-			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->theme_path).'themes/';
+			$this->base_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->base_path);
+			$this->theme_path = $this->base_path.'themes/';
 		}
 
+		$this->base_path = str_replace('//', '/', $this->base_path);
 		$this->root_theme_path = $this->theme_path;
 		define('PATH_THEMES', $this->root_theme_path.'ee/');
 		define('URL_THEMES', $this->root_theme_path.'ee/');
@@ -754,8 +752,7 @@ class Wizard extends CI_Controller {
 			'username' => $this->userdata['db_username'],
 			'password' => $this->userdata['db_password'],
 			'database' => $this->userdata['db_name'],
-			'dbdriver' => $this->userdata['dbdriver'],
-			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'dbdriver' => 'mysqli',
 			'dbprefix' => $this->getDbPrefix(),
 			'swap_pre' => 'exp_',
 			'db_debug' => TRUE, // We show our own errors
@@ -776,7 +773,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Does the specified database schema type exist?
-		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php'))
+		if ( ! file_exists(APPPATH.'schema/mysqli_schema.php'))
 		{
 			$errors[] = lang('unreadable_dbdriver');
 		}
@@ -796,7 +793,7 @@ class Wizard extends CI_Controller {
 		$this->userdata['screen_name'] = $this->userdata['username'];
 
 		// Load the DB schema
-		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
+		require APPPATH.'schema/mysqli_schema.php';
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
@@ -1094,30 +1091,6 @@ class Wizard extends CI_Controller {
 
 		// Make sure the site_url has a trailing slash
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
-
-		// Set the checkbox values
-		$prefs = array(
-			'db_conntype'		=> array(
-				'persistent' => array('persistent', 'nonpersistent')
-			)
-		);
-
-		foreach ($prefs as $name => $value)
-		{
-			foreach ($value as $k => $v)
-			{
-				if ($this->userdata[$name] == $k)
-				{
-					$this->userdata[$v[0]] = 'checked="checked"';
-					$this->userdata[$v[1]] = '';
-				}
-				else
-				{
-					$this->userdata[$v[0]] = '';
-					$this->userdata[$v[1]] = 'checked="checked"';
-				}
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1570,6 +1543,7 @@ class Wizard extends CI_Controller {
 			{
 				$theme = ee('ThemeInstaller');
 				$theme->setSiteURL($this->userdata['site_url']);
+				$theme->setBasePath($this->base_path);
 				$theme->setThemePath($this->root_theme_path);
 				$theme->setThemeURL($this->set_path('themes'));
 				$theme->install($this->userdata['theme']);
@@ -1602,13 +1576,13 @@ class Wizard extends CI_Controller {
 	 */
 	private function write_config_data()
 	{
-		$captcha_url = rtrim($this->userdata['site_url'], '/').'/';
-		$captcha_url .= 'images/captchas/';
+		$captcha_url = '{base_url}images/captchas/';
 
 		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path)
 		{
 			$prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
 			$this->userdata[$path] = rtrim(realpath($prefix.$this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			$this->userdata[$path] = str_replace($this->base_path, '{base_path}', $this->userdata[$path]);
 		}
 
 		$config = array(
@@ -1617,17 +1591,16 @@ class Wizard extends CI_Controller {
 			'db_username'               => $this->userdata['db_username'],
 			'db_password'               => $this->userdata['db_password'],
 			'db_database'               => $this->userdata['db_name'],
-			'db_dbdriver'               => $this->userdata['dbdriver'],
-			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
 			'debug'                     => '1',
-			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
 			'site_label'                => $this->userdata['site_label'],
-			'site_url'                  => $this->userdata['site_url'],
-			'theme_folder_url'          => $this->userdata['site_url'].'themes/',
-			'doc_url'                   => $this->userdata['doc_url'],
+			'base_path'                 => $this->base_path,
+			'base_url'                  => $this->userdata['site_url'],
+			'cp_url'                    => str_replace($this->userdata['site_url'], '{base_url}', $this->userdata['cp_url']),
+			'site_url'                  => '{base_url}',
+			'theme_folder_url'          => '{base_url}themes/',
 			'webmaster_email'           => $this->userdata['email_address'],
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
@@ -1697,13 +1670,13 @@ class Wizard extends CI_Controller {
 			'member_theme'              => 'default',
 			'enable_avatars'            => 'y',
 			'allow_avatar_uploads'      => 'n',
-			'avatar_url'                => $this->userdata['site_url'].$this->userdata['avatar_url'],
+			'avatar_url'                => '{base_url}'.$this->userdata['avatar_url'],
 			'avatar_path'               => $this->userdata['avatar_path'],
 			'avatar_max_width'          => '100',
 			'avatar_max_height'         => '100',
 			'avatar_max_kb'             => '50',
 			'enable_photos'             => 'n',
-			'photo_url'                 => $this->userdata['site_url'].$this->userdata['photo_url'],
+			'photo_url'                 => '{base_url}'.$this->userdata['photo_url'],
 			'photo_path'                => $this->userdata['photo_path'],
 			'photo_max_width'           => '100',
 			'photo_max_height'          => '100',
@@ -1712,7 +1685,7 @@ class Wizard extends CI_Controller {
 			'sig_maxlength'             => '500',
 			'sig_allow_img_hotlink'     => 'n',
 			'sig_allow_img_upload'      => 'n',
-			'sig_img_url'               => $this->userdata['site_url'].$this->userdata['signature_img_url'],
+			'sig_img_url'               => '{base_url}'.$this->userdata['signature_img_url'],
 			'sig_img_path'              => $this->userdata['signature_img_path'],
 			'sig_img_max_width'         => '480',
 			'sig_img_max_height'        => '80',
@@ -1745,7 +1718,7 @@ class Wizard extends CI_Controller {
 			'ban_message'               => 'This site is currently unavailable',
 			'ban_destination'           => 'http://www.yahoo.com/',
 			'enable_emoticons'          => 'y',
-			'emoticon_url'              => $this->userdata['site_url'].'images/smileys/',
+			'emoticon_url'              => '{base_url}'.'images/smileys/',
 			'recount_batch_total'       => '1000',
 			'image_resize_protocol'     => 'gd2',
 			'image_library_path'        => '',
@@ -1777,6 +1750,9 @@ class Wizard extends CI_Controller {
 		// Default Administration Prefs
 		$admin_default = array(
 			'site_index',
+			'base_url',
+			'base_path',
+			'cp_url',
 			'site_url',
 			'theme_folder_url',
 			'webmaster_email',
@@ -2011,13 +1987,6 @@ class Wizard extends CI_Controller {
 			$config[$key] = $val;
 		}
 
-		// To enable CI's helpers and native functions that deal with URLs
-		// to work correctly we make these CI config items identical
-		// to the EE counterparts
-		if (isset($config['site_url']))
-		{
-			$config['base_url'] = $config['site_url'];
-		}
 		if (isset($config['site_index']))
 		{
 			$config['index_page'] = $config['site_index'];
@@ -2053,7 +2022,6 @@ class Wizard extends CI_Controller {
 				$data = str_replace('{'.$key.'}', $config[$key], $data);
 				unset($config[$key]);
 			}
-
 		}
 
 		// any unanticipated keys that aren't in our template?
@@ -2066,8 +2034,16 @@ class Wizard extends CI_Controller {
 			unset($config['site_label']);
 		}
 
+		// Create extra_config, unset defaults
+		$defaults = default_config_items();
 		foreach ($config as $key => $val)
 		{
+			// Bypass defaults and empty values
+			if (empty($val) || (isset($defaults[$key]) && $defaults[$key] == $val))
+			{
+				continue;
+			}
+
 			$extra_config .= "\$config['{$key}'] = '{$val}';\n";
 		}
 

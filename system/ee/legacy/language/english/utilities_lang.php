@@ -81,8 +81,6 @@ $lang = array(
 'btn_send_email_working' => 'Sending...',
 
 'none'		=> 'Plain Text',
-'auto_br'	=> 'Auto &lt;br /&gt;',
-'xhtml'		=> 'XHTML',
 
 'no_cached_emails' => 'No <b>Sent emails</b> found.',
 
@@ -110,7 +108,7 @@ $lang = array(
 'cannot_create_zip'		=>	'Cannot create a .zip file',
 'no_files_selected'		=>	'No files were selected for export',
 'invalid_path' 			=> 'The path you submitted is not valid:',
-'file_saved'			=> 'The translation file has been saved to <b>system/ee/legacy/translations/%s</b>',
+'file_saved'			=> 'The translation file has been saved to <b>%s</b>',
 'trans_file_not_writable'=> 'Translation file is not writeable.',
 'translate_btn' 		=>	'Save Translations',
 'translations_saved'	=>	'Translations Saved',

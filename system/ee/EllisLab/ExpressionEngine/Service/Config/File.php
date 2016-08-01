@@ -25,9 +25,9 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       https://ellislab.com
  */
-class File implements Config {
+class File extends ConfigWithDefaults {
 
-	protected $config = array();
+	protected $config   = array();
 
 	/**
 	 * Create a new Config\File object
@@ -43,19 +43,27 @@ class File implements Config {
 		{
 			$this->config = $config;
 		}
+
+		$this->defaults = default_config_items();
 	}
 
 	/**
 	 * Get an item from the config, you can use
 	 * "item.subitem.subsubitem" to drill down in the config
 	 *
-	 * @param  string $path    The config item to get
-	 * @param  mixed  $default The value to return if $path can not be found
-	 * @return mixed           The value found for $path, otherwise $default
+	 * @param  string $path      The config item to get
+	 * @param  mixed  $default   The value to return if $path can not be found
+	 * @param  mixed  $raw_value Whether or not to return the raw value with unparsed variables
+	 * @return mixed             The value found for $path, otherwise $default
 	 */
-	public function get($path, $default = NULL)
+	public function get($path, $default = NULL, $raw_value = FALSE)
 	{
 		$config = $this->getArrayValue($this->config, $path);
+
+		if ( ! $raw_value)
+		{
+			$config = parse_config_variables($config);
+		}
 
 		return ($config !== NULL) ? $config : $default;
 	}

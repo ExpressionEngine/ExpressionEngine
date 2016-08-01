@@ -229,15 +229,17 @@ class EE_Channel_data_parser {
 			$this->_count = $count;
 
 			$row['count']				= $count + 1;
+			$row['reverse_count']		= $total_results - $row['count'] + 1;
 			$row['page_uri']			= '';
 			$row['page_url']			= '';
 			$row['total_results']		= $total_results;
 			$row['absolute_count']		= $absolute_offset + $row['count'];
 			$row['absolute_results']	= ($absolute_results === NULL) ? $total_results : $absolute_results;
+			$row['absolute_reverse_count'] = $row['absolute_results'] - $row['absolute_count'] + 1;
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
 			$row['cp_edit_entry_url']	= ee('CP/URL')
 				->make('publish/edit/entry/'.$row['entry_id'],
-					array(),
+					array('site_id' => $row['site_id']),
 					ee()->config->item('cp_url')
 			);
 

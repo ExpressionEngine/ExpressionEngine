@@ -71,6 +71,7 @@
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
+			<?=$tab->renderAlert()?>
 			<?php foreach ($tab->getFields() as $field): ?>
 			<?php if ( ! $field->isRequired() && ! $field->isVisible()) continue; ?>
 				<?php
@@ -122,7 +123,7 @@
 						<em<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>><?=$field->getInstructions()?></em>
 						<?php if ($field->get('field_id') == 'categories' &&
 								$entry->Channel->cat_group &&
-								ee()->cp->allowed_group('can_edit_categories')): ?>
+								ee()->cp->allowed_group('can_create_categories')): ?>
 							<p><a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="<?=$field->get('group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php endif; ?>
 					</div>
@@ -145,7 +146,20 @@
 			</div>
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
-				<?=cp_form_submit($button_text, lang('btn_saving'))?>
+				<?php
+					$class = 'btn';
+					$disabled = '';
+
+					if ((isset($errors) && $errors->isNotValid()))
+					{
+						$class = 'btn disable';
+						$disabled = 'disabled="disabled"';
+					}
+
+					$just_save = trim(sprintf(lang('btn_save'), ''));
+				?>
+				<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="edit" data-submit-text="<?=$just_save?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : $just_save?></button>
+				<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_save_and_close')?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : lang('btn_save_and_close')?></button>
 			</fieldset>
 		</form>
 	</div>

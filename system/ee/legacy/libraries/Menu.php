@@ -54,8 +54,59 @@ class EE_Menu {
 		$menu['sites']    = $this->_site_menu();
 		$menu['channels'] = $this->_channels_menu();
 		$menu['develop']  = $this->_develop_menu();
+		$menu['custom']   = NULL;
 
-		// CP-TODO: Add back cp_menu_array hook?
+		$custom = ee('CP/CustomMenu');
+
+		// prep the hook data
+		$which = 'cp_custom_menu';
+
+		$byclass = array();
+		$active = ee()->extensions->active_hook($which);
+		$hooks = ee()->extensions->get_active_hook_info($which) ?: array();
+
+		foreach ($hooks as $priority => $calls)
+		{
+			foreach ($calls as $class => $metadata)
+			{
+				$byclass[$class][] = $metadata;
+			}
+		}
+
+		$args = array($custom);
+		$items = ee('Model')->get('MenuItem')
+			->fields('MenuItem.*', 'Children.*')
+			->with(array('Set' => 'MemberGroups'), 'Children')
+			->filter('MemberGroups.group_id', ee()->session->userdata('group_id'))
+			->order('MenuItem.sort')
+			->order('Children.sort')
+			->all();
+
+		foreach ($items as $item)
+		{
+			if ($active && $item->type == 'addon' && isset($byclass[$item->data]))
+			{
+				foreach ($byclass[$item->data] as $metadata)
+				{
+					ee()->extensions->call_class($item->data, $which, $metadata, $args);
+				}
+			}
+			elseif ($item->type == 'submenu')
+			{
+				$sub = $custom->addSubmenu($item->name);
+
+				foreach ($item->Children as $child)
+				{
+					$sub->addItem($child->name, $child->data);
+				}
+			}
+			elseif ($item->parent_id == 0)
+			{
+				$custom->addItem($item->name, $item->data);
+			}
+		}
+
+		$menu['custom'] = $custom;
 
 		return $menu;
 	}
@@ -86,7 +137,7 @@ class EE_Menu {
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode()));
+					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id);
 				}
 			}
 		}
@@ -105,21 +156,47 @@ class EE_Menu {
 	 */
 	private function _channels_menu()
 	{
-		ee()->legacy_api->instantiate('channel_structure');
-		$channels = ee()->api_channel_structure->get_channels();
+		$channels_query = ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
+			->order('channel_title', 'ASC');
+
+		$allowed_channels = ee()->session->userdata('assigned_channels');
+		if (count($allowed_channels))
+		{
+			$channels = $channels_query->filter('channel_id', 'IN', array_keys($allowed_channels));
+		}
 
 		$menu['create'] = array();
 		$menu['edit'] = array();
 
-		if ($channels)
+		if (isset($channels))
 		{
-			foreach($channels->result() as $channel)
+			foreach($channels->all() as $channel)
 			{
+				$filtered_by_channel = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
+
 				// Create link
 				$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
+
+				// Is there a max entries setting and are we at the limit?
+				if ($channel->max_entries !== '0' && $channel->total_records >= $channel->max_entries)
+				{
+					// Point folks trying to publish to the edit listing
+					$menu['create'][$channel->channel_title] = $filtered_by_channel;
+
+					// If there's a limit of 1, just send them to the edit screen for that entry
+					if ($channel->total_records === '1' && $channel->max_entries === '1')
+					{
+						$entry = ee('Model')->get('ChannelEntry')
+							->filter('channel_id', $channel->channel_id)
+							->first();
+
+						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+					}
+				}
 			}
 		}
 

@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
 use EllisLab\ExpressionEngine\Service\Validation\Result;
+use EllisLab\ExpressionEngine\Service\Alert\Alert;
 
 class LayoutTab {
 
@@ -11,6 +12,7 @@ class LayoutTab {
 
 	protected $fields;
 	protected $visible = TRUE;
+	protected $alert;
 
 	public function __construct($id, $title, array $fields = array())
 	{
@@ -35,6 +37,16 @@ class LayoutTab {
 	public function getFields()
 	{
 		return $this->fields;
+	}
+
+	public function setAlert(Alert $alert)
+	{
+		$this->alert = $alert;
+	}
+
+	public function renderAlert()
+	{
+		return ($this->alert) ? $this->alert->render() : '';
 	}
 
 	public function hide()

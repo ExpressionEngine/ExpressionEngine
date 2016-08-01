@@ -13,7 +13,6 @@ feature 'URL and Path Settings' do
     @cp_url = ee_config(item: 'cp_url')
     @theme_folder_url = ee_config(item: 'theme_folder_url')
     @theme_folder_path = ee_config(item: 'theme_folder_path')
-    @doc_url = ee_config(item: 'doc_url')
     @profile_trigger = ee_config(item: 'profile_trigger')
     @reserved_category_word = ee_config(item: 'reserved_category_word')
     @use_category_name = ee_config(item: 'use_category_name')
@@ -32,7 +31,6 @@ feature 'URL and Path Settings' do
     @page.cp_url.value.should == @cp_url
     @page.theme_folder_url.value.should == @theme_folder_url
     @page.theme_folder_path.value.should == @theme_folder_path
-    @page.doc_url.value.should == @doc_url
     @page.profile_trigger.value.should == @profile_trigger
     @page.category_segment_trigger.value.should == @reserved_category_word
     @page.use_category_name[0].checked?.should == (@use_category_name == 'y')
@@ -42,7 +40,6 @@ feature 'URL and Path Settings' do
 
   it 'should validate the form' do
     field_required = "This field is required."
-    theme_path_invalid = 'The path you submitted is not valid.'
 
     @page.site_url.set ''
     @page.submit
@@ -108,7 +105,7 @@ feature 'URL and Path Settings' do
     should_have_error_text(@page.cp_url, field_required)
     should_have_error_text(@page.theme_folder_url, field_required)
     # TODO: Uncomment when this stops fluking out
-    #should_have_error_text(@page.theme_folder_path, theme_path_invalid)
+    #should_have_error_text(@page.theme_folder_path, $invalid_path)
   end
 
   it 'should reject XSS' do

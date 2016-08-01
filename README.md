@@ -2,11 +2,25 @@
 
 **These repositories must remain private and all work under NDA.**
 
-## Naming Branches
+[Working with Git](#working-with-git)
+* [Naming Branches](#naming-branches)
+* [Commit Messages](#commit-messages)
 
-ExpressionEngine follows the Git Flow naming conventions. The primary branches are:
+[Development Installs](#development-installs)
+* [Configuration](#configuration)
+* [Installing from the Repo](#installing-from-the-repo)
+* [Updating from the Repo](#updating-from-the-repo)
 
-* `stability` - development for bug fixes (next minor release)
+[Testing](#testing)
+* [Unit Testing](#unit-testing)
+
+## Working with Git
+
+### Naming Branches
+
+We have two base branches:
+
+* `stability` - for bug fixes, always releasable (next minor version)
 * `master` - no development, matches the last release
 
 Feature development should take place in feature branches. These should be prefixed with `feature/`:
@@ -14,32 +28,35 @@ Feature development should take place in feature branches. These should be prefi
 * `feature/commerce`
 * `feature/pandora-accessory`
 
-Feature branches should be turned into pull-requests before they are merged into develop.
+Feature branches should be turned into pull-requests before they are merged into stability. Large pull requests should target a release branch instead of stability.
 
-When code for a release is frozen, a branch prefixed with `release/` should be created. Version numbers should follow [semver](http://semver.org) conventions.
+When code for a release is frozen, or development on a non-patch version is started, a branch prefixed with `release/` should be created. Version numbers should follow [semver](http://semver.org) conventions.
 
 * `release/2.9.0`
 * `release/2.22.0-dp.15+intrepid-earwig`
 
-## Installing / Getting up and running
+### Commit Messages
 
-Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
+* Limit the first line to 72 characters or less
+* Reference issues and pull requests liberally
+* When only changing documentation, include [ci skip] in the commit description
+* Consider starting the commit message with an applicable emoji:
+    * :art: `:art:` when improving the format/structure of the code
+    * :racehorse: `:racehorse:` when improving performance
+    * :memo: `:memo:` when writing docs
+    * :bug: `:bug:` when fixing a bug
+    * :fire: `:fire:` when removing code or files
+    * :green_heart: `:green_heart:` when fixing the CI build
+    * :white_check_mark: `:white_check_mark:` when adding tests
+    * :lock: `:lock:` when dealing with security
+    * :alien: `:alien:` when adding a third-party dependency
+    * :bathtub: `:bathtub:` when refactoring
+    * :spaghetti: `:spaghetti:` for WIP
+    * :twisted_rightwards_arrows: `:twisted_rightwards_arrows:` for merges
 
-```php
-if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
+## Development Installs
 
-to
-
-```php
-if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
-
-1. Create an empty `config.php` file in `/system/user/config/`
-2. Run the installer.
-3. Set the development configuration items below.
-
-## Development Configuration
+### Configuration
 
 Force MySQL strict mode:
 
@@ -54,36 +71,46 @@ $debug = 1;
 $config['debug'] = '2';
 ```
 
-## Updating from the repo
+### Installing from the Repo
 
-Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
+Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60:
 
 ```php
+// from
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
-
-to
-
-```php
+// to
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
-Modify config version variable in `system/user/config/config.php` around line 14 from:
+1. Create an empty `config.php` file in `/system/user/config/`
+2. Run the installer.
+3. Set the development configuration items above.
+
+### Updating from the repo
+
+Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60:
 
 ```php
-$config['app_version'] = '3.0.0';
+// from
+if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
+// to
+if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
-to
+Modify the `app_version` config item in `system/user/config/config.php` around line 14 to a previous version. For example:
 
 ```php
+// from
+$config['app_version'] = '3.0.0';
+// to
 $config['app_version'] = '2.9.0';
 ```
 
 Run updater, login.
 
+## Testing
 
-## Unit Testing
+### Unit Testing
 
 In order to run unit tests you will need Composer and PHPUnit. In the system/Tests directory run:
 

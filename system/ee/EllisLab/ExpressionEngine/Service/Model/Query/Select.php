@@ -84,6 +84,17 @@ class Select extends Query {
 			$query->end_group();
 		}
 
+		// add search conditions - these are always AND'ed to the filters so
+		// that we can potentially ditch them later.
+		$search = $builder->getSearch();
+
+		if ( ! empty($search))
+		{
+			$query->start_like_group();
+			$this->applySearch($query, $search);
+			$query->end_like_group();
+		}
+
 		// orders
 		$this->applyOrders($query, $builder->getOrders());
 
@@ -251,6 +262,11 @@ class Select extends Query {
 
 		$fn = 'where';
 
+		if ($connective == 'or')
+		{
+			$fn = 'or_where';
+		}
+
 		switch ($operator)
 		{
 			case 'NOT IN':
@@ -261,12 +277,55 @@ class Select extends Query {
 				$operator = '';
 		}
 
-		if ($connective == 'or')
+		if (is_null($value) || (is_string($value) && strtoupper($value) == 'NULL'))
 		{
-			$fn = 'or_'.$fn;
-		}
+			switch ($operator)
+			{
+				case '!=':
+					$operator = 'IS NOT';
+					break;
+				case '==':
+				case '':
+					$operator = 'IS';
+					break;
+			}
 
-		$query->$fn("{$property} {$operator}", $value);
+			$query->$fn("{$property} {$operator} NULL");
+		}
+		else
+		{
+			$query->$fn("{$property} {$operator}", $value);
+		}
+	}
+
+	/**
+	 * Add any search filters to the query.
+	 *
+	 * Searches are always applied as an AND at the end of the query, with
+	 * OR's between all fields and ANDs for each set of words.
+	 *
+	 * So a search for 'fluffy cow' becomes:
+	 * (title ~= fluffy AND title ~= cow) OR (body ~= fluffy AND body ~= cow)
+	 *
+	 * @param Query $query Query object
+	 * @param Array $search Search data [field => [word => include?]]
+	 */
+	protected function applySearch($query, $search)
+	{
+		foreach ($search as $field => $words)
+		{
+			$field = $this->translateProperty($field);
+
+			$query->or_start_like_group();
+
+			foreach ($words as $word => $include)
+			{
+				$fn = $include ? 'like' : 'not_like';
+				$query->$fn($field, $word);
+			}
+
+			$query->end_like_group();
+		}
 	}
 
 	/**

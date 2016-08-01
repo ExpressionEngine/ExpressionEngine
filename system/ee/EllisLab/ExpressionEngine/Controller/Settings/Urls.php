@@ -39,6 +39,20 @@ class Urls extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
+					'title' => 'base_url',
+					'desc' => 'base_url_desc',
+					'fields' => array(
+						'base_url' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'base_path',
+					'desc' => 'base_path_desc',
+					'fields' => array(
+						'base_path' => array('type' => 'text')
+					)
+				),
+				array(
 					'title' => 'site_index',
 					'desc' => 'site_index_desc',
 					'fields' => array(
@@ -71,13 +85,6 @@ class Urls extends Settings {
 					'desc' => 'themes_path_desc',
 					'fields' => array(
 						'theme_folder_path' => array('type' => 'text', 'required' => TRUE)
-					)
-				),
-				array(
-					'title' => 'docs_url',
-					'desc' => 'docs_url_desc',
-					'fields' => array(
-						'doc_url' => array('type' => 'text')
 					)
 				),
 				array(
@@ -125,6 +132,11 @@ class Urls extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
+				'field' => 'base_path',
+				'label' => 'lang:base_path',
+				'rules' => 'file_exists'
+			),
+			array(
 				'field' => 'site_index',
 				'label' => 'lang:site_index',
 				'rules' => 'strip_tags|valid_xss_check'
@@ -153,11 +165,6 @@ class Urls extends Settings {
 				'field' => 'profile_trigger',
 				'label' => 'lang:member_segment_trigger',
 				'rules' => 'alpha_dash'
-			),
-			array(
-				'field' => 'doc_url',
-				'label' => 'lang:docs_url',
-				'rules' => 'strip_tags|valid_xss_check'
 			),
 		));
 

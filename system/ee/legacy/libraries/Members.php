@@ -369,7 +369,7 @@ class Members {
 
 		$file_info = ee()->upload->data();
 
-		@chmod($file_info['full_path'], DIR_WRITE_MODE);
+		@chmod($file_info['full_path'], FILE_WRITE_MODE);
 
 		// Do we need to resize?
 		$width	= $file_info['image_width'];
@@ -577,6 +577,7 @@ class Members {
 						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
 
 						$path = reduce_double_slashes(ee()->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/');
+						$path = parse_config_variables($path);
 
 						$result_ids[$channel_keys[$row['entry_id']]] = array(
 												'title' => $row['title'],
@@ -622,7 +623,7 @@ class Members {
 					{
 						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
 
-						$path = reduce_double_slashes(ee()->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/');
+						$path = reduce_double_slashes(ee()->functions->prep_query_string(parse_config_variables($row['board_forum_url'])).'/viewthread/'.$row['topic_id'].'/');
 
 						$result_ids[$forum_keys[$row['topic_id']]] = array(
 												'title' => $row['title'],

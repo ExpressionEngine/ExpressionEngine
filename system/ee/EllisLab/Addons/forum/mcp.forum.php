@@ -660,7 +660,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_forum_url' => array(
 							'type' => 'text',
-							'value' => $board->board_forum_url,
+							'value' => $board->getRawProperty('board_forum_url'),
 							'required' => TRUE
 						)
 					)
@@ -740,7 +740,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_upload_path' => array(
 							'type' => 'text',
-							'value' => $board->board_upload_path,
+							'value' => $board->getRawProperty('board_upload_path'),
 						)
 					)
 				),
@@ -1071,6 +1071,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$sections = array(
 			array(
@@ -1430,7 +1434,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_forum_url' => array(
 							'type' => 'text',
-							'value' => $alias->board_forum_url,
+							'value' => $alias->getRawProperty('board_forum_url'),
 							'required' => TRUE
 						)
 					)
@@ -1779,6 +1783,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$vars['sections'] = array(
 			array(
@@ -2296,6 +2304,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$vars['sections'] = array(
 			array(
@@ -2902,6 +2914,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -3289,6 +3305,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$sections = array(
 			array(

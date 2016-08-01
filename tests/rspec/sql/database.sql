@@ -331,6 +331,7 @@ CREATE TABLE `exp_channels` (
   `channel_description` varchar(255) DEFAULT NULL,
   `channel_lang` varchar(12) NOT NULL,
   `total_entries` mediumint(8) NOT NULL DEFAULT '0',
+  `total_records` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `total_comments` mediumint(8) NOT NULL DEFAULT '0',
   `last_entry_date` int(10) unsigned NOT NULL DEFAULT '0',
   `last_comment_date` int(10) unsigned NOT NULL DEFAULT '0',
@@ -372,6 +373,7 @@ CREATE TABLE `exp_channels` (
   `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
   `url_title_prefix` varchar(80) DEFAULT NULL,
   `live_look_template` int(10) unsigned NOT NULL DEFAULT '0',
+  `max_entries` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
   KEY `status_group` (`status_group`),
@@ -750,6 +752,7 @@ CREATE TABLE `exp_member_fields` (
 CREATE TABLE `exp_member_groups` (
     `group_id` smallint(4) unsigned NOT NULL,
     `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+    `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
     `group_title` varchar(100) NOT NULL,
     `group_description` text NOT NULL,
     `is_locked` char(1) NOT NULL DEFAULT 'n',
@@ -759,6 +762,7 @@ CREATE TABLE `exp_member_groups` (
     `can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
     `can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
     `can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
+    `can_view_homepage_news` char(1) NOT NULL DEFAULT 'y',
     `can_access_files` char(1) NOT NULL DEFAULT 'n',
     `can_access_design` char(1) NOT NULL DEFAULT 'n',
     `can_access_addons` char(1) NOT NULL DEFAULT 'n',
@@ -952,10 +956,10 @@ CREATE TABLE `exp_members` (
   `parse_smileys` char(1) NOT NULL DEFAULT 'y',
   `smart_notifications` char(1) NOT NULL DEFAULT 'y',
   `language` varchar(50) NOT NULL,
-  `timezone` varchar(50) NOT NULL,
-  `time_format` char(2) NOT NULL DEFAULT '12',
-  `date_format` varchar(8) NOT NULL DEFAULT '%n/%j/%Y',
-  `include_seconds` char(1) NOT NULL DEFAULT 'n',
+  `timezone` varchar(50) NULL,
+  `time_format` char(2) NULL,
+  `date_format` varchar(8) NULL,
+  `include_seconds` char(1) NULL,
   `cp_theme` varchar(32) DEFAULT NULL,
   `profile_theme` varchar(32) DEFAULT NULL,
   `forum_theme` varchar(32) DEFAULT NULL,
@@ -1450,7 +1454,23 @@ CREATE TABLE `exp_upload_prefs` (
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
-
+CREATE TABLE `exp_menu_sets` (
+  `set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+    
+CREATE TABLE `exp_menu_items` (
+  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) NOT NULL DEFAULT '0',
+  `set_id` int(10) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `data` varchar(255) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `sort` int(5) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`),
+  KEY `set_id` (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
@@ -1772,8 +1792,8 @@ UNLOCK TABLES;
 LOCK TABLES `exp_member_groups` WRITE;
 
   INSERT INTO exp_member_groups
-  			(group_description, group_title, group_id, can_view_offline_system, can_access_cp, can_access_footer_report_bug, can_access_footer_new_ticket, can_access_footer_user_guide, can_upload_new_files, can_edit_files, can_delete_files, can_upload_new_toolsets, can_edit_toolsets, can_delete_toolsets, can_create_upload_directories, can_edit_upload_directories, can_delete_upload_directories, can_access_files, can_access_design, can_access_addons, can_access_members, can_access_sys_prefs, can_access_comm, can_access_utilities, can_access_data, can_access_logs, can_admin_channels, can_create_channels, can_edit_channels, can_delete_channels, can_create_channel_fields, can_edit_channel_fields, can_delete_channel_fields, can_create_statuses, can_delete_statuses, can_edit_statuses, can_create_categories, can_create_member_groups, can_delete_member_groups, can_edit_member_groups, can_admin_design, can_create_members, can_edit_members, can_delete_members, can_admin_mbr_groups, can_admin_mbr_templates, can_ban_users, can_admin_addons, can_create_new_templates, can_edit_templates, can_delete_templates, can_create_template_groups, can_edit_template_groups, can_delete_template_groups, can_create_template_partials, can_edit_template_partials, can_delete_template_partials, can_create_template_variables, can_delete_template_variables, can_edit_template_variables, can_edit_categories, can_delete_categories, can_view_other_entries, can_edit_other_entries, can_assign_post_authors, can_delete_self_entries, can_delete_all_entries, can_view_other_comments, can_edit_own_comments, can_delete_own_comments, can_edit_all_comments, can_delete_all_comments, can_moderate_comments, can_send_cached_email, can_email_member_groups, can_email_from_profile, can_view_profiles, can_edit_html_buttons, can_delete_self, exclude_from_moderation, can_send_private_messages, can_attach_in_private_messages, can_send_bulletins, include_in_authorlist, search_flood_control)
-  			VALUES ('', 'Super Admin', 1, 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', '0');
+  			(group_description, group_title, group_id, can_view_offline_system, can_access_cp, can_access_footer_report_bug, can_access_footer_new_ticket, can_access_footer_user_guide, can_view_homepage_news, can_upload_new_files, can_edit_files, can_delete_files, can_upload_new_toolsets, can_edit_toolsets, can_delete_toolsets, can_create_upload_directories, can_edit_upload_directories, can_delete_upload_directories, can_access_files, can_access_design, can_access_addons, can_access_members, can_access_sys_prefs, can_access_comm, can_access_utilities, can_access_data, can_access_logs, can_admin_channels, can_create_channels, can_edit_channels, can_delete_channels, can_create_channel_fields, can_edit_channel_fields, can_delete_channel_fields, can_create_statuses, can_delete_statuses, can_edit_statuses, can_create_categories, can_create_member_groups, can_delete_member_groups, can_edit_member_groups, can_admin_design, can_create_members, can_edit_members, can_delete_members, can_admin_mbr_groups, can_admin_mbr_templates, can_ban_users, can_admin_addons, can_create_new_templates, can_edit_templates, can_delete_templates, can_create_template_groups, can_edit_template_groups, can_delete_template_groups, can_create_template_partials, can_edit_template_partials, can_delete_template_partials, can_create_template_variables, can_delete_template_variables, can_edit_template_variables, can_edit_categories, can_delete_categories, can_view_other_entries, can_edit_other_entries, can_assign_post_authors, can_delete_self_entries, can_delete_all_entries, can_view_other_comments, can_edit_own_comments, can_delete_own_comments, can_edit_all_comments, can_delete_all_comments, can_moderate_comments, can_send_cached_email, can_email_member_groups, can_email_from_profile, can_view_profiles, can_edit_html_buttons, can_delete_self, exclude_from_moderation, can_send_private_messages, can_attach_in_private_messages, can_send_bulletins, include_in_authorlist, search_flood_control)
+  			VALUES ('', 'Super Admin', 1, 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', '0');
 
   INSERT INTO exp_member_groups
   			(group_description, group_title, group_id, can_access_cp, can_view_online_system, can_search, can_post_comments, include_in_memberlist, search_flood_control)

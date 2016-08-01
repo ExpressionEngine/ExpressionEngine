@@ -349,13 +349,13 @@ class Grid_model extends CI_Model {
 		{
 			// If we already have data for this particular tag configuation
 			// and entry ID, we don't need to get it again
-			if ($reset_cache === FALSE && isset($this->_grid_data[$field_id][$marker][$entry_id]))
+			if ($reset_cache === FALSE && isset($this->_grid_data[$content_type][$field_id][$marker][$entry_id]))
 			{
 				unset($entry_ids[$key]);
 			}
 		}
 
-		$this->_grid_data[$field_id][$marker]['params'] = $options;
+		$this->_grid_data[$content_type][$field_id][$marker]['params'] = $options;
 
 		if ( ! empty($entry_ids))
 		{
@@ -364,7 +364,7 @@ class Grid_model extends CI_Model {
 			// querying for data that doesn't exist
 			foreach ($entry_ids as $entry_id)
 			{
-				$this->_grid_data[$field_id][$marker][$entry_id] = array();
+				$this->_grid_data[$content_type][$field_id][$marker][$entry_id] = array();
 			}
 
 			// fixed_order parameter
@@ -422,11 +422,11 @@ class Grid_model extends CI_Model {
 			// Add these rows to the cache
 			foreach ($rows as $row)
 			{
-				$this->_grid_data[$field_id][$marker][$row['entry_id']][$row['row_id']] = $row;
+				$this->_grid_data[$content_type][$field_id][$marker][$row['entry_id']][$row['row_id']] = $row;
 			}
 		}
 
-		return isset($this->_grid_data[$field_id][$marker]) ? $this->_grid_data[$field_id][$marker] : FALSE;
+		return isset($this->_grid_data[$content_type][$field_id][$marker]) ? $this->_grid_data[$content_type][$field_id][$marker] : FALSE;
 	}
 
 	// --------------------------------------------------------------------

@@ -1,9 +1,9 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/default-nav-table'); ?>
 
 <div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
 	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 		<input class="btn submit" type="submit" value="<?=lang('search_emails_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
@@ -37,7 +37,7 @@
 							<ul class="checklist mb">
 								<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date->format('U'))?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
 							</ul>
-							<?=$email->message?>
+							<?=ee('Security/XSS')->clean($email->message)?>
 						</div>
 					</div>
 				</div>

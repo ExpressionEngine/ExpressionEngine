@@ -56,6 +56,18 @@ $.fn.eeTableReorder = function(params) {
 				var $originals = row.children();
 				var $helper = row.clone();
 
+				// Make sure radio buttons retain their state after sort,
+				// explanation:
+				// Upon finishing the sort, the new row will be put down
+				// before the helper is destroyed, so for a brief moment
+				// in time, there are multiple sets of radios with the
+				// same name, and given the nature of radio buttons, only
+				// one can be selected within the same name group, and the
+				// helper wins; so, we'll just assign a random name to each 
+				$helper.find('input[type=radio]:enabled').each(function() {
+					$(this).attr('name', Math.random() * 20);
+				});
+
 				$helper.children().each(function(index)
 				{
 					// Set helper cell sizes to match the original sizes

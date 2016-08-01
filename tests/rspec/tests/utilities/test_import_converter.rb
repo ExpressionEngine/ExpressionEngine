@@ -11,7 +11,6 @@ feature 'Import File Converter' do
 
     # Error messages we'll be checking for
     @field_required = 'This field is required.'
-    @file_location_validation = 'The path you submitted is not valid.'
     @min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
     @assign_fields_title = 'Import File Converter - Assign Fields'
 
@@ -54,14 +53,14 @@ feature 'Import File Converter' do
     @page.file_location.set '/some/bogus/path'
     @page.file_location.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.file_location, @file_location_validation)
+    should_have_error_text(@page.file_location, $invalid_path)
     should_have_form_errors(@page)
 
     @page.file_location.set @tab_file
     @page.file_location.trigger 'blur'
 
     @page.wait_for_error_message_count(0)
-    @page.should have_no_text @file_location_validation
+    @page.should have_no_text $invalid_path
     should_have_no_form_errors(@page)
 
     # "Other" selected but no custom delimiter entered
@@ -120,7 +119,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     @page.should have_text 'Attention: File not converted'
-    should_have_error_text(@page.file_location, @file_location_validation)
+    should_have_error_text(@page.file_location, $invalid_path)
     should_have_form_errors(@page)
 
     @page.file_location.set @tab_file

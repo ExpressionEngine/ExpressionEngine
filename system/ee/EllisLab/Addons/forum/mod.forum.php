@@ -833,7 +833,7 @@ class Forum {
 	 */
 	public function fetch_pref($which)
 	{
-		return ( ! isset($this->preferences[$which])) ? '' : $this->preferences[$which];
+		return ( ! isset($this->preferences[$which])) ? '' : parse_config_variables($this->preferences[$which]);
 	}
 
 	// --------------------------------------------------------------------
@@ -847,6 +847,12 @@ class Forum {
 	{
 		// Grab theme.  Can be from a cookie or user pref
 		$forum_theme = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('forum_theme') : '';
+
+		// or overridden with a tag param in the template
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
+		{
+			$forum_theme = (ee()->TMPL->fetch_param('theme')) ?: $forum_theme;
+		}
 
 		// Maybe the theme is in a cookie?
 		if ($forum_theme == '')
@@ -1237,11 +1243,12 @@ class Forum {
 				'path:view_new_topics'     => $this->forum_path('/new_topic_search'),
 				'path:view_active_topics'  => $this->forum_path('/active_topic_search'),
 				'path:view_pending_topics' => $this->forum_path('/view_pending_topics'),
-				'path:mark_all_read'       => $this->forum_path('/mark_all_read/'),
+				'path:mark_all_read'       => rtrim($this->forum_path('/mark_all_read/' . CSRF_TOKEN), '/'),
 				'path:do_search'           => $this->forum_path('/do_search/'),
 				'path:smileys'             => $this->forum_path('/smileys/'),
 				'path:rss'                 => $this->forum_path('/rss/'.$this->feed_ids),
 				'path:atom'                => $this->forum_path('/atom/'.$this->feed_ids),
+				'path:set_theme'           => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Forum', 'set_theme').'&board_id='.$this->fetch_pref('original_board_id'),
 				'recent_poster'            => $this->fetch_pref('board_recent_poster'),
 				'forum_name'               => $this->_convert_special_chars($this->fetch_pref('board_label'), TRUE),
 				'forum_url'                => $this->fetch_pref('board_forum_url'),
@@ -2016,14 +2023,12 @@ class Forum {
 		// Load the XML Helper
 		ee()->load->helper('xml');
 
-		$path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Forum', 'set_theme').'&board_id='.$this->fetch_pref('original_board_id').'&theme=';
-
 		$str = '';
 		foreach ($this->fetch_theme_list() as $val)
 		{
 			$sel = ($this->theme == $val) ? ' selected="selected"' : '';
 
-			$str .= '<option value="'.xml_convert($path.$val).'"'.$sel.'>'.ucwords(str_replace('_', ' ', $val))."</option>\n";
+			$str .= '<option value="'.xml_convert($val).'"'.$sel.'>'.ucwords(str_replace('_', ' ', $val))."</option>\n";
 		}
 
 		return $str;
@@ -2036,7 +2041,12 @@ class Forum {
 	 */
 	public function set_theme()
 	{
-		$theme = ee()->input->get('theme');
+		if (empty($_POST))
+		{
+			return $this->trigger_error();
+		}
+
+		$theme = ee()->input->post('theme');
 
 		if ( ! preg_match("/^[a-z0-9\s_-]+$/i", $theme))
 		{

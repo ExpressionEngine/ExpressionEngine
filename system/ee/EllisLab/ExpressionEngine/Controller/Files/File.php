@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Files;
 
 use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -53,15 +54,11 @@ class File extends AbstractFilesController {
 		ee()->load->library('image_lib');
 		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
 
-		// Adapted from http://jeffreysambells.com/2012/10/25/human-readable-filesize-php
-		$size   = array('b', 'kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb');
-		$factor = floor((strlen($file->file_size) - 1) / 3);
-
 		$vars = array(
 			'file' => $file,
 			'height' => $info['height'],
 			'width' => $info['width'],
-			'size' => sprintf("%d", $file->file_size / pow(1024, $factor)) . lang('size_' . @$size[$factor])
+			'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes()
 		);
 
 		ee()->cp->render('files/view', $vars);
@@ -74,7 +71,10 @@ class File extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$errors = NULL;
+
 		$file = ee('Model')->get('File', $id)
+			->with('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -88,109 +88,29 @@ class File extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$result = $this->validateFile($file);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveFileAndRedirect($file);
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('files/file/edit/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
 			'save_btn_text_working' => 'btn_saving',
-			'sections' => array(
-				array(
-					array(
-						'title' => 'title',
-						'fields' => array(
-							'title' => array(
-								'type' => 'text',
-								'value' => $file->title
-							)
-						)
-					),
-					array(
-						'title' => 'description',
-						'fields' => array(
-							'description' => array(
-								'type' => 'textarea',
-								'value' => $file->description
-							)
-						)
-					),
-					array(
-						'title' => 'credit',
-						'fields' => array(
-							'credit' => array(
-								'type' => 'text',
-								'value' => $file->credit
-							)
-						)
-					),
-					array(
-						'title' => 'location',
-						'fields' => array(
-							'location' => array(
-								'type' => 'text',
-								'value' => $file->location
-							)
-						)
-					),
-				)
-			)
+			'tabs' => array(
+				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
+				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
+			),
+			'sections' => array(),
 		);
-
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'title',
-				'label' => 'lang:title',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'description',
-				'label' => 'lang:description',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'credit',
-				'label' => 'lang:credit',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'location',
-				'label' => 'lang:location',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-		));
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$file->title = ee()->input->post('title');
-			$file->description = ee()->input->post('description');
-			$file->credit = ee()->input->post('credit');
-			$file->location = ee()->input->post('location');
-			$file->modified_by_member_id = ee()->session->userdata('member_id');
-			$file->modified_date = ee()->localize->now;
-
-			$file->save();
-
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('edit_file_metadata_success'))
-				->addToBody(sprintf(lang('edit_file_metadata_success_desc'), $file->title))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('edit_file_metadata_error'))
-				->addToBody(lang('edit_file_metadata_error_desc'))
-				->now();
-		}
 
 		$this->generateSidebar($file->upload_location_id);
 		$this->stdHeader();

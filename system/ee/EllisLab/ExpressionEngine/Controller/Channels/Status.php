@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use Mexitek\PHPColors\Color;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -557,6 +558,19 @@ class Status extends AbstractChannelsController {
 		// Member IDs NOT in $no_access have access...
 		list($allowed_groups, $member_groups) = $this->getAllowedGroups(is_null($status_id) ? NULL : $status);
 
+		// Create the status example
+		$status_style = '';
+		if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
+		{
+			$foreground = $this->calculateForegroundFor($status->highlight);
+			$status_style = "style='background-color: {$status->highlight}; border-color: {$status->highlight}; color: {$foreground};'";
+		}
+
+		$status_name = (empty($status->status)) ? lang('status') : $status->status;
+
+		$status_class = str_replace(' ', '_', strtolower($status->status));
+		$status_example = '<span class="status-tag st-'.$status_class.'" '.$status_style.'>'.$status_name.'</span>';
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -574,9 +588,11 @@ class Status extends AbstractChannelsController {
 				array(
 					'title' => 'highlight_color',
 					'desc' => 'highlight_color_desc',
+					'example' => $status_example,
 					'fields' => array(
 						'highlight' => array(
 							'type' => 'text',
+							'attrs' => 'class="color-picker"',
 							'value' => $status->highlight ?: '000000',
 							'required' => TRUE
 						)
@@ -672,7 +688,48 @@ class Status extends AbstractChannelsController {
 			$status_group->group_name . ' &mdash; ' . lang('statuses')
 		);
 
+		ee()->javascript->set_global('status.default_name', lang('status'));
+		ee()->javascript->set_global('status.foreground_color_url', ee('CP/URL', 'channels/status/get-foreground-color')->compile());
+		ee()->cp->add_js_script('file', 'cp/channel/status_edit');
+		ee()->cp->add_js_script('plugin', 'minicolors');
+
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Retrieve the foreground color for a given status color
+	 *
+	 * @param string $color The hex color for the background
+	 * @return void
+	 */
+	public function getForegroundColor($color = '')
+	{
+		$color = ee()->input->post('highlight');
+		$foreground = $this->calculateForegroundFor($color);
+		ee()->output->send_ajax_response($foreground);
+	}
+
+	/**
+	 * Retrieve the foreground color for a given status color
+	 *
+	 * @param string $color The hex color for the background
+	 * @return string The hex color best suited for the background color
+	 */
+	protected function calculateForegroundFor($background)
+	{
+		try
+		{
+			$background = new Color($background);
+			$foreground = ($background->isLight())
+				? $background->darken(100)
+				: $background->lighten(100);
+		}
+		catch (\Exception $e)
+		{
+			$foreground = 'ffffff';
+		}
+
+		return $foreground;
 	}
 
 	/**
@@ -760,7 +817,7 @@ class Status extends AbstractChannelsController {
 	 */
 	public function validateHex($hex)
 	{
-		if ($hex != '' && ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
+		if ($hex != '' && ! preg_match('/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
 		{
 			ee()->form_validation->set_message('validateHex', lang('invalid_hex_code'));
 			return FALSE;
@@ -790,7 +847,7 @@ class Status extends AbstractChannelsController {
 		}
 
 		$status->status = ee()->input->post('status');
-		$status->highlight = ee()->input->post('highlight');
+		$status->highlight = ltrim(ee()->input->post('highlight'), '#');
 
 		$access = ee()->input->post('status_access') ?: array();
 

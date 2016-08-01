@@ -25,6 +25,7 @@ class MemberGroup extends StructureModel {
 		'can_access_footer_report_bug'   => 'boolString',
 		'can_access_footer_new_ticket'   => 'boolString',
 		'can_access_footer_user_guide'   => 'boolString',
+		'can_view_homepage_news'         => 'boolString',
 		'can_access_files'               => 'boolString',
 		'can_access_design'              => 'boolString',
 		'can_access_addons'              => 'boolString',
@@ -186,7 +187,11 @@ class MemberGroup extends StructureModel {
 			'pivot' => array(
 				'table' => 'email_cache_mg'
 			)
-		)
+		),
+		'MenuSet' => array(
+			'type' => 'belongsTo',
+			'from_key' => 'menu_set_id'
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -200,12 +205,14 @@ class MemberGroup extends StructureModel {
 	protected $group_title;
 	protected $group_description;
 	protected $is_locked;
+	protected $menu_set_id;
 	protected $can_view_offline_system;
 	protected $can_view_online_system;
 	protected $can_access_cp;
 	protected $can_access_footer_report_bug;
 	protected $can_access_footer_new_ticket;
 	protected $can_access_footer_user_guide;
+	protected $can_view_homepage_news;
 	protected $can_access_files;
 	protected $can_access_design;
 	protected $can_access_addons;
@@ -375,7 +382,8 @@ class MemberGroup extends StructureModel {
 			array(
 				'group_title' => $this->group_title,
 				'group_description' => $this->group_description,
-				'is_locked' => $this->is_locked
+				'is_locked' => $this->is_locked,
+				'menu_set_id' => $this->menu_set_id
 			),
 			array('group_id' => $this->group_id)
 		);

@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Database;
 
-use \EllisLab\ExpressionEngine\Service\Config\Config;
+use \EllisLab\ExpressionEngine\Service\Config\ConfigWithDefaults;
 use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
@@ -28,7 +28,7 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
  * @author     EllisLab Dev Team
  * @link       https://ellislab.com
  */
-class DBConfig implements Config {
+class DBConfig extends ConfigWithDefaults {
 
 	protected $delegate;
 	protected $active_group;
@@ -158,30 +158,6 @@ class DBConfig implements Config {
 		}
 
 		return $database_config;
-	}
-
-	/**
-	 * Get the default for a given db item. If they gave us a
-	 * default, we prefer that over the default default.
-	 */
-	private function getDefaultFor($item, $prefer_default = NULL)
-	{
-		if ($item == '')
-		{
-			return $this->defaults;
-		}
-
-		if (isset($prefer_default))
-		{
-			return $prefer_default;
-		}
-
-		if (array_key_exists($item, $this->defaults))
-		{
-			return $this->defaults[$item];
-		}
-
-		return $prefer_default;
 	}
 
 	/**

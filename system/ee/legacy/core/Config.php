@@ -39,6 +39,8 @@ class EE_Config {
 	public $_global_vars        = array(); // The global vars from path.php (deprecated but usable for other purposes now)
 	public $_config_path_errors = array();
 
+	protected $defaults = array();
+
 	/**
 	 * Constructor
 	 */
@@ -46,8 +48,10 @@ class EE_Config {
 	{
 		$this->config =& get_config();
 
-		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
+		$this->_config_paths = array(SYSPATH.'user/');
 		$this->config_path = SYSPATH.'user/config/config.php';
+
+		$this->defaults = default_config_items();
 
 		$this->_initialize();
 	}
@@ -184,7 +188,7 @@ class EE_Config {
 		$file = ($file == '') ? 'config' : str_replace('.php', '', $file);
 		$loaded = FALSE;
 
-		foreach($this->_config_paths as $path)
+		foreach ($this->_config_paths as $path)
 		{
 			$file_path = $path.'config/'.$file.'.php';
 
@@ -245,6 +249,31 @@ class EE_Config {
 		return TRUE;
 	}
 
+	/**
+	 * Load a single config file
+	 */
+	public function loadFile($file)
+	{
+		$file = str_replace('..', '', $file);
+		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
+		$userpath = SYSPATH.'user/config/'.$file.'.php';
+
+		$out = array();
+
+		if (file_exists($syspath))
+		{
+			$out = include $syspath;
+		}
+
+		if (file_exists($userpath))
+		{
+			$userout = include $userpath;
+			$out = array_replace_recursive($out, $userout);
+		}
+
+		return $out;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -256,9 +285,12 @@ class EE_Config {
 	 * @access	public
 	 * @param	string	Name of the site
 	 * @param	int		ID of the site
+	 * @param	boolean	Whether or not this method should mutate the current
+	 *   global config; when false, will just return the config for the
+	 *   specified site
 	 * @return	void
 	 */
-	function site_prefs($site_name, $site_id = 1)
+	function site_prefs($site_name, $site_id = 1, $mutating = TRUE)
 	{
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
@@ -289,13 +321,12 @@ class EE_Config {
 			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
 		}
 
-
 		// Reset Core Preferences back to their Pre-Database State
 		// This way config.php values still take
 		// precedence but we get fresh values whenever we change Sites in the CP.
-		$this->config = $this->default_ini;
+		$config = $this->default_ini;
 
-		$this->config['site_pages'] = FALSE;
+		$config['site_pages'] = FALSE;
 		// Fetch the query result array
 		$row = $query->row_array();
 
@@ -311,11 +342,11 @@ class EE_Config {
 					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
 				}
 				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
-				$this->config = array_merge(unserialize($data), $this->config);
+				$config = array_merge(unserialize($data), $config);
 			}
 			elseif ($name == 'site_pages')
 			{
-				$this->config['site_pages'] = $this->site_pages($row['site_id'], $data);
+				$config['site_pages'] = $this->site_pages($row['site_id'], $data);
 			}
 			elseif ($name == 'site_bootstrap_checksums')
 			{
@@ -323,30 +354,37 @@ class EE_Config {
 
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
-					$this->config['site_bootstrap_checksums'] = array();
+					$config['site_bootstrap_checksums'] = array();
 					continue;
 				}
 
-				$this->config['site_bootstrap_checksums'] = unserialize($data);
+				$config['site_bootstrap_checksums'] = unserialize($data);
 			}
 			else
 			{
-				$this->config[str_replace('sites_', 'site_', $name)] = $data;
+				$config[str_replace('sites_', 'site_', $name)] = $data;
 			}
 		}
 
 		// Few More Variables
-		$this->config['site_short_name'] = $row['site_name'];
-		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
+		$config['site_short_name'] = $row['site_name'];
+		$config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 
 		// Need this so we know the base url a page belongs to
-		if (isset($this->config['site_pages'][$row['site_id']]))
+		if (isset($config['site_pages'][$row['site_id']]))
 		{
-			$url = $this->config['site_url'].'/';
-			$url .= $this->config['site_index'].'/';
+			$url = $config['site_url'].'/';
+			$url .= $config['site_index'].'/';
 
-			$this->config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
+			$config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
+
+		// lowercase version charset to use in HTML output
+		$config['output_charset'] = strtolower($this->item('charset'));
+
+		if ($mutating)
+		{
+			$this->config = $config;
 
 		// master tracking override?
 		if ($this->item('disable_all_tracking') == 'y')
@@ -357,9 +395,41 @@ class EE_Config {
 		// If we just reloaded, then we reset a few things automatically
 		$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
 		ee('Database')->getLog()->saveQueries($save_queries);
+		}
+		else
+		{
+			return $config;
+		}
+	}
 
-		// lowercase version charset to use in HTML output
-		$this->config['output_charset'] = strtolower($this->config['charset']);
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get config for another site, but do not mutate the active global config
+	 * and cache the config for accessing later as well
+	 *
+	 * @access	public
+	 * @param	int		Site ID to get the config for
+	 * @return	array	Associative array of site config data
+	 */
+	public function get_cached_site_prefs($site_id)
+	{
+		static $site_configs = array();
+
+		if ( ! isset($site_configs[$site_id]))
+		{
+			// Asking for the current site? No need to reload everything
+			if ($site_id == $this->item('site_id'))
+			{
+				$site_configs[$site_id] = $this->config;
+			}
+			else
+			{
+				$site_configs[$site_id] = $this->site_prefs('', $site_id, FALSE);
+			}
+		}
+
+		return $site_configs[$site_id];
 	}
 
 	// --------------------------------------------------------------------
@@ -371,19 +441,25 @@ class EE_Config {
 	 * @access	public
 	 * @param	string	the config item name
 	 * @param	string	the index name
-	 * @param	bool
+	 * @param	boolean	Whether or not to return the raw value with unparsed variables
 	 * @return	string
 	 */
-	function item($item, $index = '')
+	function item($item, $index = '', $raw_value = FALSE)
 	{
 		if ($index == '')
 		{
-			if ( ! isset($this->config[$item]))
+			if (isset($this->config[$item]))
+			{
+				$pref = $this->config[$item];
+			}
+			else if (isset($this->defaults[$item]))
+			{
+				$pref = $this->defaults[$item];
+			}
+			else
 			{
 				return FALSE;
 			}
-
-			$pref = $this->config[$item];
 		}
 		else
 		{
@@ -400,7 +476,7 @@ class EE_Config {
 			$pref = $this->config[$index][$item];
 		}
 
-		return $pref;
+		return $raw_value ? $pref : parse_config_variables($pref);
 	}
 
 
@@ -506,6 +582,8 @@ class EE_Config {
 	{
 		$system_default = array(
 			'is_site_on',
+			'base_url',
+			'base_path',
 			'site_index',
 			'site_url',
 			'cp_url',
@@ -747,8 +825,14 @@ class EE_Config {
 		$this->_check_paths($new_values);
 
 		// Let's get this shindig started
+		$msm_values = $new_values;
 		foreach ($site_ids as $site_id)
 		{
+			// If we don't do this, then only the first site will have the new changes.
+			// On the last loop, $new_values will still contain any leftovers that need
+			// to go to the config file.
+			$new_values = $msm_values;
+
 			$this->_category_trigger_check($site_id, $new_values);
 			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
@@ -823,7 +907,7 @@ class EE_Config {
 					$site_prefs[$val] .= '/';
 				}
 
-				$fp = $site_prefs[$val];
+				$fp = parse_config_variables($site_prefs[$val]);
 
 				if ( ! @is_dir($fp))
 				{
@@ -1299,7 +1383,6 @@ class EE_Config {
 				'caching_driver'         => array('f', 'caching_driver'),
 				'max_caches'             => array('i', '', 'numeric'),
 				'new_version_check'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'doc_url'                => array('i', '', 'strip_tags|trim|valid_xss_check'),
 			),
 
 			'db_cfg'			=>	array(
@@ -1824,7 +1907,7 @@ class EE_Config {
 			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
 		}
 
-		return $pref;
+		return parse_config_variables($pref);
 	}
 
 
