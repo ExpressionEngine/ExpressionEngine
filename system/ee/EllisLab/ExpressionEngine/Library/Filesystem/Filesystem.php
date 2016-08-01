@@ -436,6 +436,56 @@ class Filesystem {
 	}
 
 	/**
+	 * Given a path this returns a unique filename by appending "_n" (where "n"
+	 * is a number) if a file by the same name already exists, i.e. "image002_1.jpg".
+	 *
+	 * @param String $path Path to make unique
+	 * @return string The path to the file.
+	 */
+	public function getUniqueFilename($path)
+	{
+		$path = $this->normalize($path);
+
+		// The path is good! We're done here.
+		if ( ! $this->exists($path))
+		{
+			return $path;
+		}
+
+		$parts = explode('.', $path);
+		$extension = '.' . end($parts);
+		unset($parts); // We'll not use this again.
+
+		$filename = str_replace($extension, '', $path);
+
+		$files = glob($filename . '*'. $this->file_ext);
+
+		if ( ! empty($files))
+		{
+			// Try to figure out if we already have a file we've renamed, then
+			// we can pick up where we left off, and reduce the guessing.
+			rsort($files, SORT_NATURAL);
+			$number = str_replace(array($filename, $extension), '', $files[0]);
+			if (strpos($number, '_') === 0)
+			{
+				$number = str_replace('_', '', $number);
+				if (is_numeric($number))
+				{
+					$i = (int) $number;
+				}
+			}
+		}
+
+		do
+		{
+			$i++;
+			$path = $filename . '_' . $i . $extension;
+		} while (in_array($path, $files));
+
+		return $path;
+	}
+
+	/**
 	 * Add EE's default index file to a directory
 	 */
 	protected function addIndexHtml($dir)
