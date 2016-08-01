@@ -292,13 +292,16 @@ class Filepicker_mcp {
 	 */
 	private function sort($files)
 	{
-		if ($sort_col = ee()->input->get('sort_col'))
+		$sort_col = ee()->input->get('sort_col');
+
+		$sort_map = array(
+			'title_or_name' => 'file_name',
+			'file_type' => 'mime_type',
+			'date_added' => 'upload_date'
+		);
+
+		if (array_key_exists($sort_col, $sort_map))
 		{
-			$sort_map = array(
-				'title_or_name' => 'file_name',
-				'file_type' => 'mime_type',
-				'date_added' => 'upload_date'
-			);
 			$files->order($sort_map[$sort_col], ee()->input->get('sort_dir'));
 		}
 	}
