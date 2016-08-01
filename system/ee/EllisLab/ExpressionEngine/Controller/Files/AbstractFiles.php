@@ -369,7 +369,7 @@ abstract class AbstractFiles extends CP_Controller {
 				->orFilter('mime_type', 'LIKE', '%' . $search_terms . '%')
 				->endFilterGroup();
 
-			$vars['search_terms'] = $search_terms;
+			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
 
 		$total_files = $files->count();
