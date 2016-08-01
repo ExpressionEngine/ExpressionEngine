@@ -397,17 +397,33 @@ class EE_Upload {
 			return $filename;
 		}
 
+		$i = 0;
+
 		$filename = str_replace($this->file_ext, '', $filename);
 
-		$new_filename = '';
-		for ($i = 1; $i < 100; $i++)
+		$files = glob($filename . '*'. $this->file_ext);
+
+		if ( ! empty($files))
 		{
-			if ( ! file_exists($path.$filename.$i.$this->file_ext))
+			// Try to figure out if we already have a file we've renamed, then
+			// we can pick up where we left off, and reduce the guessing.
+			rsort($files);
+			$number = str_replace(array($filename, $this->file_ext), '', $files[0]);
+			if (strpos($number, '_') === 0)
 			{
-				$new_filename = $filename.$i.$this->file_ext;
-				break;
+				$number = str_replace('_', '', $number);
+				if (is_numeric($number))
+				{
+					$i = (int) $number;
+				}
 			}
 		}
+
+		do
+		{
+			$i++;
+			$new_filename = $filename . '_' . $i . $this->file_ext;
+		} while (in_array($new_filename, $files));
 
 		if ($new_filename == '')
 		{
