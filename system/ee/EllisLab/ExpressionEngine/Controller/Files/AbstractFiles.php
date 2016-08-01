@@ -141,13 +141,17 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		$table = ee('CP/Table', array(
 			'sort_col'   => 'date_added',
-			'sort_dir'   => 'desc'
+			'sort_dir'   => 'desc',
+			'class'      => 'tbl-fixed'
 		));
 
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
-					'encode' => FALSE
+					'encode' => FALSE,
+					'attrs' => array(
+						'width' => '40%'
+					),
 				),
 				'file_type',
 				'date_added',
