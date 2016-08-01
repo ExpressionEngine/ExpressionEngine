@@ -300,7 +300,7 @@ class Filepicker_mcp {
 			'date_added' => 'upload_date'
 		);
 
-		if (array_key_exists($sort_col, $sort_map))
+		if (array_key_exists((string) $sort_col, $sort_map))
 		{
 			$files->order($sort_map[$sort_col], ee()->input->get('sort_dir'));
 		}
