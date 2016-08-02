@@ -17,7 +17,7 @@ if ($wrap): ?>
 			<td>
 				<?=lang($no_results['text'])?>
 				<?php if ( ! empty($no_results['action_text'])): ?>
-					<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+					<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 				<?php endif ?>
 			</td>
 		</tr>
@@ -98,7 +98,7 @@ if ($wrap): ?>
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
