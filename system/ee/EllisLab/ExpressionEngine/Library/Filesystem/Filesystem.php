@@ -452,10 +452,11 @@ class Filesystem {
 			return $path;
 		}
 
+		$i = 0;
 		$extension = $this->extension($path);
-		$filename  = $this->filename($path);
+		$filename  = $this->dirname($path) . '/' . $this->filename($path);
 
-		$files = glob($filename . '_*'. $this->file_ext);
+		$files = glob($filename . '_*'. $extension);
 
 		if ( ! empty($files))
 		{
@@ -476,7 +477,7 @@ class Filesystem {
 		do
 		{
 			$i++;
-			$path = $filename . '_' . $i . $extension;
+			$path = $filename . '_' . $i . '.' . $extension;
 		} while (in_array($path, $files));
 
 		return $path;
