@@ -62,7 +62,7 @@ class Notifications {
 						'entry_title'		=> $e->row('title'),
 						'entry_url'			=> reduce_double_slashes(parse_config_variables($c->row('channel_url'), $overrides).'/'.$e->row('url_title')),
 						'comment_url'		=> reduce_double_slashes(parse_config_variables($c->row('comment_url'), $overrides).'/'.$e->row('url_title')),
-						'cp_edit_entry_url'	=> ee('CP/URL')->make('publish/edit/entry/'.$row['entry_id'],
+						'cp_edit_entry_url'	=> ee('CP/URL')->make('publish/edit/entry/'.$entry_id,
 												array(),
 												ee()->config->item('cp_url')
 												)
