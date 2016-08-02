@@ -118,7 +118,9 @@ class Filepicker_mcp {
 				->filter('upload_location_id', 'IN', $dirs->getIds())
 				->filter('site_id', ee()->config->item('site_id'));
 
-			if (empty($dirs->getIds()))
+			$dir_ids = $dirs->getIds();
+
+			if (empty($dir_ids))
 			{
 				$nodirs = TRUE;
 				$files->markAsFutile();
