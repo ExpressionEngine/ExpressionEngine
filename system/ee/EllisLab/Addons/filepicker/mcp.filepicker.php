@@ -108,6 +108,8 @@ class Filepicker_mcp {
 
 		$directories = $dirs->indexBy('id');
 		$files = NULL;
+		$nodirs = FALSE;
+
 		$vars['search_allowed'] = FALSE;
 
 		if ($requested == 'all')
@@ -115,6 +117,12 @@ class Filepicker_mcp {
 			$files = ee('Model')->get('File')
 				->filter('upload_location_id', 'IN', $dirs->getIds())
 				->filter('site_id', ee()->config->item('site_id'));
+
+			if (empty($dirs->getIds()))
+			{
+				$nodirs = TRUE;
+				$files->markAsFutile();
+			}
 
 			$this->search($files);
 			$this->sort($files);
@@ -236,7 +244,7 @@ class Filepicker_mcp {
 
 		$vars['dir'] = $requested;
 
-		if ($this->images || $type == 'thumb')
+		if (($this->images || $type == 'thumb') && $total_files > 0)
 		{
 			$vars['type'] = 'thumb';
 			$vars['files'] = $files;
@@ -251,6 +259,24 @@ class Filepicker_mcp {
 			if (isset($vars['upload']) && is_numeric($vars['dir']))
 			{
 				$table->addActionButton($vars['upload'], lang('upload_new_file'));
+			}
+
+			// show a slightly different message if we have no upload directories
+			if ($nodirs)
+			{
+				if (ee()->cp->allowed_group('can_create_upload_directories'))
+				{
+					$table->setNoResultsText(
+						lang('zero_upload_directories_found'),
+						lang('create_new'),
+						ee('CP/URL')->make('files/uploads/create'),
+						TRUE
+					);
+				}
+				else
+				{
+					$table->setNoResultsText(lang('zero_upload_directories_found'));
+				}
 			}
 
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
