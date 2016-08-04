@@ -1230,6 +1230,10 @@ class EE_Typography {
 			return $matches[1].$code.$matches[1];
 		};
 
+		// make sure no one is sneaking things into links. XSS Clean won't pick these up since they aren't real markup
+		$str = $this->exposeMarkdownLinks($str);
+		$str = $this->exposeMarkdownReferenceLinks($str);
+
 		// Codefences
 		if (strpos($str, '```') !== FALSE
 			OR strpos($str, '~~~') !== FALSE)
@@ -1291,6 +1295,77 @@ class EE_Typography {
 	}
 
 	// --------------------------------------------------------------------
+
+	private function exposeMarkdownLinks($str)
+	{
+		$nested_brackets_depth = 6;
+		$nested_brackets_re =
+			str_repeat('(?>[^\[\]]+|\[', $nested_brackets_depth).
+			str_repeat('\])*', $nested_brackets_depth);
+
+		$nested_url_parenthesis_depth = 4;
+		$nested_url_parenthesis_re =
+			str_repeat('(?>[^()\s]+|\(', $nested_url_parenthesis_depth).
+			str_repeat('(?>\)))*', $nested_url_parenthesis_depth);
+
+		if ( ! $count = preg_match_all('{
+			(				# wrap whole match in $1
+			  \[
+				('.$nested_brackets_re.')	# link text = $2
+			  \]
+			  \(			# literal paren
+				[ \n]*
+				(?:
+					<(.+?)>	# href = $3
+				|
+					('.$nested_url_parenthesis_re.')	# href = $4
+				)
+				[ \n]*
+				(			# $5
+				  ([\'"])	# quote char = $6
+				  (.*?)		# Title = $7
+				  \6		# matching quote
+				  [ \n]*	# ignore any spaces/tabs between closing quote and )
+				)?			# title is optional
+			  \)
+			)
+			}xs',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		for ($i = 2; $i <= 7; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$new = '['.
+						$link_matches[2][$key]. // link text
+					']('.
+						$link_matches[3][$key].$link_matches[4][$key]. // one of these will be the href
+						$link_matches[6][$key]. // " or '
+						$link_matches[7][$key]. // optional title= attribute
+						$link_matches[6][$key]. // " or '
+					')';
+
+			$str = str_replace($match, $new, $str);
+		}
+
+		return $str;
+	}
+
+	private function exposeMarkdownReferenceLinks($str)
+	{
+		return $str;
+	}
 
 	/**
 	 * Formats an entry title for front-end presentation; things like converting
