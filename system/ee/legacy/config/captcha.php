@@ -23,6 +23,7 @@
  * @link		https://ellislab.com
  */
 
+ee()->load->library('logger');
 ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
 
 $words = ee()->config->loadFile('captcha');
