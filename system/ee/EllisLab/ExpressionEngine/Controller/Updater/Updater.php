@@ -84,7 +84,7 @@ class Updater extends CP_Controller {
 		$next_step = [
 			'preflight' => 'download',
 			'download' => 'unpack',
-			'unpack' => FALSE
+			'unpack' => 'updateFiles'
 		];
 
 		return [

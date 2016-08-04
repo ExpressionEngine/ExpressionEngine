@@ -40,8 +40,47 @@ class Updater {
 	public function index($step = '')
 	{
 		$this->updater = $this->getUpdaterService();
-		$this->updater->updateFiles();
-		echo 'hi';
+
+		$step = isset($_GET['step']) ? $_GET['step'] : FALSE;
+
+		if ($step === FALSE OR $step == 'undefined')
+		{
+			$step = 'updateFiles';
+		}
+
+		$step_groups = [
+			'updateFiles' => [
+				'updateFiles'
+			]
+		];
+
+		foreach ($step_groups[$step] as $sub_step)
+		{
+			try
+			{
+				$this->updater->$sub_step();
+			}
+			catch (\Exception $e)
+			{
+				return json_encode([
+					'messageType' => 'error',
+					'message' => $e->getMessage()
+				]);
+			}
+		}
+
+		$messages = [
+			'updateFiles' => 'Files updated!'
+		];
+		$next_step = [
+			'updateFiles' => FALSE
+		];
+
+		return json_encode([
+			'messageType' => 'success',
+			'message' => $messages[$step],
+			'nextStep' => $next_step[$step]
+		]);
 	}
 
 	/**

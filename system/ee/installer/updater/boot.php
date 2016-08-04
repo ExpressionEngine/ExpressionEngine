@@ -33,7 +33,7 @@
 
 	if (php_sapi_name() != 'cli')
 	{
-		$directory = (isset($_GET['D'])) ? $_GET['D'] : 'updater';
+		$directory = (isset($_GET['D']) && $_GET['D'] !== 'cp') ? $_GET['D'] : 'updater';
 		$controller = (isset($_GET['C'])) ? $_GET['C'] : 'updater';
 		$method = (isset($_GET['M'])) ? $_GET['M'] : 'index';
 		routeRequest($directory, $controller, $method);
