@@ -40,6 +40,9 @@ var Grid = window.Grid = {
  * @param	{string}	field		Selector of table to instantiate as a Grid
  */
 Grid.Publish = function(field, settings) {
+	if (field === null || field === undefined) {
+		return;
+	}
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);

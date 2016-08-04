@@ -81,8 +81,6 @@ $lang = array(
 'btn_send_email_working' => 'Sending...',
 
 'none'		=> 'Plain Text',
-'auto_br'	=> 'Auto &lt;br /&gt;',
-'xhtml'		=> 'XHTML',
 
 'no_cached_emails' => 'No <b>Sent emails</b> found.',
 

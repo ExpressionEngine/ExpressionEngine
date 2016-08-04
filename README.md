@@ -49,6 +49,10 @@ When code for a release is frozen, or development on a non-patch version is star
     * :green_heart: `:green_heart:` when fixing the CI build
     * :white_check_mark: `:white_check_mark:` when adding tests
     * :lock: `:lock:` when dealing with security
+    * :alien: `:alien:` when adding a third-party dependency
+    * :bathtub: `:bathtub:` when refactoring
+    * :spaghetti: `:spaghetti:` for WIP
+    * :twisted_rightwards_arrows: `:twisted_rightwards_arrows:` for merges
 
 ## Development Installs
 

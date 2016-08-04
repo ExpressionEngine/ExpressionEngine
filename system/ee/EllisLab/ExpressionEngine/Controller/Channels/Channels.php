@@ -205,6 +205,7 @@ class Channels extends AbstractChannelsController {
 		$cat_group_options = array();
 		$category_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
 			->order('group_name')
 			->all();
 		foreach ($category_groups as $group)
@@ -360,7 +361,7 @@ class Channels extends AbstractChannelsController {
 			array(
 				'field' => 'channel_title',
 				'label' => 'lang:channel_title',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'strip_tags|trim|valid_xss_check|required'
 			),
 			array(
 				'field' => 'channel_name',
@@ -372,6 +373,11 @@ class Channels extends AbstractChannelsController {
 				'label' => 'lang:channel_max_entries',
 				'rules' => 'is_natural'
 			),
+			array(
+				'field' => 'title_field_label',
+				'label' => 'lang:title_field_label',
+				'rules' => 'valid_xss_check'
+			)
 		));
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);

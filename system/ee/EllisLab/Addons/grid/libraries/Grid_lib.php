@@ -332,7 +332,7 @@ class Grid_lib {
 		$searchable_data = array();
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE);
 		$rows = $rows[$this->entry_id];
 
 		// Remove deleted rows from $rows
@@ -472,6 +472,17 @@ class Grid_lib {
 			$data = $data['rows'];
 		}
 
+		// In EE3, Channel Form populates the field_name property of its
+		// fieldtypes with the actual field_name on field display, but on
+		// submit, field_name is actually the field ID. Trouble is, POST is
+		// organized by field name instead of field ID, but we don't know our
+		// field name, so we need to get it so we can properly traverse POST
+		// and FILES. Hopefully will be back to consistent in EE4.
+		if (REQ !== 'CP' && $this->field_name == 'field_id_'.$this->field_id)
+		{
+			$this->field_name = ee('Model')->get('ChannelField', $this->field_id)->first()->field_name;
+		}
+
 		// Make a copy of the files array so we can spoof it per field below
 		$grid_field_name = $this->field_name;
 		$files_backup = $_FILES;
@@ -522,19 +533,23 @@ class Grid_lib {
 
 				if (isset($files_backup[$grid_field_name]))
 				{
-					$newfiles = array();
-
 					foreach ($files_backup[$grid_field_name] as $files_key => $value)
 					{
 						if (isset($value['rows'][$row_id][$col_id]))
 						{
-							$newfiles[$files_key] = $value['rows'][$row_id][$col_id];
+							$_FILES[$col_id][$files_key] = $value['rows'][$row_id][$col_id];
 						}
 					}
 
-					$_FILES[$col_id] = $newfiles;
+					// Hack for File fields in Channel form to get uploading
+					// working properly. This is the same hack done in
+					// Channel_form_lib for regular File fields
+					if (REQ !== 'CP' && $column['col_type'] === 'file')
+					{
+						$img = ee()->file_field->validate($_FILES[$col_id]['name'], $col_id);
+						$row[$col_id] = isset($img['value']) ?  $img['value'] : '';
+					}
 				}
-
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = ee()->grid_parser->call($method, $row[$col_id]);

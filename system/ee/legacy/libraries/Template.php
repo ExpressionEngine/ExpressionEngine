@@ -338,7 +338,7 @@ class EE_Template {
 
 			// Only iterate over the partials present in the template
 			$regex = $this->getGlobalsRegex();
-			if (preg_match_all($regex, $this->template, $result))
+			while (preg_match_all($regex, $this->template, $result))
 			{
 				foreach ($result[1] as $variable)
 				{
@@ -3398,12 +3398,7 @@ class EE_Template {
 
 		$time = microtime(TRUE)-$this->start_microtime;
 
-		$memory_usage = '';
-
-		if (function_exists('memory_get_usage'))
-		{
-			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2);
-		}
+		$memory_usage = memory_get_usage();
 
 		$last = end($this->log);
 		$time = number_format($time, 6);

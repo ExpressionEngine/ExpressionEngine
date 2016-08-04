@@ -39,12 +39,24 @@ $(document).ready(function () {
 
 			// Add hidden <input> elements
 			checked.each(function() {
-				$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+				$(modalIs + " .checklist li:last").append(
+					$('<input/>').attr({
+						type: 'hidden',
+						name: $(this).attr('name'),
+						value: $(this).val()
+					})
+				);
 			});
 
 			if (typeof confirm_input != 'undefined') {
 				$("input[name='" + confirm_input + "']").each(function() {
-					$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+					$(modalIs + " .checklist li:last").append(
+						$('<input/>').attr({
+							type: 'hidden',
+							name: $(this).attr('name'),
+							value: $(this).val()
+						})
+					);
 				});
 			}
 

@@ -28,11 +28,13 @@ $lang = array(
 
 'your_current_un_pw' => 'Your existing username and password',
 
-'access_notice' => 'Important notice: The administrator has changed the access requirements for this site as follows:',
+'new_requirements' => 'New Access Requirements',
 
-'choose_new_un' => 'Please choose a new username',
+'access_notice' => 'The administrator has changed the access requirements for this site.',
 
-'choose_new_pw' => 'Please choose a new password',
+'choose_new_un' => 'Choose a new username',
+
+'choose_new_pw' => 'Choose a new password',
 
 'confirm_new_pw' => 'Confirm your new password',
 
@@ -46,9 +48,9 @@ $lang = array(
 
 'ypw_len' => 'Your password is currently %s characters long',
 
-'existing_username' => 'Your Existing Username',
+'existing_username' => 'Your existing username',
 
-'existing_password' => 'Your Current Password',
+'existing_password' => 'Your current password',
 
 'all_fields_required' => 'You must submit all fields',
 

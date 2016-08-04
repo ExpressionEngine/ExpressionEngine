@@ -14,7 +14,7 @@ $params = array('value' => $value, 'name' => $field_name, 'rel' => 'date-picker'
 
 if ($value)
 {
-	$params['data-timestamp'] = ee()->localize->string_to_timestamp($value);
+	$params['data-timestamp'] = ee()->localize->string_to_timestamp($value, ($localized == 'y'), $date_format);
 }
 
 if ($disabled)

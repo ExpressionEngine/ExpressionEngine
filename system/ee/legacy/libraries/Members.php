@@ -369,7 +369,7 @@ class Members {
 
 		$file_info = ee()->upload->data();
 
-		@chmod($file_info['full_path'], DIR_WRITE_MODE);
+		@chmod($file_info['full_path'], FILE_WRITE_MODE);
 
 		// Do we need to resize?
 		$width	= $file_info['image_width'];

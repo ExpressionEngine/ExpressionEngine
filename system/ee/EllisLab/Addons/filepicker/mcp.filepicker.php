@@ -108,6 +108,8 @@ class Filepicker_mcp {
 
 		$directories = $dirs->indexBy('id');
 		$files = NULL;
+		$nodirs = FALSE;
+
 		$vars['search_allowed'] = FALSE;
 
 		if ($requested == 'all')
@@ -115,6 +117,14 @@ class Filepicker_mcp {
 			$files = ee('Model')->get('File')
 				->filter('upload_location_id', 'IN', $dirs->getIds())
 				->filter('site_id', ee()->config->item('site_id'));
+
+			$dir_ids = $dirs->getIds();
+
+			if (empty($dir_ids))
+			{
+				$nodirs = TRUE;
+				$files->markAsFutile();
+			}
 
 			$this->search($files);
 			$this->sort($files);
@@ -236,7 +246,7 @@ class Filepicker_mcp {
 
 		$vars['dir'] = $requested;
 
-		if ($this->images || $type == 'thumb')
+		if (($this->images || $type == 'thumb') && $total_files > 0)
 		{
 			$vars['type'] = 'thumb';
 			$vars['files'] = $files;
@@ -250,7 +260,25 @@ class Filepicker_mcp {
 			// Display Upload button if we can
 			if (isset($vars['upload']) && is_numeric($vars['dir']))
 			{
-				$table->addActionButton($vars['upload'], lang('upload_new_file'), 'btn action');
+				$table->addActionButton($vars['upload'], lang('upload_new_file'));
+			}
+
+			// show a slightly different message if we have no upload directories
+			if ($nodirs)
+			{
+				if (ee()->cp->allowed_group('can_create_upload_directories'))
+				{
+					$table->setNoResultsText(
+						lang('zero_upload_directories_found'),
+						lang('create_new'),
+						ee('CP/URL')->make('files/uploads/create'),
+						TRUE
+					);
+				}
+				else
+				{
+					$table->setNoResultsText(lang('zero_upload_directories_found'));
+				}
 			}
 
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
@@ -292,13 +320,16 @@ class Filepicker_mcp {
 	 */
 	private function sort($files)
 	{
-		if ($sort_col = ee()->input->get('sort_col'))
+		$sort_col = ee()->input->get('sort_col');
+
+		$sort_map = array(
+			'title_or_name' => 'file_name',
+			'file_type' => 'mime_type',
+			'date_added' => 'upload_date'
+		);
+
+		if (array_key_exists((string) $sort_col, $sort_map))
 		{
-			$sort_map = array(
-				'title_or_name' => 'file_name',
-				'file_type' => 'mime_type',
-				'date_added' => 'upload_date'
-			);
 			$files->order($sort_map[$sort_col], ee()->input->get('sort_dir'));
 		}
 	}
@@ -354,6 +385,8 @@ class Filepicker_mcp {
 
 	public function upload()
 	{
+		$errors = NULL;
+
 		$dir_id = ee()->input->get('directory');
 
 		if (empty($dir_id))
@@ -398,57 +431,21 @@ class Filepicker_mcp {
 				->now();
 		}
 
+		$file = ee('Model')->make('File');
+		$file->UploadDestination = $dir;
+
 		$vars = array(
+			'required' => TRUE,
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
 			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_saving',
-			'sections' => array(
-				array(
-					array(
-						'title' => 'file',
-						'fields' => array(
-							'file' => array(
-								'type' => 'file',
-								'required' => TRUE
-							)
-						)
-					),
-					array(
-						'title' => 'title',
-						'fields' => array(
-							'title' => array(
-								'type' => 'text',
-							)
-						)
-					),
-					array(
-						'title' => 'description',
-						'fields' => array(
-							'description' => array(
-								'type' => 'textarea',
-							)
-						)
-					),
-					array(
-						'title' => 'credit',
-						'fields' => array(
-							'credit' => array(
-								'type' => 'text',
-							)
-						)
-					),
-					array(
-						'title' => 'location',
-						'fields' => array(
-							'location' => array(
-								'type' => 'text',
-							)
-						)
-					),
-				)
-			)
+			'tabs' => array(
+				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
+				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
+			),
+			'sections' => array(),
 		);
 
 		ee()->load->library('form_validation');
@@ -499,10 +496,12 @@ class Filepicker_mcp {
 				$file->upload_location_id = $dir_id;
 				$file->site_id = ee()->config->item('site_id');
 
+				$file->set($_POST);
 				$file->title = (ee()->input->post('title')) ?: $file->file_name;
-				$file->description = ee()->input->post('description');
-				$file->credit = ee()->input->post('credit');
-				$file->location = ee()->input->post('location');
+				if (array_key_exists('categories', $_POST))
+				{
+					$file->setCategoriesFromPost($_POST['categories']);
+				}
 
 				$file->uploaded_by_member_id = ee()->session->userdata('member_id');
 				$file->upload_date = ee()->localize->now;

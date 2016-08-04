@@ -51,7 +51,9 @@ class Template extends ProfilerSection {
 	 **/
 	public function getSummary()
 	{
-		return $this->template_memory.'mb '.lang('profiler_'.$this->section_name);
+		return $this->fmt_factory->make('Number', $this->template_memory)->bytes().
+			' '.
+			lang('profiler_'.$this->section_name);
 	}
 
 	/**
@@ -76,7 +78,8 @@ class Template extends ProfilerSection {
 
 		foreach($log as &$entry)
 		{
-			$entry['memory_threshold'] = $this->memory_threshold;
+			// convert human friendly megabytes into bytes for maths
+			$entry['memory_threshold'] = $this->memory_threshold * 1048576;
 			$entry['time_threshold'] = $this->time_threshold;
 		}
 

@@ -1562,6 +1562,18 @@ GRID_FALLBACK;
 						$_POST[$field] = ee()->localize->human_time();
 					}
 				}
+				// Prevent a DateTime object from going into POST
+				elseif ($field == 'recent_comment_date')
+				{
+					if ($this->entry($field) && $this->entry($field)->getTimestamp() !== 1)
+					{
+						$_POST[$field] = $this->entry($field)->getTimestamp();
+					}
+					else
+					{
+						$_POST[$field] = 0;
+					}
+				}
 				elseif ($field == 'versioning_enabled' AND $this->channel('enable_versioning') == 'y')
 				{
 					$_POST[$field] = 'y';
@@ -2102,11 +2114,7 @@ GRID_FALLBACK;
 	 */
 	public function fetch_channel($channel_id, $channel_name = FALSE)
 	{
-		//exit if already loaded - TODO when does this happen? overly defensive
-		if (isset($this->channel))
-		{
-			return;
-		}
+		//If two forms are on the same template, $this->channel needs to be redefined
 
 		$query = ee('Model')->get('Channel')
 			->with('ChannelFormSettings');
@@ -3330,7 +3338,7 @@ GRID_FALLBACK;
 		$word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
 
 		// Foreign Character Conversion Javascript
-		include(APPPATH.'config/foreign_chars.php');
+		$foreign_characters = ee()->config->loadFile('foreign_chars');
 
 		/* -------------------------------------
 		/*  'foreign_character_conversion_array' hook.

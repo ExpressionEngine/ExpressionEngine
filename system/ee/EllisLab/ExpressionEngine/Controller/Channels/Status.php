@@ -563,7 +563,7 @@ class Status extends AbstractChannelsController {
 		if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
 		{
 			$foreground = $this->calculateForegroundFor($status->highlight);
-			$status_style = "style='background-color: {$status->highlight}; border-color: {$status->highlight}; color: {$foreground};'";
+			$status_style = "style='background-color: #{$status->highlight}; border-color: #{$status->highlight}; color: #{$foreground};'";
 		}
 
 		$status_name = (empty($status->status)) ? lang('status') : $status->status;

@@ -125,8 +125,11 @@ FuzzyListSearch.prototype = {
 function ListFocus(ul) {
 	this.ul = ul;
 	this.items = ul.find('li');
+	this.isNav = !! ul.closest('.nav-main').length;
 
-	this.scrollWrap = this.ul.closest('.scroll-wrap');
+	this.scrollWrap = this.getScrollWrap();
+	this.scrollOffset = this.isNav ? 7 : 4;
+
 	this.current = -1;
 	this.scrolled = 0;
 
@@ -134,6 +137,14 @@ function ListFocus(ul) {
 }
 
 ListFocus.prototype = {
+
+	getScrollWrap: function() {
+		if (this.isNav) {
+			return this.ul;
+		}
+
+		return this.ul.closest('.scroll-wrap');
+	},
 
 	/**
 	 * Set the focus index
@@ -171,8 +182,8 @@ ListFocus.prototype = {
 	_updateScroll: function() {
 		var delta = this.current - this.scrolled;
 
-		if (delta > 4) {
-			this.scrolled += delta - 4;
+		if (delta > this.scrollOffset) {
+			this.scrolled += delta - this.scrollOffset;
 		} else if (delta <= 0) {
 			this.scrolled += delta;
 		}
@@ -215,12 +226,13 @@ $.fn.fuzzyFilter = function() {
 
 		var input = $(this);
 		var list = $(this).closest('.sub-menu, .nav-sub-menu').find('ul');
-		var scrollWrap = list.closest('.scroll-wrap');
 
 		var focusBar = new ListFocus(list);
 		var fuzzyList = new FuzzyListSearch(list, {
 			keep: ':has(.add, .nav-add)'
 		});
+
+		var scrollWrap = focusBar.getScrollWrap();
 
 		// the input gains focus when it becomes visible. at this point
 		// we want to make sure that our menu isn't going to shrink horizontally

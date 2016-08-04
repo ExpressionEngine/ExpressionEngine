@@ -547,6 +547,11 @@ class Api_channel_fields extends Api {
 
 		$old_data = $query->row_array();
 
+		if ($col_settings_method == 'grid_settings_modify_column')
+		{
+			$old_data = json_decode($old_data['col_settings'], TRUE);
+		}
+
 		// merge in a few variables to the data array
 		$old_data[$id_field] = $field_id;
 		$old_data['ee_action'] = $type;

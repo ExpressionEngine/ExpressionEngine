@@ -183,7 +183,9 @@ class Search {
 			/**  Remove "ignored" words
 			/** ----------------------------------------*/
 
-			if (( ! isset($_POST['exact_keyword']) OR $_POST['exact_keyword'] != 'y') && @include_once(APPPATH.'config/stopwords.php'))
+			$ignore = ee()->config->loadFile('stopwords');
+
+			if (( ! isset($_POST['exact_keyword']) OR $_POST['exact_keyword'] != 'y'))
 			{
 				$parts = explode('"', $this->keywords);
 

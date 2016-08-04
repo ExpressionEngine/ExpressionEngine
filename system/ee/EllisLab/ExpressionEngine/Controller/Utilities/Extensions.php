@@ -55,7 +55,7 @@ class Extensions extends Utilities {
 		$this->params['perpage'] = $this->perpage; // Set a default
 
 		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 
 		$this->base_url = ee('CP/URL')->make('utilities/extensions');
 

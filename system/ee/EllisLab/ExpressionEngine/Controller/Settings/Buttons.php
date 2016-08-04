@@ -41,8 +41,8 @@ class Buttons extends Settings {
 		ee()->lang->load('admin_content');
 
 		// load the predefined buttons
-		include_once(APPPATH.'config/html_buttons.php');
-		$this->predefined = $predefined_buttons;
+		$button_config = ee()->config->loadFile('html_buttons');
+		$this->predefined = $button_config['buttons'];
 
 		$this->index_url = $this->base_url;
 		$this->base_url = ee('CP/URL')->make($this->base_url);
@@ -60,6 +60,7 @@ class Buttons extends Settings {
 		// Default HTML buttons simply have a member ID of 0
 		$buttons = ee('Model')->get("HTMLButton")
 					->filter('member_id', 0)
+					->filter('site_id', ee()->config->item('site_id'))
 					->order('tag_order', 'asc')
 					->all();
 

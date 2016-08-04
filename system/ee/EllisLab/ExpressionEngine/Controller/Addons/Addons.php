@@ -69,7 +69,7 @@ class Addons extends CP_Controller {
 		$this->params['perpage'] = $this->perpage; // Set a default
 
 		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 
 		$this->base_url = ee('CP/URL')->make('addons');
 
@@ -308,7 +308,13 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => $return_url->encode())),
+						'href' => '#',
+						'data-post-url' => ee('CP/URL')->make(
+							'addons/install/' . $info['package'],
+							array(
+								'return' => $return_url->encode()
+							)
+						),
 						'title' => lang('install'),
 						'content' => lang('install'),
 						'type' => 'txt-only',
@@ -352,7 +358,13 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => $return_url->encode())),
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make(
+								'addons/update/' . $info['package'],
+								array(
+									'return' => $return_url->encode()
+								)
+							),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -486,7 +498,8 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -647,7 +660,8 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'));
 		}
