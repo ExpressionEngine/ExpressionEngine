@@ -411,11 +411,15 @@ JSC;
 				margin: 4px 0 0;
 			}
 			.remove_file {
-				position: absolute;
-				top: -6px;
-				left: -6px;
-				z-index: 5;
+				color: #5F6C74;
+				font-family: Helvetica, Arial, sans-serif;
+				font-size: 12px;
+				text-decoration: underline;
+				display: block;
+				padding: 0;
+				margin: 0 0 8px;
 			}
+
 			.clear {
 				clear: both;
 			}
