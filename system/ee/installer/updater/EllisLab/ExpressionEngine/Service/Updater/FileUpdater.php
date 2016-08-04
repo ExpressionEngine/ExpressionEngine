@@ -254,6 +254,10 @@ class FileUpdater {
 		{
 			throw new UpdaterException('Destination path not a directory: '.$destination, 18);
 		}
+		elseif ( ! $this->filesystem->isWritable($destination))
+		{
+			throw new UpdaterException('Destination path not writable: '.$destination, 18);
+		}
 
 		$contents = $this->filesystem->getDirectoryContents($source);
 
@@ -268,12 +272,9 @@ class FileUpdater {
 			$new_path = str_replace($source, $destination, $path);
 
 			// Try to catch permissions errors before PHP's file I/O functions do
-			foreach ([$path, $new_path] as $path_to_check)
+			if ( ! $this->filesystem->isWritable($path))
 			{
-				if ( ! $this->filesystem->isWritable($path_to_check))
-				{
-					throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path_to_check}", 19);
-				}
+				throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path}", 19);
 			}
 
 			$this->logger->log('Moving '.$path.' to '.$new_path);
