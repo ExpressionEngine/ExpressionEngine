@@ -260,6 +260,23 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 			$this->assertEquals(18, $e->getCode());
 		}
 
+		// Destination isn't writable
+		$source = SYSPATH.'ee/';
+		$destination = $this->backups_path.'system_ee/';
+		$this->filesystem->shouldReceive('exists')->with($destination)->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('isDir')->with($destination)->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('isWritable')->with($destination)->andReturn(FALSE)->once();
+
+		try
+		{
+			$this->fileupdater->backupExistingInstallFiles();
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(21, $e->getCode());
+		}
+
 		// Should exclude files
 		$this->filesystem->shouldReceive('exists')->with($destination)->andReturn(FALSE)->once();
 		$this->filesystem->shouldReceive('mkDir')->with($destination, FALSE)->andReturn(TRUE)->once();
@@ -271,7 +288,6 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$new_path = str_replace($source, $destination, $source.'index.html');
 		$this->filesystem->shouldReceive('isWritable')->with($source.'index.html')->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('isWritable')->with($new_path)->andReturn(TRUE)->once();
 		$this->filesystem->shouldReceive('rename')->with($source.'index.html', $new_path)->andReturn(TRUE)->once();
 
 		$source = '/themes/ee/';
@@ -295,8 +311,7 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 		])->once();
 
 		$new_path = str_replace($source, $destination, $source.'index.html');
-		$this->filesystem->shouldReceive('isWritable')->with($source.'index.html')->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('isWritable')->with($new_path)->andReturn(FALSE)->once();
+		$this->filesystem->shouldReceive('isWritable')->with($source.'index.html')->andReturn(FALSE)->once();
 
 		try
 		{
@@ -364,13 +379,13 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->filesystem->shouldReceive('exists')->with($destination)->andReturn(TRUE)->once();
 		$this->filesystem->shouldReceive('isDir')->with($destination)->andReturn(TRUE)->once();
+		$this->filesystem->shouldReceive('isWritable')->with($destination)->andReturn(TRUE)->once();
 
 		$file_path = $source.'index.html';
 		$this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([$file_path])->once();
 
 		$new_path = str_replace($source, $destination, $file_path);
 		$this->filesystem->shouldReceive('isWritable')->with($file_path)->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('isWritable')->with($new_path)->andReturn(TRUE)->once();
 
 		$method = $copy ? 'copy' : 'rename';
 		$this->filesystem->shouldReceive($method)->with($file_path, $new_path)->andReturn(TRUE)->once();

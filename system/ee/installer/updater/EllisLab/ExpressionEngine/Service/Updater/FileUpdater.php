@@ -256,7 +256,7 @@ class FileUpdater {
 		}
 		elseif ( ! $this->filesystem->isWritable($destination))
 		{
-			throw new UpdaterException('Destination path not writable: '.$destination, 18);
+			throw new UpdaterException('Destination path not writable: '.$destination, 21);
 		}
 
 		$contents = $this->filesystem->getDirectoryContents($source);
