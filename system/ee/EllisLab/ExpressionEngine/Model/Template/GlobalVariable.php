@@ -164,7 +164,7 @@ class GlobalVariable extends FileSyncedModel {
 			->filter('site_id', $this->site_id)
 			->first();
 
-		return $basepath.$site->site_name.'/_partials';
+		return $basepath.$site->site_name.'/_variables';
 	}
 
 	/**
