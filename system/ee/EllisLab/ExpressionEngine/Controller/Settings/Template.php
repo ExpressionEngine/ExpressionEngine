@@ -157,15 +157,21 @@ class Template extends Settings {
 
 		if ($save_template_files == 'y')
 		{
-			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')->all();
+			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 			$tgs->Templates->save();
 			$tgs = NULL;
 
-			$snippets = ee('Model')->get('Snippet')->all();
+			$snippets = ee('Model')->get('Snippet')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 			$snippets->save();
 			$snippets = NULL;
 
-			$variables = ee('Model')->get('GlobalVariable')->all();
+			$variables = ee('Model')->get('GlobalVariable')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 			$variables->save();
 			$variables = NULL;
 		}
