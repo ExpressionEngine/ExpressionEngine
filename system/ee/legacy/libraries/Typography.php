@@ -1231,8 +1231,8 @@ class EE_Typography {
 		};
 
 		// make sure no one is sneaking things into links. XSS Clean won't pick these up since they aren't real markup
-		$str = $this->exposeMarkdownLinks($str);
-		$str = $this->exposeMarkdownReferenceLinks($str);
+		$str = $this->unencodeMarkdownLinks($str);
+		$str = $this->unencodeMarkdownReferenceLinks($str);
 
 		// Codefences
 		if (strpos($str, '```') !== FALSE
@@ -1296,8 +1296,21 @@ class EE_Typography {
 
 	// --------------------------------------------------------------------
 
-	private function exposeMarkdownLinks($str)
+	/**
+	 * Unencode Markdown Links
+	 *
+	 * Turns:
+	 * 		[Link](&#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;)
+	 * Into:
+	 * 		[Link](https://example.com/)
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownLinks($str)
 	{
+		// these are protected class properties of Markdown
+		// copied here to keep the regex below sane
 		$nested_brackets_depth = 6;
 		$nested_brackets_re =
 			str_repeat('(?>[^\[\]]+|\[', $nested_brackets_depth).
@@ -1308,6 +1321,7 @@ class EE_Typography {
 			str_repeat('(?>[^()\s]+|\(', $nested_url_parenthesis_depth).
 			str_repeat('(?>\)))*', $nested_url_parenthesis_depth);
 
+		// regex from in-line style links in Markdown::doAnchors()
 		if ( ! $count = preg_match_all('{
 			(				# wrap whole match in $1
 			  \[
@@ -1337,6 +1351,7 @@ class EE_Typography {
 			return $str;
 		}
 
+		// decode entities in captures we will use for replacement
 		for ($i = 2; $i <= 7; $i++)
 		{
 			for ($j = 0; $j < $count; $j++)
@@ -1345,6 +1360,7 @@ class EE_Typography {
 			}
 		}
 
+		// replace original full match with the decoded version
 		foreach ($link_matches[0] as $key => $match)
 		{
 			$new = '['.
@@ -1362,10 +1378,101 @@ class EE_Typography {
 		return $str;
 	}
 
-	private function exposeMarkdownReferenceLinks($str)
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unencode Markdown Reference Links
+	 *
+	 * Turns:
+	 * 		[1]: &#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;
+	 * Into:
+	 * 		[1]: https://example.com/
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownReferenceLinks($str)
 	{
+		// set to 1 less than Markdown's $tab_width property
+		$less_than_tab = 3;
+
+		// regex from Markdown::stripLinkDefinitions()
+		if ( ! $count = preg_match_all(
+			'{
+			^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:	# id = $1
+			  [ ]*
+			  \n?				# maybe *one* newline
+			  [ ]*
+			(?:
+			  <(.+?)>			# url = $2
+			|
+			  (\S+?)			# url = $3
+			)
+			  [ ]*
+			  \n?				# maybe one newline
+			  [ ]*
+			(?:
+				(?<=\s)			# lookbehind for whitespace
+				["(]
+				(.*?)			# title = $4
+				[")]
+				[ ]*
+			)?	# title is optional
+			(?:\n+|\Z)
+			}xm',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 4; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$title = '';
+
+			if (empty($link_matches[4][$key]))
+			{
+				$title = '';
+			}
+			else
+			{
+				if (strpos($link_matches[4][$key], '"') !== FALSE)
+				{
+					$title = ' ('.$link_matches[4][$key].')';
+				}
+				else
+				{
+					$title = ' "'.$link_matches[4][$key].'"';
+				}
+			}
+
+			$newline = (substr($match, -1) === "\n") ? "\n" : '';
+
+			$new = '['.
+					$link_matches[1][$key]. // link id
+					']: '.
+					$link_matches[2][$key].$link_matches[3][$key]. // one of these will be the href
+					$title. // empty or optional title
+					$newline; // preserve newlines
+
+			$str = str_replace($match, $new, $str);
+		}
+
 		return $str;
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Formats an entry title for front-end presentation; things like converting
