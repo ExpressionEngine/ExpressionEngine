@@ -159,8 +159,12 @@ class GlobalVariable extends FileSyncedModel {
 			return $basepath.'_global_variables';
 		}
 
-		$site = ee()->config->item('site_short_name');
-		return $basepath.$site.'/_variables';
+		$site = $this->getFrontend()->get('Site')
+			->fields('site_name')
+			->filter('site_id', $this->site_id)
+			->first();
+
+		return $basepath.$site->site_name.'/_partials';
 	}
 
 	/**
