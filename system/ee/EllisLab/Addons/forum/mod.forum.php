@@ -1065,14 +1065,14 @@ class Forum {
 	 */
 	public function deny_if($cond, $str, $replace = '')
 	{
-		return preg_replace("/\{if\s+".$cond."\}.+?\{\/if\}/si", $replace, $str);
+		return str_replace("{if {$cond}}", "{if FALSE}", $str);
 	}
 
 	// --------------------------------------------------------------------
 
 	public function allow_if($cond, $str)
 	{
-		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
+		return str_replace("{if {$cond}}", "{if TRUE}", $str);
 	}
 
 	// --------------------------------------------------------------------
@@ -1208,6 +1208,8 @@ class Forum {
 			'current_id'		=> $this->current_id,
 			'current_page'		=> $this->current_page,
 			'pm_enabled'		=> EE_Messages::can_send_pm(),
+			'logged_in'			=> ee()->session->userdata('member_id') != 0,
+			'logged_out'		=> ee()->session->userdata('member_id') == 0
 		);
 
 		// parse certain board preferences as well
@@ -1263,27 +1265,8 @@ class Forum {
 			)
 		);
 
-		// Evaluate the segment conditionals
-		if (preg_match("/".LD."if (".implode('|', array_keys($conds)).").*?".RD.".*?".LD."\/if".RD."/s", $str))
-		{
-			$str = ee()->functions->prep_conditionals($str, $conds, 'y');
-
-			// protect PHP tags within the conditional
-			// code block PHP tags are already protected, so we must double encode them
-			$str = str_replace(array('&lt;?', '?&gt;'), array('&amp;lt;?', '?&amp;gt;'), $str);
-			$str = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $str);
-
-			// convert our prepped EE conditionals to PHP
-			$str = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $str);
-			$str = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s*(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $str);
-
-			// Evaluate the php conditionals
-			$str = $this->parse_template_php($str);
-
-			// Bring back the old php tags and double encoded
-			$str = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $str);
-			$str = str_replace(array('&amp;lt;?', '?&amp;gt;'), array('&lt;?', '?&gt;'), $str);
-		}
+		// Evaluate the conditionals
+		$str = ee()->functions->prep_conditionals($str, $conds);
 
 		if ($this->fetch_pref('board_allow_php') == 'y' AND $this->fetch_pref('board_php_stage') == 'o')
 		{

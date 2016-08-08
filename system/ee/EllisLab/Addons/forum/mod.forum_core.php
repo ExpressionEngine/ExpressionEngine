@@ -1375,9 +1375,8 @@ class Forum_Core extends Forum {
 		// Cycle through the results
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'highlight_code'	=> TRUE,
-				'encode_type'		=> 'noscript')
-				);
+			'encode_type' => 'noscript'
+		));
 
 		$res = '';
 
@@ -2013,7 +2012,8 @@ class Forum_Core extends Forum {
 											'super_admins'	=> $super_admins,
 											'is_topic'		=> TRUE,
 											'topic_id'		=> $tquery->row('post_id') ,
-											'topic_status'	=> $tquery->row('status')
+											'topic_status'	=> $tquery->row('status'),
+											'forum_id'      => $tquery->row('forum_id')
 											),
 										TRUE
 									);
@@ -2616,6 +2616,16 @@ class Forum_Core extends Forum {
 			$str = $this->load_element('threads');
 		}
 
+		// parse this early to spare parsing for blocks the user doesn't have permission for
+		if ( ! $this->_mod_permission('is_moderator', $tquery->row('forum_id')))
+		{
+			$str = $this->deny_if('is_moderator', $str);
+		}
+		else
+		{
+			$str = $this->allow_if('is_moderator', $str);
+		}
+
 		// Check to see if the old style pagination exists
 		// @deprecated 2.8
 		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
@@ -2828,6 +2838,36 @@ class Forum_Core extends Forum {
 		ee()->db->where('topic_id', $this->current_id);
 		ee()->db->update('forum_topics', array('thread_views' => $views));
 
+		// Is there a poll?
+		ee()->db->select('poll_id, poll_question, poll_answers, total_votes');
+		$query = ee()->db->get_where('forum_polls', array('topic_id' => $this->current_id));
+
+		if ($query->num_rows() == 0)
+		{
+			$str = $this->deny_if('poll', $str, '');
+			$poll = '';
+		}
+		else
+		{
+			$answers = $this->array_stripslashes(unserialize($query->row('poll_answers') ));
+
+			if ( ! is_array($answers))
+			{
+				$str = $this->deny_if('poll', $str, '');
+				$poll = '';
+			}
+			else
+			{
+				$str = $this->allow_if('poll', $str);
+				$poll = $this->_generate_poll(
+					$query->row('poll_id'),
+					$query->row('poll_question'),
+					$answers,
+					$query->row('total_votes')
+				);
+			}
+		}
+
 		// Parse the template with the topic data
 		$topic = $this->thread_rows(
 			array(
@@ -2841,7 +2881,9 @@ class Forum_Core extends Forum {
 				'is_topic'     => TRUE,
 				'topic_id'     => $tquery->row('post_id') ,
 				'topic_status' => $tquery->row('status') ,
-				'is_split'     => $is_split
+				'is_split'     => $is_split,
+				'forum_id'     => $tquery->row('forum_id'),
+				'poll'         => $poll
 			),
 			FALSE,
 			$thread_review
@@ -2930,7 +2972,8 @@ class Forum_Core extends Forum {
 					'is_topic'     => FALSE,
 					'topic_id'     => $this->current_id,
 					'topic_status' => $tquery->row('status') ,
-					'is_split'     => $is_split
+					'is_split'     => $is_split,
+					'forum_id'     => $tquery->row('forum_id')
 				),
 				FALSE,
 				$thread_review
@@ -2968,36 +3011,6 @@ class Forum_Core extends Forum {
 			{
 				$subscription_text = lang('unsubscribe_to_thread');
 				$subscription_path = $this->forum_path('/unsubscribe/'.$this->current_id.'/');
-			}
-		}
-
-		// Is there a poll?
-		ee()->db->select('poll_id, poll_question, poll_answers, total_votes');
-		$query = ee()->db->get_where('forum_polls', array('topic_id' => $this->current_id));
-
-		if ($query->num_rows() == 0)
-		{
-			$str = $this->deny_if('poll', $str, '');
-			$poll = '';
-		}
-		else
-		{
-			$answers = $this->array_stripslashes(unserialize($query->row('poll_answers') ));
-
-			if ( ! is_array($answers))
-			{
-				$str = $this->deny_if('poll', $str, '');
-				$poll = '';
-			}
-			else
-			{
-				$str = $this->allow_if('poll', $str);
-				$poll = $this->_generate_poll(
-					$query->row('poll_id'),
-					$query->row('poll_question'),
-					$answers,
-					$query->row('total_votes')
-				);
 			}
 		}
 
@@ -3089,6 +3102,8 @@ class Forum_Core extends Forum {
 
 		// Finalize the result
 		$thread = ($is_split == FALSE ) ? 'thread_rows' : 'split_thread_rows';
+
+		$str = ee()->TMPL->parse_date_variables($str, array('topic_date' => $tquery->row('date')));
 
 		return $this->var_swap($str, array(
 			'topic_title'                => trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
@@ -3241,12 +3256,16 @@ class Forum_Core extends Forum {
 				$temp = str_replace('{poll_choice}', $this->_convert_special_chars(ee()->typography->filter_censored_words($val['answer'])), $temp);
 				$temp = str_replace('{votes}', $val['votes'], $temp);
 
+				$percent = 0;
 				if ($val['votes'] > 0)
 				{
-					$num = abs($val['votes'] / $total_votes * 100);
-					$num = round(abs($num / 3));
+					$percent = abs($val['votes'] / $total_votes * 100);
+					$num = round(abs($percent / 3));
 					$img .= str_repeat($img_m, $num);
 				}
+
+				$temp = str_replace('{vote_percentage}', $percent, $temp);
+				$temp = str_replace('{vote_percentage_factor_ten}', round($percent, -1), $temp);
 
 				$img .= $img_r;
 
@@ -3313,6 +3332,16 @@ class Forum_Core extends Forum {
 			}
 		}
 
+		// parse this early to spare parsing for blocks the user doesn't have permission for
+		if ( ! $this->_mod_permission('is_moderator', $forum_id))
+		{
+			$template = $this->deny_if('is_moderator', $template);
+		}
+		else
+		{
+			$template = $this->allow_if('is_moderator', $template);
+		}
+
 		// -------------------------------------------
 		// 'forum_thread_rows_start' hook.
 		//  - Allows usurping of forum thread rows display
@@ -3339,9 +3368,7 @@ class Forum_Core extends Forum {
 
 		// Load the typography class
 		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-				'highlight_code'	=> TRUE)
-				);
+		ee()->typography->initialize();
 
 		// Loop through the result
 		$thread_rows  = '';
@@ -3841,6 +3868,16 @@ class Forum_Core extends Forum {
 				}
 			}
 
+			if ( ! empty($poll))
+			{
+				$temp = $this->allow_if('poll', $temp);
+			}
+			else
+			{
+				$temp = $this->deny_if('poll', $temp);
+				$poll = '';
+			}
+
 			$temp = $this->var_swap($temp,
 				array(
 						'post_id'					=> $row['post_id'],
@@ -3849,6 +3886,7 @@ class Forum_Core extends Forum {
 						'author'					=> $row['author'],
 						'ip_address'				=> $row['ip_address'],
 						'include:signature'			=> $signature,
+						'include:poll'				=> $poll,
 						'total_posts'				=> $total_posts,
 						'path:photos'				=> $photo_path,
 						'photo_width'				=> $photo_width,
@@ -5060,9 +5098,8 @@ class Forum_Core extends Forum {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'highlight_code'	=> TRUE,
-				'parse_smileys'		=> (isset($_POST['smileys'])) ? TRUE : FALSE)
-				);
+			'parse_smileys' => (isset($_POST['smileys'])) ? TRUE : FALSE
+		));
 
 		$forum_text_formatting  = 'xhtml';
 		$forum_html_formatting 	= 'safe';
@@ -6230,9 +6267,8 @@ class Forum_Core extends Forum {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'		=> FALSE,
-				'highlight_code'	=> FALSE)
-				);
+			'parse_images' => FALSE
+		));
 
 		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '".$data['topic_id']."'");
 
@@ -6932,9 +6968,8 @@ class Forum_Core extends Forum {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'highlight_code'	=> TRUE,
-				'parse_smileys'		=> ($query->row('parse_smileys')  == 'y') ? TRUE : FALSE)
-				);
+			'parse_smileys' => ($query->row('parse_smileys') == 'y') ? TRUE : FALSE
+		));
 
 		$body = ee()->typography->parse_type($query->row('body') ,
  								  array(
@@ -7795,9 +7830,8 @@ class Forum_Core extends Forum {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'highlight_code'	=> TRUE,
-				'parse_smileys'		=> ($parse_smileys == 'y') ? TRUE : FALSE)
-				);
+			'parse_smileys' => ($parse_smileys == 'y') ? TRUE : FALSE
+		));
 
 		$str = $this->var_swap($str,
 				array(
