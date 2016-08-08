@@ -32,7 +32,7 @@ class File extends SplFileObject {
 
 	public function getUrl()
 	{
-		return $this->url . '/' . $this->getFilename();
+		return parse_config_variables($this->url) . '/' . $this->getFilename();
 	}
 
 	public function getThumbnailUrl()
@@ -42,7 +42,7 @@ class File extends SplFileObject {
 			return $this->getUrl();
 		}
 
-		return $this->thumb_url . '/' . $this->getFilename();;
+		return parse_config_variables($this->thumb_url) . '/' . $this->getFilename();;
 	}
 
 	public function getMimeType()
