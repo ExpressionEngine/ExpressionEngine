@@ -270,7 +270,7 @@ class UploadDestination extends Model {
 	public function getFilesystem()
 	{
 		$fs = ee('File')->getPath($this->getProperty('server_path'));
-		$fs->setUrl($this->getRawProperty('url'));
+		$fs->setUrl($this->getProperty('url'));
 
 		return $fs;
 	}
