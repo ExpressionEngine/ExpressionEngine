@@ -139,7 +139,7 @@ class UploadDestination extends Model {
 	public function __get($name)
 	{
 		$value = parent::__get($name);
-		return $this->fetchOverride($name) ?: $value;
+		return $this->fetchOverride($name, $value) ?: $value;
 	}
 
 	/**
@@ -167,12 +167,11 @@ class UploadDestination extends Model {
 	 * if needed
 	 *
 	 * @param str $name The name of the property to fetch
+	 * @param string $value Value of property to parse
 	 * @return mixed The value of the property or NULL if there was no override
 	 */
-	private function fetchOverride($name)
+	private function fetchOverride($name, $value = NULL)
 	{
-		$value = NULL;
-
 		if ($this->hasOverride($name))
 		{
 			$value = $this->_property_overrides[$this->id][$name];
