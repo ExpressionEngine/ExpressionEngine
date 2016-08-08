@@ -17,7 +17,7 @@ class File extends SplFileObject {
 
 	public function getDirectory()
 	{
-		return $this->directory;
+		return parse_config_variables($this->directory);
 	}
 
 	public function setUrl($url)
