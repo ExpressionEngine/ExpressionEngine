@@ -194,7 +194,7 @@ class UploadDestination extends Model {
 	public function getProperty($name)
 	{
 		$value = parent::getProperty($name);
-		return $this->fetchOverride($name) ?: $value;
+		return $this->fetchOverride($name, $value) ?: $value;
 	}
 
 	/**
