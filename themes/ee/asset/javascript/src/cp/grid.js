@@ -263,6 +263,13 @@ Grid.Publish.prototype = {
 			if (that._getRows().size() == 0) {
 				that.emptyField.show();
 			}
+
+			// Mark entire Grid field as valid if all rows with invalid cells are cleared
+			if ($('td.invalid', that.root).size() == 0 &&
+				EE.cp &&
+				EE.cp.formValidation !== undefined) {
+				EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankRow).eq(0));
+			}
 		});
 	},
 
