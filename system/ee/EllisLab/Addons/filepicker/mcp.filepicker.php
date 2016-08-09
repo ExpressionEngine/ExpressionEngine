@@ -332,6 +332,10 @@ class Filepicker_mcp {
 		{
 			$files->order($sort_map[$sort_col], ee()->input->get('sort_dir'));
 		}
+		else
+		{
+			$files->order('upload_date', 'desc');
+		}
 	}
 
 	public function modal()
