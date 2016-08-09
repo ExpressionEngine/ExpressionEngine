@@ -139,7 +139,7 @@ class UploadDestination extends Model {
 	public function __get($name)
 	{
 		$value = parent::__get($name);
-		return $this->fetchOverride($name) ?: $value;
+		return $this->fetchOverride($name, $value);
 	}
 
 	/**
@@ -169,9 +169,9 @@ class UploadDestination extends Model {
 	 * @param str $name The name of the property to fetch
 	 * @return mixed The value of the property or NULL if there was no override
 	 */
-	private function fetchOverride($name)
+	private function fetchOverride($name, $default = NULL)
 	{
-		$value = NULL;
+		$value = $default;
 
 		if ($this->hasOverride($name))
 		{
@@ -195,7 +195,7 @@ class UploadDestination extends Model {
 	public function getProperty($name)
 	{
 		$value = parent::getProperty($name);
-		return $this->fetchOverride($name) ?: $value;
+		return $this->fetchOverride($name, $value);
 	}
 
 	/**
@@ -270,7 +270,7 @@ class UploadDestination extends Model {
 	public function getFilesystem()
 	{
 		$fs = ee('File')->getPath($this->getProperty('server_path'));
-		$fs->setUrl($this->getRawProperty('url'));
+		$fs->setUrl($this->getProperty('url'));
 
 		return $fs;
 	}
