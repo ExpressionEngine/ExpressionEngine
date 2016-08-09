@@ -595,11 +595,13 @@ class EE_Template {
 		if ( ! isset($this->globals_regex))
 		{
 			$global_names = array_keys(ee()->config->_global_vars);
-
-			if (strpos(implode($global_names), '-') !== FALSE)
-			{
-				$global_names = array_map('preg_quote', $global_names);
-			}
+			$global_names = array_map(
+				function($str)
+				{
+					return preg_quote($str, '/');
+				},
+				$global_names
+			);
 
 			$this->globals_regex = '/'.LD.'('.implode('|', $global_names).')'.RD.'/';
 		}
