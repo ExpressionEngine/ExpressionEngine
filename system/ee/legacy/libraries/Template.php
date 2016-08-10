@@ -1217,7 +1217,10 @@ class EE_Template {
 					$this->template = str_replace($chunk, 'M'.$this->loop_count.$this->marker, $this->template);
 				}
 
-				$cfile = md5($chunk); // This becomes the name of the cache file
+				// Removing the comments from the chunk, because annotations
+				// are comments and are unique thus alwasy generating a new
+				// md5 hash. So remove them when computing the hash.
+				$cfile = md5($this->remove_ee_comments($chunk)); // This becomes the name of the cache file
 
 				// Build a multi-dimensional array containing all of the tag data we've assembled
 
