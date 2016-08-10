@@ -9,6 +9,7 @@
 | and the array values are used to set the actual name of the item.
 |
 */
+ee()->load->library('logger');
 ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
 
 $conf = ee()->config->loadFile('user_agents');

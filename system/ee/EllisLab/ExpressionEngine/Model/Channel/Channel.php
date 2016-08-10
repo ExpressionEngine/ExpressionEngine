@@ -237,7 +237,7 @@ class Channel extends StructureModel {
 	public function duplicatePreferences(Channel $channel)
 	{
 		$exceptions = array('channel_id', 'site_id', 'channel_name', 'channel_title', 'total_entries',
-							'total_comments', 'last_entry_date', 'last_comment_date');
+							'total_comments', 'last_entry_date', 'last_comment_date', 'total_records');
 
 		foreach (get_object_vars($this) as $property => $value)
 		{

@@ -52,7 +52,7 @@ class Select_ft extends EE_Fieldtype {
 					break;
 				}
 			}
-			elseif ((string) $key === $data)
+			elseif ($key == $data)
 			{
 				$valid = TRUE;
 				break;

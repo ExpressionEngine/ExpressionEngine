@@ -46,6 +46,7 @@ class Updater {
 				'update_collation_config',
 				'fix_table_collations',
 				'ensure_upload_directories_are_correct',
+				'add_channel_max_entries_columns',
 				'synchronize_layouts',
 				'template_routes_remove_empty'
 			)
@@ -345,6 +346,43 @@ class Updater {
 				$dir->save();
 			}
 		}
+	}
+
+	/**
+	 * Adds the max_entries and total_records column to the exp_channels table
+	 * for the new Max Entries feature for Channels
+	 *
+	 * NOTE: These columns were added in 3.4 but they need to be added here for
+	 * folks upgrading from an earlier version because we access the Channel
+	 * model below, and a 3.4+ Channel model needs these columns present
+	 */
+	private function add_channel_max_entries_columns()
+	{
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'max_entries'      => array(
+					'type'         => 'int',
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
+				),
+			)
+		);
+
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'total_records'    => array(
+					'type'         => 'mediumint',
+					'constraint'   => 8,
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
+				),
+			),
+			'total_entries'
+		);
 	}
 
 	/**
