@@ -2,8 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Updater;
 
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Service;
+use EllisLab\ExpressionEngine\Service\Updater\Runner;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -32,70 +31,44 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class Updater {
 
-	private $updater;
-
 	/**
 	 * Request end-point for updater tasks
 	 */
 	public function index($step = '')
 	{
-		$this->updater = $this->getUpdaterService();
+		$runner = new Runner();
 
 		$step = isset($_GET['step']) ? $_GET['step'] : FALSE;
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
-			$step = 'updateFiles';
+			$step = $runner->getFirstStep();
 		}
 
-		$step_groups = [
-			'updateFiles' => [
-				'updateFiles'
-			]
-		];
-
-		foreach ($step_groups[$step] as $sub_step)
+		try
 		{
-			try
-			{
-				$this->updater->$sub_step();
-			}
-			catch (\Exception $e)
-			{
-				return json_encode([
-					'messageType' => 'error',
-					'message' => $e->getMessage()
-				]);
-			}
+			$runner->runStep($step);
+		}
+		catch (\Exception $e)
+		{
+			return [
+				'messageType' => 'error',
+				'message' => $e->getMessage()
+			];
 		}
 
+		// Language and markup for front-end; each string
+		// is what is sent back AFTER the corresponding key
+		// step name has run
 		$messages = [
 			'updateFiles' => 'Files updated!'
-		];
-		$next_step = [
-			'updateFiles' => FALSE
 		];
 
 		return json_encode([
 			'messageType' => 'success',
 			'message' => $messages[$step],
-			'nextStep' => $next_step[$step]
+			'nextStep' => $runner->getNextStep()
 		]);
-	}
-
-	/**
-	 * Constructs the updater service and assigns it to a class variable
-	 */
-	protected function getUpdaterService()
-	{
-		$filesystem = new Filesystem();
-		$config = new Service\Config\File(SYSPATH.'user/config/config.php');
-		$verifier = new Service\Updater\Verifier($filesystem);
-		// TODO: prolly need to put this cache path into the configs.json and load that here
-		$file_logger = new Service\Logger\File(SYSPATH.'user/cache/ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
-		$updater_logger = new Service\Updater\Logger($file_logger);
-
-		return new Service\Updater\FileUpdater($filesystem, $config, $verifier, $updater_logger);
 	}
 }
 // EOF

@@ -39,58 +39,44 @@ class Updater extends CP_Controller {
 		// TODO: Can we catch a PHP timeout and report that to the user?
 		// TODO: Prolly just restrict super admins to auto-updating
 
+		$runner = ee('Updater\Runner');
+
 		$step = ee()->input->get('step');
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
-			$step = 'preflight';
+			$step = $runner->getFirstStep();
 		}
 
-		$step_groups = [
-			'preflight' => [
-				'preflight'
-			],
-			'download' => [
-				'downloadPackage'
-			],
-			'unpack' => [
-				'unzipPackage',
-				'verifyExtractedPackage',
-				'checkRequirements',
-				'moveUpdater'
-			]
-		];
-
-		foreach ($step_groups[$step] as $sub_step)
+		try
 		{
-			try
-			{
-				ee('Updater\Downloader')->$sub_step();
-			}
-			catch (\Exception $e)
-			{
-				return [
-					'messageType' => 'error',
-					'message' => $e->getMessage()
-				];
-			}
+			$runner->runStep($step);
+		}
+		catch (\Exception $e)
+		{
+			return [
+				'messageType' => 'error',
+				'message' => $e->getMessage()
+			];
 		}
 
+		// Language and markup for front-end; each string
+		// is what is sent back AFTER the corresponding key
+		// step name has run
 		$messages = [
 			'preflight' => 'Downloading update<span>...</span>',
 			'download' => 'Unpacking update<span>...</span>',
 			'unpack' => 'Updating files<span>...</span>'
 		];
-		$next_step = [
-			'preflight' => 'download',
-			'download' => 'unpack',
-			'unpack' => 'updateFiles'
-		];
+
+		// If there is no next step, provide something so that
+		// the AJAX hits the micro app
+		$next_step = $runner->getNextStep() ?: 'updateFiles';
 
 		return [
 			'messageType' => 'success',
 			'message' => $messages[$step],
-			'nextStep' => $next_step[$step]
+			'nextStep' => $next_step
 		];
 	}
 }

@@ -201,6 +201,11 @@ return array(
 				new Updater\RequirementsCheckerLoader($filesystem),
 				$ee->make('Model')->get('Site')->all()
 			);
+		},
+
+		'Updater\Runner' => function($ee)
+		{
+			return new Updater\Runner($ee->make('Updater\Downloader'));
 		}
 	),
 
