@@ -29,6 +29,13 @@ class Association {
         $this->bootAssociation();
     }
 
+    /**
+     * Fill item(s) for this association. Will not mark changes.
+     *
+     * @param Mixed $related Model(s)|Collection
+     * @param Bool $_skip_inverse
+     * @return void
+     */
     public function fill($related, $_skip_inverse = FALSE)
     {
         $this->related = $related;
@@ -47,6 +54,13 @@ class Association {
         $this->markAsLoaded();
     }
 
+    /**
+     * set item(s) for this association. Will remove all existing ones and
+     * mark as changed.
+     *
+     * @param Mixed $item Model(s)|Collection
+     * @return void
+     */
     public function set($item)
     {
         $this->diff->reset();
@@ -69,6 +83,11 @@ class Association {
         $this->diff->wasSet();
     }
 
+    /**
+     * Get inverse association name
+     *
+     * @return String Name of inverse association
+     */
     public function getInverseName()
     {
         if ( ! isset($this->inverse_name))
@@ -80,12 +99,23 @@ class Association {
         return $this->inverse_name;
     }
 
+    /**
+     * Get inverse association on a given model
+     *
+     * @param Model $model Model whose association to get
+     * @return Association that reverses this one
+     */
     public function getInverse(Model $model)
     {
         $inverse_name = $this->getInverseName();
         return $model->getAssociation($inverse_name);
     }
 
+    /**
+     * Get association items. Will lazy load if necessary
+     *
+     * @return Model|Collection
+     */
     public function get()
     {
         if ( ! $this->isLoaded())
@@ -96,6 +126,12 @@ class Association {
         return $this->related;
     }
 
+    /**
+     * Add an item to this association
+     *
+     * @param Mixed $item Model(s)|Collection
+     * @return void
+     */
     public function add($item)
     {
         $items = $this->toModelArray($item);
@@ -106,6 +142,12 @@ class Association {
         }
     }
 
+    /**
+     * Remove an item from this association
+     *
+     * @param Mixed $items Model(s)|Collection (if not passed, remove all)
+     * @return void
+     */
     public function remove($items = NULL)
     {
         $items = $items ?: $this->related;
@@ -117,6 +159,13 @@ class Association {
         }
     }
 
+    /**
+     * Utility method to handle a primary key change. Public due to PHP 5.3's callbacks
+     * being wonky. Don't call externally, all other methods in this class will
+     * do the right thing automtically.
+     *
+     * @return void
+     */
     public function idHasChanged()
     {
         $new_id = $this->model->getId();
@@ -130,6 +179,8 @@ class Association {
 
     /**
      * Save any unsaved relations and then the related models.
+     *
+     * @return void
      */
     public function save()
     {
@@ -148,18 +199,35 @@ class Association {
         }
     }
 
+    /**
+     * Utility method to mark data as loaded. Public due to PHP 5.3's callbacks
+     * being wonky. Don't call externally, all other methods in this class will
+     * do the right thing automtically.
+     *
+     * @return void
+     */
     public function markAsLoaded()
     {
         $this->loaded = TRUE;
     }
 
+    /**
+     * Utility method to check if data has been loaded. Public due to PHP 5.3's
+     * callbacks being wonky. Don't call externally, all other methods in this
+     * class will do the right thing automtically.
+     *
+     * @return bool Association data is loaded?
+     */
     public function isLoaded()
     {
         return $this->loaded;
     }
 
 	/**
-	 *
+	 * (Re)load the association
+     *
+     * This runs a query to pull in related data and links up all the object
+     * references.
 	 */
 	public function reload()
 	{
@@ -222,6 +290,13 @@ class Association {
         $assoc->ensureDoesNotExist($this->model);
     }
 
+    /**
+     * Utility method to turn a model, model collection, or other model
+     * datastructure into a plain array.
+     *
+     * @param Mixed Model(s)
+     * @return Array of Models
+     */
     protected function toModelArray($item)
     {
         if (is_null($item))
