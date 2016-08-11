@@ -25,7 +25,8 @@
 		->addPrefix('EllisLab', SYSPATH.'ee/updater/EllisLab/')
 		->register();
 
-	require __DIR__.'EllisLab/ExpressionEngine/Boot/boot.common.php';
+	require __DIR__.'/EllisLab/ExpressionEngine/Boot/boot.common.php';
+
 /*
  * ------------------------------------------------------
  *  Route the request to a controller
