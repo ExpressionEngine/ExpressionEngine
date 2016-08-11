@@ -638,7 +638,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	 */
 	protected function backupIfChanging($name, $old_value, $new_value)
 	{
-		if ($new_value !== $old_value)
+		if ($new_value != $old_value)
 		{
 			if ( ! $this->hasBackup($name))
 			{
