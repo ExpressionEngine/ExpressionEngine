@@ -144,10 +144,12 @@ themes/third_party/
 
 # Updater dependencies =================================================
 
+system/ee/installer/updater/EllisLab/ExpressionEngine/Boot/boot.common.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Core/Autoloader.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Library/Filesystem/Filesystem.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Library/Filesystem/FilesystemException.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/Config.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Protocol/Config/Config.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/ConfigWithDefaults.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/Directory.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/Factory.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/File.php

@@ -58,3 +58,5 @@
 			}
 		}
 	}
+
+	require __DIR__.'EllisLab/ExpressionEngine/Boot/boot.common.php';
