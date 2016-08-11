@@ -234,8 +234,6 @@ class Association {
 		$query = $this->facade->get($this->relation->getTargetModel());
 		$query->setLazyConstraint($this->relation, $this->model);
 
-        list($key, $_) = $this->relation->getKeys();
-
 		$result = $query->all();
 
         if ($result instanceOf Collection)
