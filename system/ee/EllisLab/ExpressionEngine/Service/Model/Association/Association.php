@@ -9,6 +9,8 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 class Association {
 
     private $loaded = FALSE;
+    private $saving = FALSE;
+
     private $inverse_name;
 
     protected $diff;
@@ -16,11 +18,13 @@ class Association {
     protected $facade;
     protected $related;
     protected $relation;
+    protected $foreign_key;
 
     public function __construct(Model $model, Relation $relation)
     {
         $this->model = $model;
         $this->relation = $relation;
+        list($this->foreign_key, $_) = $this->relation->getKeys();
 
         $this->bootAssociation();
     }
@@ -40,7 +44,7 @@ class Association {
             }
         }
 
-        $this->loaded = TRUE;
+        $this->markAsLoaded();
     }
 
     public function set($item)
@@ -84,7 +88,7 @@ class Association {
 
     public function get()
     {
-        if ( ! isset($this->related) && ! $this->isLoaded())
+        if ( ! $this->isLoaded())
         {
             $this->reload();
         }
@@ -127,8 +131,6 @@ class Association {
     /**
      * Save any unsaved relations and then the related models.
      */
-    private $saving = FALSE;
-
     public function save()
     {
         $this->diff->commit();
@@ -163,6 +165,8 @@ class Association {
 	{
 		$query = $this->facade->get($this->relation->getTargetModel());
 		$query->setLazyConstraint($this->relation, $this->model);
+
+        list($key, $_) = $this->relation->getKeys();
 
 		$result = $query->all();
 
@@ -244,13 +248,68 @@ class Association {
     }
 
     /**
+     * Force a reload next time this relationship is accessed.
      *
+     * @return void
+     */
+    public function markForReload()
+    {
+        if ($this->isLoaded())
+        {
+            $related = $this->toModelArray($this->related);
+
+            $this->related = NULL;
+            $this->loaded = FALSE;
+
+            foreach ($related as $model)
+            {
+                $inverse = $this->getInverse($model);
+                $inverse->markForReload();
+            }
+        }
+    }
+
+    /**
+     * Handle a foreign key change
+     *
+     * This gets called when the potential foreign key changes. Currently our
+     * response it to play it safe and always reload the relationship.
+     *
+     * @param Int $fk New foreign key value
+     * @return void
+     */
+    public function foreignKeyChanged($fk)
+    {
+        if ($this->isLoaded())
+        {
+            $this->markForReload();
+        }
+    }
+
+    /**
+     * Spin up the association
+     *
+     * This creates an object diff tracker to ensure we save object changes. It
+     * also sets up listeners on the current id and the potential foreign key
+     * to track changes to those and trigger reloads.
+     *
+     * @return void
      */
     protected function bootAssociation()
     {
         $this->diff = new Diff($this->model, $this->relation);
 
         $that = $this;
+        $foreign_key = $this->foreign_key;
+
+        $this->model->on('afterSet', function($name, $value) use ($that, $foreign_key)
+        {
+            if ($name == $foreign_key)
+            {
+                $that->foreignKeyChanged($value);
+            }
+        });
+
         $this->model->on('setId', function() use ($that)
         {
             $that->idHasChanged();
