@@ -122,7 +122,7 @@ class MenuManager extends Settings {
 				$checkbox['disabled'] = "disabled";
 			}
 
-			$assigned = $set->MemberGroups->pluck('group_title');
+			$assigned = $set->MemberGroups->filter('can_access_cp', TRUE)->pluck('group_title');
 
 			$columns = array(
 				$main_link,
@@ -198,7 +198,10 @@ class MenuManager extends Settings {
 			$set->set($_POST);
 
 			$assigned = ee('Request')->post('member_groups');
-			$set->MemberGroups = ee('Model')->get('MemberGroup', (array) $assigned)->all();
+			$set->MemberGroups = ee('Model')
+				->get('MemberGroup', (array) $assigned)
+				->filter('can_access_cp', 'y')
+				->all();
 
 			$sort = (array) ee('Request')->post('sort', array());
 			$kids = ee('Model')->get('MenuItem', $sort)->all();
@@ -278,13 +281,14 @@ class MenuManager extends Settings {
 	{
 		$disabled_choices = array();
 		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(2, 3, 4))
+			->filter('can_access_cp', 'y')
 			->filter('site_id', 1) // this is on purpose, saving the member group apply the set to other sites
 			->all()
 			->getDictionary('group_id', 'group_title');
 
 		$other_sets = ee('Model')->get('MenuSet')
-			->with('MemberGroups');
+			->with('MemberGroups')
+			->filter('MemberGroups.can_access_cp', 'y');
 
 		if ( ! $set->isNew())
 		{
@@ -296,8 +300,11 @@ class MenuManager extends Settings {
 		{
 			foreach ($other_set->MemberGroups as $group)
 			{
-				$member_groups[$group->group_id] = '<s>' . $group->group_title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'settings/menu-manager/edit-set/' . $other_set->set_id) . '">' . $other_set->name . '</a></i>';
-				$disabled_choices[] = $group->group_id;
+				if ($group->can_access_cp)
+				{
+					$member_groups[$group->group_id] = '<s>' . $group->group_title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'settings/menu-manager/edit-set/' . $other_set->set_id) . '">' . $other_set->name . '</a></i>';
+					$disabled_choices[] = $group->group_id;
+				}
 			}
 		}
 

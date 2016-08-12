@@ -191,8 +191,9 @@ class Updater {
 					'default'		=> 0
 				),
 				'set_id' => array(
-					'type'			=> 'varchar',
-					'constraint'    => 512,
+					'type'			=> 'int',
+					'constraint'    => 10,
+					'unsigned'		=> TRUE,
 					'null'			=> TRUE
 				),
 				'name' => array(

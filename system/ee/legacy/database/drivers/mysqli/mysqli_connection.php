@@ -116,7 +116,7 @@ class CI_DB_mysqli_connection {
 		}
 		catch (Exception $e)
 		{
-			throw new \Exception($e->getMessage().":<br>\n".$query);
+			throw new \Exception($e->getMessage().":<br>\n".htmlentities($query, ENT_QUOTES, 'UTF-8'));
 		}
 
 		$time_end = microtime(TRUE);

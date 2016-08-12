@@ -138,8 +138,6 @@ on your server, and then submit the location of the file.',
 
 'no_read_access' => 'Unable to read the file: ',
 
-'none' => 'None',
-
 'not_enough_fields' => 'You must have at least 3 fields: username, screen_name, and email address',
 
 'option' => 'Option',

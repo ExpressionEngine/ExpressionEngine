@@ -332,7 +332,7 @@ class Grid_lib {
 		$searchable_data = array();
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE);
 		$rows = $rows[$this->entry_id];
 
 		// Remove deleted rows from $rows

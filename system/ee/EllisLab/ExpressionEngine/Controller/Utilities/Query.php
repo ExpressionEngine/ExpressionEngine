@@ -42,6 +42,7 @@ class Query extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->load->library('encrypt');
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
@@ -79,6 +80,8 @@ class Query extends Utilities {
 	 */
 	public function runQuery($table_name = '')
 	{
+		ee()->load->library('encrypt');
+
 		$row_limit	= 25;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
@@ -97,6 +100,19 @@ class Query extends Utilities {
 			else
 			{
 				$sql = trim(base64_decode(rawurldecode($sql)));
+
+				if ( ! $signature = ee('Request')->get('signature'))
+				{
+					return $this->index(FALSE);
+				}
+
+				ee()->load->library('encrypt');
+
+				if ( ! ee()->encrypt->verify_signature($sql, $signature))
+				{
+					var_dump($sql, $signature);
+					return $this->index(FALSE);
+				}
 
 				if (strncasecmp($sql, 'SELECT ', 7) !== 0 &&
 					strncasecmp($sql, 'SHOW', 4) !== 0)
@@ -244,13 +260,16 @@ class Query extends Utilities {
 
 		$base_url = ee('CP/URL')->make(
 			'utilities/query/run-query/'.$table_name,
-			array('thequery' => rawurlencode(base64_encode($sql)))
+			array(
+				'thequery' => rawurlencode(base64_encode($sql)),
+				'signature' => ee()->encrypt->sign($sql)
+			)
 		);
 		$view_data = $table->viewData($base_url);
 		$data = $view_data['data'];
 		$vars['table'] = $view_data;
 
-		$vars['thequery'] = ee('Security/XSS')->clean($sql);
+		$vars['thequery'] = $sql;
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 		$vars['total_results'] = ($show_query) ? $vars['table']['total_rows'] : $vars['total_results'];
 

@@ -988,7 +988,8 @@ class Groups extends Members\Members {
 						'group'  => 'can_access_cp',
 						'fields' => array(
 							'can_view_homepage_news' => array(
-								'type' => 'yes_no'
+								'type' => 'yes_no',
+								'value' => element('can_view_homepage_news', $values)
 							)
 						)
 					)

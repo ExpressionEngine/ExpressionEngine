@@ -376,10 +376,6 @@ $lang = array(
 
 'allow_all_html_not_recommended' => 'Allow all HTML (not recommended)',
 
-'auto_br' => 'Auto &lt;br /&gt;',
-
-'xhtml' => 'XHTML',
-
 'open' => 'Open',
 
 'closed' => 'Closed',

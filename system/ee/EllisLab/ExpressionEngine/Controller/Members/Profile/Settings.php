@@ -365,9 +365,10 @@ class Settings extends Profile {
 			return;
 		}
 
-		// We don't have the suffix, so
-
-		$suffix = array_pop(explode('.', $_FILES['upload_avatar']['name']));
+		// We don't have the suffix, so first we explode to avoid passed by reference error
+		// Then we grab our suffix
+		$name_array = explode('.', $_FILES['upload_avatar']['name']);
+		$suffix = array_pop($name_array);
 
 		$name = $_FILES['upload_avatar']['name'];
 		$name = 'avatar_'.$this->member->member_id.'.'.$suffix;

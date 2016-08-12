@@ -12,6 +12,7 @@
 |
 */
 
+ee()->load->library('logger');
 ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
 
 $smileys = ee()->config->loadFile('smileys');

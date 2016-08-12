@@ -17,7 +17,7 @@ if ($wrap): ?>
 			<td>
 				<?=lang($no_results['text'])?>
 				<?php if ( ! empty($no_results['action_text'])): ?>
-					<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+					<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 				<?php endif ?>
 			</td>
 		</tr>
@@ -34,13 +34,14 @@ if ($wrap): ?>
 				{
 					$colspan++;
 				}
-				
+
 				if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder"></span></th>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
+					$attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
 					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
@@ -64,7 +65,7 @@ if ($wrap): ?>
 							$header_class .= ' '.$settings['class'];
 						}
 						?>
-						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
+						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
@@ -97,7 +98,7 @@ if ($wrap): ?>
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>

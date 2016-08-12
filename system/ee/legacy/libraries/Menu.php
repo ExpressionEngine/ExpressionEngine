@@ -157,12 +157,13 @@ class EE_Menu {
 	private function _channels_menu()
 	{
 		$channels_query = ee('Model')->get('Channel')
-			->fields('channel_id', 'channel_title', 'max_entries', 'total_records');
+			->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
+			->order('channel_title', 'ASC');
 
 		$allowed_channels = ee()->session->userdata('assigned_channels');
 		if (count($allowed_channels))
 		{
-			$channels = $channels_query->filter('channel_title', 'IN', $allowed_channels);
+			$channels = $channels_query->filter('channel_id', 'IN', array_keys($allowed_channels));
 		}
 
 		$menu['create'] = array();
@@ -193,7 +194,11 @@ class EE_Menu {
 							->filter('channel_id', $channel->channel_id)
 							->first();
 
-						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						// Just in case $channel->total_records is inaccurate
+						if ($entry)
+						{
+							$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						}
 					}
 				}
 			}

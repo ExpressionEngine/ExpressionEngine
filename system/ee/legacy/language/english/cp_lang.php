@@ -351,6 +351,8 @@ $lang = array(
 'rev_date' => 'Date',
 'rev_author' => 'Author',
 'current' => 'Current',
+'auto_br' => 'Auto line break',
+'xhtml' => 'XHTML',
 
 /**
  * Footer

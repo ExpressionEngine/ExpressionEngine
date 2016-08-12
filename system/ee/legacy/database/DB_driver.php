@@ -224,7 +224,7 @@ class CI_DB_driver {
 				return $this->display_error(array(
 					'<b>Error number</b>: '.$error_no,
 					$error_msg,
-					$sql
+					htmlentities($sql, ENT_QUOTES, 'UTF-8')
 				));
 			}
 
@@ -1271,42 +1271,6 @@ class CI_DB_driver {
 		}
 
 		return preg_replace('/'.$preg_ec[0].'?([^'.$preg_ec[1].'\.]+)'.$preg_ec[1].'?(\.)?/i', $preg_ec[2].'$1'.$preg_ec[3].'$2', $item);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Escape String
-	 *
-	 * @param	string	$str
-	 * @param	bool	$like	Whether or not the string will be used in a LIKE condition
-	 * @return	string
-	 */
-	public function escape_str($str, $like = FALSE)
-	{
-		if (is_array($str))
-		{
-			foreach ($str as $key => $val)
-			{
-				$str[$key] = $this->escape_str($val, $like);
-			}
-
-			return $str;
-		}
-
-		$str = $this->_escape_str($str);
-
-		// escape LIKE condition wildcards
-		if ($like === TRUE)
-		{
-			return str_replace(
-				array($this->_like_escape_chr, '%', '_'),
-				array($this->_like_escape_chr.$this->_like_escape_chr, $this->_like_escape_chr.'%', $this->_like_escape_chr.'_'),
-				$str
-			);
-		}
-
-		return $str;
 	}
 }
 

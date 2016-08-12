@@ -338,7 +338,7 @@ class EE_Template {
 
 			// Only iterate over the partials present in the template
 			$regex = $this->getGlobalsRegex();
-			if (preg_match_all($regex, $this->template, $result))
+			while (preg_match_all($regex, $this->template, $result))
 			{
 				foreach ($result[1] as $variable)
 				{

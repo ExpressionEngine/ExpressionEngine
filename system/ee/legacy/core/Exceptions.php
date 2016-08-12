@@ -213,6 +213,7 @@ class EE_Exceptions {
 		$location =  $filepath . ':' . $exception->getLine();
 
 		$trace = explode("\n", $exception->getTraceAsString());
+		$partial_path = substr(SYSPATH, 0, 15);
 
 		// Replace the system paths in the stack trace
 		foreach ($trace as &$line)
@@ -231,6 +232,8 @@ class EE_Exceptions {
 				$path = dirname($path);
 				$i++;
 			}
+
+			$line = str_replace($partial_path, '', $line);
 		}
 
 		$debug = DEBUG;

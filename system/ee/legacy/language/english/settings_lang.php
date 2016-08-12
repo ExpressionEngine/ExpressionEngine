@@ -537,7 +537,7 @@ $lang = array(
 'menu_set_updated_desc' => 'The menu set <b>%s</b> has been updated.',
 'menu_sets_removed' => 'Menu Sets removed',
 'menu_sets_removed_desc' => '%d menu sets were removed.',
-'no_menu_items' => 'No menu items',
+'no_menu_items' => 'No <b>Menu Items</b> found.',
 'create_menu_item' => 'Create Menu Item',
 'set_name' => 'Name',
 'set_assigned' => 'Assigned',
@@ -559,7 +559,7 @@ $lang = array(
 'menu_url_desc' => 'Link <abbr title="Uniform Resource Locator">URL</abbr>',
 'menu_addon' => 'Add-On',
 'menu_addon_desc' => 'Navigation from installed Add-Ons',
-'menu_no_addons' => 'No Add-Ons Found',
+'menu_no_addons' => 'No <b>Add-ons with menus</b> found.',
 'edit_menu_item' => 'Edit Menu Item',
 'add_menu_item' => 'Add Menu Item',
 

@@ -1230,6 +1230,10 @@ class EE_Typography {
 			return $matches[1].$code.$matches[1];
 		};
 
+		// make sure no one is sneaking things into links. XSS Clean won't pick these up since they aren't real markup
+		$str = $this->unencodeMarkdownLinks($str);
+		$str = $this->unencodeMarkdownReferenceLinks($str);
+
 		// Codefences
 		if (strpos($str, '```') !== FALSE
 			OR strpos($str, '~~~') !== FALSE)
@@ -1287,6 +1291,184 @@ class EE_Typography {
 		}
 
 		// Put everything back in to place
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unencode Markdown Links
+	 *
+	 * Turns:
+	 * 		[Link](&#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;)
+	 * Into:
+	 * 		[Link](https://example.com/)
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownLinks($str)
+	{
+		// these are protected class properties of Markdown
+		// copied here to keep the regex below sane
+		$nested_brackets_depth = 6;
+		$nested_brackets_re =
+			str_repeat('(?>[^\[\]]+|\[', $nested_brackets_depth).
+			str_repeat('\])*', $nested_brackets_depth);
+
+		$nested_url_parenthesis_depth = 4;
+		$nested_url_parenthesis_re =
+			str_repeat('(?>[^()\s]+|\(', $nested_url_parenthesis_depth).
+			str_repeat('(?>\)))*', $nested_url_parenthesis_depth);
+
+		// regex from in-line style links in Markdown::doAnchors()
+		if ( ! $count = preg_match_all('{
+			(				# wrap whole match in $1
+			  \[
+				('.$nested_brackets_re.')	# link text = $2
+			  \]
+			  \(			# literal paren
+				[ \n]*
+				(?:
+					<(.+?)>	# href = $3
+				|
+					('.$nested_url_parenthesis_re.')	# href = $4
+				)
+				[ \n]*
+				(			# $5
+				  ([\'"])	# quote char = $6
+				  (.*?)		# Title = $7
+				  \6		# matching quote
+				  [ \n]*	# ignore any spaces/tabs between closing quote and )
+				)?			# title is optional
+			  \)
+			)
+			}xs',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 7; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$new = '['.
+						$link_matches[2][$key]. // link text
+					']('.
+						$link_matches[3][$key].$link_matches[4][$key]. // one of these will be the href
+						$link_matches[6][$key]. // " or '
+						$link_matches[7][$key]. // optional title= attribute
+						$link_matches[6][$key]. // " or '
+					')';
+
+			$str = str_replace($match, $new, $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unencode Markdown Reference Links
+	 *
+	 * Turns:
+	 * 		[1]: &#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;
+	 * Into:
+	 * 		[1]: https://example.com/
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownReferenceLinks($str)
+	{
+		// set to 1 less than Markdown's $tab_width property
+		$less_than_tab = 3;
+
+		// regex from Markdown::stripLinkDefinitions()
+		if ( ! $count = preg_match_all(
+			'{
+			^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:	# id = $1
+			  [ ]*
+			  \n?				# maybe *one* newline
+			  [ ]*
+			(?:
+			  <(.+?)>			# url = $2
+			|
+			  (\S+?)			# url = $3
+			)
+			  [ ]*
+			  \n?				# maybe one newline
+			  [ ]*
+			(?:
+				(?<=\s)			# lookbehind for whitespace
+				["(]
+				(.*?)			# title = $4
+				[")]
+				[ ]*
+			)?	# title is optional
+			(?:\n+|\Z)
+			}xm',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 4; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$title = '';
+
+			if (empty($link_matches[4][$key]))
+			{
+				$title = '';
+			}
+			else
+			{
+				if (strpos($link_matches[4][$key], '"') !== FALSE)
+				{
+					$title = ' ('.$link_matches[4][$key].')';
+				}
+				else
+				{
+					$title = ' "'.$link_matches[4][$key].'"';
+				}
+			}
+
+			$newline = (substr($match, -1) === "\n") ? "\n" : '';
+
+			$new = '['.
+					$link_matches[1][$key]. // link id
+					']: '.
+					$link_matches[2][$key].$link_matches[3][$key]. // one of these will be the href
+					$title. // empty or optional title
+					$newline; // preserve newlines
+
+			$str = str_replace($match, $new, $str);
+		}
+
 		return $str;
 	}
 
@@ -1363,11 +1545,16 @@ class EE_Typography {
 			str_repeat('(?>[^()]+|\(', 4).
 			str_repeat('(?>\)))*', 4);
 
-		if (preg_match_all('/\[.*?\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all('/\[(.*?)\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
 		{
 			foreach ($matches as $match)
 			{
-				$str = str_replace($match[1], str_replace(' ', '%20', $match[1]), $str);
+				// It felt too heavy handed to do a global replace of all URLs
+				// that matched, so (for now) we'll only replace the URLs that
+				// the REGEX matched. (that's why the '[]' are being
+				// concatenated)
+				$str = str_replace('['.$match[1].']', '['.$this->decodeIDN($match[1]).']', $str);
+				$str = str_replace($match[2], str_replace(' ', '%20', $match[2]), $str);
 			}
 		}
 
@@ -1497,15 +1684,14 @@ class EE_Typography {
 			$matches[6] = $punc_match[1];
 		}
 
-		return	$matches['1'].'[url=http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].']http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].'[/url]'.
-				$end.
-				$matches['7'];
+		$url = 'http'.
+			   $matches['4'].'://'.
+			   $matches['5'].
+			   $matches['6'];
+
+	   $url = $this->decodeIDN($url);
+
+	   return $matches['1'].'[url='.$url.']'.$url.'[/url]'.$end.$matches['7'];
 	}
 
 	// --------------------------------------------------------------------
@@ -1677,7 +1863,7 @@ class EE_Typography {
 						$url = urlencode($url);
 					}
 
-					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$matches['2'][$i]."</a>", $str);
+					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$this->decodeIDN($matches['2'][$i])."</a>", $str);
 				}
 			}
 		}
@@ -2464,6 +2650,66 @@ while (--j >= 0)
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * If present we'll run `idn_to_ascii` on the the URL to protect against
+	 * homograph attacks.
+	 *
+	 * @param string $url A URL
+	 * @return string A decoded URL
+	 */
+	public function decodeIDN($url)
+	{
+		if ( ! function_exists('idn_to_ascii'))
+		{
+			return $url;
+		}
+
+		// If we have a relative URL and are in PHP 5.3 temporarily add a
+		// schema to fix a bug in 5.3's parse_url
+		$fix_relative_domains = FALSE;
+
+		if (version_compare(PHP_VERSION, '5.4', '<')
+			&& strpos('//', $url) === 0)
+		{
+			$fix_relative_domains = TRUE;
+			$url = 'http:' . $url;
+		}
+
+		// Amazingly, this will parse if passed 'http://example.com is fun!'
+		// but will not parse if passed 'I really like http://example.com'
+		$parts = parse_url($url);
+
+		if ($fix_relative_domains)
+		{
+			unset($parts['scheme']);
+		}
+
+		// According to http://php.net/idn_to_ascii this should only be run
+		// on the domain and not the entire string.
+		if (isset($parts['host']))
+		{
+			$parts['host'] = idn_to_ascii($parts['host']);
+		}
+
+		return $this->unparse_url($parts);
+	}
+
+	/**
+	 * Copied from http://php.net/manual/en/function.parse-url.php#106731
+	 */
+	private function unparse_url($parsed_url) {
+	  $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+	  $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+	  $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+	  $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+	  $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+	  $pass     = ($user || $pass) ? "$pass@" : '';
+	  $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+	  $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+	  $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+	  return "$scheme$user$pass$host$port$path$query$fragment";
+	}
 
 }
 // END CLASS

@@ -66,7 +66,11 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
+// sidebar
 'zero_directories_found' => 'No <b>Directories</b> found',
+
+// modal
+'zero_upload_directories_found' => 'No <b>upload directories</b> found.',
 
 'files_in_directory' => 'Files in <b>%s</b>',
 

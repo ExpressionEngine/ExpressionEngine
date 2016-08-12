@@ -85,7 +85,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
@@ -163,7 +163,7 @@ class Comments extends AbstractPublishController {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 		else
 		{
@@ -209,7 +209,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
