@@ -2230,6 +2230,7 @@ class Forum_Core extends Forum {
 
 			// Assign the post marker (folder image)
 			$topic_type = '';
+			$topic_class = '';
 
 			if ((isset($read_topics[$row['topic_id']]) AND $read_topics[$row['topic_id']] > $row['last_post_date']) OR ee()->session->userdata('last_visit') > $row['last_post_date'])
 			{
@@ -2237,10 +2238,19 @@ class Forum_Core extends Forum {
 				{
 					$topic_marker = $markers['poll_old'];
 					$topic_type = "<span class='forumLightLinks'>".lang('poll_marker').'&nbsp;</span>';
+					$topic_class = 'poll';
 				}
 				else
 				{
-					$topic_marker = ($row['thread_total'] >= $hot_topic ) ? $markers['hot_old'] : $markers['old'];
+					if ($row['thread_total'] >= $hot_topic )
+					{
+						$topic_class = 'hot';
+						$topic_marker = $markers['hot_old'];
+					}
+					else
+					{
+						$topic_marker = $markers['old'];
+					}
 				}
 
 				$temp = $this->deny_if('is_new', $temp);
@@ -2251,10 +2261,19 @@ class Forum_Core extends Forum {
 				{
 					$topic_marker = $markers['poll_new'];
 					$topic_type = "<span class='forumLightLinks'>".lang('poll_marker').'&nbsp;</span>';
+					$topic_class = 'poll';
 				}
 				else
 				{
-					$topic_marker = ($row['thread_total'] >= $hot_topic ) ? $markers['hot'] : $markers['new'];
+					if ($row['thread_total'] >= $hot_topic )
+					{
+						$topic_class = 'hot';
+						$topic_marker = $markers['hot'];
+					}
+					else
+					{
+						$topic_marker = $markers['new'];
+					}
 				}
 
 				$temp = $this->allow_if('new_topic', $temp);
@@ -2265,18 +2284,21 @@ class Forum_Core extends Forum {
 			{
 				$topic_marker = $markers['closed'];
 				$topic_type = "<span class='forumLightLinks'>".lang('closed').'&nbsp;</span>';
+				$topic_class = 'closed';
 			}
 
 			if ($row['sticky'] == 'y')
 			{
 				$topic_marker = $markers['sticky'];
 				$topic_type = "<span class='forumLightLinks'>".lang('sticky').'&nbsp;</span>';
+				$topic_class = 'sticky';
 			}
 
 			if ($row['moved_forum_id'] != 0 AND $row['moved_forum_id'] == $this->current_id)
 			{
 				$topic_marker = $markers['moved'];
 				$topic_type = "<span class='forumLightLinks'>".lang('moved').'&nbsp;</span>';
+				$topic_class = 'moved';
 			}
 
 			// Do we need small pagination links?
@@ -2400,6 +2422,7 @@ class Forum_Core extends Forum {
 							array(
 									'topic_marker'			=>	$topic_marker,
 									'topic_type'			=>  $topic_type,
+									'topic_class'			=>  $topic_class,
 									'topic_title'			=>	trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
 									'author'				=>	$row['author'],
 									'total_views'			=>	$row['thread_views'],
