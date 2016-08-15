@@ -149,7 +149,7 @@ Grid.Publish.prototype = {
 		}
 
 		if (this.settings.grid_min_rows !== '') {
-			var deleteButtons = this.root.find('.toolbar .remove');
+			var deleteButtons = this.root.find('td:last-child .toolbar .remove');
 
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
