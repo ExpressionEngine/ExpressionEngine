@@ -72,10 +72,12 @@ class DataStore {
 	 */
 	public function make($name, Facade $facade, array $data = array())
 	{
-		if ($name instanceOf Model)
+		$is_object = ($name instanceOf Model);
+
+		if ($is_object)
 		{
-			$object = $name;
-			$name = $object->getName();
+			$model = $name;
+			$name = $model->getName();
 		}
 		else
 		{
@@ -94,7 +96,11 @@ class DataStore {
 			$model->set($data);
 		}
 
-		$model->setName($name);
+		if ( ! $is_object)
+		{
+			$model->setName($name);
+		}
+
 		$model->setFacade($facade);
 
 		$this->initializeAssociationsOn($model);
