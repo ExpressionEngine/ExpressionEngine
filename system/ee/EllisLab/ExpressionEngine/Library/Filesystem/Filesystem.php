@@ -462,7 +462,14 @@ class Filesystem {
 		{
 			// Try to figure out if we already have a file we've renamed, then
 			// we can pick up where we left off, and reduce the guessing.
-			rsort($files, SORT_NATURAL);
+			if (version_compare(PHP_VERSION, '5.4.0') < 0)
+			{
+				rsort($files); // SORT_NATURAL was introduced in 5.3.0 :(
+			}
+			else
+			{
+				rsort($files, SORT_NATURAL);
+			}
 			$number = str_replace(array($filename, $extension), '', $files[0]);
 			if (strpos($number, '_') === 0)
 			{
