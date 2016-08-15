@@ -774,7 +774,8 @@ class Cat extends AbstractChannelsController {
 				'parent_id' => array(
 					'type' => 'select',
 					'value' => $category->parent_id,
-					'choices' => $parent_id_options
+					'choices' => $parent_id_options,
+					'encode' => FALSE
 				)
 			)
 		);
