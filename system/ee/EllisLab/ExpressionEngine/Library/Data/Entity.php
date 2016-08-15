@@ -4,12 +4,13 @@ namespace EllisLab\ExpressionEngine\Library\Data;
 
 use Closure;
 use InvalidArgumentException;
+use Serializable;
 use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
 use EllisLab\ExpressionEngine\Service\Event\Emitter;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
-abstract class Entity extends MixableImpl implements Publisher {
+abstract class Entity extends MixableImpl implements Publisher, Serializable {
 
 	/**
 	 * @var Event emitter
@@ -569,6 +570,49 @@ abstract class Entity extends MixableImpl implements Publisher {
 	public function toJson()
 	{
 		return json_encode($this->toArray());
+	}
+
+	/**
+	 * Serialize
+	 *
+	 * @return String Serialized object
+	 */
+	public function serialize()
+	{
+		return serialize($this->getSerializeData());
+	}
+
+	/**
+	 * Unserialize
+	 *
+	 * @param String $serialized Serialized object
+	 * @return void
+	 */
+	public function unserialize($serialized)
+	{
+		$this->__construct();
+		$this->setSerializeData(unserialize($serialized));
+	}
+
+	/**
+	 * Overridable getter for serialization
+	 *
+	 * @return Mixed Data to serialize
+	 */
+	protected function getSerializeData()
+	{
+		return $this->getRawValues();
+	}
+
+	/**
+	 * Overridable setter for unserialization
+	 *
+	 * @param Mixed $data Data returned from `getSerializedData`
+	 * @return void
+	 */
+	protected function setSerializeData($data)
+	{
+		$this->fill($data);
 	}
 
 	/**
