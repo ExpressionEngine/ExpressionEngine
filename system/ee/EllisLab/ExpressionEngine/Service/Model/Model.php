@@ -742,6 +742,36 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	}
 
 	/**
+	 * Getter for serialization
+	 *
+	 * @return Mixed Data to serialize
+	 */
+	protected function getSerializeData()
+	{
+		return array(
+			'name' => $this->getName(),
+			'values' => parent::getSerializeData()
+		);
+	}
+
+	/**
+	 * Overridable setter for unserialization
+	 *
+	 * @param Mixed $data Data returned from `getSerializedData`
+	 * @return void
+	 */
+	public function setSerializeData($data)
+	{
+		// datastore requires a name
+		$this->setName($data['name']);
+
+		// set all of the external dependencies
+		ee('Model')->make($this);
+
+		parent::setSerializeData($data['values']);
+	}
+
+	/**
 	 * Interface method to implement Event\Subscriber
 	 */
 	public function getSubscribedEvents()
