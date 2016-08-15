@@ -464,7 +464,7 @@ class Filesystem {
 			// we can pick up where we left off, and reduce the guessing.
 			if (version_compare(PHP_VERSION, '5.4.0') < 0)
 			{
-				rsort($files); // SORT_NATURAL was introduced in 5.3.0 :(
+				rsort($files); // SORT_NATURAL was introduced in 5.4.0 :(
 			}
 			else
 			{
