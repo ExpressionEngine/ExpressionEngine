@@ -44,6 +44,7 @@ class DataStore {
 	protected $enabled_prefixes;
 	protected $metadata = array();
 	protected $relations = array();
+	protected $all_relations = array();
 
 	/**
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
@@ -183,6 +184,11 @@ class DataStore {
 	 */
 	public function getAllRelations($model_name)
 	{
+		if (isset($this->all_relations[$model_name]))
+		{
+			return $this->all_relations[$model_name];
+		}
+
 		$from_reader = $this->getMetaDataReader($model_name);
 		$relationships = $from_reader->getRelationships();
 
@@ -219,7 +225,7 @@ class DataStore {
 			}
 		}
 
-		return $relations;
+		return $this->all_relations[$model_name] = $relations;
 	}
 
 	protected function modelIsEnabled($model_name)

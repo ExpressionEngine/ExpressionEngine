@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 use Closure;
 use OverflowException;
 
-use EllisLab\ExpressionEngine\Library\Data\Entity;
+use EllisLab\ExpressionEngine\Library\Data\SerializableEntity;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
@@ -35,7 +35,7 @@ use EllisLab\ExpressionEngine\Service\Event\Subscriber;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Model extends Entity implements Subscriber, ValidationAware {
+class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 
 	/**
