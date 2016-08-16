@@ -16,10 +16,14 @@ feature 'Debugging & Output Settings' do
   it 'should load current settings into form fields' do
     debug = ee_config(item: 'debug')
     show_profiler = ee_config(item: 'show_profiler')
-    enable_devlog_alerts = ee_config(item: 'enable_devlog_alerts')
     gzip_output = ee_config(item: 'gzip_output')
     force_query_string = ee_config(item: 'force_query_string')
     send_headers = ee_config(item: 'send_headers')
+
+    enable_devlog_alerts = ee_config(item: 'enable_devlog_alerts')
+    if enable_devlog_alerts == '' then
+      enable_devlog_alerts = 'n'
+    end
 
     # This is ridiculous
     @page.debug_y.checked?.should == (debug == '1')
