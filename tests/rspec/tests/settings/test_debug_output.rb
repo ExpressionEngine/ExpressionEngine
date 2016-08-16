@@ -16,22 +16,18 @@ feature 'Debugging & Output Settings' do
   it 'should load current settings into form fields' do
     debug = ee_config(item: 'debug')
     show_profiler = ee_config(item: 'show_profiler')
+    enable_devlog_alerts = ee_config(item: 'enable_devlog_alerts')
     gzip_output = ee_config(item: 'gzip_output')
     force_query_string = ee_config(item: 'force_query_string')
     send_headers = ee_config(item: 'send_headers')
 
-    enable_devlog_alerts = ee_config(item: 'enable_devlog_alerts')
-    if enable_devlog_alerts == '' then
-      enable_devlog_alerts = 'n'
-    end
-
-    # This is ridiculous
+    # This is ridiculous -- testing *each* radio button's status
     @page.debug_y.checked?.should == (debug == '1')
     @page.debug_n.checked?.should == (debug == '0')
     @page.show_profiler_y.checked?.should == (show_profiler == 'y')
     @page.show_profiler_n.checked?.should == (show_profiler == 'n')
     @page.enable_devlog_alerts_y.checked?.should == (enable_devlog_alerts == 'y')
-    @page.enable_devlog_alerts_n.checked?.should == (enable_devlog_alerts == 'n')
+    @page.enable_devlog_alerts_n.checked?.should == (enable_devlog_alerts == 'n' || enable_devlog_alerts == '')
     @page.gzip_output_y.checked?.should == (gzip_output == 'y')
     @page.gzip_output_n.checked?.should == (gzip_output == 'n')
     @page.force_query_string_y.checked?.should == (force_query_string == 'y')
