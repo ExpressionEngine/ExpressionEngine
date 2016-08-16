@@ -159,10 +159,15 @@ class Snippet extends FileSyncedModel {
 			return $basepath.'_global_partials';
 		}
 
-		$site = $this->getFrontend()->get('Site')
-			->fields('site_name')
-			->filter('site_id', $this->site_id)
-			->first();
+		if ( ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site'))
+		{
+			$site = $this->getFrontend()->get('Site')
+				->fields('site_name')
+				->filter('site_id', $this->site_id)
+				->first();
+
+			ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
+		}
 
 		return $basepath.$site->site_name.'/_partials';
 	}
