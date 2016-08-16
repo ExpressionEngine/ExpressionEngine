@@ -36,7 +36,8 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'add_enable_devlog_alerts'
+				'add_enable_devlog_alerts',
+				'fix_file_dimension_site_ids'
 			)
 		);
 
@@ -54,6 +55,27 @@ class Updater {
 			array('enable_devlog_alerts' => 'n'),
 			'all'
 		);
+	}
+
+	/**
+	 * File dimensions were previously being saved with a site ID of 1 regardless
+	 * of actual site saved on, this corrects previously-saved file dimensions
+	 */
+	private function fix_file_dimension_site_ids()
+	{
+		$upload_destinations = ee('Model')->get('UploadDestination')->all();
+
+		foreach ($upload_destinations as $upload)
+		{
+			foreach ($upload->FileDimensions as $size)
+			{
+				if ($size->site_id != $upload->site_id)
+				{
+					$size->site_id = $upload->site_id;
+					$size->save();
+				}
+			}
+		}
 	}
 }
 
