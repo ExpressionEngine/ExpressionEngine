@@ -119,6 +119,20 @@ class Validator {
 	}
 
 	/**
+	 * Check for custom rule presence
+	 *
+	 * We use this in the models to define custom rules only when they're about
+	 * to be used to prevent carrying that circular reference around.
+	 *
+	 * @param String $name Custom rule name
+	 * @return bool Has rule of name $name?
+	 */
+	public function hasCustomRule($name)
+	{
+		return array_key_exists($name, $this->custom);
+	}
+
+	/**
 	 * Run the validation
 	 *
 	 * @param Array $values Data to validate
@@ -339,7 +353,6 @@ class Validator {
 
 		throw new \Exception("Unknown validation rule `{$rule_name}`.");
 	}
-
 }
 
 // EOF

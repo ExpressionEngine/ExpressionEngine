@@ -456,20 +456,24 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 */
 	public function validate()
 	{
-		if ( ! isset($this->_validator))
+		$validator = $this->getValidator();
+
+		if ( ! isset($validator))
 		{
 			return TRUE;
 		}
+
+		$this->ensureValidationAliases();
 
 		$this->emit('beforeValidate');
 
 		if ($this->isNew())
 		{
-			$result = $this->_validator->validate($this);
+			$result = $validator->validate($this);
 		}
 		else
 		{
-			$result = $this->_validator->validatePartial($this);
+			$result = $validator->validatePartial($this);
 		}
 
 		$this->emit('afterValidate');
@@ -487,12 +491,6 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	{
 		$this->_validator = $validator;
 
-		// alias unique to the validateUnique callback
-		$validator->defineRule('unique', array($this, 'validateUnique'));
-
-		// alias uniqueWithinSiblings to the validateUniqueWithinSiblings callback
-		$validator->defineRule('uniqueWithinSiblings', array($this, 'validateUniqueWithinSiblings'));
-
 		return $this;
 	}
 
@@ -504,6 +502,25 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	public function getValidator()
 	{
 		return $this->_validator;
+	}
+
+	/**
+	 * Alias some validate* rules to the unprefixed name.
+	 *
+	 * This used to be done in the validation setter, but that ends up being a
+	 * bit of a waste of work and sets up a circular reference that's not easily
+	 * garbage collected. This is much easier.
+	 */
+	private function ensureValidationAliases()
+	{
+		if ( ! $this->_validator->hasCustomRule('unique'))
+		{
+			// alias unique to the validateUnique callback
+			$this->_validator->defineRule('unique', array($this, 'validateUnique'));
+
+			// alias uniqueWithinSiblings to the validateUniqueWithinSiblings callback
+			$this->_validator->defineRule('uniqueWithinSiblings', array($this, 'validateUniqueWithinSiblings'));
+		}
 	}
 
 	/**
