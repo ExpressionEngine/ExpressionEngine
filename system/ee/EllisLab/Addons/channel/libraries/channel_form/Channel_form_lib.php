@@ -439,8 +439,8 @@ class Channel_form_lib
 			}
 		}
 
-		//edit form
-		if ($this->edit)
+		//edit form or post-error submission
+		if ($this->edit OR is_object($this->entry))
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -545,8 +545,8 @@ class Channel_form_lib
 		}
 		elseif ($this->channel('channel_id'))
 		{
-			$this->parse_variables['title']		= ($this->entry('title')) ?: $this->channel('default_entry_title');
-			$this->parse_variables['url_title'] = ($this->entry('url_title')) ?: $this->channel('url_title_prefix');
+			$this->parse_variables['title']		= $this->channel('default_entry_title');
+			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
 			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
 
 			if ($this->datepicker)
