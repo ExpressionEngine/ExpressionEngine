@@ -14,7 +14,6 @@ class Association {
     private $inverse_name;
 
     protected $diff;
-    protected $model;
     protected $facade;
     protected $related;
     protected $relation;
@@ -22,11 +21,10 @@ class Association {
 
     public function __construct(Model $model, Relation $relation)
     {
-        $this->model = $model;
         $this->relation = $relation;
         list($this->foreign_key, $_) = $this->relation->getKeys();
 
-        $this->bootAssociation();
+        $this->bootAssociation($model);
     }
 
     /**
@@ -36,7 +34,7 @@ class Association {
      * @param Bool $_skip_inverse
      * @return void
      */
-    public function fill($related, $_skip_inverse = FALSE)
+    public function fill($model, $related, $_skip_inverse = FALSE)
     {
         $this->related = $related;
 
@@ -46,8 +44,8 @@ class Association {
 
             foreach ($related as $to)
             {
-                $this->relation->fillLinkIds($this->model, $to);
-                $this->getInverse($to)->fill($this->model, TRUE);
+                $this->relation->fillLinkIds($model, $to);
+                $this->getInverse($to)->fill($to, $model, TRUE);
             }
         }
 
@@ -61,7 +59,7 @@ class Association {
      * @param Mixed $item Model(s)|Collection
      * @return void
      */
-    public function set($item)
+    public function set($parent, $item)
     {
         $this->diff->reset();
 
@@ -77,7 +75,7 @@ class Association {
                 $inverse->remove();
             }
 
-            $this->addToRelated($model);
+            $this->addToRelated($parent, $model);
         }
 
         $this->diff->wasSet();
@@ -116,11 +114,11 @@ class Association {
      *
      * @return Model|Collection
      */
-    public function get()
+    public function get($parent)
     {
         if ( ! $this->isLoaded())
         {
-            $this->reload();
+            $this->reload($parent);
         }
 
         return $this->related;
@@ -132,13 +130,13 @@ class Association {
      * @param Mixed $item Model(s)|Collection
      * @return void
      */
-    public function add($item)
+    public function add($parent, $item)
     {
         $items = $this->toModelArray($item);
 
         foreach ($items as $model)
         {
-            $this->addToRelated($model);
+            $this->addToRelated($parent, $model);
         }
     }
 
@@ -166,14 +164,14 @@ class Association {
      *
      * @return void
      */
-    public function idHasChanged()
+    public function idHasChanged($parent)
     {
-        $new_id = $this->model->getId();
+        $new_id = $parent->getId();
         $items = $this->toModelArray($this->related);
 
         foreach ($items as $to)
         {
-            $this->relation->linkIds($this->model, $to);
+            $this->relation->linkIds($parent, $to);
         }
     }
 
@@ -184,7 +182,7 @@ class Association {
      */
     public function save()
     {
-        $this->diff->commit();
+        $this->diff->commit($parent);
 
         if ( ! $this->saving && $this->relation->canSaveAcross())
         {
@@ -229,10 +227,10 @@ class Association {
      * This runs a query to pull in related data and links up all the object
      * references.
 	 */
-	public function reload()
+	public function reload($parent)
 	{
 		$query = $this->facade->get($this->relation->getTargetModel());
-		$query->setLazyConstraint($this->relation, $this->model);
+		$query->setLazyConstraint($this->relation, $parent);
 
 		$result = $query->all();
 
@@ -241,7 +239,7 @@ class Association {
             $result->setAssociation($this);
         }
 
-		$this->fill($result);
+		$this->fill($parent, $result);
 
         $this->diff->reset();
 		$this->markAsLoaded();
@@ -252,40 +250,40 @@ class Association {
         $this->facade = $facade;
     }
 
-    protected function addToRelated(Model $model)
+    protected function addToRelated(Model $parent, Model $model)
     {
-        $this->ensureExists($model);
-        $this->ensureInverseExists($model);
+        $this->ensureExists($parent, $model);
+        $this->ensureInverseExists($parent, $model);
     }
 
-    protected function removeFromRelated(Model $model)
+    protected function removeFromRelated(Model $parent, Model $model)
     {
-        $this->ensureDoesNotExist($model);
-        $this->ensureInverseDoesNotExist($model);
+        $this->ensureDoesNotExist($parent, $model);
+        $this->ensureInverseDoesNotExist($parent, $model);
     }
 
-    protected function ensureExists($model)
+    protected function ensureExists($parent, $model)
     {
         $this->diff->add($model);
-        $this->relation->linkIds($this->model, $model);
+        $this->relation->linkIds($parent, $model);
     }
 
-    protected function ensureDoesNotExist($model)
+    protected function ensureDoesNotExist($parent, $model)
     {
         $this->diff->remove($model);
-        $this->relation->unlinkIds($this->model, $model);
+        $this->relation->unlinkIds($parent, $model);
     }
 
-    protected function ensureInverseExists($model)
+    protected function ensureInverseExists($parent, $model)
     {
         $assoc = $this->getInverse($model);
-        $assoc->ensureExists($this->model);
+        $assoc->ensureExists($model, $parent);
     }
 
-    protected function ensureInverseDoesNotExist($model)
+    protected function ensureInverseDoesNotExist($parent, $model)
     {
         $assoc = $this->getInverse($model);
-        $assoc->ensureDoesNotExist($this->model);
+        $assoc->ensureDoesNotExist($model, $parent);
     }
 
     /**
@@ -373,13 +371,13 @@ class Association {
      *
      * @return void
      */
-    protected function bootAssociation()
+    protected function bootAssociation($model)
     {
-        $this->diff = new Diff($this->model, $this->relation);
+        $this->diff = new Diff($this->relation);
 
-        if ($this->foreign_key != $this->model->getPrimaryKey())
+        if ($this->foreign_key != $model->getPrimaryKey())
         {
-            $this->model->addForeignKey($this->foreign_key, $this);
+            $model->addForeignKey($this->foreign_key, $this);
         }
     }
 }

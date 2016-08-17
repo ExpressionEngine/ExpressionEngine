@@ -7,16 +7,14 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association;
  */
 class Diff {
 
-	private $parent;
 	private $relation;
 
 	protected $added = array();
 	protected $removed = array();
 	protected $was_set = FALSE;
 
-	public function __construct($parent, $relation)
+	public function __construct($relation)
 	{
-		$this->parent = $parent;
 		$this->relation = $relation;
 	}
 
@@ -74,21 +72,21 @@ class Diff {
 		return FALSE;
 	}
 
-	public function commit()
+	public function commit($parent)
 	{
 		// when setting, remove everything not in the new set
 		if ($this->was_set)
 		{
-			$this->relation->set($this->parent, $this->added);
+			$this->relation->set($parent, $this->added);
 		}
 		else
 		{
 			if ( ! empty($this->removed))
 			{
-				$this->relation->drop($this->parent, $this->removed);
+				$this->relation->drop($parent, $this->removed);
 			}
 
-			$this->relation->insert($this->parent, $this->added);
+			$this->relation->insert($parent, $this->added);
 		}
 
 		$this->reset();

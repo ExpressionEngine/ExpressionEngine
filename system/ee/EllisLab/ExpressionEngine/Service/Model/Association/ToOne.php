@@ -6,7 +6,7 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 class ToOne extends Association {
 
-	public function fill($related, $_skip_inverse = FALSE)
+	public function fill($parent, $related, $_skip_inverse = FALSE)
 	{
 		if ($related instanceOf Collection)
 		{
@@ -18,24 +18,24 @@ class ToOne extends Association {
 			$related = array_shift($related);
 		}
 
-		return parent::fill($related, $_skip_inverse);
+		return parent::fill($parent, $related, $_skip_inverse);
 	}
 
-	protected function ensureExists($model)
+	protected function ensureExists($parent, $model)
 	{
 		if ($this->related !== $model)
 		{
 			$this->related = $model;
-			parent::ensureExists($model);
+			parent::ensureExists($parent, $model);
 		}
 	}
 
-	protected function ensureDoesNotExist($model)
+	protected function ensureDoesNotExist($parent, $model)
 	{
 		if ($this->related === $model)
 		{
 			$this->related = NULL;
-			parent::ensureDoesNotExist($model);
+			parent::ensureDoesNotExist($parent, $model);
 		}
 	}
 }

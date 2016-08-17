@@ -114,7 +114,7 @@ class Relationship implements Mixin {
 			case 'get':
 				return $this->scope->$name;
 			case 'fill':
-				return $assoc->fill($args[0]);
+				return $assoc->fill($this->scope, $args[0]);
 			case 'set':
 				$this->scope->$name = $args[0];
 				return $this->scope;

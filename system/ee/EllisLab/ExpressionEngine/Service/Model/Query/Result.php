@@ -245,7 +245,7 @@ class Result {
 			}
 
 			$name = $relation->getName();
-			$parent->getAssociation($name)->fill($collection);
+			$parent->getAssociation($name)->fill($parent, $collection);
 		}
 	}
 
