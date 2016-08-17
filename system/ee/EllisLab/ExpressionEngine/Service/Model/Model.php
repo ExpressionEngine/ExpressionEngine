@@ -132,10 +132,12 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 */
 	protected function initialize()
 	{
-		$this->addFilter('get', array($this, 'typedGet'));
-		$this->addFilter('set', array($this, 'typedSet'));
-		$this->addFilter('fill', array($this, 'typedLoad'));
-		$this->addFilter('store', array($this, 'typedStore'));
+		// not a typo, 'this' is replaced with $this to prevent
+		// a memory leak - long term these need to move to a better place
+		$this->addFilter('get', array('this', 'typedGet'));
+		$this->addFilter('set', array('this', 'typedSetAndForeignKeys'));
+		$this->addFilter('fill', array('this', 'typedLoad'));
+		$this->addFilter('store', array('this', 'typedStore'));
 
 		if ($publish_as = $this->getMetaData('hook_id'))
 		{

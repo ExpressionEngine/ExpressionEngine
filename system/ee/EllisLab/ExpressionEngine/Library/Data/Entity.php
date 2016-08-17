@@ -202,6 +202,11 @@ abstract class Entity extends MixableImpl implements Publisher {
 
 		foreach ($this->getFilters($type) as $filter)
 		{
+			if (is_array($filter) && $filter[0] == 'this')
+			{
+				$filter[0] = $this;
+			}
+
 			$args[0] = call_user_func_array($filter, $args);
 		}
 
