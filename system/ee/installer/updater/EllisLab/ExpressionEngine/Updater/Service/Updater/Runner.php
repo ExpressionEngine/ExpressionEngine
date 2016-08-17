@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Service;
+use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
+use EllisLab\ExpressionEngine\Updater\Service;
 
 /**
  * ExpressionEngine - by EllisLab
