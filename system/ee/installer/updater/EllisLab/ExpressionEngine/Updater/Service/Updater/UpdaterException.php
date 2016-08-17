@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
 /**
  * ExpressionEngine - by EllisLab

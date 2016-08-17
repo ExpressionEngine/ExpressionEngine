@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controller\Updater;
+namespace EllisLab\ExpressionEngine\Updater\Controller\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\Runner;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\Runner;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 

@@ -2,18 +2,18 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\FileUpdater;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\FileUpdater;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use Mockery;
 
 class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
-		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
-		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Verifier');
-		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
+		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem');
+		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Updater\Service\Config\File');
+		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Updater\Service\Updater\Verifier');
+		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Updater\Service\Updater\Logger');
 
 		$this->logger->shouldReceive('log');
 

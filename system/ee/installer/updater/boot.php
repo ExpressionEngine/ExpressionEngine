@@ -19,13 +19,14 @@
  * ------------------------------------------------------
  */
 
-	require SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Core/Autoloader.php';
+	require SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php';
 
 	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
 		->addPrefix('EllisLab', SYSPATH.'ee/updater/EllisLab/')
 		->register();
 
-	require __DIR__.'/EllisLab/ExpressionEngine/Boot/boot.common.php';
+	// TODO: These functions may already be included by the CLI bootstrap, what to do?
+	require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
 
 /*
  * ------------------------------------------------------
@@ -41,10 +42,9 @@
 		routeRequest($directory, $controller, $method);
 	}
 
-	// For scoping
 	function routeRequest($directory, $controller, $method = '')
 	{
-		$class = 'EllisLab\ExpressionEngine\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
+		$class = 'EllisLab\ExpressionEngine\Updater\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
 
 		if (class_exists($class))
 		{

@@ -1,11 +1,11 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Service\Config\File;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\Logger;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
+use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
+use EllisLab\ExpressionEngine\Updater\Service\Config\File;
 
 /**
  * ExpressionEngine - by EllisLab

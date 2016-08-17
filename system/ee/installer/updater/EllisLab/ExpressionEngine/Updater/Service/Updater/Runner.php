@@ -52,7 +52,8 @@ class Runner {
 	}
 
 	/**
-	 * Gathers dependencies and makes the file updater service
+	 * Since we don't (yet?) have a dependency injection container, this gathers
+	 * dependencies and makes the file updater service for the Runner class to use
 	 */
 	protected function makeUpdaterService()
 	{

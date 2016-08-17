@@ -144,16 +144,16 @@ themes/third_party/
 
 # Updater dependencies =================================================
 
-system/ee/installer/updater/EllisLab/ExpressionEngine/Boot/boot.common.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Core/Autoloader.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Library/Filesystem/Filesystem.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Library/Filesystem/FilesystemException.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Protocol/Config/Config.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/ConfigWithDefaults.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/Directory.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/Factory.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Config/File.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Logger/File.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/Logger.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/Steppable.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/Verifier.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Library/Filesystem/FilesystemException.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Protocol/Config/Config.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/ConfigWithDefaults.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Directory.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Factory.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/File.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Logger/File.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Logger.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Steppable.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Verifier.php
