@@ -382,11 +382,6 @@ class Association {
                 $that->foreignKeyChanged($value);
             }
         });
-
-        $this->model->on('setId', function() use ($that)
-        {
-            $that->idHasChanged();
-        });
     }
 }
 

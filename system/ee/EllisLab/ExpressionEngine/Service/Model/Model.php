@@ -261,6 +261,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 		$this->emit('setId', $id);
 
+		foreach ($this->_associations as $association)
+		{
+			$association->idHasChanged();
+		}
+
 		return $this;
 	}
 
