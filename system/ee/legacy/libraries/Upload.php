@@ -397,7 +397,7 @@ class EE_Upload {
 			return $filename;
 		}
 
-		$new_filename = ee('Filesystem')->getUniqueFilename($filename);
+		$new_filename = ee('Filesystem')->getUniqueFilename($path.$filename);
 
 		if ($new_filename == '')
 		{
