@@ -74,6 +74,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	protected $_property_types = array();
 
 	/**
+	 * @var Cache of foreign key names
+	 */
+	protected $_foreign_keys = array();
+
+	/**
 	 * @var Type names and their corresponding classes
 	 */
 	protected static $_type_classes = array(
@@ -704,7 +709,13 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	{
 		if ($type = $this->getTypeFor($name))
 		{
-			return $type->set($value);
+			$value = $type->set($value);
+		}
+
+		if (array_key_exists($name, $this->_foreign_keys))
+		{
+			$assoc = $this->_foreign_keys[$name];
+			$assoc->foreignKeyChanged($value);
 		}
 
 		return $value;
@@ -865,6 +876,13 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		return $this->setAssociation($as, $this->getAssociation($association));
 	}
 
+	/**
+	 * Add a foreign key
+	 */
+	public function addForeignKey($key, $assoc)
+	{
+		$this->_foreign_keys[$key] = $assoc;
+	}
 
 	/**
 	 * Create a new query tied to this object
@@ -876,6 +894,10 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		return $this->_facade->get($this);
 	}
 
+	/**
+	 * Provide a bit of debugging information when printing a model, but
+	 * don't show any potentially sensitive information.
+	 */
 	public function __toString()
 	{
 		return spl_object_hash($this).':'.$this->getName().':'.$this->getId();

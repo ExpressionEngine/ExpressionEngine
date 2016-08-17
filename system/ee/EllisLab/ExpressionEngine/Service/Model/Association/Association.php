@@ -348,11 +348,16 @@ class Association {
      * This gets called when the potential foreign key changes. Currently our
      * response it to play it safe and always reload the relationship.
      *
-     * @param Int $fk New foreign key value
+     * @param Mixed $value New foreign key value
      * @return void
      */
-    public function foreignKeyChanged($fk)
+    public function foreignKeyChanged($value)
     {
+        if ($value == NULL)
+        {
+            return $this->remove();
+        }
+
         if ($this->isLoaded())
         {
             $this->markForReload();
@@ -372,16 +377,10 @@ class Association {
     {
         $this->diff = new Diff($this->model, $this->relation);
 
-        $that = $this;
-        $foreign_key = $this->foreign_key;
-
-        $this->model->on('afterSet', function($name, $value) use ($that, $foreign_key)
+        if ($this->foreign_key != $this->model->getPrimaryKey())
         {
-            if ($name == $foreign_key)
-            {
-                $that->foreignKeyChanged($value);
-            }
-        });
+            $this->model->addForeignKey($this->foreign_key, $this);
+        }
     }
 }
 
