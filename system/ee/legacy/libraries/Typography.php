@@ -188,7 +188,8 @@ class EE_Typography {
 			'abbr' => array('properties' => array('title')),
 			'span' => array('properties' => array('class')),
 			'sup',
-			'sub'
+			'sub',
+			'mark' => array('properties' => array('class'))
 		);
 
 		$this->safe_decode = array(
@@ -205,7 +206,8 @@ class EE_Typography {
 			'quote'      => 'blockquote',
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
 			'sup'        => 'sup',
-			'sub'        => 'sub'
+			'sub'        => 'sub',
+			'mark'       => array('tag' => 'mark', 'properties' => array('class')),
 		);
 
 		// enable quote protection within braces for EE {variable="attributes"}
@@ -1230,6 +1232,10 @@ class EE_Typography {
 			return $matches[1].$code.$matches[1];
 		};
 
+		// make sure no one is sneaking things into links. XSS Clean won't pick these up since they aren't real markup
+		$str = $this->unencodeMarkdownLinks($str);
+		$str = $this->unencodeMarkdownReferenceLinks($str);
+
 		// Codefences
 		if (strpos($str, '```') !== FALSE
 			OR strpos($str, '~~~') !== FALSE)
@@ -1287,6 +1293,184 @@ class EE_Typography {
 		}
 
 		// Put everything back in to place
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unencode Markdown Links
+	 *
+	 * Turns:
+	 * 		[Link](&#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;)
+	 * Into:
+	 * 		[Link](https://example.com/)
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownLinks($str)
+	{
+		// these are protected class properties of Markdown
+		// copied here to keep the regex below sane
+		$nested_brackets_depth = 6;
+		$nested_brackets_re =
+			str_repeat('(?>[^\[\]]+|\[', $nested_brackets_depth).
+			str_repeat('\])*', $nested_brackets_depth);
+
+		$nested_url_parenthesis_depth = 4;
+		$nested_url_parenthesis_re =
+			str_repeat('(?>[^()\s]+|\(', $nested_url_parenthesis_depth).
+			str_repeat('(?>\)))*', $nested_url_parenthesis_depth);
+
+		// regex from in-line style links in Markdown::doAnchors()
+		if ( ! $count = preg_match_all('{
+			(				# wrap whole match in $1
+			  \[
+				('.$nested_brackets_re.')	# link text = $2
+			  \]
+			  \(			# literal paren
+				[ \n]*
+				(?:
+					<(.+?)>	# href = $3
+				|
+					('.$nested_url_parenthesis_re.')	# href = $4
+				)
+				[ \n]*
+				(			# $5
+				  ([\'"])	# quote char = $6
+				  (.*?)		# Title = $7
+				  \6		# matching quote
+				  [ \n]*	# ignore any spaces/tabs between closing quote and )
+				)?			# title is optional
+			  \)
+			)
+			}xs',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 7; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$new = '['.
+						$link_matches[2][$key]. // link text
+					']('.
+						$link_matches[3][$key].$link_matches[4][$key]. // one of these will be the href
+						$link_matches[6][$key]. // " or '
+						$link_matches[7][$key]. // optional title= attribute
+						$link_matches[6][$key]. // " or '
+					')';
+
+			$str = str_replace($match, $new, $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unencode Markdown Reference Links
+	 *
+	 * Turns:
+	 * 		[1]: &#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;
+	 * Into:
+	 * 		[1]: https://example.com/
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownReferenceLinks($str)
+	{
+		// set to 1 less than Markdown's $tab_width property
+		$less_than_tab = 3;
+
+		// regex from Markdown::stripLinkDefinitions()
+		if ( ! $count = preg_match_all(
+			'{
+			^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:	# id = $1
+			  [ ]*
+			  \n?				# maybe *one* newline
+			  [ ]*
+			(?:
+			  <(.+?)>			# url = $2
+			|
+			  (\S+?)			# url = $3
+			)
+			  [ ]*
+			  \n?				# maybe one newline
+			  [ ]*
+			(?:
+				(?<=\s)			# lookbehind for whitespace
+				["(]
+				(.*?)			# title = $4
+				[")]
+				[ ]*
+			)?	# title is optional
+			(?:\n+|\Z)
+			}xm',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 4; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$title = '';
+
+			if (empty($link_matches[4][$key]))
+			{
+				$title = '';
+			}
+			else
+			{
+				if (strpos($link_matches[4][$key], '"') !== FALSE)
+				{
+					$title = ' ('.$link_matches[4][$key].')';
+				}
+				else
+				{
+					$title = ' "'.$link_matches[4][$key].'"';
+				}
+			}
+
+			$newline = (substr($match, -1) === "\n") ? "\n" : '';
+
+			$new = '['.
+					$link_matches[1][$key]. // link id
+					']: '.
+					$link_matches[2][$key].$link_matches[3][$key]. // one of these will be the href
+					$title. // empty or optional title
+					$newline; // preserve newlines
+
+			$str = str_replace($match, $new, $str);
+		}
+
 		return $str;
 	}
 

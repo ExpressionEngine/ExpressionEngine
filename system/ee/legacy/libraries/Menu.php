@@ -194,7 +194,11 @@ class EE_Menu {
 							->filter('channel_id', $channel->channel_id)
 							->first();
 
-						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						// Just in case $channel->total_records is inaccurate
+						if ($entry)
+						{
+							$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						}
 					}
 				}
 			}

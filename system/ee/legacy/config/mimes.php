@@ -28,7 +28,8 @@
  * @link		https://ellislab.com
  */
 
-ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
+ee()->load->library('logger');
+ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("mimes") to load this config file', TRUE, 604800);
 
 $whitelist = ee()->config->loadFile('mimes');
 

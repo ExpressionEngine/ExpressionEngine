@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Library\Data;
 
 use Closure;
 use InvalidArgumentException;
+use Serializable;
 use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
 use EllisLab\ExpressionEngine\Service\Event\Emitter;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;

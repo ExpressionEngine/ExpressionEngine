@@ -60,6 +60,7 @@ class Buttons extends Settings {
 		// Default HTML buttons simply have a member ID of 0
 		$buttons = ee('Model')->get("HTMLButton")
 					->filter('member_id', 0)
+					->filter('site_id', ee()->config->item('site_id'))
 					->order('tag_order', 'asc')
 					->all();
 
@@ -335,12 +336,7 @@ class Buttons extends Settings {
 			array(
 				 'field'   => 'tag_open',
 				 'label'   => 'lang:tag_open',
-				 'rules'   => 'required|valid_xss_check'
-			),
-			array(
-				 'field'   => 'tag_close',
-				 'label'   => 'lang:tag_close',
-				 'rules'   => 'valid_xss_check'
+				 'rules'   => 'required'
 			),
 			array(
 				 'field'   => 'accesskey',

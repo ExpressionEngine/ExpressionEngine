@@ -26,7 +26,8 @@
  * @link		https://ellislab.com
  */
 
-ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
+ee()->load->library('logger');
+ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("stopwords") to load this config file', TRUE, 604800);
 
 $ignore = ee()->config->loadFile('stopwords');
 
