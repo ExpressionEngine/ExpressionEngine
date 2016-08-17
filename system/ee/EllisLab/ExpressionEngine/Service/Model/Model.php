@@ -812,6 +812,26 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		return $this->getMetaData('events') ?: array();
 	}
 
+	public function emit($event/*, ...$args */)
+	{
+		// handle events we're subscribed to
+		if (in_array($event, $this->getSubscribedEvents()))
+		{
+			$args = func_get_args();
+			array_shift($args);
+
+			$method = 'on'.ucfirst($event);
+			call_user_func_array(array($this, $method), $args);
+		}
+
+		call_user_func_array(
+			'parent::emit',
+			func_get_args()
+		);
+	}
+
+
+
 	/**
 	* Get all associations
 	*
