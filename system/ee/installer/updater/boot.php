@@ -6,12 +6,14 @@
  *             files check for this (`if ! defined ...`)
  * ------------------------------------------------------
  */
-	define('BASEPATH', SYSPATH.'ee/legacy/');
-
-	define('FILE_READ_MODE', 0644);
-	define('FILE_WRITE_MODE', 0666);
-	define('DIR_READ_MODE', 0755);
-	define('DIR_WRITE_MODE', 0777);
+	if ( ! defined('BASEPATH'))
+	{
+		define('BASEPATH', SYSPATH.'ee/legacy/');
+		define('FILE_READ_MODE', 0644);
+		define('FILE_WRITE_MODE', 0666);
+		define('DIR_READ_MODE', 0755);
+		define('DIR_WRITE_MODE', 0777);
+	}
 
 /*
  * ------------------------------------------------------
@@ -25,8 +27,12 @@
 		->addPrefix('EllisLab', SYSPATH.'ee/updater/EllisLab/')
 		->register();
 
-	// TODO: These functions may already be included by the CLI bootstrap, what to do?
-	require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
+	// TODO: We need to figure out how to include the latest boot.common helper functions
+	// after the old ones were already included in the CLI bootstrap
+	if ( ! function_exists('is_php'))
+	{
+		require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
+	}
 
 /*
  * ------------------------------------------------------
