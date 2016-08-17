@@ -41,7 +41,7 @@ class RequirementsCheckerLoader {
 	public function __construct($filesystem)
 	{
 		$this->filesystem = $filesystem;
-		$this->path = SYSPATH . '/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php';
+		$this->path = SYSPATH . '/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php';
 	}
 
 	/**

@@ -321,7 +321,7 @@ class Downloader {
 		$this->logger->log('Checking server requirements of new ExpressionEngine version');
 
 		$this->requirements->setClassPath(
-			$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php'
+			$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php'
 		);
 		$result = $this->requirements->check();
 
