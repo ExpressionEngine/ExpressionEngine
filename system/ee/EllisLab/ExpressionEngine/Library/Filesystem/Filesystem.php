@@ -470,13 +470,18 @@ class Filesystem {
 			{
 				rsort($files, SORT_NATURAL);
 			}
-			$number = str_replace(array($filename, $extension), '', $files[0]);
-			if (strpos($number, '_') === 0)
+
+			foreach ($files as $file)
 			{
-				$number = str_replace('_', '', $number);
-				if (is_numeric($number))
+				$number = str_replace(array($filename, $extension), '', $file);
+				if (substr_count($number, '_') == 1 && strpos($number, '_') === 0)
 				{
-					$i = (int) $number;
+					$number = str_replace('_', '', $number);
+					if (is_numeric($number))
+					{
+						$i = (int) $number;
+						break;
+					}
 				}
 			}
 		}

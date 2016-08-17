@@ -21,7 +21,10 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase {
 			'image002.jpg',
 			'image002_2.jpg',
 			'vacation_2016_01_02.jpg',
-			'unique_test.txt'
+			'unique_test.txt',
+			'image.jpg',
+			'image_99.jpg',
+			'image_99_1.jpg'
 		);
 
 		foreach ($this->dummy_files as $file)
@@ -62,7 +65,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase {
 			array('File is already unique',            'DSC_0001.jpg',            'DSC_0001.jpg'),
 			array('Adds an underscore',                'image001.jpg',            'image001_1.jpg'),
 			array('Rename picks up where it left off', 'image002.jpg',            'image002_3.jpg'),
-			array('Handles extra underscores',         'vacation_2016_01_02.jpg', 'vacation_2016_01_02_1.jpg'),
+			array('Handles extra underscores in name', 'vacation_2016_01_02.jpg', 'vacation_2016_01_02_1.jpg'),
+			array('Handles extra underscores',         'image.jpg',               'image_100.jpg'),
 			array('Handles partial matches',           'vacation.jpg',            'vacation.jpg'),
 			array('Exceeds 100 renames',               'unique_test.txt',         'unique_test_101.txt')
 		);
