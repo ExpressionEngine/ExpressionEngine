@@ -522,7 +522,17 @@ class Channel_form_lib
 
 					if (in_array($key, $this->date_fields) || $this->get_field_type($name) == 'date')
 					{
-						$this->parse_variables[$key] = ($this->entry($name)) ? ee()->localize->human_time($this->entry($name)) : '';
+						if ($this->entry($name))
+						{
+							// most likely a failed submission, and $this->entry->getProperty() will not
+							// return the posted string value
+							$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							$this->parse_variables[$key] = ee()->localize->human_time($date);
+						}
+						else
+						{
+							$this->parse_variables[$key] = '';
+						}
 					}
 					elseif (in_array($key, $this->checkboxes))
 					{
