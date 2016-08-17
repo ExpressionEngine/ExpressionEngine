@@ -2473,6 +2473,7 @@ class Filemanager {
 			$thumb_suffix = ee()->config->item('thumbnail_prefix');
 
 			$new_filename = ee('Filesystem')->getUniqueFilename($path.$filename.'_'.$thumb_suffix.$file_ext);
+			$new_filename = str_replace($path, '', $new_filename);
 
 			$image_name_reference = $new_filename;
 			$config['new_image'] = $new_filename;

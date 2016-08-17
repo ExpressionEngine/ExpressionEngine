@@ -398,6 +398,7 @@ class EE_Upload {
 		}
 
 		$new_filename = ee('Filesystem')->getUniqueFilename($path.$filename);
+		$new_filename = str_replace($path, '', $new_filename);
 
 		if ($new_filename == '')
 		{
