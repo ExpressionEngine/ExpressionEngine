@@ -705,7 +705,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		return $value;
 	}
 
-	public function typedSet($value, $name)
+	public function typedSetAndForeignKeys($value, $name)
 	{
 		if ($type = $this->getTypeFor($name))
 		{
