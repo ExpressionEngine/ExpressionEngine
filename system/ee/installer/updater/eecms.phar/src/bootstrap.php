@@ -2,12 +2,20 @@
 
 $project_base = realpath('../').'/';
 
+// TODO: Add some test to make sure the CLI file hasn't been moved out of system/ee and complain if it has
+
 // Path constants
 define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
 define('APPPATH',  BASEPATH);
 define('PATH_THIRD',  SYSPATH.'user/addons/');
 define('PATH_ADDONS',  SYSPATH.'ee/EllisLab/Addons/');
+define('PATH_CACHE',  SYSPATH . 'user/cache/');
+
+define('FILE_READ_MODE', 0644);
+define('FILE_WRITE_MODE', 0666);
+define('DIR_READ_MODE', 0755);
+define('DIR_WRITE_MODE', 0777);
 
 require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.common.php';
 
@@ -17,6 +25,7 @@ define('RD', '}');
 define('IS_CORE', FALSE);
 define('DEBUG', 1);
 define('FIXTURE', TRUE);
+
 
 require SYSPATH."ee/EllisLab/ExpressionEngine/Core/Autoloader.php";
 
