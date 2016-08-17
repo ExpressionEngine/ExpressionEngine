@@ -23,7 +23,7 @@
 
 	require SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php';
 
-	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
+	EllisLab\ExpressionEngine\Updater\Core\Autoloader::getInstance()
 		->addPrefix('EllisLab', SYSPATH.'ee/updater/EllisLab/')
 		->register();
 
