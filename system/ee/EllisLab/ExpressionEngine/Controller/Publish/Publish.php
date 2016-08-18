@@ -179,7 +179,7 @@ class Publish extends AbstractPublishController {
 			$entry->status = $channel->deft_status;
 		}
 
-		if (isset($channel->deft_category))
+		if ( ! empty($channel->deft_category))
 		{
 			$cat = ee('Model')->get('Category', $channel->deft_category)->first();
 			if ($cat)
