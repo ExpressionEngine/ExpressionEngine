@@ -7,7 +7,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class ToMany extends Association {
 
-	public function fill($parent, $related, $_skip_inverse = FALSE)
+	public function fill($related, $_skip_inverse = FALSE)
 	{
 		if (is_array($related))
 		{
@@ -25,12 +25,12 @@ class ToMany extends Association {
 		}
 
 
-		return parent::fill($parent, $related, $_skip_inverse);
+		return parent::fill($related, $_skip_inverse);
 	}
 
-	public function get($parent)
+	public function get()
 	{
-		$result = parent::get($parent);
+		$result = parent::get();
 
 		if ( ! isset($result))
 		{
@@ -41,23 +41,23 @@ class ToMany extends Association {
 		return $result;
 	}
 
-	protected function ensureExists($parent, $model)
+	protected function ensureExists($model)
 	{
 		$this->ensureCollection();
 
 		if ( ! $this->has($model))
 		{
 			$this->related->add($model);
-			parent::ensureExists($parent, $model);
+			parent::ensureExists($model);
 		}
 	}
 
-	protected function ensureDoesNotExist($parent, $model)
+	protected function ensureDoesNotExist($model)
 	{
 		if ($this->has($model))
 		{
 			$this->related->remove($model);
-			parent::ensureDoesNotExist($parent, $model);
+			parent::ensureDoesNotExist($model);
 		}
 	}
 

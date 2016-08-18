@@ -248,7 +248,7 @@ class Delete extends Query {
 				$final[1] = $this->nest($final[1]);
 			}
 		}
-
+		
 		return array_reverse($this->delete_list);
 	}
 
@@ -342,7 +342,7 @@ class Delete extends Query {
 			// PHP just won't let us have nice things.
 			foreach ($models as $model)
 			{
-				$model->getAssociation($name)->get($model)->delete();
+				$model->getAssociation($name)->get()->delete();
 			}
 
 			// continue deleting

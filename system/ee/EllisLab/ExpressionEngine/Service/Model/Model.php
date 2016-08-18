@@ -176,7 +176,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		{
 			if ($this->hasAssociation($key))
 			{
-				return $this->getAssociation($key)->get($this);
+				return $this->getAssociation($key)->get();
 			}
 		}
 
@@ -195,7 +195,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		{
 			if ($this->hasAssociation($key))
 			{
-				return $this->getAssociation($key)->set($this, $value);
+				return $this->getAssociation($key)->set($value);
 			}
 		}
 
@@ -270,7 +270,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 		foreach ($this->_associations as $association)
 		{
-			$association->idHasChanged($this);
+			$association->idHasChanged();
 		}
 
 		return $this;
@@ -370,7 +370,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		{
 			if (isset($assoc))
 			{
-				$assoc->save($this);
+				$assoc->save();
 			}
 		}
 
@@ -402,7 +402,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		{
 			if (isset($assoc))
 			{
-				$assoc->set($this, NULL);
+				$assoc->set(NULL);
 			}
 		}
 
@@ -717,7 +717,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		if (array_key_exists($name, $this->_foreign_keys))
 		{
 			$assoc = $this->_foreign_keys[$name];
-			$assoc->foreignKeyChanged($this, $value);
+			$assoc->foreignKeyChanged($value);
 		}
 
 		return $value;
