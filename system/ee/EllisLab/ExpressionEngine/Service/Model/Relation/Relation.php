@@ -65,7 +65,7 @@ abstract class Relation {
 	/**
 	 *
 	 */
-	abstract public function createAssociation(Model $source);
+	abstract public function createAssociation();
 
 	/**
 	 *

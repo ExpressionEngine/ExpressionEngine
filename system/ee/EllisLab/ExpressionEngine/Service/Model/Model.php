@@ -268,7 +268,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 		$this->emit('setId', $id);
 
-		foreach ($this->_associations as $association)
+		foreach ($this->getAllBootedAssociations() as $association)
 		{
 			$association->idHasChanged();
 		}
@@ -716,7 +716,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 		if (array_key_exists($name, $this->_foreign_keys))
 		{
-			$assoc = $this->_foreign_keys[$name];
+			$assoc = $this->getAssociation($this->_foreign_keys[$name]);
 			$assoc->foreignKeyChanged($value);
 		}
 
@@ -833,8 +833,6 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		call_user_func_array('parent::emit', $args);
 	}
 
-
-
 	/**
 	* Get all associations
 	*
@@ -842,7 +840,35 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	*/
 	public function getAllAssociations()
 	{
+		foreach ($this->_associations as $name => $assoc)
+		{
+			if ( ! $assoc->isBooted())
+			{
+				$assoc->boot($this);
+			}
+		}
+
 		return $this->_associations;
+	}
+
+	/**
+	* Get all booted associations
+	*
+	* @return array associations
+	*/
+	public function getAllBootedAssociations()
+	{
+		$assocs = [];
+
+		foreach ($this->_associations as $assoc)
+		{
+			if ($assoc->isBooted())
+			{
+				$assocs[] = $assoc;
+			}
+		}
+
+		return $assocs;
 	}
 
 	/**
@@ -864,7 +890,14 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	*/
 	public function getAssociation($name)
 	{
-		return $this->_associations[$name];
+		$assoc = $this->_associations[$name];
+
+		if ( ! $assoc->isBooted())
+		{
+			$assoc->boot($this);
+		}
+
+		return $assoc;
 	}
 
 	/**
@@ -877,6 +910,14 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	public function setAssociation($name, Association $association)
 	{
 		$association->setFacade($this->getModelFacade());
+
+		// check for a foreign key to listen to
+		$fk = $association->getForeignKey();
+
+		if ($fk != $this->getPrimaryKey())
+		{
+			$this->addForeignKey($fk, $name);
+		}
 
 		$this->_associations[$name] = $association;
 
@@ -902,9 +943,9 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	/**
 	 * Add a foreign key
 	 */
-	public function addForeignKey($key, $assoc)
+	public function addForeignKey($key, $assoc_name)
 	{
-		$this->_foreign_keys[$key] = $assoc;
+		$this->_foreign_keys[$key] = $assoc_name;
 	}
 
 	/**

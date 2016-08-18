@@ -171,7 +171,7 @@ class DataStore {
 
 		foreach ($relations as $name => $relation)
 		{
-			$assoc = $relation->createAssociation($model);
+			$assoc = $relation->createAssociation();
 			$model->setAssociation($name, $assoc);
 		}
 	}

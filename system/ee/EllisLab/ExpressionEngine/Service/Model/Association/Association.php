@@ -8,6 +8,7 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
 class Association {
 
+    private $booted = FALSE;
     private $loaded = FALSE;
     private $saving = FALSE;
 
@@ -20,13 +21,10 @@ class Association {
     protected $relation;
     protected $foreign_key;
 
-    public function __construct(Model $model, Relation $relation)
+    public function __construct(Relation $relation)
     {
-        $this->model = $model;
         $this->relation = $relation;
         list($this->foreign_key, $_) = $this->relation->getKeys();
-
-        $this->bootAssociation();
     }
 
     /**
@@ -343,6 +341,16 @@ class Association {
     }
 
     /**
+     * Accessor for the foreign key name
+     *
+     * @return String foreign key name
+     */
+    public function getForeignKey()
+    {
+        return $this->foreign_key;
+    }
+
+    /**
      * Handle a foreign key change
      *
      * This gets called when the potential foreign key changes. Currently our
@@ -365,6 +373,16 @@ class Association {
     }
 
     /**
+     * Check if the association has been booted
+     *
+     * @return bool Booted?
+     */
+    public function isBooted()
+    {
+        return $this->booted;
+    }
+
+    /**
      * Spin up the association
      *
      * This creates an object diff tracker to ensure we save object changes. It
@@ -373,14 +391,11 @@ class Association {
      *
      * @return void
      */
-    protected function bootAssociation()
+    public function boot($model)
     {
+        $this->booted = TRUE;
+        $this->model = $model;
         $this->diff = new Diff($this->model, $this->relation);
-
-        if ($this->foreign_key != $this->model->getPrimaryKey())
-        {
-            $this->model->addForeignKey($this->foreign_key, $this);
-        }
     }
 }
 
