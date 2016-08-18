@@ -184,7 +184,9 @@ class Publish extends AbstractPublishController {
 			$cat = ee('Model')->get('Category', $channel->deft_category)->first();
 			if ($cat)
 			{
-				$entry->Categories[] = $cat;
+				// set directly so other categories don't get lazy loaded
+				// along with our default
+				$entry->Categories = $cat;
 			}
 		}
 
