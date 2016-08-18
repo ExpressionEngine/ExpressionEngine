@@ -15,8 +15,9 @@ feature 'Publish Page - Create' do
   it 'selects default categories for new entries' do
     @page.load(channel_id: 1)
     @page.tab_links[2].click
-    first_category = @page.first('input[name="categories[cat_group_id_1][]"]')
-    expect(first_category).to be_checked
+    @page.all('input[type="checkbox"]').each do |category|
+      category.checked?.should == (category.value == '2')
+    end
   end
 
   context 'when using file fields' do
