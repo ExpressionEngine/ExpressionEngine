@@ -62,7 +62,7 @@ end
 RSpec.configure do |config|
   # Keep using 'should' syntax in RSpec 3
   config.expect_with :rspec do |c|
-    c.syntax = :should
+    c.syntax = [:should, :expect]
   end
 
   # Before each example...

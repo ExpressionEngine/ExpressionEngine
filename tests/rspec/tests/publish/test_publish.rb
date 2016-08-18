@@ -12,6 +12,13 @@ feature 'Publish Page - Create' do
     @page.is_404?.should == true
   end
 
+  it 'selects default categories for new entries' do
+    @page.load(channel_id: 1)
+    @page.tab_links[2].click
+    first_category = @page.first('input[name="categories[cat_group_id_1][]"]')
+    expect(first_category).to be_checked
+  end
+
   context 'when using file fields' do
     before :each do
       channel_field_form = ChannelFieldForm.new
