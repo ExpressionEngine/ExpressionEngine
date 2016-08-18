@@ -362,7 +362,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Try to include the RequirementsChecker class and check server requirements
-		require_once(APPPATH.'updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php');
+		require_once(APPPATH.'updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
 
 		$this->requirements = new RequirementsChecker($db);
 
