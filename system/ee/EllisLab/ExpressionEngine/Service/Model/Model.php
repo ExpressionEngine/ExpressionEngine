@@ -814,22 +814,23 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		return $this->getMetaData('events') ?: array();
 	}
 
-	public function emit($event/*, ...$args */)
+	/**
+	 * Override emit for subscribed events. This keeps us from circularly referencing
+	 * ourselves in the event emitter.
+	 */
+	public function emit(/*$event, ...$args */)
 	{
+		$args = func_get_args();
+		$event = $args[0];
+
 		// handle events we're subscribed to
 		if (in_array($event, $this->getSubscribedEvents()))
 		{
-			$args = func_get_args();
-			array_shift($args);
-
 			$method = 'on'.ucfirst($event);
-			call_user_func_array(array($this, $method), $args);
+			call_user_func_array(array($this, $method), array_slice($args, 1));
 		}
 
-		call_user_func_array(
-			'parent::emit',
-			func_get_args()
-		);
+		call_user_func_array('parent::emit', $args);
 	}
 
 
