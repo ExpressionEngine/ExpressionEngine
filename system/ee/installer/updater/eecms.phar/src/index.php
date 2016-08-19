@@ -4,7 +4,7 @@ require_once 'phar://eecms.phar/bootstrap.php';
 
 try
 {
-	ee('Updater\Runner')->run();
+	ee('Updater/Runner')->run();
 }
 catch (\Exception $e)
 {

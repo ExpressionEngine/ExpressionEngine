@@ -39,7 +39,7 @@ class Updater extends CP_Controller {
 		// TODO: Can we catch a PHP timeout and report that to the user?
 		// TODO: Prolly just restrict super admins to auto-updating
 
-		$runner = ee('Updater\Runner');
+		$runner = ee('Updater/Runner');
 
 		$step = ee()->input->get('step');
 

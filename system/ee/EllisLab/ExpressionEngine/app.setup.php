@@ -182,7 +182,7 @@ return array(
 			return new Permission\Permission($userdata);
 		},
 
-		'Updater\Downloader' => function($ee)
+		'Updater/Downloader' => function($ee)
 		{
 			$filesystem = $ee->make('Filesystem');
 			$file_logger = new Logger\File(PATH_CACHE.'ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
@@ -203,9 +203,9 @@ return array(
 			);
 		},
 
-		'Updater\Runner' => function($ee)
+		'Updater/Runner' => function($ee)
 		{
-			return new Updater\Runner($ee->make('Updater\Downloader'));
+			return new Updater\Runner($ee->make('Updater/Downloader'));
 		}
 	),
 
