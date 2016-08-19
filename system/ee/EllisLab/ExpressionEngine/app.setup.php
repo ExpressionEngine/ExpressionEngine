@@ -118,6 +118,14 @@ return array(
 			return $ee->make('Database')->newQuery();
 		},
 
+		'Database/Backup' => function($ee, $file_path = PATH_CACHE.'ee_update/database.sql')
+		{
+			$filesystem = $ee->make('Filesystem');
+			$file_logger = new Logger\File($file_path, $filesystem);
+
+			return new Database\Backup($ee->make('db'), $file_logger);
+		},
+
 		'Event' => function($ee)
 		{
 			return new Event\Emitter();
