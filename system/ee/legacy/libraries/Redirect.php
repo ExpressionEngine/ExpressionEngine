@@ -50,7 +50,10 @@ $url = ee()->typography->decodeIDN($_GET['URL']);
 
 $link = "<a rel=\"nofollow\" href='".$url."'>Continue to the new page</a>";
 
-if ( $link !== ee('Security/XSS')->clean($link) )
+// catch XSS as well as any HTML or malformed URLs. FILTER_VALIDATE_URL doesn't work with IDN,
+// so this will also fail if an IDN is used as a redirect on a server that is missing PHP's intl extension,
+// but that's okay, as it probably means this redirect was not created by the site owner
+if ( ! filter_var($url, FILTER_VALIDATE_URL) OR $link !== ee('Security/XSS')->clean($link) )
 {
 	show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
