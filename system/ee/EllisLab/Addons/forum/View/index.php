@@ -38,7 +38,9 @@
 				<?php
 				foreach ($categories as $category)
 				{
+					echo '<div class="tbl-wrap">';
 					$this->embed('ee:_shared/table', $category);
+					echo '</div>';
 				}
 				?>
 
