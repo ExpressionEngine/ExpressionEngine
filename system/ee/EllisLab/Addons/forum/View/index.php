@@ -35,14 +35,11 @@
 				</tr>
 			</table>
 			<?php else: ?>
-				<?php
-				foreach ($categories as $category)
-				{
-					echo '<div class="tbl-wrap">';
-					$this->embed('ee:_shared/table', $category);
-					echo '</div>';
-				}
-				?>
+				<?php foreach ($categories as $category): ?>
+				<div class="tbl-wrap">
+					<?=$this->embed('ee:_shared/table', $category);?>
+				</div>
+				<?php endforeach; ?>
 
 				<fieldset class="tbl-bulk-act hidden">
 					<select name="bulk_action">
