@@ -161,6 +161,8 @@ class Forums extends AbstractDesignController {
 		}
 		else
 		{
+			$theme_path = ee('Theme')->getPath('forum/');
+
 			foreach (array_keys($files) as $file)
 			{
 				$dir = array_shift($files);
