@@ -859,7 +859,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	*/
 	public function getAllBootedAssociations()
 	{
-		$assocs = [];
+		$assocs = array();
 
 		foreach ($this->_associations as $assoc)
 		{
