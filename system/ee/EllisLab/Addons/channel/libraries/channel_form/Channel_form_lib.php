@@ -2596,6 +2596,8 @@ GRID_FALLBACK;
 		foreach ($this->all_params as $name)
 		{
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
+			// none of these fields are allowed by direct POST
+			unset($_POST[$name]);
 		}
 
 		// Should be y or FALSE for allow_comments
