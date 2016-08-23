@@ -184,6 +184,13 @@ class DataStore {
 	 */
 	public function getAllRelations($model_name)
 	{
+		$prefix = $this->getPrefix($model_name);
+
+		if (strpos($model_name, $prefix) !== 0)
+		{
+			$model_name = $prefix.':'.$model_name;
+		}
+
 		if (isset($this->all_relations[$model_name]))
 		{
 			return $this->all_relations[$model_name];
@@ -196,10 +203,8 @@ class DataStore {
 
 		foreach ($relationships as $name => $info)
 		{
-			$relations[$name] = $this->getRelation($model_name, $name);
+			$relations[$name] = $this->makeRelation($model_name, $name);
 		}
-
-		$foreigns = array();
 
 		foreach ($this->foreign_models as $model => $dependencies)
 		{
@@ -207,18 +212,21 @@ class DataStore {
 			{
 				continue;
 			}
-
 			if (in_array($model_name, $dependencies))
 			{
 				$ships = $this->fetchRelationships($model);
 
 				foreach ($ships as $name => $ship)
 				{
-					if (isset($ship['model']) && $ship['model'] == $model_name)
+					if ( ! isset($ship['inverse']))
 					{
-						$relation = $this->getRelation($model, $name);
-						$inverse = $relation->getInverse();
+						continue;
+					}
 
+					if ($ship['model'] == $model_name)
+					{
+						$relation = $this->makeRelation($model, $name);
+						$inverse = $relation->getInverse();
 						$relations[$inverse->getName()] = $inverse;
 					}
 				}
@@ -324,11 +332,12 @@ class DataStore {
 
 	public function getRelation($model, $name)
 	{
-		if (array_key_exists($model.'_'.$name, $this->relations))
-		{
-			return $this->relations[$model.'_'.$name];
-		}
+		$relations = $this->getAllRelations($model);
+		return $relations[$name];
+	}
 
+	public function makeRelation($model, $name)
+	{
 		$options = $this->prepareRelationshipData($model, $name);
 
 		return $this->relations[$model.'_'.$name] = $this->newRelation($model, $name, $options);
