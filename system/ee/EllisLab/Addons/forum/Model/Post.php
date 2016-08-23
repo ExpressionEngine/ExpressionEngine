@@ -131,13 +131,19 @@ class Post extends Model {
 		$this->Author->save();
 	}
 
-	public function onAfterDelete()
+	public function onBeforeDelete()
 	{
-		$this->Forum->forum_total_posts--;
-		$this->Forum->save();
+		if ($this->Forum)
+		{
+			$this->Forum->forum_total_posts--;
+			$this->Forum->save();
+		}
 
-		$this->Author->total_forum_posts--;
-		$this->Author->save();
+		if ($this->Author)
+		{
+			$this->Author->total_forum_posts--;
+			$this->Author->save();
+		}
 	}
 
 }
