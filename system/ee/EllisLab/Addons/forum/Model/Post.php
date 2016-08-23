@@ -57,7 +57,7 @@ class Post extends Model {
 			'from_key' => 'author_id',
 			'weak'     => TRUE,
 			'inverse' => array(
-				'name' => 'Post',
+				'name' => 'Posts',
 				'type' => 'hasMany'
 			)
 		),
@@ -66,12 +66,11 @@ class Post extends Model {
 		),
 		'EditAuthor' => array(
 			'type'     => 'belongsTo',
-			'from_key' => 'post_edit_author',
-			'to_key'   => 'member_id',
 			'model'    => 'ee:Member',
+			'from_key' => 'post_edit_author',
 			'weak'     => TRUE,
 			'inverse' => array(
-				'name' => 'Post',
+				'name' => 'EditedPosts',
 				'type' => 'hasMany'
 			)
 		),
