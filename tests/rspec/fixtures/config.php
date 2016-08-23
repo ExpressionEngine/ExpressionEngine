@@ -44,7 +44,7 @@ if (empty($argv))
 	{
 		exit('empty');
 	}
-	exit($value);
+	exit((string)$value);
 }
 
 $value = array_shift($argv);

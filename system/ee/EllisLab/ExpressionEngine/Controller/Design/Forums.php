@@ -89,7 +89,7 @@ class Forums extends AbstractDesignController {
 		{
 			$path = $base_path . '/' . $dir;
 
-			if ( ! is_array($files))
+			if ( ! is_array($files) OR $dir == 'images')
 			{
 				continue;
 			}
