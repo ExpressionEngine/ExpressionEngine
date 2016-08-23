@@ -36,7 +36,7 @@
 			</table>
 			<?php else: ?>
 				<?php foreach ($categories as $category): ?>
-				<div class="tbl-wrap">
+				<div class="tbl-wrap mb">
 					<?=$this->embed('ee:_shared/table', $category);?>
 				</div>
 				<?php endforeach; ?>
