@@ -651,6 +651,7 @@ class Uploads extends AbstractFilesController {
 		foreach ($new_sizes as $row_id => $columns)
 		{
 			$model = ee('Model')->make('FileDimension', $columns);
+			$model->site_id = ee()->config->item('site_id');
 			$upload_destination->FileDimensions[] = $model;
 
 			$validate[$row_id] = $model;

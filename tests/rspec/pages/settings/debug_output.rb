@@ -5,6 +5,8 @@ class DebugOutput < ControlPanelPage
   element :debug_n, 'input[name=debug][value="0"]'
   element :show_profiler_y, 'input[name=show_profiler][value=y]'
   element :show_profiler_n, 'input[name=show_profiler][value=n]'
+  element :enable_devlog_alerts_y, 'input[name=enable_devlog_alerts][value=y]'
+  element :enable_devlog_alerts_n, 'input[name=enable_devlog_alerts][value=n]'
   element :gzip_output_y, 'input[name=gzip_output][value=y]'
   element :gzip_output_n, 'input[name=gzip_output][value=n]'
   element :force_query_string_y, 'input[name=force_query_string][value=y]'
