@@ -183,7 +183,7 @@ class Forum_mcp extends CP_Controller {
 					'reorder_header'    => TRUE,
 					'sortable'          => FALSE,
 					'class'             => $class,
-					'wrap'              => TRUE,
+					'wrap'              => FALSE,
 				);
 
 				$table = ee('CP/Table', $table_config);
