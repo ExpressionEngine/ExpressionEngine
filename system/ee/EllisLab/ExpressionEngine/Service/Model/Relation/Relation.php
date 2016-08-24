@@ -58,6 +58,9 @@ abstract class Relation {
 		$this->to = $to;
 		$this->name = $name;
 
+		$this->from_primary_key = $from->getPrimaryKey();
+		$this->to_primary_key = $to->getPrimaryKey();
+
 		$this->is_weak = FALSE;
 		$this->processOptions($options);
 	}
@@ -248,9 +251,6 @@ abstract class Relation {
 		{
 			$this->inverse_info = $options['inverse'];
 		}
-
-		$this->from_primary_key = $options['from_primary_key'];
-		$this->to_primary_key = $options['to_primary_key'];
 
 		$this->key_tuple = $this->deriveKeys();
 		list($from, $to) = $this->key_tuple;

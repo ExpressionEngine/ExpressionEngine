@@ -211,9 +211,7 @@ class RelationGraph {
 		);
 
 		$required = array(
-			'model' => $to_model,
-			'from_primary_key' => $this->getPrimaryKey($model),
-			'to_primary_key' => $this->getPrimaryKey($to_model)
+			'model' => $to_model
 		);
 
 		$options = array_replace($defaults, $relationship, $required);
