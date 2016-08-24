@@ -65,6 +65,7 @@ class RelationGraph {
 			{
 				continue;
 			}
+
 			if (in_array($model_name, $dependencies))
 			{
 				$ships = $this->fetchRelationships($model);
@@ -213,14 +214,7 @@ class RelationGraph {
 			'model' => $to_model
 		);
 
-		$options = array_replace($defaults, $relationship, $required);
-
-		if (isset($options['pivot']))
-		{
-			$options['pivot'] = $this->processPivot($options);
-		}
-
-		return $options;
+		return array_replace($defaults, $relationship, $required);
 	}
 
 	/**
@@ -245,30 +239,6 @@ class RelationGraph {
 	}
 
 	/**
-	 * Process pivot information
-	 *
-	 * In a model the pivot key can either be an array or a table name.
-	 * If it is a table name, then the lhs and rhs keys must equal the pk's
-	 * of the two models
-	 */
-	private function processPivot($options)
-	{
-		$pivot = $options['pivot'];
-
-		$defaults = array(
-			'left' => $options['from_primary_key'],
-			'right' => $options['to_primary_key']
-		);
-
-		if ( ! is_array($pivot))
-		{
-			$pivot = array('table' => $pivot);
-		}
-
-		return $pivot + $defaults;
-	}
-
-	/**
 	 *
 	 */
 	private function fetchRelationship($model, $name)
@@ -289,14 +259,6 @@ class RelationGraph {
 	private function fetchRelationships($model)
 	{
 		return $this->datastore->getMetaDataReader($model)->getRelationships();
-	}
-
-	/**
-	 *
-	 */
-	private function getPrimaryKey($model)
-	{
-		return $this->datastore->getMetaDataReader($model)->getPrimaryKey();
 	}
 
 	/**
