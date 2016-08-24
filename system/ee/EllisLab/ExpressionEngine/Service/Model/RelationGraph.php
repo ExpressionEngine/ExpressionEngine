@@ -304,7 +304,9 @@ class RelationGraph {
 	 */
 	private function modelIsEnabled($model_name)
 	{
-		return in_array(strstr($model_name, ':', TRUE), $this->enabled_prefixes);
+		$prefix = $this->getPrefix($model_name);
+
+		return in_array($prefix, $this->enabled_prefixes);
 	}
 
 	private function getPrefix($model)
