@@ -242,7 +242,7 @@ class Forum extends Model {
 
 		foreach ($updates as $update)
 		{
-			$update->set(array('forum_order' => $update->forum_order + 1));
+			$update->setProperty('forum_order', $update->forum_order + 1);
 		}
 
 		$updates->save();
