@@ -264,9 +264,6 @@ class Forum_mcp extends CP_Controller {
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/addons/forums/reorder',
-			),
-			'plugin' => array(
-				'ee_table_reorder',
 			)
 		));
 
