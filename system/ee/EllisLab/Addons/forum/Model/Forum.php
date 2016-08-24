@@ -206,6 +206,12 @@ class Forum extends Model {
 		// if it's a new category, just tack it on
 		if ($this->getProperty('forum_is_cat'))
 		{
+			if ( ! $last_forum->first())
+			{
+				$this->setProperty('forum_order', 1);
+				return;
+			}
+
 			$this->setProperty('forum_order', $last_forum->first()->forum_order + 1);
 			return;
 		}
@@ -246,8 +252,8 @@ class Forum extends Model {
 		}
 
 		$updates->save();
-	}
 
+	}
 }
 
 // EOF
