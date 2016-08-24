@@ -4,28 +4,72 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @license		https://expressionengine.com/license
+ * @link		https://ellislab.com
+ * @since		Version 3.5
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Model Relation Graph
+ *
+ * Relations are the edges of the relationship graph. The node of the graph
+ * are static (classes, not objects). Usually relations are lazily created
+ * on the graph one model class at a time as the information is needed. We
+ * cache all relation information, so over the time of a request we build up
+ * a more and more complete view of the graph. A full subgraph can also be
+ * constructed on the fly to do things like cascade deletes.
+ *
+ * @package		ExpressionEngine
+ * @category	Service
+ * @subpackage	Model
+ * @author		EllisLab Dev Team
+ * @link		https://ellislab.com
+ */
 class RelationGraph {
 
-	private $relations = array();
+	/**
+	 * @var EllisLab\ExpressionEngine\Service\Model\Registry
+	 */
+	private $registry;
 
+	/**
+	 * @var EllisLab\ExpressionEngine\Service\Model\Datastore
+	 */
 	private $datastore;
-	private $default_prefix;
-	private $enabled_prefixes;
+
+	/**
+	 * @var Array of one sided model dependencies (e.g. third party => first party)
+	 */
 	private $foreign_models;
 
 	/**
-	 *
+	 * @var Array of Relation objects [modelname => [relationshipname => relation]]
 	 */
-	public function __construct(DataStore $datastore, $default_prefix, $enabled_prefixes, $foreign_models)
+	private $relations = array();
+
+	/**
+	 * @param $datastore EllisLab\ExpressionEngine\Service\Model\Datastore
+	 * @param $registry EllisLab\ExpressionEngine\Service\Model\Registry
+	 * @param Array $foreign_models Map of one sided model dependencies (e.g. third party => first party)
+	 */
+	public function __construct(DataStore $datastore, Registry $registry, array $foreign_models)
 	{
 		$this->datastore = $datastore;
-		$this->default_prefix = $default_prefix;
-		$this->enabled_prefixes = $enabled_prefixes;
+		$this->registry = $registry;
 		$this->foreign_models = $foreign_models;
 	}
 
 	/**
-	 *
+	 * Get a relation object for a given model and relationship name
 	 */
 	public function get($model_name, $name)
 	{
@@ -34,11 +78,11 @@ class RelationGraph {
 	}
 
 	/**
-	 *
+	 * Get all relations for a given model name
 	 */
 	public function getAll($model_name)
 	{
-		$prefix = $this->getPrefix($model_name);
+		$prefix = $this->registry->getPrefix($model_name);
 
 		if (strpos($model_name, $prefix) !== 0)
 		{
@@ -61,7 +105,7 @@ class RelationGraph {
 
 		foreach ($this->foreign_models as $model => $dependencies)
 		{
-			if ( ! $this->modelIsEnabled($model))
+			if ( ! $this->registry->isEnabled($model))
 			{
 				continue;
 			}
@@ -91,14 +135,14 @@ class RelationGraph {
 	}
 
 	/**
-	 *
+	 * Get inverse of a relation
 	 */
 	public function getInverse(Relation $relation)
 	{
 		$model = $relation->getTargetModel();
 		$source = $relation->getSourceModel();
 
-		$prefix = $this->getPrefix($model);
+		$prefix = $this->registry->getPrefix($model);
 
 		if (strpos($model, $prefix) !== 0)
 		{
@@ -160,7 +204,8 @@ class RelationGraph {
 	}
 
 	/**
-	 *
+	 * Create a new relation object, only should be called if one doesn't
+	 * already exist.
 	 */
 	public function makeRelation($model, $name, $options = NULL)
 	{
@@ -174,8 +219,8 @@ class RelationGraph {
 			throw new \Exception("Unknown relationship type {$type} in {$model}");
 		}
 
-		$from_reader = $this->datastore->getMetaDataReader($model);
-		$to_reader = $this->datastore->getMetaDataReader($options['model']);
+		$from_reader = $this->registry->getMetaDataReader($model);
+		$to_reader = $this->registry->getMetaDataReader($options['model']);
 
 		$relation = new $class($from_reader, $to_reader, $name, $options);
 		$relation->setDataStore($this->datastore);
@@ -195,10 +240,10 @@ class RelationGraph {
 
 		if (strpos($to_model, ':') == 0)
 		{
-			$to_model = $this->getPrefix($model).':'.$to_model;
+			$to_model = $this->registry->getPrefix($model).':'.$to_model;
 		}
 
-		if ( ! $this->datastore->modelExists($to_model))
+		if ( ! $this->registry->modelExists($to_model))
 		{
 			throw new \Exception('Unknown model "'.$as_defined_to.'". Used in model "'.$model.'" for a relationship called "'.$name.'".');
 		}
@@ -225,7 +270,7 @@ class RelationGraph {
 		$options = $relation->getInverseOptions();
 		$options['model'] = $relation->getSourceModel();
 
-		$prefix = $this->getPrefix($relation->getSourceModel());
+		$prefix = $this->registry->getPrefix($relation->getSourceModel());
 		$name = $options['name'];
 
 		if (strpos($name, $prefix) !== 0)
@@ -239,7 +284,11 @@ class RelationGraph {
 	}
 
 	/**
+	 * Fetch a given entry in the relationship meta array.
 	 *
+	 * @param String $model_name Model alias
+	 * @param String $name Relationship name to fetch
+	 * @return Array of relationships data
 	 */
 	private function fetchRelationship($model, $name)
 	{
@@ -254,30 +303,13 @@ class RelationGraph {
 	}
 
 	/**
+	 * Fetch the entire relationship meta array.
 	 *
+	 * @param String $model_name Model alias
+	 * @return Array of relationships as defined on the model
 	 */
-	private function fetchRelationships($model)
+	private function fetchRelationships($model_name)
 	{
-		return $this->datastore->getMetaDataReader($model)->getRelationships();
-	}
-
-	/**
-	 *
-	 */
-	private function modelIsEnabled($model_name)
-	{
-		$prefix = $this->getPrefix($model_name);
-
-		return in_array($prefix, $this->enabled_prefixes);
-	}
-
-	private function getPrefix($model)
-	{
-		if (strpos($model, ':'))
-		{
-			return strstr($model, ':', TRUE);
-		}
-
-		return $this->default_prefix;
+		return $this->registry->getMetaDataReader($model_name)->getRelationships();
 	}
 }

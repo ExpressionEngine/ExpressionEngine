@@ -38,13 +38,25 @@ use EllisLab\ExpressionEngine\Service\Database\Database;
  */
 class DataStore {
 
+	/**
+	 * @var EllisLab\ExpressionEngine\Service\Database\Database
+	 */
 	private $db;
+
+	/**
+	 * @var EllisLab\ExpressionEngine\Service\Model\RelationGraph
+	 */
 	private $graph;
+
+	/**
+	 * @var EllisLab\ExpressionEngine\Service\Model\Configuration
+	 */
 	private $config;
 
-	protected $aliases;
-	protected $default_prefix;
-	protected $metadata = array();
+	/**
+	 * @var EllisLab\ExpressionEngine\Service\Model\Registry
+	 */
+	private $registry;
 
 	/**
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
@@ -55,15 +67,17 @@ class DataStore {
 		$this->db = $db;
 		$this->config = $config;
 
-		$this->graph = new RelationGraph(
-			$this,
+		$this->registry = new Registry(
+			$config->getModelAliases(),
 			$config->getDefaultPrefix(),
-			$config->getEnabledPrefixes(),
-			$config->getModelDependencies()
+			$config->getEnabledPrefixes()
 		);
 
-		$this->aliases = $config->getModelAliases();
-		$this->default_prefix = $config->getDefaultPrefix();
+		$this->graph = new RelationGraph(
+			$this,
+			$this->registry,
+			$config->getModelDependencies()
+		);
 	}
 
 	/**
@@ -92,7 +106,7 @@ class DataStore {
 			$model = $this->newModelFromAlias($name);
 		}
 
-		$prefix = $this->getPrefix($name);
+		$prefix = $this->registry->getPrefix($name);
 
 		if (strpos($name, $prefix) !== 0)
 		{
@@ -120,6 +134,7 @@ class DataStore {
 	 * Create a query
 	 *
 	 * @param String $name  Name of the model to query on
+	 * @return Object Query\Builder
 	 */
 	public function get($name)
 	{
@@ -157,14 +172,7 @@ class DataStore {
 	 */
 	public function getMetaDataReader($name)
 	{
-		$class = $this->expandModelAlias($name);
-
-		if ( ! isset($this->metadata[$class]))
-		{
-			$this->metadata[$class] = new MetaDataReader($name, $class);
-		}
-
-		return $this->metadata[$class];
+		return $this->registry->getMetaDataReader($name);
 	}
 
 	/**
@@ -183,13 +191,6 @@ class DataStore {
 		}
 	}
 
-	protected function modelIsEnabled($model_name)
-	{
-		$prefix = strstr($model_name, ':', TRUE);
-
-		return $this->config->isEnabledPrefix($prefix);
-	}
-
 	/**
 	 * Get all relations for a model
 	 *
@@ -201,30 +202,27 @@ class DataStore {
 		return $this->graph->getAll($model_name);
 	}
 
+	/**
+	 * Get the inverse of a relation. Currently used by the relations
+	 * themselves to call back into this. Probably won't stay here.
+	 *
+	 * @param Relation $relation
+	 * @return Relation Inverse
+	 */
 	public function getInverseRelation(Relation $relation)
 	{
 		return $this->graph->getInverse($relation);
 	}
 
+	/**
+	 * Get a relation for a given model. Currently used in query construction.
+	 *
+	 * @param Relation $relation
+	 * @return Relation requested relation
+	 */
 	public function getRelation($model, $name)
 	{
 		return $this->graph->get($model, $name);
-	}
-
-	protected function getPrimaryKey($model)
-	{
-		$class = $this->expandModelAlias($model);
-		return $class::getMetaData('primary_key');
-	}
-
-	protected function getPrefix($model)
-	{
-		if (strpos($model, ':'))
-		{
-			return strstr($model, ':', TRUE);
-		}
-
-		return $this->default_prefix;
 	}
 
 	/**
@@ -292,17 +290,6 @@ class DataStore {
 	}
 
 	/**
-	 * Check if a model exists given an alias
-	 *
-	 * @param String $alias Model alias (with prefix)
-	 * @return bool Exists?
-	 */
-	public function modelExists($alias)
-	{
-		return array_key_exists($alias, $this->aliases);
-	}
-
-	/**
 	 * Create a model instance from the di object
 	 *
 	 * @param String $name Model name
@@ -310,7 +297,7 @@ class DataStore {
 	 */
 	protected function newModelFromAlias($name)
 	{
-		$class = $this->expandModelAlias($name);
+		$class = $this->registry->expandAlias($name);
 
 		if ($class instanceOf Closure)
 		{
@@ -322,33 +309,6 @@ class DataStore {
 		}
 
 		return $model;
-	}
-
-	/**
-	 * Given a model alias, get the class name. If a class name
-	 * is passed and no alias is found, return that class name.
-	 *
-	 * @param String $name The alias name to look up
-	 * @return String The class name
-	 */
-	protected function expandModelAlias($name)
-	{
-		if ( ! strpos($name, ':'))
-		{
-			$name = $this->default_prefix.':'.$name;
-		}
-
-		if ( ! isset($this->aliases[$name]))
-		{
-			if ( ! class_exists($name))
-			{
-				throw new \Exception("Unknown model: {$name}");
-			}
-
-			return $name;
-		}
-
-		return $this->aliases[$name];
 	}
 }
 
