@@ -7,10 +7,22 @@ require './bootstrap.rb'
 
 feature 'File Manager' do
 
-	before(:each) do
+	before(:all) do
+		# Create backups of these folders so we can restore them after each test
 		@upload_dir = File.expand_path('../../images/about/')
 		@avatar_dir = File.expand_path('../../images/avatars')
+		system('mkdir /tmp/about')
+		system('mkdir /tmp/avatars')
+		system('cp -r ' + @upload_dir + '/* /tmp/about')
+		system('cp -r ' + @avatar_dir + '/* /tmp/avatars')
+	end
 
+	after(:all) do
+    system('rm -rf /tmp/about')
+    system('rm -rf /tmp/avatars')
+  end
+
+	before(:each) do
 		cp_session
 		@page = FileManager.new
 		@page.load
@@ -64,9 +76,14 @@ feature 'File Manager' do
 	end
 
 	after(:each) do
-		system('git checkout -- ' + @upload_dir)
-		system('git checkout -- ' + @avatar_dir)
+		system('rm -rf ' + @upload_dir)
+    system('mkdir ' + @upload_dir)
+    system('cp -r /tmp/about/* ' + @upload_dir)
 		FileUtils.chmod_R 0777, @upload_dir
+
+		system('rm -rf ' + @avatar_dir)
+    system('mkdir ' + @avatar_dir)
+    system('cp -r /tmp/avatars/* ' + @avatar_dir)
 	end
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
