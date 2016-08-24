@@ -50,10 +50,9 @@ class RelationGraph {
 			return $this->relations[$model_name];
 		}
 
-		$from_reader = $this->datastore->getMetaDataReader($model_name);
-		$relationships = $from_reader->getRelationships();
-
 		$relations = array();
+
+		$relationships = $this->fetchRelationships($model_name);
 
 		foreach ($relationships as $name => $info)
 		{
