@@ -50,13 +50,15 @@ class DataStore {
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
 	 * @param $aliases Array of model aliases
 	 */
-	public function __construct(Database $db, $aliases, $foreign_models, $default_prefix, $enabled_prefixes)
+	public function __construct(Database $db, Configuration $config)
 	{
 		$this->db = $db;
-		$this->aliases = $aliases;
-		$this->default_prefix = $default_prefix;
-		$this->foreign_models = $foreign_models;
-		$this->enabled_prefixes = $enabled_prefixes;
+		$this->config = $config;
+
+		$this->aliases = $config->getModelAliases();
+		$this->default_prefix = $config->getDefaultPrefix();
+		$this->foreign_models = $config->getModelDependencies();
+		$this->enabled_prefixes = $config->getEnabledPrefixes();
 	}
 
 	/**
@@ -238,7 +240,9 @@ class DataStore {
 
 	protected function modelIsEnabled($model_name)
 	{
-		return in_array(strstr($model_name, ':', TRUE), $this->enabled_prefixes);
+		$prefix = strstr($model_name, ':', TRUE);
+		
+		return $this->config->isEnabledPrefix($prefix);
 	}
 
 	public function getInverseRelation(Relation $relation)

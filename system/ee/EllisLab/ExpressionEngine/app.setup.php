@@ -280,13 +280,13 @@ return array(
 				$installed_prefixes[] = $addon->getProvider()->getPrefix();
 			}
 
-			return new Model\DataStore(
-				$ee->make('Database'),
-				$app->getModels(),
-				$app->forward('getModelDependencies'),
-				$ee->getPrefix(),
-				$installed_prefixes
-			);
+			$config = new Model\Configuration();
+			$config->setDefaultPrefix($ee->getPrefix());
+			$config->setModelAliases($app->getModels());
+			$config->setEnabledPrefixes($installed_prefixes);
+			$config->setModelDependencies($app->forward('getModelDependencies'));
+
+			return new Model\DataStore($ee->make('Database'), $config);
 		},
 
 		'Request' => function($ee)
