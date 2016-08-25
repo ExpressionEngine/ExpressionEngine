@@ -64,7 +64,7 @@ function ee($dep = NULL)
 	if (isset($dep))
 	{
 		global $di;
-		return $di->make($dep);
+		return call_user_func_array(array($di, 'make'), func_get_args());
 	}
 	static $EE;
 	if ( ! $EE)	$EE = new stdClass();
