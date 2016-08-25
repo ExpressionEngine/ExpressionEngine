@@ -60,6 +60,7 @@ class Buttons extends Settings {
 		// Default HTML buttons simply have a member ID of 0
 		$buttons = ee('Model')->get("HTMLButton")
 					->filter('member_id', 0)
+					->filter('site_id', ee()->config->item('site_id'))
 					->order('tag_order', 'asc')
 					->all();
 

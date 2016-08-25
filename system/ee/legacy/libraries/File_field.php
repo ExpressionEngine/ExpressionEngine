@@ -122,6 +122,7 @@ class File_field {
 		// Note- the count is at least one because first select option is Directory
 		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 		$vars['undo_link'] = '<a href="#" class="undo_remove js_hide">'.lang('file_undo_remove').'</a>';
+		$vars['remove_file_link'] = '<a href="#" class="remove_file" title="'.lang('remove_file').'">'.lang('remove_file').'</a>';
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';

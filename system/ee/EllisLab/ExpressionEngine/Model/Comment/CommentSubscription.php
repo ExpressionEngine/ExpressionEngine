@@ -21,7 +21,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 /**
  * ExpressionEngine Comment Subscription Model
  *
- * A model representing user subscriptions to the comment thread on a particle
+ * A model representing user subscriptions to the comment thread on a particular
  * entry.
  *
  * @package		ExpressionEngine
@@ -37,11 +37,11 @@ class CommentSubscription extends Model {
 
 	protected static $_relationships = array(
 		'Entry' => array(
-			'type' => 'many_to_one',
+			'type' => 'belongsTo',
 			'model' => 'ChannelEntry'
 		),
 		'Member' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		)
 	);
 

@@ -141,13 +141,17 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		$table = ee('CP/Table', array(
 			'sort_col'   => 'date_added',
-			'sort_dir'   => 'desc'
+			'sort_dir'   => 'desc',
+			'class'      => 'tbl-fixed'
 		));
 
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
-					'encode' => FALSE
+					'encode' => FALSE,
+					'attrs' => array(
+						'width' => '40%'
+					),
 				),
 				'file_type',
 				'date_added',
@@ -369,7 +373,7 @@ abstract class AbstractFiles extends CP_Controller {
 				->orFilter('mime_type', 'LIKE', '%' . $search_terms . '%')
 				->endFilterGroup();
 
-			$vars['search_terms'] = $search_terms;
+			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
 
 		$total_files = $files->count();
