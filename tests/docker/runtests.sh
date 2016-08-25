@@ -38,7 +38,6 @@ pushd /var/www/html/
 	chmod 777 tests/rspec/support/tmp
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
-	chmod -R 777 themes/ee/site_themes/agile_records/images/uploads
 popd
 
 rm /app/ee.tar

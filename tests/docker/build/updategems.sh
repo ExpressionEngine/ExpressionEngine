@@ -2,6 +2,6 @@
 
 source /usr/local/rvm/scripts/rvm
 
-pushd /var/www/html/tests/rspec
+pushd /app/tests/rspec
 	bundle install --no-deployment --path=~/gems/
 popd

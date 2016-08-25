@@ -9,27 +9,27 @@ git archive --format=tar -o ee.tar $STASH_NAME
 
 # Possible future parallelization on Circle
 #pushd tests/rspec
-#	find ./tests -name "*.rb" | sort | parallel -j10 docker run --rm -v /Users/ubuntu/ExpressionEngine/:/app test ./run.sh {}
+#	find ./tests -name "*.rb" | sort | parallel -j10 docker run --rm -v /Users/ubuntu/ExpressionEngine/:/app eecms ./run.sh {}
 #popd
 
 # Open a prompt on the Docker container to fiddle
 if [ "$1" == "prompt" ]; then
-	docker run -t -i -p 8080:80 -v $(pwd):/app test /bin/bash
+	docker run -t -i -p 8080:80 -v $(pwd):/app eecms /bin/bash
 # Install or update gems
 elif [ "$1" == "updategems" ]; then
-	docker run -t -i -v $(pwd):/app test ./updategems.sh
+	docker run -t -i -v $(pwd):/app eecms ./updategems.sh
 	# TODO: abstract container commitment and removal into function
 	CONTAINER_ID=`docker ps -l -q`
-	docker commit $CONTAINER_ID test
+	docker commit $CONTAINER_ID eecms
 	docker rm $CONTAINER_ID
 # Install the GD extension for each version of PHP
 elif [ "$1" == "install-gd" ]; then
-	docker run -t -i -v $(pwd):/app test ./install-gd.sh
+	docker run -t -i -v $(pwd):/app eecms ./install-gd.sh
 	CONTAINER_ID=`docker ps -l -q`
-	docker commit $CONTAINER_ID test
+	docker commit $CONTAINER_ID eecms
 	docker rm $CONTAINER_ID
 else
 	# Have to quote this to get multiple arguments working for run.sh
-	DOCKER_CMD="docker run --rm -t -i -v $(pwd):/app test /bin/bash -c \"./run.sh $@\""
+	DOCKER_CMD="docker run --rm -t -i -v $(pwd):/app eecms /bin/bash -c \"./run.sh $@\""
 	eval $DOCKER_CMD
 fi
