@@ -1,7 +1,10 @@
 #!/bin/bash
 
 STASH_NAME=`git stash create`;
-# TODO: create archive based on HEAD if repo not dirty
+if [ "$STASH_NAME" == "" ]; then
+	STASH_NAME="HEAD"
+fi
+echo $STASH_NAME
 git archive --format=tar -o ee.tar $STASH_NAME
 
 # Absolutely have to have the git folder available in the archive?
