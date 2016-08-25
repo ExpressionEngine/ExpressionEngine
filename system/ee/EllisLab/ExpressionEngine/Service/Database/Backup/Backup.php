@@ -103,6 +103,11 @@ class Backup {
 		}
 	}
 
+	public function writeTableInsertsConservatively()
+	{
+		// return ['table_name' => 'x', 'offset' => 'x']
+	}
+
 	/**
 	 * Writes partial INSERTs for a given table, with the idea being a backup
 	 * can be split up across multiple requests for large databases

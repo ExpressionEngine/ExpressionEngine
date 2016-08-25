@@ -35,6 +35,7 @@ class Runner {
 	// process into quick, hopefully low-memory tasks when accessed
 	// through the browser
 	protected $steps = [
+		'backupDatabase',
 		'updateFiles'
 	];
 
@@ -44,6 +45,23 @@ class Runner {
 	public function __construct()
 	{
 		$this->fileUpdater = $this->makeUpdaterService();
+	}
+
+	public function backupDatabase($table_name = '', $offset = '')
+	{
+		// TODO: ensure this directory exists
+		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
+		$backup->startFile();
+		$backup->writeDropAndCreateStatements();
+
+		/*
+
+		if not finished {
+			return 'backupDatabase[table_name,offset]';
+		}
+		Modify Steppable so that if a step returns a string, make that the
+		actual next step, and also allow step methods to take arguments
+		 */
 	}
 
 	public function updateFiles()
