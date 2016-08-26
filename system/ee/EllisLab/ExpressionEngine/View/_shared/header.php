@@ -87,30 +87,34 @@
 								<?php endforeach ?>
 							</ul>
 							<?php if (ee()->cp->allowed_group('can_create_channels')): ?>
-							<a class="nav-add" href="<?=ee('CP/URL', 'channels/create')?>"><i class="icon-add"></i><?=lang('new_channel')?></a>
+								<a class="nav-add" href="<?=ee('CP/URL', 'channels/create')?>"><i class="icon-add"></i><?=lang('new_channel')?></a>
 							<?php endif; ?>
 						</div>
 					</div>
 					<?php endif; ?>
 					<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')): ?>
 					<div class="nav-edit">
+					<?php if (count($cp_main_menu['channels']['edit']) == 1): ?>
+						<a href="<?=current($cp_main_menu['channels']['edit'])?>"><?=lang('edit')?></a>
+					<?php elseif (count($cp_main_menu['channels']['edit']) > 1): ?>
 						<a class="nav-has-sub" href=""><?=lang('menu_edit')?></a>
 						<div class="nav-sub-menu">
-							<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
-								<form class="nav-filter">
+							<form class="nav-filter">
+								<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
 									<input type="text" class="autofocus" value="" placeholder="<?=lang('filter_channels')?>">
 									<hr>
-									<a class="reset" href="<?=ee('CP/URL', 'publish/edit')?>"><b><?= lang('view_all') ?></b></a>
-								</form>
-							<?php endif ?>
+								<?php endif ?>
+								<a class="reset" href="<?=ee('CP/URL', 'publish/edit')?>"><b><?= lang('view_all') ?></b></a>
+							</form>
 							<ul>
 								<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
-									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+								<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 							</ul>
 						</div>
+					<?php endif ?>
 					</div>
-					<?php endif; ?>
+					<?php endif ?>
 					<?php if (ee()->cp->allowed_group('can_access_files')): ?>
 					<a class="nav-files" href="<?=ee('CP/URL', 'files')?>"><i class="icon-files"></i><span class="nav-txt-collapse"><?=lang('menu_files')?></span></a>
 					<?php endif; ?>
