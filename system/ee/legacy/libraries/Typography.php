@@ -188,7 +188,8 @@ class EE_Typography {
 			'abbr' => array('properties' => array('title')),
 			'span' => array('properties' => array('class')),
 			'sup',
-			'sub'
+			'sub',
+			'mark' => array('properties' => array('class'))
 		);
 
 		$this->safe_decode = array(
@@ -205,7 +206,8 @@ class EE_Typography {
 			'quote'      => 'blockquote',
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
 			'sup'        => 'sup',
-			'sub'        => 'sub'
+			'sub'        => 'sub',
+			'mark'       => array('tag' => 'mark', 'properties' => array('class')),
 		);
 
 		// enable quote protection within braces for EE {variable="attributes"}

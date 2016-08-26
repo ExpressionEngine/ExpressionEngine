@@ -93,7 +93,7 @@ case 'yes_no': ?>
 <?php break;
 
 case 'select': ?>
-<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs); ?>
+<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs, isset($field['encode']) ? $field['encode'] : TRUE); ?>
 <?php break;
 
 case 'checkbox': ?>

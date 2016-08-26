@@ -438,6 +438,20 @@ class Addons_installer {
 
 							ee()->load->remove_package_path($fieldtype_settings['path']);
 						}
+
+						// Remove associated Channel fields and Grid columns
+						if ($action === 'uninstall' && $installed)
+						{
+							ee('Model')->get('ChannelField')
+								->filter('field_type', $fieldtype_name)
+								->delete();
+
+							if (ee()->addons_model->fieldtype_installed('grid'))
+							{
+								ee()->load->model('grid_model');
+								ee()->grid_model->delete_columns_of_type($fieldtype_name);
+							}
+						}
 					}
 				}
 				else

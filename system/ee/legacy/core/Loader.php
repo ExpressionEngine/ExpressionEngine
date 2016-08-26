@@ -1081,7 +1081,7 @@ class EE_Loader {
 		$this->_ci_classes[$class] = $classvar;
 
 		// Instantiate the class
-		if ($config !== NULL)
+		if ( ! empty($config))
 		{
 			$this->facade->set($classvar, new $name($config));
 		}

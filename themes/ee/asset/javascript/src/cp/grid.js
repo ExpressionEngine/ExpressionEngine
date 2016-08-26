@@ -149,7 +149,7 @@ Grid.Publish.prototype = {
 		}
 
 		if (this.settings.grid_min_rows !== '') {
-			var deleteButtons = this.root.find('.toolbar .remove');
+			var deleteButtons = this.root.find('td:last-child .toolbar .remove');
 
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
@@ -584,10 +584,12 @@ Grid.Settings.prototype = {
 	 * only one column
 	 */
 	_toggleDeleteButtons: function() {
-		var colCount = this.root.find('.grid-item').size(),
-			deleteButtons = this.root.find('.grid-tools li.remove');
+		var multiCol = this.root.find('.grid-item').size() > 1,
+			deleteButtons = this.root.find('.grid-tools li.remove'),
+			addButton = this.root.find('.grid-tools li.add');
 
-		deleteButtons.toggle(colCount > 1);
+		deleteButtons.toggle(multiCol);
+		addButton.toggleClass('last', ! multiCol);
 	},
 
 	/**

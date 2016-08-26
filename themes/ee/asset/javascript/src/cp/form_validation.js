@@ -77,7 +77,7 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).change(function() {
 			var element = $(this);
 
 			setTimeout(function() {
@@ -348,6 +348,9 @@ EE.cp.formValidation = {
 				// more errors exist in the Grid
 				if (fieldset.parent().find('td.invalid').size() == 0) {
 					fieldset.removeClass('invalid');
+
+					// Remove error message below Grid field
+					container.parents('div.setting-field').find('> ' + errorClass).remove();
 				}
 			} else {
 				fieldset.removeClass('invalid');

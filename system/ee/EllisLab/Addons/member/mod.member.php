@@ -2542,7 +2542,6 @@ class Member {
 			}
 
 			$avatar_path	= $avatar_url.$query->row('avatar_filename');
-			$avatar_path	= ee()->config->item('avatar_url').$query->row('avatar_filename');
 			$avatar_width	= $query->row('avatar_width');
 			$avatar_height	= $query->row('avatar_height');
 			$avatar			= TRUE;

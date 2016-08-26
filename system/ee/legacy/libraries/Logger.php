@@ -277,7 +277,6 @@ class EE_Logger {
 
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
-		$this->show_flashdata($deprecation_log);
 	}
 
 	// --------------------------------------------------------------------
@@ -332,46 +331,6 @@ class EE_Logger {
 
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($description, TRUE, 604800);
-		$this->show_flashdata($deprecation_log);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show Flashdata
-	 *
-	 * Shows and stores flashdata if we are in the CP, and only to Super Admins
-	 *
-	 * @param	array	$deprecation_log - array, returned by $this->developer()
-	 * @return	void
-	 **/
-	private function show_flashdata($deprecation_log)
-	{
-		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session
-			&& ee()->session->userdata('group_id') == 1)
-		{
-			ee()->lang->loadfile('tools');
-
-			// Set JS globals for "What does this mean?" modal
-			ee()->javascript->set_global(
-				array(
-					'developer_log' => array(
-						'dev_log_help'			=> lang('dev_log_help'),
-						'deprecation_meaning'	=> lang('deprecated_meaning')
-					)
-				)
-			);
-
-			if (isset($deprecation_log['updated']))
-			{
-				ee()->session->set_flashdata(
-					'message_error',
-					lang('deprecation_detected').'<br />'.
-						'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>
-						'.lang('or').' <a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
-				);
-			}
-		}
 	}
 
 	// --------------------------------------------------------------------
