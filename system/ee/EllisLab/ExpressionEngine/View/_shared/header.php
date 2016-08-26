@@ -95,7 +95,7 @@
 					<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')): ?>
 					<div class="nav-edit">
 					<?php if (count($cp_main_menu['channels']['edit']) == 1): ?>
-						<a href="<?=current($cp_main_menu['channels']['edit'])?>"><?=lang('edit')?></a>
+						<a href="<?=current($cp_main_menu['channels']['edit'])?>"><?=lang('menu_edit')?></a>
 					<?php elseif (count($cp_main_menu['channels']['edit']) > 1): ?>
 						<a class="nav-has-sub" href=""><?=lang('menu_edit')?></a>
 						<div class="nav-sub-menu">
