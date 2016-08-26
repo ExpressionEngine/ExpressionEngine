@@ -2232,7 +2232,12 @@ GRID_FALLBACK;
 			if ($this->channel->ChannelFormSettings)
 			{
 				$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
-				$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+
+				// only override if user is not logged in, and guest entries are allowed
+				if ($this->entry->author_id == 0 && $this->channel->ChannelFormSettings->allow_guest_posts == 'y')
+				{
+					$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+				}
 			}
 
 			return;
