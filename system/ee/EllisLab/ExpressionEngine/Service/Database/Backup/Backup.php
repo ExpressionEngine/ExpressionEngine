@@ -39,10 +39,42 @@ class Backup {
 	 */
 	protected $logger;
 
+	/**
+	 * @var boolean When TRUE, writes a file that has one query per line with no
+	 * linebreaks in those queries for easy line-by-line consumption by a
+	 * restore script
+	 */
+	protected $compact_file = FALSE;
+
+	/**
+	 * Constructor
+	 *
+	 * @param	Backup\Query	$query	Query object for generating query strings
+	 * @param	Logger\File		$logger	Logger object for writing to files
+	 */
 	public function __construct(Query $query, Logger\File $logger)
 	{
 		$this->query = $query;
 		$this->logger = $logger;
+	}
+
+	/**
+	 * Class will write a file with comments and helpful whitespace formatting
+	 */
+	public function makePrettyFile()
+	{
+		$this->compact_file = FALSE;
+		$this->query->makePrettyQueries();
+	}
+
+	/**
+	 * Class will write a file that has one query per line with no linebreaks in
+	 * those queries for easy line-by-line consumption by a restore script
+	 */
+	public function makeCompactFile()
+	{
+		$this->compact_file = TRUE;
+		$this->query->makeCompactQueries();
 	}
 
 	/**
@@ -79,11 +111,19 @@ class Backup {
 			$this->writeChunk($this->query->getDropStatement($table));
 		}
 
-		$this->writeSeparator('CREATE TABLE statements');
+		$this->writeSeparator('Create tables and their structure');
 
 		foreach ($tables as $table)
 		{
-			$this->writeChunk($this->query->getCreateForTable($table));
+			$create = $this->query->getCreateForTable($table);
+
+			// Add an extra linebreak if not a compact file
+			if ( ! $this->compact_file)
+			{
+				$create .= "\n";
+			}
+
+			$this->writeChunk($create);
 		}
 	}
 
@@ -92,6 +132,8 @@ class Backup {
 	 */
 	public function writeAllTableInserts()
 	{
+		$this->writeSeparator('Populate tables with their data');
+
 		foreach ($this->query->getTables() as $table)
 		{
 			$offset = $this->writeInsertsForTableWithOffset($table);
@@ -122,33 +164,27 @@ class Backup {
 
 		$total_rows = $this->query->getTotalRows($table_name);
 
-		// Starting from the beginning? Write initial INSERT since we are doing
-		// compact INSERTs
-		if ($offset == 0 && $total_rows > 0)
+		if ($total_rows - $offset <= 0)
 		{
-			$this->writeChunk(
-				$this->query->getInitialInsertForTable($table_name)
-			);
+			return 0;
 		}
 
-		// We need to determine if this is the last batch of insert values we
-		// are getting to determine whether to end with a , or a ;
-		$end_of_inserts = $total_rows - $offset - $default_offset <= 0;
-		$inserts = $this->query->getInsertsForTable($table_name, $offset, $default_offset, $end_of_inserts);
+		$this->writeChunk(
+			$this->query->getInsertsForTable($table_name, $offset, $default_offset)
+		);
 
-		foreach ($inserts as $insert)
+		// Add another line break if not compact
+		if ( ! $this->compact_file)
 		{
-			$this->writeChunk($insert);
+			$this->writeChunk('');
 		}
 
 		// Still more to go? Notify the caller of the new offset to start from
-		if ( ! $end_of_inserts)
+		if ($total_rows - $offset > 0)
 		{
 			return $offset + $default_offset;
 		}
 
-		// End of this table, write a newline
-		$this->writeChunk('');
 		return 0;
 	}
 
@@ -171,6 +207,11 @@ class Backup {
 	 */
 	protected function writeSeparator($text)
 	{
+		if ($this->compact_file)
+		{
+			return;
+		}
+
 		$separator = <<<EOT
 
 --

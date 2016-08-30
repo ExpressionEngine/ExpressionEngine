@@ -32,9 +32,35 @@ class Query {
 	 */
 	protected $query;
 
+	/**
+	 * @var boolean When TRUE, class returns queries with no linebreaks
+	 */
+	protected $compact_queries = FALSE;
+
+	/**
+	 * Constructor
+	 *
+	 * @param	Database\Query	$query	Database query object
+	 */
 	public function __construct(\EllisLab\ExpressionEngine\Service\Database\Query $query)
 	{
 		$this->query = $query;
+	}
+
+	/**
+	 * Makes the class return pretty queries with helpful whitespace formatting
+	 */
+	public function makePrettyQueries()
+	{
+		$this->compact_queries = FALSE;
+	}
+
+	/**
+	 * Makes the class return queries that have no linebreaks in them
+	 */
+	public function makeCompactQueries()
+	{
+		$this->compact_queries = TRUE;
 	}
 
 	/**
@@ -77,10 +103,17 @@ class Query {
 
 		if ( ! isset($create_result['Create Table']))
 		{
-			// Complain
+			throw new Exception('Could not generate CREATE TABLE statement for table ' . $table_name, 1);
 		}
 
-		return $create_result['Create Table']."\n\n";
+		$create = $create_result['Create Table'] . ';';
+
+		if ($this->compact_queries)
+		{
+			$create = str_replace("\n", '', $create);
+		}
+
+		return $create;
 	}
 
 	/**
@@ -113,14 +146,15 @@ class Query {
 	}
 
 	/**
-	 * Given a table name, generates initial INSERT INTO statement for a compact
-	 * INSERT query
+	 * Queries for data given a table name and offset parameters, and generates
+	 * an array of values for each row to follow a VALUES statement
 	 *
-	 * @param	string	$table_name	Table name
-	 * @return	string	Initial INSERT INTO statement, no values, e.g.
-	 *   "INSERT INTO `table` (`field_1`, `field_2`) VALUES"
+	 * @param	string	$table_name		Table name
+	 * @param	int		$offset			Query offset
+	 * @param	int		$limit			Query limit
+	 * @return	string	Full, valid INSERT INTO statement for given range of table data
 	 */
-	public function getInitialInsertForTable($table_name)
+	public function getInsertsForTable($table_name, $offset, $limit)
 	{
 		$data = $this->query
 			->query(sprintf('DESCRIBE `%s`;', $table_name))
@@ -132,25 +166,35 @@ class Query {
 			return sprintf('`%s`', $row['Field']);
 		}, $data);
 
-		return "INSERT INTO `$table_name` (" . implode(', ', $fields) . ") VALUES";
+		$insert = sprintf('INSERT INTO `%s` (%s) VALUES ', $table_name, implode(', ', $fields));
+
+		$values = $this->getValuesForTable($table_name, $offset, $limit);
+
+		if ($this->compact_queries)
+		{
+			$insert .= implode(', ', $values);
+		}
+		else
+		{
+			$insert .= "\n\t" . implode(",\n\t", $values);
+		}
+
+		return $insert . ';';
 	}
 
 	/**
-	 * Queries for data given a table name and offset parameters, and generates
-	 * an array of values for each row to follow a VALUES statement
+	 * Gets values for a table formatted for a VALUES string
 	 *
 	 * @param	string	$table_name		Table name
 	 * @param	int		$offset			Query offset
 	 * @param	int		$limit			Query limit
-	 * @param	boolean	$end_of_inserts	Whether or not this query will reach the
-	 *                                	end of the table
 	 * @return	array	Array of groups of values to follow an INSERT INTO ... VALUES statement, e.g.
-	 *   [
-	 *		'(1, NULL, 'some value'),',
-	 *		'(2, NULL, 'another value');'
-	 *   ]
+	 *	[
+	 *		'(1, NULL, 'some value')',
+	 *		'(2, NULL, 'another value')'
+	 *	]
 	 */
-	public function getInsertsForTable($table_name, $offset, $limit, $end_of_inserts)
+	protected function getValuesForTable($table_name, $offset, $limit)
 	{
 		$data = $this->query
 			->offset($offset)
@@ -158,24 +202,17 @@ class Query {
 			->get($table_name)
 			->result_array();
 
-		$inserts = [];
-		$count = 1;
-		$data_count = count($data);
+		$values = [];
 		foreach ($data as $row)
 		{
-			$values = array_map(function($value) {
+			$formatted_values = array_map(function($value) {
 				return $this->formatValue($value);
 			}, $row);
 
-			// Last set of values for the table? End with ;
-			$separator = ($end_of_inserts && $count == $data_count) ? ';' : ',';
-
-			$inserts[] = "\t(" . implode(', ', $values) . ")" . $separator;
-
-			$count++;
+			$values[] = sprintf('(%s)', implode(', ', $formatted_values));
 		}
 
-		return $inserts;
+		return $values;
 	}
 
 	/**
@@ -195,8 +232,9 @@ class Query {
 		{
 			return $value;
 		}
-		else {
-			return "'" . $this->query->escape_str($value) . "'";
+		else
+		{
+			return sprintf("'%s'", $this->query->escape_str($value));
 		}
 	}
 }
