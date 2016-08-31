@@ -528,7 +528,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
 		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
 
-		$this->requirements->shouldReceive('setClassPath')->with('cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Service/Updater/RequirementsChecker.php');
+		$this->requirements->shouldReceive('setClassPath')->with('cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
 		$next_step = $this->downloader->checkRequirements();
