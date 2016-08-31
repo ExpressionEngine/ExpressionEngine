@@ -152,7 +152,12 @@ class Query {
 	 * @param	string	$table_name		Table name
 	 * @param	int		$offset			Query offset
 	 * @param	int		$limit			Query limit
-	 * @return	string	Full, valid INSERT INTO statement for given range of table data
+	 * @return	array	Array containing ull, valid INSERT INTO statement for a given
+	 * range of table data, and also the number of rows that were exported, e.g.:
+	 *	[
+	 *		'insert_string' => 'INSERT INTO `table_name` VALUES ... ;',
+	 *		'rows_exported' => 50
+	 *	]
 	 */
 	public function getInsertsForTable($table_name, $offset, $limit)
 	{
@@ -179,7 +184,10 @@ class Query {
 			$insert .= "\n\t" . implode(",\n\t", $values);
 		}
 
-		return $insert . ';';
+		return [
+			'insert_string' => $insert . ';',
+			'rows_exported' => count($values)
+		];
 	}
 
 	/**

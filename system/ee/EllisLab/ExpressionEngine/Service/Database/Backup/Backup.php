@@ -56,6 +56,12 @@ class Backup {
 	protected $row_limit = 5000;
 
 	/**
+	 * @var int Number of rows exported in the current session for when we need
+	 * to export a database conservatively
+	 */
+	protected $rows_exported = 0;
+
+	/**
 	 * Constructor
 	 *
 	 * @param	Backup\Query	$query	Query object for generating query strings
@@ -190,18 +196,23 @@ class Backup {
 			$tables = array_slice($tables, array_search($table, $tables));
 		}
 
-		$rows_inserted = 0;
+		$this->rows_exported = 0;
 		foreach ($tables as $table)
 		{
-			$returned = $this->writeInsertsForTableWithOffset($table, $offset);
+			$total_rows = $this->query->getTotalRows($table);
 
-			$rows_inserted += $returned['rows_inserted'];
-			$next_offset = $returned['next_offset'];
+			// Keep under our row limit
+			$limit = $this->row_limit - $this->rows_exported;
 
-			// Have we finished a table AND inserted what we consider to be the
-			// most number of rows we should insert? Start a fresh request with
+			$returned = $this->writeInsertsForTableWithOffset($table, $offset, $limit);
+
+			$this->rows_exported += $returned['rows_exported'];
+			$offset = $returned['next_offset'];
+
+			// Have we finished a table AND exported what we consider to be the
+			// most number of rows we should export? Start a fresh request with
 			// the next table
-			if ($rows_inserted >= $this->row_limit && $next_offset == 0)
+			if ($this->rows_exported >= $this->row_limit && $offset == 0)
 			{
 				// Find the next table in the array
 				$next_table = array_slice($tables, array_search($table, $tables) + 1, 1);
@@ -216,13 +227,13 @@ class Backup {
 					'offset' => 0
 				];
 			}
-
-			// There is more of this table to export, let the caller know
-			if ($next_offset > 0)
+			// There is more of this table to export that we weren't able to,
+			// let the caller know
+			elseif ($offset > 0)
 			{
 				return [
 					'table_name' => $table,
-					'offset' => $next_offset
+					'offset' => $offset
 				];
 			}
 		}
@@ -236,21 +247,35 @@ class Backup {
 	 *
 	 * @param	string	$table_name	Table name
 	 * @param	int		$offset		Offset to start the backup from
-	 * @return	int		Next offset to start from TODO
+	 * @return	array	Array of information to tell the caller the offset the
+	 * table should be queried from next, and also the number of rows that were
+	 * exported during the call, e.g.:
+	 *	[
+	 *		'next_offset' => 0,
+	 *		'rows_exported' => 50
+	 *	]
+	 * If next_offset is zero, there are no more rows to export.
 	 */
-	public function writeInsertsForTableWithOffset($table_name, $offset = 0)
+	public function writeInsertsForTableWithOffset($table_name, $offset = 0, $limit = 0)
 	{
 		$total_rows = $this->query->getTotalRows($table_name);
 
 		// No more rows? We're done here
 		if ($total_rows - $offset <= 0)
 		{
-			return 0;
+			return [
+				'next_offset' => 0,
+				'rows_exported' => 0
+			];
 		}
 
-		$this->writeChunk(
-			$this->query->getInsertsForTable($table_name, $offset, $this->row_limit)
-		);
+		// At least apply the row limit to prevent selecting a million-row table
+		// all at once
+		$limit = ($limit !== 0) ? $limit : $this->row_limit;
+
+		$inserts = $this->query->getInsertsForTable($table_name, $offset, $limit);
+
+		$this->writeChunk($inserts['insert_string']);
 
 		// Add another line break if not compact
 		if ( ! $this->compact_file)
@@ -261,14 +286,14 @@ class Backup {
 		$next_offset = 0;
 
 		// Still more to go? Notify the caller of the new offset to start from
-		if ($total_rows - ($offset + $this->row_limit) > 0)
+		if ($total_rows - ($offset + $limit) > 0)
 		{
-			$next_offset = $offset + $this->row_limit;
+			$next_offset = $offset + $limit;
 		}
 
 		return [
 			'next_offset' => $next_offset,
-			'rows_inserted' => $total_rows - $offset
+			'rows_exported' => $inserts['rows_exported']
 		];
 	}
 
