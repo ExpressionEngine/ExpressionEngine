@@ -47,6 +47,15 @@ class Backup {
 	protected $compact_file = FALSE;
 
 	/**
+	 * @var int Maximum number of rows to work with/process at a given operation,
+	 * e.g. this is the max number of rows we will ask to be queried at once,
+	 * and this is roughly how many rows will be written to a file before we
+	 * decide to advise the caller to start a new request, should they be backing
+	 * up via a web interface
+	 */
+	protected $row_limit = 5000;
+
+	/**
 	 * Constructor
 	 *
 	 * @param	Backup\Query	$query	Query object for generating query strings
@@ -56,6 +65,18 @@ class Backup {
 	{
 		$this->query = $query;
 		$this->logger = $logger;
+	}
+
+	/**
+	 * Set max row limit; this is mainly for unit testing purposes as ideally
+	 * this property will already be set to a reasonable default
+	 *
+	 * @param	Backup\Query	$query	Query object for generating query strings
+	 * @param	Logger\File		$logger	Logger object for writing to files
+	 */
+	public function setRowLimit($limit)
+	{
+		$this->row_limit = $limit;
 	}
 
 	/**
@@ -136,18 +157,13 @@ class Backup {
 
 		foreach ($this->query->getTables() as $table)
 		{
-			$offset = $this->writeInsertsForTableWithOffset($table);
+			$returned = $this->writeInsertsForTableWithOffset($table);
 
-			while ($offset > 0)
+			if ($returned['next_offset'] > 0)
 			{
-				$offset = $this->writeInsertsForTableWithOffset($table, $offset);
+				$returned = $this->writeInsertsForTableWithOffset($table, $returned['next_offset']);
 			}
 		}
-	}
-
-	public function writeTableInsertsConservatively()
-	{
-		// return ['table_name' => 'x', 'offset' => 'x']
 	}
 
 	/**
@@ -156,21 +172,84 @@ class Backup {
 	 *
 	 * @param	string	$table_name	Table name
 	 * @param	int		$offset		Offset to start the backup from
-	 * @return	int		Next offset to start from
+	 * @return	mixed	FALSE if no more work to do, otherwise an array telling
+	 * the caller which table and offset they need to start at next time, e.g.:
+	 *	[
+	 *		'table_name' => 'exp_some_table'
+	 *		'offset'     => 5000
+	 *	]
+	 */
+	public function writeTableInsertsConservatively($table = NULL, $offset = 0)
+	{
+		$tables = $this->query->getTables();
+
+		// Table specified? Chop off the beginning of the tables array until we
+		// we get to the specified table and start the loop from there
+		if ( ! empty($table))
+		{
+			$tables = array_slice($tables, array_search($table, $tables));
+		}
+
+		$rows_inserted = 0;
+		foreach ($tables as $table)
+		{
+			$returned = $this->writeInsertsForTableWithOffset($table, $offset);
+
+			$rows_inserted += $returned['rows_inserted'];
+			$next_offset = $returned['next_offset'];
+
+			// Have we finished a table AND inserted what we consider to be the
+			// most number of rows we should insert? Start a fresh request with
+			// the next table
+			if ($rows_inserted >= $this->row_limit && $next_offset == 0)
+			{
+				// Find the next table in the array
+				$next_table = array_slice($tables, array_search($table, $tables) + 1, 1);
+
+				if ( ! isset($next_table[0]))
+				{
+					return FALSE;
+				}
+
+				return [
+					'table_name' => $next_table[0],
+					'offset' => 0
+				];
+			}
+
+			// There is more of this table to export, let the caller know
+			if ($next_offset > 0)
+			{
+				return [
+					'table_name' => $table,
+					'offset' => $next_offset
+				];
+			}
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * Writes partial INSERTs for a given table, with the idea being a backup
+	 * can be split up across multiple requests for large databases
+	 *
+	 * @param	string	$table_name	Table name
+	 * @param	int		$offset		Offset to start the backup from
+	 * @return	int		Next offset to start from TODO
 	 */
 	public function writeInsertsForTableWithOffset($table_name, $offset = 0)
 	{
-		$default_offset = 5000;
-
 		$total_rows = $this->query->getTotalRows($table_name);
 
+		// No more rows? We're done here
 		if ($total_rows - $offset <= 0)
 		{
 			return 0;
 		}
 
 		$this->writeChunk(
-			$this->query->getInsertsForTable($table_name, $offset, $default_offset)
+			$this->query->getInsertsForTable($table_name, $offset, $this->row_limit)
 		);
 
 		// Add another line break if not compact
@@ -179,13 +258,18 @@ class Backup {
 			$this->writeChunk('');
 		}
 
+		$next_offset = 0;
+
 		// Still more to go? Notify the caller of the new offset to start from
-		if ($total_rows - $offset > 0)
+		if ($total_rows - ($offset + $this->row_limit) > 0)
 		{
-			return $offset + $default_offset;
+			$next_offset = $offset + $this->row_limit;
 		}
 
-		return 0;
+		return [
+			'next_offset' => $next_offset,
+			'rows_inserted' => $total_rows - $offset
+		];
 	}
 
 	/**
