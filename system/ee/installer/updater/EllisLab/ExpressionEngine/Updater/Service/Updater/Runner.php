@@ -40,33 +40,39 @@ class Runner {
 	];
 
 	// File updater singleton
-	protected $fileUpdater;
+	protected $file_updater;
 
 	public function __construct()
 	{
-		$this->fileUpdater = $this->makeUpdaterService();
+		$this->file_updater = $this->makeUpdaterService();
 	}
 
-	public function backupDatabase($table_name = '', $offset = '')
+	public function backupDatabase($table_name = NULL, $offset = 0)
 	{
-		// TODO: ensure this directory exists
-		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
-		$backup->startFile();
-		$backup->writeDropAndCreateStatements();
-
-		/*
-
-		if not finished {
-			return 'backupDatabase[table_name,offset]';
+		if (empty($table_name))
+		{
+			// TODO: ensure this directory exists
+			$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
+			$backup->startFile();
+			$backup->writeDropAndCreateStatements();
 		}
-		Modify Steppable so that if a step returns a string, make that the
-		actual next step, and also allow step methods to take arguments
-		 */
+
+		$returned = $backup->writeTableInsertsConservatively($table_name, $offset);
+
+		if ($returned !== FALSE)
+		{
+			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
+		}
 	}
 
 	public function updateFiles()
 	{
-		$this->fileUpdater->updateFiles();
+		$this->file_updater->updateFiles();
+	}
+
+	public function rollback()
+	{
+		$this->file_updater->rollbackFiles();
 	}
 
 	/**
