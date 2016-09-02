@@ -61,12 +61,23 @@ class Updater {
 		// is what is sent back AFTER the corresponding key
 		// step name has run
 		$messages = [
+			'backupDatabase' => 'Backing up database<span>...</span>',
 			'updateFiles' => 'Files updated!'
 		];
 
+		// TODO: Make better
+		if (strpos($step, 'backupDatabase') !== 0)
+		{
+			$message = 'Backing up database<span>...</span>';
+		}
+		else
+		{
+			$message = $messages[$step];
+		}
+
 		return json_encode([
 			'messageType' => 'success',
-			'message' => $messages[$step],
+			'message' => $message,
 			'nextStep' => $runner->getNextStep()
 		]);
 	}

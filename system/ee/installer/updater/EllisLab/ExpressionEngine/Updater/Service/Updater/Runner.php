@@ -36,7 +36,8 @@ class Runner {
 	// through the browser
 	protected $steps = [
 		'backupDatabase',
-		'updateFiles'
+		'updateFiles',
+		'rollback' // Temporary for testing
 	];
 
 	// File updater singleton
@@ -49,10 +50,11 @@ class Runner {
 
 	public function backupDatabase($table_name = NULL, $offset = 0)
 	{
+		// TODO: ensure this directory exists
+		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
+
 		if (empty($table_name))
 		{
-			// TODO: ensure this directory exists
-			$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
 			$backup->startFile();
 			$backup->writeDropAndCreateStatements();
 		}

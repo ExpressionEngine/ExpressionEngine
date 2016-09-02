@@ -66,7 +66,7 @@ class Updater extends CP_Controller {
 		$messages = [
 			'preflight' => 'Downloading update<span>...</span>',
 			'download' => 'Unpacking update<span>...</span>',
-			'unpack' => 'Updating files<span>...</span>'
+			'unpack' => 'Backing up database<span>...</span>'
 		];
 
 		// If there is no next step, provide something so that
