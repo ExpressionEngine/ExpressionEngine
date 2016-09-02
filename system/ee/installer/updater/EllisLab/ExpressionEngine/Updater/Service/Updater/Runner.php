@@ -52,6 +52,7 @@ class Runner {
 	{
 		// TODO: ensure this directory exists
 		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
+		$backup->makeCompactFile();
 
 		if (empty($table_name))
 		{
