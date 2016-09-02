@@ -34,9 +34,9 @@ trait Steppable {
 	 */
 	public function run()
 	{
-		foreach ($this->steps as $step)
+		while (($next_step = $this->getNextStep()) !== FALSE)
 		{
-			$this->runStep($step);
+			$this->runStep($next_step);
 		}
 	}
 
@@ -48,8 +48,42 @@ trait Steppable {
 		if (in_array($step, $this->steps))
 		{
 			$this->currentStep = $step;
-			$this->$step();
+
+			list($step, $parameters) = $this->parseStepString($step);
+
+			$return = call_user_func_array([$this, $step], $parameters);
+
+			// If we got a string back, we assume it's a method name with optional
+			// parameters, insert it into the steps array to be called next
+			if (is_string($return))
+			{
+				$index = array_search($this->currentStep, $this->steps);
+
+				array_splice($this->steps, $index + 1, 0, $return);
+			}
 		}
+	}
+
+	/**
+	 * Split up the step method name and its parameters, e.g. 'method[param1,param2]'
+	 *
+	 * @param	string	$string	Step method
+	 * @return	array	[step method, [...parameters]]
+	 */
+	protected function parseStepString($string)
+	{
+		if (preg_match("/(.*?)\[(.*?)\]/", $string, $match))
+		{
+			$rule_name	= $match[1];
+			$parameters	= $match[2];
+
+			$parameters = explode(',', $parameters);
+			$parameters = array_map('trim', $parameters);
+
+			return [$rule_name, $parameters];
+		}
+
+		return [$string, []];
 	}
 
 	/**
