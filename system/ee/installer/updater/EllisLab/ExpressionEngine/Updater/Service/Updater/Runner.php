@@ -37,7 +37,8 @@ class Runner {
 	protected $steps = [
 		'backupDatabase',
 		'updateFiles',
-		'rollback' // Temporary for testing
+		'rollback', // Temporary for testing
+		'restoreDatabase' // Temporary for testing
 	];
 
 	// File updater singleton
@@ -81,6 +82,11 @@ class Runner {
 	public function rollback()
 	{
 		$this->file_updater->rollbackFiles();
+	}
+
+	public function restoreDatabase()
+	{
+		ee('Database/Restore')->restoreLineByLine(PATH_CACHE.'ee_update/database.sql');
 	}
 
 	/**
