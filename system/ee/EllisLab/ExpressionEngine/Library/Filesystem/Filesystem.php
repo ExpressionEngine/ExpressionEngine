@@ -54,6 +54,37 @@ class Filesystem {
 	}
 
 	/**
+	 * Read a file from disk line-by-line, good for large text files
+	 *
+	 * @param String $path File to read
+	 * @return Callable Callback to call for each line of the file
+	 */
+	public function readLineByLine($path, Callable $callback)
+	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException("File not found: {$path}");
+		}
+		elseif ( ! $this->isFile($path))
+		{
+			throw new FilesystemException("Not a file: {$path}");
+		}
+		elseif ( ! $this->isReadable($path))
+		{
+			throw new FilesystemException("Cannot read file: {$path}");
+		}
+
+		$pointer = fopen($path, 'r');
+
+		while ( ! feof($pointer))
+		{
+			$callback(fgets($pointer));
+		}
+
+		fclose($pointer);
+	}
+
+	/**
 	 * Write a file to disk
 	 *
 	 * @param String $path File to write to
