@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Database\Backup;
 
-use EllisLab\ExpressionEngine\Service\Database\Query;
+use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
@@ -46,7 +46,7 @@ class Restore {
 	 * @param	Database\Query	$query		Database query object
 	 * @param	Filesystem		$filesystem	Filesytem library object
 	 */
-	public function __construct(Query $query, Filesystem $filesystem)
+	public function __construct(Database\Query $query, Filesystem $filesystem)
 	{
 		$this->query = $query;
 		$this->filesystem = $filesystem;
@@ -75,7 +75,7 @@ class Restore {
 		$this->filesystem->readLineByLine($file_path, function($line)
 		{
 			$query = trim($line);
-			
+
 			if ( ! empty($query))
 			{
 				$this->query->query(trim($line));
