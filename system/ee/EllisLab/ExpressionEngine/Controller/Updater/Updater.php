@@ -71,7 +71,7 @@ class Updater extends CP_Controller {
 
 		// If there is no next step, provide something so that
 		// the AJAX hits the micro app
-		$next_step = $runner->getNextStep() ?: 'updateFiles';
+		$next_step = $runner->getNextStep() ?: 'backupDatabase';
 
 		return [
 			'messageType' => 'success',
