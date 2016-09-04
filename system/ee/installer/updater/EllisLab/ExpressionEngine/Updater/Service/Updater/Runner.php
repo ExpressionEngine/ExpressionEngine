@@ -51,6 +51,7 @@ class Runner {
 	public function backupDatabase($table_name = NULL, $offset = 0)
 	{
 		// TODO: ensure this directory exists
+		// TODO: This isn't available inside the micro app
 		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
 		$backup->makeCompactFile();
 
@@ -62,6 +63,10 @@ class Runner {
 
 		$returned = $backup->writeTableInsertsConservatively($table_name, $offset);
 
+		// TODO: Detect running out of disk space
+
+		// Backup not finished? Start a new request with the table name and
+		// offset to start from
 		if ($returned !== FALSE)
 		{
 			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
