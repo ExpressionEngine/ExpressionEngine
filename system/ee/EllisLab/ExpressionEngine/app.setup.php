@@ -127,6 +127,13 @@ return array(
 			return new Database\Backup\Backup($backup_query, $file_logger);
 		},
 
+		'Database/Restore' => function($ee)
+		{
+			$filesystem = $ee->make('Filesystem');
+
+			return new Database\Backup\Restore($ee->make('db'), $filesystem);
+		},
+
 		'Event' => function($ee)
 		{
 			return new Event\Emitter();
