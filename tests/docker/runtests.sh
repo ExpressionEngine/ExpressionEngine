@@ -42,14 +42,18 @@ popd
 
 rm /app/ee.tar
 
+PHP_VERSION_ASPLODE=(${PHP_VERSION//./ })
+PHP_MAJOR_VERSION=${PHP_VERSION_ASPLODE[0]}
+
 source ~/.phpbrew/bashrc
 echo "Loading PHP ${PHP_VERSION} ..."
 phpbrew use php-$PHP_VERSION
-echo "LoadModule php7_module /usr/lib/apache2/modules/libphp7.0.4.so" > /etc/apache2/mods-available/php5.load
-
-CORE_COUNT=`shell grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu`
+# Empty out the 7 file that was placed during 7's installation
+echo "" > /etc/apache2/mods-available/php7.load
+echo "LoadModule php${PHP_MAJOR_VERSION}_module /usr/lib/apache2/modules/libphp${PHP_VERSION}.so" > /etc/apache2/mods-available/php5.load
 
 if [ "${COMMAND}" == "lint" ]; then
+	CORE_COUNT=`shell grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu`
 	pushd /var/www/html/
 		find -L . -name '*.php' -not -path "./system/ee/EllisLab/Tests/vendor/*" -not -path "./node_modules/*" -not -name "config_tmpl.php" | parallel -j $CORE_COUNT php -l {}
 	popd

@@ -4,7 +4,6 @@ STASH_NAME=`git stash create`;
 if [ "$STASH_NAME" == "" ]; then
 	STASH_NAME="HEAD"
 fi
-echo $STASH_NAME
 git archive --format=tar -o ee.tar $STASH_NAME
 
 # Absolutely have to have the git folder available in the archive?
