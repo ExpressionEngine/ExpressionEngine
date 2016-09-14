@@ -175,6 +175,11 @@ class URL implements \Serializable {
 		return $this->base.$path.rtrim('&'.$qs, '&');
 	}
 
+	/**
+	 * Serializes the object by JSON encoding
+	 *
+	 * @return string A JSON encoded string.
+	 */
 	public function serialize()
 	{
 		$serialize = array(
@@ -188,20 +193,37 @@ class URL implements \Serializable {
 		return json_encode($serialize);
 	}
 
+	/**
+	 * Unserializes the data by JSON decoding.
+	 *
+	 * @return bool FALSE if serialized data was not JSON encoded; TRUE otherwise
+	 */
 	public function unserialize($serialized)
 	{
 		$data = json_decode($serialized, TRUE);
+
+		if ( ! is_array($data))
+		{
+			return FALSE;
+		}
 
 		$this->path = $data['path'];
 		$this->session_id = $data['session_id'];
 		$this->qs = $data['qs'];
 		$this->base = $data['base'];
 		$this->requested_uri = $data['requested_uri'];
+
+		return TRUE;
 	}
 
+	/**
+	 * Encodes the object by first serializing and then base64_encoding
+	 *
+	 * @return string A base64 encoded serialized string.
+	 */
 	public function encode()
 	{
-		return base64_encode(serialize($this));
+		return base64_encode($this->serialize($this));
 	}
 }
 
