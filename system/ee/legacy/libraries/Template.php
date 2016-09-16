@@ -297,7 +297,16 @@ class EE_Template {
 		$this->log_item("Parsing Site Variables");
 
 		// load site variables into the global_vars array
-		foreach (array('site_id', 'site_label', 'site_short_name') as $site_var)
+		foreach (array(
+			'site_id',
+			'site_label',
+			'site_short_name',
+			'site_name',
+			'site_url',
+			'site_description',
+			'site_index',
+			'webmaster_email'
+		) as $site_var)
 		{
 			ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
 		}
