@@ -448,6 +448,11 @@ class Member_register extends Member {
 			$cust_errors[] = lang($pw_validate);
 		}
 
+		if ($_POST['password'] != $_POST['password_confirm'])
+		{
+			$cust_errors[] = lang('missmatched_passwords');
+		}
+
 		$field_labels = array();
 
 		foreach ($member->getDisplay()->getFields() as $field)
