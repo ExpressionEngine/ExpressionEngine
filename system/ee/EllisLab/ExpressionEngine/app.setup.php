@@ -121,10 +121,9 @@ return array(
 		'Database/Backup' => function($ee, $file_path)
 		{
 			$filesystem = $ee->make('Filesystem');
-			$file_logger = new Logger\File($file_path, $filesystem);
 			$backup_query = new Database\Backup\Query($ee->make('db'));
 
-			return new Database\Backup\Backup($backup_query, $file_logger);
+			return new Database\Backup\Backup($filesystem, $backup_query, $file_path);
 		},
 
 		'Database/Restore' => function($ee)

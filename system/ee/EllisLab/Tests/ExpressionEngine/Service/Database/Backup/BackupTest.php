@@ -9,17 +9,17 @@ class BackupTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
+		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->query = Mockery::mock('EllisLab\ExpressionEngine\Service\Database\Backup\Query');
-		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Logger\File');
-		$this->logger->shouldReceive('log');
+		$this->filesystem->shouldReceive('write');
 
-		$this->backup = new Backup($this->query, $this->logger);
+		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql');
 	}
 
 	public function tearDown()
 	{
+		$this->filesystem = NULL;
 		$this->query = NULL;
-		$this->logger = NULL;
 	}
 
 	public function testConservativeInserts()
