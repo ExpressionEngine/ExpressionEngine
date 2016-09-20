@@ -201,19 +201,59 @@ class Forum extends Model {
 
 		$last_forum = $model->get('forum:Forum')
 			->fields('forum_order')
-			->filter('forum_is_cat', $this->getProperty('forum_is_cat'))
 			->order('forum_order', 'desc');
 
+		// if it's a new category, just tack it on
 		if ($this->getProperty('forum_is_cat'))
 		{
-			$last_forum->filter('forum_parent', $this->getProperty('forum_parent'));
+			if ( ! $last_forum->first())
+			{
+				$this->setProperty('forum_order', 1);
+				return;
+			}
+
+			$this->setProperty('forum_order', $last_forum->first()->forum_order + 1);
+			return;
 		}
 
-		$order = ($last_forum->first()) ? $last_forum->first()->forum_order + 1 : 1;
+		// - get the last forum in this category, if one exists
+		$last = $last_forum->filter('forum_parent', $this->getProperty('forum_parent'))
+			->first();
+
+		if ($last)
+		{
+			// set this forum's order to one more, to be last in the category
+			$order = $last->forum_order + 1;
+		}
+		else
+		{
+			// there weren't any forums in this category yet, so set to one higher
+			// than the category itself
+			$order = $model->get('forum:Forum')
+				->fields('forum_order')
+				->filter('forum_id', $this->getProperty('forum_parent'))
+				->first()
+				->forum_order
+				+ 1;
+		}
 
 		$this->setProperty('forum_order', $order);
-	}
 
+		// - increment any categories and forums that follow the one we are inserting
+		$updates = $model->get('forum:Forum')
+			->filter('forum_order', '>=', $order)
+			->filter('forum_id', '!=', $this->getId())
+			->order('forum_order', 'asc')
+			->all();
+
+		foreach ($updates as $update)
+		{
+			$update->setProperty('forum_order', $update->forum_order + 1);
+		}
+
+		$updates->save();
+
+	}
 }
 
 // EOF

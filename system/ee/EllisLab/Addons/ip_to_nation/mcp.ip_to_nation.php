@@ -334,7 +334,8 @@ class Ip_to_nation_mcp {
 		foreach ($cache_files as $file)
 		{
 			$filename = basename($file);
-			$ext = end(explode('.', $filename));
+			$parts = explode('.', $filename);
+			$ext = end($parts);
 
 			$fn = '_extract_'.$ext;
 			$this->$fn($filename);
