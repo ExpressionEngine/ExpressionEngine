@@ -213,11 +213,13 @@ class Query {
 		$values = [];
 		foreach ($data as $row)
 		{
-			$formatted_values = array_map(function($value) {
-				return $this->formatValue($value);
-			}, $row);
+			// Faster than array_map
+			foreach ($row as &$column)
+			{
+				$column = $this->formatValue($column);
+			}
 
-			$values[] = sprintf('(%s)', implode(', ', $formatted_values));
+			$values[] = sprintf('(%s)', implode(', ', $row));
 		}
 
 		return $values;
@@ -240,8 +242,12 @@ class Query {
 		{
 			return $value;
 		}
+		else if (ctype_print(preg_replace('/\s+/', '', $value)))
+		{
+			return sprintf("'%s'", $this->query->escape_str($value));
+		}
 		// Probably binary
-		else if ( ! ctype_print($value))
+		else
 		{
 			$hex = '';
 			foreach(str_split($value) as $char)
@@ -250,10 +256,6 @@ class Query {
 			}
 
 			return sprintf("x'%s'", $hex);
-		}
-		else
-		{
-			return sprintf("'%s'", $this->query->escape_str($value));
 		}
 	}
 }
