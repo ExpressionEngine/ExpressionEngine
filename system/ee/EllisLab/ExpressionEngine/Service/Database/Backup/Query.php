@@ -38,6 +38,11 @@ class Query {
 	protected $compact_queries = FALSE;
 
 	/**
+	 * @var array Array of tables and their corresponding row counts and size on disk
+	 */
+	protected $tables = [];
+
+	/**
 	 * Constructor
 	 *
 	 * @param	Database\Query	$query	Database query object
@@ -66,27 +71,32 @@ class Query {
 	/**
 	 * Returns an array of names of tables present in the database
 	 *
-	 * @return	array	Flat array of table names
+	 * @return	array	Associative array of tables to row count and size on disk, e.g.:
+	 *	[
+	 *		'table' => [
+	 *			'rows' => 123,
+	 *			'size' => 123456
+	 *		],
+	 *		...
+	 *	]
 	 */
 	public function getTables()
 	{
-		static $tables;
-
-		if (empty($tables))
+		if (empty($this->tables))
 		{
-			$tables_result = $this->query
-				->query('SHOW TABLES;')
-				->result_array();
+			$query = $this->query
+				->query(sprintf('SHOW TABLE STATUS FROM `%s`', $this->query->database));
 
-			$tables = [];
-			foreach ($tables_result as $table)
+			foreach ($query->result() as $row)
 			{
-				$table_values = array_values($table);
-				$tables[] = $table_values[0];
+				$this->tables[$row->Name] = [
+					'rows' => $row->Rows,
+					'size' => $row->Data_length
+				];
 			}
 		}
 
-		return $tables;
+		return $this->tables;
 	}
 
 	/**
@@ -135,14 +145,14 @@ class Query {
 	 */
 	public function getTotalRows($table_name)
 	{
-		static $table_counts = [];
+		$tables = $this->getTables();
 
-		if ( ! isset($table_counts[$table_name]))
+		if (isset($tables[$table_name]))
 		{
-			$table_counts[$table_name] = $this->query->count_all_results($table_name);
+			return $tables[$table_name]['rows'];
 		}
 
-		return $table_counts[$table_name];
+		throw new Exception('Not existent table requested: ' . $table_name, 1);
 	}
 
 	/**

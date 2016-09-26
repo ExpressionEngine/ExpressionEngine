@@ -139,14 +139,14 @@ class Backup {
 
 		$this->writeSeparator('Drop old tables if exists');
 
-		foreach ($tables as $table)
+		foreach ($tables as $table => $specs)
 		{
 			$this->writeChunk($this->query->getDropStatement($table));
 		}
 
 		$this->writeSeparator('Create tables and their structure');
 
-		foreach ($tables as $table)
+		foreach ($tables as $table => $specs)
 		{
 			$create = $this->query->getCreateForTable($table);
 
@@ -167,7 +167,7 @@ class Backup {
 	{
 		$this->writeSeparator('Populate tables with their data');
 
-		foreach ($this->query->getTables() as $table)
+		foreach ($this->query->getTables() as $table => $specs)
 		{
 			$returned = $this->writeInsertsForTableWithOffset($table);
 
@@ -193,7 +193,7 @@ class Backup {
 	 */
 	public function writeTableInsertsConservatively($table = NULL, $offset = 0)
 	{
-		$tables = $this->query->getTables();
+		$tables = array_keys($this->query->getTables());
 
 		// Table specified? Chop off the beginning of the tables array until we
 		// we get to the specified table and start the loop from there
@@ -230,7 +230,7 @@ class Backup {
 
 				return [
 					'table_name' => $next_table[0],
-					'offset' => 0
+					'offset'     => 0
 				];
 			}
 			// There is more of this table to export that we weren't able to,
@@ -239,7 +239,7 @@ class Backup {
 			{
 				return [
 					'table_name' => $table,
-					'offset' => $offset
+					'offset'     => $offset
 				];
 			}
 		}

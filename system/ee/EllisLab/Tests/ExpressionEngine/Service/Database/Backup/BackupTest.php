@@ -25,12 +25,12 @@ class BackupTest extends \PHPUnit_Framework_TestCase {
 	public function testConservativeInserts()
 	{
 		$this->query->shouldReceive('getTables')->andReturn([
-			'table1',
-			'table2',
-			'table3',
-			'table4',
-			'table5',
-			'table6',
+			'table1' => ['rows' => 20, 'size' => 1234],
+			'table2' => ['rows' => 50, 'size' => 1234],
+			'table3' => ['rows' => 75, 'size' => 1234],
+			'table4' => ['rows' => 26, 'size' => 1234],
+			'table5' => ['rows' => 1, 'size' => 1234],
+			'table6' => ['rows' => 0, 'size' => 1234],
 		]);
 
 		$this->query->shouldReceive('getTotalRows')->with('table1')->andReturn(20);
