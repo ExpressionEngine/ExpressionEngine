@@ -230,8 +230,7 @@ class Backup {
 
 				return [
 					'table_name' => $next_table[0],
-					'offset'     => 0,
-					'total_rows' => $this->query->getTotalRows($next_table[0])
+					'offset' => 0
 				];
 			}
 			// There is more of this table to export that we weren't able to,
@@ -240,8 +239,7 @@ class Backup {
 			{
 				return [
 					'table_name' => $table,
-					'offset'     => $offset,
-					'total_rows' => $total_rows
+					'offset' => $offset
 				];
 			}
 		}
