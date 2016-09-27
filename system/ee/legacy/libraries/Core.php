@@ -678,12 +678,6 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
-
-		// Record the New Relic transaction
-		$this->set_newrelic_transaction(function() {
-			$template = ee()->TMPL->templates_loaded[0];
-			return "{$template['group_name']}/{$template['template_name']}";
-		});
 	}
 
 	// ------------------------------------------------------------------------
