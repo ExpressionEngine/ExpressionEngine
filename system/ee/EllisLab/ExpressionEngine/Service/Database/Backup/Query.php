@@ -43,6 +43,11 @@ class Query {
 	protected $tables = [];
 
 	/**
+	 * @var int Number of bytes to limit INSERT query sizes to
+	 */
+	protected $query_size_limit = 3e+6;
+
+	/**
 	 * Constructor
 	 *
 	 * @param	Database\Query	$query	Database query object
@@ -66,6 +71,16 @@ class Query {
 	public function makeCompactQueries()
 	{
 		$this->compact_queries = TRUE;
+	}
+
+	/**
+	 * Sets the byte limit for INSERT query sizes
+	 *
+	 * @param	int	$limit	Number of bytes
+	 */
+	public function setQuerySizeLimit($limit)
+	{
+		$this->query_size_limit = $limit;
 	}
 
 	/**
@@ -181,23 +196,83 @@ class Query {
 			return sprintf('`%s`', $row['Field']);
 		}, $data);
 
-		$insert = sprintf('INSERT INTO `%s` (%s) VALUES ', $table_name, implode(', ', $fields));
+		$insert_prepend = sprintf('INSERT INTO `%s` (%s) VALUES ', $table_name, implode(', ', $fields));
 
-		$values = $this->getValuesForTable($table_name, $offset, $limit);
+		$rows = $this->getValuesForTable($table_name, $offset, $limit);
+		$row_chunks = $this->makeRowChunks($rows);
 
-		if ($this->compact_queries)
+		$inserts = '';
+		foreach ($row_chunks as $row_chunk)
 		{
-			$insert .= implode(', ', $values);
-		}
-		else
-		{
-			$insert .= "\n\t" . implode(",\n\t", $values);
+			if ($this->compact_queries)
+			{
+				$inserts .= $insert_prepend . implode(', ', $row_chunk);
+			}
+			else
+			{
+				$inserts .= $insert_prepend . "\n\t" . implode(",\n\t", $row_chunk);
+			}
+
+			$inserts .=  ";\n";
 		}
 
 		return [
-			'insert_string' => $insert . ';',
-			'rows_exported' => count($values)
+			'insert_string' => trim($inserts),
+			'rows_exported' => count($rows)
 		];
+	}
+
+	/**
+	 * We need to balance keeping our INSERT query numbers small (for smaller
+	 * file sizes and potentially faster imports) while also making sure a
+	 * single query doesn't get too long, so here we'll break up a given array
+	 * of rows into chunks that can likely be placed into a single query.
+	 * MySQL's max_allowed_packet defaults to 4MB, but we'll shoot for under 3MB
+	 * to be safe.
+	 *
+	 * @param	array	$rows	Rows of data pre-formatted for a VALUES string
+	 * @return	array	Array of groups of rows
+	 *	[
+	 *		[ // One query's values
+	 *			"(1, NULL, 'some value')",
+	 *			"(2, NULL, 'another value')"
+	 *		],
+	 *		[ // Another query's values
+	 *			"(3, NULL, 'some value')",
+	 *			"(4, NULL, 'another value')"
+	 *		],
+	 *		...
+	 *	]
+	 */
+	protected function makeRowChunks($rows)
+	{
+		$row_chunks = [];
+		$byte_count = 0;
+		$current_chunk = 0;
+
+		foreach ($rows as $row)
+		{
+			// We'll assume that each character is roughly a byte
+			$row_length = strlen($row) + 2;
+
+			// We check for empty because even if the given row is too large
+			// too fit in a query by itself, we have to export it anyway
+			if (empty($row_chunks[$current_chunk]) OR
+				$row_length + $byte_count < $this->query_size_limit)
+			{
+				$byte_count += $row_length;
+			}
+			// Reset the byte count for a new chunk and start a new chunk
+			else
+			{
+				$current_chunk++;
+				$byte_count = $row_length;
+			}
+
+			$row_chunks[$current_chunk][] = $row;
+		}
+
+		return $row_chunks;
 	}
 
 	/**
