@@ -11,9 +11,10 @@ class BackupTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->query = Mockery::mock('EllisLab\ExpressionEngine\Service\Database\Backup\Query');
+		$this->formatter = Mockery::mock('EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory');
 		$this->filesystem->shouldReceive('write');
 
-		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql');
+		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql', $this->formatter);
 	}
 
 	public function tearDown()
