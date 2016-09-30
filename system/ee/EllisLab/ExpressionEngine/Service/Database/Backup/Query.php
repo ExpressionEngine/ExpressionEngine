@@ -299,9 +299,12 @@ class Query {
 		foreach ($data as $row)
 		{
 			// Faster than array_map
-			foreach ($row as &$column)
+			foreach ($row as $column_name => &$value)
 			{
-				$column = $this->formatValue($column);
+				$value = $this->formatValue(
+					$value,
+					$this->columnIsBinary($table_name, $column_name)
+				);
 			}
 
 			$values[] = sprintf('(%s)', implode(', ', $row));
@@ -313,26 +316,14 @@ class Query {
 	/**
 	 * Formats a given database value for use in a VALUES string
 	 *
-	 * @param	mixed	$value	Database column value
+	 * @param	mixed	$value		Database column value
+	 * @param	boolean	$is_binary	Whether or not the data is binary
 	 * @return	mixed	Typically either a string or number, but formatted for
 	 *                  a VALUES string
 	 */
-	protected function formatValue($value)
+	protected function formatValue($value, $is_binary)
 	{
-		if (is_null($value))
-		{
-			return 'NULL';
-		}
-		elseif (is_numeric($value))
-		{
-			return $value;
-		}
-		else if (ctype_print(preg_replace('/\s+/', '', $value)))
-		{
-			return sprintf("'%s'", $this->query->escape_str($value));
-		}
-		// Probably binary
-		else
+		if ($is_binary)
 		{
 			$hex = '';
 			foreach(str_split($value) as $char)
@@ -342,6 +333,67 @@ class Query {
 
 			return sprintf("x'%s'", $hex);
 		}
+
+		if (is_null($value))
+		{
+			return 'NULL';
+		}
+		elseif (is_numeric($value))
+		{
+			return $value;
+		}
+		else
+		{
+			return sprintf("'%s'", $this->query->escape_str($value));
+		}
+	}
+
+	/**
+	 * Gathers column types for a given table
+	 *
+	 * @param	string	$table_name	Table name
+	 * @return	array	Associative array of tables to columns => type
+	 */
+	protected function getTypesForTable($table_name)
+	{
+		if ( ! isset($this->columns[$table_name]))
+		{
+			$this->columns[$table_name] = [];
+
+			$query = $this->query
+				->query(sprintf('DESCRIBE `%s`', $table_name));
+
+			foreach ($query->result() as $row)
+			{
+				$this->columns[$table_name][$row->Field] = $row->Type;
+			}
+		}
+
+		return $this->columns[$table_name];
+	}
+
+	/**
+	 * Given a table and column name, determines if that column is of a binary type
+	 *
+	 * @param	string	$table_name		Table name
+	 * @param	string	$column_name	Column name
+	 * @return	boolean	Whether or not the column is of binary type
+	 */
+	protected function columnIsBinary($table_name, $column_name)
+	{
+		$types = $this->getTypesForTable($table_name);
+
+		if ( ! isset($types[$column_name]))
+		{
+			throw new \Exception('Non-existant column requested: '. $column_name, 1);
+		}
+
+		$type = strtolower($types[$column_name]);
+
+		return (
+			strpos($type, 'binary') !== FALSE OR
+			strpos($type, 'blob') !== FALSE
+		);
 	}
 }
 
