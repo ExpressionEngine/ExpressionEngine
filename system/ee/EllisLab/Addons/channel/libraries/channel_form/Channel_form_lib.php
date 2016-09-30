@@ -2219,12 +2219,15 @@ GRID_FALLBACK;
 			$this->entry->status = $this->channel->deft_status;
 			$this->entry->author_id = ee()->session->userdata('member_id');
 
-			if (isset($this->channel->deft_category))
+			if ( ! empty($this->channel->deft_category))
 			{
 				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+
 				if ($cat)
 				{
-					$this->entry->Categories[] = $cat;
+					// set directly so other categories don't get lazy loaded
+					// along with our default
+					$this->entry->Categories = $cat;
 				}
 			}
 
