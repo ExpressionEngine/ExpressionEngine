@@ -138,7 +138,7 @@ class Edit extends AbstractPublishController {
 				// Don't show create button
 				$vars['create_button'] = '';
 
-				$desc_key = ($channel->max_entries === '1')
+				$desc_key = ($channel->max_entries == 1)
 					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
 				ee('CP/Alert')->makeInline()
 					->asWarning()
