@@ -121,11 +121,11 @@ feature 'Channel Sets' do
       channel_set['category_groups'][0]['categories'][0]['cat_name'].should == 'News'
       channel_set['category_groups'][0]['categories'][0]['cat_url_title'].should == 'news'
       channel_set['category_groups'][0]['categories'][0]['cat_description'].should == ''
-      channel_set['category_groups'][0]['categories'][0]['cat_order'].should == '2'
+      channel_set['category_groups'][0]['categories'][0]['cat_order'].should == 2
       channel_set['category_groups'][0]['categories'][1]['cat_name'].should == 'Bands'
       channel_set['category_groups'][0]['categories'][1]['cat_url_title'].should == 'bands'
       channel_set['category_groups'][0]['categories'][1]['cat_description'].should == ''
-      channel_set['category_groups'][0]['categories'][1]['cat_order'].should == '3'
+      channel_set['category_groups'][0]['categories'][1]['cat_order'].should == 3
       channel_set['upload_destinations'].size.should == 0
 
       expected_files.sort.should == found_files.sort.map(&:name)
