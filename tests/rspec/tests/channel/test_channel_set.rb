@@ -429,7 +429,7 @@ feature 'Channel Sets' do
           column['instructions'].should == compare[:instructions]
           column['required'].should == (compare[:required] ? 'y' : 'n')
           column['search'].should == (compare[:searchable] ? 'y' : 'n')
-          column['width'].should == compare[:width]
+          column['width'].should == compare[:width].to_i
 
           column['settings'].each do |key, value|
             if compare.has_key? key.to_sym then
