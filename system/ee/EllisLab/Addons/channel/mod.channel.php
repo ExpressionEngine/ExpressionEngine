@@ -899,6 +899,10 @@ class Channel {
 								$qstring = 'C'.$result->row('cat_id') ;
 								$cat_id = $result->row('cat_id');
 							}
+							else
+							{
+								return '';
+							}
 						}
 					}
 				}
