@@ -81,9 +81,9 @@ class Emoticon_upd {
 	 * @access	public
 	 * @return	bool
 	 */
-	function update($current='')
+	public function update($current='')
 	{
-		return FALSE;
+		return TRUE;
 	}
 }
 // END CLASS
