@@ -235,7 +235,11 @@ EE.cp.formValidation = {
 
 			if (success.size() > 0)
 			{
-				success.remove();
+				// Add a delay in case someone is blurring a field by clicking
+				// on a submit button or some other control
+				setTimeout(function() {
+					success.remove();
+				}, 500);
 			}
 		});
 	},
