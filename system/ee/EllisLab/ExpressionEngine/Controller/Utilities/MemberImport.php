@@ -883,7 +883,13 @@ class MemberImport extends Utilities {
 
 		if ($this->form_validation->run() === FALSE)
 		{
-			return $this->member_import_confirm();
+			ee('CP/Alert')->makeInline()
+				->asIssue()
+				->withTitle(lang('member_import_error'))
+				->addToBody(lang('member_import_no_custom_fields_selected'))
+				->now();
+
+			return $this->memberImportConfirm();
 		}
 
 		$error = array();
@@ -970,7 +976,7 @@ class MemberImport extends Utilities {
 			}
 		}
 
-		ee()->form_validation->set_message('required', lang('s_required'));
+		ee()->form_validation->set_message('required', lang('member_import_no_custom_fields_selected'));
 	}
 }
 // END CLASS
