@@ -203,7 +203,7 @@ class MemberImport extends Utilities {
 
 		if ( ! empty($member_group))
 		{
-			$group_name = $member_group->group_title;
+			$group_name = htmlentities($member_group->group_title, ENT_QUOTES, 'UTF-8');
 		}
 
 		$data = array(
