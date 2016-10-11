@@ -917,6 +917,7 @@ class MemberImport extends Utilities {
 			$this->db->insert('member_fields', $data);
 			$field_id = $this->db->insert_id();
 			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$field_id.' text NULL DEFAULT NULL');
+			$this->db->query('ALTER table exp_member_data add column m_field_ft_'.$field_id.' text NULL DEFAULT NULL');
 
 			$_POST['added_fields'][$_POST['m_field_name'][$k]] = $_POST['m_field_label'][$k];
 			//$_POST['xml_custom_fields'][$_POST['xml_field_name'][$k]] = $field_id;
