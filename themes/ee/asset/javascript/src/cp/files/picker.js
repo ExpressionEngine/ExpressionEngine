@@ -45,7 +45,7 @@
 			}
 		});
 
-		$('.modal-file').off('click', '.filepicker-item, tbody > tr');
+		$('.modal-file').off('click', '.filepicker-item, tbody > tr:not(.tbl-action)');
 		$('.modal-file').on('click', '.filepicker-item, tbody > tr:not(.tbl-action)', function(e) {
 
 			if ($(e.target).is('a[rel=external]')) {

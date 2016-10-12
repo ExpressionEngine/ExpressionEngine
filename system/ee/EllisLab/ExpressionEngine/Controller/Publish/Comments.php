@@ -652,19 +652,16 @@ class Comments extends AbstractPublishController {
 
 		$comments = ee('Model')->get('Comment', $comment_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->set('status', $status)
-			->update();
-
-		$comments = ee('Model')->get('Comment', $comment_ids)
-			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$comment_names = array();
-
 		ee()->load->helper('text');
+		$comment_names = array();
 
 		foreach ($comments as $comment)
 		{
+			$comment->status = $status;
+			$comment->save();
+
 			$comment_names[] = ellipsize($comment->comment, 50);
 		}
 

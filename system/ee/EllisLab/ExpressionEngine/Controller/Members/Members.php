@@ -240,7 +240,8 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
-			->filter('group_id', 4);
+			->filter('group_id', 4)
+			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
 		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
 
@@ -291,7 +292,8 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
-			->filter('group_id', 2);
+			->filter('group_id', 2)
+			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
 		$table = $this->buildTableFromMemberQuery($members);
 		$table->setNoResultsText('no_banned_members_found');
@@ -554,7 +556,18 @@ class Members extends CP_Controller {
 	{
 		$table = $this->initializeTable();
 
-		$members = $members->order($table->config['sort_col'], $table->config['sort_dir'])
+		$sort_map = array(
+			'member_group' => 'group_id',
+			'dates' => 'join_date'
+		);
+
+		$sort_col = $table->config['sort_col'];
+		if (isset($sort_map[$sort_col]))
+		{
+			$sort_col = $sort_map[$sort_col];
+		}
+
+		$members = $members->order($sort_col, $table->config['sort_dir'])
 			->all();
 
 		$data = array();
@@ -719,7 +732,7 @@ class Members extends CP_Controller {
 					}
 					break;
 				default:
-					$group = $groups[$member['group_id']];
+					$group = htmlentities($groups[$member['group_id']], ENT_QUOTES, 'UTF-8');
 			}
 
 			if (ee()->session->flashdata('highlight_id') == $member['member_id'])
@@ -748,7 +761,7 @@ class Members extends CP_Controller {
 						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
 						<b>'.lang('last_visit').'</b>: '.$last_visit.'
 					</span>',
-					'member_group' => htmlentities($group, ENT_QUOTES, 'UTF-8')
+					'member_group' => $group
 				),
 				'attrs' => $attributes
 			);

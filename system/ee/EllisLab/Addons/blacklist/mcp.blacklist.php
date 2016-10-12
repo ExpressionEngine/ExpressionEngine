@@ -90,7 +90,7 @@ class Blacklist_mcp {
 		if (ee()->session->userdata('group_id') == '1')
 		{
 			$allow_write_htaccess = TRUE;
-			$htaccess_path = ee()->config->item('htaccess_path');
+			$htaccess_path = ee()->config->item('htaccess_path', '', TRUE);
 		}
 
 		$vars = array(
@@ -176,7 +176,7 @@ class Blacklist_mcp {
 			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
-		$this->write_htaccess(ee()->input->get_post('htaccess_path'));
+		$this->write_htaccess(parse_config_variables(ee()->input->get_post('htaccess_path')));
 
 		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
@@ -192,6 +192,8 @@ class Blacklist_mcp {
 		{
 			return TRUE;
 		}
+
+		$str = parse_config_variables($str);
 
 		if ( ! file_exists($str) OR ! is_file($str))
 		{

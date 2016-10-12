@@ -243,9 +243,11 @@ class Updater {
 		);
 
 		ee()->dbforge->add_key('set_id', TRUE);
-		ee()->smartforge->create_table('menu_sets');
 
-		ee()->db->insert('menu_sets', array('name' => 'Default'));
+		if (ee()->smartforge->create_table('menu_sets'))
+		{
+			ee()->db->insert('menu_sets', array('name' => 'Default'));
+		}
 	}
 }
 

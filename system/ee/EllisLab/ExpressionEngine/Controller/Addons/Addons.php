@@ -538,12 +538,16 @@ class Addons extends CP_Controller {
 
 				if ($UPD->update($version) !== FALSE)
 				{
-					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
+					$new_version = $addon_info->getVersion();
+					if (version_compare($version, $new_version, '<'))
+					{
+						$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
 						->first();
-					$module->module_version = $addon_info->getVersion();
-					$module->save();
+						$module->module_version = $new_version;
+						$module->save();
 
-					$updated[$party][$addon] = $name;
+						$updated[$party][$addon] = $name;
+					}
 				}
 			}
 

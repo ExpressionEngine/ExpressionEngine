@@ -422,6 +422,10 @@ class ThemeInstaller {
 		$field_group_path = $this->theme_path."ee/site/{$theme_name}/custom_fields/";
 		$field_groups = directory_map($field_group_path);
 
+		// Sorting file listing as a temporary workaround where the order of
+		// files may cause an exception
+		ksort($field_groups);
+
 		foreach ($field_groups as $group_name => $fields)
 		{
 			$field_group = ee('Model')->make('ChannelFieldGroup');
@@ -430,6 +434,7 @@ class ThemeInstaller {
 
 			$this->model_data['field_group'][$field_group->group_name] = $field_group;
 
+			sort($fields);
 			foreach ($fields as $file_name)
 			{
 				// reset for Grid fields

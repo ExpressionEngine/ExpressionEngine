@@ -98,7 +98,7 @@ class ChannelEntry extends ContentModel {
 		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
-		'title'              => 'required|limitHtml[b,strong,i,em,span,sup,sub,code,ins,del]',
+		'title'              => 'required|limitHtml[b,strong,i,em,span,sup,sub,code,ins,del,mark]',
 		'url_title'          => 'required|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
@@ -207,7 +207,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateMaxEntries($key, $value, $params, $rule)
 	{
-		if ($this->Channel->max_entries === '0')
+		if ($this->Channel->max_entries == 0)
 		{
 			return TRUE;
 		}

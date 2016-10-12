@@ -6,6 +6,7 @@ use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
+use EllisLab\ExpressionEngine\Library\Data\SerializableEntity;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
@@ -35,7 +36,7 @@ use EllisLab\ExpressionEngine\Service\Event\Subscriber;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Model extends Entity implements Subscriber, ValidationAware {
+class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 
 	/**
@@ -739,6 +740,36 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		}
 
 		return $changed;
+	}
+
+	/**
+	 * Getter for serialization
+	 *
+	 * @return Mixed Data to serialize
+	 */
+	protected function getSerializeData()
+	{
+		return array(
+			'name' => $this->getName(),
+			'values' => parent::getSerializeData()
+		);
+	}
+
+	/**
+	 * Overridable setter for unserialization
+	 *
+	 * @param Mixed $data Data returned from `getSerializedData`
+	 * @return void
+	 */
+	public function setSerializeData($data)
+	{
+		// datastore requires a name
+		$this->setName($data['name']);
+
+		// set all of the external dependencies
+		ee('Model')->make($this);
+
+		parent::setSerializeData($data['values']);
 	}
 
 	/**
