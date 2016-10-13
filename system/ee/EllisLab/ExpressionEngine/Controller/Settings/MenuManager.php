@@ -437,7 +437,7 @@ class MenuManager extends Settings {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$item = $item ?: ee('Model')->make('MenuItem');
+		$item = $item ?: ee('Model')->make('MenuItem', array('sort' => 1));
 
 		if ( ! empty($_POST))
 		{
@@ -445,7 +445,7 @@ class MenuManager extends Settings {
 			{
 				$items = $set->Items;
 				$last = $items->sortBy('sort')->last();
-				$item->sort = $last ? $last->sort + 1 : 1;
+				$item->sort = $last && $item->isNew() ? $last->sort + 1 : $item->sort;
 				$set->Items[] = $item;
 			}
 
