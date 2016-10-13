@@ -354,7 +354,7 @@ class MenuManager extends Settings {
 			'field_name'          => 'fieldname',
 			'options'             => $set->Items->filter('parent_id', 0)->sortBy('sort'),
 			'set_id'              => $set->getId(),
-			'content_item_label'  => 'foo'
+			'content_item_label'  => $set->name
 		));
 
 		if ($html_only)
