@@ -535,59 +535,6 @@ $lang = array(
 
 "group_assignment_defaults_to_two" => "If you require account activation, members will be set to this once they are activated",
 
-"website_session_type" => "Website Session Type",
-
-"cp_session_type" => "Control Panel Session Type",
-
-"security_cfg" => "Security and Session Preferences",
-
-"un_min_len" => "Minimum Username Length",
-
-"pw_min_len" => "Minimum Password Length",
-
-"cs_session" => "Cookies and session ID",
-
-"c_session" => "Cookies only",
-
-"s_session" => "Session ID only",
-
-"deny_duplicate_data" => "Deny Duplicate Data?",
-
-"deny_duplicate_data_explanation" => "This option prevents data submitted by users (comments, etc.) from being received if it is an exact duplicate of data that already exists.",
-
-"allow_multi_logins" => "Allow multiple log-ins from a single account?",
-
-"allow_multi_logins_explanation" => "Determines whether more than one person can simultaneously access the system using the same user account.  Note: If your Session Type above is set to \"Cookies Only\" this feature will not work.",
-
-"password_lockout" => "Enable Password Lockout?",
-
-"password_lockout_explanation" => "If enabled, only four invalid login attempts are permitted within the time interval specified below. This is a deterrent to hackers using collision attacks to guess poorly chosen passwords.",
-
-"password_lockout_interval" => "Time Interval for Lockout",
-
-"login_interval_explanation" => "Number is set in minutes.  You are allowed to use decimal fractions.  Example:  1.5",
-
-"require_ip_for_login" => "Require IP Address and User Agent for Login?",
-
-"require_ip_explanation" => "Prevents users from logging in unless their browser generates IP Address and User Agent data. This keeps hackers from logging in using direct socket connections.",
-
-"allow_username_change" => "Allow members to change their username?",
-
-"require_secure_passwords" => "Require Secure Passwords?",
-
-"secure_passwords_explanation" => "Users will have to choose passwords containing at least one uppercase, one lowercase, and one numeric character",
-
-"allow_dictionary_pw" => "Allow Dictionary Words as Passwords?",
-
-"real_word_explanation" => "This setting prevents users from using words and names contained in a dictionary as their password",
-
-'dictionary_note'	=>
-'Note: In order to use this feature you must install the dictionary file.  Consult the manual.',
-
-"name_of_dictionary_file" => "Name of Dictionary File",
-
-"dictionary_explanation" => "The name of the file containing your word list",
-
 'license_contact_explanation' => 'The contact email address for the owner of this software license.',
 
 'license_number_explanation' => 'You can find and manage your software licenses on the EllisLab.com <a href="https://store.ellislab.com/manage" rel="external">Manage Purchases</a> page,',

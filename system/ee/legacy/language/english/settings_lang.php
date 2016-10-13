@@ -719,9 +719,9 @@ $lang = array(
 
 'un_min_len_desc' => 'Minimum number of characters required for new members\' usernames.',
 
-'allow_multi_logins' => 'Allow multiple logins?',
+'allow_multi_logins' => 'Allow multiple sessions?',
 
-'allow_multi_logins_desc' => 'When set to <b>yes</b>, members will be able to login simultaneously using one account. If session type is set to <mark>Cookies only</mark>, this will not work.',
+'allow_multi_logins_desc' => 'When set to <b>no</b>, members will not be able to log in from another location or browser if they already have an active session.',
 
 'require_ip_for_login' => 'Require user agent and <abbr title="Internet Protocol">IP</abbr> for login?',
 

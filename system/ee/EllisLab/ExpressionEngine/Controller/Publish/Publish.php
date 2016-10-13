@@ -141,7 +141,8 @@ class Publish extends AbstractPublishController {
 			show_404();
 		}
 
-		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		if ( ! ee()->cp->allowed_group('can_create_entries') OR
+			 ! in_array($channel_id, $this->assigned_channel_ids))
 		{
 			show_error(lang('unauthorized_access'));
 		}

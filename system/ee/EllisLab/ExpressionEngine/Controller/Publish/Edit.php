@@ -406,6 +406,11 @@ class Edit extends AbstractPublishController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! in_array($entry->channel_id, $this->assigned_channel_ids))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		// -------------------------------------------
 		// 'publish_form_entry_data' hook.
 		//  - Modify entry's data
