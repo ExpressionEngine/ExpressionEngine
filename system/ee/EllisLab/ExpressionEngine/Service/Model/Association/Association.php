@@ -38,7 +38,7 @@ class Association {
 	{
 		$this->related = $related;
 
-		if ( ! $_skip_inverse)
+		if ( ! $_skip_inverse && $this->relation instanceOf HasOneOrMany)
 		{
 			$related = $this->toModelArray($related);
 
@@ -343,12 +343,6 @@ class Association {
 
 			$this->related = NULL;
 			$this->loaded = FALSE;
-
-			foreach ($related as $model)
-			{
-				$inverse = $this->getInverse($model);
-	//			$inverse->markForReload();
-			}
 		}
 	}
 
