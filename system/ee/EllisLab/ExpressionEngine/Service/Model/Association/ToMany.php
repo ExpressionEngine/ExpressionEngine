@@ -56,7 +56,7 @@ class ToMany extends Association {
 	{
 		if ($this->has($model))
 		{
-			$this->related->remove($model);
+			$this->related->removeElement($model);
 			parent::ensureDoesNotExist($model);
 		}
 	}
