@@ -861,11 +861,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	{
 		$assocs = array();
 
-		foreach ($this->_associations as $assoc)
+		foreach ($this->_associations as $name => $assoc)
 		{
 			if ($assoc->isBooted())
 			{
-				$assocs[] = $assoc;
+				$assocs[$name] = $assoc;
 			}
 		}
 
