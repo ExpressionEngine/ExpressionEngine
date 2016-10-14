@@ -148,7 +148,7 @@ class MetaDataReader {
 	}
 
 	/**
-	 *
+	 * @return array [TableName => [columns]]
 	 */
 	public function getTables($cached = TRUE)
 	{
@@ -174,7 +174,7 @@ class MetaDataReader {
 	}
 
 	/**
-	 *
+	 * Get a table for a given column
 	 */
 	public function getTableForField($field)
 	{
