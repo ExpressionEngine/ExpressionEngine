@@ -47,7 +47,7 @@ class RelationGraph {
 	private $datastore;
 
 	/**
-	 * @var Array of one sided model dependencies (e.g. third party => first party)
+	 * @var Array of one sided model dependencies (e.g. [addon:model => [ee:model1, ee:model2])
 	 */
 	private $foreign_models;
 
@@ -59,7 +59,7 @@ class RelationGraph {
 	/**
 	 * @param $datastore EllisLab\ExpressionEngine\Service\Model\Datastore
 	 * @param $registry EllisLab\ExpressionEngine\Service\Model\Registry
-	 * @param Array $foreign_models Map of one sided model dependencies (e.g. third party => first party)
+	 * @param Array $foreign_models Map of one sided model dependencies (e.g. [addon:model => [ee:model1, ee:model2])
 	 */
 	public function __construct(DataStore $datastore, Registry $registry, array $foreign_models)
 	{
@@ -95,47 +95,49 @@ class RelationGraph {
 		}
 
 		$relations = array();
-
 		$relationships = $this->fetchRelationships($model_name);
 
+		// create the easily defined ones
 		foreach ($relationships as $name => $info)
 		{
-			$relations[$name] = $this->makeRelation($model_name, $name);
+			$relation = $this->makeRelation($model_name, $name);
+
+			$relations[$name] = $relation;
 		}
 
-		foreach ($this->foreign_models as $model => $dependencies)
+		$this->relations[$model_name] = $relations;
+
+		// add any relations that are declared on foreign models
+		// for example, Member will grab forum relationships here
+		foreach ($this->foreign_models as $foreign_model => $native_models)
 		{
-			if ( ! $this->registry->isEnabled($model))
+			if ( ! $this->registry->isEnabled($foreign_model))
 			{
 				continue;
 			}
 
-			if (in_array($model_name, $dependencies))
+			if (in_array($model_name, $native_models))
 			{
-				$ships = $this->fetchRelationships($model);
+				$foreign_relations = $this->getAll($foreign_model);
 
-				foreach ($ships as $name => $ship)
+				foreach ($foreign_relations as $name => $relation)
 				{
-					if ( ! isset($ship['inverse']))
+					if ($relation->getTargetModel() == $model_name)
 					{
-						continue;
-					}
-
-					if ($ship['model'] == $model_name)
-					{
-						$relation = $this->makeRelation($model, $name);
 						$inverse = $relation->getInverse();
-						$relations[$inverse->getName()] = $inverse;
+						$this->relations[$model_name][$inverse->getName()] = $inverse;
 					}
 				}
 			}
 		}
 
-		return $this->relations[$model_name] = $relations;
+		return $this->relations[$model_name];
 	}
 
 	/**
-	 * Get inverse of a relation
+	 * Get inverse of a relation.
+	 *
+	 * Do not call this directly, always call getInverse() on the relation
 	 */
 	public function getInverse(Relation $relation)
 	{
@@ -149,14 +151,7 @@ class RelationGraph {
 			$model = $prefix.':'.$model;
 		}
 
-		if (isset($this->foreign_models[$source]))
-		{
-			if (in_array($model, $this->foreign_models[$source]))
-			{
-				return $this->getForeignInverse($relation, $model);
-			}
-		}
-
+		// grab all potential options
 		$relations = $this->getAll($model);
 
 		// todo check for more than one match
@@ -192,7 +187,6 @@ class RelationGraph {
 			}
 		}
 
-
 		$name = $relation->getName();
 		$from = $relation->getSourceModel();
 		$type = substr(strrchr(get_class($relation), '\\'), 1);
@@ -204,8 +198,43 @@ class RelationGraph {
 	}
 
 	/**
+	 * Create the foreign inverse. Do not call this directly, always
+	 * use `$relation->getInverse()`
+	 */
+	public function makeForeignInverse($relation)
+	{
+		$to_model = $relation->getTargetModel();
+		$options = $relation->getInverseOptions();
+
+		$options['model'] = $relation->getSourceModel();
+
+		$prefix = $this->registry->getPrefix($relation->getSourceModel());
+		$name = $options['name'];
+
+		if (strpos($name, $prefix) !== 0)
+		{
+			$name = $prefix.':'.$name;
+		}
+
+
+		$prefix = $this->registry->getPrefix($to_model);
+
+		if (strpos($to_model, $prefix) !== 0)
+		{
+			$to_model = $prefix.':'.$to_model;
+		}
+
+		unset($options['name']);
+
+ 		return $this->relations[$to_model][$name] = $this->makeRelation($to_model, $name, $options);
+	}
+
+	/**
 	 * Create a new relation object, only should be called if one doesn't
 	 * already exist.
+	 *
+	 * @param String $model Model where the relation lives
+	 * @
 	 */
 	public function makeRelation($model, $name, $options = NULL)
 	{
@@ -260,27 +289,6 @@ class RelationGraph {
 		);
 
 		return array_replace($defaults, $relationship, $required);
-	}
-
-	/**
-	 *
-	 */
-	private function getForeignInverse($relation, $to_model)
-	{
-		$options = $relation->getInverseOptions();
-		$options['model'] = $relation->getSourceModel();
-
-		$prefix = $this->registry->getPrefix($relation->getSourceModel());
-		$name = $options['name'];
-
-		if (strpos($name, $prefix) !== 0)
-		{
-			$name = $prefix.':'.$name;
-		}
-
-		unset($options['name']);
-
-		return $this->makeRelation($to_model, $name, $options);
 	}
 
 	/**

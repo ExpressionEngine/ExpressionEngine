@@ -129,10 +129,35 @@ abstract class Relation {
 	{
 		if ( ! isset($this->inverse))
 		{
-			$this->inverse = $this->datastore->getInverseRelation($this);
+			if ($this->hasForeignInverse())
+			{
+				$this->setInverse($this->datastore->getGraph()->makeForeignInverse($this));
+			}
+			else
+			{
+				$this->setInverse($this->datastore->getGraph()->getInverse($this));
+			}
 		}
 
 		return $this->inverse;
+	}
+
+	public function setInverse(Relation $inverse)
+	{
+		if ( ! isset($this->inverse))
+		{
+			$this->inverse = $inverse;
+		}
+	}
+
+	public function hasInverse()
+	{
+		return isset($this->inverse);
+	}
+
+	public function hasForeignInverse()
+	{
+		return isset($this->inverse_info);
 	}
 
 	/**

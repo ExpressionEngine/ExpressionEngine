@@ -89,6 +89,3 @@ DEPENDENCIES
   rubyzip
   site_prism
   syntax
-
-BUNDLED WITH
-   1.12.1

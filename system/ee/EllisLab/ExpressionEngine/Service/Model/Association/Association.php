@@ -76,6 +76,11 @@ class Association {
 			}
 
 			$this->addToRelated($model);
+
+			if ($inverse instanceOf ToOne)
+			{
+				$inverse->markAsLoaded();
+			}
 		}
 
 		$this->diff->wasSet();
@@ -137,6 +142,13 @@ class Association {
 		foreach ($items as $model)
 		{
 			$this->addToRelated($model);
+
+			$inverse = $this->getInverse($model);
+
+			if ($inverse instanceOf ToOne)
+			{
+				$inverse->markAsLoaded();
+			}
 		}
 	}
 
@@ -335,7 +347,7 @@ class Association {
 			foreach ($related as $model)
 			{
 				$inverse = $this->getInverse($model);
-				$inverse->markForReload();
+	//			$inverse->markForReload();
 			}
 		}
 	}
@@ -366,10 +378,7 @@ class Association {
 			return $this->remove();
 		}
 
-		if ($this->isLoaded())
-		{
-			$this->markForReload();
-		}
+		$this->markForReload();
 	}
 
 	/**
