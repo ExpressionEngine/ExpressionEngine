@@ -164,6 +164,11 @@ class DataStore {
 		return $this->db->newQuery();
 	}
 
+	public function getGraph()
+	{
+		return $this->graph;
+	}
+
 	/**
 	 * Create a metaDataReader
 	 *
