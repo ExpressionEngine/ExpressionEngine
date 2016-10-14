@@ -41,6 +41,11 @@ class ToMany extends Association {
 		return $result;
 	}
 
+	public function foreignKeyChanged($value)
+	{
+		// nada
+	}
+
 	protected function ensureExists($model)
 	{
 		$this->ensureCollection();
