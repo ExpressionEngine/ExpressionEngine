@@ -38,14 +38,18 @@ class Association {
 	{
 		$this->related = $related;
 
-		if ( ! $_skip_inverse && $this->relation instanceOf HasOneOrMany)
+		if ( ! $_skip_inverse)
 		{
 			$related = $this->toModelArray($related);
 
 			foreach ($related as $to)
 			{
 				$this->relation->fillLinkIds($this->model, $to);
-				$this->getInverse($to)->fill($this->model, TRUE);
+
+				if ($this->relation instanceOf HasOneOrMany)
+				{
+					$this->getInverse($to)->fill($this->model, TRUE);
+				}
 			}
 		}
 
