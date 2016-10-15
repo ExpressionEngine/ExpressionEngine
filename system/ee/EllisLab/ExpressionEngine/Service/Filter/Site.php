@@ -94,7 +94,7 @@ class Site extends Filter {
 	 * Overriding the value method to account for someone searching for a
 	 * site
 	 *
-	 * @return int[]|NULL The value of the filter (NULL if it has no value)
+	 * @return int|NULL The value of the filter (NULL if it has no value)
 	 */
 	public function value()
 	{
