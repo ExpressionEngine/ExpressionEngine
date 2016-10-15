@@ -44,7 +44,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 	{
 		$_POST['filter_by_username'] = 2;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(2), $filter->value(), 'The value reflects the POSTed value');
+		$this->assertEquals(2, $filter->value(), 'The value reflects the POSTed value');
 		$this->assertTrue($filter->isValid(), 'POSTing a number is valid');
 	}
 
@@ -52,7 +52,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 	{
 		$_GET['filter_by_username'] = 2;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(2), $filter->value(), 'The value reflects the GETed value');
+		$this->assertEquals(2, $filter->value(), 'The value reflects the GETed value');
 		$this->assertTrue($filter->isValid(), 'GETing a number is valid');
 	}
 
@@ -61,7 +61,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 		$_POST['filter_by_username'] = 2;
 		$_GET['filter_by_username'] = 3;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(2), $filter->value(), 'Use POST over GET');
+		$this->assertEquals(2, $filter->value(), 'Use POST over GET');
 	}
 
 	// Use GET when POST is present but "empty"
@@ -70,22 +70,22 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 		$_POST['filter_by_username'] = '';
 		$_GET['filter_by_username'] = 3;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(3), $filter->value(), 'Use GET when POST is an empty string');
+		$this->assertEquals(3, $filter->value(), 'Use GET when POST is an empty string');
 
 		$_POST['filter_by_username'] = NULL;
 		$_GET['filter_by_username'] = 3;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(3), $filter->value(), 'Use GET when POST is NULL');
+		$this->assertEquals(3, $filter->value(), 'Use GET when POST is NULL');
 
 		$_POST['filter_by_username'] = 0;
 		$_GET['filter_by_username'] = 3;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(3), $filter->value(), 'Use GET when POST is 0');
+		$this->assertEquals(3, $filter->value(), 'Use GET when POST is 0');
 
 		$_POST['filter_by_username'] = "0";
 		$_GET['filter_by_username'] = 3;
 		$filter = new Username($this->usernames);
-		$this->assertEquals(array(3), $filter->value(), 'Use GET when POST is "0"');
+		$this->assertEquals(3, $filter->value(), 'Use GET when POST is "0"');
 	}
 
 	// Test valid without query and input not numeric
@@ -165,13 +165,13 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 		// Present
 		$_POST['filter_by_username'] = 2;
 		$filter = $this->makeFilterWithQuery();
-		$this->assertEquals(array(2), $filter->value(), 'The value reflects the submitted value');
+		$this->assertEquals(2, $filter->value(), 'The value reflects the submitted value');
 		$this->assertTrue($filter->isValid(), 'Submitting an existing user id is valid');
 
 		// Absent
 		$_POST['filter_by_username'] = 4;
 		$filter = $this->makeFilterWithQuery();
-		$this->assertEquals(array(4), $filter->value(), 'The value reflects the submitted value');
+		$this->assertEquals(4, $filter->value(), 'The value reflects the submitted value');
 		$this->assertFalse($filter->isValid(), 'Submitting non-existant user id is invalid');
 	}
 
@@ -183,9 +183,9 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 		$members = m::mock('EllisLab\ExpressionEngine\Service\Model\Collection');
 		$this->query->shouldReceive("filter->all")->andReturn($members);
 		$members->shouldReceive('count')->withNoArgs()->andReturn(1);
-		$members->shouldReceive('pluck')->with('member_id')->andReturn(array(1));
+		$members->shouldReceive('pluck')->with('member_id')->andReturn(1);
 
-		$this->assertEquals(array(1), $filter->value(), 'The value reflects the id of the username');
+		$this->assertEquals(1, $filter->value(), 'The value reflects the id of the username');
 		$this->assertTrue($filter->isValid(), 'Submitting an existing username is valid');
 	}
 
@@ -198,7 +198,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 		$this->query->shouldReceive("filter->all")->andReturn($members);
 		$members->shouldReceive('count')->withNoArgs()->andReturn(0);
 
-		$this->assertEquals(array(-1), $filter->value(), 'We should have an array of -1 for failed searches');
+		$this->assertEquals(-1, $filter->value(), 'We should have an array of -1 for failed searches');
 		$this->assertFalse($filter->isValid(), 'Submitting an non-existing username is invalid');
 	}
 

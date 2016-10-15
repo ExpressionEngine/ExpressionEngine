@@ -114,7 +114,7 @@ class Username extends Filter {
 					}
 					else
 					{
-						$this->selected_value = array(-1);
+						$this->selected_value = -1;
 					}
 				}
 			}
