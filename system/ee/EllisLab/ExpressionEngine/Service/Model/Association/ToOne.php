@@ -59,7 +59,7 @@ class ToOne extends Association {
 	{
 		$fk = $this->getForeignKey();
 
-		if ($model && $fk)
+		if ($model && $model->hasProperty($fk))
 		{
 			$this->fk_value = $model->$fk;
 		}
