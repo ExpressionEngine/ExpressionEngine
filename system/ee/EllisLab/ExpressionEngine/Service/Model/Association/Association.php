@@ -87,6 +87,7 @@ class Association {
 			}
 		}
 
+		$this->markAsLoaded();
 		$this->diff->wasSet();
 	}
 
