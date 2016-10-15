@@ -58,16 +58,11 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
         $assoc->fill($collection);
 
-        // check that both were filled
+        // check that the relationship exists
         $this->assertSame($parent->FillChild, $collection);
-        $this->assertSame($child1->FillParent, $parent);
-        $this->assertSame($child2->FillParent, $parent);
-
-        // check that the key was linked
-        $this->assertEquals(5, $child1->parent_id);
-        $this->assertEquals(5, $child2->parent_id);
 
         // it's a fill, so nothing should be marked as dirty
+        $this->assertEquals(array(), $parent->getDirty());
         $this->assertEquals(array(), $child1->getDirty());
         $this->assertEquals(array(), $child2->getDirty());
     }
@@ -152,9 +147,9 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 		$parent->SetChild[] = $child1;
 		$parent->SetChild[] = $child2;
 
-		// check that both were filled
-		$this->assertSame($parent, $child1->SetParent);
-		$this->assertSame($parent, $child2->SetParent);
+		// check that the reverse was set
+//		$this->assertSame($parent, $child1->SetParent);
+//		$this->assertSame($parent, $child2->SetParent);
 
 		// check that the key was linked
 		$this->assertEquals(5, $child1->parent_id);
@@ -198,10 +193,6 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
 		$assoc->fill(new Collection(array($child1)));
 		$parent->SetChild[] = $child2;
-
-		// check that both were filled
-		$this->assertSame($parent, $child1->SetParent);
-		$this->assertSame($parent, $child2->SetParent);
 
 		// check that the key was linked
 		$this->assertEquals(5, $child1->parent_id);
@@ -249,8 +240,6 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
 		// check that both were filled
 		$this->assertSame(2, count($parent->SetChild));
-		$this->assertSame($parent, $child1->SetParent);
-		$this->assertSame($parent, $child2->SetParent);
 
 		// Null it
 		$parent->SetChild = NULL;
@@ -352,8 +341,6 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
 		// check that both were filled
 		$this->assertSame(2, count($parent->SetChild));
-		$this->assertSame($parent, $child1->SetParent);
-		$this->assertSame($parent, $child2->SetParent);
 		$this->assertEquals(5, $child1->parent_id);
 		$this->assertEquals(5, $child2->parent_id);
 
@@ -363,8 +350,6 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 		// check that the key was unlinked
 		$this->assertEquals(5, $child1->parent_id);
 		$this->assertEquals(NULL, $child2->parent_id);
-		$this->assertSame($parent, $child1->SetParent);
-		$this->assertSame(NULL, $child2->SetParent);
 
 		// null means our foreign key has disappeared
 		$this->assertEquals(array(), $child1->getDirty());
@@ -424,23 +409,15 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(5, $child1->parent_id);
         $this->assertEquals(5, $child2->parent_id);
-        $this->assertSame($parent, $child1->SetParent);
-        $this->assertSame($parent, $child2->SetParent);
         $this->assertNull($child3->parent_id);
         $this->assertNull($child4->parent_id);
-        $this->assertSame(NULL, $child3->SetParent);
-        $this->assertSame(NULL, $child4->SetParent);
 
         $parent->SetChild = $new_collection;
 
         $this->assertNull($child1->parent_id);
         $this->assertNull($child2->parent_id);
-        $this->assertSame(NULL, $child1->SetParent);
-        $this->assertSame(NULL, $child2->SetParent);
         $this->assertEquals(5, $child3->parent_id);
         $this->assertEquals(5, $child4->parent_id);
-        $this->assertSame($parent, $child3->SetParent);
-        $this->assertSame($parent, $child4->SetParent);
 
         $this->assertEquals(array('parent_id' => NULL), $child1->getDirty());
         $this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
@@ -519,13 +496,15 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
         $relation[0]->shouldDeferMissing();
 
-        $assoc = $relation[0]->createAssociation($model);
-        $assoc->markAsLoaded();
+        $assoc = $relation[0]->createAssociation();
+        $assoc->boot($model);
 
         $model->setAssociation($relation[1], $assoc);
+        $assoc->markAsLoaded();
 
         return $assoc;
     }
+
 }
 
 class OneToManyParent extends Model {
