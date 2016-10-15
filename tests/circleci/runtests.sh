@@ -28,6 +28,8 @@ installmysql() {
 	echo "Checking installed version....."
 	mysql -D mysql -e "SELECT version()"
 	echo "Done!!"
+
+	set +x
 }
 
 # Explode php_versions environment variable since we can't assign

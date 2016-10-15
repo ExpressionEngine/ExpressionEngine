@@ -207,7 +207,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateMaxEntries($key, $value, $params, $rule)
 	{
-		if ($this->Channel->max_entries === '0')
+		if ($this->Channel->max_entries == 0)
 		{
 			return TRUE;
 		}

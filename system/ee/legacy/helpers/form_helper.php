@@ -468,18 +468,19 @@ if ( ! function_exists('form_textarea'))
  * @param	array
  * @param	mixed
  * @param	string
+ * @param	boolean	$form_prep	Whether or not to form_prep the displayed value (use caution when FALSE!)
  * @return	type
  */
 if ( ! function_exists('form_multiselect'))
 {
-	function form_multiselect($name = '', $options = array(), $selected = array(), $extra = '')
+	function form_multiselect($name = '', $options = array(), $selected = array(), $extra = '', $form_prep = TRUE)
 	{
 		if ( ! strpos($extra, 'multiple'))
 		{
 			$extra .= ' multiple="multiple"';
 		}
 
-		return form_dropdown($name, $options, $selected, $extra);
+		return form_dropdown($name, $options, $selected, $extra, $form_prep);
 	}
 }
 
@@ -493,11 +494,12 @@ if ( ! function_exists('form_multiselect'))
  * @param	array
  * @param	string
  * @param	string
+ * @param	boolean	$form_prep	Whether or not to form_prep the displayed value (use caution when FALSE!)
  * @return	string
  */
 if ( ! function_exists('form_dropdown'))
 {
-	function form_dropdown($name = '', $options = array(), $selected = array(), $extra = '')
+	function form_dropdown($name = '', $options = array(), $selected = array(), $extra = '', $form_prep = TRUE)
 	{
 		if ( ! is_array($selected))
 		{
@@ -532,7 +534,12 @@ if ( ! function_exists('form_dropdown'))
 				{
 					$sel = (in_array($optgroup_key, $selected)) ? ' selected="selected"' : '';
 
-					$form .= '<option value="'.form_prep($optgroup_key).'"'.$sel.'>'.form_prep((string) $optgroup_val)."</option>\n";
+					if ($form_prep)
+					{
+						$optgroup_val = form_prep((string) $optgroup_val);
+					}
+
+					$form .= '<option value="'.form_prep($optgroup_key).'"'.$sel.'>'.(string) $optgroup_val."</option>\n";
 				}
 
 				$form .= '</optgroup>'."\n";
@@ -541,7 +548,12 @@ if ( ! function_exists('form_dropdown'))
 			{
 				$sel = (in_array($key, $selected)) ? ' selected="selected"' : '';
 
-				$form .= '<option value="'.form_prep($key).'"'.$sel.'>'.form_prep((string) $val)."</option>\n";
+				if ($form_prep)
+				{
+					$val = form_prep((string) $val);
+				}
+
+				$form .= '<option value="'.form_prep($key).'"'.$sel.'>'.(string) $val."</option>\n";
 			}
 		}
 

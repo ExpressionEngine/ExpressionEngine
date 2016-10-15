@@ -171,7 +171,10 @@ class CategoryGroup extends StructureModel {
 		$field->setItem('field_list_items', $category_list);
 
 		$object = $field->getItem('categorized_object');
-		if ( ! $object->isNew())
+
+		// New Channel Entries might have a default category selecdted, but File
+		// entities should not have categories pre-selected for new entries
+		if ( ! $object->isNew() OR $object->getName() == 'ee:ChannelEntry')
 		{
 			$set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
 			$field->setData(implode('|', $set_categories));

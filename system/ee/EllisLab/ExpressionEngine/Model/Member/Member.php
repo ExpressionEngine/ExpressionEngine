@@ -106,8 +106,8 @@ class Member extends ContentModel {
 
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
-		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|uniqueEmail',
+		'username'        => 'required|unique|validateUsername',
+		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
@@ -322,6 +322,12 @@ class Member extends ContentModel {
 	{
 		$cp_homepage = NULL;
 
+		// Make sure to get the correct site, revert once issue #1285 is fixed
+		$member_group = ee('Model')->get('MemberGroup')
+			->filter('group_id', $this->group_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
 		if ( ! empty($this->cp_homepage))
 		{
 			$site_id = ee()->config->item('site_id');
@@ -331,11 +337,11 @@ class Member extends ContentModel {
 			$cp_homepage_channel = $cp_homepage_channel[$site_id];
 			$cp_homepage_custom = $this->cp_homepage_custom;
 		}
-		elseif ( ! empty($this->MemberGroup->cp_homepage))
+		elseif ( ! empty($member_group->cp_homepage))
 		{
-			$cp_homepage = $this->MemberGroup->cp_homepage;
-			$cp_homepage_channel = $this->MemberGroup->cp_homepage_channel;
-			$cp_homepage_custom = $this->MemberGroup->cp_homepage_custom;
+			$cp_homepage = $member_group->cp_homepage;
+			$cp_homepage_channel = $member_group->cp_homepage_channel;
+			$cp_homepage_custom = $member_group->cp_homepage_custom;
 		}
 
 		switch ($cp_homepage) {
@@ -414,6 +420,11 @@ class Member extends ContentModel {
 			return sprintf(lang('username_too_short'), $un_length);
 		}
 
+		if (strlen($username) > USERNAME_MAX_LENGTH)
+		{
+			return 'username_too_long';
+		}
+
 		if ($this->isNew())
 		{
 			// Is username banned?
@@ -421,6 +432,19 @@ class Member extends ContentModel {
 			{
 				return 'username_taken';
 			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validation callback for email field
+	 */
+	public function validateEmail($key, $email)
+	{
+		if (strlen($email) > USERNAME_MAX_LENGTH)
+		{
+			return 'email_too_long';
 		}
 
 		return TRUE;

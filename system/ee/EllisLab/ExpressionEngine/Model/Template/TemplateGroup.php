@@ -183,10 +183,16 @@ class TemplateGroup extends Model {
 			return NULL;
 		}
 
-		$site = $this->getFrontend()->get('Site')
-			->fields('site_name')
-			->filter('site_id', $this->site_id)
-			->first();
+		// Cache the sites as we query
+		if ( ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site'))
+		{
+			$site = $this->getFrontend()->get('Site')
+				->fields('site_name')
+				->filter('site_id', $this->site_id)
+				->first();
+
+			ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
+		}
 
 		return $basepath.$site->site_name.'/'.$this->group_name . '.group';
 	}

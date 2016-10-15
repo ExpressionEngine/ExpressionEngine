@@ -422,9 +422,16 @@ class Category_model extends CI_Model {
 
 			foreach ($categories as $num => $cat_group)
 			{
-				$channels[$row->channel_id][] = ($cat_group != $group_id) ? $cat_group : '';
+				if ($cat_group != $group_id)
+				{
+					$channels[$row->channel_id][] = $cat_group;
+				}
 			}
 
+			if ( ! isset($channels[$row->channel_id]))
+			{
+				$channels[$row->channel_id][] = '';
+			}
 		}
 
 		foreach ($channels as $k => $v)

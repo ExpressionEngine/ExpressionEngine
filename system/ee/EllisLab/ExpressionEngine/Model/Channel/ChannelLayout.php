@@ -92,11 +92,19 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 				$field = $fields[$field_id];
 
-				// Collapsed is "optional" and defaults to "not collapsed"
-				if (isset($field_info['collapsed']) && $field_info['collapsed'])
+				// Fields can be configured to start collapsed or expaned, but
+				// a layout should always override it.
+				if (isset($field_info['collapsed']))
 				{
-					$field->collapse();
-				}
+                    if ($field_info['collapsed'])
+                    {
+    					$field->collapse();
+                    }
+                    else
+                    {
+                        $field->expand();
+                    }
+    			}
 
 				// Visible is "optional" and defaults to "I can see you!"
 				if (isset($field_info['visible']) && ! $field_info['visible'])

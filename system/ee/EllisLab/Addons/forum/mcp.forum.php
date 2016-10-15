@@ -189,7 +189,7 @@ class Forum_mcp extends CP_Controller {
 				$table = ee('CP/Table', $table_config);
 				$table->setColumns(
 					array(
-						$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
+						$category->forum_name.form_hidden('order[]', $category->forum_id) => array(
 							'encode' => FALSE
 						),
 						$this->getStatusWidget($category->forum_status) => array(
@@ -264,10 +264,7 @@ class Forum_mcp extends CP_Controller {
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/addons/forums/reorder',
-			),
-			'plugin' => array(
-				'ee_table_reorder',
-			),
+			)
 		));
 
 		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
@@ -300,28 +297,27 @@ class Forum_mcp extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		if (isset($new_order['order']))
-		{
-			$order = $new_order['order'];
-			$collection = $board->Forums->indexBy('forum_id');
-		}
-		else
-		{
-			$order = $new_order['cat_order'];
-			$collection = $board->Categories->indexBy('forum_id');
-		}
+		$order = $new_order['order'];
+		$collection = $board->Forums->indexBy('forum_id');
 
 		$i = 1;
+		$current_category = NULL;
 		foreach ($order as $forum_id)
 		{
-			// Only update status orders that have changed
-			if (isset($collection[$forum_id]) && $collection[$forum_id]->forum_order != $i)
+			// stale form, POST fiddling, perhaps
+			if ( ! isset($collection[$forum_id]))
 			{
-				$collection[$forum_id]->forum_order = $i;
-				$collection[$forum_id]->save();
+				continue;
 			}
 
-			$i++;
+			if ($collection[$forum_id]->forum_is_cat)
+			{
+				$current_category = $forum_id;
+			}
+
+			$collection[$forum_id]->forum_order = $i++;
+			$collection[$forum_id]->forum_parent = ($forum_id == $current_category) ? 0 : $current_category;
+			$collection[$forum_id]->save();
 		}
 
 		ee()->output->send_ajax_response(NULL);
