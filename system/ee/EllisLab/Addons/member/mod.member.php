@@ -157,7 +157,15 @@ class Member {
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 		ee()->functions->template_type = 'webpage';
-		$this->trigger = ee()->config->item('profile_trigger');
+
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
+		{
+			$this->trigger = ee()->TMPL->fetch_param('profile_trigger', ee()->config->item('profile_trigger'));
+		}
+		else
+		{
+			$this->trigger = ee()->config->item('profile_trigger');
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -190,6 +198,8 @@ class Member {
 			$this->request = str_replace("/simple", '', $this->request);
 			$this->show_headings = FALSE;
 		}
+
+		$this->request = str_replace($this->trigger.'/', '', $this->request);
 
 		if ($this->request == $this->trigger)
 		{
