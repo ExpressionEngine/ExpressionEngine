@@ -223,6 +223,15 @@ class EE_Template {
 			'site_id'       => $site_id
 		);
 
+		// Record the New Relic transaction. Use a constant so that separate instances of this
+		// class can't accidentally restart the transaction metrics
+		if ( ! defined('EECMS_NEW_RELIC_TRANS_NAME'))
+		{
+			$template = $this->templates_loaded[0];
+			define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
+			ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
+		}
+
 		$this->log_item("Template Type: ".$this->template_type);
 
 		$this->parse($this->template, $is_embed, $site_id, $is_layout);
@@ -297,7 +306,16 @@ class EE_Template {
 		$this->log_item("Parsing Site Variables");
 
 		// load site variables into the global_vars array
-		foreach (array('site_id', 'site_label', 'site_short_name') as $site_var)
+		foreach (array(
+			'site_id',
+			'site_label',
+			'site_short_name',
+			'site_name',
+			'site_url',
+			'site_description',
+			'site_index',
+			'webmaster_email'
+		) as $site_var)
 		{
 			ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
 		}
@@ -338,7 +356,7 @@ class EE_Template {
 
 			// Only iterate over the partials present in the template
 			$regex = $this->getGlobalsRegex();
-			if (preg_match_all($regex, $this->template, $result))
+			while (preg_match_all($regex, $this->template, $result))
 			{
 				foreach ($result[1] as $variable)
 				{
@@ -595,11 +613,13 @@ class EE_Template {
 		if ( ! isset($this->globals_regex))
 		{
 			$global_names = array_keys(ee()->config->_global_vars);
-
-			if (strpos(implode($global_names), '-') !== FALSE)
-			{
-				$global_names = array_map('preg_quote', $global_names);
-			}
+			$global_names = array_map(
+				function($str)
+				{
+					return preg_quote($str, '/');
+				},
+				$global_names
+			);
 
 			$this->globals_regex = '/'.LD.'('.implode('|', $global_names).')'.RD.'/';
 		}
@@ -1215,7 +1235,10 @@ class EE_Template {
 					$this->template = str_replace($chunk, 'M'.$this->loop_count.$this->marker, $this->template);
 				}
 
-				$cfile = md5($chunk); // This becomes the name of the cache file
+				// Removing the comments from the chunk, because annotations
+				// are comments and are unique thus alwasy generating a new
+				// md5 hash. So remove them when computing the hash.
+				$cfile = md5($this->remove_ee_comments($chunk)); // This becomes the name of the cache file
 
 				// Build a multi-dimensional array containing all of the tag data we've assembled
 
@@ -3398,12 +3421,7 @@ class EE_Template {
 
 		$time = microtime(TRUE)-$this->start_microtime;
 
-		$memory_usage = '';
-
-		if (function_exists('memory_get_usage'))
-		{
-			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2);
-		}
+		$memory_usage = memory_get_usage();
 
 		$last = end($this->log);
 		$time = number_format($time, 6);

@@ -116,6 +116,47 @@ feature 'Installer' do
       installed_modules.should include('filepicker')
       installed_modules.should include('search')
     end
+
+    it 'uses {base_url} and {base_path}' do
+      @page.install_form.db_hostname.set '127.0.0.1'
+      @page.install_form.db_name.set $test_config[:db_name]
+      @page.install_form.db_username.set $test_config[:db_username]
+      @page.install_form.db_password.set $test_config[:db_password]
+      @page.install_form.username.set 'admin'
+      @page.install_form.email_address.set 'hello@ellislab.com'
+      @page.install_form.password.set 'password'
+      @page.install_form.license_agreement.click
+      @page.install_form.install_submit.click
+
+      no_php_js_errors
+      @installer.disable_installer
+      @page.find('.btn').click
+      cp_session
+
+      @settings = UrlsSettings.new
+      @settings.load
+
+      @settings.base_url.value.should == $test_config[:app_host]
+      @settings.base_path.value.should_not == ''
+      @settings.site_url.value.should include '{base_url}'
+      @settings.cp_url.value.should include '{base_url}'
+      @settings.theme_folder_url.value.should include '{base_url}'
+      @settings.theme_folder_path.value.should include '{base_path}'
+
+      @settings = MessagingSettings.new
+      @settings.load
+
+      @settings.prv_msg_upload_url.value.should include '{base_url}'
+      @settings.prv_msg_upload_path.value.should include '{base_path}'
+
+      @settings = CaptchaSettings.new
+      @settings.load
+
+      @settings.captcha_url.value.should include '{base_url}'
+      @settings.captcha_path.value.should include '{base_path}'
+
+      @installer.enable_installer
+    end
   end
 
   context 'when using invalid database credentials' do

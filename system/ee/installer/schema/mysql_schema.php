@@ -391,6 +391,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_member_groups (
 			`group_id` smallint(4) unsigned NOT NULL,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
+			`menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
 			`group_title` varchar(100) NOT NULL,
 			`group_description` text NOT NULL,
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
@@ -570,6 +571,7 @@ class EE_Schema {
 			channel_description varchar(255) NULL DEFAULT NULL,
 			channel_lang varchar(12) NOT NULL,
 			total_entries mediumint(8) default '0' NOT NULL,
+			total_records mediumint(8) unsigned NOT NULL DEFAULT '0',
 			total_comments mediumint(8) default '0' NOT NULL,
 			last_entry_date int(10) unsigned default '0' NOT NULL,
 			last_comment_date int(10) unsigned default '0' NOT NULL,
@@ -1377,6 +1379,27 @@ class EE_Schema {
 			KEY `field_id` (`field_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_menu_sets` (
+  			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  			`name` varchar(50) DEFAULT NULL,
+  			PRIMARY KEY (`set_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_menu_items` (
+		  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `parent_id` int(10) NOT NULL DEFAULT '0',
+		  `set_id` int(10) DEFAULT NULL,
+		  `name` varchar(50) DEFAULT NULL,
+		  `data` varchar(255) DEFAULT NULL,
+		  `type` varchar(10) DEFAULT NULL,
+		  `sort` int(5) NOT NULL DEFAULT '0',
+		  PRIMARY KEY (`item_id`),
+		  KEY `set_id` (`set_id`)
+	  	)";
+
+		// Default menu set
+		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
+
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		//  Specialty Templates
@@ -1613,7 +1636,10 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'open', '1', '009933')";
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'closed', '2', '990000')";
 
-		include(EE_APPPATH.'config/html_buttons.php');
+		$button_config = ee()->config->loadFile('html_buttons');
+
+		$installation_defaults = $button_config['defaults'];
+		$predefined_buttons = $button_config['buttons'];
 
 		$buttoncount = 1;
 

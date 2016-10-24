@@ -268,7 +268,7 @@ $(document).ready(function () {
 	});
 
 	// Saving the collapsed state
-	$('.sub-arrow').on('click', function(e) {
+	$('div.publish form').on('click', '.sub-arrow', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 

@@ -104,6 +104,11 @@ class Builder {
 	 */
 	public function count()
 	{
+		if ($this->isFutile())
+		{
+			return 0;
+		}
+
 		return $this->datastore->countQuery($this);
 	}
 

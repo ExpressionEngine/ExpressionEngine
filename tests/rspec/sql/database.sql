@@ -331,6 +331,7 @@ CREATE TABLE `exp_channels` (
   `channel_description` varchar(255) DEFAULT NULL,
   `channel_lang` varchar(12) NOT NULL,
   `total_entries` mediumint(8) NOT NULL DEFAULT '0',
+  `total_records` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `total_comments` mediumint(8) NOT NULL DEFAULT '0',
   `last_entry_date` int(10) unsigned NOT NULL DEFAULT '0',
   `last_comment_date` int(10) unsigned NOT NULL DEFAULT '0',
@@ -751,6 +752,7 @@ CREATE TABLE `exp_member_fields` (
 CREATE TABLE `exp_member_groups` (
     `group_id` smallint(4) unsigned NOT NULL,
     `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+    `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
     `group_title` varchar(100) NOT NULL,
     `group_description` text NOT NULL,
     `is_locked` char(1) NOT NULL DEFAULT 'n',
@@ -1452,7 +1454,23 @@ CREATE TABLE `exp_upload_prefs` (
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_menu_sets` (
+  `set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_menu_items` (
+  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) NOT NULL DEFAULT '0',
+  `set_id` int(10) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `data` varchar(255) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `sort` int(5) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`),
+  KEY `set_id` (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
@@ -1590,7 +1608,7 @@ UNLOCK TABLES;
 LOCK TABLES `exp_channels` WRITE;
 ALTER TABLE `exp_channels` DISABLE KEYS;
 INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `field_group`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `url_title_prefix`, `live_look_template`) VALUES
-	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,1409242030,0,'1',1,'open',1,2,'','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','',0),
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,1409242030,0,'1',1,'open',1,2,2,'y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','',0),
 	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,1409242030,0,'2',1,'open',2,7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','',0);
 ALTER TABLE `exp_channels` ENABLE KEYS;
 UNLOCK TABLES;

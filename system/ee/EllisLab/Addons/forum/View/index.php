@@ -35,12 +35,12 @@
 				</tr>
 			</table>
 			<?php else: ?>
-				<?php
-				foreach ($categories as $category)
-				{
-					$this->embed('ee:_shared/table', $category);
-				}
-				?>
+				<?php $total = count($categories);
+					foreach ($categories as $key => $category): ?>
+					<div class="tbl-wrap <?=($key + 1 != $total) ? 'mb' : '' ?>">
+						<?=$this->embed('ee:_shared/table', $category);?>
+					</div>
+				<?php endforeach; ?>
 
 				<fieldset class="tbl-bulk-act hidden">
 					<select name="bulk_action">

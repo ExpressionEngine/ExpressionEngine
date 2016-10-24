@@ -271,15 +271,15 @@ class Login extends CP_Controller {
 		$ulen = strlen($this->input->post('username'));
 		$plen = strlen($this->input->post('password'));
 
-		$new_un = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
-		$new_pw = ($this->input->get_post('new_password') !== FALSE) ? $this->input->get_post('new_password') : '';
+		$new_un = ee('Request')->post('new_username', '');
+		$new_pw = ee('Request')->post('new_password', '');
 
 		$data = array(
+			'required_changes' => array(),
+			'focus_field'   => 'new_username',
 			'cp_page_title'	=> lang('login'),
-			'message'		=> array(
-				$message,
-				lang('access_notice')
-			),
+			'message'		=> lang('access_notice').'<br>',
+			'message_status' => 'issue',
 			'username'		=> $this->input->post('username'),
 			'new_username_required'	=> FALSE,
 			'new_username'	=> $new_un,
@@ -295,18 +295,16 @@ class Login extends CP_Controller {
 		if ($ulen < $uml)
 		{
 			$data['new_username_required'] = TRUE;
-			$data['notices']['un_len'] = sprintf(lang('un_len'), $uml);
-			$data['notices']['yun_len'] = sprintf(lang('yun_len'), $ulen);
+			$data['required_changes'][] = sprintf(lang('un_len'), $uml);
 		}
 
 		if ($plen < $pml)
 		{
 			$data['new_password_required'] = TRUE;
-			$data['notices']['pw_len'] = sprintf(lang('pw_len'), $pml);
-			$data['notices']['ypw_len'] = sprintf(lang('ypw_len'), $plen);
+			$data['required_changes'][] = sprintf(lang('pw_len'), $pml);
 		}
 
-		$this->load->view('account/update_un_pw', $data);
+		return ee('View')->make('account/update_un_pw')->render($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -325,7 +323,7 @@ class Login extends CP_Controller {
 
 		$missing = FALSE;
 
-		if ( ! isset($_POST['new_username']) AND  ! isset($_POST['new_password']))
+		if ( ! isset($_POST['new_username']) AND ! isset($_POST['new_password']))
 		{
 			return $this->_un_pw_update_form(lang('all_fields_required'));
 		}
@@ -337,6 +335,7 @@ class Login extends CP_Controller {
 			// In the event it's a string, send it to return to login
 			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
+
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
 
@@ -739,6 +738,7 @@ class Login extends CP_Controller {
 
 		$this->view->cp_page_title = lang('enter_new_password');
 		$this->view->resetcode = $resetcode;
+		$this->view->focus_field = 'password';
 
 		$this->view->render('account/reset_password');
 	}

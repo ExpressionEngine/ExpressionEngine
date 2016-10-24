@@ -459,12 +459,6 @@ $lang = array(
 
 'newline_format' => 'Formatting:',
 
-'none' => 'None',
-
-'xhtml' => 'XHTML',
-
-'auto_br' => 'Auto &lt;br /&gt;',
-
 'link' => 'Link',
 
 'email' => 'Email',

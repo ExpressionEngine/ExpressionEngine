@@ -142,7 +142,7 @@ class Date_ft extends EE_Fieldtype {
 			OR ( ! is_numeric($field_data) && ! empty($field_data)))
 		{
 			// probably had a validation error so repopulate as-is
-			$custom_date = $field_data;
+			$custom_date = isset($_POST[$date_field]) ? $_POST[$date_field] : $field_data;
 		}
 		else
 		{
@@ -236,6 +236,7 @@ class Date_ft extends EE_Fieldtype {
 			'value' => $custom_date,
 			'localize_option_name' => $date_local,
 			'localized' => $localized,
+			'date_format' => ee()->localize->get_date_format(),
 			'disabled' => $this->get_setting('field_disabled')
 		));
 	}

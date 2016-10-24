@@ -118,10 +118,46 @@ feature 'Channel Sets' do
       channel_set['category_groups'].size.should == 1
       channel_set['category_groups'][0]['name'].should == 'News Categories'
       channel_set['category_groups'][0]['sort_order'].should == 'a'
-      channel_set['category_groups'][0]['categories'].should == %w(News Bands)
+      channel_set['category_groups'][0]['categories'][0]['cat_name'].should == 'News'
+      channel_set['category_groups'][0]['categories'][0]['cat_url_title'].should == 'news'
+      channel_set['category_groups'][0]['categories'][0]['cat_description'].should == ''
+      channel_set['category_groups'][0]['categories'][0]['cat_order'].should == 2
+      channel_set['category_groups'][0]['categories'][1]['cat_name'].should == 'Bands'
+      channel_set['category_groups'][0]['categories'][1]['cat_url_title'].should == 'bands'
+      channel_set['category_groups'][0]['categories'][1]['cat_description'].should == ''
+      channel_set['category_groups'][0]['categories'][1]['cat_order'].should == 3
       channel_set['upload_destinations'].size.should == 0
 
       expected_files.sort.should == found_files.sort.map(&:name)
+    end
+
+    it 'exports all category groups for the channel' do
+      # First add a second category to the News channel
+      @channel = ChannelCreate.new
+      @channel.load_edit_for_channel(1)
+      @channel.cat_group[0].click
+      @channel.submit
+
+      @page.load
+      download_channel_set(1)
+
+      # Check to see if the file exists
+      name = @page.channel_names[0].text
+      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      File.exist?(path).should == true
+      no_php_js_errors
+
+      found_files = []
+      Zip::File.open(path) do |zipfile|
+        zipfile.each do |file|
+          found_files << file
+        end
+      end
+
+      channel_set = JSON.parse(found_files[3].get_input_stream.read)
+      channel_set['category_groups'].size.should == 2
+      channel_set['category_groups'][1]['name'].should == 'About'
+      channel_set['category_groups'][0]['name'].should == 'News Categories'
     end
 
     context 'with relationships' do
@@ -393,7 +429,7 @@ feature 'Channel Sets' do
           column['instructions'].should == compare[:instructions]
           column['required'].should == (compare[:required] ? 'y' : 'n')
           column['search'].should == (compare[:searchable] ? 'y' : 'n')
-          column['width'].should == compare[:width]
+          column['width'].should == compare[:width].to_i
 
           column['settings'].each do |key, value|
             if compare.has_key? key.to_sym then
@@ -418,6 +454,24 @@ feature 'Channel Sets' do
       $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row|
         channel_title_field_label = row['count']
         channel_title_field_label.should == 1
+      end
+    end
+
+    it 'imports a 3.3.x channel set' do
+      import_channel_set 'simple-3.3'
+
+      $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row|
+        channel_title_field_label = row['count']
+        channel_title_field_label.should == 1
+      end
+    end
+
+    it 'imports a channel set with 2 category groups' do
+      import_channel_set 'two-cat-groups'
+
+      $db.query("SELECT cat_group FROM exp_channels WHERE channel_title = 'Test'").each do |row|
+        channel_title_field_label = row['cat_group']
+        channel_title_field_label.should == '3|4'
       end
     end
 
@@ -610,7 +664,7 @@ feature 'Channel Sets' do
         check_success
 
         upload_dir_id = 0
-        $db.query("SELECT id, count(*) AS count FROM exp_upload_prefs WHERE name = 'Uploads'").each do |row|
+        $db.query("SELECT id, count(id) AS count FROM exp_upload_prefs WHERE name = 'Uploads' GROUP BY id").each do |row|
           upload_dir_id = row['id']
           new_upload_directory_count = row['count']
           new_upload_directory_count.should == 1

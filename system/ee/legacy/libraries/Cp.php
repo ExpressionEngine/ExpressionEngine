@@ -64,7 +64,7 @@ class Cp {
 		}
 
 		// Make sure all requests to iframe the CP are denied
-		ee()->output->set_header('X-Frame-Options: SameOrigin');
+		ee()->output->set_header('X-Frame-Options: SAMEORIGIN');
 	}
 
 	// --------------------------------------------------------------------

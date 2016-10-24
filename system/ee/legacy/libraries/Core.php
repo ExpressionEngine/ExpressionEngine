@@ -82,9 +82,9 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160615');
-		define('APP_VER',		'3.4.0');
-		define('APP_VER_ID',	'dp.1');
+		define('APP_BUILD',		'20160919');
+		define('APP_VER',		'3.4.3');
+		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -281,7 +281,7 @@ class EE_Core {
 			exit;
 		}
 
-		// Throttle and Blacklist Check
+		// Security Checks: Throttle, Blacklist, File Integrity, and iFraming
 		if (REQ != 'CP')
 		{
 			ee()->load->library('throttling');
@@ -292,6 +292,8 @@ class EE_Core {
 
 			ee()->load->library('file_integrity');
 			ee()->file_integrity->create_bootstrap_checksum();
+
+			$this->setFrameHeaders();
 		}
 
 		ee()->load->library('remember');
@@ -676,12 +678,6 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
-
-		// Record the New Relic transaction
-		$this->set_newrelic_transaction(function() {
-			$template = ee()->TMPL->templates_loaded[0];
-			return "{$template['group_name']}/{$template['template_name']}";
-		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -764,6 +760,34 @@ class EE_Core {
 				ee()->newrelic->set_appname();
 				ee()->newrelic->name_transaction($transaction_name);
 			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set iFrame Headers
+	 *
+	 * A security precaution to prevent iFraming of the site to protect
+	 * against clickjacking. By default we use SAMEORIGIN so that iframe
+	 * designs are still possible.
+	 *
+	 * @return	void
+	 */
+	private function setFrameHeaders()
+	{
+		$frame_options = ee()->config->item('x_frame_options');
+		$frame_options = strtoupper($frame_options);
+
+		// if not specified or invalid value, default to SAMEORIGIN
+		if ( ! in_array($frame_options, array('DENY', 'SAMEORIGIN', 'NONE')))
+		{
+			$frame_options = 'SAMEORIGIN';
+		}
+
+		if ($frame_options != 'NONE')
+		{
+			ee()->output->set_header('X-Frame-Options: '.$frame_options);
 		}
 	}
 

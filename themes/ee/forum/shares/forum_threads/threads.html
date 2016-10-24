@@ -31,6 +31,45 @@ function showHideRow(el)
         document.getElementById(el).style.display = "";
     }
 }
+
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function subscribe(el)
+{
+	var csrf_token = "{csrf_token}",
+	         parts = el.href.slice(0, -1).split('/'),
+		  topic_id = parts.pop(),
+		       url = parts.join('/');
+
+	post(url, {
+		topic_id: topic_id,
+		csrf_token: csrf_token
+	});
+
+	return false;
+}
 //-->
 </script>
 
@@ -66,7 +105,7 @@ function showHideRow(el)
 <table cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
 <tr>
 <td class="tableHeadingBG" colspan="2"><div class="tableHeading">{topic_title}</div></td>
-<td class="tableHeadingBG BGright" colspan="1" align="right"><div class="altLinks">{if logged_in}<a href="{path:subscribe}"><b>{lang:subscribe}</b></a>{/if}&nbsp;</div></td>
+<td class="tableHeadingBG BGright" colspan="1" align="right"><div class="altLinks">{if logged_in}<a href="{path:subscribe}" onclick="return subscribe(this)"><b>{lang:subscribe}</b></a>{/if}&nbsp;</div></td>
 
 </tr>
 

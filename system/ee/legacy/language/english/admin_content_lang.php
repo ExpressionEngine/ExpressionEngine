@@ -402,8 +402,6 @@ $lang = array(
 
 'closed' => 'Closed',
 
-'none' => 'None',
-
 'html_button' => 'HTML Button',
 
 'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
@@ -665,10 +663,6 @@ $lang = array(
 'textarea' => 'Textarea',
 
 'select_list' => 'Select List',
-
-'auto_br' => 'Auto &lt;br /&gt;',
-
-'xhtml' => 'XHTML',
 
 'no_field_name' => 'You must submit a field name',
 

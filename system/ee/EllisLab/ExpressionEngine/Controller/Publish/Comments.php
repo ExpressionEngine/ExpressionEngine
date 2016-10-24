@@ -85,7 +85,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
@@ -163,7 +163,7 @@ class Comments extends AbstractPublishController {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 		else
 		{
@@ -209,7 +209,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
@@ -272,7 +272,7 @@ class Comments extends AbstractPublishController {
 			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
 		);
 
-		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
+		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
@@ -281,7 +281,7 @@ class Comments extends AbstractPublishController {
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), $entry->title);
+			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 		}
 
 		$vars['can_delete'] = ee()->cp->allowed_group_any(
@@ -652,19 +652,16 @@ class Comments extends AbstractPublishController {
 
 		$comments = ee('Model')->get('Comment', $comment_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->set('status', $status)
-			->update();
-
-		$comments = ee('Model')->get('Comment', $comment_ids)
-			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$comment_names = array();
-
 		ee()->load->helper('text');
+		$comment_names = array();
 
 		foreach ($comments as $comment)
 		{
+			$comment->status = $status;
+			$comment->save();
+
 			$comment_names[] = ellipsize($comment->comment, 50);
 		}
 

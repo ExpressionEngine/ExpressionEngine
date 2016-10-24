@@ -147,7 +147,7 @@ class Fields extends Members\Members {
 		$data['new'] = ee('CP/URL')->make('members/fields/create');
 		$base_url = $data['table']['base_url'];
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
+		ee()->javascript->set_global('lang.remove_confirm', lang('custom_member_fields') . ': <b>### ' . lang('custom_member_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/members/member_field_reorder');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
@@ -188,6 +188,11 @@ class Fields extends Members\Members {
 
 		$fields = ee('Model')->get('MemberField', $field_ids)->all();
 		$field_names = $fields->pluck('field_label');
+		$field_names = array_map(function($field_name)
+		{
+			return htmlentities($field_name, ENT_QUOTES, 'UTF-8');
+		}, $field_names);
+
 		$fields->delete();
 
 		ee('CP/Alert')->makeInline('fields')

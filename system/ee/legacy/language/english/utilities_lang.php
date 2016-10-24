@@ -81,8 +81,6 @@ $lang = array(
 'btn_send_email_working' => 'Sending...',
 
 'none'		=> 'Plain Text',
-'auto_br'	=> 'Auto &lt;br /&gt;',
-'xhtml'		=> 'XHTML',
 
 'no_cached_emails' => 'No <b>Sent emails</b> found.',
 
@@ -337,6 +335,8 @@ $lang = array(
 'member_import_error' => 'Attention: Import not completed',
 
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
+
+'member_import_no_custom_fields_selected' => 'No custom fields were selected for import. Please click the checkboxes next to the fields you which to create.',
 
 /**
  * SQL Query Form

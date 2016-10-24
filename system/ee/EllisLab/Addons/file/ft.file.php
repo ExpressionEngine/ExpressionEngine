@@ -235,7 +235,6 @@ class File_ft extends EE_Fieldtype {
 		}
 
 		$this->_frontend_js();
-		$this->_frontend_css();
 
 		return ee()->file_field->field(
 			$this->field_name,
@@ -368,68 +367,6 @@ JSC;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Basic styles on the frontend
-	 *
-	 * @access	public
-	 */
-	protected function _frontend_css()
-	{
-		if (empty(ee()->session->cache['file_field']['css']))
-		{
-			ee()->session->cache['file_field']['css'] = TRUE;
-
-			$styles = <<<STYLIO
-			<style type="text/css">
-			.file_set {
-				color: #5F6C74;
-				font-family: Helvetica, Arial, sans-serif;
-				font-size: 12px;
-				position: relative;
-			}
-			.filename {
-				border: 1px solid #B6C0C2;
-				position: relative;
-				padding: 5px;
-				text-align: center;
-				float: left;
-				margin: 0 0 5px;
-			}
-			.undo_remove {
-				color: #5F6C74;
-				font-family: Helvetica, Arial, sans-serif;
-				font-size: 12px;
-				text-decoration: underline;
-				display: block;
-				padding: 0;
-				margin: 0 0 8px;
-			}
-			.filename img {
-				display: block;
-			}
-			.filename p {
-				padding: 0;
-				margin: 4px 0 0;
-			}
-			.remove_file {
-				position: absolute;
-				top: -6px;
-				left: -6px;
-				z-index: 5;
-			}
-			.clear {
-				clear: both;
-			}
-			</style>
-STYLIO;
-
-			$styles = preg_replace('/\s+/is', ' ', $styles);
-			ee()->cp->add_to_head($styles);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Prep the publish data
 	 *
 	 * @access	public
@@ -461,6 +398,12 @@ STYLIO;
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
+		// Make sure we have file_info to work with
+		if ($tagdata !== FALSE && $file_info === FALSE)
+		{
+			$tagdata = ee()->TMPL->parse_variables($tagdata, array());
+		}
+
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
@@ -473,37 +416,17 @@ STYLIO;
 			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
 		}
 
+		$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
+
 		// Make sure we have file_info to work with
-		if ($tagdata !== FALSE AND $file_info === FALSE)
+		if ($tagdata !== FALSE)
 		{
-			$tagdata = ee()->functions->prep_conditionals($tagdata, array());
+			return ee()->TMPL->parse_variables($tagdata, array($file_info));
 		}
-		else if ($tagdata !== FALSE)
-		{
-			$tagdata = ee()->functions->prep_conditionals($tagdata, $file_info);
 
-			$date_vars = array(
-				'upload_date' => $file_info['upload_date'],
-				'modified_date' => $file_info['modified_date']
-			);
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $date_vars);
-
-			// ---------------
-			// Parse the rest!
-			// ---------------
-			$tagdata = ee()->functions->var_swap($tagdata, $file_info);
-
-			// More an example than anything else - not particularly useful in this context
-			if (isset($params['backspace']))
-			{
-				$tagdata = substr($tagdata, 0, - $params['backspace']);
-			}
-
-			return $tagdata;
-		}
-		else if ( ! empty($file_info['path'])
-			AND ! empty($file_info['filename'])
-			AND $file_info['extension'] !== FALSE)
+		if ( ! empty($file_info['path'])
+			&& ! empty($file_info['filename'])
+			&& $file_info['extension'] !== FALSE)
 		{
 			$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
 

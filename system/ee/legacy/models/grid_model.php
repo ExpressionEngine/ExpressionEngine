@@ -306,6 +306,41 @@ class Grid_model extends CI_Model {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Typically used when a fieldtype is uninstalled, removes all columns of
+	 * a certain fieldtype across all Grid fields and content types
+	 *
+	 * @param	string 	$field_type	Fieldtype short name
+	 */
+	public function delete_columns_of_type($field_type)
+	{
+		$grid_cols = ee()->db->where('col_type', $field_type)
+			->get('grid_columns')
+			->result_array();
+
+		$cols_to_fieldtypes = array();
+		$fields_to_columns = array();
+		$fields_to_contenttypes = array();
+		foreach ($grid_cols as $column)
+		{
+			$cols_to_fieldtypes[$column['col_id']] = $column['col_type'];
+			$fields_to_columns[$column['field_id']][] = $column['col_id'];
+			$fields_to_contenttypes[$column['field_id']] = $column['content_type'];
+		}
+
+		foreach ($fields_to_columns as $field_id => $col_ids)
+		{
+			$this->delete_columns(
+				$col_ids,
+				$cols_to_fieldtypes,
+				$field_id,
+				$fields_to_contenttypes[$field_id]
+			);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Returns the row data for a single entry ID and field ID
 	 *
 	 * @param	int 	Entry ID

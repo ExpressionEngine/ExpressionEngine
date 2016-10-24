@@ -5,6 +5,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
@@ -13,6 +14,7 @@ use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
@@ -37,6 +39,11 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'Category' => function($ee)
+		{
+			return new Category\Factory;
+		},
 
 		'CP/CustomMenu' => function($ee)
 		{
@@ -63,6 +70,7 @@ return array(
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
+			ee()->lang->load('content');
 			$grid = new Library\CP\GridInput(
 				$config,
 				ee()->cp,
@@ -119,6 +127,11 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
+		'Format' => function($ee)
+		{
+			return new Formatter\FormatterFactory(ee()->lang);
+		},
+
 		'Curl' => function($ee)
 		{
 			return new Curl\RequestFactory();
@@ -159,7 +172,7 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
 		},
 
 		'Permission' => function($ee)
@@ -369,6 +382,10 @@ return array(
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
+
+			// ..\Menu
+			'MenuSet' => 'Model\Menu\MenuSet',
+			'MenuItem' => 'Model\Menu\MenuItem',
 
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',

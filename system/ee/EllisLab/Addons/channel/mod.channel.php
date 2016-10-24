@@ -836,7 +836,6 @@ class Channel {
 
 					if ($query->num_rows() > 0)
 					{
-						$valid = 'y';
 						$valid_cats = explode('|', $query->row('cat_group') );
 
 						foreach($query->result_array() as $row)
@@ -854,18 +853,10 @@ class Channel {
 
 							if (count($valid_cats) == 0)
 							{
-								$valid = 'n';
-								break;
+								return '';
 							}
 						}
-					}
-					else
-					{
-						$valid = 'n';
-					}
 
-					if ($valid == 'y')
-					{
 						// the category URL title should be the first segment left at this point in $qstring,
 						// but because prior to this feature being added, category names were used in URLs,
 						// and '/' is a valid character for category names.  If they have not updated their
@@ -898,6 +889,10 @@ class Channel {
 							{
 								$qstring = 'C'.$result->row('cat_id') ;
 								$cat_id = $result->row('cat_id');
+							}
+							else
+							{
+								return '';
 							}
 						}
 					}
@@ -4683,7 +4678,7 @@ class Channel {
 			'entry_id'						=> $query->row('entry_id'),
 			'id_path'						=> array($query->row('entry_id'), array('path_variable' => TRUE)),
 			'path'							=> array($query->row('url_title'), array('path_variable' => TRUE)),
-			'title'							=> $title,
+			'title'							=> ee()->typography->formatTitle($title),
 			'url_title'						=> $query->row('url_title'),
 			'channel_short_name'			=> $query->row('channel_name'),
 			'channel'						=> $query->row('channel_title'),

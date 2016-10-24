@@ -122,6 +122,7 @@ class File_field {
 		// Note- the count is at least one because first select option is Directory
 		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 		$vars['undo_link'] = '<a href="#" class="undo_remove js_hide">'.lang('file_undo_remove').'</a>';
+		$vars['remove_file_link'] = '<a href="#" class="remove_file" title="'.lang('remove_file').'">'.lang('remove_file').'</a>';
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
@@ -619,6 +620,8 @@ class File_field {
 
 		$upload_dir = $upload_dir[$file['upload_location_id']];
 
+		// save the file name for use in the file system as well as the URL
+		$fs_file_name = $file['file_name'];
 		$file['file_name'] = rawurlencode($file['file_name']);
 
 		// Set additional data based on what we've gathered
@@ -643,6 +646,12 @@ class File_field {
 		$file['image_properties'] = $upload_dir['properties'];
 		$file['file_properties'] = $upload_dir['file_properties'];
 
+		$file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
+		$file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(FALSE);
+
+		$file['directory_id'] = $file['upload_location_id'];
+		$file['directory_title'] = $upload_dir['name'];
+
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
 		if ( ! empty($manipulations))
@@ -652,6 +661,14 @@ class File_field {
 				$file['url:'.$manipulation->short_name] = $file['path'].'_'.$manipulation->short_name.'/'.$file['file_name'];
 
 				$dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
+
+				$manip_path = $upload_dir['server_path'].'_'.$manipulation->short_name.'/'.$fs_file_name;
+
+				$size = file_exists($manip_path) ? filesize($manip_path) : 0;
+
+				$file['file_size:'.$manipulation->short_name] = $size;
+				$file['file_size:'.$manipulation->short_name.':human'] = (string) ee('Format')->make('Number', $size)->bytes();
+				$file['file_size:'.$manipulation->short_name.':human_long'] = (string) ee('Format')->make('Number', $size)->bytes(FALSE);
 
 				if ($dimensions)
 				{
@@ -815,7 +832,6 @@ class File_field {
 		if ( ! isset($this->_manipulations[$dir_id]))
 		{
 			$this->_manipulations[$dir_id] = ee('Model')->get('FileDimension')
-			->filter('site_id', ee()->config->item('site_id'))
 			->filter('upload_location_id', $dir_id)
 			->all();
 		}

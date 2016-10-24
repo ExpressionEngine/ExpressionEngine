@@ -176,10 +176,14 @@ class Channel_form_lib
 		}
 
 		// Get the entry data, if an entry was specified
-		$this->fetch_entry(
-			ee()->TMPL->fetch_param('entry_id'),
-			ee()->TMPL->fetch_param('url_title')
-		);
+		// the entry object will already exist if this is a submission error
+		if ( ! is_object($this->entry))
+		{
+			$this->fetch_entry(
+				ee()->TMPL->fetch_param('entry_id'),
+				ee()->TMPL->fetch_param('url_title')
+			);
+		}
 
 		$this->entry_match_check(array(
 			'entry_id' => ee()->TMPL->fetch_param('entry_id'),
@@ -435,8 +439,8 @@ class Channel_form_lib
 			}
 		}
 
-		//edit form
-		if ($this->edit)
+		//edit form or post-error submission
+		if ($this->edit OR is_object($this->entry))
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -518,7 +522,17 @@ class Channel_form_lib
 
 					if (in_array($key, $this->date_fields) || $this->get_field_type($name) == 'date')
 					{
-						$this->parse_variables[$key] = ($this->entry($name)) ? ee()->localize->human_time($this->entry($name)) : '';
+						if ($this->entry($name))
+						{
+							// most likely a failed submission, and $this->entry->getProperty() will not
+							// return the posted string value
+							$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							$this->parse_variables[$key] = ee()->localize->human_time($date);
+						}
+						else
+						{
+							$this->parse_variables[$key] = '';
+						}
 					}
 					elseif (in_array($key, $this->checkboxes))
 					{
@@ -1260,7 +1274,6 @@ GRID_FALLBACK;
 				$conditional_errors['error:' . $error['field']] = $error['error'];
 			}
 		}
-
 
 		return $conditional_errors;
 	}
@@ -2114,11 +2127,7 @@ GRID_FALLBACK;
 	 */
 	public function fetch_channel($channel_id, $channel_name = FALSE)
 	{
-		//exit if already loaded - TODO when does this happen? overly defensive
-		if (isset($this->channel))
-		{
-			return;
-		}
+		//If two forms are on the same template, $this->channel needs to be redefined
 
 		$query = ee('Model')->get('Channel')
 			->with('ChannelFormSettings');
@@ -2210,12 +2219,15 @@ GRID_FALLBACK;
 			$this->entry->status = $this->channel->deft_status;
 			$this->entry->author_id = ee()->session->userdata('member_id');
 
-			if (isset($this->channel->deft_category))
+			if ( ! empty($this->channel->deft_category))
 			{
 				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+
 				if ($cat)
 				{
-					$this->entry->Categories[] = $cat;
+					// set directly so other categories don't get lazy loaded
+					// along with our default
+					$this->entry->Categories = $cat;
 				}
 			}
 
@@ -2223,7 +2235,12 @@ GRID_FALLBACK;
 			if ($this->channel->ChannelFormSettings)
 			{
 				$this->entry->status = ($this->channel->ChannelFormSettings->default_status) ?: $this->channel->deft_status;
-				$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+
+				// only override if user is not logged in, and guest entries are allowed
+				if ($this->entry->author_id == 0 && $this->channel->ChannelFormSettings->allow_guest_posts == 'y')
+				{
+					$this->entry->author_id = $this->channel->ChannelFormSettings->default_author;
+				}
 			}
 
 			return;
@@ -2600,6 +2617,8 @@ GRID_FALLBACK;
 		foreach ($this->all_params as $name)
 		{
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
+			// none of these fields are allowed by direct POST
+			unset($_POST[$name]);
 		}
 
 		// Should be y or FALSE for allow_comments
@@ -3342,7 +3361,7 @@ GRID_FALLBACK;
 		$word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
 
 		// Foreign Character Conversion Javascript
-		include(APPPATH.'config/foreign_chars.php');
+		$foreign_characters = ee()->config->loadFile('foreign_chars');
 
 		/* -------------------------------------
 		/*  'foreign_character_conversion_array' hook.

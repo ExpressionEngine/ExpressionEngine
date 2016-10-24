@@ -90,14 +90,17 @@ class FilePicker {
 	{
 		$table = ee('CP/Table', array(
 			'limit'    => $limit,
-			'class'    => 'file-list',
+			'class'    => 'file-list tbl-fixed',
 			'autosort' => FALSE
 		));
 
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
-					'encode' => FALSE
+					'encode' => FALSE,
+					'attrs' => array(
+						'width' => '40%'
+					),
 				),
 				'file_type',
 				'date_added',

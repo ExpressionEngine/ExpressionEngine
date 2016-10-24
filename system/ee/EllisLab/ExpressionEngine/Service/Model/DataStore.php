@@ -44,6 +44,7 @@ class DataStore {
 	protected $enabled_prefixes;
 	protected $metadata = array();
 	protected $relations = array();
+	protected $all_relations = array();
 
 	/**
 	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
@@ -72,10 +73,12 @@ class DataStore {
 	 */
 	public function make($name, Facade $facade, array $data = array())
 	{
-		if ($name instanceOf Model)
+		$is_object = ($name instanceOf Model);
+
+		if ($is_object)
 		{
-			$object = $name;
-			$name = $object->getName();
+			$model = $name;
+			$name = $model->getName();
 		}
 		else
 		{
@@ -94,7 +97,11 @@ class DataStore {
 			$model->set($data);
 		}
 
-		$model->setName($name);
+		if ( ! $is_object)
+		{
+			$model->setName($name);
+		}
+
 		$model->setFacade($facade);
 
 		$this->initializeAssociationsOn($model);
@@ -177,6 +184,11 @@ class DataStore {
 	 */
 	public function getAllRelations($model_name)
 	{
+		if (isset($this->all_relations[$model_name]))
+		{
+			return $this->all_relations[$model_name];
+		}
+
 		$from_reader = $this->getMetaDataReader($model_name);
 		$relationships = $from_reader->getRelationships();
 
@@ -213,7 +225,7 @@ class DataStore {
 			}
 		}
 
-		return $relations;
+		return $this->all_relations[$model_name] = $relations;
 	}
 
 	protected function modelIsEnabled($model_name)

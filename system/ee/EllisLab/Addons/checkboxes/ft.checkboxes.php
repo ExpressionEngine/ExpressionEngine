@@ -70,7 +70,6 @@ class Checkboxes_ft extends EE_Fieldtype {
 				$selected = array($selected);
 			}
 
-			$selected = form_prep($selected);
 			$unknown = array_diff($selected, array_keys($field_options));
 
 			if (count($unknown) > 0)

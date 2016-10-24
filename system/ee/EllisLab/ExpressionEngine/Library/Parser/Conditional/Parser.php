@@ -55,6 +55,8 @@ class Parser extends AbstractParser {
 
 	protected $last_conditional_annotation;
 
+	private $ignore_whitespace = FALSE;
+
 	public function parse()
 	{
 		$this->openBuffer();
@@ -68,7 +70,9 @@ class Parser extends AbstractParser {
 
 		$this->expect('EOS');
 
-		return $this->closeBuffer();
+		$out = $this->closeBuffer(FALSE);
+
+		return preg_replace('/^\n?(.*?)\n?$/is', '$1', $out);
 	}
 
 	/**
@@ -215,6 +219,7 @@ class Parser extends AbstractParser {
 	protected function skipConditionalBody()
 	{
 		$conditional_depth = 0;
+		$this->ignore_whitespace = TRUE;
 
 		do
 		{
@@ -252,6 +257,8 @@ class Parser extends AbstractParser {
 			$this->next(FALSE);
 		}
 		while ($this->valid());
+
+		$this->ignore_whitespace = FALSE;
 	}
 
 	/**
@@ -465,7 +472,7 @@ class Parser extends AbstractParser {
 	 */
 	protected function whitespace()
 	{
-		if (substr($this->output, -1) != ' ')
+		if ( ! $this->ignore_whitespace && substr($this->output, -1) != ' ')
 		{
 			$this->output(' ');
 		}
@@ -483,11 +490,11 @@ class Parser extends AbstractParser {
 	/**
 	 * Close and flush the current output buffer
 	 */
-	protected function closeBuffer()
+	protected function closeBuffer($trim = TRUE)
 	{
 		$out = array_pop($this->output_buffers);
 		$this->initBuffer();
-		return trim($out);
+		return $trim ? trim($out) : $out;
 	}
 
 	/**

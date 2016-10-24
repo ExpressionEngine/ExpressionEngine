@@ -46,7 +46,6 @@ feature 'Debug Extensions' do
 
   it 'can navigate to a manual page' do
     @page.find('ul.toolbar li.manual a').click
-    no_php_js_errors
   end
 
 end

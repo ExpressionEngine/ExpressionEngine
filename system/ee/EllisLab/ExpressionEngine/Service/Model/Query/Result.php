@@ -40,6 +40,7 @@ class Result {
 	protected $relations = array();
 
 	protected $related_ids = array();
+	private $primary_keys = array();
 
 	public function __construct(Builder $builder, $db_result, $aliases, $relations)
 	{
@@ -68,6 +69,7 @@ class Result {
 			return new Collection;
 		}
 
+
 		$this->collectColumnsByAliasPrefix($this->db_result[0]);
 		$this->initializeResultArray();
 
@@ -92,17 +94,39 @@ class Result {
 		return new Collection($this->objects[$root]);
 	}
 
+
 	/**
-	 *
+	 * Take a single database row and turn it into one or more model objects.
 	 */
 	protected function parseRow($row)
 	{
-		$by_row = array();
+		// track ids in this row [alias => id, alias2 => id2]
+		// we use this to match relationships later
+		$row_object_ids = array();
 
+		// run through the aliases in the query
 		foreach ($this->columns as $alias => $columns)
 		{
 			$model_data = array();
 
+			// if we know the primary key for this alias, look up the value
+			// to see if we've already processed it. This happens when we have
+			// joins that pull in a duplicate data (e.g. Templates with TemplateGroup).
+			if (isset($this->primary_keys[$alias]))
+			{
+				$pkey = $this->primary_keys[$alias];
+				$value = $row[$pkey];
+
+				if (isset($this->objects[$alias][$value]))
+				{
+					$object = $this->objects[$alias][$value];
+					$row_object_ids[$alias] = $object->getId();
+
+					continue;
+				}
+			}
+
+			// pull out unprefixed properties for this alias
 			foreach ($columns as $property)
 			{
 				if ( ! array_key_exists("{$alias}__{$property}", $row))
@@ -125,18 +149,27 @@ class Result {
 
 			$name = $this->aliases[$alias];
 
+			// spin up the object
 			$object = $this->facade->make($name);
 			$object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
 			$object->fill($model_data);
 
+			// store for results and reuse
 			$this->objects[$alias][$object->getId()] = $object;
 
-			$by_row[$alias] = $object->getId();
+			// on the first pass, memoize primary key names
+			if ( ! isset($this->primary_keys[$alias]))
+			{
+				$this->primary_keys[$alias] = $alias.'__'.$object->getPrimaryKey();
+			}
+
+			$row_object_ids[$alias] = $object->getId();
 		}
 
-		foreach ($by_row as $alias => $id)
+		// connect ids
+		foreach ($row_object_ids as $alias => $id)
 		{
-			$related = $by_row;
+			$related = $row_object_ids;
 			unset($related[$alias]);
 
 			if ( ! isset($this->related_ids[$alias]))

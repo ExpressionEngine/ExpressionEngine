@@ -39,6 +39,14 @@ class Link {
 	public function __construct($title, $url)
 	{
 		$this->title = htmlspecialchars($title);
+
+		$base = ee('CP/URL')->make('')->compile();
+
+		if (strpos($url, '://') === FALSE && strpos($url, $base) !== 0)
+		{
+			$url = ee('CP/URL')->make($url)->compile();
+		}
+
 		$this->url = $url;
 	}
 

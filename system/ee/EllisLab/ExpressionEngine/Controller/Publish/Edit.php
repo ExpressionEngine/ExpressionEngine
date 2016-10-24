@@ -79,7 +79,7 @@ class Edit extends AbstractPublishController {
 		}
 
 		$vars['filters'] = $filters->render($base_url);
-		$vars['search_value'] = ee()->input->get_post('search');
+		$vars['search_value'] = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
@@ -132,9 +132,13 @@ class Edit extends AbstractPublishController {
 			$channel = ee('Model')->get('Channel', $channel_id)->first();
 			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
-			if ($channel->max_entries !== '0' && $count >= $channel->max_entries)
+			// Have we reached the max entries limit for this channel?
+			if ($channel->max_entries != 0 && $count >= $channel->max_entries)
 			{
-				$desc_key = ($channel->max_entries === '1')
+				// Don't show create button
+				$vars['create_button'] = '';
+
+				$desc_key = ($channel->max_entries == 1)
 					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
 				ee('CP/Alert')->makeInline()
 					->asWarning()
@@ -402,6 +406,11 @@ class Edit extends AbstractPublishController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! in_array($entry->channel_id, $this->assigned_channel_ids))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		// -------------------------------------------
 		// 'publish_form_entry_data' hook.
 		//  - Modify entry's data
@@ -413,7 +422,7 @@ class Edit extends AbstractPublishController {
 			}
 		// -------------------------------------------
 
-		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		$form_attributes = array(
 			'class' => 'settings ajax-validate',
@@ -493,7 +502,7 @@ class Edit extends AbstractPublishController {
 
 		if ($entry->Channel->CategoryGroups)
 		{
-			$this->addCategoryModals();
+			ee('Category')->addCategoryModals();
 		}
 
 		ee()->cp->render('publish/entry', $vars);

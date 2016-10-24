@@ -131,7 +131,7 @@ class UploadDestination extends Model {
 	}
 
 	/**
-	 * Returns the propety value using the overrides if present
+	 * Returns the property value using the overrides if present
 	 *
 	 * @param str $name The name of the property to fetch
 	 * @return mixed The value of the property
@@ -139,18 +139,7 @@ class UploadDestination extends Model {
 	public function __get($name)
 	{
 		$value = parent::__get($name);
-
-		if ($this->hasOverride($name))
-		{
-			$value = $this->_property_overrides[$this->id][$name];
-		}
-
-		if ($name == 'url' OR $name == 'server_path')
-		{
-			$value = $this->parseConfigVars((string) $value);
-		}
-
-		return $value;
+		return $this->fetchOverride($name, $value);
 	}
 
 	/**
@@ -174,6 +163,37 @@ class UploadDestination extends Model {
 	}
 
 	/**
+	 * Fetches the override, if there is one, and processes the config vars
+	 * if needed
+	 *
+	 * @param str  $name        The name of the property to fetch
+	 * @param str  $default     Default value if value not present
+	 * @param bool $config_only Only apply config override without config variables parsing
+	 * @return mixed The value of the property or NULL if there was no override
+	 */
+	private function fetchOverride($name, $default = NULL, $config_only = FALSE)
+	{
+		$value = $default;
+
+		if ($this->hasOverride($name))
+		{
+			$value = $this->_property_overrides[$this->id][$name];
+		}
+
+		if ($config_only)
+		{
+			return $value;
+		}
+
+		if ($name == 'url' OR $name == 'server_path')
+		{
+			$value = $this->parseConfigVars((string) $value);
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Returns the propety value using the overrides if present
 	 *
 	 * @param str $name The name of the property to fetch
@@ -182,19 +202,26 @@ class UploadDestination extends Model {
 	public function getProperty($name)
 	{
 		$value = parent::getProperty($name);
+		return $this->fetchOverride($name, $value);
+	}
 
-		if ($this->hasOverride($name))
-		{
-			$value = $this->_property_overrides[$this->id][$name];
-		}
-
-		return $value;
+	/**
+	 * Returns the propety value using the overrides if present, but WITHOUT
+	 * config variable parsing
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @return mixed The value of the property
+	 */
+	public function getConfigOverriddenProperty($name)
+	{
+		$value = parent::getProperty($name);
+		return $this->fetchOverride($name, $value, TRUE);
 	}
 
 	/**
 	 * Check if have an override for this directory and that it's an
 	 * array (as it should be)
-
+	 *
 	 * @param str $name The name of the property to check
 	 * @return bool Property is overridden?
 	 */
@@ -263,7 +290,7 @@ class UploadDestination extends Model {
 	public function getFilesystem()
 	{
 		$fs = ee('File')->getPath($this->getProperty('server_path'));
-		$fs->setUrl($this->getRawProperty('url'));
+		$fs->setUrl($this->getProperty('url'));
 
 		return $fs;
 	}

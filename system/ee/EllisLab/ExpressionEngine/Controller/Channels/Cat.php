@@ -639,8 +639,9 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		//  Check discrete privileges
-		if (AJAX_REQUEST)
+		//  Check discrete privileges when editig (we have no discrete create
+		//  permissions)
+		if (AJAX_REQUEST && $editing)
 		{
 			$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
 
@@ -667,7 +668,27 @@ class Cat extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
-			ee()->javascript->set_global('publish.word_separator', ee()->config->item('word_separator') != "dash" ? '_' : '-');
+
+			//	Create Foreign Character Conversion JS
+			$foreign_characters = ee()->config->loadFile('foreign_chars');
+
+			/* -------------------------------------
+			/*  'foreign_character_conversion_array' hook.
+			/*  - Allows you to use your own foreign character conversion array
+			/*  - Added 1.6.0
+			* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+			*/
+				if (ee()->extensions->active_hook('foreign_character_conversion_array') === TRUE)
+				{
+					$foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
+				}
+			/*
+			/* -------------------------------------*/
+
+			ee()->javascript->set_global(array(
+				'publish.foreignChars'   => $foreign_characters,
+				'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-'
+			));
 
 			ee()->javascript->output('
 				$("input[name=cat_name]").bind("keyup keydown", function() {
@@ -773,27 +794,25 @@ class Cat extends AbstractChannelsController {
 				'parent_id' => array(
 					'type' => 'select',
 					'value' => $category->parent_id,
-					'choices' => $parent_id_options
+					'choices' => $parent_id_options,
+					'encode' => FALSE
 				)
 			)
 		);
 
-		if ( ! AJAX_REQUEST)
+		foreach ($category->getDisplay()->getFields() as $field)
 		{
-			foreach ($category->getDisplay()->getFields() as $field)
-			{
-				$vars['sections']['custom_fields'][] = array(
-					'title' => $field->getLabel(),
-					'desc' => '',
-					'fields' => array(
-						$field->getName() => array(
-							'type' => 'html',
-							'content' => $field->getForm(),
-							'required' => $field->isRequired(),
-						)
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
 					)
-				);
-			}
+				)
+			);
 		}
 
 		ee()->view->ajax_validate = TRUE;
@@ -894,33 +913,21 @@ class Cat extends AbstractChannelsController {
 	 */
 	private function categoryGroupPublishField($group_id, $editing = FALSE)
 	{
+		$group = ee('Model')->get('CategoryGroup', $group_id)->first();
+
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->Categories = NULL;
+
 		// Initialize a new category group field so we can return its publish form
-		$category_group_field = array(
-			'field_id'				=> 'categories',
-			'group_id'				=> $group_id,
-			'field_label'			=> lang('categories'),
-			'field_required'		=> 'n',
-			'field_show_fmt'		=> 'n',
-			'field_instructions'	=> lang('categories_desc'),
-			'field_text_direction'	=> 'ltr',
-			'field_type'			=> 'checkboxes',
-			'string_override'		=> '',
-			'field_list_items'      => '',
-			'field_maxl'			=> 100,
-			'editable'				=> ee()->cp->allowed_group('can_edit_categories'),
-			'editing'				=> $editing,
-			'deletable'				=> ee()->cp->allowed_group('can_delete_categories'),
-			'manage_toggle_label'	=> lang('manage_categories'),
-			'content_item_label'	=> lang('category')
-		);
+		$category_group_field = $group->getFieldMetadata();
+		$category_group_field['editing'] = $editing;
+		$category_group_field['categorized_object'] = $entry;
 
 		$field_id = 'categories[cat_group_id_'.$group_id.']';
 		$field = new FieldFacade($field_id, $category_group_field);
 		$field->setName($field_id);
 
-		$entry = ee('Model')->make('ChannelEntry');
-		$entry->Categories = NULL;
-		$entry->populateCategories($field);
+		$group->populateCategories($field);
 
 		// Reset the categories they already have selected
 		$selected_cats = ee('Model')->get('Category')->filter('cat_id', 'IN', ee()->input->post('categories'))->all();
@@ -1201,6 +1208,7 @@ class Cat extends AbstractChannelsController {
 
 			$cat_field = ee('Model')->make('CategoryField');
 			$cat_field->setCategoryGroup($cat_group);
+			$cat_field->site_id = ee()->config->item('site_id');
 			$cat_field->field_type = 'text';
 
 			$alert_key = 'created';

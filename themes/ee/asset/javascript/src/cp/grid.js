@@ -40,6 +40,9 @@ var Grid = window.Grid = {
  * @param	{string}	field		Selector of table to instantiate as a Grid
  */
 Grid.Publish = function(field, settings) {
+	if (field === null || field === undefined) {
+		return;
+	}
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
@@ -146,7 +149,7 @@ Grid.Publish.prototype = {
 		}
 
 		if (this.settings.grid_min_rows !== '') {
-			var deleteButtons = this.root.find('.toolbar .remove');
+			var deleteButtons = this.root.find('td:last-child .toolbar .remove');
 
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
@@ -259,6 +262,13 @@ Grid.Publish.prototype = {
 			// Show our empty field message if we have no rows left
 			if (that._getRows().size() == 0) {
 				that.emptyField.show();
+			}
+
+			// Mark entire Grid field as valid if all rows with invalid cells are cleared
+			if ($('td.invalid', that.root).size() == 0 &&
+				EE.cp &&
+				EE.cp.formValidation !== undefined) {
+				EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankRow).eq(0));
 			}
 		});
 	},
@@ -574,10 +584,12 @@ Grid.Settings.prototype = {
 	 * only one column
 	 */
 	_toggleDeleteButtons: function() {
-		var colCount = this.root.find('.grid-item').size(),
-			deleteButtons = this.root.find('.grid-tools li.remove');
+		var multiCol = this.root.find('.grid-item').size() > 1,
+			deleteButtons = this.root.find('.grid-tools li.remove'),
+			addButton = this.root.find('.grid-tools li.add');
 
-		deleteButtons.toggle(colCount > 1);
+		deleteButtons.toggle(multiCol);
+		addButton.toggleClass('last', ! multiCol);
 	},
 
 	/**
@@ -747,7 +759,9 @@ Grid.Settings.prototype = {
 			// Handle checkboxes
 			else if ($(this).attr('type') == 'checkbox') {
 				// .prop('checked', true) doesn't work, must set the attribute
-				new_input.attr('checked', $(this).attr('checked'));
+				if ($(this).prop('checked')) {
+					new_input.attr('checked', 'checked');
+				}
 			}
 			// Handle radio buttons
 			else if ($(this).attr('type') == 'radio') {

@@ -232,91 +232,7 @@ class Msm extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				foreach(array('system', 'channel', 'template', 'member') as $type)
-				{
-					$prefs = 'site_' . $type . '_preferences';
-
-					foreach(ee()->config->divination($type) as $value)
-					{
-						$site->$prefs->$value = ee()->config->item($value);
-					}
-				}
-
-				$site->site_template_preferences->save_tmpl_files = 'n';
-				$site->site_template_preferences->tmpl_file_basepath = '';
-
 				$site->save();
-
-				// Create new site-specific stats by cloning site 1
-				$data = ee('Model')->get('Stats')
-					->filter('site_id', 1)
-					->first()
-					->getValues();
-
-				unset($data['stat_id']);
-				$data['site_id'] = $site->site_id;
-				$data['last_entry_date'] = 0;
-				$data['last_cache_clear'] = 0;
-
-				ee('Model')->make('Stats', $data)->save();
-
-				// Create new site-specific HTML buttons
-				$buttons = ee('Model')->get('HTMLButton')
-					->filter('site_id', 1)
-					->filter('member_id', 1)
-					->all();
-
-				foreach($buttons as $button)
-				{
-					$data = $button->getValues();
-					unset($data['id']);
-					$data['site_id'] = $site->site_id;
-
-					ee('Model')->make('HTMLButton', $data)->save();
-				}
-
-				// Create new site-specific specialty templates
-				$templates = ee('Model')->get('SpecialtyTemplate')
-					->filter('site_id', 1)
-					->all();
-
-				foreach($templates as $template)
-				{
-					$data = $template->getValues();
-					unset($data['template_id']);
-					$data['site_id'] = $site->site_id;
-
-					ee('Model')->make('SpecialtyTemplate', $data)->save();
-				}
-
-				// Create new site-specific member groups
-				// Not working yet -sb
-				// $groups = ee('Model')->get('MemberGroup')
-				// 	->filter('site_id', 1)
-				// 	->all();
-				//
-				// foreach($groups as $group)
-				// {
-				// 	$data = $group->getValues();
-				// 	$data['site_id'] = $site->site_id;
-				//
-				// 	ee('Model')->make('MemberGroup', $data)->save();
-				// }
-
-				// @TODO remove this once the above works
-				$query = ee()->db->get_where(
-					'member_groups',
-					array('site_id' => ee()->config->item('site_id'))
-				);
-
-				foreach ($query->result_array() as $row)
-				{
-					$data = $row;
-					$data['site_id'] = $site->site_id;
-
-					ee()->db->insert('member_groups', $data);
-				}
-
 
 				ee()->session->set_flashdata('site_id', $site->site_id);
 
@@ -471,7 +387,7 @@ class Msm extends CP_Controller {
 			'fields' => array(
 				'site_label' => array(
 					'type' => 'text',
-					'value' => $site->site_label,
+					'value' => $site->site_label ?: '',
 					'required' => TRUE,
 					'disabled' => $disabled
 				)
@@ -485,7 +401,7 @@ class Msm extends CP_Controller {
 			'fields' => array(
 				'site_name' => array(
 					'type' => 'text',
-					'value' => $site->site_name,
+					'value' => $site->site_name ?: '',
 					'required' => TRUE,
 					'disabled' => $disabled
 				)

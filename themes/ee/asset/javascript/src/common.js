@@ -270,7 +270,7 @@ $(document).ready(function(){
 	// ====================
 
 		// hide overlay and any modals, so that fadeIn works right
-		$('.overlay, .modal-wrap').hide();
+		$('.overlay, .modal-wrap, .modal-form-wrap').hide();
 
 		// prevent modals from popping when disabled
 		$('body').on('click','.disable',function(){
@@ -279,7 +279,7 @@ $(document).ready(function(){
 			return false;
 		});
 
-		$('body').on('modal:open', '.modal-wrap', function(e) {
+		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap', function(e) {
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
@@ -294,24 +294,30 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			setTimeout(function() {
-				$(document).scrollTop(0);
-			}, 100);
+			if ( ! $(this).is('.modal-form-wrap'))
+			{
+				setTimeout(function() {
+					$(document).scrollTop(0);
+				}, 100);
+			}
 
 			$(document).one('keydown', function(e) {
 				if (e.keyCode === 27) {
-					$('.modal-wrap').trigger('modal:close');
+					$('.modal-wrap, .modal-form-wrap').trigger('modal:close');
 				}
 			});
 		});
 
-		$('body').on('modal:close', '.modal-wrap', function(e) {
+		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap', function(e) {
 			// fade out the overlay
 			$('.overlay').fadeOut('slow');
 			// fade out the modal
-			$('.modal-wrap').fadeOut('fast');
+			$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-			$(document).scrollTop($(this).data('scroll'));
+			if ( ! $(this).is('.modal-form-wrap'))
+			{
+				$(document).scrollTop($(this).data('scroll'));
+			}
 		});
 
 		// listen for clicks to elements with a class of m-link
@@ -327,14 +333,14 @@ $(document).ready(function(){
 
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close', function(e) {
-			$(this).closest('.modal-wrap').trigger('modal:close');
+			$(this).closest('.modal-wrap, .modal-form-wrap').trigger('modal:close');
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
 		});
 
 		$('body').on('click', '.overlay', function() {
-			$('.modal-wrap').trigger('modal:close');
+			$('.modal-wrap, .modal-form-wrap').trigger('modal:close');
 		});
 
 	// ==================================
@@ -427,7 +433,7 @@ $(document).ready(function(){
 	// =======================
 
 		// listen for clicks on .sub-arrows
-		$('.setting-txt .sub-arrow').on('click',function(){
+		$('div.publish form').on('click', '.setting-txt .sub-arrow', function(e) {
 			// toggle the .setting-field and .setting-text
 			$(this).parents('.setting-txt').siblings('.setting-field').toggle();
 			// toggle the instructions

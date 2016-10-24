@@ -3284,10 +3284,10 @@ $.fn.CommentEditor = function(options) {
 		var id = this.id.replace('comment_', ''),
 		parent = $(this);
 
-		parent.find(OPT.showEditor).click(function() { showEditor(id); return false; });
-		parent.find(OPT.hideEditor).click(function() { hideEditor(id); return false; });
-		parent.find(OPT.saveComment).click(function() { saveComment(id); return false; });
-		parent.find(OPT.closeComment).click(function() { closeComment(id); return false; });
+		parent.find(OPT.showEditor).click(function(e) { e.preventDefault(); showEditor(id); });
+		parent.find(OPT.hideEditor).click(function(e) { e.preventDefault(); hideEditor(id); });
+		parent.find(OPT.saveComment).click(function(e) { e.preventDefault(); saveComment(id); });
+		parent.find(OPT.closeComment).click(function(e) { e.preventDefault(); closeComment(id); });
 	});
 
 	function showEditor(id) {
