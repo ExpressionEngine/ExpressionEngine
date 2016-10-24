@@ -578,6 +578,7 @@ class EE_Output {
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+		$this->set_status_header(403);
 
 		if ($type != 'off')
 		{
