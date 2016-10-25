@@ -220,27 +220,6 @@ EE.cp.formValidation = {
 				button = form.find('.form-ctrls input.btn');
 
 			that.bindInputs(form);
-			that._dismissSuccessAlert(form);
-		});
-	},
-
-	/**
-	 * When a form element is interacted with after the form has been
-	 * successfully submitted, hide the success message
-	 */
-	_dismissSuccessAlert: function(form) {
-
-		$('input, select, textarea', form).change(function(event) {
-			var success = form.find('div.alert.success');
-
-			if (success.size() > 0)
-			{
-				// Add a delay in case someone is blurring a field by clicking
-				// on a submit button or some other control
-				setTimeout(function() {
-					success.remove();
-				}, 500);
-			}
 		});
 	},
 
