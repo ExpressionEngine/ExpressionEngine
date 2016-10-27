@@ -171,9 +171,9 @@ class Multi_select_ft extends EE_Fieldtype {
 				ee()->functions->encode_ee_tags($entry),
 				array(
 						'text_format'	=> $text_format,
-						'html_format'	=> $this->row['channel_html_formatting'],
-						'auto_links'	=> $this->row['channel_auto_link_urls'],
-						'allow_img_url' => $this->row['channel_allow_img_urls']
+						'html_format'	=> $this->row('channel_html_formatting', 'all'),
+						'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+						'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
 					  )
 		);
 	}
@@ -192,8 +192,7 @@ class Multi_select_ft extends EE_Fieldtype {
 			$limit = $params['limit'];
 		}
 
-		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
-			? $this->row['field_ft_'.$this->field_id] : 'none';
+		$text_format = $this->row('field_ft_'.$this->field_id, 'none');
 
 		foreach($data as $key => $item)
 		{
@@ -209,9 +208,9 @@ class Multi_select_ft extends EE_Fieldtype {
 						$item,
 						array(
 								'text_format'	=> $text_format,
-								'html_format'	=> $this->row['channel_html_formatting'],
-								'auto_links'	=> $this->row['channel_auto_link_urls'],
-								'allow_img_url' => $this->row['channel_allow_img_urls']
+								'html_format'	=> $this->row('channel_html_formatting', 'all'),
+								'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+								'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
 							  )
 						);
 

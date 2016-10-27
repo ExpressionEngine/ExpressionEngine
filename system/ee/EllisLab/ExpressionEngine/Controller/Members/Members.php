@@ -557,17 +557,13 @@ class Members extends CP_Controller {
 		$table = $this->initializeTable();
 
 		$sort_map = array(
-			'member_group' => 'group_id',
-			'dates' => 'join_date'
+			'member_id'    => 'member_id',
+			'username'     => 'username',
+			'dates'        => 'join_date',
+			'member_group' => 'group_id'
 		);
 
-		$sort_col = $table->config['sort_col'];
-		if (isset($sort_map[$sort_col]))
-		{
-			$sort_col = $sort_map[$sort_col];
-		}
-
-		$members = $members->order($sort_col, $table->config['sort_dir'])
+		$members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
 			->all();
 
 		$data = array();

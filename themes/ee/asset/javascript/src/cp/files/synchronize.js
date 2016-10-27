@@ -39,6 +39,9 @@ EE.file_manager.sync_listen = function() {
 		// Disable sync button
 		$('input.btn', this).prop('disabled', true);
 
+		// Remove any existing alerts
+		$('.alert.inline').remove();
+
 		// Send ajax requests
 		// Note- testing didn't show async made much improvement on time
 		EE.file_manager.sync_timeout_id = setTimeout(function() {

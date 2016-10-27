@@ -164,6 +164,7 @@ class Channel_form_lib
 
 		if ( ! $this->member)
 		{
+			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -172,6 +173,7 @@ class Channel_form_lib
 		// Can they post?
 		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() !== 1)
 		{
+			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -195,6 +197,7 @@ class Channel_form_lib
 		{
 			if (ee()->TMPL->no_results())
 			{
+				ee()->config->set_item('site_id', $current_site_id);
 				return ee()->TMPL->no_results();
 			}
 
@@ -279,7 +282,11 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('channel_form_entry_form_tagdata_start') === TRUE)
 		{
 			ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
-			if (ee()->extensions->end_script === TRUE) return;
+			if (ee()->extensions->end_script === TRUE)
+			{
+				ee()->config->set_item('site_id', $current_site_id);
+				return;
+			}
 		}
 
 		// build custom field variables
@@ -2219,12 +2226,15 @@ GRID_FALLBACK;
 			$this->entry->status = $this->channel->deft_status;
 			$this->entry->author_id = ee()->session->userdata('member_id');
 
-			if (isset($this->channel->deft_category))
+			if ( ! empty($this->channel->deft_category))
 			{
 				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+
 				if ($cat)
 				{
-					$this->entry->Categories[] = $cat;
+					// set directly so other categories don't get lazy loaded
+					// along with our default
+					$this->entry->Categories = $cat;
 				}
 			}
 

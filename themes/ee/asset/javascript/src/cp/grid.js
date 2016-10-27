@@ -759,7 +759,9 @@ Grid.Settings.prototype = {
 			// Handle checkboxes
 			else if ($(this).attr('type') == 'checkbox') {
 				// .prop('checked', true) doesn't work, must set the attribute
-				new_input.attr('checked', $(this).attr('checked'));
+				if ($(this).prop('checked')) {
+					new_input.attr('checked', 'checked');
+				}
 			}
 			// Handle radio buttons
 			else if ($(this).attr('type') == 'radio') {

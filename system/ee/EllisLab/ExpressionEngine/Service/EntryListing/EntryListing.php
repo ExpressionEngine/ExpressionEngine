@@ -312,7 +312,8 @@ class EntryListing {
 		$category_options = array();
 		foreach ($category_groups as $group)
 		{
-			foreach ($group->Categories as $category)
+			$sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
+			foreach ($group->Categories->sortBy($sort_column) as $category)
 			{
 				$category_options[$category->cat_id] = $category->cat_name;
 			}
