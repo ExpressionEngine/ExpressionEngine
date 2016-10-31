@@ -180,6 +180,7 @@ class Wizard extends CI_Controller {
 		$this->load->library('localize');
 		$this->load->library('cp');
 		$this->load->library('functions');
+		$this->load->library('session');
 		$this->load->driver('cache');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
