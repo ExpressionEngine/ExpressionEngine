@@ -58,6 +58,8 @@ if ( ! filter_var($url, FILTER_VALIDATE_URL) OR $link !== ee('Security/XSS')->cl
 	show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
 
+// Make sure all requests to iframe this page are denied
+header('X-Frame-Options: SAMEORIGIN');
 
 if ($force_redirect == TRUE OR ( ! isset($_SERVER['HTTP_REFERER']) OR ! stristr($_SERVER['HTTP_REFERER'], $host)))
 {
