@@ -34,6 +34,11 @@ class Installer_Session {
 	{
 		return $this;
 	}
+
+	public function userdata($which, $default = FALSE)
+	{
+		return FALSE;
+	}
 }
 // END CLASS
 
