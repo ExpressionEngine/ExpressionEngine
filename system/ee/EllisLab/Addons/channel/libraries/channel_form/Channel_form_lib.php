@@ -164,6 +164,7 @@ class Channel_form_lib
 
 		if ( ! $this->member)
 		{
+			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -172,6 +173,7 @@ class Channel_form_lib
 		// Can they post?
 		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() !== 1)
 		{
+			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -195,6 +197,7 @@ class Channel_form_lib
 		{
 			if (ee()->TMPL->no_results())
 			{
+				ee()->config->set_item('site_id', $current_site_id);
 				return ee()->TMPL->no_results();
 			}
 
@@ -279,7 +282,11 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('channel_form_entry_form_tagdata_start') === TRUE)
 		{
 			ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
-			if (ee()->extensions->end_script === TRUE) return;
+			if (ee()->extensions->end_script === TRUE)
+			{
+				ee()->config->set_item('site_id', $current_site_id);
+				return;
+			}
 		}
 
 		// build custom field variables
@@ -538,7 +545,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					elseif (strncmp($key, 'exp', 3) !== 0 && strncmp($key, 'embed=', 6) !== 0)
+					elseif ($this->entry($name) !== NULL)
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}
@@ -1591,10 +1598,6 @@ GRID_FALLBACK;
 				{
 					$_POST[$field] = 'y';
 				}
-				elseif ($field == 'allow_comments')
-				{
-					$_POST[$field] = $this->_meta['allow_comments'];
-				}
 				else
 				{
 					if ($this->entry($field) !== FALSE)
@@ -2565,9 +2568,6 @@ GRID_FALLBACK;
 		$meta['channel_id'] = $this->channel('channel_id');  // channel_id is for THIS channel- use new_channel to change it
 		$meta['decrypt_check'] = TRUE;
 
-		$meta['allow_comments'] = (isset($meta['allow_comments']))
-			? $meta['allow_comments'] : $this->channel('comment_system_enabled');
-
 		$meta = serialize($meta);
 
 		ee()->load->library('encrypt');
@@ -2603,28 +2603,27 @@ GRID_FALLBACK;
 			throw new Channel_form_exception(lang('form_decryption_failed'));
 		}
 
-		// Check for Overrides in POST- only allow if param not set
-		$valid_inputs = array('allow_comments');
-
-		foreach ($valid_inputs as $current_input)
-		{
-			if (empty($this->_meta[$current_input]) && ee()->input->post($current_input))
-			{
-				$this->_meta[$current_input] = ee()->input->post($current_input);
-			}
-		}
-
 		foreach ($this->all_params as $name)
 		{
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
 			// none of these fields are allowed by direct POST
+
+			// url_title in the meta array tells us which entry we're editing, not what
+			// to set the url_title to, so allow it to be in POST for editing
+			if ($name == 'url_title' OR
+				($name == 'allow_comments' && $this->_meta[$name] === FALSE))
+			{
+				continue;
+			}
 			unset($_POST[$name]);
 		}
 
-		// Should be y or FALSE for allow_comments
-		// We do this here so they can be set via form input when not specified as a param
-		// This pains me, but go with it for now for consistency
-		$this->_meta['allow_comments'] = ($this->bool_string($this->_meta['allow_comments']) == TRUE) ? 'y' : FALSE;
+		// Override allow_comments in POST if its set as a param
+		if (($allow_comments = $this->bool_string($this->_meta['allow_comments'], NULL)) !== NULL)
+		{
+			$_POST['allow_comments'] = $allow_comments ? 'y' : 'n';
+		}
+
 		$this->_meta['channel_id'] = ($this->_meta['channel_id'] != FALSE) ? $this->_meta['channel_id'] : $this->_meta['channel'];
 
 		//is an edit form?  This seems madly overkill

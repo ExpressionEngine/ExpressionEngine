@@ -49,7 +49,8 @@ class Auth extends Settings {
 							'type' => 'text',
 							'required' => TRUE,
 							'value' => $this->member->username,
-							'maxlength' => USERNAME_MAX_LENGTH
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				),
@@ -60,7 +61,8 @@ class Auth extends Settings {
 							'type' => 'text',
 							'required' => TRUE,
 							'value' => $this->member->screen_name,
-							'maxlength' => USERNAME_MAX_LENGTH
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				)

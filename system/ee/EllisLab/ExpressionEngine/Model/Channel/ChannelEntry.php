@@ -109,6 +109,7 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
+		'beforeSave',
 		'afterDelete',
 		'afterInsert',
 		'afterUpdate',
@@ -294,6 +295,15 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return TRUE;
+	}
+
+	public function onBeforeSave()
+	{
+		// Set allow_comments to the channel default if not set
+		if (empty($this->allow_comments))
+		{
+			$this->allow_comments = $this->Channel->deft_comments;
+		}
 	}
 
 	public function onAfterSave()

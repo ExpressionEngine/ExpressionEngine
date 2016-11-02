@@ -3154,7 +3154,7 @@ class EE_Template {
 		// Parse non-cachable variables
 		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
 
-		foreach ($this->user_vars as $val)
+		foreach (array_merge($this->user_vars, array('member_group')) as $val)
 		{
 			$replace = (isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
 				ee()->session->userdata[$val] : '';

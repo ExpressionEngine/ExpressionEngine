@@ -71,7 +71,8 @@ class Email extends Settings {
 							'type' => 'text',
 							'value' => $this->member->email,
 							'required' => TRUE,
-							'maxlength' => USERNAME_MAX_LENGTH
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				),

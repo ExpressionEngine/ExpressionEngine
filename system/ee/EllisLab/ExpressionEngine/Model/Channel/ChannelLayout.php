@@ -142,7 +142,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 		foreach ($fields as $field_id => $field)
 		{
-			if (strpos($field_id, 'categories[') == 0)
+			if (strpos($field_id, 'categories[') === 0)
 			{
 				$tab = $categories_tab;
 			}
