@@ -249,6 +249,8 @@ class Member extends ContentModel {
 					$this->username,
 					$this->member_id
 				));
+
+				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
 		}
 	}
@@ -370,7 +372,13 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->MemberGroup;
+		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->group_id})"))
+		{
+			$structure = $this->MemberGroup;
+			ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", $structure);
+		}
+
+		return $structure;
 	}
 
 	/**
