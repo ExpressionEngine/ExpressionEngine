@@ -101,7 +101,7 @@ Grid.Publish.prototype = {
 
 		// Show empty field message if field is empty and no rows are needed
 		if (rowsCount == 0 && neededRows == 0) {
-			this.emptyField.show();
+			this.emptyField.removeClass('hidden');
 		}
 
 		// Add the needed rows
@@ -149,7 +149,7 @@ Grid.Publish.prototype = {
 		}
 
 		if (this.settings.grid_min_rows !== '') {
-			var deleteButtons = this.root.find('.toolbar .remove');
+			var deleteButtons = this.root.find('td:last-child .toolbar .remove');
 
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
@@ -199,7 +199,6 @@ Grid.Publish.prototype = {
 
 		el.removeClass('grid-blank-row');
 		el.removeClass('hidden');
-		el.show();
 
 		// Increment namespacing on inputs
 		this.original_row_count++;
@@ -224,7 +223,7 @@ Grid.Publish.prototype = {
 		}
 
 		// Make sure empty field message is hidden
-		this.emptyField.hide();
+		this.emptyField.addClass('hidden');
 
 		// Hide/show delete buttons depending on minimum row setting
 		this._toggleRowManipulationButtons();
@@ -261,7 +260,14 @@ Grid.Publish.prototype = {
 
 			// Show our empty field message if we have no rows left
 			if (that._getRows().size() == 0) {
-				that.emptyField.show();
+				that.emptyField.removeClass('hidden');
+			}
+
+			// Mark entire Grid field as valid if all rows with invalid cells are cleared
+			if ($('td.invalid', that.root).size() == 0 &&
+				EE.cp &&
+				EE.cp.formValidation !== undefined) {
+				EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankRow).eq(0));
 			}
 		});
 	},
@@ -577,10 +583,12 @@ Grid.Settings.prototype = {
 	 * only one column
 	 */
 	_toggleDeleteButtons: function() {
-		var colCount = this.root.find('.grid-item').size(),
-			deleteButtons = this.root.find('.grid-tools li.remove');
+		var multiCol = this.root.find('.grid-item').size() > 1,
+			deleteButtons = this.root.find('.grid-tools li.remove'),
+			addButton = this.root.find('.grid-tools li.add');
 
-		deleteButtons.toggle(colCount > 1);
+		deleteButtons.toggle(multiCol);
+		addButton.toggleClass('last', ! multiCol);
 	},
 
 	/**
@@ -750,7 +758,9 @@ Grid.Settings.prototype = {
 			// Handle checkboxes
 			else if ($(this).attr('type') == 'checkbox') {
 				// .prop('checked', true) doesn't work, must set the attribute
-				new_input.attr('checked', $(this).attr('checked'));
+				if ($(this).prop('checked')) {
+					new_input.attr('checked', 'checked');
+				}
 			}
 			// Handle radio buttons
 			else if ($(this).attr('type') == 'radio') {

@@ -58,7 +58,7 @@ case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?>>
 <?php break;
 case 'password': ?>
-	<input type="password" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="off"<?=$attrs?>>
 <?php break;
 case 'hidden': ?>
 	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
@@ -93,7 +93,7 @@ case 'yes_no': ?>
 <?php break;
 
 case 'select': ?>
-<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs); ?>
+<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs, isset($field['encode']) ? $field['encode'] : TRUE); ?>
 <?php break;
 
 case 'checkbox': ?>

@@ -668,7 +668,27 @@ class Cat extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
-			ee()->javascript->set_global('publish.word_separator', ee()->config->item('word_separator') != "dash" ? '_' : '-');
+
+			//	Create Foreign Character Conversion JS
+			$foreign_characters = ee()->config->loadFile('foreign_chars');
+
+			/* -------------------------------------
+			/*  'foreign_character_conversion_array' hook.
+			/*  - Allows you to use your own foreign character conversion array
+			/*  - Added 1.6.0
+			* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+			*/
+				if (ee()->extensions->active_hook('foreign_character_conversion_array') === TRUE)
+				{
+					$foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
+				}
+			/*
+			/* -------------------------------------*/
+
+			ee()->javascript->set_global(array(
+				'publish.foreignChars'   => $foreign_characters,
+				'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-'
+			));
 
 			ee()->javascript->output('
 				$("input[name=cat_name]").bind("keyup keydown", function() {
@@ -774,7 +794,8 @@ class Cat extends AbstractChannelsController {
 				'parent_id' => array(
 					'type' => 'select',
 					'value' => $category->parent_id,
-					'choices' => $parent_id_options
+					'choices' => $parent_id_options,
+					'encode' => FALSE
 				)
 			)
 		);

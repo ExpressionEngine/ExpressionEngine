@@ -141,7 +141,8 @@ class Publish extends AbstractPublishController {
 			show_404();
 		}
 
-		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		if ( ! ee()->cp->allowed_group('can_create_entries') OR
+			 ! in_array($channel_id, $this->assigned_channel_ids))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -156,7 +157,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		// Redirect to edit listing if we've reached max entries for this channel
-		if ($channel->max_entries !== '0' && $channel->total_records >= $channel->max_entries)
+		if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
 		{
 			ee()->functions->redirect(
 				ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $channel_id))
@@ -179,12 +180,14 @@ class Publish extends AbstractPublishController {
 			$entry->status = $channel->deft_status;
 		}
 
-		if (isset($channel->deft_category))
+		if ( ! empty($channel->deft_category))
 		{
 			$cat = ee('Model')->get('Category', $channel->deft_category)->first();
 			if ($cat)
 			{
-				$entry->Categories[] = $cat;
+				// set directly so other categories don't get lazy loaded
+				// along with our default
+				$entry->Categories = $cat;
 			}
 		}
 

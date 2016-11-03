@@ -108,7 +108,7 @@ class Files extends AbstractFilesController {
 
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
-		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
+		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_new_files');
 
 		$this->generateSidebar($id);
 		$this->stdHeader();

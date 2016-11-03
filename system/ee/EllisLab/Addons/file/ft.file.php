@@ -235,7 +235,6 @@ class File_ft extends EE_Fieldtype {
 		}
 
 		$this->_frontend_js();
-		$this->_frontend_css();
 
 		return ee()->file_field->field(
 			$this->field_name,
@@ -362,68 +361,6 @@ class File_ft extends EE_Fieldtype {
 			});
 JSC;
 			ee()->javascript->output($script);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Basic styles on the frontend
-	 *
-	 * @access	public
-	 */
-	protected function _frontend_css()
-	{
-		if (empty(ee()->session->cache['file_field']['css']))
-		{
-			ee()->session->cache['file_field']['css'] = TRUE;
-
-			$styles = <<<STYLIO
-			<style type="text/css">
-			.file_set {
-				color: #5F6C74;
-				font-family: Helvetica, Arial, sans-serif;
-				font-size: 12px;
-				position: relative;
-			}
-			.filename {
-				border: 1px solid #B6C0C2;
-				position: relative;
-				padding: 5px;
-				text-align: center;
-				float: left;
-				margin: 0 0 5px;
-			}
-			.undo_remove {
-				color: #5F6C74;
-				font-family: Helvetica, Arial, sans-serif;
-				font-size: 12px;
-				text-decoration: underline;
-				display: block;
-				padding: 0;
-				margin: 0 0 8px;
-			}
-			.filename img {
-				display: block;
-			}
-			.filename p {
-				padding: 0;
-				margin: 4px 0 0;
-			}
-			.remove_file {
-				position: absolute;
-				top: -6px;
-				left: -6px;
-				z-index: 5;
-			}
-			.clear {
-				clear: both;
-			}
-			</style>
-STYLIO;
-
-			$styles = preg_replace('/\s+/is', ' ', $styles);
-			ee()->cp->add_to_head($styles);
 		}
 	}
 

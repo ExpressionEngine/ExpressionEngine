@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -7,28 +7,39 @@
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://expressionengine.com/license
  * @link		https://ellislab.com
- * @since		Version 2.0
+ * @since		Version 3.4.5
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Pre Defined HTML Buttons
+ * ExpressionEngine Mock Session Class
  *
  * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
+ * @subpackage	Installer
+ * @category	Session
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
 
-ee()->load->library('logger');
-ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("html_buttons") to load this config file', TRUE, 604800);
+class Installer_Session {
 
-$conf = ee()->config->loadFile('html_buttons');
+	public function cache($class, $key, $default = FALSE)
+	{
+		return FALSE;
+	}
 
-$installation_defaults = $conf['defaults'];
-$predefined_buttons = $conf['buttons'];
+	public function set_cache($class, $key, $val)
+	{
+		return $this;
+	}
+
+	public function userdata($which, $default = FALSE)
+	{
+		return FALSE;
+	}
+}
+// END CLASS
 
 // EOF

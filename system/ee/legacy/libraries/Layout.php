@@ -316,14 +316,57 @@ class Layout {
 			return FALSE;
 		}
 
-		foreach ($tabs as $key => $val)
+		$layouts = ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if (count($channel_id) > 0)
 		{
-			$clean_tabs[strtolower($key)] = $tabs[$key];
+			$layouts->filter('channel_id', $channel_id);
 		}
 
-		ee()->load->model('layout_model');
+		$layouts = $layouts->all();
 
-		return ee()->layout_model->update_layouts($clean_tabs, 'add_fields', $channel_id);
+		if ( ! $layouts)
+		{
+			return FALSE;
+		}
+
+		foreach ($tabs as $key => $fields)
+		{
+			$tab_id = strtolower($key);
+			$found = FALSE;
+
+			foreach ($layouts as $layout)
+			{
+				$field_layout = $layout->field_layout;
+
+				foreach ($field_layout as &$tab)
+				{
+					if ($tab['id'] == $tab_id)
+					{
+						$found = TRUE;
+						foreach ($fields as $name => $info)
+						{
+							$tab['fields'][] = array(
+								'field' => $name,
+								'visible' => TRUE,
+								'collapsed' => FALSE
+							);
+						}
+
+						$layout->field_layout = $field_layout;
+						$layout->save();
+					}
+				}
+			}
+
+			if ( ! $found)
+			{
+				$this->add_layout_tabs(array($key => $fields), '', $channel_id);
+			}
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

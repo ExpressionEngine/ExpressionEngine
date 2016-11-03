@@ -348,12 +348,7 @@ class Buttons extends Settings {
 			array(
 				 'field'   => 'tag_open',
 				 'label'   => 'lang:tag_open',
-				 'rules'   => 'required|valid_xss_check'
-			),
-			array(
-				 'field'   => 'tag_close',
-				 'label'   => 'lang:tag_close',
-				 'rules'   => 'valid_xss_check'
+				 'rules'   => 'required'
 			),
 			array(
 				 'field'   => 'accesskey',

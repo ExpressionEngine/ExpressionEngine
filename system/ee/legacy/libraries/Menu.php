@@ -182,19 +182,23 @@ class EE_Menu {
 				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
 
 				// Is there a max entries setting and are we at the limit?
-				if ($channel->max_entries !== '0' && $channel->total_records >= $channel->max_entries)
+				if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
 				{
 					// Point folks trying to publish to the edit listing
 					$menu['create'][$channel->channel_title] = $filtered_by_channel;
 
 					// If there's a limit of 1, just send them to the edit screen for that entry
-					if ($channel->total_records === '1' && $channel->max_entries === '1')
+					if ($channel->total_records == 1 && $channel->max_entries == 1)
 					{
 						$entry = ee('Model')->get('ChannelEntry')
 							->filter('channel_id', $channel->channel_id)
 							->first();
 
-						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						// Just in case $channel->total_records is inaccurate
+						if ($entry)
+						{
+							$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						}
 					}
 				}
 			}

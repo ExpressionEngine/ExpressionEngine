@@ -141,6 +141,7 @@ themes/site/brilliant_retail/
 themes/solspace_themes/
 themes/third_party/
 
+asset/*
 
 # Updater dependencies =================================================
 

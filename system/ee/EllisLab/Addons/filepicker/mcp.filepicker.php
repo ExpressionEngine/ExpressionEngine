@@ -285,6 +285,7 @@ class Filepicker_mcp {
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
 			$vars['type'] = $type;
+			$vars['files'] = array();
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
 		}
@@ -331,6 +332,10 @@ class Filepicker_mcp {
 		if (array_key_exists((string) $sort_col, $sort_map))
 		{
 			$files->order($sort_map[$sort_col], ee()->input->get('sort_dir'));
+		}
+		else
+		{
+			$files->order('upload_date', 'desc');
 		}
 	}
 

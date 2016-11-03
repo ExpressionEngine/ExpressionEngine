@@ -221,7 +221,7 @@ class EE_Functions {
 
        $out = reduce_double_slashes($base);
 
-       return $out;
+       return parse_config_variables($out);
 	}
 
 

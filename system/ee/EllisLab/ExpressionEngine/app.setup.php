@@ -72,6 +72,7 @@ return array(
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
+			ee()->lang->load('content');
 			$grid = new Library\CP\GridInput(
 				$config,
 				ee()->cp,

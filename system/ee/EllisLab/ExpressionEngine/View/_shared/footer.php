@@ -1,3 +1,5 @@
+		</section>
+		<footer>
 			<section class="product-bar <?php if ( ! empty($version_identifier)): ?>pre-release<?php endif ?>">
 				<div class="snap">
 					<div class="left">
@@ -89,7 +91,7 @@
 					</div>
 				</div>
 			</section>
-		</section>
+		</footer>
 		<div class="overlay"></div>
 
 		<div class="update-overlay">

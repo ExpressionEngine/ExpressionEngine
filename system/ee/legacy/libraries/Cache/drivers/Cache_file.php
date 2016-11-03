@@ -128,7 +128,7 @@ class EE_Cache_file extends CI_Driver {
 
 		if (write_file($this->_cache_path.$key, serialize($contents)))
 		{
-			@chmod($this->_cache_path.$key, 0660);
+			@chmod($this->_cache_path.$key, FILE_WRITE_MODE);
 			return TRUE;
 		}
 

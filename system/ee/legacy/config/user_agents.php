@@ -10,7 +10,7 @@
 |
 */
 ee()->load->library('logger');
-ee()->logger->developer('Manually including config files has been deprecated, use ee()->config->loadFile() instead', TRUE, 604800);
+ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("user_agents") to load this config file', TRUE, 604800);
 
 $conf = ee()->config->loadFile('user_agents');
 
