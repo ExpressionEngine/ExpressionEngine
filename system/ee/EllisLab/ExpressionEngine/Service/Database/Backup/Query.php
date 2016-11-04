@@ -38,9 +38,14 @@ class Query {
 	protected $compact_queries = FALSE;
 
 	/**
-	 * @var array Array of tables and their corresponding row counts and size on disk
+	 * @var array Cache array of tables and their corresponding row count estimates and size on disk
 	 */
 	protected $tables = [];
+
+	/**
+	 * @var array Cache array of tables and their corresponding accurate row counts
+	 */
+	protected $table_row_counts = [];
 
 	/**
 	 * @var int Number of bytes to limit INSERT query sizes to
@@ -94,6 +99,8 @@ class Query {
 	 *		],
 	 *		...
 	 *	]
+	 *	NOTE: The row count may be inaccurate for large InnoDB tables, do not
+	 *	rely on it for precision work
 	 */
 	public function getTables()
 	{
@@ -155,19 +162,25 @@ class Query {
 	/**
 	 * Given a table name, queries for and caches the total rows for the table
 	 *
+	 * We query instead of using the meta data in getTables() because the row
+	 * count may be inaccurate, this method is for when precision is needed
+	 *
 	 * @param	string	$table_name	Table name
 	 * @return	int		Total rows in table
 	 */
 	public function getTotalRows($table_name)
 	{
-		$tables = $this->getTables();
-
-		if (isset($tables[$table_name]))
+		if ( ! in_array($table_name, array_keys($this->getTables())))
 		{
-			return $tables[$table_name]['rows'];
+			throw new Exception('Not existent table requested: ' . $table_name, 1);
 		}
 
-		throw new Exception('Not existent table requested: ' . $table_name, 1);
+		if ( ! isset($this->table_row_counts[$table_name]))
+		{
+			$this->table_row_counts[$table_name] = $this->query->count_all($table_name);
+		}
+
+		return $this->table_row_counts[$table_name];
 	}
 
 	/**
