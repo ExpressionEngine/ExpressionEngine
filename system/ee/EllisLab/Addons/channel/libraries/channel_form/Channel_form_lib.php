@@ -545,7 +545,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					elseif (property_exists($this->entry, $name))
+					elseif (property_exists($this->entry, $name) OR $this->entry->hasCustomField($name))
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}
