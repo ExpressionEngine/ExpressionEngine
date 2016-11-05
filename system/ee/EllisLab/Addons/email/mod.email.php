@@ -205,6 +205,8 @@ class Email {
 			$data['message'] = (get_bool_from_string(ee()->TMPL->fetch_param('markdown')))
 				? ee()->typography->markdown(ee()->input->post('message', TRUE))
 				: ee()->input->post('message', TRUE);
+
+			$data['message'] = ee()->functions->encode_ee_tags($data['message'], TRUE);
 		}
 
 		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data);
