@@ -32,7 +32,7 @@ class Updater {
 		// update docs location
 		if (ee()->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
 		{
-			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'), 1);
+			ee()->config->update_site_prefs(array('doc_url' => 'https://docs.expressionengine.com/latest'), 1);
 		}
 
 		ee()->smartforge->add_column(

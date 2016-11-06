@@ -840,8 +840,8 @@ class Filemanager {
 
 		// Mask the URL if we're coming from the CP
 		$sync_files_url = (REQ == "CP") ?
-			ee()->cp->masked_url('https://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html') :
-			'https://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html';
+			ee()->cp->masked_url(DOC_URL.'cp/files/uploads/sync.html') :
+			DOC_URL.'cp/files/uploads/sync.html';
 
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),

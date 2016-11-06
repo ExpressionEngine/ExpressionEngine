@@ -595,7 +595,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		if (strpos(ee()->config->item('doc_url'), 'expressionengine.com/user_guide') !== FALSE)
 		{
 			ee()->config->_update_config(array(
-				'doc_url' => 'https://ellislab.com/expressionengine/user-guide/'
+				'doc_url' => 'https://docs.expressionengine.com/latest'
 			));
 		}
 	}
