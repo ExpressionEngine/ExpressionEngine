@@ -211,7 +211,10 @@ class Channel_form_lib
 
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $member_id)
 		{
-			throw new Channel_form_exception(lang('channel_form_author_only'));
+			if (ee()->session->userdata('group_id') != 1)
+			{
+				throw new Channel_form_exception(lang('channel_form_author_only'));
+			}
 		}
 
 		$meta = $this->_build_meta_array();
@@ -2259,6 +2262,8 @@ GRID_FALLBACK;
 		{
 			$query->filter('url_title', $url_title);
 		}
+
+		$query->filter('ChannelEntry.site_id', $this->site_id);
 
 		$entry = $query->first();
 
