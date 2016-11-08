@@ -37,6 +37,7 @@ class Relationship_ft extends EE_Fieldtype {
 	protected $channels = array();
 	protected $entries = array();
 	protected $children = array();
+	protected $act_url = NULL;
 
 	/**
 	 * Validate Field
@@ -336,72 +337,25 @@ class Relationship_ft extends EE_Fieldtype {
 
 			foreach ($related as $row)
 			{
-				if ( ! AJAX_REQUEST)
-				{
-					$selected[$row['child_id']] = $row['child_id'];
-				}
-
+				$selected[$row['child_id']] = $row['child_id'];
 				$order[$row['child_id']] = $row['order'];
 			}
 		}
 
-		$channels = array();
-		$limit_channels = $this->settings['channels'];
-		$limit_categories = $this->settings['categories'];
-		$limit_statuses = $this->settings['statuses'];
-		$limit_authors = $this->settings['authors'];
-		$limit = $this->settings['limit'];
+		$settings = array(
+			'channels'    => $this->settings['channels'],
+			'categories'  => $this->settings['categories'],
+			'statuses'    => $this->settings['statuses'],
+			'authors'     => $this->settings['authors'],
+			'limit'       => $this->settings['limit'],
+			'expired'     => $this->settings['expired'],
+			'future'      => $this->settings['future'],
+			'order_field' => $this->settings['order_field'],
+			'order_dir'   => $this->settings['order_dir'],
+		);
 
-		$show_expired = (bool) $this->settings['expired'];
-		$show_future = (bool) $this->settings['future'];
-
-		$order_field = $this->settings['order_field'];
-		$order_dir = $this->settings['order_dir'];
-
-		$separate_query_for_selected = (count($selected) && $limit);
-
-		// Create a cache ID based on the query criteria for this field so fields
-		// with similar entry listings can share data that's already been queried
-		$cache_id = md5(serialize(compact('limit_channels', 'limit_categories', 'limit_statuses',
-			'limit_authors', 'limit', 'show_expired', 'show_future', 'order_field', 'order_dir')));
-
-		// Bug 19321, old fields use date
-		if ($order_field == 'date')
-		{
-			$order_field = 'entry_date';
-		}
-
-		$entries = ee('Model')->get('ChannelEntry')
-			->with('Channel')
-			->fields('Channel.*', 'entry_id', 'title', 'channel_id')
-			->order($order_field, $order_dir);
-
-		if (AJAX_REQUEST)
-		{
-			if (ee()->input->post('search'))
-			{
-				$entries->filter('title', 'LIKE', '%' . ee()->input->post('search') . '%');
-			}
-
-			if (ee()->input->post('channel'))
-			{
-				$entries->filter('channel_id', ee()->input->post('channel'));
-			}
-		}
-
-		// -------------------------------------------
-		// 'relationships_display_field_options' hook.
-		//  - Allow developers to add additional filters to the entries that populate the field options
-		//
-		if (ee()->extensions->active_hook('relationships_display_field_options') === TRUE)
-		{
-			ee()->extensions->call(
-					'relationships_display_field_options',
-					$entries,
-					$this->field_id,
-					$this->settings
-				);
-		}
+		ee()->load->library('EntryList');
+		$entries = ee()->entrylist->query($entry_id, $settings, $selected);
 
 		// Create a cache of channel names
 		if (empty($this->channels))
@@ -411,9 +365,9 @@ class Relationship_ft extends EE_Fieldtype {
 				->all();
 		}
 
+		$limit_channels = $this->settings['channels'];
 		if (count($limit_channels))
 		{
-			$entries->filter('channel_id', 'IN', $limit_channels);
 			$channels = $this->channels->filter(function($channel) use ($limit_channels)
 			{
 				return in_array($channel->getId(), $limit_channels);
@@ -422,122 +376,6 @@ class Relationship_ft extends EE_Fieldtype {
 		else
 		{
 			$channels = $this->channels;
-		}
-
-		if (count($limit_categories))
-		{
-			$entries->with('Categories')
-				->filter('Categories.cat_id', 'IN', $limit_categories);
-		}
-
-		if (count($limit_statuses))
-		{
-			$limit_statuses = str_replace(
-				array('Open', 'Closed'),
-				array('open', 'closed'),
-				$limit_statuses
-			);
-
-			$entries->filter('status', 'IN', $limit_statuses);
-		}
-
-		if (count($limit_authors))
-		{
-			$groups = array();
-			$members = array();
-
-			foreach ($limit_authors as $author)
-			{
-				switch ($author[0])
-				{
-					case 'g': $groups[] = substr($author, 2);
-						break;
-					case 'm': $members[] = substr($author, 2);
-						break;
-				}
-			}
-
-			$entries->with('Author');
-
-			if (count($members) && count($groups))
-			{
-				$entries->filterGroup()
-					->filter('author_id', 'IN', implode(', ', $members))
-					->orFilter('Author.group_id', 'IN', implode(', ', $groups))
-					->endFilterGroup();
-			}
-			else
-			{
-				if (count($members))
-				{
-					$entries->filter('author_id', 'IN', implode(', ', $members));
-				}
-
-				if (count($groups))
-				{
-					$entries->filter('Author.group_id', 'IN', implode(', ', $groups));
-				}
-			}
-		}
-
-		// Limit times
-		$now = ee()->localize->now;
-
-		if ( ! $show_future)
-		{
-			$entries->filter('entry_date', '<', $now);
-		}
-
-		if ( ! $show_expired)
-		{
-			$entries->filterGroup()
-				->filter('expiration_date', 0)
-				->orFilter('expiration_date', '>', $now)
-				->endFilterGroup();
-		}
-
-		if ($entry_id)
-		{
-			$entries->filter('entry_id', '!=', $entry_id);
-		}
-
-		if ($limit)
-		{
-			$entries->limit($limit);
-		}
-
-		// If we've got a limit and selected entries, we need to run the query
-		// twice. Once without those entries and then separately with only those
-		// entries.
-
-		if ($separate_query_for_selected)
-		{
-			$selected_entries = clone $entries;
-
-			$entries = $entries->filter('entry_id', 'NOT IN', $selected)->all();
-
-			$selected_entries->limit(count($selected))
-				->filter('entry_id', 'IN', $selected)
-				->all()
-				->map(function($entry) use(&$entries) { $entries[] = $entry; });
-
-			$entries = $entries->sortBy($order_field);
-			if (strtolower($order_dir) == 'desc')
-			{
-				$entries = $entries->reverse();
-			}
-		}
-		else
-		{
-			// Don't query if we have this same query in the cache
-			if (isset($this->entries[$cache_id]))
-			{
-				$entries = $this->entries[$cache_id];
-			}
-			else
-			{
-				$this->entries[$cache_id] = $entries = $entries->all();
-			}
 		}
 
 		if (REQ != 'CP' && $this->settings['allow_multiple'] == 0)
@@ -558,6 +396,21 @@ class Relationship_ft extends EE_Fieldtype {
 			'ui' => 'sortable'
 		));
 
+		if ( ! $this->act_url)
+		{
+			$action_id = ee('Model')->get('Action')
+				->filter('class', 'Relationship')
+				->filter('method', 'entryList')
+				->first()
+				->action_id;
+			$this->act_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id;
+		}
+
+		ee()->javascript->set_global(array(
+			'relationship.filter_url' => $this->act_url,
+			'relationship.settings.'.$this->field_id => $settings
+		));
+
 		if ($entry_id)
 		{
 			if ( ! isset($this->children[$entry_id]))
@@ -571,17 +424,6 @@ class Relationship_ft extends EE_Fieldtype {
 			else
 			{
 				$children = $this->children[$entry_id];
-			}
-
-			if (AJAX_REQUEST)
-			{
-				if (ee()->input->post('search_related'))
-				{
-					$search_term = ee()->input->post('search_related');
-					$children = $children->filter(function($entry) use($search_term) {
-						return (strpos($entry->title, $search_term) !== FALSE);
-					});
-				}
 			}
 
 			$children = $children->indexBy('entry_id');
@@ -613,17 +455,9 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ( ! empty($new_children_ids))
 		{
-			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids)->with('Channel');
-
-			if (AJAX_REQUEST)
-			{
-				if (ee()->input->post('search_related'))
-				{
-					$new_children->filter('title', 'LIKE', '%' . ee()->input->post('search_related') . '%');
-				}
-			}
-
-			$new_children = $new_children->all()
+			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
+				->with('Channel')
+				->all()
 				->indexBy('entry_id');
 		}
 
