@@ -1,8 +1,8 @@
 <?php if ($multiple): ?>
-<div data-field="<?=$field_name?>" class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" data-settings='<?=json_encode($settings)?>' class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
 <?php else: ?>
-<div data-field="<?=$field_name?>" class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" data-settings='<?=json_encode($settings)?>' class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
 <?php endif; ?>
 	<div class="relate-actions">

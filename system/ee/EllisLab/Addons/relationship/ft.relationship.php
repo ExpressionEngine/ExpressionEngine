@@ -352,10 +352,11 @@ class Relationship_ft extends EE_Fieldtype {
 			'future'      => $this->settings['future'],
 			'order_field' => $this->settings['order_field'],
 			'order_dir'   => $this->settings['order_dir'],
+			'entry_id'    => $entry_id,
 		);
 
 		ee()->load->library('EntryList');
-		$entries = ee()->entrylist->query($entry_id, $settings, $selected);
+		$entries = ee()->entrylist->query($settings, $selected);
 
 		// Create a cache of channel names
 		if (empty($this->channels))
@@ -407,8 +408,7 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->javascript->set_global(array(
-			'relationship.filter_url' => $this->act_url,
-			'relationship.settings.'.$this->field_id => $settings
+			'relationship.filter_url' => $this->act_url
 		));
 
 		if ($entry_id)
@@ -475,7 +475,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
-		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
+		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels', 'settings'));
 	}
 
 	// --------------------------------------------------------------------

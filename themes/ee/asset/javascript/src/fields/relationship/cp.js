@@ -121,27 +121,11 @@
 		var ajaxTimer,
 			ajaxRequest;
 
-		function ajaxRefresh(elem, channelId, delay) {
-			var field = $(elem).closest('fieldset').find('div.col.last').eq(0),
-				data = $(elem).closest('fieldset').serialize(),
-				url = EE.publish.field.URL + '&field_name=' + $(field).find('.relate-wrap').data('field'),
-				name = $(elem).attr('name');
+		function ajaxRefresh(elem, search, channelId, delay) {
+			var settings = $(elem).closest('.relate-wrap').data('settings');
 
-			// Assume it's in a Grid
-			if (field.length == 0) {
-				field = $(elem).closest('td');
-
-				var row_id = $(field).data('row-id') ? $(field).data('row-id') : $(field).data('new-row-id');
-
-				data = $(field).find('input').serialize() + '&column_id=' + $(field).data('column-id') + '&row_id=' + row_id;
-
-				url = EE.publish.field.URL + '&field_name=' + $(elem).closest('table').attr('id');
-			}
-
-			if (channelId)
-			{
-				data += '&channel=' + channelId;
-			}
+			settings['search'] = search;
+			settings['channel_id'] = channelId;
 
 			// Cancel the last AJAX request
 			clearTimeout(ajaxTimer);
@@ -151,20 +135,12 @@
 
 			ajaxTimer = setTimeout(function() {
 				ajaxRequest = $.ajax({
-					url: url,
-					data: data,
+					url: EE.relationship.filter_url,
+					data: $.param(settings),
 					type: 'POST',
 					dataType: 'json',
 					success: function(ret) {
-						$(field).html(ret.html);
-
-						// Set focus back to current search field and place cursor at the end
-						var searchField = $('input[name='+name+']', field).focus(),
-							tmpStr = searchField.val();
-						searchField.val('');
-						searchField.val(tmpStr);
-
-						$('.w-8.relate-wrap .scroll-wrap', field).sortable(sortable_options);
+						console.log(ret);
 					}
 				});
 			}, delay);
@@ -173,7 +149,9 @@
 
 		// Filter by Channel
 		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
-			ajaxRefresh(this, $(this).data('channel-id'), 0);
+			var search = $(this).closest('.relate-wrap').find('.relate-search').val();
+
+			ajaxRefresh(this, search, $(this).data('channel-id'), 0);
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
@@ -181,16 +159,11 @@
 
 		// Search Relationships
 		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
-			var channelId = $(this).closest('.relate-actions').find('.filters .has-sub .faded').data('channel-id');
+			var channelId = $(this).closest('.relate-actions')
+				.find('.filters .has-sub .faded')
+				.data('channel-id');
 
-			// In Grids, this field got its name reset
-			if ($(this).attr('name').indexOf('search_related') != -1) {
-				$(this).attr('name', 'search_related');
-			} else {
-				$(this).attr('name', 'search');
-			}
-
-			ajaxRefresh(this, channelId, 150);
+			ajaxRefresh(this, $(this).val(), channelId, 150);
 		});
 
 		// Sortable!

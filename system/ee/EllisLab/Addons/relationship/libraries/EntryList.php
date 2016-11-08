@@ -31,7 +31,7 @@ class EntryList {
 	protected $entries = array();
 	protected $children = array();
 
-	public function query($entry_id, $settings, $selected = array(), $search = NULL, $channel_id = NULL)
+	public function query($settings, $selected = array())
 	{
 		$channels = array();
 		$limit_channels = $settings['channels'];
@@ -39,14 +39,13 @@ class EntryList {
 		$limit_statuses = $settings['statuses'];
 		$limit_authors = $settings['authors'];
 		$limit = $settings['limit'];
-
-		$separate_query_for_selected = (count($selected) && $limit);
-
 		$show_expired = (bool) $settings['expired'];
 		$show_future = (bool) $settings['future'];
-
 		$order_field = $settings['order_field'];
 		$order_dir = $settings['order_dir'];
+		$entry_id = $settings['entry_id'];
+		$search = isset($settings['search']) ? $settings['search'] : NULL;
+		$channel_id = isset($settings['channel_id']) ? $settings['channel_id'] : NULL;
 
 		// Create a cache ID based on the query criteria for this field so fields
 		// with similar entry listings can share data that's already been queried
@@ -64,12 +63,12 @@ class EntryList {
 			->fields('Channel.*', 'entry_id', 'title', 'channel_id')
 			->order($order_field, $order_dir);
 
-		if ($search)
+		if ( ! empty($search))
 		{
 			$entries->filter('title', 'LIKE', '%' . $search . '%');
 		}
 
-		if ($channel_id)
+		if ( ! empty($channel_id) && is_numeric($channel_id))
 		{
 			$entries->filter('channel_id', $channel_id);
 		}
@@ -179,7 +178,7 @@ class EntryList {
 		// twice. Once without those entries and then separately with only those
 		// entries.
 
-		if ($separate_query_for_selected)
+		if (count($selected) && $limit)
 		{
 			$selected_entries = clone $entries;
 
