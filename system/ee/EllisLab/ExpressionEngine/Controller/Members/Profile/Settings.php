@@ -88,7 +88,7 @@ class Settings extends Profile {
 
 		if ($this->member->parse_smileys == 'y')
 		{
-			$settings[] = 'display_emoticons';
+			$settings[] = 'parse_smileys';
 		}
 
 		if ($this->member->display_avatars == 'y')
@@ -98,7 +98,7 @@ class Settings extends Profile {
 
 		if ($this->member->accept_messages == 'y')
 		{
-			$settings[] = 'allow_messages';
+			$settings[] = 'accept_messages';
 		}
 
 		$this->load->helper('html');
