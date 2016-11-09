@@ -1026,6 +1026,8 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
+		$this->_set_page_title(lang('mbr_forgotten_password'));
+
 		return $MA->forgot_password($ret);
 	}
 
@@ -1247,6 +1249,8 @@ class Member {
 		{
 			$MR->{$key} = $value;
 		}
+
+		$this->_set_page_title(lang('member_registration'));
 
 		return $MR->registration_form();
 	}
