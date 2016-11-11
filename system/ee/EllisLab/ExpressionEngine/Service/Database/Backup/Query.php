@@ -347,6 +347,25 @@ class Query {
 	}
 
 	/**
+	 * Returns a data type for a given column
+	 *
+	 * @param	string	$table_name		Table name
+	 * @param	string	$column_name	Column name
+	 * @return	const	Constant to define data type
+	 */
+	protected function getColumnType($table_name, $column_name)
+	{
+		$types = $this->getTypesForTable($table_name);
+
+		if ( ! isset($types[$column_name]))
+		{
+			throw new \Exception('Non-existant column requested: '. $table_name .'.'. $column_name, 1);
+		}
+
+		return $types[$column_name];
+	}
+
+	/**
 	 * Gathers column types for a given table
 	 *
 	 * @param	string	$table_name	Table name
@@ -363,7 +382,7 @@ class Query {
 
 			foreach ($query->result() as $row)
 			{
-				$this->columns[$table_name][$row->Field] = $row->Type;
+				$this->columns[$table_name][$row->Field] = $this->getDataType($row->Type);
 			}
 		}
 
@@ -371,22 +390,14 @@ class Query {
 	}
 
 	/**
-	 * Infers a data type for a given column
+	 * Infers a data type for a given column type
 	 *
-	 * @param	string	$table_name		Table name
-	 * @param	string	$column_name	Column name
+	 * @param	string	$column_type	Table name
 	 * @return	const	Constant to define data type
 	 */
-	protected function getColumnType($table_name, $column_name)
+	protected function getDataType($column_type)
 	{
-		$types = $this->getTypesForTable($table_name);
-
-		if ( ! isset($types[$column_name]))
-		{
-			throw new \Exception('Non-existant column requested: '. $column_name, 1);
-		}
-
-		$type = strtolower($types[$column_name]);
+		$type = strtolower($column_type);
 
 		if (strpos($type, 'binary') !== FALSE OR
 			strpos($type, 'blob') !== FALSE)
@@ -396,7 +407,8 @@ class Query {
 		elseif (strpos($type, 'char') !== FALSE OR
 			strpos($type, 'text') !== FALSE OR
 			strpos($type, 'date') !== FALSE OR
-			strpos($type, 'time') !== FALSE)
+			strpos($type, 'time') !== FALSE OR
+			strpos($type, 'enum') !== FALSE)
 		{
 			return self::STRING_TYPE;
 		}
