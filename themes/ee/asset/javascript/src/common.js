@@ -433,7 +433,7 @@ $(document).ready(function(){
 	// =======================
 
 		// listen for clicks on .sub-arrows
-		$('.setting-txt .sub-arrow').on('click',function(){
+		$('div.publish form').on('click', '.setting-txt .sub-arrow', function(e) {
 			// toggle the .setting-field and .setting-text
 			$(this).parents('.setting-txt').siblings('.setting-field').toggle();
 			// toggle the instructions

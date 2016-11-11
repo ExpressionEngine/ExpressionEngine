@@ -158,10 +158,9 @@ class EE_Actions {
 
 		ee()->load->add_package_path($package_path, FALSE);
 
-		$path = $package_path.$type.'.'.$base_class.'.php';
+		$addon = ee('Addon')->get($base_class);
 
-		// Does the path exist?
-		if ( ! file_exists($path))
+		if ( ! $addon)
 		{
 			if (ee()->config->item('debug') >= 1)
 			{
@@ -173,14 +172,17 @@ class EE_Actions {
 			}
 		}
 
-		// Require the class file
-		if ( ! class_exists($class))
+		if ($type == 'mcp')
 		{
-			require $path;
+			$fqcn = $addon->getControlPanelClass();
+		}
+		else
+		{
+			$fqcn = $addon->getModuleClass();
 		}
 
 		// Instantiate the class/method
-		$ACT = new $class(0);
+		$ACT = new $fqcn(0);
 
 		$flags = 0;
 

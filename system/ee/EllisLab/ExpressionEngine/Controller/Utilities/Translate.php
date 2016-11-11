@@ -304,12 +304,13 @@ class Translate extends Utilities {
 
 		$keys = array();
 
+		ee()->lang->load($file);
 		foreach ($M as $key => $val)
 		{
 			if ($key != '')
 			{
 				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
-				$keys[$key]['original'] = htmlentities($val);
+				$keys[$key]['original'] = lang(htmlentities($key));
 				$keys[$key]['trans'] = str_replace("'", "&#39;", $trans);
 				$keys[$key]['type'] = (strlen($val) > 100) ? 'textarea' : 'text';
 			}

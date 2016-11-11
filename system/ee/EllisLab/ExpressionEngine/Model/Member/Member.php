@@ -322,6 +322,12 @@ class Member extends ContentModel {
 	{
 		$cp_homepage = NULL;
 
+		// Make sure to get the correct site, revert once issue #1285 is fixed
+		$member_group = ee('Model')->get('MemberGroup')
+			->filter('group_id', $this->group_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
 		if ( ! empty($this->cp_homepage))
 		{
 			$site_id = ee()->config->item('site_id');
@@ -331,11 +337,11 @@ class Member extends ContentModel {
 			$cp_homepage_channel = $cp_homepage_channel[$site_id];
 			$cp_homepage_custom = $this->cp_homepage_custom;
 		}
-		elseif ( ! empty($this->MemberGroup->cp_homepage))
+		elseif ( ! empty($member_group->cp_homepage))
 		{
-			$cp_homepage = $this->MemberGroup->cp_homepage;
-			$cp_homepage_channel = $this->MemberGroup->cp_homepage_channel;
-			$cp_homepage_custom = $this->MemberGroup->cp_homepage_custom;
+			$cp_homepage = $member_group->cp_homepage;
+			$cp_homepage_channel = $member_group->cp_homepage_channel;
+			$cp_homepage_custom = $member_group->cp_homepage_custom;
 		}
 
 		switch ($cp_homepage) {

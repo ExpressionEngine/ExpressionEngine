@@ -48,7 +48,7 @@ class Purchase extends Model {
 
 	protected static $_relationships = array(
 		'Item' => array(
-			'type' => 'hasOne',
+			'type' => 'belongsTo',
 			'model' => 'Item',
 			'from_key' => 'item_id',
 			'weak' => TRUE

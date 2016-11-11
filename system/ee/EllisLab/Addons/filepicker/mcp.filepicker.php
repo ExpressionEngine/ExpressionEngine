@@ -285,6 +285,7 @@ class Filepicker_mcp {
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
 			$vars['type'] = $type;
+			$vars['files'] = array();
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
 		}

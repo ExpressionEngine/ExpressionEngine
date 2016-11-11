@@ -8,7 +8,7 @@ class GetRequest extends Request {
 	{
 		if ( ! empty($data))
 		{
-			$url = trim($url, '/') . '/' . http_build_query($data);
+			$url = trim($url, '/') . '?' . http_build_query($data);
 		}
 
 		return parent::__construct($url, array(), $callback);

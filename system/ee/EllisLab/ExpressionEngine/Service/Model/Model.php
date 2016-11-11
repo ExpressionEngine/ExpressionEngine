@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 use Closure;
 use OverflowException;
 
+use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Library\Data\SerializableEntity;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;

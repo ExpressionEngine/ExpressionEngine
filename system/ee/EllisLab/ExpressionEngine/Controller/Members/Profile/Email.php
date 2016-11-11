@@ -67,7 +67,12 @@ class Email extends Settings {
 				array(
 					'title' => 'email',
 					'fields' => array(
-						'email' => array('type' => 'text', 'value' => $this->member->email, 'required' => TRUE)
+						'email' => array(
+							'type' => 'text',
+							'value' => $this->member->email,
+							'required' => TRUE,
+							'attrs' => 'autocomplete="off"'
+						)
 					)
 				),
 				array(

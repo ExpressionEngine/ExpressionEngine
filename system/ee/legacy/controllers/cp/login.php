@@ -738,6 +738,7 @@ class Login extends CP_Controller {
 
 		$this->view->cp_page_title = lang('enter_new_password');
 		$this->view->resetcode = $resetcode;
+		$this->view->focus_field = 'password';
 
 		$this->view->render('account/reset_password');
 	}

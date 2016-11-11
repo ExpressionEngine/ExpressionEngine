@@ -261,6 +261,15 @@ class Delete extends Query {
 
 		foreach ($relations as $name => $relation)
 		{
+			// If the relation is a belongsTo then we can stop looking.
+			// It may be tempting to let a weak relationship continue,
+			// but that would be incorrect and inefficient since the id
+			// holding side of the relationship is the being deleted anyways.
+			if ($relation instanceOf BelongsTo)
+			{
+				continue;
+			}
+
 			$inverse = $relation->getInverse();
 
 			if ($relation->isWeak())

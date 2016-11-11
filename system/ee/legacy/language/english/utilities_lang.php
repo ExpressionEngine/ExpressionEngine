@@ -336,6 +336,8 @@ $lang = array(
 
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
 
+'member_import_no_custom_fields_selected' => 'No custom fields were selected for import. Please click the checkboxes next to the fields you which to create.',
+
 /**
  * SQL Query Form
  */

@@ -108,7 +108,10 @@ class CI_DB_mysqli_connection {
 		$time_start = microtime(TRUE);
 		$memory_start = memory_get_usage();
 
+		$query = trim($query);
 		$query = $this->enforceCreateTableParameters($query);
+
+		$this->setEmulatePrepares($query);
 
 		try
 		{
@@ -202,6 +205,17 @@ class CI_DB_mysqli_connection {
 	}
 
 	/**
+	 * Set emulate prepares to false for SELECT statements so as not to clash
+	 * with ATTR_STRINGIFY_FETCHES, but keep it on for all other queries since
+	 * some cannot run with it off.
+	 */
+	private function setEmulatePrepares($query)
+	{
+		$on = strncasecmp($query, 'SELECT', 6) != 0;
+		$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
+	}
+
+	/**
 	 * Enforce charset and collation on CREATE TABLE queries
 	 *
 	 * @param String $query Query to check
@@ -209,8 +223,6 @@ class CI_DB_mysqli_connection {
 	 */
 	private function enforceCreateTableParameters($query)
 	{
-		$query = trim($query);
-
 		if (strncasecmp($query, 'CREATE TABLE', 12) != 0)
 		{
 			return $query;
