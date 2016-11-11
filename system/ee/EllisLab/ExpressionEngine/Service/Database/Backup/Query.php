@@ -27,6 +27,10 @@ namespace EllisLab\ExpressionEngine\Service\Database\Backup;
  */
 class Query {
 
+	const BINARY_TYPE = 1;
+	const STRING_TYPE = 2;
+	const NUMBER_TYPE = 3;
+
 	/**
 	 * @var Database\Query Database Query object
 	 */
@@ -298,7 +302,7 @@ class Query {
 			{
 				$value = $this->formatValue(
 					$value,
-					$this->columnIsBinary($table_name, $column_name)
+					$this->getColumnType($table_name, $column_name)
 				);
 			}
 
@@ -316,30 +320,29 @@ class Query {
 	 * @return	mixed	Typically either a string or number, but formatted for
 	 *                  a VALUES string
 	 */
-	protected function formatValue($value, $is_binary)
+	protected function formatValue($value, $column_type)
 	{
-		if ($is_binary)
-		{
-			$hex = '';
-			foreach(str_split($value) as $char)
-			{
-				$hex .= str_pad(dechex(ord($char)), 2, '0', STR_PAD_LEFT);
-			}
-
-			return sprintf("x'%s'", $hex);
-		}
-
 		if (is_null($value))
 		{
 			return 'NULL';
 		}
-		elseif (is_numeric($value))
+
+		switch ($column_type)
 		{
-			return $value;
-		}
-		else
-		{
-			return sprintf("'%s'", $this->query->escape_str($value));
+			case self::BINARY_TYPE:
+				$hex = '';
+				foreach(str_split($value) as $char)
+				{
+					$hex .= str_pad(dechex(ord($char)), 2, '0', STR_PAD_LEFT);
+				}
+
+				return sprintf("x'%s'", $hex);
+
+			case self::NUMBER_TYPE:
+				return $value;
+
+			default:
+				return sprintf("'%s'", $this->query->escape_str($value));
 		}
 	}
 
@@ -368,13 +371,13 @@ class Query {
 	}
 
 	/**
-	 * Given a table and column name, determines if that column is of a binary type
+	 * Infers a data type for a given column
 	 *
 	 * @param	string	$table_name		Table name
 	 * @param	string	$column_name	Column name
-	 * @return	boolean	Whether or not the column is of binary type
+	 * @return	const	Constant to define data type
 	 */
-	protected function columnIsBinary($table_name, $column_name)
+	protected function getColumnType($table_name, $column_name)
 	{
 		$types = $this->getTypesForTable($table_name);
 
@@ -385,10 +388,25 @@ class Query {
 
 		$type = strtolower($types[$column_name]);
 
-		return (
-			strpos($type, 'binary') !== FALSE OR
-			strpos($type, 'blob') !== FALSE
-		);
+		if (strpos($type, 'binary') !== FALSE OR
+			strpos($type, 'blob') !== FALSE)
+		{
+			return self::BINARY_TYPE;
+		}
+		elseif (strpos($type, 'char') !== FALSE OR
+			strpos($type, 'text') !== FALSE OR
+			strpos($type, 'date') !== FALSE OR
+			strpos($type, 'time') !== FALSE)
+		{
+			return self::STRING_TYPE;
+		}
+		elseif (strpos($type, 'int') !== FALSE OR
+			strpos($type, 'float') !== FALSE OR
+			strpos($type, 'double') !== FALSE OR
+			strpos($type, 'decimal') !== FALSE)
+		{
+			return self::NUMBER_TYPE;
+		}
 	}
 }
 
