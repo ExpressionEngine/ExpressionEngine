@@ -210,7 +210,7 @@ class Backup {
 		{
 			$returned = $this->writeInsertsForTableWithOffset($table);
 
-			if ($returned['next_offset'] > 0)
+			if ($returned !== NULL && $returned['next_offset'] > 0)
 			{
 				$returned = $this->writeInsertsForTableWithOffset($table, $returned['next_offset']);
 			}
@@ -244,12 +244,17 @@ class Backup {
 		$this->rows_exported = 0;
 		foreach ($tables as $table)
 		{
-			$total_rows = $this->query->getTotalRows($table);
-
 			// Keep under our row limit
 			$limit = $this->row_limit - $this->rows_exported;
 
 			$returned = $this->writeInsertsForTableWithOffset($table, $offset, $limit);
+
+			// No more rows to export in this table
+			if ($returned === NULL)
+			{
+				$offset = 0;
+				continue;
+			}
 
 			$this->rows_exported += $returned['rows_exported'];
 			$offset = $returned['next_offset'];
@@ -299,26 +304,21 @@ class Backup {
 	 *		'next_offset' => 0,
 	 *		'rows_exported' => 50
 	 *	]
-	 * If next_offset is zero, there are no more rows to export.
+	 * Returns NULL if no rows can be exported given the offset/limit criteria
 	 */
 	public function writeInsertsForTableWithOffset($table_name, $offset = 0, $limit = 0)
 	{
-		$total_rows = $this->query->getTotalRows($table_name);
-
-		// No more rows? We're done here
-		if ($total_rows - $offset <= 0)
-		{
-			return [
-				'next_offset' => 0,
-				'rows_exported' => 0
-			];
-		}
-
 		// At least apply the row limit to prevent selecting a million-row table
 		// all at once
 		$limit = ($limit !== 0) ? $limit : $this->row_limit;
 
 		$inserts = $this->query->getInsertsForTable($table_name, $offset, $limit);
+
+		// No more rows to export in this table
+		if (empty($inserts))
+		{
+			return NULL;
+		}
 
 		$this->writeChunk($inserts['insert_string']);
 
@@ -328,16 +328,8 @@ class Backup {
 			$this->writeChunk('');
 		}
 
-		$next_offset = 0;
-
-		// Still more to go? Notify the caller of the new offset to start from
-		if ($total_rows - ($offset + $limit) > 0)
-		{
-			$next_offset = $offset + $limit;
-		}
-
 		return [
-			'next_offset' => $next_offset,
+			'next_offset' => $offset + $limit,
 			'rows_exported' => $inserts['rows_exported']
 		];
 	}

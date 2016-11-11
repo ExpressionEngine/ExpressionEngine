@@ -160,30 +160,6 @@ class Query {
 	}
 
 	/**
-	 * Given a table name, queries for and caches the total rows for the table
-	 *
-	 * We query instead of using the meta data in getTables() because the row
-	 * count may be inaccurate, this method is for when precision is needed
-	 *
-	 * @param	string	$table_name	Table name
-	 * @return	int		Total rows in table
-	 */
-	public function getTotalRows($table_name)
-	{
-		if ( ! in_array($table_name, array_keys($this->getTables())))
-		{
-			throw new Exception('Not existent table requested: ' . $table_name, 1);
-		}
-
-		if ( ! isset($this->table_row_counts[$table_name]))
-		{
-			$this->table_row_counts[$table_name] = $this->query->count_all($table_name);
-		}
-
-		return $this->table_row_counts[$table_name];
-	}
-
-	/**
 	 * Queries for data given a table name and offset parameters, and generates
 	 * an array of values for each row to follow a VALUES statement
 	 *
@@ -212,6 +188,12 @@ class Query {
 		$insert_prepend = sprintf('INSERT INTO `%s` (%s) VALUES ', $table_name, implode(', ', $fields));
 
 		$rows = $this->getValuesForTable($table_name, $offset, $limit);
+
+		if (empty($rows))
+		{
+			return NULL;
+		}
+
 		$row_chunks = $this->makeRowChunks($rows);
 
 		$inserts = '';
