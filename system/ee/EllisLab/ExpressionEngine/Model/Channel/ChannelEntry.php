@@ -343,7 +343,7 @@ class ChannelEntry extends ContentModel {
 			ee()->load->remove_package_path($info->getPath());
 		}
 
-		if ($this->versioning_enabled)
+		if ($this->getProperty('versioning_enabled'))
 		{
 			$this->saveVersion();
 		}
@@ -595,7 +595,8 @@ class ChannelEntry extends ContentModel {
 
 	public function get__versioning_enabled()
 	{
-		return (isset($this->versioning_enabled)) ?: $this->Channel->enable_versioning;
+		return isset($this->versioning_enabled)
+			? $this->versioning_enabled : $this->Channel->enable_versioning;
 	}
 
 	/**

@@ -2728,7 +2728,7 @@ GRID_FALLBACK;
 						->where('field_id_'.$field->field_pre_field_id.' !=', '')
 						->get();
 
-				$current = explode('|', $this->entry($field->field_name));
+				$current = explode('|', $this->entry('field_id_' . $field->field_id));
 
 				foreach ($query->result_array() as $row)
 				{
