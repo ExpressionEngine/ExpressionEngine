@@ -259,33 +259,39 @@ class Backup {
 			$this->rows_exported += $returned['rows_exported'];
 			$offset = $returned['next_offset'];
 
-			// Have we finished a table AND exported what we consider to be the
-			// most number of rows we should export? Start a fresh request with
-			// the next table
-			if ($this->rows_exported >= $this->row_limit && $offset == 0)
+			// Have we exported what we consider to be the most number of rows
+			// we should reasonably export in one request?
+			if ($this->rows_exported >= $this->row_limit)
 			{
-				// Find the next table in the array
-				$next_table = array_slice($tables, array_search($table, $tables) + 1, 1);
-
-				if ( ! isset($next_table[0]))
+				// Previous table is finished, start a fresh request with the
+				// next table
+				if ($offset == 0)
 				{
-					return FALSE;
-				}
+					// Find the next table in the array
+					$next_table = array_slice($tables, array_search($table, $tables) + 1, 1);
 
-				return [
-					'table_name' => $next_table[0],
-					'offset'     => 0
-				];
+					if ( ! isset($next_table[0]))
+					{
+						return FALSE;
+					}
+
+					return [
+						'table_name' => $next_table[0],
+						'offset'     => 0
+					];
+				}
+				// There is more of this table to export that we weren't able to,
+				// let the caller know
+				else
+				{
+					return [
+						'table_name' => $table,
+						'offset'     => $offset
+					];
+				}
 			}
-			// There is more of this table to export that we weren't able to,
-			// let the caller know
-			elseif ($offset > 0)
-			{
-				return [
-					'table_name' => $table,
-					'offset'     => $offset
-				];
-			}
+
+			$offset = 0;
 		}
 
 		return FALSE;
