@@ -72,7 +72,6 @@
 				if ($multiple)
 				{
 					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked);
-					echo '<input type="hidden" name="'.$field_name.'[sort][]'.'" value="0" disabled="disabled">';
 				}
 				else
 				{
@@ -82,16 +81,6 @@
 			<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
 		</label>
 		<?php endforeach; ?>
-		<?php
-			foreach ($selected as $entry_id)
-			{
-				echo form_hidden($field_name.'[data][]', $entry_id);
-				if ($multiple)
-				{
-					echo '<input type="hidden" name="'.$field_name.'[sort][]'.'" value="0" disabled="disabled">';
-				}
-			}
-		?>
 	</div>
 	<?php if ( ! $multiple): ?>
 		<?php if ( ! $chosen && ! empty($related)) $chosen = $related[0]; ?>

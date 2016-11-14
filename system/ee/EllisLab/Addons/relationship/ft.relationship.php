@@ -87,10 +87,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function save($data, $model = NULl)
 	{
-		$sort = isset($data['sort']) ? $data['sort'] : array();
 		$data = isset($data['data']) ? $data['data'] : array();
-
-		$sort = array_filter($sort);
 
 		$cache_name = $this->field_name;
 
@@ -106,11 +103,8 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->session->set_cache(__CLASS__, $cache_name, array(
-			'data' => $data,
-			'sort' => $sort
+			'data' => $data
 		));
-
-		unset($_POST['sort_'.$this->field_name]);
 
 		return '';
 	}
@@ -145,7 +139,6 @@ class Relationship_ft extends EE_Fieldtype {
 			return;
 		}
 
-		$order = array_values($post['sort']);
 		$data = $post['data'];
 
 		$all_rows_where = array(
@@ -179,7 +172,7 @@ class Relationship_ft extends EE_Fieldtype {
 			// the old data array
 			$new_row = $all_rows_where;
 			$new_row['child_id'] = $child_id;
-			$new_row['order'] = isset($order[$i]) ? $order[$i] : 0;
+			$new_row['order'] = $i + 1;
 
 			$ships[] = $new_row;
 		}
@@ -263,7 +256,7 @@ class Relationship_ft extends EE_Fieldtype {
 			foreach ($data['data'] as $k => $id)
 			{
 				$selected[$id] = $id;
-				$order[$id] = isset($data['sort'][$k]) ? $data['sort'][$k] : 0;
+				$order[$id] = $k + 1;
 			}
 		}
 		elseif (is_int($data))
