@@ -18,13 +18,14 @@
 		//   When the radio button is clicked, copy the chosen data into the
 		//   div.relate-wrap-chosen area
 		$('div.publish').on('click', '.relate-wrap input:radio', function (e) {
-			var relationship = $(this).closest('.relate-wrap');
-			var label = $(this).closest('label');
-			var chosen = $(this).closest('.scroll-wrap')
-				.data('template')
-				.replace(/{entry-id}/g, $(this).val())
-				.replace(/{entry-title}/g, label.data('entry-title'))
-				.replace(/{channel-title}/g, label.data('channel-title'));
+			var relationship = $(this).closest('.relate-wrap'),
+				field_name = relationship.data('field'),
+				label = $(this).closest('label'),
+				chosen = $(this).closest('.scroll-wrap')
+					.data('template')
+					.replace(/{entry-id}/g, $(this).val())
+					.replace(/{entry-title}/g, label.data('entry-title'))
+					.replace(/{channel-title}/g, label.data('channel-title'));
 
 			relationship.find('.relate-wrap-chosen .no-results')
 				.closest('label')
@@ -32,6 +33,13 @@
 				.removeClass('block');
 			relationship.find('.relate-wrap-chosen .relate-manage').remove();
 			relationship.find('.relate-wrap-chosen').first().append(chosen);
+			relationship.find('.relate-wrap-chosen label').append(
+				$('<input/>', {
+					type: 'hidden',
+					name: field_name + '[data][]',
+					value: $(this).val()
+				})
+			);
 			relationship.removeClass('empty');
 		});
 
@@ -43,7 +51,8 @@
 				.siblings('.relate-wrap')
 				.first();
 
-			var label = $(this).closest('label');
+			var label = $(this).closest('label'),
+				field_name = $(this).closest('.relate-wrap').data('field');
 
 			// jQuery will decode encoded HTML in a data attribute,
 			// so we'll use this trick to keep it encoded
@@ -69,7 +78,14 @@
 				.data('entry-title', encoded_title)
 				.data('channel-id', label.data('channel-id'))
 				.data('channel-title', label.data('channel-title'))
-				.prepend('<span class="relate-reorder"></span>');
+				.prepend('<span class="relate-reorder"></span>')
+				.append(
+					$('<input/>', {
+						type: 'hidden',
+						name: field_name + '[data][]',
+						value: $(this).val()
+					})
+				);
 
 			$(this).siblings('input:hidden')
 				.val(relationship.find('.scroll-wrap label').length);

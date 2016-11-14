@@ -71,11 +71,11 @@
 			<?php
 				if ($multiple)
 				{
-					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked);
+					echo form_checkbox('', $entry->entry_id, $checked);
 				}
 				else
 				{
-					echo form_radio($field_name.'[data][]', $entry->entry_id, $checked);
+					echo form_radio('', $entry->entry_id, $checked);
 				}
 			?>
 			<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
@@ -88,6 +88,7 @@
 			<?php if($chosen): ?>
 			<label class="choice block chosen relate-manage">
 				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=htmlentities($chosen->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$chosen->Channel->channel_title?></i>
+				<?=form_hidden($field_name.'[data][]', $chosen->entry_id)?>
 			</label>
 			<?php endif; ?>
 			<label class="choice <?=($chosen) ? "hidden" : "block"?>">
@@ -108,6 +109,7 @@
 			<label class="choice block chosen relate-manage" data-entry-id="<?=$entry->entry_id?>">
 				<span class="relate-reorder"></span>
 				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
+				<?=form_hidden($field_name.'[data][]', $entry->entry_id)?>
 			</label>
 			<?php endforeach; ?>
 		<?php else: ?>
