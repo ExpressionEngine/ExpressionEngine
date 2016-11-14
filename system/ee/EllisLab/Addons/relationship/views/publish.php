@@ -106,7 +106,7 @@
 	<div class="scroll-wrap">
 		<?php if (count($related)): ?>
 			<?php foreach ($related as $entry): ?>
-			<label class="choice block chosen relate-manage" data-entry-id="<?=$entry->entry_id?>">
+			<label class="choice block chosen relate-manage" data-entry-id="<?=$entry->entry_id?>" data-search="<?=strtolower($entry->title)?>">
 				<span class="relate-reorder"></span>
 				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
 				<?=form_hidden($field_name.'[data][]', $entry->entry_id)?>

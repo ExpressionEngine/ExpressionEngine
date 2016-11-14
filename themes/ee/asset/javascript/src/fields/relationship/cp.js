@@ -174,12 +174,29 @@
 		});
 
 		// Search Relationships
-		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
+		$('div.publish').on('interact', '.relate-wrap.col.w-8[data-field] .relate-search, .relate-wrap.col.w-16 .relate-search', function (e) {
 			var channelId = $(this).closest('.relate-actions')
 				.find('.filters .has-sub .faded')
 				.data('channel-id');
 
-			ajaxRefresh(this, $(this).val(), channelId, 150);
+			ajaxRefresh(this, $(this).val(), channelId, 300);
+		});
+
+		// Filtering of chosen entries in a multiple relationships UI
+		$('div.publish').on('interact', '.relate-wrap.col.w-8.last .relate-search', function (e) {
+			var labels = $(this).closest('.relate-wrap').find('label.chosen');
+
+			// No search terms, reset
+			if ( ! this.value)
+			{
+				labels.show();
+				return;
+			}
+
+			// Do the filtering
+			labels.show().not('label[data-search*="' + this.value.toLowerCase() + '"]').hide();
+
+			// TODO: show no entries found alert if no results?
 		});
 
 		// Sortable!
