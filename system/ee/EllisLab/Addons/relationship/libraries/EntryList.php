@@ -65,7 +65,7 @@ class EntryList {
 
 		if ( ! empty($search))
 		{
-			$entries->filter('title', 'LIKE', '%' . $search . '%');
+			$entries->search('title', '"'.$search.'"');
 		}
 
 		if ( ! empty($channel_id) && is_numeric($channel_id))
