@@ -62,6 +62,7 @@
 				.data('template')
 			.replace(/{entry-id}/g, $(this).val())
 			.replace(/{entry-title}/g, encoded_title)
+			.replace(/{entry-title-lower}/g, encoded_title.toLowerCase())
 			.replace(/{channel-title}/g, label.data('channel-title'));
 
 			// If the checkbox was unchecked run the remove event
