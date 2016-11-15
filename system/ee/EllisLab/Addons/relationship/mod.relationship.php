@@ -58,8 +58,9 @@ class Relationship {
 		{
 			$response[] = array(
 				'entry_id'     => $entry->getId(),
-				'title'        => $entry->title,
-				'channel_name' => $entry->Channel->channel_title
+				'title'        => htmlentities($entry->title, ENT_QUOTES, 'UTF-8'),
+				'channel_id'   => $entry->Channel->getId(),
+				'channel_name' => htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8')
 			);
 		}
 
