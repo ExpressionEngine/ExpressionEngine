@@ -218,9 +218,18 @@
 
 		// Filter by Channel
 		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
-			var search = $(this).closest('.relate-wrap').find('.relate-search').val();
+			var search = $(this).closest('.relate-wrap').find('.relate-search').val(),
+				link = $(this).closest('.filters').find('a.has-sub'),
+				channel_id = $(this).data('channel-id'),
+				span = $('<span/>', {
+					'class': 'faded',
+					'data-channel-id': channel_id
+				}).html('('+$(this).text()+')');
 
-			ajaxRefresh(this, search, $(this).data('channel-id'), 0);
+			link.find('span').remove();
+			link.append(span);
+
+			ajaxRefresh(this, search, channel_id, 0);
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();

@@ -10,7 +10,7 @@
 		<div class="filters">
 			<ul>
 				<li>
-					<a class="has-sub" href=""><?=lang('channel')?> <?php if (ee()->input->post('channel')): ?><span class="faded" data-channel-id="<?=ee()->input->post('channel')?>">(<?=$channels->filter('channel_id', ee()->input->post('channel'))->first()->channel_title?>)</span><?php endif; ?></a>
+					<a class="has-sub" href=""><?=lang('channel')?></a>
 					<div class="sub-menu">
 						<?php if (count($channels) > 9): ?><div class="scroll-wrap"><?php endif;?>
 						<ul>
