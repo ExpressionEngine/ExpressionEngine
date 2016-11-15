@@ -169,9 +169,15 @@
 		function populateEntryList(scroll_wrap, entries) {
 			var relate_wrap = scroll_wrap.closest('.relate-wrap'),
 				field_name = relate_wrap.data('field'),
-				multiple = relate_wrap.hasClass('w-8');
+				multiple = relate_wrap.hasClass('w-8'),
+				no_results = scroll_wrap.find('.no-results');
 
+			no_results.addClass('hidden');
 			scroll_wrap.find('label').remove();
+
+			if (entries.length == 0) {
+				no_results.removeClass('hidden');
+			}
 
 			for (i in entries) {
 				scroll_wrap.append(
@@ -245,19 +251,28 @@
 
 		// Filtering of chosen entries in a multiple relationships UI
 		$('div.publish').on('interact', '.relate-wrap.col.w-8.last .relate-search', function (e) {
-			var labels = $(this).closest('.relate-wrap').find('label.chosen');
+			var relate_wrap = $(this).closest('.relate-wrap'),
+				labels = relate_wrap.find('label.chosen'),
+				no_results = relate_wrap.find('.no-results');
+
+			no_results.addClass('hidden');
 
 			// No search terms, reset
 			if ( ! this.value)
 			{
-				labels.show();
+				labels.removeClass('hidden');
+				no_results.toggleClass('hidden', relate_wrap.find('label.chosen:visible').size() != 0);
 				return;
 			}
 
 			// Do the filtering
-			labels.show().not('label[data-search*="' + this.value.toLowerCase() + '"]').hide();
+			labels.removeClass('hidden')
+				.not('label[data-search*="' + this.value.toLowerCase() + '"]')
+				.addClass('hidden');
 
-			// TODO: show no entries found alert if no results?
+			if (relate_wrap.find('label.chosen:visible').size() == 0) {
+				no_results.removeClass('hidden');
+			}
 		});
 
 		// Sortable!

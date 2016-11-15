@@ -112,9 +112,8 @@
 				<?=form_hidden($field_name.'[data][]', $entry->entry_id)?>
 			</label>
 			<?php endforeach; ?>
-		<?php else: ?>
-			<div class="no-results"><?=lang('no_entries_related')?></div>
 		<?php endif;?>
+		<div class="no-results<?php if (count($related)): ?> hidden<?php endif ?>"><?=lang('no_entries_related')?></div>
 	</div>
 </div>
 <?php endif; ?>
