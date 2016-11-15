@@ -29,7 +29,7 @@
 
 			relationship.find('.relate-wrap-chosen .no-results')
 				.closest('label')
-				.hide()
+				.addClass('hidden')
 				.removeClass('block');
 			relationship.find('.relate-wrap-chosen .relate-manage').remove();
 			relationship.find('.relate-wrap-chosen').first().append(chosen);
@@ -71,7 +71,7 @@
 				return;
 			}
 
-			relationship.find('.scroll-wrap .no-results').hide();
+			relationship.find('.scroll-wrap .no-results').addClass('hidden');
 			relationship.removeClass('empty');
 			relationship.find('.scroll-wrap').first().append(chosen);
 			relationship.find('.scroll-wrap label')
@@ -117,11 +117,10 @@
 				if (chosen.hasClass('w-8')) {
 					chosen.addClass('empty')
 						.find('.no-results')
-						.show();
+						.removeClass('hidden');
 				} else {
 					chosen.find('.relate-wrap-chosen .no-results')
 						.closest('label')
-						.show()
 						.removeClass('hidden')
 						.addClass('block');
 				}
