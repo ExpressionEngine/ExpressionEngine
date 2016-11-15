@@ -67,7 +67,7 @@
 				$chosen = $entry;
 			}
 		?>
-		<label class="<?=$class?>" data-channel-id="<?=$entry->Channel->channel_id?>" data-channel-title="<?=$entry->Channel->channel_title?>" data-entry-title="<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?>">
+		<label class="<?=$class?>" data-channel-id="<?=$entry->Channel->channel_id?>" data-channel-title="<?=htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8')?>" data-entry-title="<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?>">
 			<?php
 				if ($multiple)
 				{
@@ -75,10 +75,10 @@
 				}
 				else
 				{
-					echo form_radio('', $entry->entry_id, $checked);
+					echo form_radio($field_name.'[dummy][]', $entry->entry_id, $checked);
 				}
 			?>
-			<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=$entry->Channel->channel_title?></i>
+			<?=htmlentities($entry->title, ENT_QUOTES, 'UTF-8')?> <i>&mdash; <?=htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8')?></i>
 		</label>
 		<?php endforeach; ?>
 	</div>
