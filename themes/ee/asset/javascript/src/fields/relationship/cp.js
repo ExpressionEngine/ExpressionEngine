@@ -229,7 +229,7 @@
 				span = $('<span/>', {
 					'class': 'faded',
 					'data-channel-id': channel_id
-				}).html('('+$(this).text()+')');
+				}).html(' ('+$(this).text()+')');
 
 			link.find('span').remove();
 			link.append(span);
