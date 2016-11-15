@@ -33,7 +33,7 @@
 				.removeClass('block');
 			relationship.find('.relate-wrap-chosen .relate-manage').remove();
 			relationship.find('.relate-wrap-chosen').first().append(chosen);
-			relationship.find('.relate-wrap-chosen label').append(
+			relationship.find('.relate-wrap-chosen label.chosen').append(
 				$('<input/>', {
 					type: 'hidden',
 					name: field_name + '[data][]',
@@ -108,12 +108,7 @@
 			choices.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
 				.attr('checked', false)
 				.parents('.choice')
-				.removeClass('chosen')
-				.find('input:hidden')
-				.val(0);
-
-			choices.find('.scroll-wrap input[type="hidden"][value=' + $(this).data('entry-id') + ']')
-				.remove();
+				.removeClass('chosen');
 
 			$(this).closest('label').remove();
 
@@ -156,11 +151,68 @@
 					type: 'POST',
 					dataType: 'json',
 					success: function(ret) {
-						console.log(ret);
+						var scroll_wrap = $(elem).closest('.relate-wrap').find('.scroll-wrap').first();
+
+						populateEntryList(scroll_wrap, ret);
 					}
 				});
 			}, delay);
 
+		}
+
+		/**
+		 * Populates a given container with entry choice elements
+		 *
+		 * @param	{jQuery object}	scroll_wrap	Parent scroll-wrap container for entries
+		 * @param	{array}			entries		Array of entry objects
+		 */
+		function populateEntryList(scroll_wrap, entries) {
+			var relate_wrap = scroll_wrap.closest('.relate-wrap'),
+				field_name = relate_wrap.data('field'),
+				multiple = relate_wrap.hasClass('w-8');
+
+			scroll_wrap.find('label').remove();
+
+			for (i in entries) {
+				scroll_wrap.append(
+					makeElementForEntry(entries[i], field_name, multiple)
+				);
+			}
+		}
+
+		/**
+		 * Constructs an entry choice element to display in the choices pane
+		 * of a Relationship field
+		 *
+		 * @param	{object}	entry		JSON object of entry details
+		 * @param	{string}	field_name	Field name
+		 * @param	{boolean}	multiple	Whether or not this is a multi-relationship field
+		 */
+		function makeElementForEntry(entry, field_name, multiple) {
+			var checked = $('input[name="'+field_name+'[data][]"][value='+entry.entry_id+']').length > 0,
+				checked_class = checked ? ' chosen' : '',
+				choice_element = multiple ? 'checkbox' : 'radio';
+
+			var label = $('<label/>', {
+				'class': 'choice block' + checked_class,
+				'data-channel-id': entry.channel_id,
+				'data-channel-title': entry.channel_name,
+				'data-entry-title': entry.title,
+			});
+
+			var choice = $('<input/>', {
+				type: choice_element,
+				name: choice_element == 'checkbox' ? '' : field_name+'[dummy][]',
+				value: entry.entry_id
+			});
+
+			if (checked) {
+				choice.attr('checked', 'checked');
+			}
+
+			var channel_title = $('<i/>').html('&mdash; ' + entry.channel_name);
+
+			return label.append(choice).append(' ' + entry.title).append(channel_title);
 		}
 
 		// Filter by Channel
