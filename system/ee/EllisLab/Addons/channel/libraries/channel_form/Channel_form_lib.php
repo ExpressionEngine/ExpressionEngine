@@ -81,7 +81,7 @@ class Channel_form_lib
 
 
 	private $all_params = array(
-		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
+		'allow_comments', 'author_only', 'category', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
 		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
 		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
@@ -1625,6 +1625,11 @@ GRID_FALLBACK;
 			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 
+		if ( ! $this->edit && is_array($this->_meta['category']))
+		{
+			$_POST['category'] = $this->_meta['category'];
+		}
+
 		$_POST['revision_post'] = $_POST;
 
 		$this->_member_group_override();
@@ -2622,8 +2627,11 @@ GRID_FALLBACK;
 			// none of these fields are allowed by direct POST
 
 			// url_title in the meta array tells us which entry we're editing, not what
-			// to set the url_title to, so allow it to be in POST for editing
+			// to set the url_title to, so allow it to be in POST for editing;
+			// Do not allow category or allow_comments to be overridden by POST
+			// if set as a parameter
 			if ($name == 'url_title' OR
+				($name == 'category' && $this->_meta[$name] === FALSE) OR
 				($name == 'allow_comments' && $this->_meta[$name] === FALSE))
 			{
 				continue;
@@ -2635,6 +2643,14 @@ GRID_FALLBACK;
 		if (($allow_comments = $this->bool_string($this->_meta['allow_comments'], NULL)) !== NULL)
 		{
 			$_POST['allow_comments'] = $allow_comments ? 'y' : 'n';
+		}
+
+		if ($this->_meta['category'] !== FALSE)
+		{
+			$this->_meta['category'] = array_filter(explode('|', $this->_meta['category']), function($cat)
+			{
+				return is_numeric($cat);
+			});
 		}
 
 		$this->_meta['channel_id'] = ($this->_meta['channel_id'] != FALSE) ? $this->_meta['channel_id'] : $this->_meta['channel'];
