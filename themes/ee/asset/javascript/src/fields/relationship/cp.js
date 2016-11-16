@@ -284,5 +284,9 @@
 		};
 
 		$('.w-8.relate-wrap .scroll-wrap').sortable(sortable_options);
+
+		Grid.bind('relationship', 'display', function(cell) {
+			$('.w-8.relate-wrap .scroll-wrap', cell).sortable(sortable_options);
+		});
 	});
 })(jQuery);
