@@ -1,8 +1,8 @@
 <?php if ($multiple): ?>
-<div data-field="<?=$field_name?>" data-settings='<?=json_encode($settings)?>' class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" data-settings='<?=$settings?>' class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
 <?php else: ?>
-<div data-field="<?=$field_name?>" data-settings='<?=json_encode($settings)?>' class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" data-settings='<?=$settings?>' class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
 <?php endif; ?>
 	<div class="relate-actions">
@@ -28,6 +28,9 @@
 		<input class="relate-search" type="text" name="search" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
 	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}" data-search="{entry-title-lower}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
+		<?php
+		// This input is just to keep track of what Grid namespacing, if any,
+		// we should be using for dynamically-generated inputs ?>
 		<input type="hidden" name="<?=$field_name?>" class="input-name" value="">
 		<?php $chosen = NULL; ?>
 			<div class="no-results<?php if ( ! empty($entries)) echo " hidden" ?>">

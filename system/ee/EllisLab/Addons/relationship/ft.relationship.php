@@ -351,6 +351,16 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->load->library('EntryList');
 		$entries = ee()->entrylist->query($settings, $selected);
 
+		ee()->load->library('encrypt');
+
+		// These settings will be sent to the AJAX endpoint for filtering the
+		// field, encrypt them to prevent monkey business
+		$settings = json_encode($settings);
+		$settings = ee()->encrypt->encode(
+			$settings,
+			ee()->db->username.ee()->db->password
+		);
+
 		// Create a cache of channel names
 		if (empty($this->channels))
 		{

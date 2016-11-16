@@ -133,10 +133,12 @@
 			ajaxRequest;
 
 		function ajaxRefresh(elem, search, channelId, delay) {
-			var settings = $(elem).closest('.relate-wrap').data('settings');
+			var settings = $(elem).closest('.relate-wrap').data('settings'),
+				data = {};
 
-			settings['search'] = search;
-			settings['channel_id'] = channelId;
+			data['settings'] = settings;
+			data['search'] = search;
+			data['channel_id'] = channelId;
 
 			// Cancel the last AJAX request
 			clearTimeout(ajaxTimer);
@@ -147,7 +149,7 @@
 			ajaxTimer = setTimeout(function() {
 				ajaxRequest = $.ajax({
 					url: EE.relationship.filter_url,
-					data: $.param(settings),
+					data: $.param(data),
 					type: 'POST',
 					dataType: 'json',
 					success: function(ret) {
@@ -216,7 +218,7 @@
 				choice.attr('checked', 'checked');
 			}
 
-			var channel_title = $('<i/>').html('&mdash; ' + entry.channel_name);
+			var channel_title = $('<i/>').html(' &mdash; ' + entry.channel_name);
 
 			return label.append(choice).append(' ' + entry.title).append(channel_title);
 		}

@@ -26,29 +26,31 @@
 
 class Relationship {
 
+	/**
+	 * AJAX endpoint for filtering a Relationship field on the publish form
+	 */
 	public function entryList()
 	{
-		if ( ! AJAX_REQUEST OR ! ee()->session->userdata('member_id'))
+		ee()->load->library('encrypt');
+
+		$settings = ee()->encrypt->decode(
+			ee('Request')->post('settings'),
+			ee()->db->username.ee()->db->password
+		);
+		$settings = json_decode($settings, TRUE);
+
+		if (empty($settings))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$settings = array(
-			'channels'    => ee('Request')->post('channels'),
-			'categories'  => ee('Request')->post('categories'),
-			'statuses'    => ee('Request')->post('statuses'),
-			'authors'     => ee('Request')->post('authors'),
-			'limit'       => ee('Request')->post('limit'),
-			'expired'     => ee('Request')->post('expired'),
-			'future'      => ee('Request')->post('future'),
-			'order_field' => ee('Request')->post('order_field'),
-			'order_dir'   => ee('Request')->post('order_dir'),
-			'entry_id'    => ee('Request')->post('entry_id'),
-			'search'      => ee('Request')->post('search'),
-			'channel_id'  => ee('Request')->post('channel_id')
-		);
+		$settings['search'] = ee('Request')->post('search');
+		$settings['channel_id'] = ee('Request')->post('channel_id');
 
-		// Filter based on assigned channels, too, to prevent any monkey business
+		if ( ! AJAX_REQUEST OR ! ee()->session->userdata('member_id'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 		ee()->load->library('EntryList');
 		$entries = ee()->entrylist->query($settings);
