@@ -68,6 +68,7 @@ class Wizard extends CI_Controller {
 		'rte',
 		'file',
 		'filepicker',
+		'relationship',
 		'search'
 	);
 
@@ -77,8 +78,8 @@ class Wizard extends CI_Controller {
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
-		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'rss',
-		'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
+		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
+		'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
