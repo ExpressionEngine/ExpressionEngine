@@ -19,8 +19,8 @@
 		//   div.relate-wrap-chosen area
 		$('div.publish').on('click', '.relate-wrap input:radio', function (e) {
 			var relationship = $(this).closest('.relate-wrap'),
-				field_name = relationship.data('field'),
 				label = $(this).closest('label'),
+				input_name = relationship.find('.input-name').attr('name'),
 				chosen = $(this).closest('.scroll-wrap')
 					.data('template')
 					.replace(/{entry-id}/g, $(this).val())
@@ -36,7 +36,7 @@
 			relationship.find('.relate-wrap-chosen label.chosen').append(
 				$('<input/>', {
 					type: 'hidden',
-					name: field_name + '[data][]',
+					name: input_name + '[data][]',
 					value: $(this).val()
 				})
 			);
@@ -52,7 +52,7 @@
 				.first();
 
 			var label = $(this).closest('label'),
-				field_name = $(this).closest('.relate-wrap').data('field');
+				input_name = $(this).closest('.relate-wrap').find('.input-name').attr('name');
 
 			// jQuery will decode encoded HTML in a data attribute,
 			// so we'll use this trick to keep it encoded
@@ -83,7 +83,7 @@
 				.append(
 					$('<input/>', {
 						type: 'hidden',
-						name: field_name + '[data][]',
+						name: input_name + '[data][]',
 						value: $(this).val()
 					})
 				);
@@ -168,9 +168,9 @@
 		 */
 		function populateEntryList(scroll_wrap, entries) {
 			var relate_wrap = scroll_wrap.closest('.relate-wrap'),
-				field_name = relate_wrap.data('field'),
 				multiple = relate_wrap.hasClass('w-8'),
-				no_results = scroll_wrap.find('.no-results');
+				no_results = scroll_wrap.find('.no-results'),
+				input_name = scroll_wrap.find('.input-name').attr('name');
 
 			no_results.addClass('hidden');
 			scroll_wrap.find('label').remove();
@@ -181,7 +181,7 @@
 
 			for (i in entries) {
 				scroll_wrap.append(
-					makeElementForEntry(entries[i], field_name, multiple)
+					makeElementForEntry(entries[i], input_name, multiple)
 				);
 			}
 		}
@@ -191,11 +191,11 @@
 		 * of a Relationship field
 		 *
 		 * @param	{object}	entry		JSON object of entry details
-		 * @param	{string}	field_name	Field name
+		 * @param	{string}	input_name	Input name
 		 * @param	{boolean}	multiple	Whether or not this is a multi-relationship field
 		 */
-		function makeElementForEntry(entry, field_name, multiple) {
-			var checked = $('input[name="'+field_name+'[data][]"][value='+entry.entry_id+']').length > 0,
+		function makeElementForEntry(entry, input_name, multiple) {
+			var checked = $('input[name="'+input_name+'[data][]"][value='+entry.entry_id+']').length > 0,
 				checked_class = checked ? ' chosen' : '',
 				choice_element = multiple ? 'checkbox' : 'radio';
 
@@ -208,7 +208,7 @@
 
 			var choice = $('<input/>', {
 				type: choice_element,
-				name: choice_element == 'checkbox' ? '' : field_name+'[dummy][]',
+				name: choice_element == 'checkbox' ? '' : input_name+'[dummy][]',
 				value: entry.entry_id
 			});
 
