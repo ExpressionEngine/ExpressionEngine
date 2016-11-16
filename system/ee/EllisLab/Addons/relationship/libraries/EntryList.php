@@ -188,6 +188,8 @@ class EntryList {
 				->filter('entry_id', 'IN', $selected)
 				->all()
 				->map(function($entry) use(&$entries) { $entries[] = $entry; });
+
+			$entries = $entries->sortBy($order_field);
 		}
 		else
 		{
