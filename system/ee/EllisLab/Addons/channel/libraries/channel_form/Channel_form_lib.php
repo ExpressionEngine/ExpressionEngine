@@ -1495,8 +1495,16 @@ GRID_FALLBACK;
 				if (isset($_FILES[$field->field_name]['name']))
 				{
 					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
-			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';
 
+			    	if (isset($img['value']))
+					{
+						$_POST[$field->field_name] = $img['value'];
+					}
+					else
+					{
+						$_POST[$field->field_name] = '';
+						$this->field_errors[$field->field_name] = strip_tags($img);
+					}
 				}
 			}
 
@@ -2728,7 +2736,7 @@ GRID_FALLBACK;
 						->where('field_id_'.$field->field_pre_field_id.' !=', '')
 						->get();
 
-				$current = explode('|', $this->entry($field->field_name));
+				$current = explode('|', $this->entry('field_id_' . $field->field_id));
 
 				foreach ($query->result_array() as $row)
 				{

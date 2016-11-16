@@ -237,7 +237,7 @@ class Profile extends CP_Controller {
 						}
 
 						// Handle arrays of checkboxes as a special case;
-						if ($field['type'] == 'checkbox' && is_array($post))
+						if ($field['type'] == 'checkbox')
 						{
 							foreach ($field['choices']  as $property => $label)
 							{
