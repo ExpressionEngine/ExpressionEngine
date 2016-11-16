@@ -188,12 +188,6 @@ class EntryList {
 				->filter('entry_id', 'IN', $selected)
 				->all()
 				->map(function($entry) use(&$entries) { $entries[] = $entry; });
-
-			$entries = $entries->sortBy($order_field);
-			if (strtolower($order_dir) == 'desc')
-			{
-				$entries = $entries->reverse();
-			}
 		}
 		else
 		{
