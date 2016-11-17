@@ -64,8 +64,6 @@ class Runner {
 
 		$returned = $backup->writeTableInsertsConservatively($table_name, $offset);
 
-		// TODO: Detect running out of disk space
-
 		// Backup not finished? Start a new request with the table name and
 		// offset to start from
 		if ($returned !== FALSE)

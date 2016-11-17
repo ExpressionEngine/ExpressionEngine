@@ -66,7 +66,7 @@ class Updater {
 		];
 
 		// TODO: Make better
-		if (strpos($step, 'backupDatabase') !== 0)
+		if (strpos($step, 'backupDatabase') === 0)
 		{
 			$message = 'Backing up database<span>...</span>';
 		}
