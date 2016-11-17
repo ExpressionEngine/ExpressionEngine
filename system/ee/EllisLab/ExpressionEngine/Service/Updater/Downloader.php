@@ -203,7 +203,7 @@ class Downloader {
 
 			if ( ! $this->filesystem->isWritable($theme_path))
 			{
-				throw new UpdaterException('Path not writable: ' . $path, 3);
+				throw new UpdaterException('Path not writable: ' . $theme_path, 3);
 			}
 
 			// Theme path folder contents
