@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Service\Database\Backup;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -46,11 +45,6 @@ class Backup {
 	protected $file_path;
 
 	/**
-	 * @var FormatterFactory Formatter factory object
-	 */
-	protected $formatter;
-
-	/**
 	 * @var boolean When TRUE, writes a file that has one query per line with no
 	 * linebreaks in those queries for easy line-by-line consumption by a
 	 * restore script
@@ -78,14 +72,12 @@ class Backup {
 	 * @param	Backup\Query     $query     Query object for generating query strings
 	 * @param	Filesystem       $filesytem Filesystem object for writing to files
 	 * @param	string           $file_path Path to write SQL file to
-	 * @param	FormatterFactory $formatter Formatter factory
 	 */
-	public function __construct(Filesystem $filesystem, Query $query, $file_path, FormatterFactory $formatter)
+	public function __construct(Filesystem $filesystem, Query $query, $file_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->query = $query;
 		$this->file_path = $file_path;
-		$this->formatter = $formatter;
 	}
 
 	/**
@@ -138,9 +130,9 @@ class Backup {
 		$db_size = $this->getDatabaseSize();
 		if ($db_size > $this->filesystem->getFreeDiskSpace(dirname($this->file_path)))
 		{
-			$db_size = $this->formatter->make('Number', $db_size)->bytes();
+			$db_size = round($db_size / 1048576, 1);
 
-			throw new \Exception("There is not enough free disk space to write your backup. $db_size needed.", 1);
+			throw new \Exception("There is not enough free disk space to write your backup. {$db_size}MB needed.", 1);
 		}
 
 		// Truncate file
