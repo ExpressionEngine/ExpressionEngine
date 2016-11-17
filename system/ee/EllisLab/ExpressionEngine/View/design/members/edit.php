@@ -8,7 +8,7 @@
 			<em><?=sprintf(lang('last_edit'), $edit_date, '-')?></em>
 		</div>
 		<div class="setting-field col w-16 last">
-			<textarea class="template-edit" cols="" rows="" name="template_data"><?=set_value('template_data', $template_data)?></textarea>
+			<textarea class="template-edit" cols="" rows="" name="template_data"><?=form_prep($template_data, 'template_data')?></textarea>
 		</div>
 	</fieldset>
 	<fieldset class="form-ctrls">

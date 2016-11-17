@@ -81,7 +81,7 @@ class Channel_form_lib
 
 
 	private $all_params = array(
-		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
+		'allow_comments', 'author_only', 'category', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
 		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
 		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
@@ -211,7 +211,10 @@ class Channel_form_lib
 
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $member_id)
 		{
-			throw new Channel_form_exception(lang('channel_form_author_only'));
+			if (ee()->session->userdata('group_id') != 1)
+			{
+				throw new Channel_form_exception(lang('channel_form_author_only'));
+			}
 		}
 
 		$meta = $this->_build_meta_array();
@@ -545,7 +548,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					elseif (property_exists($this->entry, $name))
+					elseif (property_exists($this->entry, $name) OR $this->entry->hasCustomField($name))
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}
@@ -1492,8 +1495,16 @@ GRID_FALLBACK;
 				if (isset($_FILES[$field->field_name]['name']))
 				{
 					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
-			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';
 
+			    	if (isset($img['value']))
+					{
+						$_POST[$field->field_name] = $img['value'];
+					}
+					else
+					{
+						$_POST[$field->field_name] = '';
+						$this->field_errors[$field->field_name] = strip_tags($img);
+					}
 				}
 			}
 
@@ -1612,6 +1623,11 @@ GRID_FALLBACK;
 		if ( ! $this->edit && ! empty($this->settings['default_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
 			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
+		}
+
+		if ( ! $this->edit && is_array($this->_meta['category']))
+		{
+			$_POST['category'] = $this->_meta['category'];
 		}
 
 		$_POST['revision_post'] = $_POST;
@@ -2260,6 +2276,8 @@ GRID_FALLBACK;
 			$query->filter('url_title', $url_title);
 		}
 
+		$query->filter('ChannelEntry.site_id', $this->site_id);
+
 		$entry = $query->first();
 
 		if (isset($entry))
@@ -2609,8 +2627,11 @@ GRID_FALLBACK;
 			// none of these fields are allowed by direct POST
 
 			// url_title in the meta array tells us which entry we're editing, not what
-			// to set the url_title to, so allow it to be in POST for editing
+			// to set the url_title to, so allow it to be in POST for editing;
+			// Do not allow category or allow_comments to be overridden by POST
+			// if set as a parameter
 			if ($name == 'url_title' OR
+				($name == 'category' && $this->_meta[$name] === FALSE) OR
 				($name == 'allow_comments' && $this->_meta[$name] === FALSE))
 			{
 				continue;
@@ -2622,6 +2643,14 @@ GRID_FALLBACK;
 		if (($allow_comments = $this->bool_string($this->_meta['allow_comments'], NULL)) !== NULL)
 		{
 			$_POST['allow_comments'] = $allow_comments ? 'y' : 'n';
+		}
+
+		if ($this->_meta['category'] !== FALSE)
+		{
+			$this->_meta['category'] = array_filter(explode('|', $this->_meta['category']), function($cat)
+			{
+				return is_numeric($cat);
+			});
 		}
 
 		$this->_meta['channel_id'] = ($this->_meta['channel_id'] != FALSE) ? $this->_meta['channel_id'] : $this->_meta['channel'];
@@ -2723,7 +2752,7 @@ GRID_FALLBACK;
 						->where('field_id_'.$field->field_pre_field_id.' !=', '')
 						->get();
 
-				$current = explode('|', $this->entry($field->field_name));
+				$current = explode('|', $this->entry('field_id_' . $field->field_id));
 
 				foreach ($query->result_array() as $row)
 				{
