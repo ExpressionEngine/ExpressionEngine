@@ -64,6 +64,39 @@ class SteppableTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($this->stepper->injectedWithMultipleParamsCalled);
 		$this->assertEquals(['hello', 1234], $this->stepper->injectedWithMultipleParamsResult);
 	}
+
+	public function testInjectedStepsManually()
+	{
+		$this->stepper = new StepperWithInjection();
+		$this->stepper->runStep('step2');
+		$this->assertEquals('injectedStep', $this->stepper->getNextStep());
+
+		$this->stepper->runStep('injectedStep');
+		$this->assertEquals('injectedWithParam[hello]', $this->stepper->getNextStep());
+
+		$this->stepper->runStep('injectedWithParam[hello]');
+		$this->assertEquals('injectedWithMultipleParams[hello,1234]', $this->stepper->getNextStep());
+
+		$this->stepper->runStep('injectedWithMultipleParams[hello,1234]');
+		$this->assertEquals('step3', $this->stepper->getNextStep());
+	}
+
+	// Nomenclature may not be clear here, but this is testing what happens
+	// if a fresh Steppable object gets told to run an injected step right off
+	// the bat; basically, injected steps need to always tell us where to go
+	// afterwards to make sure order of steps remains intact
+	public function testInjectedStepFreshRequest()
+	{
+		$this->stepper = new StepperWithInjection();
+		$this->stepper->runStep('injectedFreshRequest');
+		$this->assertEquals('step3', $this->stepper->getNextStep());
+
+		$this->stepper->runStep('step3');
+		$this->assertEquals('step4', $this->stepper->getNextStep());
+
+		$this->stepper->runStep('step4');
+		$this->assertFalse($this->stepper->getNextStep());
+	}
 }
 
 class Stepper {
@@ -101,12 +134,14 @@ class StepperWithInjection {
 	public $steps = [
 		'step1',
 		'step2',
-		'step3'
+		'step3',
+		'step4'
 	];
 
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;
 	public $step3_called = FALSE;
+	public $step4_called = FALSE;
 	public $injectedStepCalled = FALSE;
 	public $injectedWithParamCalled = FALSE;
 	public $injectedWithMultipleParamsCalled = FALSE;
@@ -138,6 +173,16 @@ class StepperWithInjection {
 	{
 		$this->injectedWithParamCalled = TRUE;
 		return 'injectedWithMultipleParams['.$hello.',1234]';
+	}
+
+	public function injectedFreshRequest()
+	{
+		return 'step3';
+	}
+
+	public function step4()
+	{
+		$this->step4_called = TRUE;
 	}
 
 	public function injectedWithMultipleParams($string, $number)

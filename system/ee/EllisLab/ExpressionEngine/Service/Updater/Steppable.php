@@ -28,6 +28,7 @@ namespace EllisLab\ExpressionEngine\Service\Updater;
 trait Steppable {
 
 	protected $currentStep;
+	protected $nextStep;
 
 	/**
 	 * Runs all steps in sequence
@@ -45,22 +46,26 @@ trait Steppable {
 	 */
 	public function runStep($step)
 	{
-		if (in_array($step, $this->steps))
+		$this->currentStep = $step;
+		$this->nextStep = NULL;
+
+		list($step, $parameters) = $this->parseStepString($step);
+
+		$return = call_user_func_array([$this, $step], $parameters);
+
+		// If we got a string back, we assume it's a method name with optional
+		// parameters, insert it into the steps array to be called next
+		if (is_string($return))
 		{
-			$this->currentStep = $step;
+			$index = array_search($this->currentStep, $this->steps);
 
-			list($step, $parameters) = $this->parseStepString($step);
-
-			$return = call_user_func_array([$this, $step], $parameters);
-
-			// If we got a string back, we assume it's a method name with optional
-			// parameters, insert it into the steps array to be called next
-			if (is_string($return))
+			if ($index === FALSE)
 			{
-				$index = array_search($this->currentStep, $this->steps);
-
-				array_splice($this->steps, $index + 1, 0, $return);
+				$this->nextStep = $return;
+				return;
 			}
+
+			array_splice($this->steps, $index + 1, 0, $return);
 		}
 	}
 
@@ -106,6 +111,11 @@ trait Steppable {
 		if (empty($this->currentStep))
 		{
 			return $this->getFirstStep();
+		}
+
+		if ( ! is_null($this->nextStep))
+		{
+			return $this->nextStep;
 		}
 
 		$index = array_search($this->currentStep, $this->steps);

@@ -70,6 +70,8 @@ class Runner {
 		{
 			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
 		}
+
+		return 'updateFiles';
 	}
 
 	public function updateFiles()
