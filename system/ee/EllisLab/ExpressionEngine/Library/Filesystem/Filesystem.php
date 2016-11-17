@@ -121,11 +121,17 @@ class Filesystem {
 	 *
 	 * @param String $path Directory to create
 	 * @param bool $with_index Add EE's default index.html file in the new dir?
+	 * @return bool Success or failure of mkdir()
 	 */
 	public function mkDir($path, $with_index = TRUE)
 	{
 		$path = $this->normalize($path);
-		mkdir($path, DIR_WRITE_MODE, TRUE);
+		$result = @mkdir($path, DIR_WRITE_MODE, TRUE);
+
+		if ( ! $result)
+		{
+			return FALSE;
+		}
 
 		if ($with_index)
 		{
@@ -133,6 +139,8 @@ class Filesystem {
 		}
 
 		$this->ensureCorrectAccessMode($path);
+
+		return TRUE;
 	}
 
 	/**
