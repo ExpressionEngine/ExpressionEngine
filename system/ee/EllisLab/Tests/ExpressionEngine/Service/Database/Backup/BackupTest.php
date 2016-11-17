@@ -21,11 +21,12 @@ class BackupTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->filesystem = NULL;
 		$this->query = NULL;
+		$this->formatter = NULL;
+		$this->backup = NULL;
 	}
 
 	public function testConservativeInserts()
 	{
-		return;
 		$this->query->shouldReceive('getTables')->andReturn([
 			'table1' => ['rows' => 20, 'size' => 1234],
 			'table2' => ['rows' => 50, 'size' => 1234],
@@ -34,13 +35,6 @@ class BackupTest extends \PHPUnit_Framework_TestCase {
 			'table5' => ['rows' => 1, 'size' => 1234],
 			'table6' => ['rows' => 0, 'size' => 1234],
 		]);
-
-		$this->query->shouldReceive('getTotalRows')->with('table1')->andReturn(20);
-		$this->query->shouldReceive('getTotalRows')->with('table2')->andReturn(50);
-		$this->query->shouldReceive('getTotalRows')->with('table3')->andReturn(75);
-		$this->query->shouldReceive('getTotalRows')->with('table4')->andReturn(26);
-		$this->query->shouldReceive('getTotalRows')->with('table5')->andReturn(1);
-		$this->query->shouldReceive('getTotalRows')->with('table6')->andReturn(0);
 
 		$this->backup->setRowLimit(50);
 
@@ -91,6 +85,7 @@ class BackupTest extends \PHPUnit_Framework_TestCase {
 			'insert_string' => '',
 			'rows_exported' => 1
 		]);
+		$this->query->shouldReceive('getInsertsForTable')->with('table6', 0, 28)->andReturn(NULL);
 
 		$returned = $this->backup->writeTableInsertsConservatively('table4', 5);
 		$this->assertEquals(FALSE, $returned);
