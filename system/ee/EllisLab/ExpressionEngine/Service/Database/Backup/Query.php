@@ -47,9 +47,9 @@ class Query {
 	protected $tables = [];
 
 	/**
-	 * @var array Cache array of tables and their corresponding accurate row counts
+	 * @var array Cache array of tables and their DESCRIBE output
 	 */
-	protected $table_row_counts = [];
+	protected $table_descriptions = [];
 
 	/**
 	 * @var int Number of bytes to limit INSERT query sizes to
@@ -179,9 +179,7 @@ class Query {
 	 */
 	public function getInsertsForTable($table_name, $offset, $limit)
 	{
-		$data = $this->query
-			->query(sprintf('DESCRIBE `%s`;', $table_name))
-			->result_array();
+		$data = $this->getTableDescription($table_name);
 
 		// Surround fields with backticks
 		$fields = array_map(function($row)
@@ -219,6 +217,32 @@ class Query {
 			'insert_string' => trim($inserts),
 			'rows_exported' => count($rows)
 		];
+	}
+
+	/**
+	 * Runs a DESCRIBE query for a given table and returns it
+	 *
+	 * @param	string	$table_name	Table name
+	 * @return	array	Output of DESCRIBE query
+	 *	[
+	 *		[
+	 *			'Field' => 'column1',
+	 *			'Type' => 'int',
+	 *			...
+	 *		],
+	 *		...
+	 *	]
+	 */
+	protected function getTableDescription($table_name)
+	{
+		if ( ! isset($this->table_descriptions[$table_name]))
+		{
+			$this->table_descriptions[$table_name] = $this->query
+				->query(sprintf('DESCRIBE `%s`;', $table_name))
+				->result_array();
+		}
+
+		return $this->table_descriptions[$table_name];
 	}
 
 	/**
@@ -377,12 +401,9 @@ class Query {
 		{
 			$this->columns[$table_name] = [];
 
-			$query = $this->query
-				->query(sprintf('DESCRIBE `%s`', $table_name));
-
-			foreach ($query->result() as $row)
+			foreach ($this->getTableDescription($table_name) as $column)
 			{
-				$this->columns[$table_name][$row->Field] = $this->getDataType($row->Type);
+				$this->columns[$table_name][$column['Field']] = $this->getDataType($column['Type']);
 			}
 		}
 
