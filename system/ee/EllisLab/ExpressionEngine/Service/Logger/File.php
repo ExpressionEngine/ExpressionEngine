@@ -47,12 +47,7 @@ class File {
 
 		$log_path = $this->filesystem->dirname($this->file_path);
 
-		if ( ! $this->filesystem->exists($log_path) && $this->filesystem->isWritable($log_path))
-		{
-			$this->filesystem->mkdir($log_path);
-		}
-
-		if ( ! $this->filesystem->exists($log_path))
+		if ( ! $this->filesystem->exists($log_path) && ! $this->filesystem->mkdir($log_path))
 		{
 			throw new \Exception('Log file path does not exist: ' . $log_path, 1);
 		}
