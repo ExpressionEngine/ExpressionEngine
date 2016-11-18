@@ -161,6 +161,7 @@ class StepperWithInjection {
 	public function step3()
 	{
 		$this->step3_called = TRUE;
+		return 'step4';
 	}
 
 	public function injectedStep()

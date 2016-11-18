@@ -65,7 +65,10 @@ trait Steppable {
 				return;
 			}
 
-			array_splice($this->steps, $index + 1, 0, $return);
+			if ( ! in_array($return, $this->steps))
+			{
+				array_splice($this->steps, $index + 1, 0, $return);
+			}
 		}
 	}
 
