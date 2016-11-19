@@ -82,8 +82,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160818');
-		define('APP_VER',		'3.4.2');
+		define('APP_BUILD',		'20161026');
+		define('APP_VER',		'3.4.4');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -678,12 +678,6 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
-
-		// Record the New Relic transaction
-		$this->set_newrelic_transaction(function() {
-			$template = ee()->TMPL->templates_loaded[0];
-			return "{$template['group_name']}/{$template['template_name']}";
-		});
 	}
 
 	// ------------------------------------------------------------------------

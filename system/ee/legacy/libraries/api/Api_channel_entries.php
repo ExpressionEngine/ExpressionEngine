@@ -142,7 +142,7 @@ class Api_channel_entries extends Api {
 			'title'						=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 			'url_title'					=> $data['url_title'],
 			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> ee()->localize->format_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
+			'edit_date'					=> (isset($data['edit_date'])) ? $data['edit_date'] : ee()->localize->now(),
 			'versioning_enabled'		=> $data['versioning_enabled'],
 			'year'						=> ee()->localize->format_date('%Y', $data['entry_date']),
 			'month'						=> ee()->localize->format_date('%m', $data['entry_date']),

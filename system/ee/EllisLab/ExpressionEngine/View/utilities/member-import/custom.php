@@ -2,6 +2,7 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(ee('CP/URL')->make('utilities/member-import/create-custom-fields'), 'class="settings"', $form_hidden)?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 	<fieldset class="grid-publish col-group last">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('map_custom_fields')?></h3>

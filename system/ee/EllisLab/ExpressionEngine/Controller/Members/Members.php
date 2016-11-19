@@ -557,17 +557,13 @@ class Members extends CP_Controller {
 		$table = $this->initializeTable();
 
 		$sort_map = array(
-			'member_group' => 'group_id',
-			'dates' => 'join_date'
+			'member_id'    => 'member_id',
+			'username'     => 'username',
+			'dates'        => 'join_date',
+			'member_group' => 'group_id'
 		);
 
-		$sort_col = $table->config['sort_col'];
-		if (isset($sort_map[$sort_col]))
-		{
-			$sort_col = $sort_map[$sort_col];
-		}
-
-		$members = $members->order($sort_col, $table->config['sort_dir'])
+		$members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
 			->all();
 
 		$data = array();
@@ -1009,6 +1005,7 @@ class Members extends CP_Controller {
 		$email_message = ee()->functions->var_swap($template->template_data, $swap);
 
 		ee()->email->wordwrap = TRUE;
+		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(
 			ee()->config->item('webmaster_email'),
 			ee()->config->item('webmaster_name')

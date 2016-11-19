@@ -121,11 +121,11 @@ feature 'Channel Sets' do
       channel_set['category_groups'][0]['categories'][0]['cat_name'].should == 'News'
       channel_set['category_groups'][0]['categories'][0]['cat_url_title'].should == 'news'
       channel_set['category_groups'][0]['categories'][0]['cat_description'].should == ''
-      channel_set['category_groups'][0]['categories'][0]['cat_order'].should == '2'
+      channel_set['category_groups'][0]['categories'][0]['cat_order'].should == 2
       channel_set['category_groups'][0]['categories'][1]['cat_name'].should == 'Bands'
       channel_set['category_groups'][0]['categories'][1]['cat_url_title'].should == 'bands'
       channel_set['category_groups'][0]['categories'][1]['cat_description'].should == ''
-      channel_set['category_groups'][0]['categories'][1]['cat_order'].should == '3'
+      channel_set['category_groups'][0]['categories'][1]['cat_order'].should == 3
       channel_set['upload_destinations'].size.should == 0
 
       expected_files.sort.should == found_files.sort.map(&:name)
@@ -429,7 +429,7 @@ feature 'Channel Sets' do
           column['instructions'].should == compare[:instructions]
           column['required'].should == (compare[:required] ? 'y' : 'n')
           column['search'].should == (compare[:searchable] ? 'y' : 'n')
-          column['width'].should == compare[:width]
+          column['width'].should == compare[:width].to_i
 
           column['settings'].each do |key, value|
             if compare.has_key? key.to_sym then

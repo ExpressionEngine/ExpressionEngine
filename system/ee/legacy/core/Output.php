@@ -372,6 +372,27 @@ class EE_Output {
 			}
 		}
 
+		if (REQ == 'PAGE')
+		{
+			/* -------------------------------------------
+			/*	Hidden Configuration Variables
+			/*	- remove_unparsed_vars => Whether or not to remove unparsed EE variables
+			/*  This is most helpful if you wish for debug to be set to 0, as EE will not
+			/*  strip out javascript.
+			/* -------------------------------------------*/
+			$remove_vars = (ee()->config->item('remove_unparsed_vars') == 'y');
+			$this->remove_unparsed_variables($remove_vars);
+
+			if (ee()->config->item('debug') == 0 &&
+				$this->remove_unparsed_variables === TRUE)
+			{
+				$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
+			}
+
+			// Garbage Collection
+			ee()->core->_garbage_collection();
+		}
+
 		// --------------------------------------------------------------------
 
 		echo $output;  // Send it to the browser!

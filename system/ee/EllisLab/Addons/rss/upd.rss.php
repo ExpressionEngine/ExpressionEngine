@@ -78,7 +78,7 @@ class Rss_upd {
 
 	public function update($current='')
 	{
-		return FALSE;
+		return TRUE;
 	}
 
 }
