@@ -111,7 +111,10 @@ class Update extends Query {
 
 	protected function actOnGateway($gateway, $object)
 	{
-		$values = $gateway->getValues();
+		$values = array_intersect_key(
+			$object->getDirty(),
+			array_flip($gateway->getFieldList())
+		);
 
 		if (empty($values))
 		{
