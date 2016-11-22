@@ -4,7 +4,7 @@ while [[ $# > 0 ]]
 	do
 	key="$1"
 
-	PHP_VERSION="7.0.4"
+	PHP_VERSION="7.0.13"
 
 	case $key in
 		-p|--php)
@@ -25,8 +25,8 @@ done
 
 cp /app/ee.tar /var/www/html/
 
-pushd /var/www/html/
-	tar xf ee.tar > /dev/null
+pushd /var/www/html/ > /dev/null
+	tar xmf ee.tar > /dev/null
 	# TODO automatically replace app_version?
 	cp tests/docker/config.php system/user/config/
 	cp tests/docker/config.rb tests/rspec/
@@ -38,7 +38,7 @@ pushd /var/www/html/
 	chmod 777 tests/rspec/support/tmp
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
-popd
+popd > /dev/null
 
 rm /app/ee.tar
 
@@ -76,14 +76,14 @@ if [ "${COMMAND}" == "test" ]; then
 
 	source /usr/local/rvm/scripts/rvm
 
-	pushd /var/www/html/tests/rspec
+	pushd /var/www/html/tests/rspec > /dev/null
 		bundle install --no-deployment --path=~/gems/ > /dev/null
 		xvfb-run -a bundle exec rspec -c -fd $FILES
-	popd
+	popd > /dev/null
 
 	mkdir /app/tests/rspec/screenshots
-	pushd /app/tests/rspec/screenshots
+	pushd /app/tests/rspec/screenshots > /dev/null
 		#rm -rf *
 		cp -r /var/www/html/tests/rspec/screenshots/* .
-	popd
+	popd > /dev/null
 fi
