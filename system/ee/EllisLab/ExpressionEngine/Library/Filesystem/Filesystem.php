@@ -578,6 +578,16 @@ class Filesystem {
 	}
 
 	/**
+	 * include() a file
+	 *
+	 * @param	string	$filename	Full path to file to include
+	 */
+	public function include($filename)
+	{
+		include_once($filename);
+	}
+
+	/**
 	 * Add EE's default index file to a directory
 	 */
 	protected function addIndexHtml($dir)
