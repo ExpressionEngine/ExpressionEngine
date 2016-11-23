@@ -545,28 +545,28 @@ class Communicate extends Utilities {
 	 */
 	private function deliverManyEmails(EmailCache $email)
 	{
-		if (count($email->recipient_array) < 1)
+		$recipient_array = $email->recipient_array;
+		$number_to_send = count($recipient_array);
+
+		if ($number_to_send < 1)
 		{
 			return 0;
 		}
-
-		$number_to_send = count($email->recipient_array);
 
 		if (ee()->config->item('email_batchmode') == 'y')
 		{
 			$batch_size = (int) ee()->config->item('email_batch_size');
 
-			if ($batch_size > count($email->recipient_array))
+			if ($number_to_send > $batch_size)
 			{
 				$number_to_send = $batch_size;
 			}
 		}
 
-		$recipient_array = $email->recipient_array;
-
 		for ($x = 0; $x < $number_to_send; $x++)
 		{
 			$email_address = array_shift($recipient_array);
+
 			if ( ! $this->deliverEmail($email, $email_address))
 			{
 				$email->delete();
