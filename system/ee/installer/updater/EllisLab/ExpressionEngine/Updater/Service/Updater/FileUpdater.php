@@ -22,7 +22,7 @@ use EllisLab\ExpressionEngine\Updater\Service\Config\File;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Updater class
+ * ExpressionEngine File Updater class
  *
  * @package		ExpressionEngine
  * @subpackage	Updater
