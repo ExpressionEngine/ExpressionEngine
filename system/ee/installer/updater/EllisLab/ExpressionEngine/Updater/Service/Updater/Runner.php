@@ -37,6 +37,7 @@ class Runner {
 	protected $steps = [
 		'backupDatabase',
 		'updateFiles',
+		'updateDatabase',
 		'rollback', // Temporary for testing
 		'restoreDatabase' // Temporary for testing
 	];
@@ -77,6 +78,30 @@ class Runner {
 	public function updateFiles()
 	{
 		$this->file_updater->updateFiles();
+	}
+
+	public function updateDatabase($step = NULL)
+	{
+		$db_updater = new Service\Updater\DatabaseUpdater('3.2.0', new Filesystem());
+
+		if ($db_updater->hasUpdatesToRun())
+		{
+			if ( ! $step)
+			{
+				$db_updater->runStep($db_updater->getFirstStep());
+			}
+			else
+			{
+				$db_updater->runStep($step);
+			}
+
+			if ($db_updater->getNextStep())
+			{
+				return sprintf('updateDatabase[%s]', $db_updater->getNextStep());
+			}
+		}
+
+		return 'rollback';
 	}
 
 	public function rollback()
