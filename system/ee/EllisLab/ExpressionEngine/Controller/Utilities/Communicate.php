@@ -385,7 +385,7 @@ class Communicate extends Utilities {
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, TRUE);
 
 		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
@@ -430,7 +430,7 @@ class Communicate extends Utilities {
 
 		$this->deliverManyEmails($email);
 
-		if (empty($email->recipient_array))
+		if ($email->total_sent == count($email->recipient_array))
 		{
 			$debug_msg = ee()->email->print_debugger(array());
 
@@ -444,9 +444,9 @@ class Communicate extends Utilities {
 			$stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
 			$stats = str_replace("%y", ($email->total_sent), $stats);
 
-			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
+			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.(count($email->recipient_array)-$email->total_sent);
 
-			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, TRUE);
 
 			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
@@ -545,7 +545,7 @@ class Communicate extends Utilities {
 	 */
 	private function deliverManyEmails(EmailCache $email)
 	{
-		$recipient_array = $email->recipient_array;
+		$recipient_array = array_slice($email->recipient_array, $email->total_sent);
 		$number_to_send = count($recipient_array);
 
 		if ($number_to_send < 1)
