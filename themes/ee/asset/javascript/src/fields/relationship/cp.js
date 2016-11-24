@@ -36,7 +36,7 @@
 			relationship.find('.relate-wrap-chosen label.chosen').append(
 				$('<input/>', {
 					type: 'hidden',
-					name: input_name + '[data][]',
+					name: input_name,
 					value: $(this).val()
 				})
 			);
@@ -83,7 +83,7 @@
 				.append(
 					$('<input/>', {
 						type: 'hidden',
-						name: input_name + '[data][]',
+						name: input_name,
 						value: $(this).val()
 					})
 				);
@@ -197,7 +197,7 @@
 		 * @param	{boolean}	multiple	Whether or not this is a multi-relationship field
 		 */
 		function makeElementForEntry(entry, input_name, multiple) {
-			var checked = $('input[name="'+input_name+'[data][]"][value='+entry.entry_id+']').length > 0,
+			var checked = $('input[name="'+input_name+'"][value='+entry.entry_id+']').length > 0,
 				checked_class = checked ? ' chosen' : '',
 				choice_element = multiple ? 'checkbox' : 'radio';
 

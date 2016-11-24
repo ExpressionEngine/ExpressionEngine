@@ -87,7 +87,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function save($data, $model = NULl)
 	{
-		$data = isset($data['data']) ? $data['data'] : array();
+		$data = isset($data['data']) ? array_filter($data['data'], 'is_numeric') : array();
 
 		$cache_name = $this->field_name;
 

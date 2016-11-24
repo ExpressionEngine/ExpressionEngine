@@ -31,7 +31,7 @@
 		<?php
 		// This input is just to keep track of what Grid namespacing, if any,
 		// we should be using for dynamically-generated inputs ?>
-		<input type="hidden" name="<?=$field_name?>" class="input-name" value="">
+		<input type="hidden" name="<?=$field_name?>[data][]" class="input-name" value="">
 		<?php $chosen = NULL; ?>
 			<div class="no-results<?php if ( ! empty($entries)) echo " hidden" ?>">
 				<?=lang('no_entries_found')?>
