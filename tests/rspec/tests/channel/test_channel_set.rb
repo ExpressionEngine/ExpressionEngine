@@ -538,7 +538,7 @@ feature 'Channel Sets' do
       it 'imports a relationship field with all channels' do
         import_channel_set 'relationships-all-channels'
 
-        $db.query('SELECT * FROM exp_channel_fields WHERE field_id = 11').each do |row|
+        $db.query('SELECT * FROM exp_channel_fields WHERE field_name = "relationships"').each do |row|
           row['field_name'].should == 'relationships'
           field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
           field_settings['expired'].should == 0
@@ -554,7 +554,7 @@ feature 'Channel Sets' do
       it 'imports a relationship field with a specified channel' do
         import_channel_set 'relationships-specified-channels'
 
-        $db.query('SELECT * FROM exp_channel_fields WHERE field_id = 11').each do |row|
+        $db.query('SELECT * FROM exp_channel_fields WHERE field_name = "relationships"').each do |row|
           row['field_name'].should == 'relationships'
           field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
           field_settings['expired'].should == 0

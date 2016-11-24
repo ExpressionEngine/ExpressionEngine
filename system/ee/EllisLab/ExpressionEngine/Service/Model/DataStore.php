@@ -113,17 +113,17 @@ class DataStore {
 			$name = $prefix.':'.$name;
 		}
 
-		if (count($data))
-		{
-			$model->set($data);
-		}
-
 		if ( ! $is_object)
 		{
 			$model->setName($name);
 		}
 
 		$model->setFacade($facade);
+
+		if (count($data))
+		{
+			$model->set($data);
+		}
 
 		$this->initializeAssociationsOn($model);
 

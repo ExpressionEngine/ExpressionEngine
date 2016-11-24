@@ -41,9 +41,11 @@
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<li><a href="<?=$link?>"><?=$site_name?></a></li>
 							<?php endforeach ?>
-							<?php if (ee()->cp->allowed_group('can_admin_sites')
-									  && ee('License')->getEELicense()->canAddSites(ee('Model')->get('Site')->count())): ?>
-								<li><a class="nav-add" href="<?=ee('CP/URL', 'msm/create')?>"><i class="icon-add"></i><?=lang('new_site')?></a></li>
+							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
+								<li><a class="nav-manage" href="<?=ee('CP/URL', 'msm')?>"><i class="icon-settings"></i>Manage Sites</a></li>
+								<?php if (ee('License')->getEELicense()->canAddSites(ee('Model')->get('Site')->count())): ?>
+									<li><a class="nav-add" href="<?=ee('CP/URL', 'msm/create')?>"><i class="icon-add"></i><?=lang('new_site')?></a></li>
+								<?php endif ?>
 							<?php endif ?>
 						</ul>
 					</div>

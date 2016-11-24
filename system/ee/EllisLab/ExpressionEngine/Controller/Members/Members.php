@@ -1005,6 +1005,7 @@ class Members extends CP_Controller {
 		$email_message = ee()->functions->var_swap($template->template_data, $swap);
 
 		ee()->email->wordwrap = TRUE;
+		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(
 			ee()->config->item('webmaster_email'),
 			ee()->config->item('webmaster_name')
