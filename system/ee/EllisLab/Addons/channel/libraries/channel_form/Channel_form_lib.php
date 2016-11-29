@@ -397,9 +397,16 @@ class Channel_form_lib
 			{
 				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*?)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{
+					// Map field short name to field_id_x
+					if (array_key_exists($tag_name, $this->custom_fields))
+					{
+						$field = $this->custom_fields[$tag_name];
+						$name = 'field_id_'.$field->field_id;
+					}
+
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($tag_name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
 					}
 				}
 			}
