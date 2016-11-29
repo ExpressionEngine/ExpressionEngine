@@ -1983,6 +1983,11 @@ GRID_FALLBACK;
 			);
 		}
 
+		if ( ! empty($params['show']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_id', $params['show'], 'in_array');
+		}
+
 		if ( ! empty($params['show_group']))
 		{
 			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
@@ -3327,7 +3332,7 @@ GRID_FALLBACK;
 	{
 		$close_key = ($close_key) ? $close_key : $key;
 
-		if (preg_match_all('/'.LD.$key.RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
+		if (preg_match_all('/'.LD.preg_quote($key).RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
 		{
 			foreach ($matches[1] as $match_index => $var_pair_tagdata)
 			{
