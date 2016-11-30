@@ -72,6 +72,7 @@
 
 	if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))
 	{
+		define('INSTALLER', TRUE);
 		$core = new Core\Installer();
 	}
 	else
@@ -155,6 +156,9 @@
  *  Send the response
  * ------------------------------------------------------
  */
-	$response->send();
+	if ($response)
+	{
+		$response->send();
+	}
 
 // EOF

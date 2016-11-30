@@ -67,6 +67,20 @@ class Controller {
 
 class_alias('Controller', 'CI_Controller');
 
+/**
+ * Base controller, bootstraps EE, nothing else
+ */
+class Base_Controller extends CI_Controller {
+
+	function __construct()
+	{
+		parent::__construct();
+
+		ee()->load->library('core');
+		ee()->core->bootstrap();
+	}
+}
+
 // ------------------------------------------------------------------------
 
 /**
@@ -78,14 +92,11 @@ class_alias('Controller', 'CI_Controller');
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class EE_Controller extends CI_Controller {
+class EE_Controller extends Base_Controller {
 
 	function __construct()
 	{
 		parent::__construct();
-
-		ee()->load->library('core');
-		ee()->core->bootstrap();
 		ee()->core->run_ee();
 	}
 }
