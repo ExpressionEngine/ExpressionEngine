@@ -185,6 +185,7 @@ class Wizard extends CI_Controller {
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
 		$this->load->library('smartforge');
+		$this->load->library('progress');
 
 		$this->load->model('installer_template_model', 'template_model');
 
@@ -1101,8 +1102,6 @@ class Wizard extends CI_Controller {
 		$this->load->library('extensions');
 
 		$this->load->library('javascript');
-
-		$this->load->library('progress');
 
 		// if any of the underlying code uses caching, make sure we do nothing
 		ee()->config->set_item('cache_driver', 'dummy');
