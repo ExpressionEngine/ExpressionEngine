@@ -97,6 +97,16 @@ class SteppableTest extends \PHPUnit_Framework_TestCase {
 		$this->stepper->runStep('step4');
 		$this->assertFalse($this->stepper->getNextStep());
 	}
+
+	// Step string parser should allow for another step to be returned with
+	// an argument
+	public function testNestedInjectedStep()
+	{
+		$this->stepper = new StepperWithInjection();
+		$this->stepper->runStep('injectNested[nestedStep[argument]]');
+
+		$this->assertEquals('nestedStep[argument]', $this->stepper->getNextStep());
+	}
 }
 
 class Stepper {
@@ -190,5 +200,10 @@ class StepperWithInjection {
 	{
 		$this->injectedWithMultipleParamsCalled = TRUE;
 		$this->injectedWithMultipleParamsResult = [$string, $number];
+	}
+
+	public function injectNested($step)
+	{
+		return $step;
 	}
 }
