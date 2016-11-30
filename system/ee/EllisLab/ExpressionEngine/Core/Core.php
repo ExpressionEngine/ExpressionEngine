@@ -109,7 +109,12 @@ abstract class Core {
 		// Boot installer instead of Core?
 		if (defined('INSTALLER'))
 		{
-			$routing = $this->getRouting($request);
+			$routing = [
+				'directory' => '',
+				'class' => 'wizard',
+				'method' => 'index',
+				'segments' => []
+			];
 			$routing = $this->loadController($routing);
 			\Wizard::_setFacade($this->legacy->getFacade());
 			new \Wizard();
