@@ -73,7 +73,8 @@ class DatabaseUpdater {
 		$this->filesystem->include($this->update_files_path . $filename);
 
 		$updater = new \Updater();
-		// Run ->do_update and TADA!
+		$updater->do_update();
+		unset($updater);
 	}
 
 	/**

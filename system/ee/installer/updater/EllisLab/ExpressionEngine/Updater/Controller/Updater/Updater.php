@@ -51,10 +51,10 @@ class Updater {
 		}
 		catch (\Exception $e)
 		{
-			return [
+			return json_encode([
 				'messageType' => 'error',
 				'message' => $e->getMessage()
-			];
+			]);
 		}
 
 		// Language and markup for front-end; each string
@@ -62,13 +62,18 @@ class Updater {
 		// step name has run
 		$messages = [
 			'backupDatabase' => 'Backing up database<span>...</span>',
-			'updateFiles' => 'Files updated!'
+			'updateFiles' => 'Files updated!',
+			'updateDatabase' => 'Running database updates...',
 		];
 
 		// TODO: Make better
 		if (strpos($step, 'backupDatabase') === 0)
 		{
-			$message = 'Backing up database<span>...</span>';
+			$message = $messages['backupDatabase'];
+		}
+		elseif (strpos($step, 'updateDatabase') === 0)
+		{
+			$message = $messages['updateDatabase'];
 		}
 		else
 		{

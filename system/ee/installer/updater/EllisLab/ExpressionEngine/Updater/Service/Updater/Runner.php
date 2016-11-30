@@ -53,7 +53,7 @@ class Runner {
 	public function backupDatabase($table_name = NULL, $offset = 0)
 	{
 		// TODO: ensure this directory exists
-		// TODO: This isn't available inside the micro app
+		// TODO: Find out if we even need to make a backup
 		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
 		$backup->makeCompactFile();
 
@@ -82,7 +82,7 @@ class Runner {
 
 	public function updateDatabase($step = NULL)
 	{
-		$db_updater = new Service\Updater\DatabaseUpdater('3.2.0', new Filesystem());
+		$db_updater = new Service\Updater\DatabaseUpdater(ee()->config->item('app_version'), new Filesystem());
 
 		if ($db_updater->hasUpdatesToRun())
 		{
