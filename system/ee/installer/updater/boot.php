@@ -1,17 +1,24 @@
 <?php
 
-// TODO: We need to figure out how to include the latest boot.common helper functions
-// after the old ones were already included in the CLI bootstrap
-if ( ! function_exists('is_php'))
+if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
 {
-	require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
+	define('BOOT_ONLY', TRUE);
+	include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 }
+else
+{
+	// TODO: We need to figure out how to include the latest boot.common helper functions
+	// after the old ones were already included in the CLI bootstrap
+	if ( ! function_exists('is_php'))
+	{
+		require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
+	}
 
-/*
- * ------------------------------------------------------
- *  Constants
- * ------------------------------------------------------
- */
+	/*
+	 * ------------------------------------------------------
+	 *  Constants
+	 * ------------------------------------------------------
+	 */
 	if ( ! defined('BASEPATH') && file_exists($autoloader_path = SYSPATH . 'ee/EllisLab/ExpressionEngine/Core/Autoloader.php'))
 	{
 		define('BASEPATH', SYSPATH.'ee/legacy/');
@@ -86,6 +93,8 @@ if ( ! function_exists('is_php'))
 		require_once(BASEPATH.'database/DB.php');
 		ee()->db = DB('', NULL);
 	}
+}
+
 
 /*
  * ------------------------------------------------------
