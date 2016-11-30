@@ -110,7 +110,10 @@ class ProgressIterator extends ArrayIterator {
 		$current_step = $this->key();
 		$total_steps = $this->count();
 
-		ee()->progress->update_state("Step $current_step of $total_steps");
+		if (isset(ee()->progress))
+		{
+			ee()->progress->update_state("Step $current_step of $total_steps");
+		}
 
 		return parent::current();
 	}
