@@ -1612,7 +1612,7 @@ class EE_Config {
 			$value = isset($values[$name]) ? $values[$name] : $this->item($name);
 
 			$sub = '';
-			$details = '';
+			$details = array();
 			$selected = '';
 
 			if (isset($subtext[$name]))

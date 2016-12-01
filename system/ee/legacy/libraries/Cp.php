@@ -1194,7 +1194,8 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$redirect = ee('CP/URL')->make('homepage');
+			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$redirect = $member->getCPHomepageURL($site_id);
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings
