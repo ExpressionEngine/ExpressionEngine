@@ -81,7 +81,7 @@ class Channel_form_lib
 
 
 	private $all_params = array(
-		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
+		'allow_comments', 'author_only', 'category', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
 		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
 		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
@@ -397,9 +397,16 @@ class Channel_form_lib
 			{
 				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*?)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{
+					// Map field short name to field_id_x
+					if (array_key_exists($tag_name, $this->custom_fields))
+					{
+						$field = $this->custom_fields[$tag_name];
+						$name = 'field_id_'.$field->field_id;
+					}
+
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($tag_name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
 					}
 				}
 			}
@@ -1625,6 +1632,11 @@ GRID_FALLBACK;
 			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 
+		if ( ! $this->edit && is_array($this->_meta['category']))
+		{
+			$_POST['category'] = $this->_meta['category'];
+		}
+
 		$_POST['revision_post'] = $_POST;
 
 		$this->_member_group_override();
@@ -1969,6 +1981,11 @@ GRID_FALLBACK;
 				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
 				"$1{categories$3show_group=$4}$5"
 			);
+		}
+
+		if ( ! empty($params['show']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_id', $params['show'], 'in_array');
 		}
 
 		if ( ! empty($params['show_group']))
@@ -2622,8 +2639,11 @@ GRID_FALLBACK;
 			// none of these fields are allowed by direct POST
 
 			// url_title in the meta array tells us which entry we're editing, not what
-			// to set the url_title to, so allow it to be in POST for editing
+			// to set the url_title to, so allow it to be in POST for editing;
+			// Do not allow category or allow_comments to be overridden by POST
+			// if set as a parameter
 			if ($name == 'url_title' OR
+				($name == 'category' && $this->_meta[$name] === FALSE) OR
 				($name == 'allow_comments' && $this->_meta[$name] === FALSE))
 			{
 				continue;
@@ -2635,6 +2655,14 @@ GRID_FALLBACK;
 		if (($allow_comments = $this->bool_string($this->_meta['allow_comments'], NULL)) !== NULL)
 		{
 			$_POST['allow_comments'] = $allow_comments ? 'y' : 'n';
+		}
+
+		if ($this->_meta['category'] !== FALSE)
+		{
+			$this->_meta['category'] = array_filter(explode('|', $this->_meta['category']), function($cat)
+			{
+				return is_numeric($cat);
+			});
 		}
 
 		$this->_meta['channel_id'] = ($this->_meta['channel_id'] != FALSE) ? $this->_meta['channel_id'] : $this->_meta['channel'];
@@ -3304,7 +3332,7 @@ GRID_FALLBACK;
 	{
 		$close_key = ($close_key) ? $close_key : $key;
 
-		if (preg_match_all('/'.LD.$key.RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
+		if (preg_match_all('/'.LD.preg_quote($key).RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
 		{
 			foreach ($matches[1] as $match_index => $var_pair_tagdata)
 			{

@@ -316,22 +316,26 @@ class Member extends ContentModel {
 	 * use the default of 'homepage'. We prioritize on the Member's preferences
 	 * then the groups preferences, falling back to the default.
 	 *
+	 * @param	int	Optional site ID to get member homepage for, defaults to current site
 	 * @return EllisLab\ExpressionEngine\Library\CP\URL The URL
 	 */
-	public function getCPHomepageURL()
+	public function getCPHomepageURL($site_id = NULL)
 	{
 		$cp_homepage = NULL;
+
+		if ( ! $site_id)
+		{
+			$site_id = ee()->config->item('site_id');
+		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
 		$member_group = ee('Model')->get('MemberGroup')
 			->filter('group_id', $this->group_id)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', $site_id)
 			->first();
 
 		if ( ! empty($this->cp_homepage))
 		{
-			$site_id = ee()->config->item('site_id');
-
 			$cp_homepage = $this->cp_homepage;
 			$cp_homepage_channel = $this->cp_homepage_channel;
 			$cp_homepage_channel = $cp_homepage_channel[$site_id];

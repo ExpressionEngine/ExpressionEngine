@@ -2,9 +2,18 @@ require './bootstrap.rb'
 
 feature 'File Manger / Crop File' do
 
-  before(:each) do
-    @upload_dir = File.expand_path('../../images/about/')
+	before(:all) do
+		# Create backups of these folders so we can restore them after each test
+		@upload_dir = File.expand_path('../../images/about/')
+		system('mkdir /tmp/about')
+		system('cp -r ' + @upload_dir + '/* /tmp/about')
+	end
 
+	after(:all) do
+    system('rm -rf /tmp/about')
+  end
+
+  before(:each) do
     cp_session
     @page = CropFile.new
     @return = FileManager.new
@@ -52,7 +61,9 @@ feature 'File Manger / Crop File' do
   end
 
   after(:each) do
-    system('git checkout -- ' + @upload_dir)
+    system('rm -rf ' + @upload_dir)
+    system('mkdir ' + @upload_dir)
+    system('cp -r /tmp/about/* ' + @upload_dir)
     FileUtils.chmod_R 0777, @upload_dir
   end
 

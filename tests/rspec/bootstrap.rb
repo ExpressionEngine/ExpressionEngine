@@ -15,19 +15,16 @@ $db = Mysql2::Client.new(
   flags:    Mysql2::Client::MULTI_STATEMENTS
 )
 
-# Include our helpers
-Dir.glob(File.dirname(__FILE__) + '/helpers/*', &method(:require))
-
-# These two pages must be included in this order (not all filesystems
-# run Dir.glob() alphabetically)
+# Include our base classes first before trying to include files
+# that rely on them
 require './pages/_section_menu.rb'
 require './pages/cp_page.rb'
 
-# Include parent pages for sections of the CP
-Dir.glob(File.dirname(__FILE__) + '/pages/sections/*.rb', &method(:require))
+# Include helpers and pages
+Dir['./helpers/*.rb'].sort.each {|file| require file }
+Dir['./pages/**/*.rb'].sort.each {|file| require file }
 
-# Include the rest of our pages
-Dir.glob(File.dirname(__FILE__) + '/pages/**/*.rb', &method(:require))
+Encoding.default_external = "UTF-8"
 
 Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit

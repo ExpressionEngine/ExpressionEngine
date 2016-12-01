@@ -279,6 +279,7 @@ class ChannelEntry extends ContentModel {
 
 		$entry = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_id', 'title')
+			->filter('entry_id', '!=', $this->getId())
 			->filter('channel_id', $channel_id)
 			->filter('url_title', $value)
 			->first();
