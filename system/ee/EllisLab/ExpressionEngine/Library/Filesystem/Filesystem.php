@@ -582,7 +582,7 @@ class Filesystem {
 	 *
 	 * @param	string	$filename	Full path to file to include
 	 */
-	public function include($filename)
+	public function include_file($filename)
 	{
 		include_once($filename);
 	}

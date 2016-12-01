@@ -70,7 +70,7 @@ class DatabaseUpdater {
 	 */
 	public function runUpdateFile($filename)
 	{
-		$this->filesystem->include($this->update_files_path . $filename);
+		$this->filesystem->include_file($this->update_files_path . $filename);
 
 		$updater = new \Updater();
 		$updater->do_update();
