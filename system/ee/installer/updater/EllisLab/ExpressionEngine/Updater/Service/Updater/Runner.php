@@ -82,6 +82,7 @@ class Runner {
 
 	public function updateDatabase($step = NULL)
 	{
+		// TODO: Inject logger into here
 		$db_updater = new Service\Updater\DatabaseUpdater(ee()->config->item('app_version'), new Filesystem());
 
 		if ($db_updater->hasUpdatesToRun())
