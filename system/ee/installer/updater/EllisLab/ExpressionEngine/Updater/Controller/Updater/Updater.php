@@ -64,6 +64,8 @@ class Updater {
 			'backupDatabase' => 'Backing up database<span>...</span>',
 			'updateFiles' => 'Files updated!',
 			'updateDatabase' => 'Running database updates...',
+			'rollback' => 'Rolling back install...',
+			'restoreDatabase' => 'Restoring database...',
 		];
 
 		// TODO: Make better
