@@ -1,6 +1,9 @@
 <?php
 
-if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
+// Load full EE as bootstrap if we're running database updates
+if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
+	isset($_GET['step']) &&
+	strpos($_GET['step'], 'updateDatabase') === 0)
 {
 	define('BOOT_ONLY', TRUE);
 	include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
