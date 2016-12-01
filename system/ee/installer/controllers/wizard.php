@@ -184,7 +184,6 @@ class Wizard extends CI_Controller {
 		$this->load->driver('cache');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
-		$this->load->library('smartforge');
 		$this->load->library('progress');
 
 		$this->load->model('installer_template_model', 'template_model');
@@ -1141,6 +1140,8 @@ class Wizard extends CI_Controller {
 		// Instantiate the updater class
 		$UD = new Updater;
 		$method = 'do_update';
+
+		$this->load->library('smartforge');
 
 		$this->logger->updater("Updating to {$next_version}");
 
