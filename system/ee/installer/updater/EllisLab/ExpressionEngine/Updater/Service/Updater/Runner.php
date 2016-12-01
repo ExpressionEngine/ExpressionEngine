@@ -86,6 +86,8 @@ class Runner {
 
 		if ($db_updater->hasUpdatesToRun())
 		{
+			ee()->load->library('smartforge');
+
 			if ( ! $step)
 			{
 				$db_updater->runStep($db_updater->getFirstStep());
