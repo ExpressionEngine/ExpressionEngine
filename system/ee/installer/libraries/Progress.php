@@ -110,7 +110,7 @@ class ProgressIterator extends ArrayIterator {
 		$current_step = $this->key();
 		$total_steps = $this->count();
 
-		if (isset(ee()->progress))
+		if (isset(ee()->progress) && php_sapi_name() !== 'cli')
 		{
 			ee()->progress->update_state("Step $current_step of $total_steps");
 		}
