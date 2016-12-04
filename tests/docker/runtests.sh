@@ -4,7 +4,7 @@ while [[ $# > 0 ]]
 	do
 	key="$1"
 
-	PHP_VERSION="7.0.13"
+	PHP_VERSION="7.1.0"
 
 	case $key in
 		-p|--php)
