@@ -745,7 +745,7 @@ class Uploads extends AbstractFilesController {
 			->filter('upload_location_id', $upload_id)->all();
 
 		$size_choices = array();
-		$js_size = array($upload_id => '');
+		$js_size = array();
 		foreach ($sizes as $size)
 		{
 			// For checkboxes
@@ -753,7 +753,13 @@ class Uploads extends AbstractFilesController {
 				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
 
 			// For JS sync script
-			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height, 'watermark_id' => $size->watermark_id);
+			$js_size[$size->upload_location_id][$size->id] = array(
+				'short_name'   => $size->short_name,
+				'resize_type'  => $size->resize_type,
+				'width'        => $size->width,
+				'height'       => $size->height,
+				'watermark_id' => $size->watermark_id
+			);
 		}
 
 		// Only show the manipulations section if there are manipulations
@@ -778,6 +784,7 @@ class Uploads extends AbstractFilesController {
 		// Globals needed for JS script
 		ee()->javascript->set_global(array(
 			'file_manager' => array(
+				'sync_id'         => $upload_id,
 				'sync_files'      => $files,
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
@@ -815,13 +822,14 @@ class Uploads extends AbstractFilesController {
 		$file_data = array();
 		$replace_sizes = array();
 		$db_sync = (ee()->input->post('db_sync') == 'y') ? 'y' : 'n';
+		$id = ee()->input->post('upload_directory_id');
+		$sizes = ee()->input->post('sizes') ?: array($id => '');
 
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
 		if (
-			(($sizes = ee()->input->post('sizes')) === FALSE OR
-			($current_files = ee()->input->post('files')) === FALSE) AND
+			($current_files = ee()->input->post('files')) === FALSE AND
 			$db_sync != 'y'
 		)
 		{
@@ -837,8 +845,6 @@ class Uploads extends AbstractFilesController {
 		{
 			$this->_upload_dirs[$row['id']] = $row;
 		}
-
-		$id = key($sizes);
 
 		// Final run through, it syncs the db, removing stray records and thumbs
 		if ($db_sync == 'y')

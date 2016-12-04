@@ -32,7 +32,7 @@ EE.file_manager.sync_listen = function() {
 		EE.file_manager.sync_files = _.toArray(EE.file_manager.sync_files);
 
 		// Get upload directory
-		var upload_directory_id = _.keys(EE.file_manager.sync_sizes)[0];
+		var upload_directory_id = EE.file_manager.sync_id;
 
 		EE.file_manager.update_progress(0);
 
