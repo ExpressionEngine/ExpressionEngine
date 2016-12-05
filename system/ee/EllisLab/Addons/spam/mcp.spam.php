@@ -454,7 +454,7 @@ class Spam_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		try
@@ -477,7 +477,7 @@ class Spam_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		try
@@ -500,7 +500,7 @@ class Spam_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		try
@@ -537,7 +537,7 @@ class Spam_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		try

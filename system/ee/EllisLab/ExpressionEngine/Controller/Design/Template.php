@@ -50,7 +50,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_create_new_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$group = ee('Model')->get('TemplateGroup')
@@ -65,7 +65,7 @@ class Template extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$existing_templates = array(
@@ -201,7 +201,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_edit_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$template = ee('Model')->get('Template', $template_id)
@@ -228,7 +228,7 @@ class Template extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$template_result = $this->validateTemplate($template);
@@ -419,7 +419,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_edit_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$template = ee('Model')->get('Template', $template_id)
@@ -435,7 +435,7 @@ class Template extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$template_result = $this->validateTemplate($template);

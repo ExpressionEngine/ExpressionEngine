@@ -39,7 +39,7 @@ class Query extends Utilities {
 		// Super Admins only, please
 		if (ee()->session->userdata('group_id') != '1')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->library('encrypt');
@@ -138,7 +138,7 @@ class Query extends Utilities {
 		{
 			if (strpos(strtoupper($sql), 'DELETE') !== FALSE OR strpos(strtoupper($sql), 'ALTER') !== FALSE OR strpos(strtoupper($sql), 'TRUNCATE') !== FALSE OR strpos(strtoupper($sql), 'DROP') !== FALSE)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 

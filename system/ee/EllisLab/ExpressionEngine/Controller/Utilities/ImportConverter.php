@@ -36,7 +36,7 @@ class ImportConverter extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_import'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('member_import');
@@ -190,7 +190,7 @@ class ImportConverter extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Snag form POST data
@@ -275,7 +275,7 @@ class ImportConverter extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$contents = file($file);
@@ -314,7 +314,7 @@ class ImportConverter extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$paired = array();
@@ -398,7 +398,7 @@ class ImportConverter extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Snag form POST data

@@ -57,7 +57,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar(NULL);
@@ -74,7 +74,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar($upload_id);
@@ -102,7 +102,7 @@ class Uploads extends AbstractFilesController {
 
 			if ( ! $upload_destination)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
@@ -689,7 +689,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (empty($upload_id))
@@ -708,7 +708,7 @@ class Uploads extends AbstractFilesController {
 
 		if (empty($upload_destination))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// Get a listing of raw files in the directory

@@ -43,7 +43,7 @@ class Variables extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('variables');
@@ -177,7 +177,7 @@ class Variables extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_template_variables'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars = array(
@@ -293,7 +293,7 @@ class Variables extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_template_variables'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$variable = ee('Model')->get('GlobalVariable')
@@ -430,7 +430,7 @@ class Variables extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_template_variables'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($variable_ids))

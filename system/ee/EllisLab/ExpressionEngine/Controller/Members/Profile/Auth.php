@@ -182,7 +182,7 @@ class Auth extends Settings {
 		// validate for unallowed blank values
 		if (empty($_POST))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// If the screen name field is empty, we'll assign is from the username field.

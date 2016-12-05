@@ -41,7 +41,7 @@ class Relationship {
 
 		if (empty($settings))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$settings['search'] = ee('Request')->post('search');
@@ -49,7 +49,7 @@ class Relationship {
 
 		if ( ! AJAX_REQUEST OR ! ee()->session->userdata('member_id'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->library('EntryList');

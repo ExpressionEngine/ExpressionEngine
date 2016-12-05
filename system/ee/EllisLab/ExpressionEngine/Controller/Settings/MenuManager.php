@@ -185,7 +185,7 @@ class MenuManager extends Settings {
 
 			if ( ! $set)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -434,7 +434,7 @@ class MenuManager extends Settings {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$item = $item ?: ee('Model')->make('MenuItem', array('sort' => 1));
