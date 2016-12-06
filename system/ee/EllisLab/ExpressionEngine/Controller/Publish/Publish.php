@@ -280,26 +280,25 @@ class Publish extends AbstractPublishController {
 	 */
 	private function populateFromBookmarklet(ChannelEntry $entry)
 	{
-		$field = '';
+		$data = array();
+
+		if (($title = ee()->input->get('title')) !== FALSE)
+		{
+			$data['title'] = $title;
+		}
 
 		foreach ($_GET as $key => $value)
 		{
 			if (strpos($key, 'field_id_') === 0)
 			{
-				$field = $key;
-				break;
+				$data[$key] = $value;
 			}
 		}
 
-		if ( ! $field)
+		if (empty($data))
 		{
 			return;
 		}
-
-		$data = array(
-			'title' => ee()->input->get('title'),
-			$field => ee()->input->get($field)
-		);
 
 		$entry->set($data);
 	}

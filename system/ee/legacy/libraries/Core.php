@@ -82,8 +82,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20161026');
-		define('APP_VER',		'3.4.4');
+		define('APP_BUILD',		'20161205');
+		define('APP_VER',		'3.4.5');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -269,8 +269,8 @@ class EE_Core {
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
-			'search', 'simple_commerce', 'spam', 'stats'
+			'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
+			 'rte', 'search', 'simple_commerce', 'spam', 'stats'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.

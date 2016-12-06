@@ -543,6 +543,7 @@ class Table {
 
 	/**
 	 * Compare two values automatically
+	 *
 	 * @param  Mixed $a Left value
 	 * @param  Mixed $b Right value
 	 * @return Integer  Comparison result (-1, 0, 1) based on the two values passed in
@@ -562,9 +563,18 @@ class Table {
 			$date_a = $this->localize->string_to_timestamp($a, TRUE, $date_format);
 			$date_b = $this->localize->string_to_timestamp($b, TRUE, $date_format);
 
+			// Check for disk size
+			$sizes = array('KB', 'MB', 'GB', 'TB', 'PB');
+			$size_a = strtoupper(substr(strip_tags($a), -2));
+			$size_b = strtoupper(substr(strip_tags($b), -2));
+
 			if ($date_a !== FALSE && $date_b !== FALSE)
 			{
 				$cmp = $date_a - $date_b;
+			}
+			elseif (in_array($size_a, $sizes) && in_array($size_b, $sizes))
+			{
+				$cmp = $this->convertToBytes($a) - $this->convertToBytes($b);
 			}
 			else
 			{
@@ -574,6 +584,34 @@ class Table {
 
 		return $cmp;
 	}
+
+	/**
+	 * Given a disk size string such as "12 GB", "23.0 MB", "42KB", etc,
+	 * converts to bytes for sort comparison
+	 *
+	 * @param	string	$size	Disk size string
+	 * @return	Integer	Number of bytes the size string represents
+	 */
+	private function convertToBytes($size)
+	{
+		$number = trim(substr(strip_tags($size), 0, -2));
+
+		switch(trim(strtoupper(substr(strip_tags($size), -2))))
+		{
+			case 'KB':
+				return $number * 1024;
+			case 'MB':
+				return $number * pow(1024,2);
+			case 'GB':
+				return $number * pow(1024,3);
+			case 'TB':
+				return $number * pow(1024,4);
+			case 'PB':
+				return $number * pow(1024,5);
+			default:
+				return $size;
+		}
+}
 
 	/**
 	 * If the entire data set is passed to the table object, the table

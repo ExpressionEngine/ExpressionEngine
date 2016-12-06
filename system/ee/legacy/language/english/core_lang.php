@@ -137,7 +137,7 @@ The following files are affected:
 {changed}
 
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
-https://support.ellislab.com/',
+https://expressionengine.com/support',
 
 'new_version_error' => 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href="%s" title="download account" rel="external">Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
 

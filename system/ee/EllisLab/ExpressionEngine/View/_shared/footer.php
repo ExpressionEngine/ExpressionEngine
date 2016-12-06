@@ -1,3 +1,5 @@
+		</section>
+		<footer>
 			<section class="product-bar <?php if ( ! empty($version_identifier)): ?>pre-release<?php endif ?>">
 				<div class="snap">
 					<div class="left">
@@ -42,7 +44,7 @@
 					<div class="right">
 						<p>
 							<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
-								<a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a>
+								<a href="https://expressionengine.com/support/bugs/new" rel="external"><?=lang('report_bug')?></a>
 
 								<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
 									<b class="sep">&middot;</b>
@@ -50,7 +52,7 @@
 							<?php endif; ?>
 
 							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
-								<a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a>
+								<a href="https://expressionengine.com/support/ticket/new" rel="external"><?=lang('new_ticket')?></a>
 
 								<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
 									<b class="sep">&middot;</b>
@@ -58,7 +60,7 @@
 							<?php endif; ?>
 
 							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-								<a href="https://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('user_guide')?></a>
+								<a href="<?=DOC_URL?>" rel="external"><?=lang('user_guide')?></a>
 							<?php endif; ?>
 						</p>
 					</div>
@@ -67,7 +69,7 @@
 			<section class="footer">
 				<div class="snap">
 					<div class="left">
-						<p>&copy;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
+						<p>&copy;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://ellislab.com/')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
 					</div>
 					<div class="right">
 						<p>
@@ -87,7 +89,7 @@
 					</div>
 				</div>
 			</section>
-		</section>
+		</footer>
 		<div class="overlay"></div>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>

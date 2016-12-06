@@ -48,7 +48,8 @@ class Auth extends Settings {
 						'username' => array(
 							'type' => 'text',
 							'required' => TRUE,
-							'value' => $this->member->username
+							'value' => $this->member->username,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				),
@@ -58,7 +59,8 @@ class Auth extends Settings {
 						'screen_name' => array(
 							'type' => 'text',
 							'required' => TRUE,
-							'value' => $this->member->screen_name
+							'value' => $this->member->screen_name,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				)
