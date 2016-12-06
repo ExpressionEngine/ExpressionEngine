@@ -457,7 +457,7 @@ class Channel_form_lib
 		}
 
 		//edit form or post-error submission
-		if ($this->edit OR is_object($this->entry))
+		if ($this->edit OR ! empty($_POST))
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -541,9 +541,15 @@ class Channel_form_lib
 					{
 						if ($this->entry($name))
 						{
+							$date = $this->entry($name);
+
 							// most likely a failed submission, and $this->entry->getProperty() will not
 							// return the posted string value
-							$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							if (ee()->input->post($name))
+							{
+								$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							}
+
 							$this->parse_variables[$key] = ee()->localize->human_time($date);
 						}
 						else
