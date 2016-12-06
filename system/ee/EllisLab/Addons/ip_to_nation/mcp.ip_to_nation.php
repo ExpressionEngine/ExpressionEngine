@@ -266,7 +266,7 @@ class Ip_to_nation_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cache_path = $this->_cache_path();
@@ -326,7 +326,7 @@ class Ip_to_nation_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cache_files = $this->_cache_files('zip, gz');
@@ -352,7 +352,7 @@ class Ip_to_nation_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$files = $this->_cache_files('csv');

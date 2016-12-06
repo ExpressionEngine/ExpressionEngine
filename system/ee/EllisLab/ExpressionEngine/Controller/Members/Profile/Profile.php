@@ -89,7 +89,7 @@ class Profile extends CP_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -237,7 +237,7 @@ class Profile extends CP_Controller {
 						}
 
 						// Handle arrays of checkboxes as a special case;
-						if ($field['type'] == 'checkbox' && is_array($post))
+						if ($field['type'] == 'checkbox')
 						{
 							foreach ($field['choices']  as $property => $label)
 							{

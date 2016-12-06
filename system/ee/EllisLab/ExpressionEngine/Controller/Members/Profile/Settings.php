@@ -88,7 +88,7 @@ class Settings extends Profile {
 
 		if ($this->member->parse_smileys == 'y')
 		{
-			$settings[] = 'display_emoticons';
+			$settings[] = 'parse_smileys';
 		}
 
 		if ($this->member->display_avatars == 'y')
@@ -98,7 +98,7 @@ class Settings extends Profile {
 
 		if ($this->member->accept_messages == 'y')
 		{
-			$settings[] = 'allow_messages';
+			$settings[] = 'accept_messages';
 		}
 
 		$this->load->helper('html');
@@ -316,7 +316,7 @@ class Settings extends Profile {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 

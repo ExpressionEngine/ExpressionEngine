@@ -42,7 +42,7 @@ class Edit extends AbstractPublishController {
 			'can_edit_self_entries'
 			))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -403,12 +403,12 @@ class Edit extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
 			&& $entry->author_id != ee()->session->userdata('member_id'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! in_array($entry->channel_id, $this->assigned_channel_ids))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// -------------------------------------------
@@ -513,7 +513,7 @@ class Edit extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_delete_all_entries')
 			&& ! ee()->cp->allowed_group('can_delete_self_entries'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($entry_ids))

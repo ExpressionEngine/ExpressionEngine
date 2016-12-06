@@ -158,9 +158,12 @@ class Quicklinks extends Settings {
 	{
 		$selection = $this->input->post('selection');
 
-		// re-index from 1 to match the array we get back from the member model
-		$selection = array_combine(range(1, count($selection)), array_values($selection));
-		$this->quicklinks = array_diff_key($this->quicklinks, array_flip($selection));
+
+		$this->quicklinks = array_filter($this->quicklinks, function($link) use ($selection)
+		{
+			return ! in_array($link['order'], $selection);
+		});
+
 		$this->saveQuicklinks();
 
 		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));

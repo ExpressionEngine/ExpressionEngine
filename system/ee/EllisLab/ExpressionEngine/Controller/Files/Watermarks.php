@@ -41,7 +41,7 @@ class Watermarks extends AbstractFilesController {
 
 		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('watermark');
@@ -166,7 +166,7 @@ class Watermarks extends AbstractFilesController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('files/watermarks', ee()->cp->get_url_state()));
@@ -208,7 +208,7 @@ class Watermarks extends AbstractFilesController {
 
 			if ( ! $watermark)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';

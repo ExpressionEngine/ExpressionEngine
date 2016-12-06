@@ -182,7 +182,7 @@ EOT;
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/moblog', ee()->cp->get_url_state()));
@@ -235,7 +235,7 @@ EOT;
 
 			if ( ! $moblog)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';

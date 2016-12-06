@@ -149,7 +149,7 @@ class Rte_tool_model extends CI_Model {
 
 				if ( ! file_exists($file))
 				{
-					continue;
+					continue 2;
 				}
 
 				// load it in, instantiate the tool & add the definition
@@ -159,7 +159,7 @@ class Rte_tool_model extends CI_Model {
 				// skip tools that are not available to the front-end
 				if ($TOOL->info['cp_only'] == 'y' && ! $cp_only)
 				{
-					continue;
+					continue 2;
 				}
 
 				// loop through the pieces and pull them from the object

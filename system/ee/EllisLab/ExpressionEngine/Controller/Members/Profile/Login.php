@@ -39,7 +39,7 @@ class Login extends Profile {
 
 		if ($this->session->userdata('group_id') != 1)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -142,7 +142,7 @@ class Login extends Profile {
 
 		if ( ! $validate)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->logger->log_action(sprintf(

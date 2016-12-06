@@ -43,7 +43,7 @@ class Communicate extends Utilities {
 
 		if ( ! ee()->cp->allowed_group('can_access_comm'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -385,7 +385,7 @@ class Communicate extends Utilities {
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, TRUE);
 
 		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
@@ -430,7 +430,7 @@ class Communicate extends Utilities {
 
 		$this->deliverManyEmails($email);
 
-		if (empty($email->recipient_array))
+		if ($email->total_sent == count($email->recipient_array))
 		{
 			$debug_msg = ee()->email->print_debugger(array());
 
@@ -444,9 +444,9 @@ class Communicate extends Utilities {
 			$stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
 			$stats = str_replace("%y", ($email->total_sent), $stats);
 
-			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
+			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.(count($email->recipient_array)-$email->total_sent);
 
-			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, TRUE);
 
 			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
@@ -545,28 +545,28 @@ class Communicate extends Utilities {
 	 */
 	private function deliverManyEmails(EmailCache $email)
 	{
-		if (count($email->recipient_array) < 1)
+		$recipient_array = array_slice($email->recipient_array, $email->total_sent);
+		$number_to_send = count($recipient_array);
+
+		if ($number_to_send < 1)
 		{
 			return 0;
 		}
-
-		$number_to_send = count($email->recipient_array);
 
 		if (ee()->config->item('email_batchmode') == 'y')
 		{
 			$batch_size = (int) ee()->config->item('email_batch_size');
 
-			if ($batch_size > count($email->recipient_array))
+			if ($number_to_send > $batch_size)
 			{
 				$number_to_send = $batch_size;
 			}
 		}
 
-		$recipient_array = $email->recipient_array;
-
 		for ($x = 0; $x < $number_to_send; $x++)
 		{
 			$email_address = array_shift($recipient_array);
+
 			if ( ! $this->deliverEmail($email, $email_address))
 			{
 				$email->delete();

@@ -1412,6 +1412,157 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
+	public function testSortByDiskSize()
+	{
+		$table = new Table(array('autosort' => TRUE, 'sort_col' => 'Size', 'sort_dir' => 'desc'));
+		$table->setLocalize(new Localize());
+		$table->setColumns(array(
+			'Name',
+			'Size' => array('encode' => FALSE)
+		));
+		$table->setData(array(
+			array(
+				'size1',
+				'12 <abbr title="Gigabytes">GB</abbr>'
+			),
+			array(
+				'size2',
+				'64 <abbr title="Kilobytes">KB</abbr>'
+			),
+			array(
+				'size3',
+				'32 <abbr title="Megabytes">MB</abbr>'
+			),
+			array(
+				'size4',
+				'12.0 <abbr title="Kilobytes">KB</abbr>'
+			),
+			array(
+				'size5',
+				'123 MB'
+			),
+			array(
+				'size6',
+				'42.0 TB'
+			),
+			array(
+				'size7',
+				'3PB'
+			)
+		));
+		$view_data = $table->viewData();
+
+		$expected = array(
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size7',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '3PB',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size6',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '42.0 TB',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size1',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '12 <abbr title="Gigabytes">GB</abbr>',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size5',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '123 MB',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size3',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '32 <abbr title="Megabytes">MB</abbr>',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size2',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '64 <abbr title="Kilobytes">KB</abbr>',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'size4',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '12.0 <abbr title="Kilobytes">KB</abbr>',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					)
+				)
+			)
+		);
+
+		$this->assertEquals($expected, $view_data['data'], 'Sort columns by disk size');
+	}
+
 	/**
 	 * @expectedException InvalidArgumentException
 	 * @dataProvider badTableDataProvider

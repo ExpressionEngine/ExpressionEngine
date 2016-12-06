@@ -267,7 +267,7 @@ class Rte_mcp {
 	{
 		if ( ! ee()->cp->allowed_group('can_upload_new_toolsets'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		return array(
@@ -292,7 +292,7 @@ class Rte_mcp {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_toolsets'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		return array(
@@ -375,7 +375,7 @@ class Rte_mcp {
 			case 'remove':
 				if ( ! ee()->cp->allowed_group('can_delete_toolsets'))
 				{
-					show_error(lang('unauthorized_access'));
+					show_error(lang('unauthorized_access'), 403);
 				}
 
 				$message_title = 'toolsets_removed';
@@ -515,7 +515,7 @@ class Rte_mcp {
 
 		if ( ! $can_access)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
