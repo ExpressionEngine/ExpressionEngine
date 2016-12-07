@@ -25,7 +25,7 @@
 			</ul>
 		</div>
 		<?php endif; ?>
-		<input class="relate-search" type="text" name="search" placeholder="<?=lang('search_avilable_entries')?>">
+		<input class="relate-search" type="text" name="search" placeholder="<?=lang('search_available_entries')?>">
 	</div>
 	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}" data-search="{entry-title-lower}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php
