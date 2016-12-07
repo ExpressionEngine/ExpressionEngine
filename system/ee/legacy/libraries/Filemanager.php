@@ -2470,26 +2470,10 @@ class Filemanager {
 		else
 		{
 			// Add to db using save- becomes a new entry
-
-			$new_filename = '';
-
 			$thumb_suffix = ee()->config->item('thumbnail_prefix');
 
-			if ( ! file_exists($path.$filename.'_'.$thumb_suffix.$file_ext))
-			{
-				$new_filename = $filename.'_'.$thumb_suffix.$file_ext;
-			}
-			else
-			{
-				for ($i = 1; $i < 100; $i++)
-				{
-					if ( ! file_exists($path.$filename.'_'.$thumb_suffix.'_'.$i.$file_ext))
-					{
-						$new_filename = $filename.'_'.$thumb_suffix.'_'.$i.$file_ext;
-						break;
-					}
-				}
-			}
+			$new_filename = ee('Filesystem')->getUniqueFilename($path.$filename.'_'.$thumb_suffix.$file_ext);
+			$new_filename = str_replace($path, '', $new_filename);
 
 			$image_name_reference = $new_filename;
 			$config['new_image'] = $new_filename;
