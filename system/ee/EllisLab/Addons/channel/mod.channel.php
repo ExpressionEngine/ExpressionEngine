@@ -3005,7 +3005,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[5]);
 
 				$cat_vars = array(
-					'category_name'			=> $val[3],
+					'category_name'			=> ee()->typography->format_characters($val[3]),
 					'category_url_title'	=> $val[6],
 					'category_description'	=> $val[4],
 					'category_image'		=> $cat_image,
@@ -3477,7 +3477,7 @@ class Channel {
 						$cat_image = ee()->file_field->parse_string($row['cat_image']);
 
 						$cat_vars = array(
-							'category_name'			=> $row['cat_name'],
+							'category_name'			=> ee()->typography->format_characters($row['cat_name']),
 							'category_url_title'	=> $row['cat_url_title'],
 							'category_description'	=> $row['cat_description'],
 							'category_image'		=> $cat_image,
@@ -3564,7 +3564,7 @@ class Channel {
 						if ($trow['cat_id'] == $row['cat_id'])
 						{
 							$chunk = str_replace(array(LD.'title'.RD, LD.'category_name'.RD),
-												 array($trow['title'],$row['cat_name']),
+												 array($trow['title'],ee()->typography->format_characters($row['cat_name'])),
 												 $title_chunk);
 
 							foreach($t_path as $tkey => $tval)
@@ -3946,7 +3946,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[2]);
 
 				$cat_vars = array(
-					'category_name'			=> $val[1],
+					'category_name'			=> ee()->typography->format_characters($val[1]),
 					'category_url_title'	=> $val[4],
 					'category_description'	=> $val[3],
 					'category_image'		=> $cat_image,
@@ -4314,7 +4314,7 @@ class Channel {
 		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
 
 		$cat_vars = array(
-			'category_name'			=> $query->row('cat_name'),
+			'category_name'			=> ee()->typography->format_characters($query->row('cat_name')),
 			'category_url_title'	=> $query->row('cat_url_title'),
 			'category_description'	=> $query->row('cat_description'),
 			'category_image'		=> $cat_image,

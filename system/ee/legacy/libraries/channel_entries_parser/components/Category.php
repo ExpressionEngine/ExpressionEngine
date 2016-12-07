@@ -205,7 +205,9 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						'category_count'         => ++$count,
 						'category_reverse_count' => $total_results - $count + 1,
 						'category_total_results' => $total_results,
-						'category_name'          => ee()->functions->encode_ee_tags($v[2]),
+						'category_name'          => ee()->typography->format_characters(
+							ee()->functions->encode_ee_tags($v[2])
+						),
 						'category_url_title'     => $v[6],
 						'category_description'   => (isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
 						'category_group'         => (isset($v[5])) ? $v[5] : '',
