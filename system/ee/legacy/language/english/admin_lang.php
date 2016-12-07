@@ -537,7 +537,7 @@ $lang = array(
 
 'license_contact_explanation' => 'The contact email address for the owner of this software license.',
 
-'license_number_explanation' => 'You can find and manage your software licenses on the EllisLab.com <a href="https://store.ellislab.com/manage" rel="external">Manage Purchases</a> page,',
+'license_number_explanation' => 'You can find and manage your software licenses on the EllisLab.com <a href="https://expressionengine.com/store/purchases" rel="external">Manage Purchases</a> page,',
 
 "image_path" => "Path to Images Directory",
 

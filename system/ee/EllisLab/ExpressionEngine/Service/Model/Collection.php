@@ -106,8 +106,6 @@ class Collection extends CoreCollection {
             $remove = $this->filter($pk, $which)->asArray();
         }
 
-        $this->elements = array_diff($this->elements, $remove);
-
 		foreach ($remove as $model)
 		{
 			$this->association->remove($model);
@@ -115,6 +113,12 @@ class Collection extends CoreCollection {
 
         return $this;
     }
+
+	public function removeElement($model)
+	{
+		$this->elements = array_diff($this->elements, array($model));
+		return $this;
+	}
 
 	public function getAssociation()
 	{
@@ -126,7 +130,7 @@ class Collection extends CoreCollection {
 		$this->association = $association;
 	}
 
-	public function offsetSet($offset, $value = NULL)
+	public function offsetSet($offset, $value)
 	{
 		parent::offsetSet($offset, $value);
 

@@ -4934,53 +4934,62 @@ class Channel {
 
 	public function related_category_entries()
 	{
-		if ($this->query_string == '')
+		// grab url_title= parameter, fallback on entry_id= param
+		$current_entry = ee()->TMPL->fetch_param('url_title', ee()->TMPL->fetch_param('entry_id'));
+
+		// try to divine one if no parameter was given
+		if ( ! $current_entry)
 		{
-			return FALSE;
-		}
+			$current_entry = $this->query_string;
 
-		$qstring = $this->query_string;
+			/** --------------------------------------
+			/**  Remove page number
+			/** --------------------------------------*/
 
-		/** --------------------------------------
-		/**  Remove page number
-		/** --------------------------------------*/
+			if (preg_match("#/P\d+#", $current_entry, $match))
+			{
+				$current_entry = reduce_double_slashes(str_replace($match[0], '', $current_entry));
+			}
 
-		if (preg_match("#/P\d+#", $qstring, $match))
-		{
-			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
-		}
+			/** --------------------------------------
+			/**  Remove "N"
+			/** --------------------------------------*/
+			if (preg_match("#/N(\d+)#", $current_entry, $match))
+			{
+				$current_entry = reduce_double_slashes(str_replace($match[0], '', $current_entry));
+			}
 
-		/** --------------------------------------
-		/**  Remove "N"
-		/** --------------------------------------*/
-		if (preg_match("#/N(\d+)#", $qstring, $match))
-		{
-			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
-		}
+			/** --------------------------------------
+			/**  Make sure to only get one segment
+			/** --------------------------------------*/
 
-		/** --------------------------------------
-		/**  Make sure to only get one segment
-		/** --------------------------------------*/
-
-		if (strpos($qstring, '/') !== FALSE)
-		{
-			$qstring = substr($qstring, 0, strpos($qstring, '/'));
+			if (strpos($current_entry, '/') !== FALSE)
+			{
+				$current_entry = substr($current_entry, 0, strpos($current_entry, '/'));
+			}
 		}
 
 		/** ----------------------------------
 		/**  Find Categories for Entry
 		/** ----------------------------------*/
 
-		$sql = "SELECT exp_categories.cat_id, exp_categories.cat_name
-				FROM exp_channel_titles
-				INNER JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-				INNER JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-				WHERE exp_categories.cat_id IS NOT NULL
-				AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
+		$query = ee()->db->select('c.cat_id, c.cat_name')
+			->from('channel_titles t')
+			->join('category_posts p', 'p.entry_id = t.entry_id', 'INNER')
+			->join('categories c', 'p.cat_id = c.cat_id', 'INNER')
+			->where('c.cat_id IS NOT NULL')
+			->where_in('t.site_id', ee()->TMPL->site_ids);
 
-		$sql .= ( ! is_numeric($qstring)) ? "AND exp_channel_titles.url_title = '".ee()->db->escape_str($qstring)."' " : "AND exp_channel_titles.entry_id = '".ee()->db->escape_str($qstring)."' ";
+		if (is_numeric($current_entry))
+		{
+			$query->where('t.entry_id', $current_entry);
+		}
+		else
+		{
+			$query->where('t.url_title', $current_entry);
+		}
 
-		$query = ee()->db->query($sql);
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -5048,14 +5057,16 @@ class Channel {
 		$cats = substr($cats, 0, -1);
 
 		/** ----------------------------------
-		/**  Manually set paramters
+		/**  Manually set parameters
 		/** ----------------------------------*/
 
+		unset(ee()->TMPL->tagparams['entry_id']);
+		unset(ee()->TMPL->tagparams['url_title']);
 		ee()->TMPL->tagparams['category']		= $cats;
-		ee()->TMPL->tagparams['dynamic']			= 'off';
-		ee()->TMPL->tagparams['not_entry_id']	= $qstring; // Exclude the current entry
+		ee()->TMPL->tagparams['dynamic']		= 'off';
+		ee()->TMPL->tagparams['not_entry_id']	= $current_entry; // Exclude the current entry
 
-		// Set user submitted paramters
+		// Set user submitted parameters
 
 		$params = array('channel', 'username', 'status', 'orderby', 'sort');
 

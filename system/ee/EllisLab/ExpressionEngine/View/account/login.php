@@ -10,7 +10,7 @@
 	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path))?>
 		<fieldset>
 			<?=lang('username', 'username')?>
-			<?=form_input(array('dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50))?>
+			<?=form_input(array('dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => USERNAME_MAX_LENGTH))?>
 		</fieldset>
 		<fieldset class="last">
 			<?=lang('password', 'password')?>

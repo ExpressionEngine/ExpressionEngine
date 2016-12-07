@@ -419,7 +419,7 @@ JSC;
 		$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
 
 		// Make sure we have file_info to work with
-		if ($tagdata !== FALSE)
+		if ($tagdata !== FALSE && isset($file_info['file_id']))
 		{
 			return ee()->TMPL->parse_variables($tagdata, array($file_info));
 		}

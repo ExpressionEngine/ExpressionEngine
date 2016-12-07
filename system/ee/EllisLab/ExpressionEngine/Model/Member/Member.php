@@ -106,8 +106,8 @@ class Member extends ContentModel {
 
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
-		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|uniqueEmail',
+		'username'        => 'required|unique|validateUsername',
+		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
@@ -249,6 +249,8 @@ class Member extends ContentModel {
 					$this->username,
 					$this->member_id
 				));
+
+				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
 		}
 	}
@@ -370,7 +372,13 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->MemberGroup;
+		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->group_id})"))
+		{
+			$structure = $this->MemberGroup;
+			ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", $structure);
+		}
+
+		return $structure;
 	}
 
 	/**
@@ -420,6 +428,11 @@ class Member extends ContentModel {
 			return sprintf(lang('username_too_short'), $un_length);
 		}
 
+		if (strlen($username) > USERNAME_MAX_LENGTH)
+		{
+			return 'username_too_long';
+		}
+
 		if ($this->isNew())
 		{
 			// Is username banned?
@@ -427,6 +440,19 @@ class Member extends ContentModel {
 			{
 				return 'username_taken';
 			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validation callback for email field
+	 */
+	public function validateEmail($key, $email)
+	{
+		if (strlen($email) > USERNAME_MAX_LENGTH)
+		{
+			return 'email_too_long';
 		}
 
 		return TRUE;
