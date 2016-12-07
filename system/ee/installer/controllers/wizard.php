@@ -936,7 +936,7 @@ class Wizard extends CI_Controller {
 
 		if (strpos($db_hostname, ':') !== FALSE)
 		{
-			list($hostname, $port) = explode($db_hostname, ':');
+			list($hostname, $port) = explode(':', $db_hostname);
 
 			$this->userdata['db_hostname'] = $hostname;
 			$this->userdata['db_port'] = $port;
