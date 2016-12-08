@@ -37,7 +37,7 @@ class Addons extends CP_Controller {
 	var $params			= array();
 	var $base_url;
 
-	protected $assigned_modules = array();
+	public $assigned_modules = array();
 
 	/**
 	 * Constructor
