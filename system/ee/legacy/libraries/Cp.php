@@ -1188,13 +1188,14 @@ class Cp {
 
 			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 
 		if (empty($redirect))
 		{
-			$redirect = ee('CP/URL')->make('homepage');
+			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$redirect = $member->getCPHomepageURL($site_id);
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings

@@ -187,7 +187,7 @@ class EntryListing {
 			}
 			else
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 		// If we have no selected channel filter, and we are not an admin, we

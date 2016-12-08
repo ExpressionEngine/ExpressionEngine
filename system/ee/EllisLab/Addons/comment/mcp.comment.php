@@ -646,7 +646,7 @@ class Comment_mcp {
 
 		if ($comment_id == FALSE OR ! is_numeric($comment_id))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->helper('snippets');
@@ -679,7 +679,7 @@ class Comment_mcp {
 			{
 				if ( ! ee()->cp->allowed_group('can_moderate_comments'))
 				{
-					show_error(lang('unauthorized_access'));
+					show_error(lang('unauthorized_access'), 403);
 				}
 			}
 		}
@@ -744,7 +744,7 @@ class Comment_mcp {
 		  && ! ee()->cp->allowed_group('can_edit_all_comments')
 		  && ! ee()->cp->allowed_group('can_edit_own_comments'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -763,7 +763,7 @@ class Comment_mcp {
 
 		if ($comment_id == FALSE OR ! is_numeric($comment_id))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->library('form_validation');
@@ -787,7 +787,7 @@ class Comment_mcp {
 			{
 				if ( ! ee()->cp->allowed_group('can_moderate_comments'))
 				{
-					show_error(lang('unauthorized_access'));
+					show_error(lang('unauthorized_access'), 403);
 				}
 
 				$can_edit = TRUE;
@@ -833,7 +833,7 @@ class Comment_mcp {
 		{
 			if ( ! in_array($status, array('o', 'c', 'p')))
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$data = array('status' => $status);
@@ -1115,7 +1115,7 @@ class Comment_mcp {
 		if ( ! ee()->cp->allowed_group('can_delete_all_comments')
 		  && ! ee()->cp->allowed_group('can_delete_own_comments'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->cp->get_installed_modules();
@@ -1146,7 +1146,7 @@ class Comment_mcp {
 
 		if (count($comments) == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->db->select('channel_titles.author_id, title, comments.comment_id, comment, comments.ip_address');
@@ -1235,14 +1235,14 @@ class Comment_mcp {
 
 		if (count($comments) == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$status = ($status == '') ? ee()->input->get('status') : $status;
 
 		if ( ! in_array($status, array('o', 'c', 'p')))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->db->select('exp_comments.entry_id, exp_comments.channel_id, exp_comments.author_id, comment_id, exp_channel_titles.author_id AS entry_author');
@@ -1254,7 +1254,7 @@ class Comment_mcp {
 
 		if ($query->num_rows() == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$entry_ids	= array();
@@ -1279,7 +1279,7 @@ class Comment_mcp {
 
 		if (count($comments) == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 
@@ -1343,20 +1343,20 @@ class Comment_mcp {
 		if ( ! ee()->cp->allowed_group('can_delete_all_comments') &&
 			 ! ee()->cp->allowed_group('can_delete_own_comments'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$comment_id = ee()->input->post('comment_ids');
 
 		if ($comment_id == FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 
 		if ( ! preg_match("/^[0-9]+$/", str_replace('|', '', $comment_id)))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->db->where_in('comment_id', explode('|', $comment_id));
@@ -1364,7 +1364,7 @@ class Comment_mcp {
 
 		if ($count == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->cp->get_installed_modules();
@@ -1380,7 +1380,7 @@ class Comment_mcp {
 
 		if ($query->num_rows() == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$entry_ids	= array();
@@ -1409,7 +1409,7 @@ class Comment_mcp {
 			{
 				if ($row['author_id'] != ee()->session->userdata('member_id'))
 				{
-					show_error(lang('unauthorized_access'));
+					show_error(lang('unauthorized_access'), 403);
 				}
 			}
 		}

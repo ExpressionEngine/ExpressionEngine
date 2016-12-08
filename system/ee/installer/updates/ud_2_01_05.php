@@ -36,7 +36,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = '';
+		$steps = array();
 
 		// Kill blogger
 		if (ee()->db->table_exists('blogger'))

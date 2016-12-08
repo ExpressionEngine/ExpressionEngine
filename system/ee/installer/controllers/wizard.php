@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.4.4';	// The version being installed
+	public $version           = '3.4.5';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -68,6 +68,7 @@ class Wizard extends CI_Controller {
 		'rte',
 		'file',
 		'filepicker',
+		'relationship',
 		'search'
 	);
 
@@ -77,8 +78,8 @@ class Wizard extends CI_Controller {
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
-		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'rss',
-		'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
+		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
+		'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -937,7 +938,7 @@ class Wizard extends CI_Controller {
 
 		if (strpos($db_hostname, ':') !== FALSE)
 		{
-			list($hostname, $port) = explode($db_hostname, ':');
+			list($hostname, $port) = explode(':', $db_hostname);
 
 			$this->userdata['db_hostname'] = $hostname;
 			$this->userdata['db_port'] = $port;

@@ -114,6 +114,9 @@ class Smartforge {
 
 		$result = FALSE;
 
+		// Reset cache for this table in case it a column has just been added
+		unset(ee()->db->data_cache['field_names'][$table]);
+
 		foreach ($field as $k => $v)
 		{
 			if ( ! ee()->db->field_exists($k, $table))

@@ -40,7 +40,7 @@ class Layouts extends AbstractChannelsController {
 
 		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('content');
@@ -62,7 +62,7 @@ class Layouts extends AbstractChannelsController {
 
 		if ( ! $channel)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars['channel_id'] = $channel_id;
@@ -158,7 +158,7 @@ class Layouts extends AbstractChannelsController {
 
 		if ( ! $channel)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$entry = ee('Model')->make('ChannelEntry');
@@ -274,7 +274,7 @@ class Layouts extends AbstractChannelsController {
 
 		if ( ! $channel_layout)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->removeStaleFields($channel_layout);

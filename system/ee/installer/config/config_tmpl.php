@@ -12,7 +12,8 @@ $config['database'] = array(
 		'database' => '{db_database}',
 		'username' => '{db_username}',
 		'password' => '{db_password}',
-		'dbprefix' => '{db_dbprefix}'
+		'dbprefix' => '{db_dbprefix}',
+		'port'     => '{db_port}'
 	),
 );
 {extra_config}

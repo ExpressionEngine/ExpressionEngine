@@ -2475,7 +2475,7 @@ class EE_Template {
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
 						a.cache, a.refresh, a.hits, a.protect_javascript,
-						a.allow_php, a.php_parse_location, b.group_name')
+						a.allow_php, a.php_parse_location, b.group_name, a.group_id')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))

@@ -310,7 +310,7 @@ class Addons_installer {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ($module == '')
@@ -359,7 +359,7 @@ class Addons_installer {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_extensions'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ($extension == '')

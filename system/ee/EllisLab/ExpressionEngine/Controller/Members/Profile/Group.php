@@ -65,7 +65,7 @@ class Group extends Profile {
 
 		if ( ! array_key_exists($this->member->group_id, $choices))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars['sections'] = array(

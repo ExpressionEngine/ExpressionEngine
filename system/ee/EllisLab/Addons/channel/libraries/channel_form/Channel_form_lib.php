@@ -397,9 +397,16 @@ class Channel_form_lib
 			{
 				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*?)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{
+					// Map field short name to field_id_x
+					if (array_key_exists($tag_name, $this->custom_fields))
+					{
+						$field = $this->custom_fields[$tag_name];
+						$name = 'field_id_'.$field->field_id;
+					}
+
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($tag_name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
 					}
 				}
 			}
@@ -450,7 +457,7 @@ class Channel_form_lib
 		}
 
 		//edit form or post-error submission
-		if ($this->edit OR is_object($this->entry))
+		if ($this->edit OR ! empty($_POST))
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -534,9 +541,15 @@ class Channel_form_lib
 					{
 						if ($this->entry($name))
 						{
+							$date = $this->entry($name);
+
 							// most likely a failed submission, and $this->entry->getProperty() will not
 							// return the posted string value
-							$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							if (ee()->input->post($name))
+							{
+								$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							}
+
 							$this->parse_variables[$key] = ee()->localize->human_time($date);
 						}
 						else
@@ -1976,6 +1989,11 @@ GRID_FALLBACK;
 			);
 		}
 
+		if ( ! empty($params['show']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_id', $params['show'], 'in_array');
+		}
+
 		if ( ! empty($params['show_group']))
 		{
 			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
@@ -3320,7 +3338,7 @@ GRID_FALLBACK;
 	{
 		$close_key = ($close_key) ? $close_key : $key;
 
-		if (preg_match_all('/'.LD.$key.RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
+		if (preg_match_all('/'.LD.preg_quote($key).RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
 		{
 			foreach ($matches[1] as $match_index => $var_pair_tagdata)
 			{

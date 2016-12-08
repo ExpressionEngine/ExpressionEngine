@@ -89,7 +89,7 @@ class Profile extends CP_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 

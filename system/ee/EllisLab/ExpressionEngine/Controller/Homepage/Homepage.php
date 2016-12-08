@@ -157,7 +157,7 @@ class Homepage extends CP_Controller {
 	{
 		if (ee()->session->userdata('group_id') != 1)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$return = ee('CP/URL')->make('homepage');
