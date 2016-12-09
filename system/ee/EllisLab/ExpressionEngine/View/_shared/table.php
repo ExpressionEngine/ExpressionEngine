@@ -98,7 +98,7 @@ if ($wrap): ?>
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a class="btn action" rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
@@ -196,7 +196,7 @@ if ($wrap): ?>
 						<?php if ($grid_input): ?>
 							<td>
 								<ul class="toolbar">
-									<li class="remove"><a href="#" title="remove row"></a></li>
+									<li class="remove"><a href="#" rel="remove_row" title="remove row"></a></li>
 								</ul>
 							</td>
 						<?php endif ?>
@@ -223,6 +223,6 @@ if ($wrap): ?>
 
 <?php if ($grid_input && ! empty($data)): ?>
 	<ul class="toolbar">
-		<li class="add"><a href="#" title="<?=lang('add_new_row')?>"></a></li>
+		<li class="add"><a href="#" rel="add_row" title="<?=lang('add_new_row')?>"></a></li>
 	</ul>
 <?php endif ?>
