@@ -63,7 +63,28 @@ Grid.Publish = function(field, settings) {
 	this.eventHandlers = [];
 }
 
-Grid.Publish.prototype = {
+Grid.MiniField = function(field, settings) {
+	this.root = $(field);
+	this.parentContainer = this.root;
+	this.blankRow = $('.grid-blank-row', this.root);
+	this.emptyField = $('.keyvalue-empty', this.root);
+	this.tableActions = null;
+	this.rowContainer = $('.keyvalue-item-container', this.root);
+	this.addButtonToolbar = $('> ul.toolbar', this.parentContainer);
+
+	this.rowSelector = '.keyvalue-item';
+	this.cellSelector = '.keyvalue-field';
+	this.reorderHandleContainerSelector = 'ul.toolbar:has(li.reorder)';
+	this.deleteContainerHeaderSelector = null;
+	this.deleteButtonsSelector = 'ul.toolbar:has(li.remove)';
+
+	this.settings = (settings !== undefined) ? settings : EE.mini_grid_field_settings[field.id];
+	this.init();
+
+	this.eventHandlers = [];
+}
+
+Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 	init: function() {
 		this._bindSortable();
@@ -210,7 +231,7 @@ Grid.Publish.prototype = {
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
-		if (this.tableActions.length) {
+		if (this.tableActions && this.tableActions.length) {
 			this.tableActions.before(el);
 		} else {
 			this.rowContainer.append(el);
@@ -813,6 +834,13 @@ Grid.Settings.prototype = {
  */
 EE.grid = function(field, settings) {
 	return new Grid.Publish(field, settings);
+};
+
+/**
+ * Public method to instantiate Grid field
+ */
+EE.miniGrid = function(field, settings) {
+	return new Grid.MiniField(field, settings);
 };
 
 /**
