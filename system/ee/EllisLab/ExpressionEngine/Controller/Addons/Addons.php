@@ -211,7 +211,7 @@ class Addons extends CP_Controller {
 		$addons = $this->getAllAddons();
 
 		// Filter list for non-super admins
-		if (ee()->session->userdata('group_id') !== 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
 			$that = $this;
 			$addons['first'] = array_filter($addons['first'], function($addon) use ($that)
