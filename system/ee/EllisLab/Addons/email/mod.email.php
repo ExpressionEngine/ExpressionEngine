@@ -772,7 +772,7 @@ class Email {
 		}
 		else
 		{
-			$mail_type = 'plain';
+			$mail_type = 'text';
 		}
 
 		// Return Variables
@@ -805,6 +805,20 @@ class Email {
 		if (isset($_POST['charset']) && $_POST['charset'] != '')
 		{
 			ee()->email->charset = $_POST['charset'];
+		}
+
+		// add attachments, if authorized
+		if ( ! empty($_FILES) && isset($_POST['allow_attachments'])
+			 && get_bool_from_string(
+			 		// decrypted text will be "allow_attachments_[y/n]"
+					substr($this->_decrypt($_POST['allow_attachments']), -1)
+			 	)
+			)
+		{
+			if (isset($_FILES['attachment']['name']) && isset($_FILES['attachment']['tmp_name']))
+			{
+				ee()->email->attach($_FILES['attachment']['tmp_name'], '', $_FILES['attachment']['name']);
+			}
 		}
 
 		if ( count($approved_recipients) == 0 && count($approved_tos) > 0) // No Hidden Recipients
@@ -1007,12 +1021,15 @@ class Email {
 		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
 		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
 
+		$allow_attachments = get_bool_from_string(ee()->TMPL->fetch_param('allow_attachments')) ? 'y' : 'n';
+
 		$data = array(
 			'action'        => reduce_double_slashes($url),
 			'id'            => (ee()->TMPL->form_id == '')
 				? $options['form_id']
 				: ee()->TMPL->form_id,
 			'class'         => ee()->TMPL->form_class,
+			'enctype'       => ($allow_attachments == 'y') ? 'multipart/form-data' : '',
 			'hidden_fields' => array(
 				'ACT'             => ee()->functions->fetch_action_id('Email', 'send_email'),
 				'RET'             => ee()->TMPL->fetch_param('return', ee()->uri->uri_string),
@@ -1023,6 +1040,7 @@ class Email {
 				'recipients'      => $this->_encrypt($recipients),
 				'user_recipients' => $this->_encrypt(($this->_user_recipients) ? 'y' : 'n'),
 				'charset'         => $charset,
+				'allow_attachments' => $this->_encrypt('allow_attachments_'.$allow_attachments),
 				'redirect'        => ee()->TMPL->fetch_param('redirect', ''),
 				'replyto'         => ee()->TMPL->fetch_param('replyto', ''),
 				'markdown'        => $this->_encrypt(($options['markdown']) ? 'y' : 'n')
