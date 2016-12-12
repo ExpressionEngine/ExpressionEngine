@@ -397,7 +397,7 @@ class EE_Session {
 		$this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
 
 		$this->userdata['member_id']	= (int) $member_id;
-		$this->userdata['group_id']		= $member->MemberGroup->getId();
+		$this->userdata['group_id']		= (int) $member->MemberGroup->getId();
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
