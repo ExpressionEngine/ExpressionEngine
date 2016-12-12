@@ -38,6 +38,8 @@ class MiniGridInput extends GridInput {
 		if ( ! $assets_loaded)
 		{
 			$this->cp->add_js_script('ui', 'sortable');
+			$this->cp->add_js_script('file', 'cp/sort_helper');
+			$this->cp->add_js_script('plugin', 'ee_table_reorder');
 			$this->cp->add_js_script('file', 'cp/grid');
 
 			$assets_loaded = TRUE;

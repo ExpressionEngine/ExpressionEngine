@@ -56,6 +56,7 @@ Grid.Publish = function(field, settings) {
 	this.reorderHandleContainerSelector = 'th.reorder-col, td.reorder-col';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
 	this.deleteButtonsSelector = 'td:last-child .toolbar .remove';
+	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
@@ -77,6 +78,12 @@ Grid.MiniField = function(field, settings) {
 	this.reorderHandleContainerSelector = 'ul.toolbar:has(li.reorder)';
 	this.deleteContainerHeaderSelector = null;
 	this.deleteButtonsSelector = 'ul.toolbar:has(li.remove)';
+	this.sortableParams = {
+		sortableContainer: '.keyvalue-item-container',
+		handle: 'li.reorder',
+		cancel: 'li.sort-cancel',
+		item: '.keyvalue-item'
+	},
 
 	this.settings = (settings !== undefined) ? settings : EE.mini_grid_field_settings[field.id];
 	this.init();
@@ -106,18 +113,21 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * Allows rows to be reordered
 	 */
 	_bindSortable: function() {
-		var that = this;
+		var that = this,
+			params = {
+				// Fire 'beforeSort' event on sort start
+				beforeSort: function(row) {
+					that._fireEvent('beforeSort', row);
+				},
+				// Fire 'afterSort' event on sort stop
+				afterSort: function(row) {
+					that._fireEvent('afterSort', row);
+				}
+			};
 
-		this.root.eeTableReorder({
-			// Fire 'beforeSort' event on sort start
-			beforeSort: function(row) {
-				that._fireEvent('beforeSort', row);
-			},
-			// Fire 'afterSort' event on sort stop
-			afterSort: function(row) {
-				that._fireEvent('afterSort', row);
-			}
-		});
+		params = $.extend(params, this.sortableParams);
+
+		this.root.eeTableReorder(params);
 	},
 
 	/**
