@@ -171,7 +171,7 @@ class Channel_form_lib
 		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
 
 		// Can they post?
-		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() !== 1)
+		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
 		{
 			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
@@ -1730,7 +1730,7 @@ GRID_FALLBACK;
 
 			ee()->config->set_item('site_id', $this->site_id);
 
-			if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() === 1)
+			if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 			{
 				// Lastly we check for spam before inserting the data
 				$is_spam = ee('Spam')->isSpam($spam_content);
