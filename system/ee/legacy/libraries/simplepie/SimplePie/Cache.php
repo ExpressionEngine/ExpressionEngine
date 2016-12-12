@@ -5,7 +5,7 @@
  * A PHP-Based RSS and Atom Feed Framework.
  * Takes the hard work out of managing a complete RSS/Atom solution.
  *
- * Copyright (c) 2004-2012, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
+ * Copyright (c) 2004-2016, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -33,8 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package SimplePie
- * @version 1.3-dev
- * @copyright 2004-2012 Ryan Parman, Geoffrey Sneddon, Ryan McCue
+ * @copyright 2004-2016 Ryan Parman, Geoffrey Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Geoffrey Sneddon
  * @author Ryan McCue
@@ -50,6 +49,7 @@
  * via {@see register()}
  *
  * @package SimplePie
+ * @subpackage Caching
  */
 class SimplePie_Cache
 {
@@ -61,8 +61,10 @@ class SimplePie_Cache
 	 * @var array
 	 */
 	protected static $handlers = array(
-		'mysql' => 'SimplePie_Cache_MySQL',
-		'memcache' => 'SimplePie_Cache_Memcache',
+		'mysql'     => 'SimplePie_Cache_MySQL',
+		'memcache'  => 'SimplePie_Cache_Memcache',
+		'memcached' => 'SimplePie_Cache_Memcached',
+		'redis'     => 'SimplePie_Cache_Redis'
 	);
 
 	/**
@@ -78,7 +80,7 @@ class SimplePie_Cache
 	 * @param string $extension 'spi' or 'spc'
 	 * @return SimplePie_Cache_Base Type of object depends on scheme of `$location`
 	 */
-	public static function create($location, $filename, $extension)
+	public static function get_handler($location, $filename, $extension)
 	{
 		$type = explode(':', $location, 2);
 		$type = $type[0];
@@ -89,6 +91,17 @@ class SimplePie_Cache
 		}
 
 		return new SimplePie_Cache_File($location, $filename, $extension);
+	}
+
+	/**
+	 * Create a new SimplePie_Cache object
+	 *
+	 * @deprecated Use {@see get_handler} instead
+	 */
+	public function create($location, $filename, $extension)
+	{
+		trigger_error('Cache::create() has been replaced with Cache::get_handler(). Switch to the registry system to use this.', E_USER_DEPRECATED);
+		return self::get_handler($location, $filename, $extension);
 	}
 
 	/**
@@ -119,5 +132,3 @@ class SimplePie_Cache
 		return $params;
 	}
 }
-
-// EOF
