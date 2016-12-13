@@ -82,7 +82,7 @@ class Filepicker_mcp {
 
 		if ($this->access === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$dirs = $this->getUserUploadDirectories();
@@ -410,7 +410,7 @@ class Filepicker_mcp {
 
 		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! $dir->exists())

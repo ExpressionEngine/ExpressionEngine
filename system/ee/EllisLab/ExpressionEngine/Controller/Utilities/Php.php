@@ -39,7 +39,7 @@ class Php extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		exit(phpinfo());

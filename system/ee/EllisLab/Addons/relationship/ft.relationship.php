@@ -346,6 +346,7 @@ class Relationship_ft extends EE_Fieldtype {
 			'order_field' => $this->settings['order_field'],
 			'order_dir'   => $this->settings['order_dir'],
 			'entry_id'    => $entry_id,
+			'field_id'    => $this->field_id
 		);
 
 		ee()->load->library('EntryList');

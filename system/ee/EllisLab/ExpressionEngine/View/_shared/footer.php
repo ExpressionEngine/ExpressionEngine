@@ -14,7 +14,7 @@
 							}
 						}
 						?>
-						<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span></p>
+						<p><a class="brand-link" href="https://expressionengine.com" rel="external"><b>ExpressionEngine</b></a> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span></p>
 						<div class="version-info">
 							<?php if (isset($new_version) && $new_version['security']): ?>
 								<p class="alert inline warn"><?=lang('recommended_upgrade')?></p>

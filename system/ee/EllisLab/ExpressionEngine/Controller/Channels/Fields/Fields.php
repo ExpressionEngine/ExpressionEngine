@@ -41,7 +41,7 @@ class Fields extends AbstractChannelsController {
 			'can_delete_channel_fields'
 		))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('field');
@@ -101,7 +101,7 @@ class Fields extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -180,7 +180,7 @@ class Fields extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$field = ee('Model')->get('ChannelField', $id)
@@ -413,7 +413,7 @@ class Fields extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($field_ids))

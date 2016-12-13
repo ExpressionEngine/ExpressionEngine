@@ -44,7 +44,7 @@ class Translate extends Utilities {
 
 		if ( ! ee()->cp->allowed_group('can_access_translate'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->languages_dir = SYSPATH.'user/language/';

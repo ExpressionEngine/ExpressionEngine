@@ -46,7 +46,7 @@ class Fields extends Members\Members {
 
 		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('channel');
@@ -213,7 +213,7 @@ class Fields extends Members\Members {
 
 		if ( ! AJAX_REQUEST OR empty($new_order['order']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
@@ -264,7 +264,7 @@ class Fields extends Members\Members {
 
 		if ( ! $field)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('admin_content');

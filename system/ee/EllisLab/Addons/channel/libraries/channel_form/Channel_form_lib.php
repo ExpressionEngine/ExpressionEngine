@@ -171,7 +171,7 @@ class Channel_form_lib
 		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
 
 		// Can they post?
-		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() !== 1)
+		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
 		{
 			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
@@ -1693,8 +1693,7 @@ GRID_FALLBACK;
 
 			foreach ($errors as $key => $message)
 			{
-				$field = ee()->form_validation->_field_data[$key]['label'];
-				$this->field_errors[$field] = $message;
+				$this->field_errors[$key] = $message;
 			}
 		}
 
@@ -1722,90 +1721,89 @@ GRID_FALLBACK;
 			$_POST['url_title'] = url_title($_POST['title']);
 		}
 
-		if (empty($this->field_errors) && empty($this->errors))
+		//temporarily change site_id for cross-site forms
+		//channel_entries api doesn't allow you to specifically set site_id
+		$current_site_id = ee()->config->item('site_id');
+
+		ee()->config->set_item('site_id', $this->site_id);
+
+		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
-			//temporarily change site_id for cross-site forms
-			//channel_entries api doesn't allow you to specifically set site_id
-			$current_site_id = ee()->config->item('site_id');
+			// Lastly we check for spam before inserting the data
+			$is_spam = ee('Spam')->isSpam($spam_content);
 
-			ee()->config->set_item('site_id', $this->site_id);
-
-			if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() === 1)
+			if ($is_spam === FALSE)
 			{
-				// Lastly we check for spam before inserting the data
-				$is_spam = ee('Spam')->isSpam($spam_content);
+				$entry_data = array_filter(
+					$_POST,
+					function($v) { return ! is_null($v); }
+				);
 
-				if ($is_spam === FALSE)
+				$this->entry->set($entry_data);
+				$this->entry->edit_date = ee()->localize->now;
+
+				$result = $this->entry->validate();
+
+				if (isset($_POST['category']) && is_array($_POST['category']))
 				{
-					$entry_data = array_filter(
-						$_POST,
-						function($v) { return ! is_null($v); }
-					);
-
-					$this->entry->set($entry_data);
-					$this->entry->edit_date = ee()->localize->now;
-
-					$result = $this->entry->validate();
-
-					if (isset($_POST['category']) && is_array($_POST['category']))
-					{
-						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
-					}
-					else
-					{
-						$this->entry->Categories = NULL;
-					}
-
-					if ($result->isValid())
-					{
-						$this->entry->save();
-					}
-					else
-					{
-						$errors = $result->getAllErrors();
-
-						// only show the first error for each field to match CI's old behavior
-						$this->field_errors = array_map('current', $errors);
-						foreach($this->field_errors as $field => $error)
-						{
-							if (isset($id_to_name_map[$field]))
-							{
-								$this->field_errors[$id_to_name_map[$field]] = $error;
-							}
-						}
-					}
+					$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
 				}
 				else
 				{
-					if ($this->entry('entry_id'))
-					{
-						$spam_data = array($_POST, NULL, $this->entry('entry_id'));
-					}
-					else
-					{
-						$spam_data = array($_POST, $this->channel('channel_id'));
-					}
+					$this->entry->Categories = NULL;
+				}
 
-					ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
+				if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
+				{
+					$this->entry->save();
+				}
+				else
+				{
+					$errors = $result->getAllErrors();
+
+					// only show the first error for each field to match CI's old behavior
+					$current_errors = array_map('current', $errors);
+					$this->field_errors = array_merge($this->field_errors, $current_errors);
 				}
 			}
 			else
 			{
+				if ($this->entry('entry_id'))
+				{
+					$spam_data = array($_POST, NULL, $this->entry('entry_id'));
+				}
+				else
+				{
+					$spam_data = array($_POST, $this->channel('channel_id'));
+				}
 
-				$this->errors[] = lang('unauthorized_for_this_channel');
+				ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
 			}
-
-			ee()->config->set_item('site_id', $current_site_id);
-
-			$new_id = $this->entry('entry_id');
-			$this->clear_entry();
-
-			//load the just created entry into memory
-			$this->fetch_entry($new_id);
 		}
-		elseif ($captcha_required && $this->error_handling == 'inline')
+		else
+		{
+			$this->errors[] = lang('unauthorized_for_this_channel');
+		}
+
+		ee()->config->set_item('site_id', $current_site_id);
+
+		$new_id = $this->entry('entry_id');
+		$this->clear_entry();
+
+		//load the just created entry into memory
+		$this->fetch_entry($new_id);
+
+		if ($captcha_required && $this->error_handling == 'inline')
 		{
 			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
+		}
+
+		foreach($this->field_errors as $field => $error)
+		{
+			if (isset($id_to_name_map[$field]))
+			{
+				$this->field_errors[$id_to_name_map[$field]] = $error;
+			}
 		}
 
 		// Reset their group_id back to 0

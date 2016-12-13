@@ -294,7 +294,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ( ! AJAX_REQUEST OR ! $board OR (empty($new_order['order']) && empty($new_order['cat_order'])))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$order = $new_order['order'];

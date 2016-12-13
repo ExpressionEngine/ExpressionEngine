@@ -44,7 +44,7 @@ class Comments extends AbstractPublishController {
 			'can_delete_all_comments'
 			))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -299,7 +299,7 @@ class Comments extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_edit_all_comments')
 		  && ! ee()->cp->allowed_group('can_edit_own_comments'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$comment = ee('Model')->get('Comment', $comment_id)
@@ -316,7 +316,7 @@ class Comments extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_edit_all_comments')
 			&& $comment->author_id = ee()->session->userdata('member_id'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$author_information = ee('View')->make('publish/comments/partials/author_information')
@@ -602,7 +602,7 @@ class Comments extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_delete_all_comments')
 		  && ! ee()->cp->allowed_group('can_delete_own_comments'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($comment_ids))
@@ -642,7 +642,7 @@ class Comments extends AbstractPublishController {
 	{
 		if ( ! ee()->cp->allowed_group('can_moderate_comments'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($comment_ids))

@@ -43,7 +43,7 @@ class Utilities extends CP_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('utilities');

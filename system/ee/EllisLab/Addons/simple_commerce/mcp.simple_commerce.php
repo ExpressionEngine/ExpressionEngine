@@ -210,7 +210,7 @@ class Simple_commerce_mcp {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce', ee()->cp->get_url_state()));
@@ -449,7 +449,7 @@ class Simple_commerce_mcp {
 
 		if ( ! $item)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! empty($_POST))
@@ -807,7 +807,7 @@ class Simple_commerce_mcp {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
@@ -848,7 +848,7 @@ class Simple_commerce_mcp {
 
 			if ( ! $purchase)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -1136,7 +1136,7 @@ class Simple_commerce_mcp {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
@@ -1177,7 +1177,7 @@ class Simple_commerce_mcp {
 
 			if ( ! $email_template)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
