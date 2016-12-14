@@ -50,6 +50,7 @@ Grid.Publish = function(field, settings) {
 	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.children('tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
+	this.header = null;
 
 	this.rowSelector = 'tr';
 	this.cellSelector = 'td';
@@ -72,6 +73,7 @@ Grid.MiniField = function(field, settings) {
 	this.tableActions = null;
 	this.rowContainer = $('.keyvalue-item-container', this.root);
 	this.addButtonToolbar = $('> ul.toolbar', this.parentContainer);
+	this.header = $('.keyvalue-header', this.root);
 
 	this.rowSelector = '.keyvalue-item';
 	this.cellSelector = '.keyvalue-field';
@@ -166,6 +168,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		this.addButtonToolbar.toggle(showControls);
 		$(this.reorderHandleContainerSelector, this.root).toggle(showControls);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
+
+		if (this.header) {
+			this.header.toggle(showControls);
+		}
 
 		if (this.settings.grid_max_rows !== '') {
 			// Show add button if row count is below the max rows setting,
