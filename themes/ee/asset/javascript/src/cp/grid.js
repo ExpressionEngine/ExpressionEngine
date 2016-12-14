@@ -67,6 +67,7 @@ Grid.Publish = function(field, settings) {
 
 Grid.MiniField = function(field, settings) {
 	this.root = $(field);
+	this.root.data('gridInitialized', true);
 	this.parentContainer = this.root;
 	this.blankRow = $('.grid-blank-row', this.root);
 	this.emptyField = $('.keyvalue-empty', this.root);
@@ -87,11 +88,19 @@ Grid.MiniField = function(field, settings) {
 		item: '.keyvalue-item'
 	},
 
-	this.settings = (settings !== undefined) ? settings : EE.mini_grid_field_settings[field.id];
+	this.settings = settings;
 	this.init();
 	this._addNewRowOnEnter();
 
 	this.eventHandlers = [];
+}
+
+$.fn.miniGrid = function(params) {
+	return this.each(function() {
+		if ( ! $(this).data('gridInitialized')) {
+			return new Grid.MiniField(this, params);
+		}
+	});
 }
 
 Grid.Publish.prototype = Grid.MiniField.prototype = {
@@ -873,13 +882,6 @@ Grid.Settings.prototype = {
  */
 EE.grid = function(field, settings) {
 	return new Grid.Publish(field, settings);
-};
-
-/**
- * Public method to instantiate Grid field
- */
-EE.miniGrid = function(field, settings) {
-	return new Grid.MiniField(field, settings);
 };
 
 /**

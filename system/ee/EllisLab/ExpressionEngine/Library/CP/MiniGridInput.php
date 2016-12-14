@@ -54,13 +54,9 @@ class MiniGridInput extends GridInput {
 
 		if (REQ == 'CP')
 		{
-			// Set settings as a global for easy reinstantiation of field
-			// by third parties
-			$this->javascript->set_global('mini_grid_field_settings.'.$name, $settings);
-
 			// getElementById instead of $('#...') for field names that have
 			// brackets in them
-			$this->javascript->output('EE.miniGrid(document.getElementById("'.$name.'"));');
+			$this->javascript->output('$(".keyvalue").miniGrid('.json_encode($settings).');');
 		}
 	}
 }

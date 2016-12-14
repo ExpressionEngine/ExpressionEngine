@@ -1,4 +1,4 @@
-<div class="keyvalue" id="<?=$grid_field_name?>">
+<div class="keyvalue">
 	<div class="keyvalue-empty hidden">
 		<p><?=lang($no_results['text'])?>
 			<?php if ( ! empty($no_results['action_text'])): ?>
