@@ -170,6 +170,8 @@ $lang = array(
 
 'max_revisions_note' => 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
 
+'field_value_label_pairs' => 'Value/Label Pairs',
+
 'field_populate_manually' => 'Populate the menu manually',
 
 'field_populate_from_channel' => 'Populate the menu from another channel field',
