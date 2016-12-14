@@ -89,6 +89,7 @@ Grid.MiniField = function(field, settings) {
 
 	this.settings = (settings !== undefined) ? settings : EE.mini_grid_field_settings[field.id];
 	this.init();
+	this._addNewRowOnEnter();
 
 	this.eventHandlers = [];
 }
@@ -109,6 +110,28 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.blankRow.find(':input').attr('disabled', 'disabled');
+	},
+
+	/**
+	 * When enter is pressed in a text box, we will add a new row to the Grid
+	 * and set focus in the first text box in that row
+	 *
+	 * Note: This listener isn't added by default, typically only used in mini Grid
+	 */
+	_addNewRowOnEnter: function() {
+		var that = this;
+		$(this.root).on('keypress', 'input[type=text]', function(event) {
+			if (event.keyCode == 13) {
+				event.preventDefault();
+				that._addRow();
+
+				// Give focus to first text box
+				$(that.rowSelector, that.root).last()
+					.find('input[type=text]')
+					.first()
+					.focus();
+			}
+		});
 	},
 
 	/**
