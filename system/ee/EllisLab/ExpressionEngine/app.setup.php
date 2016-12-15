@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\Encrypt;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
@@ -180,6 +181,24 @@ return array(
 			$userdata = ee()->session->userdata;
 			return new Permission\Permission($userdata);
 		},
+
+		'Encrypt' => function($ee)
+		{
+			if (defined('OPENSSL_VERSION_NUMBER'))
+			{
+				$driver = new Encrypt\Drivers\OpenSSL();
+			}
+			elseif (function_exists('mcrypt_encrypt'))
+			{
+				$driver = new Encrypt\Drivers\Mcrypt();
+			}
+			else
+			{
+				$driver = new Encrypt\Drivers\ExclusiveOr();
+			}
+
+			return new Encrypt\Encrypt($driver);
+		}
 	),
 
 	'services.singletons' => array(
