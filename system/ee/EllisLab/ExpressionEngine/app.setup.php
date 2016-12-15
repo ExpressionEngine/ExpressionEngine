@@ -197,7 +197,9 @@ return array(
 				$driver = new Encrypt\Drivers\ExclusiveOr();
 			}
 
-			return new Encrypt\Facade($driver);
+			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+
+			return new Encrypt\Facade($driver, $key);
 		}
 	),
 
