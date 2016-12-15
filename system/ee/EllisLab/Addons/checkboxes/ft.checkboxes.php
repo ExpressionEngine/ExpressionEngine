@@ -352,7 +352,7 @@ class Checkboxes_ft extends OptionFieldtype {
 			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
 		}
 
-		if (isset($data['value_label_pairs']) && ! empty($data['value_label_pairs']))
+		if ((isset($data['value_label_pairs']) && ! empty($data['value_label_pairs'])) OR ! $this->field_id)
 		{
 			$data['field_pre_populate'] = 'v';
 		}
