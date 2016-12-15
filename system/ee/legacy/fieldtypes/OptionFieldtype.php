@@ -25,11 +25,6 @@
  */
 abstract class OptionFieldtype extends EE_Fieldtype {
 
-	public function display_field($data)
-	{
-		return NULL;
-	}
-
 	/**
 	 * Creates a mini Grid field based on the data in the 'value_label_pairs' key
 	 *
@@ -242,7 +237,55 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	}
 
 	/**
+	 * Default replace_tag implementation
+	 */
+	public function replace_tag($data, $params = '', $tagdata = '')
+	{
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return ee()->functions->encode_ee_tags($data);
+		}
+
+		$pairs = $this->get_setting('value_label_pairs');
+		if (isset($pairs[$data]))
+		{
+			$data = $pairs[$data];
+		}
+
+		return $this->processTypograpghy($data);
+	}
+
+	/**
+	 * Process text through default typography options
+	 *
+	 * @param	string	$string	String to process
+	 * @return	Processed string
+	 */
+	protected function processTypograpghy($string)
+	{
+		$text_format = ($this->content_type() == 'grid')
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
+
+		ee()->load->library('typography');
+
+		return ee()->typography->parse_type(
+			ee()->functions->encode_ee_tags($string),
+			array(
+				'text_format'	=> $text_format,
+				'html_format'	=> $this->row('channel_html_formatting', 'all'),
+				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
+			)
+		);
+	}
+
+	/**
 	 * Parses a multi-selection field as a single variable
+	 *
+	 * @param	string	$data	Entry field data
+	 * @param	array	$params	Params passed to the field via the template
+	 * @return	Parsed template string
 	 */
 	protected function _parse_single($data, $params)
 	{
@@ -293,23 +336,17 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($entry);
 		}
 
-		$text_format = ($this->content_type() == 'grid')
-			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
-
-		return ee()->typography->parse_type(
-				ee()->functions->encode_ee_tags($entry),
-				array(
-						'text_format'	=> $text_format,
-						'html_format'	=> $this->row('channel_html_formatting', 'all'),
-						'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
-						'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
-					  )
-		);
+		return $this->processTypograpghy($entry);
 	}
 
-	/**
-	 * Parses a multi-selection field as a variable pair
-	 */
+	 /**
+ 	 * Parses a multi-selection field as a variable pair
+ 	 *
+ 	 * @param	string	$data		Entry field data
+ 	 * @param	array	$params		Params passed to the field via the template
+ 	 * @param	string	$tagdata	String between the variable pair
+ 	 * @return	Parsed template string
+ 	 */
 	protected function _parse_multi($data, $params, $tagdata)
 	{
 		$chunk = '';
@@ -321,8 +358,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		{
 			$limit = $params['limit'];
 		}
-
-		$text_format = $this->row('field_ft_'.$this->field_id, 'none');
 
 		$pairs = $this->get_setting('value_label_pairs');
 
@@ -344,21 +379,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
 				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
 
-				$typography_options = array(
-					'text_format'	=> $text_format,
-					'html_format'	=> $this->row('channel_html_formatting', 'all'),
-					'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
-					'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
-				);
-
-				$vars['item'] = ee()->typography->parse_type(
-					$vars['item'],
-					$typography_options
-				);
-				$vars['item:label'] = ee()->typography->parse_type(
-					$vars['item:label'],
-					$typography_options
-				);
+				$vars['item'] = $this->processTypograpghy($vars['item']);
+				$vars['item:label'] = $this->processTypograpghy($vars['item:label']);
 
 				$chunk .= ee()->functions->var_swap($tmp, $vars);
 			}
