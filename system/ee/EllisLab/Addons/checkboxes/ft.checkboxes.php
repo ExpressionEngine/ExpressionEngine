@@ -1,4 +1,7 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
+
 /**
  * ExpressionEngine - by EllisLab
  *
