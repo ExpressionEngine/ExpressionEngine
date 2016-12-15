@@ -174,31 +174,10 @@ class Radio_ft extends OptionFieldtype {
 
 	public function grid_display_settings($data)
 	{
-		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
-
-		return array(
-			'field_options' => array(
-				array(
-					'title' => 'field_fmt',
-					'fields' => array(
-						'field_fmt' => array(
-							'type' => 'select',
-							'choices' => $format_options,
-							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
-						)
-					)
-				),
-				array(
-					'title' => 'radio_options',
-					'desc' => 'grid_radio_options_desc',
-					'fields' => array(
-						'field_list_items' => array(
-							'type' => 'textarea',
-							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
-						)
-					)
-				)
-			)
+		return $this->getGridSettingsForm(
+			$data,
+			'radio_options',
+			'grid_radio_options_desc'
 		);
 	}
 

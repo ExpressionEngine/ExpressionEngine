@@ -242,65 +242,10 @@ class Checkboxes_ft extends OptionFieldtype {
 
 	public function grid_display_settings($data)
 	{
-		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
-
-		if ( ! isset($data['field_pre_populate']))
-		{
-			$data['field_pre_populate'] = 'v';
-		}
-
-		$grid = $this->getValueLabelMiniGrid($data);
-
-		ee()->javascript->output("
-			Grid.bind('checkboxes', 'displaySettings', function(column) {
-				$('.keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
-			});
-		");
-
-		return array(
-			'field_options' => array(
-				array(
-					'title' => 'field_fmt',
-					'fields' => array(
-						'field_fmt' => array(
-							'type' => 'select',
-							'choices' => $format_options,
-							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
-						)
-					)
-				),
-				array(
-					'title' => 'checkbox_options',
-					'desc' => 'grid_checkbox_options_desc',
-					'fields' => array(
-						'field_value_label_pairs' => array(
-							'type' => 'radio',
-							'name' => 'field_pre_populate',
-							'choices' => array(
-								'v' => lang('field_value_label_pairs'),
-							),
-							'value' => $data['field_pre_populate'] ?: 'v'
-						),
-						'value_label_pairs' => array(
-							'type' =>'html',
-							'content' => ee('View')->make('ee:_shared/form/mini_grid')
-								->render($grid->viewData())
-						),
-						'field_pre_populate_n' => array(
-							'type' => 'radio',
-							'name' => 'field_pre_populate',
-							'choices' => array(
-								'n' => lang('field_populate_manually'),
-							),
-							'value' => $data['field_pre_populate'] ?: 'v'
-						),
-						'field_list_items' => array(
-							'type' => 'textarea',
-							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
-						)
-					)
-				)
-			)
+		return $this->getGridSettingsForm(
+			$data,
+			'checkbox_options',
+			'grid_checkbox_options_desc'
 		);
 	}
 

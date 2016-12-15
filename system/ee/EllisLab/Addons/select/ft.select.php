@@ -115,31 +115,10 @@ class Select_ft extends OptionFieldtype {
 
 	function grid_display_settings($data)
 	{
-		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
-
-		return array(
-			'field_options' => array(
-				array(
-					'title' => 'field_fmt',
-					'fields' => array(
-						'field_fmt' => array(
-							'type' => 'select',
-							'choices' => $format_options,
-							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
-						)
-					)
-				),
-				array(
-					'title' => 'select_options',
-					'desc' => 'grid_select_options_desc',
-					'fields' => array(
-						'field_list_items' => array(
-							'type' => 'textarea',
-							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
-						)
-					)
-				)
-			)
+		return $this->getGridSettingsForm(
+			$data,
+			'select_options',
+			'grid_select_options_desc'
 		);
 	}
 

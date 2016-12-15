@@ -237,6 +237,78 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	}
 
 	/**
+	 * Constructs a Grid settings form array for multi-option fields
+	 *
+	 * @param	array	$data	Fieldtype settings array
+	 * @param	string	$title	Lang key for settings section title
+	 * @param	string	$desc	Lang key or string for settings section description
+	 * @return	Array in shared form view format for Grid settings form
+	 */
+	protected function getGridSettingsForm($data, $title, $desc)
+	{
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
+		if ( ! isset($data['field_pre_populate']))
+		{
+			$data['field_pre_populate'] = 'v';
+		}
+
+		$grid = $this->getValueLabelMiniGrid($data);
+
+		ee()->javascript->output("
+			Grid.bind('checkboxes', 'displaySettings', function(column) {
+				$('.keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
+			});
+		");
+
+		return array(
+			'field_options' => array(
+				array(
+					'title' => 'field_fmt',
+					'fields' => array(
+						'field_fmt' => array(
+							'type' => 'select',
+							'choices' => $format_options,
+							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
+						)
+					)
+				),
+				array(
+					'title' => $title,
+					'desc' => $desc,
+					'fields' => array(
+						'field_value_label_pairs' => array(
+							'type' => 'radio',
+							'name' => 'field_pre_populate',
+							'choices' => array(
+								'v' => lang('field_value_label_pairs'),
+							),
+							'value' => $data['field_pre_populate'] ?: 'v'
+						),
+						'value_label_pairs' => array(
+							'type' =>'html',
+							'content' => ee('View')->make('ee:_shared/form/mini_grid')
+								->render($grid->viewData())
+						),
+						'field_pre_populate_n' => array(
+							'type' => 'radio',
+							'name' => 'field_pre_populate',
+							'choices' => array(
+								'n' => lang('field_populate_manually'),
+							),
+							'value' => $data['field_pre_populate'] ?: 'v'
+						),
+						'field_list_items' => array(
+							'type' => 'textarea',
+							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
+						)
+					)
+				)
+			)
+		);
+	}
+
+	/**
 	 * Default replace_tag implementation
 	 */
 	public function replace_tag($data, $params = '', $tagdata = '')
