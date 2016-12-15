@@ -116,6 +116,7 @@ class Select_ft extends OptionFieldtype {
 	function grid_display_settings($data)
 	{
 		return $this->getGridSettingsForm(
+			'select',
 			$data,
 			'select_options',
 			'grid_select_options_desc'

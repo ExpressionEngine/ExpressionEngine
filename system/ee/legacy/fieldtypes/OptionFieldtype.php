@@ -239,12 +239,13 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	/**
 	 * Constructs a Grid settings form array for multi-option fields
 	 *
-	 * @param	array	$data	Fieldtype settings array
-	 * @param	string	$title	Lang key for settings section title
-	 * @param	string	$desc	Lang key or string for settings section description
+	 * @param	string	$field_type	Fieldtype short name
+	 * @param	array	$data		Fieldtype settings array
+	 * @param	string	$title		Lang key for settings section title
+	 * @param	string	$desc		Lang key or string for settings section description
 	 * @return	Array in shared form view format for Grid settings form
 	 */
-	protected function getGridSettingsForm($data, $title, $desc)
+	protected function getGridSettingsForm($field_type, $data, $title, $desc)
 	{
 		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
@@ -256,7 +257,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		$grid = $this->getValueLabelMiniGrid($data);
 
 		ee()->javascript->output("
-			Grid.bind('checkboxes', 'displaySettings', function(column) {
+			Grid.bind('".$field_type."', 'displaySettings', function(column) {
 				$('.keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
 			});
 		");

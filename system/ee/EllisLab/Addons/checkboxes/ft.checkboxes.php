@@ -243,6 +243,7 @@ class Checkboxes_ft extends OptionFieldtype {
 	public function grid_display_settings($data)
 	{
 		return $this->getGridSettingsForm(
+			'checkboxes',
 			$data,
 			'checkbox_options',
 			'grid_checkbox_options_desc'

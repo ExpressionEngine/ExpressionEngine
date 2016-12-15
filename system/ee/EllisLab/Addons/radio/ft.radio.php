@@ -175,6 +175,7 @@ class Radio_ft extends OptionFieldtype {
 	public function grid_display_settings($data)
 	{
 		return $this->getGridSettingsForm(
+			'radio',
 			$data,
 			'radio_options',
 			'grid_radio_options_desc'

@@ -147,6 +147,7 @@ class Multi_select_ft extends OptionFieldtype {
 	function grid_display_settings($data)
 	{
 		return $this->getGridSettingsForm(
+			'multi_select',
 			$data,
 			'multiselect_options',
 			'grid_multiselect_options_desc'
