@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class OptionFieldtype extends EE_Fieldtype {
+abstract class OptionFieldtype extends EE_Fieldtype {
 
 	public function display_field($data)
 	{
@@ -128,6 +128,149 @@ class OptionFieldtype extends EE_Fieldtype {
 
 			return array();
 		}
+	}
+
+	/**
+	 * Parses a multi-selection field as a single variable
+	 */
+	function _parse_single($data, $params)
+	{
+		if (isset($params['limit']))
+		{
+			$limit = intval($params['limit']);
+
+			if (count($data) > $limit)
+			{
+				$data = array_slice($data, 0, $limit);
+			}
+		}
+
+		$pairs = $this->get_setting('value_label_pairs');
+
+		if ( ! empty($pairs))
+		{
+			foreach ($data as $key => $value)
+			{
+				if (isset($pairs[$value]))
+				{
+					$data[$key] = $pairs[$value];
+				}
+			}
+		}
+
+		if (isset($params['markup']) && ($params['markup'] == 'ol' OR $params['markup'] == 'ul'))
+		{
+			$entry = '<'.$params['markup'].'>';
+
+			foreach($data as $dv)
+			{
+				$entry .= '<li>';
+				$entry .= $dv;
+				$entry .= '</li>';
+			}
+
+			$entry .= '</'.$params['markup'].'>';
+		}
+		else
+		{
+			$entry = implode(', ', $data);
+		}
+
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return ee()->functions->encode_ee_tags($entry);
+		}
+
+		$text_format = ($this->content_type() == 'grid')
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
+
+		return ee()->typography->parse_type(
+				ee()->functions->encode_ee_tags($entry),
+				array(
+						'text_format'	=> $text_format,
+						'html_format'	=> $this->row('channel_html_formatting', 'all'),
+						'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+						'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
+					  )
+		);
+	}
+
+	/**
+	 * Parses a multi-selection field as a variable pair
+	 */
+	function _parse_multi($data, $params, $tagdata)
+	{
+		$chunk = '';
+		$raw_chunk = '';
+		$limit = FALSE;
+
+		// Limit Parameter
+		if (is_array($params) AND isset($params['limit']))
+		{
+			$limit = $params['limit'];
+		}
+
+		$text_format = $this->row('field_ft_'.$this->field_id, 'none');
+
+		$pairs = $this->get_setting('value_label_pairs');
+
+		foreach($data as $key => $item)
+		{
+			if ( ! $limit OR $key < $limit)
+			{
+				$vars['item'] = $item;
+				$vars['item:label'] = $item;
+				$vars['item:value'] = $item;
+				$vars['count'] = $key + 1;	// {count} parameter
+
+				if (isset($pairs[$item]))
+				{
+					$vars['item']       = $pairs[$item];
+					$vars['item:label'] = $pairs[$item];
+				}
+
+				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
+				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
+
+				$typography_options = array(
+					'text_format'	=> $text_format,
+					'html_format'	=> $this->row('channel_html_formatting', 'all'),
+					'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+					'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
+				);
+
+				$vars['item'] = ee()->typography->parse_type(
+					$vars['item'],
+					$typography_options
+				);
+				$vars['item:label'] = ee()->typography->parse_type(
+					$vars['item:label'],
+					$typography_options
+				);
+
+				$chunk .= ee()->functions->var_swap($tmp, $vars);
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		// Everybody loves backspace
+		if (isset($params['backspace']))
+		{
+			$chunk = substr($chunk, 0, - $params['backspace']);
+			$raw_chunk = substr($raw_chunk, 0, - $params['backspace']);
+		}
+
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return ee()->functions->encode_ee_tags($raw_chunk);
+		}
+
+		return $chunk;
 	}
 }
 

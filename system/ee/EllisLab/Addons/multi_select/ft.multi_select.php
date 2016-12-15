@@ -1,4 +1,7 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -22,7 +25,7 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Multi_select_ft extends EE_Fieldtype {
+class Multi_select_ft extends OptionFieldtype {
 
 	var $info = array(
 		'name'		=> 'Multi Select',
@@ -124,118 +127,6 @@ class Multi_select_ft extends EE_Fieldtype {
 		{
 			return $this->_parse_single($data, $params);
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	function _parse_single($data, $params)
-	{
-		if (isset($params['limit']))
-		{
-			$limit = intval($params['limit']);
-
-			if (count($data) > $limit)
-			{
-				$data = array_slice($data, 0, $limit);
-			}
-		}
-
-		if (isset($params['markup']) && ($params['markup'] == 'ol' OR $params['markup'] == 'ul'))
-		{
-			$entry = '<'.$params['markup'].'>';
-
-			foreach($data as $dv)
-			{
-				$entry .= '<li>';
-				$entry .= $dv;
-				$entry .= '</li>';
-			}
-
-			$entry .= '</'.$params['markup'].'>';
-		}
-		else
-		{
-			$entry = implode(', ', $data);
-		}
-
-		// Experimental parameter, do not use
-		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
-		{
-			return ee()->functions->encode_ee_tags($entry);
-		}
-
-		$text_format = ($this->content_type() == 'grid')
-			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
-
-		return ee()->typography->parse_type(
-				ee()->functions->encode_ee_tags($entry),
-				array(
-						'text_format'	=> $text_format,
-						'html_format'	=> $this->row('channel_html_formatting', 'all'),
-						'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
-						'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
-					  )
-		);
-	}
-
-	// --------------------------------------------------------------------
-
-	function _parse_multi($data, $params, $tagdata)
-	{
-		$chunk = '';
-		$raw_chunk = '';
-		$limit = FALSE;
-
-		// Limit Parameter
-		if (is_array($params) AND isset($params['limit']))
-		{
-			$limit = $params['limit'];
-		}
-
-		$text_format = $this->row('field_ft_'.$this->field_id, 'none');
-
-		foreach($data as $key => $item)
-		{
-			if ( ! $limit OR $key < $limit)
-			{
-				$vars['item'] = $item;
-				$vars['count'] = $key + 1;	// {count} parameter
-
-				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
-				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
-
-				$vars['item'] = ee()->typography->parse_type(
-						$item,
-						array(
-								'text_format'	=> $text_format,
-								'html_format'	=> $this->row('channel_html_formatting', 'all'),
-								'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
-								'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
-							  )
-						);
-
-				$chunk .= ee()->functions->var_swap($tmp, $vars);
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		// Everybody loves backspace
-		if (isset($params['backspace']))
-		{
-			$chunk = substr($chunk, 0, - $params['backspace']);
-			$raw_chunk = substr($raw_chunk, 0, - $params['backspace']);
-		}
-
-		// Experimental parameter, do not use
-		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
-		{
-			return ee()->functions->encode_ee_tags($chunk);
-		}
-
-		return $chunk;
 	}
 
 	function display_settings($data)
