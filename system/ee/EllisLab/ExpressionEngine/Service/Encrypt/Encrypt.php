@@ -32,6 +32,7 @@ class Encrypt {
 
 	public function __construct(Driver $driver, $key)
 	{
+		$driver->setHashObject($this);
 		$this->setDriver($driver);
 		$this->default_key = $key;
 	}

@@ -30,10 +30,17 @@ class Mcrypt implements Driver {
 	protected $cipher = MCRYPT_RIJNDAEL_256;
 	protected $mode = MCRYPT_MODE_CBC;
 	protected $mb_available;
+	protected $hash_object;
 
 	public function __construct()
 	{
 		$this->mb_available = (MB_ENABLED) ?: extension_loaded('mbstring');
+	}
+
+	public function setHashObject($obj)
+	{
+		$this->hash_object = $obj;
+		return $this;
 	}
 
 	public function encode($string, $key)
@@ -66,7 +73,7 @@ class Mcrypt implements Driver {
 	 */
 	protected function add_cipher_noise($data, $key)
 	{
-		$keyhash = ee('Encrypt')->hash($key);
+		$keyhash = $this->hash_object->hash($key);
 		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
 		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
@@ -90,7 +97,7 @@ class Mcrypt implements Driver {
 	 */
 	protected function remove_cipher_noise($data, $key)
 	{
-		$keyhash = ee('Encrypt')->hash($key);
+		$keyhash = $this->hash_object->hash($key);
 		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
 		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);

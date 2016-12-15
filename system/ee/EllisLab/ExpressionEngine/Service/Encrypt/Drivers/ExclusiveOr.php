@@ -27,6 +27,14 @@ use EllisLab\ExpressionEngine\Service\Encrypt\Driver;
  */
 class ExclusiveOr implements Driver {
 
+	protected $hash_object;
+
+	public function setHashObject($obj)
+	{
+		$this->hash_object = $obj;
+		return $this;
+	}
+
 	public function encode($string, $key)
 	{
 		$rand = '';
@@ -35,7 +43,7 @@ class ExclusiveOr implements Driver {
 			$rand .= mt_rand(0, mt_getrandmax());
 		}
 
-		$rand = ee('Encrypt')->hash($rand);
+		$rand = $this->hash_object->hash($rand);
 
 		$enc = '';
 		for ($i = 0; $i < strlen($string); $i++)
@@ -66,7 +74,7 @@ class ExclusiveOr implements Driver {
 	 */
 	protected function merge($string, $key)
 	{
-		$hash = ee('Encrypt')->hash($key);
+		$hash = $this->hash_object->hash($key);
 		$str = '';
 		for ($i = 0; $i < strlen($string); $i++)
 		{

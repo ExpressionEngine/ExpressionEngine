@@ -67,6 +67,11 @@ class OpenSSL implements Driver {
 		return openssl_decrypt($data, $this->method, $key, $this->options, $this->iv);
 	}
 
+	public function setHashObject($obj)
+	{
+		return $this;
+	}
+
 }
 
 // EOF

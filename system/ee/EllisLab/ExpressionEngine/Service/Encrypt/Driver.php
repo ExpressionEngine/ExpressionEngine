@@ -27,6 +27,7 @@ interface Driver {
 
 	public function encode($string, $key);
 	public function decode($data, $key);
+	public function setHashObject($obj);
 
 }
 
