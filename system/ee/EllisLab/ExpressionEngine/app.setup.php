@@ -197,7 +197,7 @@ return array(
 				$driver = new Encrypt\Drivers\ExclusiveOr();
 			}
 
-			return new Encrypt\Encrypt($driver);
+			return new Encrypt\Facade($driver);
 		}
 	),
 
