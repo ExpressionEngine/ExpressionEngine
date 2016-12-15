@@ -199,7 +199,7 @@ return array(
 
 			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
 
-			return new Encrypt\Facade($driver, $key);
+			return new Encrypt\Encrypt($driver, $key);
 		}
 	),
 

@@ -18,14 +18,14 @@ use EllisLab\ExpressionEngine\Service\Encrypt\Driver;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Facade Class
+ * ExpressionEngine Encrypt Class
  *
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Facade {
+class Encrypt {
 
 	private $driver;
 	private $default_key;
