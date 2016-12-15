@@ -131,74 +131,11 @@ class Multi_select_ft extends OptionFieldtype {
 
 	function display_settings($data)
 	{
-		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
-
-		$defaults = array(
-			'field_fmt' => '',
-			'field_pre_populate' => FALSE,
-			'field_list_items' => '',
-			'field_pre_channel_id' => 0,
-			'field_pre_field_id' => 0
+		$settings = $this->getSettingsForm(
+			$data,
+			'multiselect_options',
+			lang('options_field_desc').lang('multiselect_options_desc')
 		);
-
-		foreach ($defaults as $setting => $value)
-		{
-			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
-		}
-
-		$settings = array(
-			array(
-				'title' => 'field_fmt',
-				'fields' => array(
-					'field_fmt' => array(
-						'type' => 'select',
-						'choices' => $format_options,
-						'value' => $data['field_fmt'],
-						'note' => form_label(
-							form_checkbox('update_formatting', 'y')
-							.lang('update_existing_fields')
-						)
-					)
-				)
-			),
-			array(
-				'title' => 'multiselect_options',
-				'desc' => lang('options_field_desc').lang('multiselect_options_desc'),
-				'fields' => array(
-					'field_pre_populate_n' => array(
-						'type' => 'radio',
-						'name' => 'field_pre_populate',
-						'choices' => array(
-							'n' => lang('field_populate_manually'),
-						),
-						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
-					),
-					'field_list_items' => array(
-						'type' => 'textarea',
-						'value' => $data['field_list_items']
-					),
-					'field_pre_populate_y' => array(
-						'type' => 'radio',
-						'name' => 'field_pre_populate',
-						'choices' => array(
-							'y' => lang('field_populate_from_channel'),
-						),
-						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
-					),
-					'field_pre_populate_id' => array(
-						'type' => 'select',
-						'choices' => $this->get_channel_field_list(),
-						'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
-					)
-				)
-			)
-		);
-
-		// Only show the update existing fields note when editing.
-		if ( ! $this->field_id)
-		{
-			unset($settings[0]['fields']['field_fmt']['note']);
-		}
 
 		return array('field_options_multi_select' => array(
 			'label' => 'field_options',
