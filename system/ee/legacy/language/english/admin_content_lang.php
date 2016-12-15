@@ -89,21 +89,26 @@ $lang = array(
 'field_tools' => 'Field tools',
 
 'checkbox_options' => 'Checkbox options',
-'checkbox_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
+'checkbox_options_desc' => '<em><i>Each item in the textarea will generate a single checkbox and label pair in the publish form.</i>',
 
 'select_options' => 'Select menu options',
-'select_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
+'select_options_desc' => '<em><i>Each item in the textarea will be included in a select drop down menu in the publish form.</i>',
 
 'multiselect_options' => 'Multi-Select options',
-'multiselect_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
+'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
 
 'radio_options' => 'Radio options',
-'radio_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
+'radio_options_desc' => '<em><i>Each item in the textarea will generate a single radio button and label pair in the publish form.</i>',
 
-'grid_checkbox_options_desc' => 'Each item will generate a single checkbox and label pair in the publish form.',
-'grid_select_options_desc' => 'Each item will be included in a select drop down menu in the publish form.',
-'grid_multiselect_options_desc' => 'Each item will be included in a multi-select in the publish form.',
-'grid_radio_options_desc' => 'Each item will generate a single radio button and label pair in the publish form.',
+'options_field_desc' => 'Choose how to create the options for this field.</em>
+<em><i>Value/Label pairs can be specified if you want a different display label for items on the publish form versus the value that gets saved.</i></em>',
+
+'grid_value_label_desc' => 'Value/Label pairs can be specified if you want a different display label for items on the publish form versus the value that gets saved.',
+
+'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
+'grid_select_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a select drop down menu in the publish form.',
+'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi-select in the publish form.',
+'grid_radio_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single radio button and label pair in the publish form.',
 
 'localize_date' => 'Localize date?',
 'localize_date_desc' => 'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',

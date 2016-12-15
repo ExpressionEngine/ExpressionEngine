@@ -155,7 +155,7 @@ class Select_ft extends EE_Fieldtype {
 			),
 			array(
 				'title' => 'select_options',
-				'desc' => 'select_options_desc',
+				'desc' => lang('options_field_desc').lang('select_options_desc'),
 				'fields' => array()
 			)
 		);

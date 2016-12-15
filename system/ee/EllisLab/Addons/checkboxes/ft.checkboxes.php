@@ -377,7 +377,7 @@ class Checkboxes_ft extends OptionFieldtype {
 			),
 			array(
 				'title' => 'checkbox_options',
-				'desc' => 'checkbox_options_desc',
+				'desc' => lang('options_field_desc').lang('checkbox_options_desc'),
 				'fields' => array(
 					'field_value_label_pairs' => array(
 						'type' => 'radio',

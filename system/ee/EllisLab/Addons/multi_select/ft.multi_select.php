@@ -272,7 +272,7 @@ class Multi_select_ft extends EE_Fieldtype {
 			),
 			array(
 				'title' => 'multiselect_options',
-				'desc' => 'multiselect_options_desc',
+				'desc' => lang('options_field_desc').lang('multiselect_options_desc'),
 				'fields' => array(
 					'field_pre_populate_n' => array(
 						'type' => 'radio',
