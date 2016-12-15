@@ -349,6 +349,15 @@ class Checkboxes_ft extends OptionFieldtype {
 			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
 		}
 
+		if (isset($data['value_label_pairs']) && ! empty($data['value_label_pairs']))
+		{
+			$data['field_pre_populate'] = 'v';
+		}
+		else
+		{
+			$data['field_pre_populate'] = $data['field_pre_populate'] ? 'y' : 'n';
+		}
+
 		$grid = $this->getValueLabelMiniGrid($data);
 
 		$settings = array(
@@ -376,7 +385,7 @@ class Checkboxes_ft extends OptionFieldtype {
 						'choices' => array(
 							'v' => lang('field_value_label_pairs'),
 						),
-						'value' => $data['field_pre_populate'] ?: 'v'
+						'value' => $data['field_pre_populate']
 					),
 					'value_label_pairs' => array(
 						'type' =>'html',
@@ -389,7 +398,7 @@ class Checkboxes_ft extends OptionFieldtype {
 						'choices' => array(
 							'n' => lang('field_populate_manually'),
 						),
-						'value' => $data['field_pre_populate'] ?: 'v'
+						'value' => $data['field_pre_populate']
 					),
 					'field_list_items' => array(
 						'type' => 'textarea',
@@ -401,7 +410,7 @@ class Checkboxes_ft extends OptionFieldtype {
 						'choices' => array(
 							'y' => lang('field_populate_from_channel'),
 						),
-						'value' => $data['field_pre_populate'] ?: 'v'
+						'value' => $data['field_pre_populate']
 					),
 					'field_pre_populate_id' => array(
 						'type' => 'select',

@@ -1239,17 +1239,23 @@ class OptionFieldtype extends EE_Fieldtype {
 
 		if (isset($data['value_label_pairs']))
 		{
-			$pairs = array();
 			if (isset($data['value_label_pairs']['rows']))
 			{
 				$data['value_label_pairs'] = $data['value_label_pairs']['rows'];
 			}
+
+			$pairs = array();
+			$i = 1;
 			foreach ($data['value_label_pairs'] as $value => $label)
 			{
 				$pairs[] = array(
-					array('html' => form_input('value', $value)),
-					array('html' => form_input('label', $label))
+					'attrs' => array('row_id' => $i),
+					'columns' => array(
+						array('html' => form_input('value', $value)),
+						array('html' => form_input('label', $label))
+					)
 				);
+				$i++;
 			}
 
 			$grid->setData($pairs);
@@ -1304,7 +1310,7 @@ class OptionFieldtype extends EE_Fieldtype {
 				);
 			}
 
-			return '';
+			return array();
 		}
 	}
 }
