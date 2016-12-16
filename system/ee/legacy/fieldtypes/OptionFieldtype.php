@@ -312,7 +312,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	/**
 	 * Default replace_tag implementation
 	 */
-	public function replace_tag($data, $params = '', $tagdata = '')
+	public function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
@@ -338,7 +338,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	protected function processTypograpghy($string)
 	{
 		$text_format = ($this->content_type() == 'grid')
-			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
+			? $this->get_setting('field_fmt', 'none') : $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
 

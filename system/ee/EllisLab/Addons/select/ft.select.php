@@ -123,6 +123,28 @@ class Select_ft extends OptionFieldtype {
 		);
 	}
 
+	/**
+	 * :value modifier
+	 */
+	public function replace_value($data, $params = array(), $tagdata = FALSE)
+	{
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return ee()->functions->encode_ee_tags($data);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * :label modifier
+	 */
+	public function replace_label($data, $params = array(), $tagdata = FALSE)
+	{
+		return $this->replace_tag($data, $params, $tagdata);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
