@@ -83,13 +83,18 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	 */
 	public function save_settings($data)
 	{
-		if ($data['field_pre_populate'] == 'v')
+		if (isset($data['field_pre_populate']) && $data['field_pre_populate'] == 'v')
 		{
 			$pairs = array();
 
 			if (isset($data['value_label_pairs']['rows']))
 			{
 				$data['value_label_pairs'] = $data['value_label_pairs']['rows'];
+			}
+
+			if ( ! isset($data['value_label_pairs']))
+			{
+				$data['value_label_pairs'] = array();
 			}
 
 			foreach ($data['value_label_pairs'] as $row)
@@ -100,6 +105,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			if ($this->content_type() == 'grid')
 			{
 				return array(
+					'field_fmt' => $data['field_fmt'],
 					'field_pre_populate' => $data['field_pre_populate'],
 					'field_list_items' => '',
 					'value_label_pairs' => $pairs
@@ -115,7 +121,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			if ($this->content_type() == 'grid')
 			{
 				return array(
-					'field_pre_populate' => $data['field_pre_populate'],
+					'field_fmt' => $data['field_fmt'],
+					'field_pre_populate' => isset($data['field_pre_populate']) ? $data['field_pre_populate'] : 'n',
 					'field_list_items' => $data['field_list_items'],
 					'value_label_pairs' => array()
 				);
@@ -261,7 +268,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 		if ( ! isset($data['field_pre_populate']))
 		{
-			$data['field_pre_populate'] = 'v';
+			// Old Grid columns without this setting need to be set to 'n'
+			$data['field_pre_populate'] = empty($this->field_id) ? 'v' : 'n';
 		}
 
 		// Load from validation error
@@ -338,7 +346,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			'value_label_pairs' => 'validateValueLabelPairs'
 		));
 
-		$validator->defineRule('validateValueLabelPairs', function($key, $pairs, $parameters, $rule)
+		$validator->defineRule('validateValueLabelPairs', function($key, $pairs)
 		{
 			if (isset($pairs['rows']) OR isset($_POST['value_label_pairs']['rows']))
 			{
