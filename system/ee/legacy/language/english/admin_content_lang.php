@@ -103,6 +103,9 @@ $lang = array(
 'options_field_desc' => 'Choose how to create the options for this field.</em>
 <em><i>Value/Label pairs can be specified if you want a different display label for items on the publish form versus the value that gets saved.</i></em>',
 
+'add' => 'Add',
+'no_value_label_pairs' => 'No <b>value/label pairs</b> found.',
+
 'grid_value_label_desc' => 'Value/Label pairs can be specified if you want a different display label for items on the publish form versus the value that gets saved.',
 
 'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',

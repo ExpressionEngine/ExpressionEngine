@@ -40,8 +40,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			'Value',
 			'Label'
 		));
-		// TODO: lang key
-		$grid->setNoResultsText('No <b>key/value pairs</b> found.', 'Add');
+		$grid->setNoResultsText(lang('no_value_label_pairs'), lang('add'));
 		$grid->setBlankRow(array(
 			array('html' => form_input('value', '')),
 			array('html' => form_input('label', ''))
