@@ -110,6 +110,9 @@ $lang = array(
 'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi-select in the publish form.',
 'grid_radio_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single radio button and label pair in the publish form.',
 
+'value_label_duplicate_values' => 'Each value must be unique.',
+'value_label_empty_field' => 'Values or labels cannot be empty.',
+
 'localize_date' => 'Localize date?',
 'localize_date_desc' => 'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',
 

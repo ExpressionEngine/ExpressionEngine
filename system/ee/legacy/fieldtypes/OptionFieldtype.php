@@ -330,6 +330,46 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	}
 
 	/**
+	 * Validate settings
+	 */
+	public function validate_settings($data)
+	{
+		$validator = ee('Validation')->make(array(
+			'value_label_pairs' => 'validateValueLabelPairs'
+		));
+
+		$validator->defineRule('validateValueLabelPairs', function($key, $pairs, $parameters, $rule)
+		{
+			if (isset($pairs['rows']) OR isset($_POST['value_label_pairs']['rows']))
+			{
+				$values = array();
+				$posted = isset($pairs['rows']) ? $pairs['rows'] : $_POST['value_label_pairs']['rows'];
+
+				foreach($posted as $row)
+				{
+					// Duplicate values
+					if (in_array($row['value'], $values))
+					{
+						return 'value_label_duplicate_values';
+					}
+
+					// Empty values
+					if (empty($row['value']) OR empty($row['label']))
+					{
+						return 'value_label_empty_field';
+					}
+
+					$values[] = $row['value'];
+				}
+			}
+
+			return TRUE;
+		});
+
+		return $validator->validate($data);
+	}
+
+	/**
 	 * Default replace_tag implementation
 	 */
 	public function replace_tag($data, $params = array(), $tagdata = FALSE)
