@@ -101,6 +101,7 @@ class Select_ft extends OptionFieldtype {
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
+			'select',
 			$data,
 			'select_options',
 			lang('options_field_desc').lang('select_options_desc')

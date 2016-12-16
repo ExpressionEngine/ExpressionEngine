@@ -160,6 +160,7 @@ class Radio_ft extends OptionFieldtype {
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
+			'radio',
 			$data,
 			'radio_options',
 			lang('options_field_desc').lang('radio_options_desc')

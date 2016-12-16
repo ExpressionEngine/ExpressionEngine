@@ -228,6 +228,7 @@ class Checkboxes_ft extends OptionFieldtype {
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
+			'checkboxes',
 			$data,
 			'checkbox_options',
 			lang('options_field_desc').lang('checkbox_options_desc')

@@ -128,12 +128,13 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	/**
 	 * Constructs a settings form array for multi-option fields
 	 *
-	 * @param	array	$data	Fieldtype settings array
-	 * @param	string	$title	Lang key for settings section title
-	 * @param	string	$desc	Lang key or string for settings section description
+	 * @param	string	$field_type	Fieldtype short name
+	 * @param	array	$data		Fieldtype settings array
+	 * @param	string	$title		Lang key for settings section title
+	 * @param	string	$desc		Lang key or string for settings section description
 	 * @return	Array in shared form view format for settings form
 	 */
-	protected function getSettingsForm($data, $title, $desc)
+	protected function getSettingsForm($field_type, $data, $title, $desc)
 	{
 		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
@@ -148,6 +149,15 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		foreach ($defaults as $setting => $value)
 		{
 			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
+		}
+
+		// Load from validation error
+		if (isset($_POST['value_label_pairs']['rows']) && $_POST['field_type'] == $field_type)
+		{
+			foreach ($_POST['value_label_pairs']['rows'] as $row)
+			{
+				$data['value_label_pairs'][$row['value']] = $row['label'];
+			}
 		}
 
 		if ((isset($data['value_label_pairs']) && ! empty($data['value_label_pairs'])) OR ! $this->field_id)
@@ -252,6 +262,16 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		if ( ! isset($data['field_pre_populate']))
 		{
 			$data['field_pre_populate'] = 'v';
+		}
+
+		// Load from validation error
+		if (isset($data['value_label_pairs']['rows']))
+		{
+			foreach ($data['value_label_pairs']['rows'] as $key => $row)
+			{
+				$data['value_label_pairs'][$row['value']] = $row['label'];
+			}
+			unset($data['value_label_pairs']['rows']);
 		}
 
 		$grid = $this->getValueLabelMiniGrid($data);

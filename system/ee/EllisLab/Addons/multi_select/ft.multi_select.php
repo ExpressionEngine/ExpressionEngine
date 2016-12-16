@@ -132,6 +132,7 @@ class Multi_select_ft extends OptionFieldtype {
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
+			'multi_select',
 			$data,
 			'multiselect_options',
 			lang('options_field_desc').lang('multiselect_options_desc')
