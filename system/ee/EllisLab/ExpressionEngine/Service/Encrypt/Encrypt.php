@@ -104,7 +104,7 @@ class Encrypt {
 	 *
 	 */
 
-	public function verify_signature($data, $signed_data, $key = NULL, $algo = 'md5')
+	public function verifySignature($data, $signed_data, $key = NULL, $algo = 'md5')
 	{
 		if (empty($data))
 		{
