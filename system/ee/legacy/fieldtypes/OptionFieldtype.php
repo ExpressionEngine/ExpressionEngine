@@ -341,6 +341,14 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	 */
 	public function validate_settings($data)
 	{
+		// AJAX validation is currently a little greedy when tabbing across an
+		// incompleted form, so just ignore AJAX validation for now and let
+		// regular validation take care of it
+		if (AJAX_REQUEST)
+		{
+			return TRUE;
+		}
+
 		$validator = ee('Validation')->make(array(
 			'value_label_pairs' => 'validateValueLabelPairs'
 		));
