@@ -101,12 +101,10 @@ $lang = array(
 'radio_options_desc' => '<em><i>Each item in the textarea will generate a single radio button and label pair in the publish form.</i>',
 
 'options_field_desc' => 'Choose how to create the options for this field.</em>
-<em><i>Value/Label pairs can be specified if you want a different display label for items on the publish form versus the value that gets saved.</i></em>',
+<em><i>Value/Label pairs can be used to make content selection friendlier to content authors. For example, if you need to store a value of <b>1</b>, you could use a label of <b>One</b></i></em>',
 
 'add' => 'Add',
 'no_value_label_pairs' => 'No <b>value/label pairs</b> found.',
-
-'grid_value_label_desc' => 'Value/Label pairs can be specified if you want a different display label for items on the publish form versus the value that gets saved.',
 
 'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
 'grid_select_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a select drop down menu in the publish form.',
