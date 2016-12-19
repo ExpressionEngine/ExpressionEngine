@@ -145,7 +145,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		$defaults = array(
-			'field_fmt' => '',
+			'field_fmt' => 'none',
 			'field_pre_populate' => FALSE,
 			'field_list_items' => '',
 			'field_pre_channel_id' => 0,
