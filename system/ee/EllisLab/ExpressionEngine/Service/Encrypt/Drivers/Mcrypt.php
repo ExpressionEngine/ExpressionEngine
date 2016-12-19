@@ -43,15 +43,27 @@ class Mcrypt implements Driver {
 		return $this;
 	}
 
+	protected function ensureKeySize($key)
+	{
+		if ( ! in_array(strlen($key), array(16, 24, 32)))
+		{
+			$key = md5($key);
+		}
+
+		return $key;
+	}
+
 	public function encode($string, $key)
 	{
+		$key = $this->ensureKeySize($key);
 		$init_size = mcrypt_get_iv_size($this->cipher, $this->mode);
 		$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-		return $this->add_cipher_noise($init_vect.mcrypt_encrypt($this->cipher, $key, $data, $this->mode, $init_vect), $key);
+		return $this->add_cipher_noise($init_vect.mcrypt_encrypt($this->cipher, $key, $string, $this->mode, $init_vect), $key);
 	}
 
 	public function decode($data, $key)
 	{
+		$key = $this->ensureKeySize($key);
 		$data = $this->remove_cipher_noise($data, $key);
 		$init_size = mcrypt_get_iv_size($this->cipher, $this->mode);
 		$mb_adjusted_data_length =  ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
