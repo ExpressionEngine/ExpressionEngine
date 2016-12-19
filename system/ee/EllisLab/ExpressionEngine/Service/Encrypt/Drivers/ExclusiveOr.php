@@ -56,7 +56,7 @@ class ExclusiveOr implements Driver {
 
 	public function decode($data, $key)
 	{
-		$string = $this->merge($string, $key);
+		$string = $this->merge($data, $key);
 
 		$dec = '';
 		for ($i = 0; $i < strlen($string); $i++)
