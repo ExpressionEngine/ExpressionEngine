@@ -124,7 +124,7 @@ EE.cp.form_group_toggle = function(element) {
 	// The reset the form .last values
 	var form = $(element).closest('form');
 
-	form.find('fieldset.last').removeClass('last');
+	form.find('fieldset.last').not('.grid-wrap fieldset').removeClass('last');
 	form.find('h2, .form-ctrls').each(function() {
 		$(this).prevAll('fieldset:visible').first().addClass('last');
 	});
