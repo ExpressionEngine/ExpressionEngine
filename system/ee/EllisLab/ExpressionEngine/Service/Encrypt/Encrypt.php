@@ -51,13 +51,14 @@ class Encrypt {
 	public function encode($string, $key = '')
 	{
 		$key = ($key) ?: $this->default_key;
-		return $this->driver->encode($string, $key);
+		$encoded = $this->driver->encode($string, $key);
+		return base64_encode($encoded);
 	}
 
 	public function decode($data, $key = '')
 	{
 		$key = ($key) ?: $this->default_key;
-		return $this->driver->decode($data, $key);
+		return $this->driver->decode(base64_decode($data), $key);
 	}
 
 	/**

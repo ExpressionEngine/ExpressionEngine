@@ -36,7 +36,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 			->andReturn($return);
 
 		$encrypt = new Encrypt\Encrypt($this->driver, $key);
-		$this->assertEquals($encrypt->encode($text), $return);
+		$this->assertEquals($encrypt->encode($text), base64_encode($return));
 	}
 
 	public function testEncodeWithKey()
@@ -50,7 +50,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 			->andReturn($return);
 
 		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
-		$this->assertEquals($encrypt->encode($text, $key), $return);
+		$this->assertEquals($encrypt->encode($text, $key), base64_encode($return));
 	}
 
 	public function testDecodeWithDefaultKey()
@@ -64,7 +64,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 			->andReturn($return);
 
 		$encrypt = new Encrypt\Encrypt($this->driver, $key);
-		$this->assertEquals($encrypt->decode($text), $return);
+		$this->assertEquals($encrypt->decode(base64_encode($text)), $return);
 	}
 
 	public function testDecodeWithKey()
@@ -78,7 +78,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 			->andReturn($return);
 
 		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
-		$this->assertEquals($encrypt->decode($text, $key), $return);
+		$this->assertEquals($encrypt->decode(base64_encode($text), $key), $return);
 	}
 
 	public function testSign()
