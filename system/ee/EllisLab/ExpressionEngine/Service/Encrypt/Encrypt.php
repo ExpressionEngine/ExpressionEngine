@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Encrypt;
 
 use EllisLab\ExpressionEngine\Service\Encrypt\Driver;
+use \InvalidArgumentException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -62,11 +63,11 @@ class Encrypt {
 	/**
 	 * Creates a signed hash value using hash_hmac()
 	 *
+	 * @throws InvalidArgumentException when the algorithm is invalid
 	 * @param string $data	 Content to hash
 	 * @param mixed	$key Secret key, defaults to DB username.password if empty
 	 * @param string $algo hashing algorithm, defaults to md5
 	 * @return 	mixed   NULL if there is no data
-	 * 					FALSE if the hashing algorithm is unknown
 	 * 	        		String consisting of the calculated message digest as lowercase hexits
 	 *
 	 */
@@ -76,6 +77,11 @@ class Encrypt {
 		if (empty($data))
 		{
 			return NULL;
+		}
+
+		if ( ! in_array($algo, hash_algos()))
+		{
+			throw new InvalidArgumentException('{$algo} is not a valid hashing algorithm.');
 		}
 
 		$key = ($key) ?: $this->default_key;
