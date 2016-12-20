@@ -13,6 +13,11 @@ class McryptTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
+		if ( ! extension_loaded('mcrypt'))
+		{
+			$this->markTestSkipped('Mcrypt is not available');
+		}
+
 		$hashed = sha1('browns');
 
 		$hash = m::mock('hash')

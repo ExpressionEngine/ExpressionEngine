@@ -12,6 +12,11 @@ class OpenSSL extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
+		if ( ! extension_loaded('openssl'))
+		{
+			$this->markTestSkipped('OpenSSL is not available');
+		}
+
 		$this->driver = new Encrypt\Drivers\OpenSSL();
 	}
 

@@ -1,5 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+// Remove when PHP 5.3 is no longer supported
 if ( ! defined('OPENSSL_RAW_DATA'))
 {
 	define('OPENSSL_RAW_DATA', 1);

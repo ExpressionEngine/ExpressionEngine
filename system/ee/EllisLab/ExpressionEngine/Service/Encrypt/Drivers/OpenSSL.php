@@ -31,7 +31,7 @@ class OpenSSL implements Driver {
 	/**
 	 * @var string $method The encryption method OpenSSL will use
 	 */
-	protected $method = "AES-256-ECB";
+	protected $method = "AES-256-CBC";
 
 	/**
 	 * @var int $options The option OpenSSL will use
