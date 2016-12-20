@@ -27,14 +27,31 @@ use EllisLab\ExpressionEngine\Service\Encrypt\Driver;
  */
 class ExclusiveOr implements Driver {
 
+	/**
+	 * @var Obj $hash_object An object which has a `hash()` method
+	 */
 	protected $hash_object;
 
+	/**
+	 * Sets the hash object
+	 *
+	 * @param obj $obj An object which has a `hash()` method
+	 * @return self This returns a reference to itself
+	 */
 	public function setHashObject($obj)
 	{
 		$this->hash_object = $obj;
 		return $this;
 	}
 
+	/**
+	 * Takes a plain-text string and key as input and generates an
+	 * encoded bit-string using XOR
+	 *
+	 * @param string $string The plaintext string
+	 * @param string $key The secret key
+	 * @return string An XOR encoded string
+	 */
 	public function encode($string, $key)
 	{
 		$rand = '';
@@ -54,6 +71,14 @@ class ExclusiveOr implements Driver {
 		return $this->merge($enc, $key);
 	}
 
+	/**
+	 * Takes an encoded string and key as input and generates the
+	 * plain-text original message
+	 *
+	 * @param string $data An XOR encoded string
+	 * @param string $key The secret key
+	 * @return string The plaintext string
+	 */
 	public function decode($data, $key)
 	{
 		$string = $this->merge($data, $key);
@@ -71,6 +96,10 @@ class ExclusiveOr implements Driver {
 	 * XOR key + string Combiner
 	 *
 	 * Takes a string and key as input and computes the difference using XOR
+	 *
+	 * @param string $string A string to merge
+	 * @param string $key The secret key
+	 * @return string An XOR encoded string
 	 */
 	protected function merge($string, $key)
 	{

@@ -28,9 +28,23 @@ use \InvalidArgumentException;
  */
 class Encrypt {
 
+	/**
+	 * @var Driver $driver An encryption driver object
+	 */
 	private $driver;
+
+	/**
+	 * @var string $default_key The default encryption key to use when none is
+	 * specified.
+	 */
 	private $default_key;
 
+	/**
+	 * Constructor
+	 *
+	 * @param Driver $driver An encryption driver object
+	 * @param string $key The default encryption key to use when none is specified.
+	 */
 	public function __construct(Driver $driver, $key)
 	{
 		$driver->setHashObject($this);
@@ -38,16 +52,36 @@ class Encrypt {
 		$this->default_key = $key;
 	}
 
+	/**
+	 * Sets the driver object.
+	 *
+	 * @param Driver $driver An encryption driver object
+	 * @return self This returns a reference to itself
+	 */
 	public function setDriver(Driver $driver)
 	{
 		$this->driver = $driver;
+		return $this;
 	}
 
+	/**
+	 * Gets the driver object
+	 *
+	 * @return Driver The driver object.
+	 */
 	public function getDriver()
 	{
 		return $this->driver;
 	}
 
+	/**
+	 * Encodes the string with the set encryption driver and then base64 encodes
+	 * that.
+	 *
+	 * @param string $string The plaintext string
+	 * @param string $key The encryption key, if not defined we'll use the default
+	 * @return A base64 encoded string
+	 */
 	public function encode($string, $key = '')
 	{
 		$key = ($key) ?: $this->default_key;
@@ -55,6 +89,14 @@ class Encrypt {
 		return base64_encode($encoded);
 	}
 
+	/**
+	 * Decodes an encoded string by first base64 decodeing it, then passing the
+	 * string off to the driver for its decoding process.
+	 *
+	 * @param string $data A base64 encoded string
+	 * @param string $key The encryption key, if not defined we'll use the default
+	 * @return A plaintext strig
+	 */
 	public function decode($data, $key = '')
 	{
 		$key = ($key) ?: $this->default_key;
@@ -66,13 +108,11 @@ class Encrypt {
 	 *
 	 * @throws InvalidArgumentException when the algorithm is invalid
 	 * @param string $data	 Content to hash
-	 * @param mixed	$key Secret key, defaults to DB username.password if empty
-	 * @param string $algo hashing algorithm, defaults to md5
+	 * @param string $key The encryption key, if not defined we'll use the default
+	 * @param string $algo Hashing algorithm, defaults to md5
 	 * @return 	mixed   NULL if there is no data
 	 * 	        		String consisting of the calculated message digest as lowercase hexits
-	 *
 	 */
-
 	public function sign($data, $key = NULL, $algo = 'md5')
 	{
 		if (empty($data))
@@ -97,14 +137,12 @@ class Encrypt {
 	 *
 	 * @param string $data Current content
 	 * @param string $signed_data Hashed content to compare to
-	 * @param mixed	$key Secret key
+	 * @param string $key The encryption key, if not defined we'll use the default
 	 * @param string $algo hashing algorithm, defaults to md5
 	 * @return 	mixed   NULL if there is no data
 	 * 					FALSE if the signed data is not verified
 	 * 	        		TRUE if the signed data is verified
-	 *
 	 */
-
 	public function verifySignature($data, $signed_data, $key = NULL, $algo = 'md5')
 	{
 		if (empty($data))
@@ -126,6 +164,9 @@ class Encrypt {
 
 	/**
 	 * Generate an SHA1 Hash
+	 *
+	 * @param string $str The string to hash
+	 * @return string A SHA1 hash
 	 */
 	public function sha1($str)
 	{
@@ -141,6 +182,9 @@ class Encrypt {
 
 	/**
 	 * Hash encode a string
+	 *
+	 * @param string $str The string to hash
+	 * @return string A hash
 	 */
 	public function hash($str)
 	{
