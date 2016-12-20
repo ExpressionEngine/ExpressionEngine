@@ -2997,6 +2997,8 @@ class Channel {
 			ee()->load->helper('segment');
 			$active_cat = parse_category($this->query_string);
 
+			ee()->load->library('typography');
+
 			foreach ($this->cat_array as $key => $val)
 			{
 				$chunk = ee()->TMPL->tagdata;
@@ -3461,6 +3463,8 @@ class Channel {
 				// Get category ID from URL for {if active} conditional
 				ee()->load->helper('segment');
 				$active_cat = parse_category($this->query_string);
+
+				ee()->load->library('typography');
 
 				foreach($query->result_array() as $row)
 				{
@@ -3945,6 +3949,8 @@ class Channel {
 				ee()->load->library('file_field');
 				$cat_image = ee()->file_field->parse_string($val[2]);
 
+				ee()->load->library('typography');
+
 				$cat_vars = array(
 					'category_name'			=> ee()->typography->format_characters($val[1]),
 					'category_url_title'	=> $val[4],
@@ -4312,6 +4318,8 @@ class Channel {
 
 		ee()->load->library('file_field');
 		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
+
+		ee()->load->library('typography');
 
 		$cat_vars = array(
 			'category_name'			=> ee()->typography->format_characters($query->row('cat_name')),
