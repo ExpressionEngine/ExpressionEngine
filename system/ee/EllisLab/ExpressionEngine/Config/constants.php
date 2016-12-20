@@ -1,5 +1,10 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+if ( ! defined('OPENSSL_RAW_DATA'))
+{
+	define('OPENSSL_RAW_DATA', 1);
+}
+
 return array(
 /*
 |--------------------------------------------------------------------------
