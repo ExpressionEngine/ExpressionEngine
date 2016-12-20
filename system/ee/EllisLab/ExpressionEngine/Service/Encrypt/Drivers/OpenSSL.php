@@ -29,7 +29,7 @@ use \InvalidArgumentException;
 class OpenSSL implements Driver {
 
 	protected $method = "AES-256-ECB";
-	protected $options = OPENSSL_RAW_DATA;
+	protected $options = 1; // Which is OPENSSL_RAW_DATA (but 5.3 doesn't have this constant)
 	protected $iv;
 
 	public function __construct()
