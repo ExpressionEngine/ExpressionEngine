@@ -333,9 +333,7 @@ class Search {
 
 		$meta = serialize($meta);
 
-		$meta = ee('Encrypt')->encode($meta, md5(ee()->db->username.ee()->db->password));
-
-		return base64_encode($meta);
+		return ee('Encrypt')->encode($meta, md5(ee()->db->username.ee()->db->password));
 	}
 
 	// ------------------------------------------------------------------------

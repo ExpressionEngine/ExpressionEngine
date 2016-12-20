@@ -1056,7 +1056,7 @@ class Email {
 	 */
 	private function _encrypt($data)
 	{
-		return base64_encode(ee('Encrypt')->encode($data, md5(ee()->db->username.ee()->db->password)));
+		return ee('Encrypt')->encode($data, md5(ee()->db->username.ee()->db->password));
 	}
 
 	// -------------------------------------------------------------------------
@@ -1068,7 +1068,7 @@ class Email {
 	 */
 	private function _decrypt($data)
 	{
-		return ee('Encrypt')->decode(base64_decode($data), md5(ee()->db->username.ee()->db->password));
+		return ee('Encrypt')->decode($data, md5(ee()->db->username.ee()->db->password));
 	}
 }
 // END CLASS
