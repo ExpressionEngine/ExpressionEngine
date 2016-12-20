@@ -2606,9 +2606,7 @@ GRID_FALLBACK;
 
 		$meta = serialize($meta);
 
-		ee()->load->library('encrypt');
-
-		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
+		return ee('Encrypt')->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
 
@@ -2629,8 +2627,7 @@ GRID_FALLBACK;
 			throw new Channel_form_exception(lang('form_decryption_failed'));
 		}
 
-		ee()->load->library('encrypt');
-		$meta = ee()->encrypt->decode($meta, ee()->db->username.ee()->db->password);
+		$meta = ee('Encrypt')->decode($meta, ee()->db->username.ee()->db->password);
 
 		$this->_meta = unserialize($meta);
 
