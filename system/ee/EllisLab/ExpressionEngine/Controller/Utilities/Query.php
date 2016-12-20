@@ -105,7 +105,6 @@ class Query extends Utilities {
 
 				if ( ! ee('Encrypt')->verifySignature($sql, $signature))
 				{
-					var_dump($sql, $signature);
 					return $this->index(FALSE);
 				}
 
