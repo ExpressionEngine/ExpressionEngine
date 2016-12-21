@@ -476,7 +476,7 @@ class EE_Encrypt {
 	 */
 	function hash($str)
 	{
-		return ee('Encrypt')->hash($str);
+		return ($this->_hash_type == 'sha1') ? $this->sha1($str) : md5($str);
 	}
 
 	// --------------------------------------------------------------------
@@ -490,7 +490,14 @@ class EE_Encrypt {
 	 */
 	function sha1($str)
 	{
-		return ee('Encrypt')->sha1($str);
+		if ( ! function_exists('sha1'))
+		{
+			return bin2hex(mhash(MHASH_SHA1, $str));
+		}
+		else
+		{
+			return sha1($str);
+		}
 	}
 
 	// --------------------------------------------------------------------
