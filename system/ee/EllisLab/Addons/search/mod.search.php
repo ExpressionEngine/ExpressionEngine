@@ -348,7 +348,7 @@ class Search {
 	{
 		// Get data from the meta input
 
-		$meta_array = ee('Encrypt')->decode(base64_decode($_POST['meta']), md5(ee()->db->username.ee()->db->password));
+		$meta_array = ee('Encrypt')->decode($_POST['meta'], md5(ee()->db->username.ee()->db->password));
 
 		$this->_meta = unserialize($meta_array);
 
