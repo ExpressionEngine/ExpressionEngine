@@ -25,7 +25,6 @@
  * @category	Libraries
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/encryption.html
- * @deprecated 3.5.0 Use ee('Encrypt') instead
  */
 class EE_Encrypt {
 
@@ -46,9 +45,7 @@ class EE_Encrypt {
 	{
 		$this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? FALSE : TRUE;
 		$this->mb_available = (MB_ENABLED) ?: extension_loaded('mbstring');
-
-		ee()->load->library('logger');
-		ee()->logger->deprecated('3.5.0', "ee('Encrypt')");
+		log_message('debug', "Encrypt Class Initialized");
 	}
 
 	// --------------------------------------------------------------------
