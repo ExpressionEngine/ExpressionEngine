@@ -550,7 +550,7 @@ class Groups extends Members\Members {
 		}
 
 		// Set our various permissions if we're not editing the Super Admin
-		if ($group->group_id !== 1)
+		if ($group->group_id != 1)
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();

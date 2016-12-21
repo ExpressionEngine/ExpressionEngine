@@ -439,7 +439,7 @@ class ChannelEntry extends ContentModel {
 			'channel_id'   => $this->channel_id,
 			'author_id'    => $this->author_id ?: 1,
 			'version_date' => ee()->localize->now,
-			'version_data' => $this->getValues()
+			'version_data' => $_POST ?: $this->getValues()
 		);
 
 		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();

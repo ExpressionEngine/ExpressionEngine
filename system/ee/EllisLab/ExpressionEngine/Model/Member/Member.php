@@ -340,8 +340,17 @@ class Member extends ContentModel {
 		{
 			$cp_homepage = $this->cp_homepage;
 			$cp_homepage_channel = $this->cp_homepage_channel;
-			$cp_homepage_channel = $cp_homepage_channel[$site_id];
 			$cp_homepage_custom = $this->cp_homepage_custom;
+
+			// Site created after setting was saved, no channel setting will be available
+			if ($this->cp_homepage == 'publish_form' && ! isset($cp_homepage_channel[$site_id]))
+			{
+				$cp_homepage = '';
+			}
+			else
+			{
+				$cp_homepage_channel = $cp_homepage_channel[$site_id];
+			}
 		}
 		elseif ( ! empty($member_group->cp_homepage))
 		{
