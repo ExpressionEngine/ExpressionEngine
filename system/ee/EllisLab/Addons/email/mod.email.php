@@ -1056,23 +1056,7 @@ class Email {
 	 */
 	private function _encrypt($data)
 	{
-		if (function_exists('mcrypt_encrypt'))
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			return base64_encode(
-				mcrypt_encrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->db->username.ee()->db->password),
-					$data,
-					MCRYPT_MODE_ECB,
-					$init_vect
-				)
-			);
-		}
-
-		return base64_encode($data.md5(ee()->db->username.ee()->db->password.$data));
+		return ee('Encrypt')->encode($data, md5(ee()->db->username.ee()->db->password));
 	}
 
 	// -------------------------------------------------------------------------
@@ -1084,27 +1068,7 @@ class Email {
 	 */
 	private function _decrypt($data)
 	{
-		if ( function_exists('mcrypt_encrypt'))
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$data = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5(ee()->db->username.ee()->db->password), base64_decode($data), MCRYPT_MODE_ECB, $init_vect), "\0");
-		}
-		else
-		{
-			$raw = base64_decode($data);
-
-			$hash = substr($raw, -32);
-			$data = substr($raw, 0, -32);
-
-			if ($hash != md5(ee()->db->username.ee()->db->password.$data))
-			{
-				$data = '';
-			}
-		}
-
-		return $data;
+		return ee('Encrypt')->decode($data, md5(ee()->db->username.ee()->db->password));
 	}
 }
 // END CLASS

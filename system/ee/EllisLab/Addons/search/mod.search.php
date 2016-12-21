@@ -333,25 +333,7 @@ class Search {
 
 		$meta = serialize($meta);
 
-		if ( function_exists('mcrypt_encrypt') )
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$meta = mcrypt_encrypt(
-				MCRYPT_RIJNDAEL_256,
-				md5(ee()->db->username.ee()->db->password),
-				$meta,
-				MCRYPT_MODE_ECB,
-				$init_vect
-			);
-		}
-		else
-		{
-			$meta = $meta.md5(ee()->db->username.ee()->db->password.$meta);
-		}
-
-		return base64_encode($meta);
+		return ee('Encrypt')->encode($meta, md5(ee()->db->username.ee()->db->password));
 	}
 
 	// ------------------------------------------------------------------------
@@ -366,34 +348,7 @@ class Search {
 	{
 		// Get data from the meta input
 
-		if ( function_exists('mcrypt_encrypt') )
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$meta_array = rtrim(
-				mcrypt_decrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->db->username.ee()->db->password),
-					base64_decode($_POST['meta']),
-					MCRYPT_MODE_ECB,
-					$init_vect
-				),
-				"\0"
-			);
-		}
-		else
-		{
-			$raw = base64_decode($_POST['meta']);
-
-			$hash = substr($raw, -32);
-			$meta_array = substr($raw, 0, -32);
-
-			if ($hash != md5(ee()->db->username.ee()->db->password.$meta_array))
-			{
-				$meta_array = '';
-			}
-		}
+		$meta_array = ee('Encrypt')->decode($_POST['meta'], md5(ee()->db->username.ee()->db->password));
 
 		$this->_meta = unserialize($meta_array);
 

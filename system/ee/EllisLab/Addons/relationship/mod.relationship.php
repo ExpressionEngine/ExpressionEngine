@@ -31,9 +31,7 @@ class Relationship {
 	 */
 	public function entryList()
 	{
-		ee()->load->library('encrypt');
-
-		$settings = ee()->encrypt->decode(
+		$settings = ee('Encrypt')->decode(
 			ee('Request')->post('settings'),
 			ee()->db->username.ee()->db->password
 		);

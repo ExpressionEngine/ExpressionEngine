@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\Encrypt;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
@@ -193,6 +194,13 @@ return array(
 			$userdata = ee()->session->userdata;
 			return new Permission\Permission($userdata);
 		},
+
+		'Encrypt' => function($ee)
+		{
+			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+
+			return new Encrypt\Encrypt($key);
+		}
 	),
 
 	'services.singletons' => array(
