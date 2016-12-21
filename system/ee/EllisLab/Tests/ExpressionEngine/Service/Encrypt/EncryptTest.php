@@ -110,6 +110,20 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($encrypt->decrypt($encoded, $key) != $text);
 	}
 
+	public function testKeys()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+
+		$encrypted = $encrypt->encrypt($text);
+		$this->assertTrue($encrypt->decrypt($encrypted, $key) != $text);
+
+		$encrypted = $encrypt->encrypt($text, $key);
+		$this->assertTrue($encrypt->decrypt($encrypted) != $text);
+	}
+
 	public function testSign()
 	{
 		$text = "Language";
