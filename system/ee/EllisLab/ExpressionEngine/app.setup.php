@@ -81,6 +81,19 @@ return array(
 			return $grid;
 		},
 
+		'CP/MiniGridInput' => function($ee, $config = array())
+		{
+			ee()->lang->load('content');
+			$grid = new Library\CP\MiniGridInput(
+				$config,
+				ee()->cp,
+				ee()->config,
+				ee()->javascript
+			);
+
+			return $grid;
+		},
+
 		'CP/Table' => function($ee, $config = array())
 		{
 			$table = Library\CP\Table::fromGlobals($config);
