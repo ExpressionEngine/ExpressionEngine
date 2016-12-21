@@ -1,7 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Encrypt;
 
-use EllisLab\ExpressionEngine\Service\Encrypt\Driver;
 use \InvalidArgumentException;
 
 /**
@@ -29,49 +28,99 @@ use \InvalidArgumentException;
 class Encrypt {
 
 	/**
-	 * @var Driver $driver An encryption driver object
-	 */
-	private $driver;
-
-	/**
 	 * @var string $default_key The default encryption key to use when none is
 	 * specified.
 	 */
 	private $default_key;
 
 	/**
+	 * @var string $method The encryption method OpenSSL will use
+	 */
+	protected $method = "AES-256-CBC";
+
+	/**
+	 * @var int $options The option OpenSSL will use
+	 */
+	protected $options = OPENSSL_RAW_DATA;
+
+	/**
+	* @var bool $mb_available Do we have the mbstring extension?
+	*/
+	protected $mb_available;
+
+	/**
 	 * Constructor
 	 *
-	 * @param Driver $driver An encryption driver object
 	 * @param string $key The default encryption key to use when none is specified.
 	 */
-	public function __construct(Driver $driver, $key)
+	public function __construct($key)
 	{
-		$driver->setHashObject($this);
-		$this->setDriver($driver);
 		$this->default_key = $key;
+		$this->mb_available = extension_loaded('mbstring');
 	}
 
 	/**
-	 * Sets the driver object.
+	 * Genrates an initialization vector based on the encryption method
 	 *
-	 * @param Driver $driver An encryption driver object
+	 * @return string An initialization vector
+	 */
+	protected function generateInitializationVector()
+	{
+		return openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->method));
+	}
+
+	/**
+	 * Sets the encryption method and regenerates the initialization vector
+	 *
+	 * @throws InvalidARgumentException if the method is invalid
+	 * @param string $method The encryption method
 	 * @return self This returns a reference to itself
 	 */
-	public function setDriver(Driver $driver)
+	public function setMethod($method)
 	{
-		$this->driver = $driver;
+		if (in_array($method, openssl_get_cipher_methods(true)))
+		{
+			$this->method = $method;
+		}
+		else
+		{
+			throw new InvalidArgumentException('{$method} is not a valid encryption method.');
+		}
+
 		return $this;
 	}
 
 	/**
-	 * Gets the driver object
+	 * Takes a plain-text string and key and encrypts it
 	 *
-	 * @return Driver The driver object.
+	 * @param string $string The plaintext string
+	 * @param string $key The secret key
+	 * @return string|FALSE The encrypted string on success or FALSE on failure
 	 */
-	public function getDriver()
+	public function encrypt($string, $key = '')
 	{
-		return $this->driver;
+		$key = ($key) ?: $this->default_key;
+		$iv = $this->generateInitializationVector();
+		return $iv.openssl_encrypt($string, $this->method, $key, $this->options, $iv);
+	}
+
+	/**
+	 * Takes an encrypted string and key and decrypts it.
+	 *
+	 * @param string $data The encrypted string
+	 * @param string $key The secret key
+	 * @return string|FALSE the decrypted string on success or FALSE on failure
+	 */
+	public function decrypt($data, $key = '')
+	{
+		$key = ($key) ?: $this->default_key;
+
+		$iv_size = openssl_cipher_iv_length($this->method);
+
+		$iv = ($this->mb_available) ? mb_substr($data, 0, $iv_size, 'ascii') : substr($data, 0, $iv_size);
+		$data = ($this->mb_available) ? mb_substr($data, $iv_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $iv_size);
+
+		return openssl_decrypt($data, $this->method, $key, $this->options, $iv);
 	}
 
 	/**
@@ -84,9 +133,7 @@ class Encrypt {
 	 */
 	public function encode($string, $key = '')
 	{
-		$key = ($key) ?: $this->default_key;
-		$encoded = $this->driver->encode($string, $key);
-		return base64_encode($encoded);
+		return base64_encode($this->encrypt($string, $key));
 	}
 
 	/**
@@ -99,8 +146,7 @@ class Encrypt {
 	 */
 	public function decode($data, $key = '')
 	{
-		$key = ($key) ?: $this->default_key;
-		return $this->driver->decode(base64_decode($data), $key);
+		return $this->decrypt(base64_decode($data), $key);
 	}
 
 	/**
@@ -160,35 +206,6 @@ class Encrypt {
 		}
 
 		return FALSE;
-	}
-
-	/**
-	 * Generate an SHA1 Hash
-	 *
-	 * @param string $str The string to hash
-	 * @return string A SHA1 hash
-	 */
-	public function sha1($str)
-	{
-		if ( ! function_exists('sha1'))
-		{
-			return bin2hex(mhash(MHASH_SHA1, $str));
-		}
-		else
-		{
-			return sha1($str);
-		}
-	}
-
-	/**
-	 * Hash encode a string
-	 *
-	 * @param string $str The string to hash
-	 * @return string A hash
-	 */
-	public function hash($str)
-	{
-		return $this->sha1($str);
 	}
 
 }

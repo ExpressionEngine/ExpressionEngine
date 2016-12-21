@@ -2,90 +2,119 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Service\Encrypt;
 
-use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Encrypt;
 
 class EncryptTest extends \PHPUnit_Framework_TestCase {
 
-	protected $driver;
-
-	public function setUp()
-	{
-		$this->driver = m::mock(new EncryptionTestDriver());
-	}
-
-	public function tearDown()
-	{
-		m::close();
-	}
-
-	public function testGetDriver()
-	{
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
-		$this->assertEquals($encrypt->getDriver(), $this->driver);
-	}
+	protected $base64_regex = '#^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$#';
 
 	public function testEncodeWithDefaultKey()
 	{
 		$text = "ExpressionEngine";
 		$key = "EllisLab";
-		$return = "3xpr35510n3ng1n3";
 
-		$this->driver->shouldReceive('encode')
-			->with($text, $key)
-			->andReturn($return);
+		$encrypt = new Encrypt\Encrypt($key);
+		$encoded = $encrypt->encode($text);
 
-		$encrypt = new Encrypt\Encrypt($this->driver, $key);
-		$this->assertEquals($encrypt->encode($text), base64_encode($return));
+		$this->assertTrue($encoded != $text);
+		$this->assertTrue(preg_match($this->base64_regex, $encoded) == 1);
 	}
 
 	public function testEncodeWithKey()
 	{
 		$text = "ExpressionEngine";
 		$key = "EllisLab";
-		$return = "3xpr35510n3ng1n3";
 
-		$this->driver->shouldReceive('encode')
-			->with($text, $key)
-			->andReturn($return);
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+		$encoded = $encrypt->encode($text, $key);
 
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
-		$this->assertEquals($encrypt->encode($text, $key), base64_encode($return));
+		$this->assertTrue($encoded != $text);
+		$this->assertTrue(preg_match($this->base64_regex, $encoded) == 1);
 	}
 
 	public function testDecodeWithDefaultKey()
 	{
-		$text = "3xpr35510n3ng1n3";
+		$text = "ExpressionEngine";
 		$key = "EllisLab";
-		$return = "ExpressionEngine";
 
-		$this->driver->shouldReceive('decode')
-			->with($text, $key)
-			->andReturn($return);
-
-		$encrypt = new Encrypt\Encrypt($this->driver, $key);
-		$this->assertEquals($encrypt->decode(base64_encode($text)), $return);
+		$encrypt = new Encrypt\Encrypt($key);
+		$encoded = $encrypt->encode($text);
+		$this->assertEquals($encrypt->decode($encoded), $text);
 	}
 
 	public function testDecodeWithKey()
 	{
-		$text = "3xpr35510n3ng1n3";
+		$text = "ExpressionEngine";
 		$key = "EllisLab";
-		$return = "ExpressionEngine";
 
-		$this->driver->shouldReceive('decode')
-			->with($text, $key)
-			->andReturn($return);
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+		$encoded = $encrypt->encode($text, $key);
+		$this->assertEquals($encrypt->decode($encoded, $key), $text);
+	}
 
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
-		$this->assertEquals($encrypt->decode(base64_encode($text), $key), $return);
+	public function testEncryptWithDefaultKey()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt($key);
+		$this->assertTrue($encrypt->encrypt($text) != $text);
+	}
+
+	public function testEncryptWithKey()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+		$this->assertTrue($encrypt->encrypt($text, $key) != $text);
+	}
+
+	public function testDecryptWithDefaultKey()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt($key);
+		$encrypted = $encrypt->encrypt($text);
+		$this->assertEquals($encrypt->decrypt($encrypted), $text);
+	}
+
+	public function testDecryptWithKey()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+		$encrypted = $encrypt->encrypt($text, $key);
+		$this->assertEquals($encrypt->decrypt($encrypted, $key), $text);
+	}
+
+	public function testDecryptEncodedDataWithDefaultKey()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt($key);
+		$encoded = $encrypt->encode($text);
+		$this->assertTrue($encrypt->decrypt($encoded) != $text);
+	}
+
+	public function testDecryptEncodedDataWithKey()
+	{
+		$text = "ExpressionEngine";
+		$key = "EllisLab";
+
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+		$encoded = $encrypt->encode($text, $key);
+		$this->assertTrue($encrypt->decrypt($encoded, $key) != $text);
 	}
 
 	public function testSign()
 	{
 		$text = "Language";
 
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$this->assertTrue($encrypt->sign($text) != $text);
 		$this->assertTrue($encrypt->sign($text, "Skelington") != $text);
 		$this->assertTrue($encrypt->sign($text, "Skelington", "sha1") != $text);
@@ -93,7 +122,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSignNoData()
 	{
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$this->assertNull($encrypt->sign(''));
 	}
 
@@ -102,13 +131,13 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testSignUnknownAlgorithm()
 	{
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$encrypt->sign('Hi', NULL, 'FooBarAlgorithm');
 	}
 
 	public function testVerifySignature()
 	{
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 
 		$text = "age";
 
@@ -141,7 +170,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 
 	public function testVerifySignatureNoData()
 	{
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 
 		$text = "age";
 		$signature = $encrypt->sign($text);
@@ -153,13 +182,7 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testVerifySignatureUnknownAlgorithm()
 	{
-		$encrypt = new Encrypt\Encrypt($this->driver, "SomeDefaultKey");
+		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$encrypt->verifySignature('Hi', 'John Hancock', NULL, 'FooBarAlgorithm');
 	}
-}
-
-class EncryptionTestDriver implements Encrypt\Driver {
-	public function encode($string, $key) {}
-	public function decode($data, $key) {}
-	public function setHashObject($obj) {}
 }

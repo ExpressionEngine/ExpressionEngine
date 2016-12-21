@@ -184,22 +184,9 @@ return array(
 
 		'Encrypt' => function($ee)
 		{
-			if (defined('OPENSSL_VERSION_NUMBER'))
-			{
-				$driver = new Encrypt\Drivers\OpenSSL();
-			}
-			elseif (function_exists('mcrypt_encrypt'))
-			{
-				$driver = new Encrypt\Drivers\Mcrypt();
-			}
-			else
-			{
-				$driver = new Encrypt\Drivers\ExclusiveOr();
-			}
-
 			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
 
-			return new Encrypt\Encrypt($driver, $key);
+			return new Encrypt\Encrypt($key);
 		}
 	),
 
