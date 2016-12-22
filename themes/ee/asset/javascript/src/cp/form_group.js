@@ -83,6 +83,17 @@ $(document).ready(function() {
 function toggleFields(fields, show, key) {
 	toggleInputs(fields, key, show);
 	fields.toggle(show);
+
+	fields.each(function(i, field) {
+		var fieldset = $(field).closest('fieldset');
+
+		if (fieldset.hasClass('invalid')) {
+			if (fieldset.find('input:visible').not('input.btn').size() == 0) {
+				fieldset.removeClass('invalid');
+				fieldset.find('em.ee-form-error-message').remove();
+			}
+		}
+	});
 }
 
 function toggleSections(sections, show, key) {
