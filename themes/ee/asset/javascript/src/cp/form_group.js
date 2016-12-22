@@ -44,7 +44,9 @@ $(document).ready(function() {
 			value  = $(this).val();
 
 		$.each(config, function (key, data) {
-			states[data] = !!(key == value);
+			if (states[data] == undefined || states[data] == false) {
+				states[data] = !!(key == value);
+			}
 		});
 	});
 
@@ -111,14 +113,20 @@ EE.cp.form_group_toggle = function(element) {
 	var config = $(element).data('groupToggle'),
 		value  = $(element).val();
 
+	states = {
+		"always-hidden": false
+	};
+
 	// Show the selected group and enable its inputs
 	$.each(config, function (key, data) {
 		var field_targets = $('*[data-group="'+data+'"]');
 		var section_targets = $('*[data-section-group="'+data+'"]');
 
-		states[data] = (key == value);
+		if (states[data] == undefined || states[data] == false) {
+			states[data] = (key == value);
+		}
 		toggleFields(field_targets, hidden[data] ? false : (key == value));
-		toggleSections(section_targets, key == value);
+		toggleSections(section_targets, states[data]);
 	});
 
 	// The reset the form .last values
