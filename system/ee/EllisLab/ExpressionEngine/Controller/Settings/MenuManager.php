@@ -741,6 +741,14 @@ class MenuManager extends Settings {
 				);
 			}
 		}
+		// Auto-populate the Grid with the Single Link info
+		elseif ($item->type == 'link')
+		{
+			$data[] = array(
+				'attrs' => array(),
+				'columns' => $this->getGridRow($item),
+			);
+		}
 
 		$grid->setData($data);
 
