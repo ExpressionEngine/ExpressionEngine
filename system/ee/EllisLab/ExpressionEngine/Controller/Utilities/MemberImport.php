@@ -726,7 +726,7 @@ class MemberImport extends Utilities {
 		}
 
 		/** -------------------------------------
-		/**  Add records to exp_member_data and exp_member_homepage tables for all imported members
+		/**  Add records to exp_member_data tables for all imported members
 		/** -------------------------------------*/
 
 		$values = '';
@@ -742,8 +742,6 @@ class MemberImport extends Utilities {
 		{
 			$this->db->query("INSERT INTO exp_member_data (member_id) VALUES ".$values);
 		}
-
-		$this->db->query("INSERT INTO exp_member_homepage (member_id) VALUES ".$values);
 
 		//  Update Statistics
 		$this->stats->update_member_stats();
