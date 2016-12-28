@@ -127,15 +127,7 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterInsert()
 	{
-		$ft = $this->getFieldtypeInstance();
-
-		$data = $this->getValues();
-		$data['ee_action'] = 'add';
-
-		$columns = $ft->settings_modify_column($data);
-		$columns = $this->ensureDefaultColumns($columns);
-
-		$this->createColumns($columns);
+		$this->createTable();
 	}
 
 	/**
@@ -143,15 +135,23 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		$ft = $this->getFieldtypeInstance();
+		if ($this->hasProperty('field_data_in_channel_data')
+			&& $this->getProperty('field_data_in_channel_data') == FALSE)
+		{
+			$this->dropTable();
+		}
+		else
+		{
+			$ft = $this->getFieldtypeInstance();
 
-		$data = $this->getValues();
-		$data['ee_action'] = 'delete';
+			$data = $this->getValues();
+			$data['ee_action'] = 'delete';
 
-		$columns = $ft->settings_modify_column($data);
-		$columns = $this->ensureDefaultColumns($columns);
+			$columns = $ft->settings_modify_column($data);
+			$columns = $this->ensureDefaultColumns($columns);
 
-		$this->dropColumns($columns);
+			$this->dropColumns($columns);
+		}
 	}
 
 	/**
@@ -259,24 +259,6 @@ abstract class FieldModel extends Model {
 	}
 
 	/**
-	 * Create columns, add the defaults if they don't exist
-	 *
-	 * @param Array $columns List of [column name => column definition]
-	 */
-	private function createColumns($columns)
-	{
-		if (empty($columns))
-		{
-			return;
-		}
-
-		$data_table = $this->getDataTable();
-
-		ee()->load->dbforge();
-		ee()->dbforge->add_column($data_table, $columns);
-	}
-
-	/**
 	 * Modify columns that were changed
 	 *
 	 * @param Array $columns List of [column name => column definition]
@@ -366,6 +348,63 @@ abstract class FieldModel extends Model {
 	public function getColumnPrefix()
 	{
 		return '';
+	}
+
+	public function getTableName()
+	{
+		return $this->getDataTable() . '_field_' . $this->getId();
+	}
+
+	/**
+	 * Create the table for the field
+	 */
+	private function createTable()
+	{
+		ee()->load->dbforge();
+		ee()->load->library('smartforge');
+		ee()->dbforge->add_field(
+			array(
+				'id' => array(
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				),
+				'entry_id' => array(
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+				),
+				'language' => array(
+					'type'       => 'varchar',
+					'constraint' => '5',
+					'null'       => FALSE,
+					'default'    => 'en-US' // @TODO Have this match the default language of the site
+				),
+				'data' => array(
+					'type' => 'text',
+					'null' => TRUE
+				),
+				'metadata' => array(
+					'type' => 'tinytext',
+					'null' => TRUE
+				)
+			)
+		);
+		ee()->dbforge->add_key('id', TRUE);
+		ee()->dbforge->add_key('entry_id');
+		ee()->smartforge->create_table($this->getTableName());
+	}
+
+	/**
+	 * Drops the table for the field
+	 */
+	private function dropTable()
+	{
+		ee()->load->library('smartforge');
+		ee()->smartforge->drop_table($this->getTableName());
 	}
 }
 
