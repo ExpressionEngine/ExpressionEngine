@@ -43,7 +43,7 @@ class Status extends AbstractChannelsController {
 			'can_delete_statuses'
 		))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('status');
@@ -87,7 +87,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$group_ids = ee()->input->post('status_groups');
@@ -112,7 +112,7 @@ class Status extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('channels/status', ee()->cp->get_url_state()));
@@ -125,7 +125,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->form();
@@ -138,7 +138,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->form($group_id);
@@ -166,7 +166,7 @@ class Status extends AbstractChannelsController {
 
 			if ( ! $status_group)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -299,7 +299,7 @@ class Status extends AbstractChannelsController {
 
 		if ( ! $status_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$table = ee('CP/Table', array(
@@ -415,7 +415,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$status_group = ee('Model')->get('StatusGroup')
@@ -428,7 +428,7 @@ class Status extends AbstractChannelsController {
 
 		if ( ! AJAX_REQUEST OR ! $status_group OR empty($new_order['order']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$statuses = $status_group->getStatuses()->indexBy('status_id');
@@ -457,7 +457,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$status_ids = ee()->input->post('statuses');
@@ -482,7 +482,7 @@ class Status extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(
@@ -497,7 +497,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->statusForm($group_id);
@@ -510,7 +510,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->statusForm($group_id, $status_id);
@@ -529,7 +529,7 @@ class Status extends AbstractChannelsController {
 
 		if ( ! $status_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (is_null($status_id))
@@ -547,7 +547,7 @@ class Status extends AbstractChannelsController {
 
 			if ( ! $status_id)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -751,7 +751,7 @@ class Status extends AbstractChannelsController {
 		$member_groups = array();
 		foreach ($groups as $group)
 		{
-			$member_groups[$group->group_id] = $group->group_title;
+			$member_groups[$group->group_id] = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
 		}
 
 		if ( ! empty($_POST))

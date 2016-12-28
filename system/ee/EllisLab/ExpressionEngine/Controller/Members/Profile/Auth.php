@@ -48,7 +48,9 @@ class Auth extends Settings {
 						'username' => array(
 							'type' => 'text',
 							'required' => TRUE,
-							'value' => $this->member->username
+							'value' => $this->member->username,
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				),
@@ -58,7 +60,9 @@ class Auth extends Settings {
 						'screen_name' => array(
 							'type' => 'text',
 							'required' => TRUE,
-							'value' => $this->member->screen_name
+							'value' => $this->member->screen_name,
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				)
@@ -180,7 +184,7 @@ class Auth extends Settings {
 		// validate for unallowed blank values
 		if (empty($_POST))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// If the screen name field is empty, we'll assign is from the username field.

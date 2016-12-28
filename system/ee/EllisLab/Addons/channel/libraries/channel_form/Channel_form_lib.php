@@ -81,7 +81,7 @@ class Channel_form_lib
 
 
 	private $all_params = array(
-		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
+		'allow_comments', 'author_only', 'category', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
 		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
 		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
@@ -164,14 +164,16 @@ class Channel_form_lib
 
 		if ( ! $this->member)
 		{
+			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
 		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
 
 		// Can they post?
-		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() !== 1)
+		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
 		{
+			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -195,6 +197,7 @@ class Channel_form_lib
 		{
 			if (ee()->TMPL->no_results())
 			{
+				ee()->config->set_item('site_id', $current_site_id);
 				return ee()->TMPL->no_results();
 			}
 
@@ -208,7 +211,10 @@ class Channel_form_lib
 
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $member_id)
 		{
-			throw new Channel_form_exception(lang('channel_form_author_only'));
+			if (ee()->session->userdata('group_id') != 1)
+			{
+				throw new Channel_form_exception(lang('channel_form_author_only'));
+			}
 		}
 
 		$meta = $this->_build_meta_array();
@@ -279,7 +285,11 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('channel_form_entry_form_tagdata_start') === TRUE)
 		{
 			ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
-			if (ee()->extensions->end_script === TRUE) return;
+			if (ee()->extensions->end_script === TRUE)
+			{
+				ee()->config->set_item('site_id', $current_site_id);
+				return;
+			}
 		}
 
 		// build custom field variables
@@ -387,9 +397,16 @@ class Channel_form_lib
 			{
 				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*?)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{
+					// Map field short name to field_id_x
+					if (array_key_exists($tag_name, $this->custom_fields))
+					{
+						$field = $this->custom_fields[$tag_name];
+						$name = 'field_id_'.$field->field_id;
+					}
+
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($tag_name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
 					}
 				}
 			}
@@ -440,7 +457,7 @@ class Channel_form_lib
 		}
 
 		//edit form or post-error submission
-		if ($this->edit OR is_object($this->entry))
+		if ($this->edit OR ! empty($_POST))
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -524,9 +541,15 @@ class Channel_form_lib
 					{
 						if ($this->entry($name))
 						{
+							$date = $this->entry($name);
+
 							// most likely a failed submission, and $this->entry->getProperty() will not
 							// return the posted string value
-							$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							if (ee()->input->post($name))
+							{
+								$date = ee()->localize->string_to_timestamp(ee()->input->post($name));
+							}
+
 							$this->parse_variables[$key] = ee()->localize->human_time($date);
 						}
 						else
@@ -538,7 +561,7 @@ class Channel_form_lib
 					{
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
-					elseif (strncmp($key, 'exp', 3) !== 0 && strncmp($key, 'embed=', 6) !== 0)
+					elseif (property_exists($this->entry, $name) OR $this->entry->hasCustomField($name))
 					{
 						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
 					}
@@ -548,7 +571,6 @@ class Channel_form_lib
 			$this->form_hidden(
 				array(
 				      'entry_id' => $this->entry('entry_id'),
-				      'unique_url_title' => ($this->bool_string(ee()->TMPL->fetch_param('unique_url_title'))) ? '1' : '',
 				      'author_id'=> $this->entry('author_id')
 				)
 			);
@@ -558,6 +580,8 @@ class Channel_form_lib
 			$this->parse_variables['title']		= $this->channel('default_entry_title');
 			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
 			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
+
+			$this->form_hidden('unique_url_title', $this->bool_string(ee()->TMPL->fetch_param('unique_url_title')) ? '1' : '');
 
 			if ($this->datepicker)
 			{
@@ -1485,8 +1509,16 @@ GRID_FALLBACK;
 				if (isset($_FILES[$field->field_name]['name']))
 				{
 					$img = ee()->file_field->validate($_FILES[$field->field_name]['name'], $field->field_name);
-			    	$_POST[$field->field_name] = (isset($img['value'])) ?  $img['value'] : '';
 
+			    	if (isset($img['value']))
+					{
+						$_POST[$field->field_name] = $img['value'];
+					}
+					else
+					{
+						$_POST[$field->field_name] = '';
+						$this->field_errors[$field->field_name] = strip_tags($img);
+					}
 				}
 			}
 
@@ -1591,10 +1623,6 @@ GRID_FALLBACK;
 				{
 					$_POST[$field] = 'y';
 				}
-				elseif ($field == 'allow_comments')
-				{
-					$_POST[$field] = $this->_meta['allow_comments'];
-				}
 				else
 				{
 					if ($this->entry($field) !== FALSE)
@@ -1609,6 +1637,11 @@ GRID_FALLBACK;
 		if ( ! $this->edit && ! empty($this->settings['default_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
 			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
+		}
+
+		if ( ! $this->edit && is_array($this->_meta['category']))
+		{
+			$_POST['category'] = $this->_meta['category'];
 		}
 
 		$_POST['revision_post'] = $_POST;
@@ -1661,8 +1694,7 @@ GRID_FALLBACK;
 
 			foreach ($errors as $key => $message)
 			{
-				$field = ee()->form_validation->_field_data[$key]['label'];
-				$this->field_errors[$field] = $message;
+				$this->field_errors[$key] = $message;
 			}
 		}
 
@@ -1690,90 +1722,89 @@ GRID_FALLBACK;
 			$_POST['url_title'] = url_title($_POST['title']);
 		}
 
-		if (empty($this->field_errors) && empty($this->errors))
+		//temporarily change site_id for cross-site forms
+		//channel_entries api doesn't allow you to specifically set site_id
+		$current_site_id = ee()->config->item('site_id');
+
+		ee()->config->set_item('site_id', $this->site_id);
+
+		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
-			//temporarily change site_id for cross-site forms
-			//channel_entries api doesn't allow you to specifically set site_id
-			$current_site_id = ee()->config->item('site_id');
+			// Lastly we check for spam before inserting the data
+			$is_spam = ee('Spam')->isSpam($spam_content);
 
-			ee()->config->set_item('site_id', $this->site_id);
-
-			if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() === 1)
+			if ($is_spam === FALSE)
 			{
-				// Lastly we check for spam before inserting the data
-				$is_spam = ee('Spam')->isSpam($spam_content);
+				$entry_data = array_filter(
+					$_POST,
+					function($v) { return ! is_null($v); }
+				);
 
-				if ($is_spam === FALSE)
+				$this->entry->set($entry_data);
+				$this->entry->edit_date = ee()->localize->now;
+
+				$result = $this->entry->validate();
+
+				if (isset($_POST['category']) && is_array($_POST['category']))
 				{
-					$entry_data = array_filter(
-						$_POST,
-						function($v) { return ! is_null($v); }
-					);
-
-					$this->entry->set($entry_data);
-					$this->entry->edit_date = ee()->localize->now;
-
-					$result = $this->entry->validate();
-
-					if (isset($_POST['category']) && is_array($_POST['category']))
-					{
-						$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
-					}
-					else
-					{
-						$this->entry->Categories = NULL;
-					}
-
-					if ($result->isValid())
-					{
-						$this->entry->save();
-					}
-					else
-					{
-						$errors = $result->getAllErrors();
-
-						// only show the first error for each field to match CI's old behavior
-						$this->field_errors = array_map('current', $errors);
-						foreach($this->field_errors as $field => $error)
-						{
-							if (isset($id_to_name_map[$field]))
-							{
-								$this->field_errors[$id_to_name_map[$field]] = $error;
-							}
-						}
-					}
+					$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
 				}
 				else
 				{
-					if ($this->entry('entry_id'))
-					{
-						$spam_data = array($_POST, NULL, $this->entry('entry_id'));
-					}
-					else
-					{
-						$spam_data = array($_POST, $this->channel('channel_id'));
-					}
+					$this->entry->Categories = NULL;
+				}
 
-					ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
+				if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
+				{
+					$this->entry->save();
+				}
+				else
+				{
+					$errors = $result->getAllErrors();
+
+					// only show the first error for each field to match CI's old behavior
+					$current_errors = array_map('current', $errors);
+					$this->field_errors = array_merge($this->field_errors, $current_errors);
 				}
 			}
 			else
 			{
+				if ($this->entry('entry_id'))
+				{
+					$spam_data = array($_POST, NULL, $this->entry('entry_id'));
+				}
+				else
+				{
+					$spam_data = array($_POST, $this->channel('channel_id'));
+				}
 
-				$this->errors[] = lang('unauthorized_for_this_channel');
+				ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
 			}
-
-			ee()->config->set_item('site_id', $current_site_id);
-
-			$new_id = $this->entry('entry_id');
-			$this->clear_entry();
-
-			//load the just created entry into memory
-			$this->fetch_entry($new_id);
 		}
-		elseif ($captcha_required && $this->error_handling == 'inline')
+		else
+		{
+			$this->errors[] = lang('unauthorized_for_this_channel');
+		}
+
+		ee()->config->set_item('site_id', $current_site_id);
+
+		$new_id = $this->entry('entry_id');
+		$this->clear_entry();
+
+		//load the just created entry into memory
+		$this->fetch_entry($new_id);
+
+		if ($captcha_required && $this->error_handling == 'inline')
 		{
 			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
+		}
+
+		foreach($this->field_errors as $field => $error)
+		{
+			if (isset($id_to_name_map[$field]))
+			{
+				$this->field_errors[$id_to_name_map[$field]] = $error;
+			}
 		}
 
 		// Reset their group_id back to 0
@@ -1955,6 +1986,11 @@ GRID_FALLBACK;
 				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
 				"$1{categories$3show_group=$4}$5"
 			);
+		}
+
+		if ( ! empty($params['show']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_id', $params['show'], 'in_array');
 		}
 
 		if ( ! empty($params['show_group']))
@@ -2219,12 +2255,15 @@ GRID_FALLBACK;
 			$this->entry->status = $this->channel->deft_status;
 			$this->entry->author_id = ee()->session->userdata('member_id');
 
-			if (isset($this->channel->deft_category))
+			if ( ! empty($this->channel->deft_category))
 			{
 				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+
 				if ($cat)
 				{
-					$this->entry->Categories[] = $cat;
+					// set directly so other categories don't get lazy loaded
+					// along with our default
+					$this->entry->Categories = $cat;
 				}
 			}
 
@@ -2253,6 +2292,8 @@ GRID_FALLBACK;
 		{
 			$query->filter('url_title', $url_title);
 		}
+
+		$query->filter('ChannelEntry.site_id', $this->site_id);
 
 		$entry = $query->first();
 
@@ -2562,14 +2603,9 @@ GRID_FALLBACK;
 		$meta['channel_id'] = $this->channel('channel_id');  // channel_id is for THIS channel- use new_channel to change it
 		$meta['decrypt_check'] = TRUE;
 
-		$meta['allow_comments'] = (isset($meta['allow_comments']))
-			? $meta['allow_comments'] : $this->channel('comment_system_enabled');
-
 		$meta = serialize($meta);
 
-		ee()->load->library('encrypt');
-
-		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
+		return ee('Encrypt')->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
 
@@ -2590,8 +2626,7 @@ GRID_FALLBACK;
 			throw new Channel_form_exception(lang('form_decryption_failed'));
 		}
 
-		ee()->load->library('encrypt');
-		$meta = ee()->encrypt->decode($meta, ee()->db->username.ee()->db->password);
+		$meta = ee('Encrypt')->decode($meta, ee()->db->username.ee()->db->password);
 
 		$this->_meta = unserialize($meta);
 
@@ -2600,28 +2635,38 @@ GRID_FALLBACK;
 			throw new Channel_form_exception(lang('form_decryption_failed'));
 		}
 
-		// Check for Overrides in POST- only allow if param not set
-		$valid_inputs = array('allow_comments');
-
-		foreach ($valid_inputs as $current_input)
-		{
-			if (empty($this->_meta[$current_input]) && ee()->input->post($current_input))
-			{
-				$this->_meta[$current_input] = ee()->input->post($current_input);
-			}
-		}
-
 		foreach ($this->all_params as $name)
 		{
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
 			// none of these fields are allowed by direct POST
+
+			// url_title in the meta array tells us which entry we're editing, not what
+			// to set the url_title to, so allow it to be in POST for editing;
+			// Do not allow category or allow_comments to be overridden by POST
+			// if set as a parameter
+			if ($name == 'url_title' OR
+				($name == 'category' && $this->_meta[$name] === FALSE) OR
+				($name == 'allow_comments' && $this->_meta[$name] === FALSE))
+			{
+				continue;
+			}
 			unset($_POST[$name]);
 		}
 
-		// Should be y or FALSE for allow_comments
-		// We do this here so they can be set via form input when not specified as a param
-		// This pains me, but go with it for now for consistency
-		$this->_meta['allow_comments'] = ($this->bool_string($this->_meta['allow_comments']) == TRUE) ? 'y' : FALSE;
+		// Override allow_comments in POST if its set as a param
+		if (($allow_comments = $this->bool_string($this->_meta['allow_comments'], NULL)) !== NULL)
+		{
+			$_POST['allow_comments'] = $allow_comments ? 'y' : 'n';
+		}
+
+		if ($this->_meta['category'] !== FALSE)
+		{
+			$this->_meta['category'] = array_filter(explode('|', $this->_meta['category']), function($cat)
+			{
+				return is_numeric($cat);
+			});
+		}
+
 		$this->_meta['channel_id'] = ($this->_meta['channel_id'] != FALSE) ? $this->_meta['channel_id'] : $this->_meta['channel'];
 
 		//is an edit form?  This seems madly overkill
@@ -2721,7 +2766,7 @@ GRID_FALLBACK;
 						->where('field_id_'.$field->field_pre_field_id.' !=', '')
 						->get();
 
-				$current = explode('|', $this->entry($field->field_name));
+				$current = explode('|', $this->entry('field_id_' . $field->field_id));
 
 				foreach ($query->result_array() as $row)
 				{
@@ -3289,7 +3334,7 @@ GRID_FALLBACK;
 	{
 		$close_key = ($close_key) ? $close_key : $key;
 
-		if (preg_match_all('/'.LD.$key.RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
+		if (preg_match_all('/'.LD.preg_quote($key).RD.'(.*?)'.LD.'\/'.$close_key.RD.'/s', $tagdata, $matches))
 		{
 			foreach ($matches[1] as $match_index => $var_pair_tagdata)
 			{

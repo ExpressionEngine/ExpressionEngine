@@ -442,6 +442,17 @@ class Member_register extends Member {
 		$member = ee('Model')->make('Member', $data);
 		$result = $member->validate();
 
+		// Validate password
+		if (($pw_validate = $member->validatePassword('password', $_POST['password'])) !== TRUE)
+		{
+			$cust_errors[] = lang($pw_validate);
+		}
+
+		if ($_POST['password'] != $_POST['password_confirm'])
+		{
+			$cust_errors[] = lang('missmatched_passwords');
+		}
+
 		$field_labels = array();
 
 		foreach ($member->getDisplay()->getFields() as $field)
@@ -449,11 +460,10 @@ class Member_register extends Member {
 			$field_labels[$field->getName()] = $field->getLabel();
 		}
 
+		$field_errors = array();
 
 		if ($result->failed())
 		{
-			$field_errors = array();
-
 			$e = $result->getAllErrors();
 			$errors = array_map('current', $e);
 

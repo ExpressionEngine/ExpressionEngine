@@ -72,44 +72,6 @@ class EE extends EE_Controller {
 			show_error('Unable to initialize ExpressionEngine.  The EE core does not appear to be defined in your autoload file.  For more information please contact technical support.');
 		}
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Add the template debugger to the output if required and then
-	 * run the garbage collection routine.
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _output($output)
-	{
-		// If 'debug' is turned off, we will remove any variables that didn't get parsed due to syntax errors.
-		// this needs to happen here as the CI output library does the elapsed_time and memory_usage replacements.
-
-		/* -------------------------------------------
-		/*	Hidden Configuration Variables
-		/*	- remove_unparsed_vars => Whether or not to remove unparsed EE variables
-		/*  This is most helpful if you wish for debug to be set to 0, as EE will not
-		/*  strip out javascript.
-		/* -------------------------------------------*/
-		$remove_vars = ($this->config->item('remove_unparsed_vars') == 'y') ? TRUE : FALSE;
-		$this->output->remove_unparsed_variables($remove_vars);
-
-		if ($this->config->item('debug') == 0 &&
-			$this->output->remove_unparsed_variables === TRUE)
-		{
-			$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
-		}
-
-		echo $output;
-
-		// Garbage Collection
-		if (REQ == 'PAGE')
-		{
-			$this->core->_garbage_collection();
-		}
-	}
 }
 
 // EOF

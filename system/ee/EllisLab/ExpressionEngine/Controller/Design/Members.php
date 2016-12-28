@@ -42,7 +42,7 @@ class Members extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_mbr_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->stdHeader();

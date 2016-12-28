@@ -43,7 +43,7 @@ class File extends AbstractFilesController {
 
 		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! $file->isImage())
@@ -68,7 +68,7 @@ class File extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_files'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$errors = NULL;
@@ -85,7 +85,7 @@ class File extends AbstractFilesController {
 
 		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$result = $this->validateFile($file);
@@ -128,7 +128,7 @@ class File extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_files'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$file = ee('Model')->get('File', $id)
@@ -142,7 +142,7 @@ class File extends AbstractFilesController {
 
 		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! $file->isImage())
@@ -325,7 +325,7 @@ class File extends AbstractFilesController {
 
 		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->helper('download');

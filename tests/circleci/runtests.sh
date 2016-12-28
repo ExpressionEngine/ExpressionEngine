@@ -53,7 +53,7 @@ do
 			installmysql
 
 			# Prevent "MySQL server has gone away" error
-			echo -e "[mysqld]\nmax_allowed_packet=256M\nwait_timeout=300\ninteractive_timeout=300" | sudo sh -c "cat >> /etc/mysql/my.cnf"
+			echo -e "[mysqld]\nmax_allowed_packet=256M\nwait_timeout=300\ninteractive_timeout=300\nsql_mode='ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'" | sudo sh -c "cat >> /etc/mysql/my.cnf"
 
 			# Upgrade databases
 			sudo mysql_upgrade -u ubuntu --force

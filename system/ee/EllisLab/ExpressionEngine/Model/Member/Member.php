@@ -106,8 +106,8 @@ class Member extends ContentModel {
 
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
-		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|uniqueEmail',
+		'username'        => 'required|unique|validateUsername',
+		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
@@ -249,6 +249,8 @@ class Member extends ContentModel {
 					$this->username,
 					$this->member_id
 				));
+
+				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
 		}
 	}
@@ -316,26 +318,39 @@ class Member extends ContentModel {
 	 * use the default of 'homepage'. We prioritize on the Member's preferences
 	 * then the groups preferences, falling back to the default.
 	 *
+	 * @param	int	Optional site ID to get member homepage for, defaults to current site
 	 * @return EllisLab\ExpressionEngine\Library\CP\URL The URL
 	 */
-	public function getCPHomepageURL()
+	public function getCPHomepageURL($site_id = NULL)
 	{
 		$cp_homepage = NULL;
+
+		if ( ! $site_id)
+		{
+			$site_id = ee()->config->item('site_id');
+		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
 		$member_group = ee('Model')->get('MemberGroup')
 			->filter('group_id', $this->group_id)
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', $site_id)
 			->first();
 
 		if ( ! empty($this->cp_homepage))
 		{
-			$site_id = ee()->config->item('site_id');
-
 			$cp_homepage = $this->cp_homepage;
 			$cp_homepage_channel = $this->cp_homepage_channel;
-			$cp_homepage_channel = $cp_homepage_channel[$site_id];
 			$cp_homepage_custom = $this->cp_homepage_custom;
+
+			// Site created after setting was saved, no channel setting will be available
+			if ($this->cp_homepage == 'publish_form' && ! isset($cp_homepage_channel[$site_id]))
+			{
+				$cp_homepage = '';
+			}
+			else
+			{
+				$cp_homepage_channel = $cp_homepage_channel[$site_id];
+			}
 		}
 		elseif ( ! empty($member_group->cp_homepage))
 		{
@@ -370,7 +385,13 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->MemberGroup;
+		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->group_id})"))
+		{
+			$structure = $this->MemberGroup;
+			ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", $structure);
+		}
+
+		return $structure;
 	}
 
 	/**
@@ -420,6 +441,11 @@ class Member extends ContentModel {
 			return sprintf(lang('username_too_short'), $un_length);
 		}
 
+		if (strlen($username) > USERNAME_MAX_LENGTH)
+		{
+			return 'username_too_long';
+		}
+
 		if ($this->isNew())
 		{
 			// Is username banned?
@@ -427,6 +453,19 @@ class Member extends ContentModel {
 			{
 				return 'username_taken';
 			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validation callback for email field
+	 */
+	public function validateEmail($key, $email)
+	{
+		if (strlen($email) > USERNAME_MAX_LENGTH)
+		{
+			return 'email_too_long';
 		}
 
 		return TRUE;

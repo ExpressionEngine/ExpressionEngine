@@ -42,7 +42,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
@@ -187,7 +187,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->model('member_model');
@@ -203,7 +203,7 @@ class MemberImport extends Utilities {
 
 		if ( ! empty($member_group))
 		{
-			$group_name = $member_group->group_title;
+			$group_name = htmlentities($member_group->group_title, ENT_QUOTES, 'UTF-8');
 		}
 
 		$data = array(
@@ -274,7 +274,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->lang->loadfile('member_import');
@@ -369,7 +369,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->lang->loadfile('member_import');
@@ -614,7 +614,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Set our optional default values
@@ -876,14 +876,20 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->_create_custom_validation();
 
 		if ($this->form_validation->run() === FALSE)
 		{
-			return $this->member_import_confirm();
+			ee('CP/Alert')->makeInline()
+				->asIssue()
+				->withTitle(lang('member_import_error'))
+				->addToBody(lang('member_import_no_custom_fields_selected'))
+				->now();
+
+			return $this->memberImportConfirm();
 		}
 
 		$error = array();
@@ -911,6 +917,7 @@ class MemberImport extends Utilities {
 			$this->db->insert('member_fields', $data);
 			$field_id = $this->db->insert_id();
 			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$field_id.' text NULL DEFAULT NULL');
+			$this->db->query('ALTER table exp_member_data add column m_field_ft_'.$field_id.' text NULL DEFAULT NULL');
 
 			$_POST['added_fields'][$_POST['m_field_name'][$k]] = $_POST['m_field_label'][$k];
 			//$_POST['xml_custom_fields'][$_POST['xml_field_name'][$k]] = $field_id;
@@ -970,7 +977,7 @@ class MemberImport extends Utilities {
 			}
 		}
 
-		ee()->form_validation->set_message('required', lang('s_required'));
+		ee()->form_validation->set_message('required', lang('member_import_no_custom_fields_selected'));
 	}
 }
 // END CLASS

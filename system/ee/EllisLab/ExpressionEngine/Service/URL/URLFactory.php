@@ -173,11 +173,14 @@ class URLFactory {
 	/**
 	 * Decodes a base64 encoded, seralized URL object.
 	 *
-	 * @return URL A URL object.
+	 * @return URL A URL object or NULL
 	 */
-	public function decodeUrl($url)
+	public function decodeUrl($data)
 	{
-		return unserialize(base64_decode($url));
+		$url = $this->make('');
+		$success = $url->unserialize(base64_decode($data));
+
+		return ($success) ? $url : NULL;
 	}
 
 }

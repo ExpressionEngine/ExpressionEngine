@@ -185,7 +185,7 @@ class MenuManager extends Settings {
 
 			if ( ! $set)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -354,7 +354,7 @@ class MenuManager extends Settings {
 			'field_name'          => 'fieldname',
 			'options'             => $set->Items->filter('parent_id', 0)->sortBy('sort'),
 			'set_id'              => $set->getId(),
-			'content_item_label'  => 'foo'
+			'content_item_label'  => $set->name
 		));
 
 		if ($html_only)
@@ -434,10 +434,10 @@ class MenuManager extends Settings {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$item = $item ?: ee('Model')->make('MenuItem');
+		$item = $item ?: ee('Model')->make('MenuItem', array('sort' => 1));
 
 		if ( ! empty($_POST))
 		{
@@ -445,7 +445,7 @@ class MenuManager extends Settings {
 			{
 				$items = $set->Items;
 				$last = $items->sortBy('sort')->last();
-				$item->sort = $last ? $last->sort + 1 : 1;
+				$item->sort = $last && $item->isNew() ? $last->sort + 1 : $item->sort;
 				$set->Items[] = $item;
 			}
 

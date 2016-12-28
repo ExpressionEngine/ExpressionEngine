@@ -100,4 +100,18 @@ ee()->di->register('Validation', function($di)
 */
 $api = ee()->di->make('Model');
 
+// :-/
+class MockSession {
+	function cache($class, $name)
+	{
+		return FALSE;
+	}
+	function set_cache($class, $name, $data)
+	{
+		return FALSE;
+	}
+}
+
+ee()->session = new MockSession();
+
 // EOF

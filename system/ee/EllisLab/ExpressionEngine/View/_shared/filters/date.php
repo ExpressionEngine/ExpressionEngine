@@ -15,11 +15,9 @@
 			<?php if ($timestamp): ?>data-timestamp="<?=$timestamp?>" <?php endif; ?>
 		>
 	</fieldset>
-	<?php if (count($options) > 10): ?><div class="scroll-wrap"><?php endif;?>
 	<ul>
 	<?php foreach ($options as $url => $label): ?>
 		<li><a href="<?=$url?>"><?=$label?></a></li>
 	<?php endforeach; ?>
 	</ul>
-	<?php if (count($options) > 10): ?></div><?php endif;?>
 </div>

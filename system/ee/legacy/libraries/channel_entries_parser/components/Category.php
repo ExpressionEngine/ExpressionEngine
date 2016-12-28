@@ -155,6 +155,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					}
 				}
 
+				$filtered_categories = array();
+
 				foreach ($categories[$data['entry_id']] as $k => $v)
 				{
 					if (in_array($v[0], $not_these) OR (isset($v[5]) && in_array($v[5], $not_these_groups)))
@@ -167,6 +169,14 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						continue;
 					}
 
+					$filtered_categories[$k] = $v;
+				}
+
+				$count = 0;
+				$total_results = count($filtered_categories);
+
+				foreach ($filtered_categories as $k => $v)
+				{
 					$temp = $catval[0];
 
 					if (preg_match_all("#".LD."path=(.+?)".RD."#", $temp, $matches))
@@ -192,14 +202,19 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					$cat_image = ee()->file_field->parse_field($v[3]);
 
 					$cat_vars = array(
-						'category_name'			=> $v[2],
-						'category_url_title'	=> $v[6],
-						'category_description'	=> (isset($v[4])) ? $v[4] : '',
-						'category_group'		=> (isset($v[5])) ? $v[5] : '',
-						'category_image'		=> $cat_image['url'],
-						'category_id'			=> $v[0],
-						'parent_id'				=> $v[1],
-						'active'				=> ($active_cat == $v[0] || $active_cat == $v[6])
+						'category_count'         => ++$count,
+						'category_reverse_count' => $total_results - $count + 1,
+						'category_total_results' => $total_results,
+						'category_name'          => ee()->typography->format_characters(
+							ee()->functions->encode_ee_tags($v[2])
+						),
+						'category_url_title'     => $v[6],
+						'category_description'   => (isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
+						'category_group'         => (isset($v[5])) ? $v[5] : '',
+						'category_image'         => $cat_image['url'],
+						'category_id'            => $v[0],
+						'parent_id'              => $v[1],
+						'active'                 => ($active_cat == $v[0] || $active_cat == $v[6])
 					);
 
 					// add custom fields for conditionals prep
@@ -210,26 +225,11 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 					$temp = ee()->functions->prep_conditionals($temp, $cat_vars);
 
-					$temp = str_replace(
-						array(
-							LD."category_id".RD,
-							LD."category_name".RD,
-							LD."category_url_title".RD,
-							LD."category_image".RD,
-							LD."category_group".RD,
-							LD.'category_description'.RD,
-							LD.'parent_id'.RD
-						),
-						array($v[0],
-							ee()->functions->encode_ee_tags($v[2]),
-							$v[6],
-							$cat_image['url'],
-							(isset($v[5])) ? $v[5] : '',
-							(isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
-							$v[1]
-						),
-						$temp
-					);
+					// and parse the variables
+					foreach ($cat_vars as $cat_var => $cat_val)
+					{
+						$temp = str_replace(LD.$cat_var.RD, $cat_val, $temp);
+					}
 
 					foreach($obj->channel()->catfields as $cv2)
 					{

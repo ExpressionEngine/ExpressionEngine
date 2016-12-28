@@ -132,8 +132,9 @@ EE.cp.datePicker = {
 			if ($('.date-picker-wrap').length == 0) {
 				var parent = $('body');
 
-				if ($('#cform').length) {
-					parent = $('#cform');
+				// Likely front end
+				if ($('input[name=ACT]').length) {
+					parent = $(this.element).closest('form');
 				}
 
 				parent.append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');

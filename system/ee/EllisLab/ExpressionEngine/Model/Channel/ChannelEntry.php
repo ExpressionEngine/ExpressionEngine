@@ -109,6 +109,7 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
+		'beforeSave',
 		'afterDelete',
 		'afterInsert',
 		'afterUpdate',
@@ -207,7 +208,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function validateMaxEntries($key, $value, $params, $rule)
 	{
-		if ($this->Channel->max_entries === '0')
+		if ($this->Channel->max_entries == 0 OR ! $this->isNew())
 		{
 			return TRUE;
 		}
@@ -278,6 +279,7 @@ class ChannelEntry extends ContentModel {
 
 		$entry = $this->getFrontend()->get('ChannelEntry')
 			->fields('entry_id', 'title')
+			->filter('entry_id', '!=', $this->getId())
 			->filter('channel_id', $channel_id)
 			->filter('url_title', $value)
 			->first();
@@ -294,6 +296,15 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return TRUE;
+	}
+
+	public function onBeforeSave()
+	{
+		// Set allow_comments to the channel default if not set
+		if (empty($this->allow_comments))
+		{
+			$this->allow_comments = $this->Channel->deft_comments;
+		}
 	}
 
 	public function onAfterSave()
@@ -333,7 +344,7 @@ class ChannelEntry extends ContentModel {
 			ee()->load->remove_package_path($info->getPath());
 		}
 
-		if ($this->versioning_enabled)
+		if ($this->getProperty('versioning_enabled'))
 		{
 			$this->saveVersion();
 		}
@@ -428,7 +439,7 @@ class ChannelEntry extends ContentModel {
 			'channel_id'   => $this->channel_id,
 			'author_id'    => $this->author_id ?: 1,
 			'version_date' => ee()->localize->now,
-			'version_data' => $this->getValues()
+			'version_data' => $_POST ?: $this->getValues()
 		);
 
 		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
@@ -585,7 +596,8 @@ class ChannelEntry extends ContentModel {
 
 	public function get__versioning_enabled()
 	{
-		return (isset($this->versioning_enabled)) ?: $this->Channel->enable_versioning;
+		return isset($this->versioning_enabled)
+			? $this->versioning_enabled : $this->Channel->enable_versioning;
 	}
 
 	/**

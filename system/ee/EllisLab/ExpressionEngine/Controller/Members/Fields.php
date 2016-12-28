@@ -46,7 +46,7 @@ class Fields extends Members\Members {
 
 		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('channel');
@@ -147,7 +147,7 @@ class Fields extends Members\Members {
 		$data['new'] = ee('CP/URL')->make('members/fields/create');
 		$base_url = $data['table']['base_url'];
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
+		ee()->javascript->set_global('lang.remove_confirm', lang('custom_member_fields') . ': <b>### ' . lang('custom_member_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/members/member_field_reorder');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
@@ -192,7 +192,7 @@ class Fields extends Members\Members {
 		{
 			return htmlentities($field_name, ENT_QUOTES, 'UTF-8');
 		}, $field_names);
-		
+
 		$fields->delete();
 
 		ee('CP/Alert')->makeInline('fields')
@@ -213,7 +213,7 @@ class Fields extends Members\Members {
 
 		if ( ! AJAX_REQUEST OR empty($new_order['order']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
@@ -264,7 +264,7 @@ class Fields extends Members\Members {
 
 		if ( ! $field)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('admin_content');

@@ -223,6 +223,15 @@ class EE_Template {
 			'site_id'       => $site_id
 		);
 
+		// Record the New Relic transaction. Use a constant so that separate instances of this
+		// class can't accidentally restart the transaction metrics
+		if ( ! defined('EECMS_NEW_RELIC_TRANS_NAME'))
+		{
+			$template = $this->templates_loaded[0];
+			define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
+			ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
+		}
+
 		$this->log_item("Template Type: ".$this->template_type);
 
 		$this->parse($this->template, $is_embed, $site_id, $is_layout);
@@ -297,7 +306,16 @@ class EE_Template {
 		$this->log_item("Parsing Site Variables");
 
 		// load site variables into the global_vars array
-		foreach (array('site_id', 'site_label', 'site_short_name') as $site_var)
+		foreach (array(
+			'site_id',
+			'site_label',
+			'site_short_name',
+			'site_name',
+			'site_url',
+			'site_description',
+			'site_index',
+			'webmaster_email'
+		) as $site_var)
 		{
 			ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
 		}
@@ -2457,7 +2475,7 @@ class EE_Template {
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
 						a.cache, a.refresh, a.hits, a.protect_javascript,
-						a.allow_php, a.php_parse_location, b.group_name')
+						a.allow_php, a.php_parse_location, b.group_name, a.group_id')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))
@@ -2801,7 +2819,7 @@ class EE_Template {
 			}
 			else
 			{
-				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match[2])));
+				ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match[2])));
 			}
 		}
 	}
@@ -2929,6 +2947,12 @@ class EE_Template {
 					if (isset($match[5]))
 					{
 						$status_code = $match[5];
+					}
+
+					// handle full URLs, don't need to prepend site details
+					if (filter_var($match[2], FILTER_VALIDATE_URL))
+					{
+						ee()->functions->redirect($match[2], FALSE, $status_code);
 					}
 
 					// Functions::redirect() exits on its own
@@ -3099,6 +3123,9 @@ class EE_Template {
 		// {doc_url}
 		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
 
+		// {username_max_length}
+		$str = str_replace(LD.'username_max_length'.RD, USERNAME_MAX_LENGTH, $str);
+
 		// {password_max_length}
 		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
 
@@ -3133,7 +3160,7 @@ class EE_Template {
 		// Parse non-cachable variables
 		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
 
-		foreach ($this->user_vars as $val)
+		foreach (array_merge($this->user_vars, array('member_group')) as $val)
 		{
 			$replace = (isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
 				ee()->session->userdata[$val] : '';

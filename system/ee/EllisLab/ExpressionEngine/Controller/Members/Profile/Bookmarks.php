@@ -145,7 +145,7 @@ class Bookmarks extends Settings {
 			);
 		}
 
-		$this->form($vars);
+		$this->form($vars, ! empty($_POST) ? $_POST : array());
 	}
 
 	/**
@@ -164,20 +164,18 @@ class Bookmarks extends Settings {
 			'cp_page_title' => lang('edit_bookmarklet')
 		);
 
+		if ( ! empty($_POST))
+		{
+			$this->bookmarks[$id]->name = ee()->input->post('name');
+			$this->bookmarks[$id]->channel = ee()->input->post('channel');
+			$this->bookmarks[$id]->field = ee()->input->post('field');
+		}
+
 		$values = array(
 			'name' => $this->bookmarks[$id]->name,
 			'channel' => $this->bookmarks[$id]->channel,
 			'field' => $this->bookmarks[$id]->field
 		);
-
-		if ( ! empty($_POST))
-		{
-			$this->bookmarks[$id] = array(
-				'name' => ee()->input->post('name'),
-				'channel' => ee()->input->post('channel'),
-				'field' => ee()->input->post('field')
-			);
-		}
 
 		$this->form($vars, $values, $id);
 	}
@@ -249,7 +247,7 @@ class Bookmarks extends Settings {
 				'channel' => array(
 					'type' => 'select',
 					'choices' => $channels,
-					'value' => $channel,
+					'value' => $channel->getId(),
 					'required' => TRUE
 				),
 				'field' => array(

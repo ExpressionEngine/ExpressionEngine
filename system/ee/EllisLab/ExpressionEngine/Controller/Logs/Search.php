@@ -49,7 +49,7 @@ class Search extends Logs {
 
 		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();

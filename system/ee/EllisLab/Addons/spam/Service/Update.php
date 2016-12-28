@@ -30,7 +30,7 @@ class Update {
 
 	public function download()
 	{
-		$location = 'https://ellislab.com/asset/file/spam.zip';
+		$location = 'https://expressionengine.com/asset/file/spam.zip';
 		$compressed = ee('Curl')->get($location)->exec();
 
 		// Write the training data to a tmp file and return the file name

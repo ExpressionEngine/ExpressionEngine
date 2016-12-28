@@ -52,7 +52,7 @@ class Groups extends Members\Members {
 
 		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->base_url = ee('CP/URL')->make('members/groups');
@@ -231,7 +231,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars = array(
@@ -248,7 +248,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->base_url = ee('CP/URL')->make('members/groups/create/', $this->query_string);
@@ -276,7 +276,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
         $this->group = ee('Model')->get('MemberGroup')
@@ -286,7 +286,7 @@ class Groups extends Members\Members {
 
 		if ($this->group->is_locked == 'y' && ! $this->super_admin)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->group_id = (int) $this->group->group_id;
@@ -310,7 +310,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$replacement = ee()->input->post('replacement');
@@ -327,7 +327,7 @@ class Groups extends Members\Members {
 		{
 			if ($group->is_locked == 'y' && ! $this->super_admin)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 
@@ -368,7 +368,7 @@ class Groups extends Members\Members {
 		//  Only super admins can delete member groups
 		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$groups = ee()->input->post('selection');
@@ -378,7 +378,7 @@ class Groups extends Members\Members {
 
 		if ( ! empty($no_delete))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars['groups'] = ee('Model')->get('MemberGroup', $groups)
@@ -409,7 +409,7 @@ class Groups extends Members\Members {
 	{
 		if (in_array($group_id, $this->no_delete))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->load->model('member_model');
@@ -550,7 +550,7 @@ class Groups extends Members\Members {
 		}
 
 		// Set our various permissions if we're not editing the Super Admin
-		if ($group->group_id !== 1)
+		if ($group->group_id != 1)
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();

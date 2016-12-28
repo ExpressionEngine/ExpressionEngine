@@ -836,7 +836,6 @@ class Channel {
 
 					if ($query->num_rows() > 0)
 					{
-						$valid = 'y';
 						$valid_cats = explode('|', $query->row('cat_group') );
 
 						foreach($query->result_array() as $row)
@@ -854,18 +853,10 @@ class Channel {
 
 							if (count($valid_cats) == 0)
 							{
-								$valid = 'n';
-								break;
+								return '';
 							}
 						}
-					}
-					else
-					{
-						$valid = 'n';
-					}
 
-					if ($valid == 'y')
-					{
 						// the category URL title should be the first segment left at this point in $qstring,
 						// but because prior to this feature being added, category names were used in URLs,
 						// and '/' is a valid character for category names.  If they have not updated their
@@ -898,6 +889,10 @@ class Channel {
 							{
 								$qstring = 'C'.$result->row('cat_id') ;
 								$cat_id = $result->row('cat_id');
+							}
+							else
+							{
+								return '';
 							}
 						}
 					}
@@ -3002,6 +2997,8 @@ class Channel {
 			ee()->load->helper('segment');
 			$active_cat = parse_category($this->query_string);
 
+			ee()->load->library('typography');
+
 			foreach ($this->cat_array as $key => $val)
 			{
 				$chunk = ee()->TMPL->tagdata;
@@ -3010,7 +3007,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[5]);
 
 				$cat_vars = array(
-					'category_name'			=> $val[3],
+					'category_name'			=> ee()->typography->format_characters($val[3]),
 					'category_url_title'	=> $val[6],
 					'category_description'	=> $val[4],
 					'category_image'		=> $cat_image,
@@ -3467,6 +3464,8 @@ class Channel {
 				ee()->load->helper('segment');
 				$active_cat = parse_category($this->query_string);
 
+				ee()->load->library('typography');
+
 				foreach($query->result_array() as $row)
 				{
 					// We'll concatenate parsed category and title chunks here for
@@ -3482,7 +3481,7 @@ class Channel {
 						$cat_image = ee()->file_field->parse_string($row['cat_image']);
 
 						$cat_vars = array(
-							'category_name'			=> $row['cat_name'],
+							'category_name'			=> ee()->typography->format_characters($row['cat_name']),
 							'category_url_title'	=> $row['cat_url_title'],
 							'category_description'	=> $row['cat_description'],
 							'category_image'		=> $cat_image,
@@ -3569,7 +3568,7 @@ class Channel {
 						if ($trow['cat_id'] == $row['cat_id'])
 						{
 							$chunk = str_replace(array(LD.'title'.RD, LD.'category_name'.RD),
-												 array($trow['title'],$row['cat_name']),
+												 array($trow['title'],ee()->typography->format_characters($row['cat_name'])),
 												 $title_chunk);
 
 							foreach($t_path as $tkey => $tval)
@@ -3950,8 +3949,10 @@ class Channel {
 				ee()->load->library('file_field');
 				$cat_image = ee()->file_field->parse_string($val[2]);
 
+				ee()->load->library('typography');
+
 				$cat_vars = array(
-					'category_name'			=> $val[1],
+					'category_name'			=> ee()->typography->format_characters($val[1]),
 					'category_url_title'	=> $val[4],
 					'category_description'	=> $val[3],
 					'category_image'		=> $cat_image,
@@ -4318,8 +4319,10 @@ class Channel {
 		ee()->load->library('file_field');
 		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
 
+		ee()->load->library('typography');
+
 		$cat_vars = array(
-			'category_name'			=> $query->row('cat_name'),
+			'category_name'			=> ee()->typography->format_characters($query->row('cat_name')),
 			'category_url_title'	=> $query->row('cat_url_title'),
 			'category_description'	=> $query->row('cat_description'),
 			'category_image'		=> $cat_image,
@@ -4939,53 +4942,62 @@ class Channel {
 
 	public function related_category_entries()
 	{
-		if ($this->query_string == '')
+		// grab url_title= parameter, fallback on entry_id= param
+		$current_entry = ee()->TMPL->fetch_param('url_title', ee()->TMPL->fetch_param('entry_id'));
+
+		// try to divine one if no parameter was given
+		if ( ! $current_entry)
 		{
-			return FALSE;
-		}
+			$current_entry = $this->query_string;
 
-		$qstring = $this->query_string;
+			/** --------------------------------------
+			/**  Remove page number
+			/** --------------------------------------*/
 
-		/** --------------------------------------
-		/**  Remove page number
-		/** --------------------------------------*/
+			if (preg_match("#/P\d+#", $current_entry, $match))
+			{
+				$current_entry = reduce_double_slashes(str_replace($match[0], '', $current_entry));
+			}
 
-		if (preg_match("#/P\d+#", $qstring, $match))
-		{
-			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
-		}
+			/** --------------------------------------
+			/**  Remove "N"
+			/** --------------------------------------*/
+			if (preg_match("#/N(\d+)#", $current_entry, $match))
+			{
+				$current_entry = reduce_double_slashes(str_replace($match[0], '', $current_entry));
+			}
 
-		/** --------------------------------------
-		/**  Remove "N"
-		/** --------------------------------------*/
-		if (preg_match("#/N(\d+)#", $qstring, $match))
-		{
-			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
-		}
+			/** --------------------------------------
+			/**  Make sure to only get one segment
+			/** --------------------------------------*/
 
-		/** --------------------------------------
-		/**  Make sure to only get one segment
-		/** --------------------------------------*/
-
-		if (strpos($qstring, '/') !== FALSE)
-		{
-			$qstring = substr($qstring, 0, strpos($qstring, '/'));
+			if (strpos($current_entry, '/') !== FALSE)
+			{
+				$current_entry = substr($current_entry, 0, strpos($current_entry, '/'));
+			}
 		}
 
 		/** ----------------------------------
 		/**  Find Categories for Entry
 		/** ----------------------------------*/
 
-		$sql = "SELECT exp_categories.cat_id, exp_categories.cat_name
-				FROM exp_channel_titles
-				INNER JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-				INNER JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-				WHERE exp_categories.cat_id IS NOT NULL
-				AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
+		$query = ee()->db->select('c.cat_id, c.cat_name')
+			->from('channel_titles t')
+			->join('category_posts p', 'p.entry_id = t.entry_id', 'INNER')
+			->join('categories c', 'p.cat_id = c.cat_id', 'INNER')
+			->where('c.cat_id IS NOT NULL')
+			->where_in('t.site_id', ee()->TMPL->site_ids);
 
-		$sql .= ( ! is_numeric($qstring)) ? "AND exp_channel_titles.url_title = '".ee()->db->escape_str($qstring)."' " : "AND exp_channel_titles.entry_id = '".ee()->db->escape_str($qstring)."' ";
+		if (is_numeric($current_entry))
+		{
+			$query->where('t.entry_id', $current_entry);
+		}
+		else
+		{
+			$query->where('t.url_title', $current_entry);
+		}
 
-		$query = ee()->db->query($sql);
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -5053,14 +5065,16 @@ class Channel {
 		$cats = substr($cats, 0, -1);
 
 		/** ----------------------------------
-		/**  Manually set paramters
+		/**  Manually set parameters
 		/** ----------------------------------*/
 
+		unset(ee()->TMPL->tagparams['entry_id']);
+		unset(ee()->TMPL->tagparams['url_title']);
 		ee()->TMPL->tagparams['category']		= $cats;
-		ee()->TMPL->tagparams['dynamic']			= 'off';
-		ee()->TMPL->tagparams['not_entry_id']	= $qstring; // Exclude the current entry
+		ee()->TMPL->tagparams['dynamic']		= 'off';
+		ee()->TMPL->tagparams['not_entry_id']	= $current_entry; // Exclude the current entry
 
-		// Set user submitted paramters
+		// Set user submitted parameters
 
 		$params = array('channel', 'username', 'status', 'orderby', 'sort');
 

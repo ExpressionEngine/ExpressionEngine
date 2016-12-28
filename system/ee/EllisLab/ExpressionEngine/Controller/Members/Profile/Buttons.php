@@ -42,7 +42,7 @@ class Buttons extends Settings {
 
 		if ( ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// load the predefined buttons

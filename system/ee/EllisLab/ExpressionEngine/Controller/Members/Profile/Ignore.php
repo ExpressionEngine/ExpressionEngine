@@ -49,12 +49,17 @@ class Ignore extends Profile {
 	 */
 	public function index()
 	{
-		$order_by = 'screen_name';
 		$sort = ($this->config->item('memberlist_sort_order')) ? $this->config->item('memberlist_sort_order') : 'asc';
 		$perpage = $this->config->item('memberlist_row_limit');
-		$sort_col = ee()->input->get('sort_col') ?: $order_by;
+		$sort_col = ee()->input->get('sort_col') ?: 'username';
 		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
 		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
+
+		$sort_map = array(
+			'member_id'    => 'member_id',
+			'username'     => 'username',
+			'member_group' => 'MemberGroup.group_title'
+		);
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
@@ -64,14 +69,19 @@ class Ignore extends Profile {
 
 		$ignored = array();
 		$data = array();
-		$members = ee()->api->get('Member', $this->ignore_list)->order($sort_col, $sort_dir);
+		$members = ee('Model')->get('Member', $this->ignore_list)
+			->with('MemberGroup')
+			->order($sort_map[$sort_col], $sort_dir);
 
 		if ( ! empty($search = ee()->input->post('search')))
 		{
-			$members = $members->filter('screen_name', 'LIKE', "%$search%");
+			// $members = $members->filter('screen_name', 'LIKE', "%$search%");
+			$members = $members->search('screen_name', $search);
 		}
 
-		$members = $members->limit($perpage)->offset(($page - 1) * $perpage)->all();
+		$members = $members->limit($perpage)
+			->offset(($page - 1) * $perpage)
+			->all();
 
 		if (count($members) > 0)
 		{
@@ -89,7 +99,7 @@ class Ignore extends Profile {
 				$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate') . "'>e-mail</a>";
 				$ignored[] = array(
 					'columns' => array(
-						'id' => $member->member_id,
+						'member_id' => $member->member_id,
 						'username' => "{$member->screen_name} ($email)",
 						'member_group' => $group,
 						array(
@@ -107,7 +117,7 @@ class Ignore extends Profile {
 
 		$table->setColumns(
 			array(
-				'id',
+				'member_id',
 				'username' => array('encode' => FALSE),
 				'member_group' => array('encode' => FALSE),
 				array(

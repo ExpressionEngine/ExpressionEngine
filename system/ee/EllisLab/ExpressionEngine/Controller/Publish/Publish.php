@@ -37,7 +37,7 @@ class Publish extends AbstractPublishController {
 
 		if ( ! ee()->cp->allowed_group('can_create_entries'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -141,9 +141,10 @@ class Publish extends AbstractPublishController {
 			show_404();
 		}
 
-		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		if ( ! ee()->cp->allowed_group('can_create_entries') OR
+			 ! in_array($channel_id, $this->assigned_channel_ids))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -156,7 +157,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		// Redirect to edit listing if we've reached max entries for this channel
-		if ($channel->max_entries !== '0' && $channel->total_records >= $channel->max_entries)
+		if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
 		{
 			ee()->functions->redirect(
 				ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $channel_id))
@@ -279,26 +280,25 @@ class Publish extends AbstractPublishController {
 	 */
 	private function populateFromBookmarklet(ChannelEntry $entry)
 	{
-		$field = '';
+		$data = array();
+
+		if (($title = ee()->input->get('title')) !== FALSE)
+		{
+			$data['title'] = $title;
+		}
 
 		foreach ($_GET as $key => $value)
 		{
 			if (strpos($key, 'field_id_') === 0)
 			{
-				$field = $key;
-				break;
+				$data[$key] = $value;
 			}
 		}
 
-		if ( ! $field)
+		if (empty($data))
 		{
 			return;
 		}
-
-		$data = array(
-			'title' => ee()->input->get('title'),
-			$field => ee()->input->get($field)
-		);
 
 		$entry->set($data);
 	}

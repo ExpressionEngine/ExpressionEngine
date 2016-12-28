@@ -82,7 +82,7 @@ class Files extends AbstractFilesController {
 
 		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! $dir->exists())
@@ -108,7 +108,7 @@ class Files extends AbstractFilesController {
 
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
-		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_files');
+		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_new_files');
 
 		$this->generateSidebar($id);
 		$this->stdHeader();
@@ -140,7 +140,7 @@ class Files extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$errors = NULL;
@@ -156,7 +156,7 @@ class Files extends AbstractFilesController {
 
 		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! $dir->exists())
@@ -245,7 +245,7 @@ class Files extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$id = ee()->input->post('dir_id');
@@ -260,7 +260,7 @@ class Files extends AbstractFilesController {
 
 		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$dir->Files->delete(); // @TODO Remove this once cascading works
@@ -383,7 +383,7 @@ class Files extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_files'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($file_ids))

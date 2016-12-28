@@ -69,7 +69,7 @@ class Msm extends CP_Controller {
 	{
 		if ( count(ee()->session->userdata('assigned_sites')) == 0 )
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -90,7 +90,7 @@ class Msm extends CP_Controller {
 			ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
 				->cannotClose()
 				->now();
 		}
@@ -204,7 +204,7 @@ class Msm extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$license = ee('License')->getEELicense();
@@ -212,7 +212,7 @@ class Msm extends CP_Controller {
 
 		if ( ! $can_add && ! empty($_POST))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -298,7 +298,7 @@ class Msm extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_sites'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$site = ee('Model')->get('Site', $site_id)->first();
@@ -375,7 +375,7 @@ class Msm extends CP_Controller {
 			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
 				->cannotClose()
 				->render();
 			$sections[0][] = $alert;

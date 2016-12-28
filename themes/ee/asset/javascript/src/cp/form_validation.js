@@ -220,23 +220,6 @@ EE.cp.formValidation = {
 				button = form.find('.form-ctrls input.btn');
 
 			that.bindInputs(form);
-			that._dismissSuccessAlert(form);
-		});
-	},
-
-	/**
-	 * When a form element is interacted with after the form has been
-	 * successfully submitted, hide the success message
-	 */
-	_dismissSuccessAlert: function(form) {
-
-		$('input, select, textarea', form).change(function(event) {
-			var success = form.find('div.alert.success');
-
-			if (success.size() > 0)
-			{
-				success.remove();
-			}
 		});
 	},
 
@@ -247,7 +230,7 @@ EE.cp.formValidation = {
 	 */
 	_errorsExist: function(form) {
 
-		return ($('fieldset.invalid, td.invalid', form).size() != 0);
+		return ($('fieldset.invalid:visible, td.invalid:visible', form).size() != 0);
 	},
 
 	/**

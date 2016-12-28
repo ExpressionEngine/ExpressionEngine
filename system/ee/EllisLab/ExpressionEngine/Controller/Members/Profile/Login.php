@@ -39,7 +39,7 @@ class Login extends Profile {
 
 		if ($this->session->userdata('group_id') != 1)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -142,7 +142,7 @@ class Login extends Profile {
 
 		if ( ! $validate)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->logger->log_action(sprintf(
@@ -160,14 +160,17 @@ class Login extends Profile {
 			$expire = time() - ee()->session->session_length;
 
 			// See if there is a current session
-			$sessions = ee()->api->get('Session')
-				->filter('member_id', ee()->member->member_id)
-				->filter('last_activity', '>', $expire);
+			// no gateway to the Session model, need to consider
+			// semver implications, so using QB for now -dj 2016-10-12
+			$sess_query = ee()->db->select('ip_address', 'user_agent')
+				->where('member_id', $this->member->member_id)
+				->where('last_activity >', $expire)
+				->get('sessions');
 
-			if (count($sessions) == 1)
+			if ($sess_query->num_rows() > 0)
 			{
-				if ((ee()->session->userdata['ip_address'] != $session->ip_address)  OR
-					(ee()->session->userdata['user_agent'] != $session->user_agent))
+				if (ee()->session->userdata['ip_address'] != $sess_query->row('ip_address') OR
+					ee()->session->userdata['user_agent'] != $sess_query->row('user_agent'))
 				{
 					show_error(lang('multi_login_warning'));
 				}

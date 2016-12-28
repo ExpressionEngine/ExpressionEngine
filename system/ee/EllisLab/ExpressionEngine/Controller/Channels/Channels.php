@@ -77,7 +77,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$channel_ids = ee()->input->post('channels');
@@ -100,7 +100,7 @@ class Channels extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('channels', ee()->cp->get_url_state()));
@@ -113,7 +113,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ($this->hasMaximumChannels())
@@ -131,7 +131,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->form($channel_id);
@@ -182,7 +182,7 @@ class Channels extends AbstractChannelsController {
 
 			if ( ! $channel)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -577,17 +577,19 @@ class Channels extends AbstractChannelsController {
 
 		if ( ! $channel)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('TemplateGroup.group_name', 'ASC')
+			->order('template_name', 'ASC')
 			->all();
 
 		$live_look_template_options[0] = lang('no_live_look_template');

@@ -51,7 +51,7 @@ class Members extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('members');
@@ -201,7 +201,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$action = ee()->input->post('bulk_action');
@@ -271,7 +271,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_ban_users'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -557,17 +557,13 @@ class Members extends CP_Controller {
 		$table = $this->initializeTable();
 
 		$sort_map = array(
-			'member_group' => 'group_id',
-			'dates' => 'join_date'
+			'member_id'    => 'member_id',
+			'username'     => 'username',
+			'dates'        => 'join_date',
+			'member_group' => 'group_id'
 		);
 
-		$sort_col = $table->config['sort_col'];
-		if (isset($sort_map[$sort_col]))
-		{
-			$sort_col = $sort_map[$sort_col];
-		}
-
-		$members = $members->order($sort_col, $table->config['sort_dir'])
+		$members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
 			->all();
 
 		$data = array();
@@ -807,7 +803,7 @@ class Members extends CP_Controller {
 		if ( ! ee()->cp->allowed_group('can_edit_members') OR
 			ee('Request')->method() !== 'POST')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($ids))
@@ -878,7 +874,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$members = ee('Model')->get('Member', $ids)
@@ -944,7 +940,7 @@ class Members extends CP_Controller {
 		if ( ! ee()->cp->allowed_group('can_edit_members') OR
 			ee()->config->item('req_mbr_activation') !== 'email')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$members = ee('Model')->get('Member', $ids)
@@ -1009,6 +1005,7 @@ class Members extends CP_Controller {
 		$email_message = ee()->functions->var_swap($template->template_data, $swap);
 
 		ee()->email->wordwrap = TRUE;
+		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(
 			ee()->config->item('webmaster_email'),
 			ee()->config->item('webmaster_name')
@@ -1148,11 +1145,16 @@ class Members extends CP_Controller {
 		// Verify the member is allowed to delete
 		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Fetch member ID numbers and build the query
 		$member_ids = ee()->input->post('selection', TRUE);
+
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
 
 		if (in_array(ee()->session->userdata['member_id'], $member_ids))
 		{

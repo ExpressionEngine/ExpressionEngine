@@ -738,6 +738,7 @@ class Login extends CP_Controller {
 
 		$this->view->cp_page_title = lang('enter_new_password');
 		$this->view->resetcode = $resetcode;
+		$this->view->focus_field = 'password';
 
 		$this->view->render('account/reset_password');
 	}
@@ -778,7 +779,7 @@ class Login extends CP_Controller {
 		// Any other way is monkeying with URLs. I have no patience for URL monkiers.
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		header('X-CSRF-TOKEN: '.CSRF_TOKEN);

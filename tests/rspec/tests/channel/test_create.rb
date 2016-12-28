@@ -165,6 +165,24 @@ feature 'Channel Create/Edit' do
     @page.channel_title.value.should == 'New channel'
   end
 
+  # Issue #1010
+	it 'should allow setting field and status groups to None' do
+    @page.load_edit_for_channel(1)
+    no_php_js_errors
+
+    @page.status_group.select 'None'
+    @page.field_group.select 'None'
+
+    @page.submit
+    no_php_js_errors
+
+    @page.load_edit_for_channel(1)
+    no_php_js_errors
+
+    @page.status_group.value.should == ''
+    @page.field_group.value.should == ''
+  end
+
   it 'should duplicate an existing channel' do
     # Set some arbitrary settings on the News channel
     channel_settings = ChannelSettings.new

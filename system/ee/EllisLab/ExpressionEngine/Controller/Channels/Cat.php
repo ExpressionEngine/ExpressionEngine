@@ -49,7 +49,7 @@ class Cat extends AbstractChannelsController {
 			'can_delete_categories'
 		))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('category');
@@ -94,7 +94,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! $this->cp->allowed_group('can_delete_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$group_ids = ee()->input->post('cat_groups');
@@ -124,7 +124,7 @@ class Cat extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('channels/cat', ee()->cp->get_url_state()));
@@ -137,7 +137,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! $this->cp->allowed_group('can_create_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->form();
@@ -150,7 +150,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! $this->cp->allowed_group('can_edit_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->form($group_id);
@@ -178,7 +178,7 @@ class Cat extends AbstractChannelsController {
 
 			if ( ! $cat_group)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -408,7 +408,7 @@ class Cat extends AbstractChannelsController {
 
 		if ( ! $cat_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
@@ -456,7 +456,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cat_group = ee('Model')->get('CategoryGroup')
@@ -470,7 +470,7 @@ class Cat extends AbstractChannelsController {
 
 		if ( ! AJAX_REQUEST OR ! $cat_group OR empty($new_order))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// Create a flattened array based on the JSON response
@@ -533,7 +533,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cat_ids = ee()->input->post('categories');
@@ -565,7 +565,7 @@ class Cat extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// Response for publish form category management
@@ -593,7 +593,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		return $this->categoryForm($group_id, NULL, (bool) $editing);
@@ -609,7 +609,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		return $this->categoryForm($group_id, $category_id, TRUE);
@@ -627,7 +627,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if (empty($group_id) OR ! is_numeric($group_id))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cat_group = ee('Model')->get('CategoryGroup')
@@ -636,7 +636,7 @@ class Cat extends AbstractChannelsController {
 
 		if ( ! $cat_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Check discrete privileges when editig (we have no discrete create
@@ -647,7 +647,7 @@ class Cat extends AbstractChannelsController {
 
 			if (ee()->session->userdata('group_id') != 1 AND ! in_array(ee()->session->userdata('group_id'), $can_edit))
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 
@@ -668,7 +668,27 @@ class Cat extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
-			ee()->javascript->set_global('publish.word_separator', ee()->config->item('word_separator') != "dash" ? '_' : '-');
+
+			//	Create Foreign Character Conversion JS
+			$foreign_characters = ee()->config->loadFile('foreign_chars');
+
+			/* -------------------------------------
+			/*  'foreign_character_conversion_array' hook.
+			/*  - Allows you to use your own foreign character conversion array
+			/*  - Added 1.6.0
+			* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+			*/
+				if (ee()->extensions->active_hook('foreign_character_conversion_array') === TRUE)
+				{
+					$foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
+				}
+			/*
+			/* -------------------------------------*/
+
+			ee()->javascript->set_global(array(
+				'publish.foreignChars'   => $foreign_characters,
+				'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-'
+			));
 
 			ee()->javascript->output('
 				$("input[name=cat_name]").bind("keyup keydown", function() {
@@ -682,7 +702,7 @@ class Cat extends AbstractChannelsController {
 
 			if ( ! $category)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -927,7 +947,7 @@ class Cat extends AbstractChannelsController {
 
 		if ( ! $cat_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$table = ee('CP/Table', array(
@@ -1045,7 +1065,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cat_group = ee('Model')->get('CategoryGroup')
@@ -1058,7 +1078,7 @@ class Cat extends AbstractChannelsController {
 
 		if ( ! AJAX_REQUEST OR ! $cat_group OR empty($new_order['order']))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$fields = $cat_group->getCategoryFields()->indexBy('field_id');
@@ -1087,7 +1107,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$field_ids = ee()->input->post('fields');
@@ -1112,7 +1132,7 @@ class Cat extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(
@@ -1129,7 +1149,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		return $this->categoryFieldForm($group_id);
@@ -1145,7 +1165,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_categories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		return $this->categoryFieldForm($group_id, $field_id);
@@ -1161,7 +1181,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if (empty($group_id) OR ! is_numeric($group_id))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cat_group = ee('Model')->get('CategoryGroup', $group_id)->first();
@@ -1198,7 +1218,7 @@ class Cat extends AbstractChannelsController {
 
 		if ( ! $cat_field)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('admin_content');

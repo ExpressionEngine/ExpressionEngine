@@ -42,7 +42,7 @@ class Edit extends AbstractPublishController {
 			'can_edit_self_entries'
 			))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -133,12 +133,12 @@ class Edit extends AbstractPublishController {
 			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
 			// Have we reached the max entries limit for this channel?
-			if ($channel->max_entries !== '0' && $count >= $channel->max_entries)
+			if ($channel->max_entries != 0 && $count >= $channel->max_entries)
 			{
 				// Don't show create button
 				$vars['create_button'] = '';
 
-				$desc_key = ($channel->max_entries === '1')
+				$desc_key = ($channel->max_entries == 1)
 					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
 				ee('CP/Alert')->makeInline()
 					->asWarning()
@@ -403,7 +403,12 @@ class Edit extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
 			&& $entry->author_id != ee()->session->userdata('member_id'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! in_array($entry->channel_id, $this->assigned_channel_ids))
+		{
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// -------------------------------------------
@@ -508,7 +513,7 @@ class Edit extends AbstractPublishController {
 		if ( ! ee()->cp->allowed_group('can_delete_all_entries')
 			&& ! ee()->cp->allowed_group('can_delete_self_entries'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($entry_ids))

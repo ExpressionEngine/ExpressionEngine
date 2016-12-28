@@ -18,20 +18,28 @@
 		//   When the radio button is clicked, copy the chosen data into the
 		//   div.relate-wrap-chosen area
 		$('div.publish').on('click', '.relate-wrap input:radio', function (e) {
-			var relationship = $(this).closest('.relate-wrap');
-			var label = $(this).closest('label');
-			var chosen = $(this).closest('.scroll-wrap')
-				.data('template')
-				.replace(/{entry-id}/g, $(this).val())
-				.replace(/{entry-title}/g, label.data('entry-title'))
-				.replace(/{channel-title}/g, label.data('channel-title'));
+			var relationship = $(this).closest('.relate-wrap'),
+				label = $(this).closest('label'),
+				input_name = relationship.find('.input-name').attr('name'),
+				chosen = $(this).closest('.scroll-wrap')
+					.data('template')
+					.replace(/{entry-id}/g, $(this).val())
+					.replace(/{entry-title}/g, label.data('entry-title'))
+					.replace(/{channel-title}/g, label.data('channel-title'));
 
 			relationship.find('.relate-wrap-chosen .no-results')
 				.closest('label')
-				.hide()
+				.addClass('hidden')
 				.removeClass('block');
 			relationship.find('.relate-wrap-chosen .relate-manage').remove();
 			relationship.find('.relate-wrap-chosen').first().append(chosen);
+			relationship.find('.relate-wrap-chosen label.chosen').append(
+				$('<input/>', {
+					type: 'hidden',
+					name: input_name,
+					value: $(this).val()
+				})
+			);
 			relationship.removeClass('empty');
 		});
 
@@ -43,7 +51,8 @@
 				.siblings('.relate-wrap')
 				.first();
 
-			var label = $(this).closest('label');
+			var label = $(this).closest('label'),
+				input_name = $(this).closest('.relate-wrap').find('.input-name').attr('name');
 
 			// jQuery will decode encoded HTML in a data attribute,
 			// so we'll use this trick to keep it encoded
@@ -53,6 +62,7 @@
 				.data('template')
 			.replace(/{entry-id}/g, $(this).val())
 			.replace(/{entry-title}/g, encoded_title)
+			.replace(/{entry-title-lower}/g, encoded_title.toLowerCase())
 			.replace(/{channel-title}/g, label.data('channel-title'));
 
 			// If the checkbox was unchecked run the remove event
@@ -61,7 +71,7 @@
 				return;
 			}
 
-			relationship.find('.scroll-wrap .no-results').hide();
+			relationship.find('.scroll-wrap .no-results').addClass('hidden');
 			relationship.removeClass('empty');
 			relationship.find('.scroll-wrap').first().append(chosen);
 			relationship.find('.scroll-wrap label')
@@ -69,7 +79,14 @@
 				.data('entry-title', encoded_title)
 				.data('channel-id', label.data('channel-id'))
 				.data('channel-title', label.data('channel-title'))
-				.prepend('<span class="relate-reorder"></span>');
+				.prepend('<span class="relate-reorder"></span>')
+				.append(
+					$('<input/>', {
+						type: 'hidden',
+						name: input_name,
+						value: $(this).val()
+					})
+				);
 
 			$(this).siblings('input:hidden')
 				.val(relationship.find('.scroll-wrap label').length);
@@ -92,12 +109,7 @@
 			choices.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
 				.attr('checked', false)
 				.parents('.choice')
-				.removeClass('chosen')
-				.find('input:hidden')
-				.val(0);
-
-			choices.find('.scroll-wrap input[type="hidden"][value=' + $(this).data('entry-id') + ']')
-				.remove();
+				.removeClass('chosen');
 
 			$(this).closest('label').remove();
 
@@ -105,11 +117,10 @@
 				if (chosen.hasClass('w-8')) {
 					chosen.addClass('empty')
 						.find('.no-results')
-						.show();
+						.removeClass('hidden');
 				} else {
 					chosen.find('.relate-wrap-chosen .no-results')
 						.closest('label')
-						.show()
 						.removeClass('hidden')
 						.addClass('block');
 				}
@@ -121,27 +132,13 @@
 		var ajaxTimer,
 			ajaxRequest;
 
-		function ajaxRefresh(elem, channelId, delay) {
-			var field = $(elem).closest('fieldset').find('div.col.last').eq(0),
-				data = $(elem).closest('fieldset').serialize(),
-				url = EE.publish.field.URL + '&field_name=' + $(field).find('.relate-wrap').data('field'),
-				name = $(elem).attr('name');
+		function ajaxRefresh(elem, search, channelId, delay) {
+			var settings = $(elem).closest('.relate-wrap').data('settings'),
+				data = {};
 
-			// Assume it's in a Grid
-			if (field.length == 0) {
-				field = $(elem).closest('td');
-
-				var row_id = $(field).data('row-id') ? $(field).data('row-id') : $(field).data('new-row-id');
-
-				data = $(field).find('input').serialize() + '&column_id=' + $(field).data('column-id') + '&row_id=' + row_id;
-
-				url = EE.publish.field.URL + '&field_name=' + $(elem).closest('table').attr('id');
-			}
-
-			if (channelId)
-			{
-				data += '&channel=' + channelId;
-			}
+			data['settings'] = settings;
+			data['search'] = search;
+			data['channel_id'] = channelId;
 
 			// Cancel the last AJAX request
 			clearTimeout(ajaxTimer);
@@ -151,46 +148,137 @@
 
 			ajaxTimer = setTimeout(function() {
 				ajaxRequest = $.ajax({
-					url: url,
-					data: data,
+					url: EE.relationship.filter_url,
+					data: $.param(data),
 					type: 'POST',
 					dataType: 'json',
 					success: function(ret) {
-						$(field).html(ret.html);
+						var scroll_wrap = $(elem).closest('.relate-wrap').find('.scroll-wrap[data-template]').first();
 
-						// Set focus back to current search field and place cursor at the end
-						var searchField = $('input[name='+name+']', field).focus(),
-							tmpStr = searchField.val();
-						searchField.val('');
-						searchField.val(tmpStr);
-
-						$('.w-8.relate-wrap .scroll-wrap', field).sortable(sortable_options);
+						populateEntryList(scroll_wrap, ret);
+					},
+					error: function() {
+						// Only defined to prevent console error when calling
+						// .abort() above
 					}
 				});
 			}, delay);
 
 		}
 
+		/**
+		 * Populates a given container with entry choice elements
+		 *
+		 * @param	{jQuery object}	scroll_wrap	Parent scroll-wrap container for entries
+		 * @param	{array}			entries		Array of entry objects
+		 */
+		function populateEntryList(scroll_wrap, entries) {
+			var relate_wrap = scroll_wrap.closest('.relate-wrap'),
+				multiple = relate_wrap.hasClass('w-8'),
+				no_results = scroll_wrap.find('.no-results'),
+				input_name = scroll_wrap.find('.input-name').attr('name');
+
+			no_results.addClass('hidden');
+			scroll_wrap.find('label').remove();
+
+			if (entries.length == 0) {
+				no_results.removeClass('hidden');
+			}
+
+			for (i in entries) {
+				scroll_wrap.append(
+					makeElementForEntry(entries[i], input_name, multiple)
+				);
+			}
+		}
+
+		/**
+		 * Constructs an entry choice element to display in the choices pane
+		 * of a Relationship field
+		 *
+		 * @param	{object}	entry		JSON object of entry details
+		 * @param	{string}	input_name	Input name
+		 * @param	{boolean}	multiple	Whether or not this is a multi-relationship field
+		 */
+		function makeElementForEntry(entry, input_name, multiple) {
+			var checked = $('input[name="'+input_name+'"][value='+entry.entry_id+']').length > 0,
+				checked_class = checked ? ' chosen' : '',
+				choice_element = multiple ? 'checkbox' : 'radio';
+
+			var label = $('<label/>', {
+				'class': 'choice block' + checked_class,
+				'data-channel-id': entry.channel_id,
+				'data-channel-title': entry.channel_name,
+				'data-entry-title': entry.title,
+			});
+
+			var choice = $('<input/>', {
+				type: choice_element,
+				name: choice_element == 'checkbox' ? '' : input_name+'[dummy][]',
+				value: entry.entry_id
+			});
+
+			if (checked) {
+				choice.attr('checked', 'checked');
+			}
+
+			var channel_title = $('<i/>').html(' &mdash; ' + entry.channel_name);
+
+			return label.append(choice).append(' ' + entry.title).append(channel_title);
+		}
+
 		// Filter by Channel
 		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
-			ajaxRefresh(this, $(this).data('channel-id'), 0);
+			var search = $(this).closest('.relate-wrap').find('.relate-search').val(),
+				link = $(this).closest('.filters').find('a.has-sub'),
+				channel_id = $(this).data('channel-id'),
+				span = $('<span/>', {
+					'class': 'faded',
+					'data-channel-id': channel_id
+				}).html(' ('+$(this).text()+')');
+
+			link.find('span').remove();
+			link.append(span);
+
+			ajaxRefresh(this, search, channel_id, 0);
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
 		});
 
 		// Search Relationships
-		$('div.publish').on('interact', '.relate-wrap .relate-actions .relate-search', function (e) {
-			var channelId = $(this).closest('.relate-actions').find('.filters .has-sub .faded').data('channel-id');
+		$('div.publish').on('interact', '.relate-wrap.col.w-8[data-field] .relate-search, .relate-wrap.col.w-16 .relate-search', function (e) {
+			var channelId = $(this).closest('.relate-actions')
+				.find('.filters .has-sub .faded')
+				.data('channel-id');
 
-			// In Grids, this field got its name reset
-			if ($(this).attr('name').indexOf('search_related') != -1) {
-				$(this).attr('name', 'search_related');
-			} else {
-				$(this).attr('name', 'search');
+			ajaxRefresh(this, $(this).val(), channelId, 300);
+		});
+
+		// Filtering of chosen entries in a multiple relationships UI
+		$('div.publish').on('interact', '.relate-wrap.col.w-8.last .relate-search', function (e) {
+			var relate_wrap = $(this).closest('.relate-wrap'),
+				labels = relate_wrap.find('label.chosen'),
+				no_results = relate_wrap.find('.no-results');
+
+			no_results.addClass('hidden');
+
+			// No search terms, reset
+			if ( ! this.value)
+			{
+				labels.removeClass('hidden');
+				no_results.toggleClass('hidden', relate_wrap.find('label.chosen:visible').size() != 0);
+				return;
 			}
 
-			ajaxRefresh(this, channelId, 150);
+			// Do the filtering
+			labels.removeClass('hidden')
+				.not('label[data-search*="' + this.value.toLowerCase() + '"]')
+				.addClass('hidden');
+
+			if (relate_wrap.find('label.chosen:visible').size() == 0) {
+				no_results.removeClass('hidden');
+			}
 		});
 
 		// Sortable!
@@ -203,24 +291,8 @@
 
 		$('.w-8.relate-wrap .scroll-wrap').sortable(sortable_options);
 
-		$('.publish form').on('submit', function (e) {
-			$('.w-8.relate-wrap .scroll-wrap').each(function() {
-				var label;
-				var relationship = $(this).closest('.relate-wrap')
-					.siblings('.relate-wrap').first();
-
-				// Adding a new grid row will enable all the disabled sort fields
-				$(this).find('input:hidden[name$="[sort][]"]').attr('disabled', 'disabled');
-
-				var i = 1;
-				$(this).find('label.relate-manage').each(function () {
-					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']').closest('label');
-					var sort = label.find('input:hidden[name$="[sort][]"]').first();
-					sort.removeAttr('disabled');
-					sort.val(i);
-					i++;
-				});
-			});
+		Grid.bind('relationship', 'display', function(cell) {
+			$('.w-8.relate-wrap .scroll-wrap', cell).sortable(sortable_options);
 		});
 	});
 })(jQuery);

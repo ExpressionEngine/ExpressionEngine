@@ -37,7 +37,7 @@ class Avatars extends Settings {
 
 		if ( ! ee()->cp->allowed_group('can_access_members', 'can_admin_design'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 

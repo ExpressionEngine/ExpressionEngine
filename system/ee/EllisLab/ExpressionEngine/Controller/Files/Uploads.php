@@ -57,7 +57,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar(NULL);
@@ -74,7 +74,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar($upload_id);
@@ -102,7 +102,7 @@ class Uploads extends AbstractFilesController {
 
 			if ( ! $upload_destination)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
@@ -189,7 +189,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'url' => array(
 							'type' => 'text',
-							'value' => $upload_destination->getRawProperty('url') ?: 'http://',
+							'value' => $upload_destination->getConfigOverriddenProperty('url') ?: 'http://',
 							'required' => TRUE
 						)
 					)
@@ -200,7 +200,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'server_path' => array(
 							'type' => 'text',
-							'value' => $upload_destination->getRawProperty('server_path'),
+							'value' => $upload_destination->getConfigOverriddenProperty('server_path'),
 							'required' => TRUE
 						)
 					)
@@ -689,7 +689,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (empty($upload_id))
@@ -708,7 +708,7 @@ class Uploads extends AbstractFilesController {
 
 		if (empty($upload_destination))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// Get a listing of raw files in the directory
@@ -745,7 +745,7 @@ class Uploads extends AbstractFilesController {
 			->filter('upload_location_id', $upload_id)->all();
 
 		$size_choices = array();
-		$js_size = array($upload_id => '');
+		$js_size = array();
 		foreach ($sizes as $size)
 		{
 			// For checkboxes
@@ -753,7 +753,13 @@ class Uploads extends AbstractFilesController {
 				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
 
 			// For JS sync script
-			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height, 'watermark_id' => $size->watermark_id);
+			$js_size[$size->upload_location_id][$size->id] = array(
+				'short_name'   => $size->short_name,
+				'resize_type'  => $size->resize_type,
+				'width'        => $size->width,
+				'height'       => $size->height,
+				'watermark_id' => $size->watermark_id
+			);
 		}
 
 		// Only show the manipulations section if there are manipulations
@@ -778,6 +784,7 @@ class Uploads extends AbstractFilesController {
 		// Globals needed for JS script
 		ee()->javascript->set_global(array(
 			'file_manager' => array(
+				'sync_id'         => $upload_id,
 				'sync_files'      => $files,
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
@@ -815,13 +822,14 @@ class Uploads extends AbstractFilesController {
 		$file_data = array();
 		$replace_sizes = array();
 		$db_sync = (ee()->input->post('db_sync') == 'y') ? 'y' : 'n';
+		$id = ee()->input->post('upload_directory_id');
+		$sizes = ee()->input->post('sizes') ?: array($id => '');
 
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
 		if (
-			(($sizes = ee()->input->post('sizes')) === FALSE OR
-			($current_files = ee()->input->post('files')) === FALSE) AND
+			($current_files = ee()->input->post('files')) === FALSE AND
 			$db_sync != 'y'
 		)
 		{
@@ -837,8 +845,6 @@ class Uploads extends AbstractFilesController {
 		{
 			$this->_upload_dirs[$row['id']] = $row;
 		}
-
-		$id = key($sizes);
 
 		// Final run through, it syncs the db, removing stray records and thumbs
 		if ($db_sync == 'y')
