@@ -436,6 +436,66 @@ class Filesystem {
 	}
 
 	/**
+	 * Given a path this returns a unique filename by appending "_n" (where "n"
+	 * is a number) if a file by the same name already exists, i.e. "image002_1.jpg".
+	 *
+	 * @param String $path Path to make unique
+	 * @return string The path to the file.
+	 */
+	public function getUniqueFilename($path)
+	{
+		$path = $this->normalize($path);
+
+		// The path is good! We're done here.
+		if ( ! $this->exists($path))
+		{
+			return $path;
+		}
+
+		$i = 0;
+		$extension = $this->extension($path);
+		$filename  = $this->dirname($path) . '/' . $this->filename($path);
+
+		$files = glob($filename . '_*'. $extension);
+
+		if ( ! empty($files))
+		{
+			// Try to figure out if we already have a file we've renamed, then
+			// we can pick up where we left off, and reduce the guessing.
+			if (version_compare(PHP_VERSION, '5.4.0') < 0)
+			{
+				rsort($files); // SORT_NATURAL was introduced in 5.4.0 :(
+			}
+			else
+			{
+				rsort($files, SORT_NATURAL);
+			}
+
+			foreach ($files as $file)
+			{
+				$number = str_replace(array($filename, $extension), '', $file);
+				if (substr_count($number, '_') == 1 && strpos($number, '_') === 0)
+				{
+					$number = str_replace('_', '', $number);
+					if (is_numeric($number))
+					{
+						$i = (int) $number;
+						break;
+					}
+				}
+			}
+		}
+
+		do
+		{
+			$i++;
+			$path = $filename . '_' . $i . '.' . $extension;
+		} while (in_array($path, $files));
+
+		return $path;
+	}
+
+	/**
 	 * Add EE's default index file to a directory
 	 */
 	protected function addIndexHtml($dir)

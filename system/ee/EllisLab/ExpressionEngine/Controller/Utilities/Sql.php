@@ -66,7 +66,6 @@ class Sql extends Utilities {
 			}
 		}
 
-		ee()->load->library('encrypt');
 		ee()->load->model('tools_model');
 		$vars = ee()->tools_model->get_sql_info();
 		$vars += ee()->tools_model->get_table_status();
@@ -83,7 +82,7 @@ class Sql extends Utilities {
 							'utilities/query/run-query/'.$table['name'],
 							array(
 								'thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])),
-								'signature' => ee()->encrypt->sign('SELECT * FROM '.$table['name'])
+								'signature' => ee('Encrypt')->sign('SELECT * FROM '.$table['name'])
 							)
 						),
 						'title' => lang('view')

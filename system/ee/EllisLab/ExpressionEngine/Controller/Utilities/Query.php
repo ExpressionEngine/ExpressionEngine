@@ -42,7 +42,6 @@ class Query extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->load->library('encrypt');
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
@@ -80,8 +79,6 @@ class Query extends Utilities {
 	 */
 	public function runQuery($table_name = '')
 	{
-		ee()->load->library('encrypt');
-
 		$row_limit	= 25;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
@@ -106,11 +103,8 @@ class Query extends Utilities {
 					return $this->index(FALSE);
 				}
 
-				ee()->load->library('encrypt');
-
-				if ( ! ee()->encrypt->verify_signature($sql, $signature))
+				if ( ! ee('Encrypt')->verifySignature($sql, $signature))
 				{
-					var_dump($sql, $signature);
 					return $this->index(FALSE);
 				}
 
@@ -262,7 +256,7 @@ class Query extends Utilities {
 			'utilities/query/run-query/'.$table_name,
 			array(
 				'thequery' => rawurlencode(base64_encode($sql)),
-				'signature' => ee()->encrypt->sign($sql)
+				'signature' => ee('Encrypt')->sign($sql)
 			)
 		);
 		$view_data = $table->viewData($base_url);

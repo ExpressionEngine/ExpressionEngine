@@ -177,7 +177,7 @@ class Buttons extends Settings {
 			->order('tag_order', 'desc')
 			->first();
 
-		$this->button->tag_order = $last_button->tag_order + 1;
+		$this->button->tag_order = isset($last_button->tag_order) ? $last_button->tag_order + 1 : 1;
 
 		$values = array();
 

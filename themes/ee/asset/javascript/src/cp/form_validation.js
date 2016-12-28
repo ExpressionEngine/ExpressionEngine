@@ -230,7 +230,7 @@ EE.cp.formValidation = {
 	 */
 	_errorsExist: function(form) {
 
-		return ($('fieldset.invalid, td.invalid', form).size() != 0);
+		return ($('fieldset.invalid:visible, td.invalid:visible', form).size() != 0);
 	},
 
 	/**

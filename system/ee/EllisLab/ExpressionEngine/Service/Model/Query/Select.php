@@ -42,7 +42,6 @@ class Select extends Query {
 		$query = $this->buildQuery();
 
 		return new Result(
-			$this->builder,
 			$query->get()->result_array(),
 			$this->aliases,
 			$this->relations
