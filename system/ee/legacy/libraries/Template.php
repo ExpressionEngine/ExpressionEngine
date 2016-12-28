@@ -397,8 +397,18 @@ class EE_Template {
 			$this->template = str_replace(LD.$key.RD, $var, $this->template);
 		}
 
+		$parse_embed_vars = ($is_embed === TRUE && count($this->embed_vars) > 0);
+		$parse_layout_vars = ($is_layout === TRUE && count($this->layout_vars) > 0);
+
+		// Match layout: or embed: vars with date parameters/modifiers
+		if ($parse_embed_vars OR $parse_layout_vars)
+		{
+			$this->date_vars = array();
+			$this->_match_date_vars($this->template);
+		}
+
 		// Parse {embed} tag variables
-		if ($is_embed === TRUE && count($this->embed_vars) > 0)
+		if ($parse_embed_vars)
 		{
 			$this->log_item("Embed Variables:", $this->embed_vars);
 
@@ -407,21 +417,21 @@ class EE_Template {
 				// add 'embed:' to the key for replacement and so these variables work in conditionals
 				$this->embed_vars['embed:'.$key] = $val;
 				unset($this->embed_vars[$key]);
-				$this->template = str_replace(LD.'embed:'.$key.RD, $val, $this->template);
+				$this->template = $this->_parse_var_single('embed:'.$key, $val, $this->template);
 			}
 		}
 
 		$layout_conditionals = array();
 
 		// Parse {layout} tag variables
-		if ($is_layout === TRUE && count($this->layout_vars) > 0)
+		if ($parse_layout_vars)
 		{
 			$this->log_item("layout Variables:", $this->layout_vars);
 
 			foreach ($this->layout_vars as $key => $val)
 			{
 				$layout_conditionals['layout:'.$key] = $val;
-				$this->template = str_replace(LD.'layout:'.$key.RD, $val, $this->template);
+				$this->template = $this->_parse_var_single('layout:'.$key, $val, $this->template);
 			}
 		}
 
@@ -2819,7 +2829,7 @@ class EE_Template {
 			}
 			else
 			{
-				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match[2])));
+				ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match[2])));
 			}
 		}
 	}
@@ -2947,6 +2957,12 @@ class EE_Template {
 					if (isset($match[5]))
 					{
 						$status_code = $match[5];
+					}
+
+					// handle full URLs, don't need to prepend site details
+					if (filter_var($match[2], FILTER_VALIDATE_URL))
+					{
+						ee()->functions->redirect($match[2], FALSE, $status_code);
 					}
 
 					// Functions::redirect() exits on its own
@@ -3116,6 +3132,9 @@ class EE_Template {
 
 		// {doc_url}
 		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
+
+		// {username_max_length}
+		$str = str_replace(LD.'username_max_length'.RD, USERNAME_MAX_LENGTH, $str);
 
 		// {password_max_length}
 		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);

@@ -5,7 +5,7 @@
  * A PHP-Based RSS and Atom Feed Framework.
  * Takes the hard work out of managing a complete RSS/Atom solution.
  *
- * Copyright (c) 2004-2012, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
+ * Copyright (c) 2004-2016, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -33,8 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package SimplePie
- * @version 1.3-dev
- * @copyright 2004-2012 Ryan Parman, Geoffrey Sneddon, Ryan McCue
+ * @copyright 2004-2016 Ryan Parman, Geoffrey Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Geoffrey Sneddon
  * @author Ryan McCue
@@ -50,6 +49,7 @@
  * This class can be overloaded with {@see SimplePie::set_source_class()}
  *
  * @package SimplePie
+ * @subpackage API
  */
 class SimplePie_Source
 {
@@ -63,9 +63,9 @@ class SimplePie_Source
 		$this->data = $data;
 	}
 
-	public function set_registry(SimplePie_Registry &$registry)
+	public function set_registry(SimplePie_Registry $registry)
 	{
-		$this->registry = &$registry;
+		$this->registry = $registry;
 	}
 
 	public function __toString()
@@ -198,7 +198,7 @@ class SimplePie_Source
 
 		if (!empty($categories))
 		{
-			return $this->registry->call('Misc', 'array_unique', array($categories));
+			return array_unique($categories);
 		}
 		else
 		{
@@ -281,7 +281,7 @@ class SimplePie_Source
 
 		if (!empty($authors))
 		{
-			return $this->registry->call('Misc', 'array_unique', array($authors));
+			return array_unique($authors);
 		}
 		else
 		{
@@ -352,7 +352,7 @@ class SimplePie_Source
 
 		if (!empty($contributors))
 		{
-			return $this->registry->call('Misc', 'array_unique', array($contributors));
+			return array_unique($contributors);
 		}
 		else
 		{
@@ -608,4 +608,3 @@ class SimplePie_Source
 	}
 }
 
-// EOF

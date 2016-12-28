@@ -840,8 +840,8 @@ class Filemanager {
 
 		// Mask the URL if we're coming from the CP
 		$sync_files_url = (REQ == "CP") ?
-			ee()->cp->masked_url('https://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html') :
-			'https://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html';
+			ee()->cp->masked_url(DOC_URL.'cp/files/uploads/sync.html') :
+			DOC_URL.'cp/files/uploads/sync.html';
 
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),
@@ -2389,9 +2389,7 @@ class Filemanager {
 		ee()->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		ee()->output->set_header("Pragma: no-cache");
 
-		ee()->load->library('encrypt');
-
-		$file = str_replace(DIRECTORY_SEPARATOR, '/', ee()->encrypt->decode(rawurldecode(ee()->input->get_post('file')), ee()->session->sess_crypt_key));
+		$file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode(ee()->input->get_post('file')), ee()->session->sess_crypt_key));
 
 		if ($file == '')
 		{
@@ -2470,26 +2468,10 @@ class Filemanager {
 		else
 		{
 			// Add to db using save- becomes a new entry
-
-			$new_filename = '';
-
 			$thumb_suffix = ee()->config->item('thumbnail_prefix');
 
-			if ( ! file_exists($path.$filename.'_'.$thumb_suffix.$file_ext))
-			{
-				$new_filename = $filename.'_'.$thumb_suffix.$file_ext;
-			}
-			else
-			{
-				for ($i = 1; $i < 100; $i++)
-				{
-					if ( ! file_exists($path.$filename.'_'.$thumb_suffix.'_'.$i.$file_ext))
-					{
-						$new_filename = $filename.'_'.$thumb_suffix.'_'.$i.$file_ext;
-						break;
-					}
-				}
-			}
+			$new_filename = ee('Filesystem')->getUniqueFilename($path.$filename.'_'.$thumb_suffix.$file_ext);
+			$new_filename = str_replace($path, '', $new_filename);
 
 			$image_name_reference = $new_filename;
 			$config['new_image'] = $new_filename;

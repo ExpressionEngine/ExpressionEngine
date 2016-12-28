@@ -260,7 +260,7 @@ class Cp {
 			{
 				if ($key == 'missing_pubkey')
 				{
-					$alert->addToBody(sprintf(lang($key), 'https://store.ellislab.com/manage'));
+					$alert->addToBody(sprintf(lang($key), 'https://expressionengine.com/store/purchases'));
 				}
 				else
 				{
@@ -473,7 +473,7 @@ class Cp {
 				->withTitle(lang('cp_message_warn'))
 				->addToBody(sprintf(
 					lang('new_version_error'),
-					ee()->cp->masked_url('https://store.ellislab.com/manage')
+					ee()->cp->masked_url('https://expressionengine.com/store/purchases')
 				))
 				->now();
 			return FALSE;

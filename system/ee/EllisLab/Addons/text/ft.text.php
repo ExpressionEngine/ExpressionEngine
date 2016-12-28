@@ -491,7 +491,7 @@ class Text_ft extends EE_Fieldtype {
 	function _format_number($data, $type = 'all', $decimals = FALSE)
 	{
 		// Numeric fields that have no data are stored as NULL
-		if ($data == NULL)
+		if ($data === NULL)
 		{
 			return '';
 		}

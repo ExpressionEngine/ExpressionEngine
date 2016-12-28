@@ -397,17 +397,8 @@ class EE_Upload {
 			return $filename;
 		}
 
-		$filename = str_replace($this->file_ext, '', $filename);
-
-		$new_filename = '';
-		for ($i = 1; $i < 100; $i++)
-		{
-			if ( ! file_exists($path.$filename.$i.$this->file_ext))
-			{
-				$new_filename = $filename.$i.$this->file_ext;
-				break;
-			}
-		}
+		$new_filename = ee('Filesystem')->getUniqueFilename($path.$filename);
+		$new_filename = str_replace($path, '', $new_filename);
 
 		if ($new_filename == '')
 		{

@@ -110,6 +110,7 @@ module GridSettings
         :searchable => false,
         :width => '40',
         :field_fmt => ['XHTML', 'xhtml'],
+        :field_pre_populate => 'n',
         :field_list_items => "Option 1\nOption & 2",
       },
       :multi_select_col => {
@@ -121,6 +122,7 @@ module GridSettings
         :searchable => false,
         :width => '30',
         :field_fmt => ['XHTML', 'xhtml'],
+        :field_pre_populate => 'n',
         :field_list_items => "Option 1\nOption & 2",
       },
       :radio_col => {
@@ -132,6 +134,7 @@ module GridSettings
         :searchable => false,
         :width => '20',
         :field_fmt => ['XHTML', 'xhtml'],
+        :field_pre_populate => 'n',
         :field_list_items => "Option 1\nOption & 2",
       },
       :select_col => {
@@ -143,6 +146,7 @@ module GridSettings
         :searchable => false,
         :width => '10',
         :field_fmt => ['XHTML', 'xhtml'],
+        :field_pre_populate => 'n',
         :field_list_items => "Option 1\nOption & 2",
       },
       :toggle_col => {
@@ -527,16 +531,25 @@ class GridSettingsColumnTypeMuliselect
   def load_elements
     @field_fmt = @node.find('[name*="field_fmt"]')
     @field_list_items = @node.find('[name*="field_list_items"]')
+    @field_pre_populate_v = @node.find('[name*="field_pre_populate"][value=v]')
+    @field_pre_populate_n = @node.find('[name*="field_pre_populate"][value=n]')
   end
 
   def fill_data(data)
     @field_fmt.select data[:field_fmt][0]
     @field_list_items.set data[:field_list_items]
+    if data[:field_pre_populate] == 'v'
+      @field_pre_populate_v.click
+    else
+      @field_pre_populate_n.click
+    end
   end
 
   def validate(data)
     @field_fmt.value.should == data[:field_fmt][1]
     @field_list_items.value.should == data[:field_list_items]
+    @field_pre_populate_v.checked?.should == (data[:field_pre_populate] == 'v')
+    @field_pre_populate_n.checked?.should == (data[:field_pre_populate] == 'n')
   end
 end
 

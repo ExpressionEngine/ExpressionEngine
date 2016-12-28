@@ -113,6 +113,7 @@ class Search {
 		{
 			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 
+			// Only checking current site searches
 			$sql = "SELECT search_id FROM exp_search WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND search_date > '{$cutoff}' AND ";
 
 			if (ee()->session->userdata['member_id'] != 0)
@@ -287,7 +288,7 @@ class Search {
 			'query'			=> addslashes(serialize($sql)),
 			'custom_fields'	=> addslashes(serialize($this->fields)),
 			'result_page'	=> $this->_meta['result_page'],
-			'site_id'		=> ee()->config->item('site_id')
+			'site_id'		=> ee()->config->item('site_id')  // site search was made from
 		);
 
 		ee()->db->query(ee()->db->insert_string('exp_search', $data));
@@ -315,6 +316,8 @@ class Search {
 	 */
 	protected function _build_meta_array()
 	{
+		$site_ids = (ee()->TMPL->fetch_param('site')) ? ee()->TMPL->site_ids: array(ee()->config->item('site_id'));
+
 		$meta = array(
 			'status'				=> ee()->TMPL->fetch_param('status', ''),
 			'channel'				=> ee()->TMPL->fetch_param('channel', ''),
@@ -324,30 +327,13 @@ class Search {
 			'show_expired'			=> ee()->TMPL->fetch_param('show_expired', ''),
 			'show_future_entries'	=> ee()->TMPL->fetch_param('show_future_entries'),
 			'result_page'			=> ee()->TMPL->fetch_param('result_page', 'search/results'),
-			'no_results_page'		=> ee()->TMPL->fetch_param('no_result_page', '')
+			'no_results_page'		=> ee()->TMPL->fetch_param('no_result_page', ''),
+			'site_ids'				=> $site_ids
 		);
 
 		$meta = serialize($meta);
 
-		if ( function_exists('mcrypt_encrypt') )
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$meta = mcrypt_encrypt(
-				MCRYPT_RIJNDAEL_256,
-				md5(ee()->db->username.ee()->db->password),
-				$meta,
-				MCRYPT_MODE_ECB,
-				$init_vect
-			);
-		}
-		else
-		{
-			$meta = $meta.md5(ee()->db->username.ee()->db->password.$meta);
-		}
-
-		return base64_encode($meta);
+		return ee('Encrypt')->encode($meta, md5(ee()->db->username.ee()->db->password));
 	}
 
 	// ------------------------------------------------------------------------
@@ -362,34 +348,7 @@ class Search {
 	{
 		// Get data from the meta input
 
-		if ( function_exists('mcrypt_encrypt') )
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$meta_array = rtrim(
-				mcrypt_decrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->db->username.ee()->db->password),
-					base64_decode($_POST['meta']),
-					MCRYPT_MODE_ECB,
-					$init_vect
-				),
-				"\0"
-			);
-		}
-		else
-		{
-			$raw = base64_decode($_POST['meta']);
-
-			$hash = substr($raw, -32);
-			$meta_array = substr($raw, 0, -32);
-
-			if ($hash != md5(ee()->db->username.ee()->db->password.$meta_array))
-			{
-				$meta_array = '';
-			}
-		}
+		$meta_array = ee('Encrypt')->decode($_POST['meta'], md5(ee()->db->username.ee()->db->password));
 
 		$this->_meta = unserialize($meta_array);
 
@@ -444,14 +403,13 @@ class Search {
 		// Which channels we are or are not supposed to search for, when
 		// "Any Channel" is chosen
 
-		$sql = "SELECT channel_id FROM exp_channels WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
-
+		ee()->db->select('channel_id');
 		if (isset($this->_meta['channel']) AND $this->_meta['channel'] != '')
 		{
-			$sql .= ee()->functions->sql_andor_string($this->_meta['channel'], 'channel_name');
+			ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
 		}
-
-		$query = ee()->db->query($sql);
+		ee()->db->where_in('site_id', $this->_meta['site_ids']);
+		$query = ee()->db->get('channels');
 
 		// If channel's are specified and there NO valid channels returned?  There can be no results!
 		if ($query->num_rows() == 0)
@@ -571,7 +529,7 @@ class Search {
 		// no need to do this unless there are keywords to search
 		if (trim($this->keywords) != '')
 		{
-			$xql = "SELECT DISTINCT(field_group) FROM exp_channels WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
+			$xql = "SELECT DISTINCT(field_group) FROM exp_channels WHERE site_id IN ('".implode("','", $this->_meta['site_ids'])."')";
 
 			if ($id_query != '')
 			{
@@ -634,7 +592,7 @@ class Search {
 
 		$sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
 			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-			WHERE exp_channels.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ";
+			WHERE exp_channels.site_id IN ('".implode("','", $this->_meta['site_ids'])."') ";
 
 		/** ----------------------------------------------
 		/**  We only select entries that have not expired
@@ -1159,12 +1117,23 @@ class Search {
 
 	function total_results()
 	{
-		$search_id = $this->_get_search_id();
+		/** ----------------------------------------
+		/**  Check search ID number
+		/** ----------------------------------------*/
 
-		if ( ! $search_id)
+		// If the QSTR variable is less than 32 characters long we
+		// don't have a valid search ID number
+
+		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return '';
 		}
+
+		/** ----------------------------------------
+		/**  Fetch ID number and page number
+		/** ----------------------------------------*/
+
+		$search_id = substr(ee()->uri->query_string, 0, 32);
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
@@ -1188,12 +1157,23 @@ class Search {
 
 	function keywords()
 	{
-		$search_id = $this->_get_search_id();
+		/** ----------------------------------------
+		/**  Check search ID number
+		/** ----------------------------------------*/
 
-		if ( ! $search_id)
+		// If the QSTR variable is less than 32 characters long we
+		// don't have a valid search ID number
+
+		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return '';
 		}
+
+		/** ----------------------------------------
+		/**  Fetch ID number and page number
+		/** ----------------------------------------*/
+
+		$search_id = substr(ee()->uri->query_string, 0, 32);
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
@@ -1215,33 +1195,6 @@ class Search {
 	}
 
 
-	/**
-	 * Returns a validated search id, checking first for a parameter and second in the query string
-	 *
-	 * @access	private
-	 * @return	mixed 	The validated search id or FALSE
-	 */
-	private function _get_search_id()
-	{
-		$search_id =  ee()->TMPL->fetch_param('search_id');
-
-		// Retrieve the search_id
-		if ( ! $search_id)
-		{
-			$qstring = explode('/', ee()->uri->query_string);
-			$search_id = trim($qstring[0]);
-		}
-
-		// Check search ID number
-		if (strlen($search_id) < 32)
-		{
-			return FALSE;
-		}
-
-		return $search_id;
-	}
-
-
 
 	/** ----------------------------------------
 	/**  Show search results
@@ -1257,9 +1210,11 @@ class Search {
 		$pagination = ee()->pagination->create();
 		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 
-		$search_id = $this->_get_search_id();
+		// Check search ID number
+		// If the QSTR variable is less than 32 characters long we
+		// don't have a valid search ID number
 
-		if ( ! $search_id)
+		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return ee()->output->show_user_error(
 				'off',
@@ -1271,10 +1226,14 @@ class Search {
 		ee()->db->delete(
 			'search',
 			array(
-				'site_id' => ee()->config->item('site_id'),
+				'site_id' => ee()->config->item('site_id'), // Current site
 				'search_date <' => ee()->localize->now - ($this->cache_expire * 3600)
 			)
 		);
+
+		// Retrieve the search_id
+		$qstring = explode('/', ee()->uri->query_string);
+		$search_id = trim($qstring[0]);
 
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));

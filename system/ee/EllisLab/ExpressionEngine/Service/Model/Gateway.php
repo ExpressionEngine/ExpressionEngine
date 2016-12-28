@@ -28,22 +28,7 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 class Gateway {
 
 	protected $_field_list_cache;
-	protected $_field_values = array();
-
-	/**
-	 *
-	 */
-	public function __set($key, $value)
-	{
-		if ($this->hasProperty($key))
-		{
-			$this->setProperty($key, $value);
-		}
-		elseif ($this->hasField($key))
-		{
-			$this->setField($key);
-		}
-	}
+	protected $_values = array();
 
 	/**
 	 *
@@ -58,7 +43,7 @@ class Gateway {
 	 */
 	public function getFieldList($cached = TRUE)
 	{
-		if ($cached && isset($this->_field_list_cache))
+		if (isset($this->_field_list_cache))
 		{
 			return $this->_field_list_cache;
 		}
@@ -90,24 +75,7 @@ class Gateway {
 	 */
 	public function setField($name, $value)
 	{
-		$this->_field_values[$name] = $value;
-	}
-
-	/**
-	 *
-	 */
-	public function hasProperty($name)
-	{
-		return (property_exists($this, $name) && $name[0] !== '_');
-	}
-
-	/**
-	 *
-	 */
-	public function setProperty($name, $value)
-	{
-		$this->$name = $value;
-		return $value;
+		$this->_values[$name] = $value;
 	}
 
 	/**
@@ -124,7 +92,7 @@ class Gateway {
 	public function getId()
 	{
 		$pk = $this->getPrimaryKey();
-		return $this->$pk;
+		return $this->_values[$pk];
 	}
 
 	/**
@@ -134,11 +102,7 @@ class Gateway {
 	{
 		foreach ($values as $key => $value)
 		{
-			if ($this->hasProperty($key))
-			{
-				$this->setProperty($key, $value);
-			}
-			elseif ($this->hasField($key))
+			if ($this->hasField($key))
 			{
 				$this->setField($key, $value);
 			}
@@ -150,22 +114,7 @@ class Gateway {
 	 */
 	public function getValues()
 	{
-		$values = get_object_vars($this);
-
-		foreach ($values as $key => $value)
-		{
-			if ( ! isset($value))
-			{
-				unset($values[$key]);
-			}
-
-			if ($key[0] == '_')
-			{
-				unset($values[$key]);
-			}
-		}
-
-		return array_merge($values, $this->_field_values);
+		return $this->_values;
 	}
 }
 

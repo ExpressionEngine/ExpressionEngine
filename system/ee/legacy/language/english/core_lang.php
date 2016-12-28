@@ -121,7 +121,7 @@ and email %s to report the link that generated this message.',
 
 'missing_mime_config' => 'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
 
-'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
+'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="'.DOC_URL.'installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
 
 'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
 

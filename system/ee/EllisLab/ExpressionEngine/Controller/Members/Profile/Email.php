@@ -71,6 +71,7 @@ class Email extends Settings {
 							'type' => 'text',
 							'value' => $this->member->email,
 							'required' => TRUE,
+							'maxlength' => USERNAME_MAX_LENGTH,
 							'attrs' => 'autocomplete="off"'
 						)
 					)
@@ -125,7 +126,7 @@ class Email extends Settings {
 			array(
 				 'field'   => 'email',
 				 'label'   => 'lang:email',
-				 'rules'   => 'required|valid_email'
+				 'rules'   => 'required|valid_email|max_length['.USERNAME_MAX_LENGTH.']'
 			),
 			array(
 				 'field'   => 'current_password',

@@ -86,7 +86,7 @@ class License extends Settings {
 
 					foreach ($license->getErrors() as $key => $value)
 					{
-						$alert->addToBody(sprintf(lang('license_file_' . $key), 'https://store.ellislab.com/manage'));
+						$alert->addToBody(sprintf(lang('license_file_' . $key), 'https://expressionengine.com/store/purchases'));
 					}
 
 					$alert->now();
@@ -100,7 +100,7 @@ class License extends Settings {
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('features_limited'))
-				->addtoBody(sprintf(lang('features_limited_desc'), 'https://store.ellislab.com'))
+				->addtoBody(sprintf(lang('features_limited_desc'), 'https://expressionengine.com/store'))
 				->now();
 		}
 
@@ -116,7 +116,7 @@ class License extends Settings {
 				array(
 					array(
 						'title' => 'license_file',
-						'desc' => sprintf(lang('license_file_desc'), 'https://store.ellislab.com/manage'),
+						'desc' => sprintf(lang('license_file_desc'), 'https://expressionengine.com/store/purchases'),
 						'fields' => array(
 							'license_file' => array('type' => 'file'),
 							'required' => TRUE
