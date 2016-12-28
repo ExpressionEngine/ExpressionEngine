@@ -470,16 +470,6 @@ class Channel extends StructureModel {
 			return 'invalid_short_name';
 		}
 
-		$channel = $this->getModelFacade()->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_name', $value)
-			->filter('channel_id', '!=', $this->channel_id);
-
-		if ($channel->count() > 0)
-		{
-			return 'taken_channel_name';
-		}
-
 		return TRUE;
 	}
 
