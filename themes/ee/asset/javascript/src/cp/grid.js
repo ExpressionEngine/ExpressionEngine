@@ -637,6 +637,10 @@ Grid.Settings.prototype = {
 					});
 				});
 			}
+
+			// Trigger validation on any invalid inputs in case the validaiton
+			// errors were due to a duplicate column name/label in this column
+			$('fieldset.invalid input', that.root).trigger('change');
 		});
 	},
 

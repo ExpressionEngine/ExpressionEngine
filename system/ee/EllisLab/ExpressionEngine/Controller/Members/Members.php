@@ -1178,6 +1178,14 @@ class Members extends CP_Controller {
 			$entries->Author = $heir;
 			$entries->save();
 
+			$entries = ee('Model')->get('File')->filter('uploaded_by_member_id', 'IN', $member_ids)->all();
+			$entries->UploadAuthor = $heir;
+			$entries->save();
+
+			$entries = ee('Model')->get('File')->filter('modified_by_member_id', 'IN', $member_ids)->all();
+			$entries->ModifyAuthor = $heir;
+			$entries->save();
+
 			$heir->updateAuthorStats();
 		}
 
