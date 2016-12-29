@@ -47,7 +47,7 @@ class Filepicker_mcp {
 
 	protected function getUserUploadDirectories()
 	{
-		$dirs = ee()->api->get('UploadDestination')
+		$dirs = ee('Model')->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->all();
@@ -62,7 +62,7 @@ class Filepicker_mcp {
 
 	protected function getSystemUploadDirectories()
 	{
-		$dirs = ee()->api->get('UploadDestination')
+		$dirs = ee('Model')->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', '!=', 0)
 			->all();

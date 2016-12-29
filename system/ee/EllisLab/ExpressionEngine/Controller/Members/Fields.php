@@ -92,8 +92,8 @@ class Fields extends Members\Members {
 
 		$data = array();
 		$fieldData = array();
-		$total = ee()->api->get('MemberField')->count();
-		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all();
+		$total = ee('Model')->get('MemberField')->count();
+		$fields = ee('Model')->get('MemberField')->order('m_field_order', 'asc')->all();
 		$type_map = array(
 			'text' => lang('text_input'),
 			'textarea' => lang('textarea'),
@@ -216,7 +216,7 @@ class Fields extends Members\Members {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
+		$fields = ee('Model')->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
 
 		$order = 1;
 		foreach ($new_order['order'] as $field_id)
