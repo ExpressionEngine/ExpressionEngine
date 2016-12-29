@@ -360,32 +360,6 @@ class EE_Schema {
 			KEY `password` (`password`)
 		)";
 
-		// CP homepage layout
-		// Each member can have their own control panel layout.
-		// We store their preferences here.
-
-		$Q[] = "CREATE TABLE exp_member_homepage (
-			member_id int(10) unsigned NOT NULL,
-			recent_entries char(1) NOT NULL default 'l',
-			recent_entries_order int(3) unsigned NOT NULL default '0',
-			recent_comments char(1) NOT NULL default 'l',
-			recent_comments_order int(3) unsigned NOT NULL default '0',
-			recent_members char(1) NOT NULL default 'n',
-			recent_members_order int(3) unsigned NOT NULL default '0',
-			site_statistics char(1) NOT NULL default 'r',
-			site_statistics_order int(3) unsigned NOT NULL default '0',
-			member_search_form char(1) NOT NULL default 'n',
-			member_search_form_order int(3) unsigned NOT NULL default '0',
-			notepad char(1) NOT NULL default 'r',
-			notepad_order int(3) unsigned NOT NULL default '0',
-			bulletin_board char(1) NOT NULL default 'r',
-			bulletin_board_order int(3) unsigned NOT NULL default '0',
-			pmachine_news_feed char(1) NOT NULL default 'n',
-			pmachine_news_feed_order int(3) unsigned NOT NULL default '0',
-			PRIMARY KEY `member_id` (`member_id`)
-		)";
-
-
 		// Member Groups table
 
 		$Q[] = "CREATE TABLE exp_member_groups (
@@ -1447,9 +1421,6 @@ class EE_Schema {
 				'".$this->userdata['default_site_timezone']."',
 				'$quick_link',
 				'".ee()->db->escape_str($this->userdata['deft_lang'])."')";
-
-		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed)
-			VALUES ('1', '1', '2', '1', '2', 'l')";
 
 		$Q[] = "INSERT INTO exp_member_data (member_id) VALUES ('1')";
 

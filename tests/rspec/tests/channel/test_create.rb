@@ -58,6 +58,13 @@ feature 'Channel Create/Edit' do
     @page.wait_for_error_message_count(1)
     should_have_error_text(@page.channel_name, @unique)
     should_have_form_errors(@page)
+
+    # Duplicate channel title
+    @page.channel_title.set 'News'
+    @page.channel_title.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.channel_title, @unique)
+    should_have_form_errors(@page)
   end
 
   it 'should reject XSS' do
