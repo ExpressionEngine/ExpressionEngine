@@ -384,9 +384,9 @@ $lang = array(
 
 'comment_word_censoring_desc' => 'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
 
-'comment_moderation_override' => 'Moderate expired entries?',
+'comment_moderation_override' => 'Moderate after comments expire?',
 
-'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an expired entry will be submitted as closed and require review by a moderator.',
+'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an entry with comments expired will be submitted as closed and require review by a moderator.',
 
 'comment_edit_time_limit' => 'Comment edit time limit (in seconds)',
 
