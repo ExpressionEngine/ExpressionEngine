@@ -122,7 +122,7 @@ if ( ! isset($alerts_name))
 
 	<fieldset class="form-ctrls <?=$fieldset_classes?>">
 		<?php foreach ($secure_form_ctrls as $setting): ?>
-			<div class="password-req required">
+			<div class="password-req required"<?php if (isset($setting['group'])): ?> data-group="<?=$setting['group']?>"<?php endif ?>>
 				<div class="setting-txt col w-8">
 					<h3><?=lang($setting['title'])?></h3>
 					<em><?=lang($setting['desc'])?></em>

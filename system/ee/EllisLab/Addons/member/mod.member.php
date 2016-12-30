@@ -157,7 +157,15 @@ class Member {
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 		ee()->functions->template_type = 'webpage';
-		$this->trigger = ee()->config->item('profile_trigger');
+
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
+		{
+			$this->trigger = ee()->TMPL->fetch_param('profile_trigger', ee()->config->item('profile_trigger'));
+		}
+		else
+		{
+			$this->trigger = ee()->config->item('profile_trigger');
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -190,6 +198,8 @@ class Member {
 			$this->request = str_replace("/simple", '', $this->request);
 			$this->show_headings = FALSE;
 		}
+
+		$this->request = str_replace($this->trigger.'/', '', $this->request);
 
 		if ($this->request == $this->trigger)
 		{
@@ -1016,6 +1026,8 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
+		$this->_set_page_title(lang('mbr_forgotten_password'));
+
 		return $MA->forgot_password($ret);
 	}
 
@@ -1237,6 +1249,8 @@ class Member {
 		{
 			$MR->{$key} = $value;
 		}
+
+		$this->_set_page_title(lang('member_registration'));
 
 		return $MR->registration_form();
 	}
@@ -2341,6 +2355,7 @@ class Member {
 				'site_name'               => stripslashes(ee()->config->item('site_name')),
 				'path:theme_css'          => $this->css_file_path,
 				'current_request'         => $this->request,
+				'username_max_length'     => USERNAME_MAX_LENGTH,
 				'password_max_length'     => PASSWORD_MAX_LENGTH
 			)
 		);

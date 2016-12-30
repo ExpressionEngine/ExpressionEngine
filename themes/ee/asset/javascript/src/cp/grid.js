@@ -44,17 +44,66 @@ Grid.Publish = function(field, settings) {
 		return;
 	}
 	this.root = $(field);
+	this.parentContainer = this.root.parents('.grid-publish');
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.children('tbody');
+	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
+	this.header = null;
+
+	this.rowSelector = 'tr';
+	this.cellSelector = 'td';
+	this.reorderHandleContainerSelector = 'th.reorder-col, td.reorder-col';
+	this.deleteContainerHeaderSelector = 'th.grid-remove';
+	this.deleteButtonsSelector = 'td:last-child .toolbar .remove';
+	this.sortableParams = {};
+
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
 	this.eventHandlers = [];
 }
 
-Grid.Publish.prototype = {
+Grid.MiniField = function(field, settings) {
+	this.root = $(field);
+	this.root.data('gridInitialized', true);
+	this.parentContainer = this.root;
+	this.blankRow = $('.grid-blank-row', this.root);
+	this.emptyField = $('.keyvalue-empty', this.root);
+	this.tableActions = null;
+	this.rowContainer = $('.keyvalue-item-container', this.root);
+	this.addButtonToolbar = $('> ul.toolbar', this.parentContainer);
+	this.header = $('.keyvalue-header', this.root);
+
+	this.rowSelector = '.keyvalue-item';
+	this.cellSelector = '.keyvalue-field';
+	this.reorderHandleContainerSelector = 'ul.toolbar:has(li.reorder)';
+	this.deleteContainerHeaderSelector = null;
+	this.deleteButtonsSelector = 'ul.toolbar:has(li.remove)';
+	this.sortableParams = {
+		sortableContainer: '.keyvalue-item-container',
+		handle: 'li.reorder',
+		cancel: 'li.sort-cancel',
+		item: '.keyvalue-item'
+	},
+
+	this.settings = settings;
+	this.init();
+	this._addNewRowOnEnter();
+
+	this.eventHandlers = [];
+}
+
+$.fn.miniGrid = function(params) {
+	return this.each(function() {
+		if ( ! $(this).data('gridInitialized')) {
+			return new Grid.MiniField(this, params);
+		}
+	});
+}
+
+Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 	init: function() {
 		this._bindSortable();
@@ -73,21 +122,46 @@ Grid.Publish.prototype = {
 	},
 
 	/**
+	 * When enter is pressed in a text box, we will add a new row to the Grid
+	 * and set focus in the first text box in that row
+	 *
+	 * Note: This listener isn't added by default, typically only used in mini Grid
+	 */
+	_addNewRowOnEnter: function() {
+		var that = this;
+		$(this.root).on('keypress', 'input[type=text]', function(event) {
+			if (event.keyCode == 13) {
+				event.preventDefault();
+				that._addRow();
+
+				// Give focus to first text box
+				$(that.rowSelector, that.root).last()
+					.find('input[type=text]')
+					.first()
+					.focus();
+			}
+		});
+	},
+
+	/**
 	 * Allows rows to be reordered
 	 */
 	_bindSortable: function() {
-		var that = this;
+		var that = this,
+			params = {
+				// Fire 'beforeSort' event on sort start
+				beforeSort: function(row) {
+					that._fireEvent('beforeSort', row);
+				},
+				// Fire 'afterSort' event on sort stop
+				afterSort: function(row) {
+					that._fireEvent('afterSort', row);
+				}
+			};
 
-		this.root.eeTableReorder({
-			// Fire 'beforeSort' event on sort start
-			beforeSort: function(row) {
-				that._fireEvent('beforeSort', row);
-			},
-			// Fire 'afterSort' event on sort stop
-			afterSort: function(row) {
-				that._fireEvent('afterSort', row);
-			}
-		});
+		params = $.extend(params, this.sortableParams);
+
+		this.root.eeTableReorder(params);
 	},
 
 	/**
@@ -118,47 +192,34 @@ Grid.Publish.prototype = {
 	 */
 	_toggleRowManipulationButtons: function() {
 		var rowCount = this._getRows().size(),
-			addButton = this.root.parents('.grid-publish').find('.toolbar .add a').parents('ul.toolbar'),
 			reorderCol = this.root.find('th.reorder-col'),
-			gridRemove = this.root.find('th.grid-remove');
+			gridRemove = this.root.find('th.grid-remove'),
+			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
-		addButton.toggle(rowCount > 0);
+		this.addButtonToolbar.toggle(showControls);
+		$(this.reorderHandleContainerSelector, this.root).toggle(showControls);
+		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
-		if (rowCount > 0) {
-			// Only show reorder header if table is configured to be reorderable
-			if (reorderCol.size() == 0 && $('td.reorder-col', this.root).size() > 0) {
-				$('> thead tr', this.root).prepend(
-					$('<th/>', { class: 'first reorder-col' })
-				);
-			}
-			if (gridRemove.size() == 0) {
-				$('> thead tr', this.root).append(
-					$('<th/>', { class: 'last grid-remove' })
-				);
-			}
-		} else {
-			reorderCol.remove();
-			gridRemove.remove();
+		if (this.header) {
+			this.header.toggle(showControls);
 		}
 
 		if (this.settings.grid_max_rows !== '') {
 			// Show add button if row count is below the max rows setting,
 			// and only if there are already other rows present
-			addButton.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
+			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
 		}
 
 		if (this.settings.grid_min_rows !== '') {
-			var deleteButtons = this.root.find('td:last-child .toolbar .remove');
-
 			// Show delete buttons if the row count is above the min rows setting
-			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
+			$(this.deleteButtonsSelector, this.root).toggle(rowCount > this.settings.grid_min_rows);
 		}
 
 		// Do not allow sortable to run when there is only one row, otherwise
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
-		this.rowContainer.find('td.reorder-col').toggleClass('sort-cancel', rowCount == 1);
+		$(this.reorderHandleContainerSelector, this.rowContainer).toggleClass('sort-cancel', rowCount == 1);
 	},
 
 	/**
@@ -168,7 +229,11 @@ Grid.Publish.prototype = {
 	 * @return	{int}	Number of rows
 	 */
 	_getRows: function() {
-		return this.rowContainer.children('tr').not(this.blankRow.add(this.emptyField).add(this.tableActions));
+		return this.rowContainer.children(this.rowSelector)
+			.not(this.blankRow
+				.add(this.emptyField)
+				.add(this.tableActions)
+			);
 	},
 
 	/**
@@ -178,13 +243,8 @@ Grid.Publish.prototype = {
 	_bindAddButton: function() {
 		var that = this;
 
-		this.root.parents('.grid-publish')
-			.find('.toolbar .add a')
-			.add('.no-results .btn', this.root)
-			.add('.tbl-action .btn.add', this.root)
-			.on('click', function(event) {
+		$('a[rel=add_row]', this.parentContainer).on('click', function(event) {
 				event.preventDefault();
-
 				that._addRow();
 			}
 		);
@@ -210,13 +270,16 @@ Grid.Publish.prototype = {
 		);
 
 		// Add the new row ID to the field data
-		$('> td', el).attr('data-new-row-id', 'new_row_' + this.original_row_count);
+		$('> '+this.cellSelector, el).attr(
+			'data-new-row-id',
+			'new_row_' + this.original_row_count
+		);
 
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
-		if (this.tableActions.length) {
+		if (this.tableActions && this.tableActions.length) {
 			this.tableActions.before(el);
 		} else {
 			this.rowContainer.append(el);
@@ -245,10 +308,10 @@ Grid.Publish.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', 'td:last-child .toolbar .remove a', function(event) {
+		this.root.on('click', 'a[rel=remove_row]', function(event) {
 			event.preventDefault();
 
-			row = $(this).parents('tr');
+			row = $(this).parents(that.rowSelector);
 
 			// Fire 'remove' event for this row
 			that._fireEvent('remove', row);

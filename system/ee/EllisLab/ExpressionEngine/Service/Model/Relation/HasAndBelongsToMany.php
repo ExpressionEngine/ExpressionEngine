@@ -52,9 +52,9 @@ class HasAndBelongsToMany extends Relation {
 	/**
 	 *
 	 */
-	public function createAssociation(Model $source)
+	public function createAssociation()
 	{
-		return new ToMany($source, $this);
+		return new ToMany($this);
 	}
 
 	/**
@@ -201,19 +201,30 @@ class HasAndBelongsToMany extends Relation {
 	}
 
 	/**
+	 * Process pivot information
 	 *
+	 * In a model the pivot key can either be an array or a table name.
+	 * If it is a table name, then the lhs and rhs keys must equal the pk's
+	 * of the two models
 	 */
 	protected function processOptions($options)
 	{
 		parent::processOptions($options);
 
-		$pivot = array(
+		$pivot = $options['pivot'];
+
+		if ( ! is_array($pivot))
+		{
+			$pivot = array('table' => $pivot);
+		}
+
+		$defaults = array(
 			'left' => $this->from_primary_key,
 			'right' => $this->to_primary_key
 		);
 
 		$this->is_weak = TRUE;
-		$this->pivot = array_merge($pivot, $options['pivot']);
+		$this->pivot = array_merge($defaults, $pivot);
 	}
 }
 

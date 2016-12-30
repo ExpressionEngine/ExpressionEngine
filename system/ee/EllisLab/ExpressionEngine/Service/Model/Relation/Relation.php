@@ -58,6 +58,9 @@ abstract class Relation {
 		$this->to = $to;
 		$this->name = $name;
 
+		$this->from_primary_key = $from->getPrimaryKey();
+		$this->to_primary_key = $to->getPrimaryKey();
+
 		$this->is_weak = FALSE;
 		$this->processOptions($options);
 	}
@@ -65,7 +68,7 @@ abstract class Relation {
 	/**
 	 *
 	 */
-	abstract public function createAssociation(Model $source);
+	abstract public function createAssociation();
 
 	/**
 	 *
@@ -126,10 +129,35 @@ abstract class Relation {
 	{
 		if ( ! isset($this->inverse))
 		{
-			$this->inverse = $this->datastore->getInverseRelation($this);
+			if ($this->hasForeignInverse())
+			{
+				$this->setInverse($this->datastore->getGraph()->makeForeignInverse($this));
+			}
+			else
+			{
+				$this->setInverse($this->datastore->getGraph()->getInverse($this));
+			}
 		}
 
 		return $this->inverse;
+	}
+
+	public function setInverse(Relation $inverse)
+	{
+		if ( ! isset($this->inverse))
+		{
+			$this->inverse = $inverse;
+		}
+	}
+
+	public function hasInverse()
+	{
+		return isset($this->inverse);
+	}
+
+	public function hasForeignInverse()
+	{
+		return isset($this->inverse_info);
 	}
 
 	/**
@@ -248,9 +276,6 @@ abstract class Relation {
 		{
 			$this->inverse_info = $options['inverse'];
 		}
-
-		$this->from_primary_key = $options['from_primary_key'];
-		$this->to_primary_key = $options['to_primary_key'];
 
 		$this->key_tuple = $this->deriveKeys();
 		list($from, $to) = $this->key_tuple;

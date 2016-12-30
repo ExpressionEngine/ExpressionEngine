@@ -5,7 +5,7 @@
  * A PHP-Based RSS and Atom Feed Framework.
  * Takes the hard work out of managing a complete RSS/Atom solution.
  *
- * Copyright (c) 2004-2012, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
+ * Copyright (c) 2004-2016, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -33,8 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package SimplePie
- * @version 1.3-dev
- * @copyright 2004-2012 Ryan Parman, Geoffrey Sneddon, Ryan McCue
+ * @copyright 2004-2016 Ryan Parman, Geoffrey Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Geoffrey Sneddon
  * @author Ryan McCue
@@ -47,6 +46,7 @@
  * Date Parser
  *
  * @package SimplePie
+ * @subpackage Parsing
  */
 class SimplePie_Parse_Date
 {
@@ -172,7 +172,7 @@ class SimplePie_Parse_Date
 		'aug' => 8,
 		'august' => 8,
 		'sep' => 9,
-		'september' => 8,
+		'september' => 9,
 		'oct' => 10,
 		'october' => 10,
 		'nov' => 11,
@@ -330,6 +330,7 @@ class SimplePie_Parse_Date
 		'CCT' => 23400,
 		'CDT' => -18000,
 		'CEDT' => 7200,
+		'CEST' => 7200,
 		'CET' => 3600,
 		'CGST' => -7200,
 		'CGT' => -10800,
@@ -598,7 +599,7 @@ class SimplePie_Parse_Date
 
 		foreach ($this->built_in as $method)
 		{
-			if (($returned = call_user_func(array(&$this, $method), $date)) !== false)
+			if (($returned = call_user_func(array($this, $method), $date)) !== false)
 			{
 				return $returned;
 			}
@@ -629,7 +630,7 @@ class SimplePie_Parse_Date
 	/**
 	 * Parse a superset of W3C-DTF (allows hyphens and colons to be omitted, as
 	 * well as allowing any of upper or lower case "T", horizontal tabs, or
-	 * spaces to be used as the time seperator (including more than one))
+	 * spaces to be used as the time separator (including more than one))
 	 *
 	 * @access protected
 	 * @return int Timestamp
@@ -719,7 +720,7 @@ class SimplePie_Parse_Date
 		{
 			$output .= substr($string, $position, $pos - $position);
 			$position = $pos + 1;
-			if ($string[$pos - 1] !== '\\')
+			if ($pos === 0 || $string[$pos - 1] !== '\\')
 			{
 				$depth++;
 				while ($depth && $position < $length)
@@ -980,4 +981,3 @@ class SimplePie_Parse_Date
 	}
 }
 
-// EOF

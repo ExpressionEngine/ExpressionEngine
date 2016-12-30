@@ -5,7 +5,7 @@ class Publish < ControlPanelPage
   element :url_title, 'input[name=url_title]'
 
   elements :file_fields, 'a.file-field-filepicker'
-  elements :chosen_files, '.file-chosen img'
+  elements :chosen_files, '.fields-upload-chosen img'
 
   elements :tab_links, 'ul.tabs li'
   elements :tabs, '.tab-wrap div.tabs'

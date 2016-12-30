@@ -132,7 +132,7 @@ class EE_Validate {
 		}
 
 		// Is username max length correct?
-		if (strlen($this->username) > 50)
+		if (strlen($this->username) > USERNAME_MAX_LENGTH)
 		{
 			$this->errors[] = ee()->lang->line('username_too_long');
 		}
@@ -193,6 +193,11 @@ class EE_Validate {
 		if (preg_match('/[\{\}<>]/', $this->screen_name))
 		{
 			return $this->errors[] = ee()->lang->line('disallowed_screen_chars');
+		}
+
+		if (strlen($this->screen_name) > USERNAME_MAX_LENGTH)
+		{
+			return $this->errors[] = ee()->lang->line('screenname_too_long');
 		}
 
 		/** -------------------------------------
