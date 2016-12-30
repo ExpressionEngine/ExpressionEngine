@@ -158,6 +158,7 @@ class Design extends AbstractDesignController {
 		ee()->javascript->set_global('templage_groups_reorder_url', ee('CP/URL')->make('design/reorder-groups')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
+			'plugin' => 'ui.touch.punch',
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/design/manager'

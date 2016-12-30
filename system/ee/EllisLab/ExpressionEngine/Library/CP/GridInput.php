@@ -224,6 +224,7 @@ class GridInput extends Table {
 		{
 			$this->cp->add_js_script('ui', 'sortable');
 			$this->cp->add_js_script('file', 'cp/sort_helper');
+			$this->cp->add_js_script('plugin', 'ui.touch.punch');
 			$this->cp->add_js_script('plugin', 'ee_table_reorder');
 			$this->cp->add_js_script('file', 'cp/grid');
 
