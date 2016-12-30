@@ -445,7 +445,7 @@ class Filepicker_mcp {
 			'has_file_input' => TRUE,
 			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
-			'save_btn_text_working' => 'btn_saving',
+			'save_btn_text_working' => 'btn_uploading',
 			'tabs' => array(
 				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
 				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),

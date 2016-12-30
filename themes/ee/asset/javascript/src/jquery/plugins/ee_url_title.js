@@ -80,6 +80,7 @@
 
 			if (url_title) {
 				$(url_title).val(newText.substring(0, 75));
+				$(url_title).trigger('change');
 			}
 		});
 	};

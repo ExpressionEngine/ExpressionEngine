@@ -29,5 +29,10 @@
 		<?=ee()->view->script_tag('common.js')?>
 		<?=ee()->view->script_tag('jquery/plugins/nestable.js')?>
 		<?=ee()->view->script_tag('cp/categories.js')?>
+		<script type="text/javascript">
+			$('input.btn').on('click', function(event) {
+				$(this).attr('value', $(this).data('work-text')).addClass('work');
+			});
+		</script>
 	</body>
 </html>

@@ -100,6 +100,8 @@ $lang = array(
 
 'btn_upload_file' => 'Upload File',
 
+'btn_uploading' => 'Uploading...',
+
 'upload_directory_removed' => 'Upload directory removed',
 
 'upload_directory_removed_desc' => 'The upload directory <b>%s</b> has been removed.',

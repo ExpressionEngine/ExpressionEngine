@@ -343,10 +343,7 @@ class File_model extends CI_Model {
 
 		if (is_array($file_name))
 		{
-			foreach($file_name as $key => $file)
-			{
-				ee()->db->or_where('file_name', $file);
-			}
+			$this->db->where_in('file_name', $file_name);
 		}
 		else
 		{

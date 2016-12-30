@@ -53,12 +53,14 @@ class Member extends ContentModel {
 		'UploadedFiles' => array(
 			'type' => 'hasMany',
 			'model' => 'File',
-			'to_key' => 'uploaded_by_member_id'
+			'to_key' => 'uploaded_by_member_id',
+			'weak' => TRUE
 		),
 		'ModifiedFiles' => array(
 			'type' => 'hasMany',
 			'model' => 'File',
-			'to_key' => 'modified_by_member_id'
+			'to_key' => 'modified_by_member_id',
+			'weak' => TRUE
 		),
 		'VersionedChannelEntries' => array(
 			'type' => 'hasMany',
@@ -123,7 +125,8 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'beforeUpdate'
+		'beforeUpdate',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -254,6 +257,18 @@ class Member extends ContentModel {
 	}
 
 	/**
+	 * Zero-out member ID data in assoicated files
+	 */
+	public function onBeforeDelete()
+	{
+		$this->UploadedFiles->uploaded_by_member_id = 0;
+		$this->UploadedFiles->save();
+
+		$this->ModifiedFiles->modified_by_member_id = 0;
+		$this->ModifiedFiles->save();
+	}
+
+	/**
 	 * Gets the member's name
 	 *
 	 * @return string The member's name
@@ -338,8 +353,17 @@ class Member extends ContentModel {
 		{
 			$cp_homepage = $this->cp_homepage;
 			$cp_homepage_channel = $this->cp_homepage_channel;
-			$cp_homepage_channel = $cp_homepage_channel[$site_id];
 			$cp_homepage_custom = $this->cp_homepage_custom;
+
+			// Site created after setting was saved, no channel setting will be available
+			if ($this->cp_homepage == 'publish_form' && ! isset($cp_homepage_channel[$site_id]))
+			{
+				$cp_homepage = '';
+			}
+			else
+			{
+				$cp_homepage_channel = $cp_homepage_channel[$site_id];
+			}
 		}
 		elseif ( ! empty($member_group->cp_homepage))
 		{

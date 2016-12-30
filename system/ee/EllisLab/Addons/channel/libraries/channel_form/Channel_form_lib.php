@@ -571,7 +571,6 @@ class Channel_form_lib
 			$this->form_hidden(
 				array(
 				      'entry_id' => $this->entry('entry_id'),
-				      'unique_url_title' => ($this->bool_string(ee()->TMPL->fetch_param('unique_url_title'))) ? '1' : '',
 				      'author_id'=> $this->entry('author_id')
 				)
 			);
@@ -581,6 +580,8 @@ class Channel_form_lib
 			$this->parse_variables['title']		= $this->channel('default_entry_title');
 			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
 			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
+
+			$this->form_hidden('unique_url_title', $this->bool_string(ee()->TMPL->fetch_param('unique_url_title')) ? '1' : '');
 
 			if ($this->datepicker)
 			{
