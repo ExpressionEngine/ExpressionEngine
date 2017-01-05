@@ -343,10 +343,7 @@ class File_model extends CI_Model {
 
 		if (is_array($file_name))
 		{
-			foreach($file_name as $key => $file)
-			{
-				ee()->db->or_where('file_name', $file);
-			}
+			$this->db->where_in('file_name', $file_name);
 		}
 		else
 		{
@@ -539,7 +536,6 @@ class File_model extends CI_Model {
 		ee()->load->helper('file');
 		ee()->load->helper('text');
 		ee()->load->helper('directory');
-		ee()->load->library('encrypt');
 		ee()->load->library('mime_type');
 
 		if (count($directories) == 0)
@@ -589,7 +585,7 @@ class File_model extends CI_Model {
 					 	reduce_double_slashes($file['relative_path']) :
 						reduce_double_slashes($directory);
 
-					$file['encrypted_path'] = rawurlencode($this->encrypt->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
+					$file['encrypted_path'] = rawurlencode(ee('Encrypt')->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
 
 					$file['mime'] = ee()->mime_type->ofFile($file['relative_path'].$file['name']);
 

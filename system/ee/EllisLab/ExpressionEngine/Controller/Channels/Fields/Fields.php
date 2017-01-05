@@ -41,7 +41,7 @@ class Fields extends AbstractChannelsController {
 			'can_delete_channel_fields'
 		))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('field');
@@ -101,7 +101,7 @@ class Fields extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -180,7 +180,7 @@ class Fields extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$field = ee('Model')->get('ChannelField', $id)
@@ -389,7 +389,20 @@ class Fields extends AbstractChannelsController {
 				continue;
 			}
 
-			$dummy_field = ee('Model')->make('ChannelField');
+			// If editing an option field, populate the dummy fieldtype with the
+			// same settings to make switching between the different types easy
+			if ( ! $field->isNew() &&
+				in_array(
+					$fieldtype->name,
+					array('checkboxes', 'multi_select', 'radio', 'select')
+				))
+			{
+				$dummy_field = clone $field;
+			}
+			else
+			{
+				$dummy_field = ee('Model')->make('ChannelField');
+			}
 			$dummy_field->field_type = $fieldtype->name;
 			$field_options = $dummy_field->getSettingsForm();
 
@@ -413,7 +426,7 @@ class Fields extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($field_ids))

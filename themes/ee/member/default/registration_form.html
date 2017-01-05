@@ -5,7 +5,7 @@
 </tr><tr>
 
 <td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:username}</div><div class='itempad'>{lang:username_length}</div></td>
-<td class='tableCellOne' style="width:55%;"><input type="text" name="username" value="" maxlength="50" class="input" size="25" style="width:300px" /></td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="username" value="" maxlength="{username_max_length}" class="input" size="25" style="width:300px" /></td>
 
 </tr><tr>
 
@@ -24,18 +24,18 @@
 <div class='defaultBold'><span class="highlight">*</span> {lang:screen_name}</div>
 <div class='itempad'>{lang:screen_name_explanation}</div>
 </td>
-<td class='tableCellOne' style="width:55%;"><input type="text" name="screen_name" value="" maxlength="50" class="input" size="25" style="width:300px" /></td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="screen_name" value="" maxlength="{username_max_length}" class="input" size="25" style="width:300px" /></td>
 
 </tr><tr>
 
 <td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:email}</div></td>
-<td class='tableCellOne' style="width:55%;"><input type="text" name="email" value="" maxlength="72" class="input" size="40" style="width:300px" /></td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="email" value="" maxlength="{username_max_length}" class="input" size="40" style="width:300px" /></td>
 
 </tr><tr>
 
 <td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:email_confirm}</div></td>
-<td class='tableCellOne' style="width:55%;"><input type="text" name="email_confirm" value="" maxlength="72" class="input" size="40" style="width:300px" /></td>
- 
+<td class='tableCellOne' style="width:55%;"><input type="text" name="email_confirm" value="" maxlength="{username_max_length}" class="input" size="40" style="width:300px" /></td>
+
 </tr><tr>
 
 <td class='tableCellTwo' style="width:45%;"><div class='defaultBold'>{lang:url}</div></td>
@@ -62,7 +62,7 @@
 <textarea name='rules' style='width:100%' class='textarea' rows='8' cols='90' readonly>
 All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators of this site.
 
-By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws.   We will permanently ban all users who do so.   
+By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws.   We will permanently ban all users who do so.
 
 We reserve the right to remove, edit, or move any messages for any reason.
 </textarea>

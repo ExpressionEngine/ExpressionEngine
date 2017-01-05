@@ -29,7 +29,6 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
  */
 class Result {
 
-	protected $builder;
 	protected $facade;
 
 	protected $db_result;
@@ -42,9 +41,8 @@ class Result {
 	protected $related_ids = array();
 	private $primary_keys = array();
 
-	public function __construct(Builder $builder, $db_result, $aliases, $relations)
+	public function __construct($db_result, $aliases, $relations)
 	{
-		$this->builder = $builder;
 		$this->db_result = $db_result;
 		$this->aliases = $aliases;
 		$this->relations = array_reverse($relations);

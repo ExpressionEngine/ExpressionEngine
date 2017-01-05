@@ -44,12 +44,12 @@ class Routes extends AbstractDesignController {
 
 		if (IS_CORE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->config->item('enable_template_routes') == 'n')

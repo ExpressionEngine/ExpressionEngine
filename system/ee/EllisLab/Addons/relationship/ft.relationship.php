@@ -346,17 +346,16 @@ class Relationship_ft extends EE_Fieldtype {
 			'order_field' => $this->settings['order_field'],
 			'order_dir'   => $this->settings['order_dir'],
 			'entry_id'    => $entry_id,
+			'field_id'    => $this->field_id
 		);
 
 		ee()->load->library('EntryList');
 		$entries = ee()->entrylist->query($settings, $selected);
 
-		ee()->load->library('encrypt');
-
 		// These settings will be sent to the AJAX endpoint for filtering the
 		// field, encrypt them to prevent monkey business
 		$settings = json_encode($settings);
-		$settings = ee()->encrypt->encode(
+		$settings = ee('Encrypt')->encode(
 			$settings,
 			ee()->db->username.ee()->db->password
 		);

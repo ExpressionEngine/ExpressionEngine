@@ -40,7 +40,8 @@ class Updater {
 				'add_menu_tables',
 				'add_channel_max_entries_columns',
 				'fix_channel_total_entries_count',
-				'add_missing_default_status_groups'
+				'add_missing_default_status_groups',
+				'extend_max_username_length'
 			)
 		);
 
@@ -123,6 +124,37 @@ class Updater {
 		{
 			$site->createDefaultStatuses();
 		}
+	}
+
+	/**
+	 * Modify username and screen_name columns to be their new max length of 75
+	 * characters
+	 */
+	private function extend_max_username_length()
+	{
+		ee()->smartforge->modify_column(
+			'members',
+			array(
+				'username' => array(
+					'name'			=> 'username',
+					'type'			=> 'varchar',
+					'constraint'	=> USERNAME_MAX_LENGTH,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'members',
+			array(
+				'screen_name' => array(
+					'name'			=> 'screen_name',
+					'type'			=> 'varchar',
+					'constraint'	=> USERNAME_MAX_LENGTH,
+					'null'			=> FALSE
+				)
+			)
+		);
 	}
 
 	/**

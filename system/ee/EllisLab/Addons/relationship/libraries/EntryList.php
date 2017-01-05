@@ -82,8 +82,8 @@ class EntryList {
 			ee()->extensions->call(
 				'relationships_display_field_options',
 				$entries,
-				$this->field_id,
-				$this->settings
+				$settings['field_id'],
+				$settings
 			);
 		}
 

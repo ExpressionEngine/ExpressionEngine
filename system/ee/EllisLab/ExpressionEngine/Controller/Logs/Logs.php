@@ -48,7 +48,7 @@ class Logs extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->base_url = ee('CP/URL')->make('logs');
@@ -125,7 +125,7 @@ class Logs extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$id = ee()->input->post('delete');

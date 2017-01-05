@@ -8,7 +8,7 @@ return array(
 	'version'        => '1.0.1',
 	'namespace'      => 'EllisLab\Addons\Rte',
 	'settings_exist' => TRUE,
-	'docs_url'       => 'https://ellislab.com/expressionengine/user-guide/modules/rte/index.html',
+	'docs_url'       => DOC_URL.'add-ons/rte/control_panel/index.html',
 	'fieldtypes'     => array(
 		'rte' => array(
 			'compatibility' => 'text'

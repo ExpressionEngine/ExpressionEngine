@@ -1,10 +1,16 @@
 #!/bin/bash
 
+# Container's nameservers keep getting reset, putting this here
+# until we figure out how to fix
+echo "domain local" > /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+
 while [[ $# > 0 ]]
 	do
 	key="$1"
 
-	PHP_VERSION="7.0.13"
+	PHP_VERSION="7.1.0"
 
 	case $key in
 		-p|--php)
@@ -72,7 +78,7 @@ if [ "${COMMAND}" == "test" ]; then
 	# TODO: Run PHP lint and PHP Unit first, bail out if they fail
 
 	mysql -u root -e 'CREATE DATABASE `ee-test`;' > /dev/null
-	mysql -u root -e 'SET sql_mode=STRICT_ALL_TABLES;'
+	mysql -u root -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
 
 	source /usr/local/rvm/scripts/rvm
 

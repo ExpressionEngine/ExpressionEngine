@@ -51,7 +51,7 @@ class Members extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('members');
@@ -201,7 +201,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$action = ee()->input->post('bulk_action');
@@ -271,7 +271,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_ban_users'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -803,7 +803,7 @@ class Members extends CP_Controller {
 		if ( ! ee()->cp->allowed_group('can_edit_members') OR
 			ee('Request')->method() !== 'POST')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($ids))
@@ -874,7 +874,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$members = ee('Model')->get('Member', $ids)
@@ -940,7 +940,7 @@ class Members extends CP_Controller {
 		if ( ! ee()->cp->allowed_group('can_edit_members') OR
 			ee()->config->item('req_mbr_activation') !== 'email')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$members = ee('Model')->get('Member', $ids)
@@ -1145,11 +1145,16 @@ class Members extends CP_Controller {
 		// Verify the member is allowed to delete
 		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Fetch member ID numbers and build the query
 		$member_ids = ee()->input->post('selection', TRUE);
+
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
 
 		if (in_array(ee()->session->userdata['member_id'], $member_ids))
 		{
@@ -1171,6 +1176,14 @@ class Members extends CP_Controller {
 
 			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
 			$entries->Author = $heir;
+			$entries->save();
+
+			$entries = ee('Model')->get('File')->filter('uploaded_by_member_id', 'IN', $member_ids)->all();
+			$entries->UploadAuthor = $heir;
+			$entries->save();
+
+			$entries = ee('Model')->get('File')->filter('modified_by_member_id', 'IN', $member_ids)->all();
+			$entries->ModifyAuthor = $heir;
 			$entries->save();
 
 			$heir->updateAuthorStats();

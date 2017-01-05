@@ -42,7 +42,7 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error(lang('not_authorized'));
+				show_error(lang('not_authorized'), 403);
 			}
 			else
 			{

@@ -54,7 +54,7 @@ class Delete extends Query {
 			list($model, $alias) = $this->splitAlias($get);
 
 			$offset		= 0;
-			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model?
+			$batch_size = self::DELETE_BATCH_SIZE;
 
 			// TODO yuck. The relations have this info more correctly
 			// in their to and from keys. store that instead.
@@ -76,8 +76,19 @@ class Delete extends Query {
 			 // expensive recursion fallback
 			 if ($withs instanceOf \Closure)
 			 {
-				 $delete_collection = $withs($basic_query);
-				 $this->deleteCollection($delete_collection, $to_meta);
+				 do {
+					 $fetch_query = clone $basic_query;
+					 $fetch_query
+					 	->offset($offset)
+ 						->limit($batch_size);
+
+					$delete_collection = $withs($fetch_query);
+					$delete_ids = $this->deleteCollection($delete_collection, $to_meta);
+
+					$offset += $batch_size;
+				 }
+				 while (count($delete_ids) == $batch_size);
+
 				 continue;
 			 }
 
@@ -248,7 +259,7 @@ class Delete extends Query {
 				$final[1] = $this->nest($final[1]);
 			}
 		}
-		
+
 		return array_reverse($this->delete_list);
 	}
 
@@ -341,6 +352,7 @@ class Delete extends Query {
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
+
 			$models = $query->with($withs)->all();
 
 			// TODO ideally we would grab the $model->$name's with just ids

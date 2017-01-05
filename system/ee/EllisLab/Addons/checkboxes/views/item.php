@@ -34,7 +34,7 @@
 						<li class="edit"><a class="m-link" rel="modal-checkboxes-edit" data-group-id="<?=$group_id?>" data-content-id="<?=$key?>" href=""></a></li>
 					<?php endif ?>
 					<?php if ($deletable): ?>
-						<li class="remove"><a class="m-link" rel="modal-checkboxes-confirm-remove" data-confirm="<?=form_prep('<b>'.$content_item_label.'</b>: '.htmlentities($value))?>" data-content-id="<?=$key?>" href=""></a></li>
+						<li class="remove"><a class="m-link" rel="modal-checkboxes-confirm-remove" data-confirm="<?=form_prep('<b>'.$content_item_label.'</b>: '.htmlentities($value))?>" data-content-id="<?=$key?>" data-group-id="<?=$group_id?>" href=""></a></li>
 					<?php endif ?>
 				</ul>
 			<?php endif ?>

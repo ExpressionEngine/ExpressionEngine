@@ -8,6 +8,6 @@ return array(
 	'version'        => '1.0.0',
 	'namespace'      => 'EllisLab\Addons\Jquery',
 	'settings_exist' => FALSE,
-	'docs_url'       => 'https://docs.expressionengine.com/latest/add-ons/jquery/index.html',
+	'docs_url'       => DOC_URL.'add-ons/jquery/index.html',
 	'built_in'       => FALSE
 );

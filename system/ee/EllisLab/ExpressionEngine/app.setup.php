@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\Encrypt;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
@@ -74,6 +75,19 @@ return array(
 		{
 			ee()->lang->load('content');
 			$grid = new Library\CP\GridInput(
+				$config,
+				ee()->cp,
+				ee()->config,
+				ee()->javascript
+			);
+
+			return $grid;
+		},
+
+		'CP/MiniGridInput' => function($ee, $config = array())
+		{
+			ee()->lang->load('content');
+			$grid = new Library\CP\MiniGridInput(
 				$config,
 				ee()->cp,
 				ee()->config,
@@ -222,6 +236,14 @@ return array(
 		'Updater/Runner' => function($ee)
 		{
 			return new Updater\Runner($ee->make('Updater/Downloader'));
+		},
+
+		'Encrypt' => function($ee)
+		{
+			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+
+			return new Encrypt\Encrypt($key);
+
 		}
 	),
 
@@ -324,13 +346,13 @@ return array(
 				$installed_prefixes[] = $addon->getProvider()->getPrefix();
 			}
 
-			return new Model\DataStore(
-				$ee->make('Database'),
-				$app->getModels(),
-				$app->forward('getModelDependencies'),
-				$ee->getPrefix(),
-				$installed_prefixes
-			);
+			$config = new Model\Configuration();
+			$config->setDefaultPrefix($ee->getPrefix());
+			$config->setModelAliases($app->getModels());
+			$config->setEnabledPrefixes($installed_prefixes);
+			$config->setModelDependencies($app->forward('getModelDependencies'));
+
+			return new Model\DataStore($ee->make('Database'), $config);
 		},
 
 		'Request' => function($ee)

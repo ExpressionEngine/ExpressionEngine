@@ -89,7 +89,7 @@ class Profile extends CP_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -182,6 +182,25 @@ class Profile extends CP_Controller {
 					$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL')->make('members/delete', $this->query_string))
 						->asDeleteAction('modal-confirm-remove-member');
 
+					// If they have entries assigned, set up the markup in the deletion modal for reassignment
+					$heirs_view = '';
+					if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0)
+					{
+						$heirs = ee('Model')->get('Member')
+							->fields('username', 'screen_name')
+							->filter('group_id', 'IN', array(1, $this->member->MemberGroup->getId()))
+							->all();
+
+						foreach ($heirs as $heir)
+						{
+							$vars['heirs'][$heir->getId()] = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;;
+						}
+
+						$vars['selected'] = array($this->member->getId());
+
+						$heirs_view = ee('View')->make('members/delete_confirm')->render($vars);
+					}
+
 					$modal_vars = array(
 						'name'		=> 'modal-confirm-remove-member',
 						'form_url'	=> ee('CP/URL')->make('members/delete'),
@@ -194,7 +213,8 @@ class Profile extends CP_Controller {
 						'hidden' => array(
 							'bulk_action' => 'remove',
 							'selection'   => $this->member->member_id
-						)
+						),
+						'ajax_default' => $heirs_view
 					);
 
 					ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));

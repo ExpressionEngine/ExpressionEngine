@@ -28,6 +28,7 @@ checkout:
     - chmod -R 777 system/user
     - chmod -R 777 system/ee/legacy/translations
     - chmod 777 tests/rspec/support/tmp
+    - mkdir -p tests/rspec/support/file-sync/uploads
     - chmod -R 777 tests/rspec/support/file-sync/uploads
     - chmod -R 777 images
     - chmod +x tests/circleci/runtests.sh

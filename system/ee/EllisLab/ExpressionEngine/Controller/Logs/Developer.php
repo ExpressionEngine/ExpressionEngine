@@ -42,7 +42,7 @@ class Developer extends Logs {
 	{
 		if ($this->session->userdata('group_id') != 1)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('delete'))

@@ -149,7 +149,7 @@ class Builder {
 
 		if ($this->isFutile())
 		{
-			return new Result($this, array(), array(), array());
+			return new Result(array(), array(), array());
 		}
 
 		return $this->datastore

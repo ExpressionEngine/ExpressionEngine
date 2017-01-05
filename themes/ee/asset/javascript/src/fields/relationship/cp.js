@@ -153,9 +153,13 @@
 					type: 'POST',
 					dataType: 'json',
 					success: function(ret) {
-						var scroll_wrap = $(elem).closest('.relate-wrap').find('.scroll-wrap').first();
+						var scroll_wrap = $(elem).closest('.relate-wrap').find('.scroll-wrap[data-template]').first();
 
 						populateEntryList(scroll_wrap, ret);
+					},
+					error: function() {
+						// Only defined to prevent console error when calling
+						// .abort() above
 					}
 				});
 			}, delay);

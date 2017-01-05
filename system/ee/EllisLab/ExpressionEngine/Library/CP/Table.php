@@ -594,9 +594,9 @@ class Table {
 	 */
 	private function convertToBytes($size)
 	{
-		$number = trim(substr($size, 0, -2));
+		$number = trim(substr(strip_tags($size), 0, -2));
 
-		switch(strtoupper(substr(strip_tags($size), -2)))
+		switch(trim(strtoupper(substr(strip_tags($size), -2))))
 		{
 			case 'KB':
 				return $number * 1024;
