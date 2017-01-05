@@ -23,6 +23,7 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
+	protected static $_table_per_field = TRUE;
 
 	protected static $_hook_id = 'channel_entry';
 
