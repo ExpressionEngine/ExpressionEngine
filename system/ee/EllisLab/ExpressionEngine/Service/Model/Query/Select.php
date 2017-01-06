@@ -43,11 +43,12 @@ class Select extends Query {
 
 		$result_array = $query->get()->result_array();
 
-		$meta = $this->store->getMetaDataReader($this->builder->getFrom());
+		$model = $this->expandAlias($this->root_alias);
+		$meta = $this->store->getMetaDataReader($model);
 		$class = $meta->getClass();
 		$table_per_field = $class::getMetaData('table_per_field');
 
-		if ($table_per_field === TRUE)
+		if ($table_per_field === TRUE && ! empty($result_array))
 		{
 			$result_array = $this->getFieldData($result_array);
 		}
@@ -64,8 +65,16 @@ class Select extends Query {
 	protected function getFieldData($result_array)
 	{
 		$field_groups = array_map(function($column) {
-			return $column['Channel__field_group'];
+			if (array_key_exists('Channel__field_group', $column))
+			{
+				return $column['Channel__field_group'];
+			}
 		}, $result_array);
+
+		if (empty($field_groups))
+		{
+			return $result_array;
+		}
 
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_id')
