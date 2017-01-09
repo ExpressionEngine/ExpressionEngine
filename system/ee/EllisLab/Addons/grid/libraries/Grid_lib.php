@@ -352,7 +352,7 @@ class Grid_lib {
 		$row_ids = array();
 		foreach ($deleted_rows as $row)
 		{
-			$row_ids[] = $row['row_id'];
+			$row_ids[$this->entry_id][] = $row['row_id'];
 		}
 
 		$this->delete_rows($row_ids);
@@ -391,14 +391,23 @@ class Grid_lib {
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// Call delete/grid_delete on each affected fieldtype and send along
-		// the row IDs
-		foreach ($columns as $column)
+		// the row IDs for each entry deleted
+		foreach ($row_ids as $entry_id => $rows)
 		{
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
-			ee()->grid_parser->call('delete', $row_ids);
-		}
+			foreach ($columns as $column)
+			{
+				ee()->grid_parser->instantiate_fieldtype(
+					$column,
+					NULL,
+					$this->field_id,
+					$entry_id,
+					$this->content_type
+				);
+				ee()->grid_parser->call('delete', $rows);
+			}
 
-		ee()->grid_model->delete_rows($row_ids, $this->field_id, $this->content_type);
+			ee()->grid_model->delete_rows($rows, $this->field_id, $this->content_type);
+		}
 	}
 
 	// ------------------------------------------------------------------------

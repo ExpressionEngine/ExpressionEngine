@@ -131,7 +131,7 @@ class Grid_ft extends EE_Fieldtype {
 
 			foreach ($rows as $row)
 			{
-				$row_ids[] = $row['row_id'];
+				$row_ids[$row['entry_id']][] = $row['row_id'];
 			}
 		}
 
