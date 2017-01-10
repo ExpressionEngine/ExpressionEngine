@@ -416,7 +416,10 @@ JSC;
 			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
 		}
 
-		$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
+		if (isset($file_info['file_id']))
+		{
+			$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
+		}
 
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE && isset($file_info['file_id']))
