@@ -10,6 +10,7 @@ $project_base = realpath(dirname(__FILE__).'/../../../').'/';
 define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
 define('APPPATH',  BASEPATH);
+define('PATH_THEMES', realpath(SYSPATH.'/../themes').'/');
 
 // application constants
 define('AMP', '&amp;');

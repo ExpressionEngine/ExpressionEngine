@@ -28,6 +28,7 @@ class Command {
 		}
 		catch (\Exception $e)
 		{
+			// TODO: Log to file
 			echo $e->getMessage();
 			exit;
 		}

@@ -168,7 +168,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->once();
 
 		$next_step = $this->downloader->preflight();
-		$this->assertEquals('downloadPackage', $next_step);return;
+		$this->assertEquals('downloadPackage', $next_step);
 
 		$this->filesystem->shouldReceive('getFreeDiskSpace')
 			->with('cache/path/ee_update/')
@@ -196,9 +196,9 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn(1048576000);
 
 		$this->filesystem->shouldReceive('mkDir');
-		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('delete')->twice();
+		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE);
+		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE);
+		$this->filesystem->shouldReceive('delete');
 
 		$this->filesystem->shouldReceive('isWritable')
 			->with('cache/path/ee_update/')
@@ -207,46 +207,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->filesystem->shouldReceive('isWritable')
 			->with(SYSPATH.'ee/')
-			->andReturn(TRUE)
-			->once();
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(PATH_THEMES)
-			->andReturn(TRUE)
-			->once();
-
-		$this->downloader->preflight();
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/ee_update/')
-			->andReturn(TRUE)
-			->times(3);
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee/')
-			->andReturn(TRUE)
-			->times(3);
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(PATH_THEMES)
-			->andReturn(TRUE)
-			->times(3);
-
-		$this->filesystem->shouldReceive('isFile')->andReturn(FALSE)->once();
-		$this->filesystem->shouldReceive('isDir')->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('delete')->once();
-
-		$this->downloader->preflight();
-
-		$this->filesystem->shouldReceive('isFile')->andReturn(TRUE)->once();
-		$this->filesystem->shouldReceive('isDir')->andReturn(FALSE)->once();
-		$this->filesystem->shouldReceive('delete')->once();
-
-		$this->downloader->preflight();
-
-		$this->filesystem->shouldReceive('isFile')->andReturn(FALSE)->once();
-		$this->filesystem->shouldReceive('isDir')->andReturn(FALSE)->once();
-		$this->filesystem->shouldReceive('delete')->never();
+			->andReturn(TRUE);
 
 		$this->downloader->preflight();
 
@@ -272,51 +233,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		catch (UpdaterException $e)
 		{
 			$this->assertEquals(1, $e->getCode());
-		}
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/ee_update/')
-			->andReturn(TRUE)
-			->once();
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee/')
-			->andReturn(FALSE)
-			->once();
-
-		try
-		{
-			$this->downloader->preflight();
-			$this->fail();
-		}
-		catch (UpdaterException $e)
-		{
-			$this->assertEquals(2, $e->getCode());
-		}
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/ee_update/')
-			->andReturn(TRUE)
-			->once();
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee/')
-			->andReturn(TRUE)
-			->once();
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(PATH_THEMES)
-			->andReturn(FALSE)
-			->once();
-
-		try
-		{
-			$this->downloader->preflight();
-			$this->fail();
-		}
-		catch (UpdaterException $e)
-		{
-			$this->assertEquals(3, $e->getCode());
+			$this->assertContains('cache/path/ee_update/', $e->getMessage());
 		}
 	}
 

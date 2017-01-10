@@ -171,49 +171,35 @@ class Downloader {
 	{
 		$this->logger->log('Checking file permissions needed to complete the update');
 
-		if ( ! $this->filesystem->isWritable($this->path()))
+		$theme_paths = array_map(function($path)
 		{
-			throw new UpdaterException('Cache folder not writable.', 1);
+			return rtrim($path, DIRECTORY_SEPARATOR).'/ee/';
+		}, $this->getThemePaths());
+
+		$paths = array_merge(
+			[$this->path(), SYSPATH.'ee/'],
+			$this->filesystem->getDirectoryContents(SYSPATH.'ee/'),
+			$theme_paths
+		);
+
+		foreach ($theme_paths as $path)
+		{
+			$paths = array_merge(
+				$paths,
+				$this->filesystem->getDirectoryContents($path)
+			);
 		}
 
-		// system/ee
-		if ( ! $this->filesystem->isWritable(SYSPATH.'ee/'))
+		$paths = array_filter($paths, function($path)
 		{
-			throw new UpdaterException('system/ee folder not writable.', 2);
-		}
+			return ! $this->filesystem->isWritable($path);
+		});
 
-		// Contents of system/ee
-		foreach ($this->filesystem->getDirectoryContents(SYSPATH.'ee/') as $path)
+		if ( ! empty($paths))
 		{
-			if (strpos($path, '.DS_Store') !== FALSE)
-			{
-				continue;
-			}
-
-			if ( ! $this->filesystem->isWritable($path))
-			{
-				throw new UpdaterException('Path not writable: ' . $path, 15);
-			}
-		}
-
-		// Theme paths for each site
-		foreach ($this->getThemePaths() as $path)
-		{
-			$theme_path = rtrim($path, DIRECTORY_SEPARATOR).'/ee/';
-
-			if ( ! $this->filesystem->isWritable($theme_path))
-			{
-				throw new UpdaterException('Path not writable: ' . $theme_path, 3);
-			}
-
-			// Theme path folder contents
-			foreach ($this->filesystem->getDirectoryContents($theme_path) as $path)
-			{
-				if ( ! $this->filesystem->isWritable($path))
-				{
-					throw new UpdaterException('Path not writable: ' . $path, 16);
-				}
-			}
+			throw new UpdaterException(
+				"The following paths are not writable:\n" . implode("\n", $paths),
+			1);
 		}
 	}
 
@@ -384,9 +370,7 @@ class Downloader {
 		$configs = [
 			'update_path' => $this->path(),
 			'archive_path' => $this->getExtractedArchivePath(),
-			'theme_paths' => array_unique(
-				$this->getThemePaths()
-			)
+			'theme_paths' => $this->getThemePaths()
 		];
 
 		$this->filesystem->write(
@@ -417,7 +401,7 @@ class Downloader {
 			$theme_paths[$site->site_id] = $site->site_system_preferences->theme_folder_path;
 		}
 
-		return $theme_paths;
+		return array_unique($theme_paths);
 	}
 
 	/**
