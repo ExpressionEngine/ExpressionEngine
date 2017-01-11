@@ -1490,7 +1490,8 @@ class EE_Typography {
 
 		// Convert any unterminated `&` to `&amp;` in the title so that titles
 		// like "M&Ms" don't end up as "M&Ms;"
-		if (preg_match_all('#&([a-z]{2,})([\x00-\x20])*;?#i', $title, $matches))
+		if (strpos($title, '&') !== FALSE &&
+			preg_match_all('#&([a-z]{2,})([\x00-\x20])*;?#i', $title, $matches))
 		{
 			foreach ($matches[0] as $i => $match)
 			{
