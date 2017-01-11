@@ -381,7 +381,7 @@ class Member_register extends Member {
 		// Assign the data
 		$data = array(
 			'username'		=> trim_nbs(ee()->input->post('username')),
-			'password'		=> sha1($_POST['password']),
+			'password'		=> ee()->input->post('password'),
 			'ip_address'	=> ee()->input->ip_address(),
 			'join_date'		=> ee()->localize->now,
 			'email'			=> trim_nbs(ee()->input->post('email')),
@@ -488,6 +488,10 @@ class Member_register extends Member {
 			return ee()->output->show_user_error('submission', $errors);
 		}
 
+		ee()->load->library('auth');
+		$hashed_password = ee()->auth->hash_password($member->password);
+		$member->password = $hashed_password['password'];
+		$member->salt = $hashed_password['salt'];
 
 		// Do we require captcha?
 		if (ee('Captcha')->shouldRequireCaptcha())
