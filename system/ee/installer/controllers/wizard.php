@@ -1649,9 +1649,11 @@ class Wizard extends CI_Controller {
 			'server_offset'             => '',
 			'default_site_timezone'     => date_default_timezone_get(),
 			'mail_protocol'             => 'mail',
+			'email_newline'             => '\n', // single-quoted for portability
 			'smtp_server'               => '',
 			'smtp_username'             => '',
 			'smtp_password'             => '',
+			'email_smtp_crypto'         => 'ssl',
 			'email_debug'               => 'n',
 			'email_charset'             => 'utf-8',
 			'email_batchmode'           => 'n',
