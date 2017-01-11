@@ -165,34 +165,53 @@ class EE_Form_validation {
 	{
 		foreach ($sections as $settings)
 		{
-			foreach ($settings as $setting)
+			// Support settings nested under a key for form groups
+			if (isset($settings['settings']))
 			{
-				if (is_array($setting))
+				$this->setRulesForSettings($settings['settings']);
+			}
+			else
+			{
+				$this->setRulesForSettings($settings);
+			}
+		}
+	}
+
+	/**
+	 * Actually sets the rules per `validateNonTextInputs()` above
+	 *
+	 * @param	array	$settings	Array of settings in shared form format
+	 */
+	private function setRulesForSettings($settings)
+	{
+		foreach ($settings as $key => $setting)
+		{
+			if (is_array($setting))
+			{
+				if ( ! isset($setting['fields'])) var_dump($setting);
+				foreach ($setting['fields'] as $field_name => $field)
 				{
-					foreach ($setting['fields'] as $field_name => $field)
+					$enum = NULL;
+
+					// If this field has 'choices', make sure only those
+					// choices are let through the submission
+					if (isset($field['choices']))
 					{
-						$enum = NULL;
+						$enum = implode(',', array_keys($field['choices']));
+					}
+					// Only allow y/n through for yes_no fields
+					elseif ($field['type'] == 'yes_no')
+					{
+						$enum = 'y,n';
+					}
 
-						// If this field has 'choices', make sure only those
-						// choices are let through the submission
-						if (isset($field['choices']))
-						{
-							$enum = implode(',', array_keys($field['choices']));
-						}
-						// Only allow y/n through for yes_no fields
-						elseif ($field['type'] == 'yes_no')
-						{
-							$enum = 'y,n';
-						}
-
-						if (isset($enum))
-						{
-							$this->set_rules(
-								$field_name,
-								$setting['title'],
-								'enum['.$enum.']'
-							);
-						}
+					if (isset($enum))
+					{
+						$this->set_rules(
+							$field_name,
+							$setting['title'],
+							'enum['.$enum.']'
+						);
 					}
 				}
 			}
