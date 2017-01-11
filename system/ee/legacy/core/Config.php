@@ -397,7 +397,7 @@ class EE_Config {
 			}
 
 			// If we just reloaded, then we reset a few things automatically
-			$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+			$save_queries = ($this->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
 			ee('Database')->getLog()->saveQueries($save_queries);
 		}
 		else
