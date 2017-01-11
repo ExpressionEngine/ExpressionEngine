@@ -167,17 +167,13 @@ class Settings extends CP_Controller {
 		// Make sure we're getting only the fields we asked for
 		foreach ($sections as $settings)
 		{
-			foreach ($settings as $setting)
+			if (isset($settings['settings']))
 			{
-				foreach ($setting['fields'] as $field_name => $field)
-				{
-					if (isset($field['save_in_config']) && $field['save_in_config'] === FALSE)
-					{
-						continue;
-					}
-
-					$fields[$field_name] = ee()->input->post($field_name);
-				}
+				$fields = array_merge($fields, $this->setFieldsForSettings($settings['settings']));
+			}
+			else
+			{
+				$fields = array_merge($fields, $this->setFieldsForSettings($settings));
 			}
 		}
 
@@ -192,6 +188,25 @@ class Settings extends CP_Controller {
 		}
 
 		return TRUE;
+	}
+
+	private function setFieldsForSettings($settings)
+	{
+		$fields = array();
+		foreach ($settings as $setting)
+		{
+			foreach ($setting['fields'] as $field_name => $field)
+			{
+				if (isset($field['save_in_config']) && $field['save_in_config'] === FALSE)
+				{
+					continue;
+				}
+
+				$fields[$field_name] = ee()->input->post($field_name);
+			}
+		}
+
+		return $fields;
 	}
 }
 // END CLASS
