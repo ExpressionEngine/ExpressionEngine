@@ -169,11 +169,11 @@ class Settings extends CP_Controller {
 		{
 			if (isset($settings['settings']))
 			{
-				$fields = array_merge($fields, $this->setFieldsForSettings($settings['settings']));
+				$fields = array_merge($fields, $this->getFieldsForSettings($settings['settings']));
 			}
 			else
 			{
-				$fields = array_merge($fields, $this->setFieldsForSettings($settings));
+				$fields = array_merge($fields, $this->getFieldsForSettings($settings));
 			}
 		}
 
@@ -190,7 +190,12 @@ class Settings extends CP_Controller {
 		return TRUE;
 	}
 
-	private function setFieldsForSettings($settings)
+	/**
+	 * Get the fields from settings' arrays
+	 * @param  array $settings Array of settings
+	 * @return array Array of [field_name] => [value]
+	 */
+	private function getFieldsForSettings($settings)
 	{
 		$fields = array();
 		foreach ($settings as $setting)
