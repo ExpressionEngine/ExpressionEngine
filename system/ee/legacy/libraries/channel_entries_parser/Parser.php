@@ -531,7 +531,8 @@ class EE_Channel_data_parser {
 						{
 							ee()->api_channel_fields->apply('_init', array(array(
 								'row' => $row,
-								'content_id' => $row['entry_id']
+								'content_id' => $row['entry_id'],
+								'content_type' => 'channel'
 							)));
 							$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
 							if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))

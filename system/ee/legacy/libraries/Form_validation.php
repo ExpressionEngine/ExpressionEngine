@@ -188,7 +188,6 @@ class EE_Form_validation {
 		{
 			if (is_array($setting))
 			{
-				if ( ! isset($setting['fields'])) var_dump($setting);
 				foreach ($setting['fields'] as $field_name => $field)
 				{
 					$enum = NULL;
