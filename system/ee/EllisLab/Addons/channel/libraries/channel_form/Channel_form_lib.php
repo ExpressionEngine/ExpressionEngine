@@ -1471,8 +1471,14 @@ GRID_FALLBACK;
 
 			if (ee()->input->post('unique_url_title', TRUE))
 			{
-				$_POST['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
-				$this->_meta['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
+				$_POST['url_title'] = uniqid(
+					$this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(
+						ee()->input->post('title', TRUE),
+						ee()->config->item('word_separator')
+					),
+				TRUE);
+
+				$this->_meta['url_title'] = $_POST['url_title'];
 			}
 		}
 
