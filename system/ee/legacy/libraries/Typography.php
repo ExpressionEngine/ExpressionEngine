@@ -1488,6 +1488,19 @@ class EE_Typography {
 	{
 		$title = str_replace(array('{', '}'), array('&#123;', '&#125;'), $title);
 
+		// Convert any unterminated `&` to `&amp;` in the title so that titles
+		// like "M&Ms" don't end up as "M&Ms;"
+		if (preg_match_all('#&([a-z]{2,})([\x00-\x20])*;?#i', $title, $matches))
+		{
+			foreach ($matches[0] as $i => $match)
+			{
+				if (strpos($match, ';') === FALSE)
+				{
+					$title = str_replace($match, '&amp;' . $matches[1][$i] . $matches[2][$i], $title);
+				}
+			}
+		}
+
 		// Strip unsafe HTML and attributes from title
 		// Preserve old HTML format, because yay singletons
 		$existing_format = $this->html_format;
