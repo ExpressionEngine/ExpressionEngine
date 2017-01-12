@@ -20,7 +20,7 @@ feature 'Outgoing Email Settings' do
       @page.webmaster_name.value.should == ee_config(item: 'webmaster_name')
       @page.email_charset.value.should == ee_config(item: 'email_charset')
       @page.mail_protocol.value.should == ee_config(item: 'mail_protocol')
-      @page.email_newline.value.should == ee_config(item: 'email_newline')
+      @page.email_newline.value.sub(/\\n/, "\n").should == ee_config(item: 'email_newline')
       @page.mail_format.value.should == ee_config(item: 'mail_format')
 
       # SMTP fields are hidden unless SMTP is selected
