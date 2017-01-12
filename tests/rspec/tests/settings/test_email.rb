@@ -14,20 +14,16 @@ feature 'Outgoing Email Settings' do
   end
 
   context 'when validating with page loads' do
-    it 'shows the Outgoing Email Settings page' do
-      @page.all_there?.should == true
-    end
 
     it 'should load current email settings into form fields' do
       @page.webmaster_email.value.should == ee_config(item: 'webmaster_email')
       @page.webmaster_name.value.should == ee_config(item: 'webmaster_name')
       @page.email_charset.value.should == ee_config(item: 'email_charset')
       @page.mail_protocol.value.should == ee_config(item: 'mail_protocol')
-      @page.smtp_server.value.should == ee_config(item: 'smtp_server')
-      @page.smtp_port.value.should == ee_config(item: 'smtp_port')
-      @page.smtp_username.value.should == ee_config(item: 'smtp_username')
-      @page.smtp_password.value.should == ee_config(item: 'smtp_password')
+      @page.email_newline.value.sub(/\\n/, "\n").should == ee_config(item: 'email_newline')
       @page.mail_format.value.should == ee_config(item: 'mail_format')
+
+      # SMTP fields are hidden unless SMTP is selected
 
       word_wrap = ee_config(item: 'word_wrap')
       @page.word_wrap_y.checked?.should == (word_wrap == 'y')
@@ -76,6 +72,13 @@ feature 'Outgoing Email Settings' do
   context 'when validating using Ajax' do
     it 'validates mail protocol' do
       @page.mail_protocol.select 'SMTP'
+
+      @page.wait_until_smtp_server_visible
+      @page.wait_until_smtp_port_visible
+      @page.wait_until_smtp_username_visible
+      @page.wait_until_smtp_password_visible
+      @page.wait_until_email_smtp_crypto_visible
+
       @page.smtp_server.set ''
       @page.smtp_server.trigger 'blur'
       @page.wait_for_error_message_count(1)
@@ -123,13 +126,20 @@ feature 'Outgoing Email Settings' do
 
     it 'validates mail protocol when using PHP Mail' do
       @page.mail_protocol.select 'PHP Mail'
-      @page.smtp_server.trigger 'blur'
+      @page.mail_protocol.trigger 'blur'
       @page.wait_for_error_message_count(0)
       should_have_no_form_errors(@page)
-      should_have_no_error_text(@page.smtp_server)
     end
 
     it 'validates SMTP port' do
+      @page.mail_protocol.select 'SMTP'
+
+      @page.wait_until_smtp_server_visible
+      @page.wait_until_smtp_port_visible
+      @page.wait_until_smtp_username_visible
+      @page.wait_until_smtp_password_visible
+      @page.wait_until_email_smtp_crypto_visible
+
       @page.smtp_port.set 'abc'
       @page.smtp_port.trigger 'blur'
       @page.wait_for_error_message_count(1)

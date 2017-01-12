@@ -215,7 +215,7 @@ $lang = array(
 
 'email_charset' => 'Character encoding',
 
-'email_charset_desc' => 'Email require character encoding to be properly formatted. UTF-8 is recommended.',
+'email_charset_desc' => 'Email requires character encoding to be properly formatted. UTF-8 is recommended.',
 
 'mail_protocol' => 'Protocol',
 
@@ -244,6 +244,20 @@ $lang = array(
 'sendmail' => 'Sendmail',
 
 'smtp' => 'SMTP',
+
+'email_smtp_crypto' => 'Connection Type',
+
+'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
+
+'ssl' => 'SSL (ssl://)',
+
+'tls' => 'STARTTLS',
+
+'unencrypted' => 'Unencrypted (not recommended)',
+
+'email_newline' => 'Newline character',
+
+'email_newline_desc' => '\\\n provides the widest compatibility; if this setting does not work for you, refer to your email provider for instructions.',
 
 'plain_text' => 'Plain Text',
 
