@@ -124,8 +124,8 @@ feature 'Outgoing Email Settings' do
       should_have_no_error_text(@page.webmaster_email)
     end
 
-    it 'validates mail protocol when using PHP Mail' do
-      @page.mail_protocol.select 'PHP Mail'
+    it 'validates mail protocol when using PHP mail' do
+      @page.mail_protocol.select 'PHP mail'
       @page.mail_protocol.trigger 'blur'
       @page.wait_for_error_message_count(0)
       should_have_no_form_errors(@page)
