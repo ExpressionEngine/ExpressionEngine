@@ -64,6 +64,33 @@ class DatabaseUpdater {
 	}
 
 	/**
+	 * Loops through update files to compile a list of tables that will be
+	 * affected by the update so that we can back them up
+	 *
+	 * @return	array	Array of table names
+	 */
+	public function getAffectedTables()
+	{
+		$files = $this->getUpdateFiles();
+
+		$affected_tables = [];
+		foreach ($files as $filename)
+		{
+			$this->filesystem->include_file($this->update_files_path . $filename);
+			$class = $this->getUpdaterClassForFilename($filename);
+
+			$updater = new $class();
+			if (isset($updater->affected_tables))
+			{
+				$affected_tables = array_merge($affected_tables, $updater->affected_tables);
+			}
+			unset($updater);
+		}
+
+		return $affected_tables;
+	}
+
+	/**
 	 * Runs a given update file
 	 *
 	 * @param	string	$filename	Base file name, no path, e.g. 'ud_4_00_00.php'
@@ -71,8 +98,9 @@ class DatabaseUpdater {
 	public function runUpdateFile($filename)
 	{
 		$this->filesystem->include_file($this->update_files_path . $filename);
+		$class = $this->getUpdaterClassForFilename($filename);
 
-		$updater = new \Updater();
+		$updater = new $class();
 		$updater->do_update();
 		unset($updater);
 	}
@@ -88,23 +116,41 @@ class DatabaseUpdater {
 	 */
 	protected function getSteps()
 	{
+		$files = $this->getUpdateFiles();
+
+		return array_map(function($filename)
+		{
+			return sprintf('runUpdateFile[%s]', $filename);
+		}, $files);
+	}
+
+	/**
+	 * Given the current version of EE, returns an array of update files we need
+	 * to run in order to update EE
+	 *
+	 * @return	array	Array of files, e.g.
+	 *   [
+	 *   	'ud_4_00_00.php',
+	 *   	...
+	 *   ]
+	 */
+	protected function getUpdateFiles()
+	{
 		$files = $this->filesystem->getDirectoryContents($this->update_files_path);
 
-		$steps = [];
+		$update_files = [];
 		foreach ($files as $filename)
 		{
 			$filename = pathinfo($filename);
-			$filename = $filename['basename'];
+			$version = $this->getVersionForFilename($filename['basename']);
 
-			$file_version = $this->getVersionForFilename($filename);
-
-			if (version_compare($file_version, $this->from_version, '>'))
+			if (version_compare($version, $this->from_version, '>'))
 			{
-				$steps[] = sprintf('runUpdateFile[%s]', $filename);
+				$update_files[] = $filename['basename'];
 			}
 		}
 
-		return $steps;
+		return $update_files;
 	}
 
 	/**
@@ -119,6 +165,19 @@ class DatabaseUpdater {
 		{
 			return "{$matches[1]}.{$matches[2]}.{$matches[3]}";
 		}
+	}
+
+	/**
+	 * Given a base file name, returns the namespaced class name for the Updater class
+	 *
+	 * @param	string	$filename	Base file name, e.g. 'ud_4_00_00.php'
+	 * @return	string	Class name, e.g. '\EllisLab\ExpressionEngine\Updater\Version_4_0_0\Updater'
+	 */
+	protected function getUpdaterClassForFilename($filename)
+	{
+		return '\EllisLab\ExpressionEngine\Updater\Version_'
+		 	. str_replace('.', '_', $this->getVersionForFilename($filename))
+			 . '\Updater';
 	}
 }
 
