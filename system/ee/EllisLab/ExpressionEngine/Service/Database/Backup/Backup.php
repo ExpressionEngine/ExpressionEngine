@@ -67,6 +67,11 @@ class Backup {
 	protected $rows_exported = 0;
 
 	/**
+	 * @var array Tables to backup
+	 */
+	protected $tables_to_backup = [];
+
+	/**
 	 * Constructor
 	 *
 	 * @param	Backup\Query     $query     Query object for generating query strings
@@ -89,6 +94,31 @@ class Backup {
 	public function setRowLimit($limit)
 	{
 		$this->row_limit = $limit;
+	}
+
+	/**
+	 * Sets an array of tables to backup, if not backing up all tables in the database
+	 *
+	 * @param	array	$tables	Array of table names
+	 */
+	public function setTablesToBackup($tables)
+	{
+		$this->tables_to_backup = $tables;
+	}
+
+	/**
+	 * Gets an array of tables to backup
+	 *
+	 * @return	array	Array of table names
+	 */
+	protected function getTables()
+	{
+		if (empty($this->tables_to_backup))
+		{
+			return array_keys($this->query->getTables());
+		}
+
+		return $this->tables_to_backup;
 	}
 
 	/**
@@ -166,18 +196,18 @@ class Backup {
 	 */
 	public function writeDropAndCreateStatements()
 	{
-		$tables = $this->query->getTables();
+		$tables = $this->getTables();
 
 		$this->writeSeparator('Drop old tables if exists');
 
-		foreach ($tables as $table => $specs)
+		foreach ($tables as $table)
 		{
 			$this->writeChunk($this->query->getDropStatement($table));
 		}
 
 		$this->writeSeparator('Create tables and their structure');
 
-		foreach ($tables as $table => $specs)
+		foreach ($tables as $table)
 		{
 			$create = $this->query->getCreateForTable($table);
 
@@ -198,7 +228,7 @@ class Backup {
 	{
 		$this->writeSeparator('Populate tables with their data');
 
-		foreach ($this->query->getTables() as $table => $specs)
+		foreach ($this->getTables() as $table)
 		{
 			$returned = $this->writeInsertsForTableWithOffset($table);
 
@@ -224,7 +254,7 @@ class Backup {
 	 */
 	public function writeTableInsertsConservatively($table = NULL, $offset = 0)
 	{
-		$tables = array_keys($this->query->getTables());
+		$tables = $this->getTables();
 
 		// Table specified? Chop off the beginning of the tables array until we
 		// we get to the specified table and start the loop from there
