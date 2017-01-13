@@ -1141,7 +1141,16 @@ class Wizard extends CI_Controller {
 		@set_time_limit(0);
 
 		// Instantiate the updater class
-		$UD = new Updater;
+		if (class_exists('Updater'))
+		{
+			$UD = new Updater;
+		}
+		else
+		{
+			$class = '\EllisLab\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
+			$UD = new $class;
+		}
+
 		$method = 'do_update';
 
 		$this->load->library('smartforge');
