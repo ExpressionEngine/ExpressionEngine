@@ -227,7 +227,7 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
-'smtp_port' => 'Server Port',
+'smtp_port' => 'Server port',
 
 'sending_options' => 'Sending Options',
 
@@ -239,13 +239,13 @@ $lang = array(
 
 'word_wrap_desc' => 'When set to <b>enable</b>, the system will wrap long lines of text to a more readable width.',
 
-'php_mail' => 'PHP Mail',
+'php_mail' => 'PHP mail',
 
 'sendmail' => 'Sendmail',
 
 'smtp' => 'SMTP',
 
-'email_smtp_crypto' => 'Connection Type',
+'email_smtp_crypto' => 'Connection type',
 
 'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
 
