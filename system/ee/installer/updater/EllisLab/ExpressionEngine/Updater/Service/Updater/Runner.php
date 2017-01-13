@@ -35,8 +35,8 @@ class Runner {
 	// process into quick, hopefully low-memory tasks when accessed
 	// through the browser
 	protected $steps = [
-		'backupDatabase',
 		'updateFiles',
+		'backupDatabase',
 		'updateDatabase',
 		'rollback', // Temporary for testing
 		'restoreDatabase' // Temporary for testing
@@ -50,12 +50,25 @@ class Runner {
 		$this->file_updater = $this->makeUpdaterService();
 	}
 
+	public function updateFiles()
+	{
+		$this->file_updater->updateFiles();
+	}
+
 	public function backupDatabase($table_name = NULL, $offset = 0)
 	{
+		$db_updater = $this->makeDatabaseUpdaterService();
+		$affected_tables = $db_updater->getAffectedTables();
+
+		if (empty($affected_tables))
+		{
+			return;
+		}
+
 		// TODO: ensure this directory exists
-		// TODO: Find out if we even need to make a backup
 		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
 		$backup->makeCompactFile();
+		$backup->setTablesToBackup($affected_tables);
 
 		if (empty($table_name))
 		{
@@ -72,18 +85,12 @@ class Runner {
 			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
 		}
 
-		return 'updateFiles';
-	}
-
-	public function updateFiles()
-	{
-		$this->file_updater->updateFiles();
+		return 'updateDatabase';
 	}
 
 	public function updateDatabase($step = NULL)
 	{
-		// TODO: Inject logger into here
-		$db_updater = new Service\Updater\DatabaseUpdater(ee()->config->item('app_version'), new Filesystem());
+		$db_updater = $this->makeDatabaseUpdaterService();
 
 		if ($db_updater->hasUpdatesToRun())
 		{
@@ -115,6 +122,12 @@ class Runner {
 	public function restoreDatabase()
 	{
 		ee('Database/Restore')->restoreLineByLine(PATH_CACHE.'ee_update/database.sql');
+	}
+
+	protected function makeDatabaseUpdaterService()
+	{
+		// TODO: Inject logger into here
+		return new Service\Updater\DatabaseUpdater(ee()->config->item('app_version'), new Filesystem());
 	}
 
 	/**
