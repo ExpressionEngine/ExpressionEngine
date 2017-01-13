@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_5;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,6 +29,8 @@ class Updater {
 
 	var $version_suffix = '';
 
+	public $affected_tables = ['exp_actions', 'exp_modules'];
+
 	/**
 	 * Do Update
 	 *
@@ -34,7 +38,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'addRelationshipModule',
 			)

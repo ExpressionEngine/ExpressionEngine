@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_0;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,6 +29,9 @@ class Updater {
 
 	var $version_suffix = '';
 
+	// This isn't complete, more for testing
+	public $affected_tables = ['exp_member_groups', 'exp_channels'];
+
 	/**
 	 * Do Update
 	 *
@@ -34,7 +39,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'add_can_view_homepage_news_permission',
 				'add_menu_tables',

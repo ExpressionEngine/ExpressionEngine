@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_1;
 
 /**
  * ExpressionEngine - by EllisLab

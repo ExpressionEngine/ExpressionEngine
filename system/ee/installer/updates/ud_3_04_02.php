@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_2;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -34,7 +36,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'add_enable_devlog_alerts',
 				'fix_file_dimension_site_ids'
