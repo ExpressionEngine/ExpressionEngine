@@ -14,7 +14,7 @@
 		</section>
 		<section class="bar snap">
 			<p class="left"><b>ExpressionEngine</b></p>
-			<p class="right">&copy;2003&mdash;<?=ee()->localize->format_date('%Y')?> <a href="https://ellislab.com/expressionengine" rel="external">EllisLab</a>, Inc.</p>
+			<p class="right">&copy;2003&mdash;<?=ee()->localize->format_date('%Y')?> <a href="https://expressionengine.com/" rel="external">EllisLab</a>, Inc.</p>
 		</section>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.min.js')?>

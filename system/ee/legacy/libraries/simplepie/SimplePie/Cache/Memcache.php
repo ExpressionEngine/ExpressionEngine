@@ -5,7 +5,7 @@
  * A PHP-Based RSS and Atom Feed Framework.
  * Takes the hard work out of managing a complete RSS/Atom solution.
  *
- * Copyright (c) 2004-2012, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
+ * Copyright (c) 2004-2016, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -33,8 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package SimplePie
- * @version 1.3-dev
- * @copyright 2004-2012 Ryan Parman, Geoffrey Sneddon, Ryan McCue
+ * @copyright 2004-2016 Ryan Parman, Geoffrey Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Geoffrey Sneddon
  * @author Ryan McCue
@@ -47,11 +46,12 @@
  *
  * Registered for URLs with the "memcache" protocol
  *
- * For example, `memcache://localhost:11211/?timeout=3600^prefix=sp_` will
+ * For example, `memcache://localhost:11211/?timeout=3600&prefix=sp_` will
  * connect to memcache on `localhost` on port 11211. All tables will be
  * prefixed with `sp_` and data will expire after 3600 seconds
  *
  * @package SimplePie
+ * @subpackage Caching
  * @uses Memcache
  */
 class SimplePie_Cache_Memcache implements SimplePie_Cache_Base
@@ -94,7 +94,8 @@ class SimplePie_Cache_Memcache implements SimplePie_Cache_Base
 				'prefix' => 'simplepie_',
 			),
 		);
-		$this->options = array_merge_recursive($this->options, SimplePie_Cache::parse_URL($location));
+		$this->options = SimplePie_Misc::array_merge_recursive($this->options, SimplePie_Cache::parse_URL($location));
+
 		$this->name = $this->options['extras']['prefix'] . md5("$name:$type");
 
 		$this->cache = new Memcache();
@@ -143,7 +144,7 @@ class SimplePie_Cache_Memcache implements SimplePie_Cache_Base
 
 		if ($data !== false)
 		{
-			// essentially ignore the mtime because Memcache expires on it's own
+			// essentially ignore the mtime because Memcache expires on its own
 			return time();
 		}
 
@@ -161,7 +162,7 @@ class SimplePie_Cache_Memcache implements SimplePie_Cache_Base
 
 		if ($data !== false)
 		{
-			return $this->cache->set($this->name, $data, MEMCACHE_COMPRESSED, (int) $this->duration);
+			return $this->cache->set($this->name, $data, MEMCACHE_COMPRESSED, (int) $this->options['extras']['timeout']);
 		}
 
 		return false;
@@ -177,5 +178,3 @@ class SimplePie_Cache_Memcache implements SimplePie_Cache_Base
 		return $this->cache->delete($this->name, 0);
 	}
 }
-
-// EOF

@@ -28,7 +28,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 class Factory {
 
 	/**
-	 *
+	 * Make a new validator for a set of rules
 	 */
 	public function make($rules = array())
 	{

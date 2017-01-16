@@ -89,21 +89,30 @@ $lang = array(
 'field_tools' => 'Field tools',
 
 'checkbox_options' => 'Checkbox options',
-'checkbox_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
+'checkbox_options_desc' => '<em><i>Each item in the textarea will generate a single checkbox and label pair in the publish form.</i>',
 
 'select_options' => 'Select menu options',
-'select_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
+'select_options_desc' => '<em><i>Each item in the textarea will be included in a select drop down menu in the publish form.</i>',
 
 'multiselect_options' => 'Multi-Select options',
-'multiselect_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
+'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
 
 'radio_options' => 'Radio options',
-'radio_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
+'radio_options_desc' => '<em><i>Each item in the textarea will generate a single radio button and label pair in the publish form.</i>',
 
-'grid_checkbox_options_desc' => 'Each item will generate a single checkbox and label pair in the publish form.',
-'grid_select_options_desc' => 'Each item will be included in a select drop down menu in the publish form.',
-'grid_multiselect_options_desc' => 'Each item will be included in a multi-select in the publish form.',
-'grid_radio_options_desc' => 'Each item will generate a single radio button and label pair in the publish form.',
+'options_field_desc' => 'Choose how to create the options for this field.</em>
+<em><i>Value/Label pairs can be used to make content selection friendlier to content authors. For example, if you need to store a value of <b>1</b>, you could use a label of <b>One</b></i></em>',
+
+'add' => 'Add',
+'no_value_label_pairs' => 'No <b>value/label pairs</b> found.',
+
+'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
+'grid_select_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a select drop down menu in the publish form.',
+'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi-select in the publish form.',
+'grid_radio_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single radio button and label pair in the publish form.',
+
+'value_label_duplicate_values' => 'Each value must be unique.',
+'value_label_empty_field' => 'Values or labels cannot be empty.',
 
 'localize_date' => 'Localize date?',
 'localize_date_desc' => 'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',
@@ -169,6 +178,8 @@ $lang = array(
 'max_revisions' => 'Maximum Number of Recent Revisions per Entry',
 
 'max_revisions_note' => 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
+
+'field_value_label_pairs' => 'Value/Label Pairs',
 
 'field_populate_manually' => 'Populate the menu manually',
 

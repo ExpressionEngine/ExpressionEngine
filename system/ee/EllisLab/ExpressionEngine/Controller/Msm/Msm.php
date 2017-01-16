@@ -90,7 +90,7 @@ class Msm extends CP_Controller {
 			ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
 				->cannotClose()
 				->now();
 		}
@@ -375,7 +375,7 @@ class Msm extends CP_Controller {
 			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
 				->cannotClose()
 				->render();
 			$sections[0][] = $alert;

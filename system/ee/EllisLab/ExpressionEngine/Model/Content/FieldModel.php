@@ -315,7 +315,6 @@ abstract class FieldModel extends Model {
 			return;
 		}
 
-		$columns = $this->ensureDefaultColumns($columns);
 		$columns = array_keys($columns);
 
 		$data_table = $this->getDataTable();

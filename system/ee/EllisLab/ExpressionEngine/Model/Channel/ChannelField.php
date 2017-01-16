@@ -67,7 +67,7 @@ class ChannelField extends FieldModel {
 		'field_label'          => 'required',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
-		'field_pre_populate'   => 'enum[y,n]',
+		'field_pre_populate'   => 'enum[y,n,v]',
 		'field_pre_channel_id' => 'integer',
 		'field_pre_field_id'   => 'integer',
 		'field_ta_rows'        => 'integer',

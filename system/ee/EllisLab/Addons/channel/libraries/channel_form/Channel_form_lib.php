@@ -1471,8 +1471,14 @@ GRID_FALLBACK;
 
 			if (ee()->input->post('unique_url_title', TRUE))
 			{
-				$_POST['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
-				$this->_meta['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
+				$_POST['url_title'] = uniqid(
+					$this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(
+						ee()->input->post('title', TRUE),
+						ee()->config->item('word_separator')
+					),
+				TRUE);
+
+				$this->_meta['url_title'] = $_POST['url_title'];
 			}
 		}
 
@@ -2605,9 +2611,7 @@ GRID_FALLBACK;
 
 		$meta = serialize($meta);
 
-		ee()->load->library('encrypt');
-
-		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
+		return ee('Encrypt')->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
 
@@ -2628,8 +2632,7 @@ GRID_FALLBACK;
 			throw new Channel_form_exception(lang('form_decryption_failed'));
 		}
 
-		ee()->load->library('encrypt');
-		$meta = ee()->encrypt->decode($meta, ee()->db->username.ee()->db->password);
+		$meta = ee('Encrypt')->decode($meta, ee()->db->username.ee()->db->password);
 
 		$this->_meta = unserialize($meta);
 

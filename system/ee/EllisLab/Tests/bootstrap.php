@@ -17,6 +17,8 @@ define('SELF', 'index.php');
 define('LD', '{');
 define('RD', '}');
 
+require '../ExpressionEngine/Config/constants.php';
+
 // Minor CI annoyance
 function log_message() {}
 

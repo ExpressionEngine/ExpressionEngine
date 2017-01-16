@@ -355,7 +355,11 @@ class EE_Relationship_data_parser {
 		while ( preg_match('/'.$open_tag.'(.+?){\/'.$tag_name.'}/is', $tagdata, $match))
 		{
 			$no_results = $this->find_no_results($node, $match[1]);
-			$tagdata = substr_replace($tagdata, $no_results, strpos($tagdata, $match[0]), strlen($match[0]));
+
+			// substr_replace() is not multibyte compatible, nor can it be overloaded, so let's DANCE!
+			$needle_position = strpos($tagdata, $match[0]);
+			$needle_length = strlen($match[0]);
+			$tagdata = substr($tagdata, 0, $needle_position).$no_results.substr($tagdata, $needle_position + $needle_length);
 		}
 
 		return $tagdata;

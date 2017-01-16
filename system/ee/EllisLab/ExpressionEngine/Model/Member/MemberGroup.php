@@ -394,7 +394,16 @@ class MemberGroup extends StructureModel {
 	 */
 	public function getCustomFields()
 	{
-		return ee('Model')->get('MemberField')->all()->asArray();
+		$member_cfields = ee()->session->cache('EllisLab::MemberGroupModel', 'getCustomFields');
+
+		// might be empty, so need to be specific
+		if ( ! is_array($member_cfields))
+		{
+			$member_cfields = ee('Model')->get('MemberField')->all()->asArray();
+			ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', $member_cfields);
+		}
+
+		return $member_cfields;
 	}
 
 	/**

@@ -2819,7 +2819,7 @@ class EE_Template {
 			}
 			else
 			{
-				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match[2])));
+				ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match[2])));
 			}
 		}
 	}
@@ -2947,6 +2947,12 @@ class EE_Template {
 					if (isset($match[5]))
 					{
 						$status_code = $match[5];
+					}
+
+					// handle full URLs, don't need to prepend site details
+					if (filter_var($match[2], FILTER_VALIDATE_URL))
+					{
+						ee()->functions->redirect($match[2], FALSE, $status_code);
 					}
 
 					// Functions::redirect() exits on its own
@@ -3116,6 +3122,9 @@ class EE_Template {
 
 		// {doc_url}
 		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
+
+		// {username_max_length}
+		$str = str_replace(LD.'username_max_length'.RD, USERNAME_MAX_LENGTH, $str);
 
 		// {password_max_length}
 		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
