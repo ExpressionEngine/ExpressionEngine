@@ -50,7 +50,6 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
 
         // check that both were filled
         $this->assertSame($parent->FillChild, $child);
-        $this->assertSame($child->FillParent, $parent);
 
         // check that the key was linked
         $this->assertEquals(5, $child->parent_id);
@@ -83,7 +82,6 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
         $assoc->fill($parent);
 
         // check that both were filled
-        $this->assertSame($parent->FillChild, $child);
         $this->assertSame($child->FillParent, $parent);
 
         // check that the key was linked
@@ -299,14 +297,12 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(5, $child->parent_id);
         $this->assertNull($new_parent->SetChild);
-        $this->assertEquals($parent, $child->SetParent);
         $this->assertSame($child, $parent->SetChild);
         $this->assertEquals(array(), $child->getDirty());
 
         $new_parent->SetChild = $child;
 
         $this->assertEquals(10, $child->parent_id);
-        $this->assertNull($parent->SetChild);
         $this->assertEquals($new_parent, $child->SetParent);
         $this->assertSame($child, $new_parent->SetChild);
         $this->assertEquals(array('parent_id' => 10), $child->getDirty());
@@ -335,7 +331,6 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(5, $child->parent_id);
         $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
 
         $this->assertEquals(array(), $child->getDirty());
 
@@ -406,7 +401,6 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
         $assoc->fill($parent);
 
         $this->assertEquals(5, $child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
         $this->assertSame($parent, $child->SetParent);
 
         $this->assertEquals(array(), $child->getDirty());
@@ -497,10 +491,11 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
 
         $relation[0]->shouldDeferMissing();
 
-        $assoc = $relation[0]->createAssociation($model);
-        $assoc->markAsLoaded();
+        $assoc = $relation[0]->createAssociation();
+        $assoc->boot($model);
 
         $model->setAssociation($relation[1], $assoc);
+        $assoc->markAsLoaded();
 
         return $assoc;
     }

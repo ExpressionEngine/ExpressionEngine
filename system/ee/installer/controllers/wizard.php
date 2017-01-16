@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.4.7';	// The version being installed
+	public $version           = '3.5.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -149,9 +149,11 @@ class Wizard extends CI_Controller {
 		parent::__construct();
 
 		define('IS_CORE', FALSE);
+		define('USERNAME_MAX_LENGTH', 75);
 		define('PASSWORD_MAX_LENGTH', 72);
 		define('PATH_CACHE',  SYSPATH.'user/cache/');
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
+		define('DOC_URL', 'https://docs.expressionengine.com/v3/');
 
 		// Third party constants
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
@@ -1647,9 +1649,11 @@ class Wizard extends CI_Controller {
 			'server_offset'             => '',
 			'default_site_timezone'     => date_default_timezone_get(),
 			'mail_protocol'             => 'mail',
+			'email_newline'             => '\n', // single-quoted for portability
 			'smtp_server'               => '',
 			'smtp_username'             => '',
 			'smtp_password'             => '',
+			'email_smtp_crypto'         => 'ssl',
 			'email_debug'               => 'n',
 			'email_charset'             => 'utf-8',
 			'email_batchmode'           => 'n',
@@ -1796,9 +1800,11 @@ class Wizard extends CI_Controller {
 			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',
+			'email_newline',
 			'smtp_server',
 			'smtp_username',
 			'smtp_password',
+			'email_smtp_crypto',
 			'email_debug',
 			'email_charset',
 			'email_batchmode',

@@ -40,6 +40,9 @@ $has_note = isset($field['note']);
 $no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
 	isset($field['no_results']) &&
 	count($field['choices']) == 0);
+
+// Conditionally show 'mr' class
+$mr_class = ( ! isset($mr) OR (isset($mr) && $mr)) ? 'mr' : '';
 ?>
 <?php if ($no_results): ?>
 	<?php $this->embed('ee:_shared/form/no_results', $field['no_results']); ?>
@@ -68,7 +71,7 @@ case 'radio_block': ?>
 	<?php foreach ($field['choices'] as $key => $choice):
 		$label = $choice['label'];
 		$checked = ($key == $value); ?>
-		<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
+		<label class="choice <?=$mr_class?> block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
 		<?php if ( ! empty($choice['html'])): ?><?=$choice['html']?><?php endif ?>
 	<?php endforeach ?>
 <?php break;
@@ -76,7 +79,7 @@ case 'radio_block': ?>
 case 'radio': ?>
 	<?php foreach ($field['choices'] as $key => $label):
 		$checked = ($key == $value); ?>
-		<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
+		<label class="choice <?=$mr_class?> block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
 	<?php endforeach ?>
 <?php break;
 

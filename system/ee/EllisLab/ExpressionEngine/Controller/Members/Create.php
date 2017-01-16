@@ -62,6 +62,14 @@ class Create extends Members {
 			$choices[$group->group_id] = $group->group_title;
 		}
 
+		// Get member groups who have CP access to verify the member creating this member
+		$groups = $groups->filter('can_access_cp', TRUE);
+		$group_toggle = array();
+		foreach ($groups as $group)
+		{
+			$group_toggle[$group->getId()] = 'verify_password';
+		}
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -71,6 +79,7 @@ class Create extends Members {
 						'group_id' => array(
 							'type' => 'select',
 							'choices' => $choices,
+							'group_toggle' => $group_toggle,
 							'value' => (isset($choices[5]) && $choices[5] == 'Members') ? 5 : '',
 							'required' => TRUE
 						)
@@ -79,27 +88,43 @@ class Create extends Members {
 				array(
 					'title' => 'username',
 					'fields' => array(
-						'username' => array('type' => 'text', 'required' => TRUE)
+						'username' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'maxlength' => USERNAME_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'mbr_email_address',
 					'fields' => array(
-						'email' => array('type' => 'text', 'required' => TRUE)
+						'email' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'maxlength' => USERNAME_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'password',
 					'desc' => 'password_desc',
 					'fields' => array(
-						'password' => array('type' => 'password', 'required' => TRUE)
+						'password' => array(
+							'type' => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'password_confirm',
 					'desc' => 'password_confirm_desc',
 					'fields' => array(
-						'confirm_password' => array('type' => 'password', 'required' => TRUE)
+						'confirm_password' => array(
+							'type' => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)
@@ -125,14 +150,36 @@ class Create extends Members {
 			}
 		}
 
-		// Separate validator to validate confirm_password
-		$validator = ee('Validation')->make();
-		$validator->setRules(array(
-			'confirm_password' => 'matches[password]'
-		));
+		$vars['sections']['secure_form_ctrls'] = array(
+			array(
+				'title' => 'your_password',
+				'desc' => 'your_password_desc',
+				'group' => 'verify_password',
+				'fields' => array(
+					'verify_password' => array(
+						'type'      => 'password',
+						'required'  => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					)
+				)
+			)
+		);
 
 		if ( ! empty($_POST))
 		{
+			// Separate validator to validate confirm_password and verify_password
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'confirm_password' => 'matches[password]',
+				'verify_password'  => 'whenGroupIdIs['.implode(',', array_keys($group_toggle)).']|authenticated'
+			));
+
+			$validator->defineRule('whenGroupIdIs', function($key, $password, $parameters, $rule)
+			{
+				// Don't need to validate if a member group without CP access was chosen
+				return in_array($_POST['group_id'], $parameters) ? TRUE : $rule->skip();
+			});
+
 			$member->set($_POST);
 
 			// Set some other defaults
@@ -147,8 +194,11 @@ class Create extends Members {
 			// Add password confirmation failure to main result object
 			if ($password_confirm->failed())
 			{
-				$rules = $password_confirm->getFailed('confirm_password');
-				$result->addFailed('confirm_password', $rules[0]);
+				$rules = $password_confirm->getFailed();
+				foreach ($rules as $field => $rule)
+				{
+					$result->addFailed($field, $rule[0]);
+				}
 			}
 
 			if ($response = $this->ajaxValidation($result))
@@ -210,6 +260,8 @@ class Create extends Members {
 		}
 
 		$this->generateSidebar('all_members');
+
+		ee()->cp->add_js_script('file', 'cp/form_group');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;

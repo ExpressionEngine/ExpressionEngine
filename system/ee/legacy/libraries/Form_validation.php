@@ -458,6 +458,12 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
+		if (strlen($str) > USERNAME_MAX_LENGTH)
+		{
+			$this->set_message('valid_screen_name', ee()->lang->line('username_too_long'));
+			return FALSE;
+		}
+
 		// Is screen name banned?
 
 		if (ee()->session->ban_check('screen_name', $str) OR trim(preg_replace("/&nbsp;*/", '', $str)) == '')

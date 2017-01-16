@@ -389,7 +389,20 @@ class Fields extends AbstractChannelsController {
 				continue;
 			}
 
-			$dummy_field = ee('Model')->make('ChannelField');
+			// If editing an option field, populate the dummy fieldtype with the
+			// same settings to make switching between the different types easy
+			if ( ! $field->isNew() &&
+				in_array(
+					$fieldtype->name,
+					array('checkboxes', 'multi_select', 'radio', 'select')
+				))
+			{
+				$dummy_field = clone $field;
+			}
+			else
+			{
+				$dummy_field = ee('Model')->make('ChannelField');
+			}
 			$dummy_field->field_type = $fieldtype->name;
 			$field_options = $dummy_field->getSettingsForm();
 

@@ -900,7 +900,12 @@ abstract class EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ($this->get_setting('field_pre_populate') === FALSE)
+		$pairs = $this->get_setting('value_label_pairs');
+		if ( ! empty($pairs))
+		{
+			return $pairs;
+		}
+		elseif ($this->get_setting('field_pre_populate') === FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{

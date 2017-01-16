@@ -79,37 +79,73 @@ class Email extends Settings {
 								'mail' => lang('php_mail'),
 								'sendmail' => lang('sendmail'),
 								'smtp' => lang('smtp')
+							),
+							'group_toggle' => array(
+								'smtp' => 'smtp_options'
 							)
 						)
 					)
 				),
+				array(
+					'title' => 'email_newline',
+					'desc' => 'email_newline_desc',
+					'fields' => array(
+						'email_newline' => array(
+							'type' => 'select',
+							'choices' => array(
+								'\n' => '\n',
+								'\r\n' => '\r\n',
+								'\r' => '\r'
+							),
+							// email_newline is converted to double-quoted representation on load
+							'value' => ee()->config->item('email_newline_form_safe')
+						)
+					)
+				)
 			),
 			'smtp_options' => array(
-				array(
-					'title' => 'smtp_server',
-					'desc' => 'smtp_server_desc',
-					'fields' => array(
-						'smtp_server' => array('type' => 'text')
-					)
-				),
-				array(
-					'title' => 'smtp_port',
-					'fields' => array(
-						'smtp_port' => array('type' => 'text')
-					)
-				),
-				array(
-					'title' => 'username',
-					'fields' => array(
-						'smtp_username' => array('type' => 'text')
-					)
-				),
-				array(
-					'title' => 'password',
-					'fields' => array(
-						'smtp_password' => array('type' => 'password')
-					)
-				),
+				'group' => 'smtp_options',
+				'settings' => array(
+					array(
+						'title' => 'smtp_server',
+						'desc' => 'smtp_server_desc',
+						'fields' => array(
+							'smtp_server' => array('type' => 'text')
+						)
+					),
+					array(
+						'title' => 'smtp_port',
+						'fields' => array(
+							'smtp_port' => array('type' => 'text')
+						)
+					),
+					array(
+						'title' => 'username',
+						'fields' => array(
+							'smtp_username' => array('type' => 'text')
+						)
+					),
+					array(
+						'title' => 'password',
+						'fields' => array(
+							'smtp_password' => array('type' => 'password')
+						)
+					),
+					array(
+						'title' => 'email_smtp_crypto',
+						'desc' => 'email_smtp_crypto_desc',
+						'fields' => array(
+							'email_smtp_crypto' => array(
+								'type' => 'select',
+								'choices' => array(
+									'ssl' => lang('ssl'),
+									'tls' => lang('tls'),
+									'' => lang('unencrypted')
+								)
+							)
+						)
+					),
+				)
 			),
 			'sending_options' => array(
 				array(
@@ -186,6 +222,10 @@ class Email extends Settings {
 		{
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
+
+		ee()->cp->add_js_script(array(
+		  'file' => array('cp/form_group'),
+		));
 
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;

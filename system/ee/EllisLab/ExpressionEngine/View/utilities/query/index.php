@@ -19,15 +19,15 @@
 				<?php
 				$status_query =	array(
 					'thequery' => rawurlencode(base64_encode('SHOW STATUS')),
-					'signature' => ee()->encrypt->sign('SHOW STATUS')
+					'signature' => ee('Encrypt')->sign('SHOW STATUS')
 				);
 				$variables_query = array(
 					'thequery' => rawurlencode(base64_encode('SHOW VARIABLES')),
-					'signature' => ee()->encrypt->sign('SHOW VARIABLES')
+					'signature' => ee('Encrypt')->sign('SHOW VARIABLES')
 				);
 				$process_query = array(
 					'thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST')),
-					'signature' => ee()->encrypt->sign('SHOW PROCESSLIST')
+					'signature' => ee('Encrypt')->sign('SHOW PROCESSLIST')
 				);
 				?>
 				<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $status_query)?>">SHOW STATUS</a>,

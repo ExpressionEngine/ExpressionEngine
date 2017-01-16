@@ -95,7 +95,7 @@ class Username extends Filter {
 	 * username, in which case we will use a $builder object (if provided)
 	 * to resolve that username to an ID.
 	 *
-	 * @return int[]|NULL The value of the filter (NULL if it has no value)
+	 * @return int|NULL The value of the filter (NULL if it has no value)
 	 */
 	public function value()
 	{
@@ -114,7 +114,7 @@ class Username extends Filter {
 					}
 					else
 					{
-						$this->selected_value = array(-1);
+						$this->selected_value = -1;
 					}
 				}
 			}
@@ -128,8 +128,6 @@ class Username extends Filter {
 			{
 				return NULL;
 			}
-
-			$value = array($value);
 		}
 		return $value;
 	}
@@ -152,12 +150,9 @@ class Username extends Filter {
 		// No Query Builder
 		if (is_null($this->builder))
 		{
-			foreach ($this->value() as $value)
+			if ( ! array_key_exists($this->value(), $this->options))
 			{
-				if ( ! array_key_exists($value, $this->options))
-				{
-					return FALSE;
-				}
+				return FALSE;
 			}
 
 			return TRUE;
@@ -168,18 +163,15 @@ class Username extends Filter {
 			// bother hitting the DB for validity
 			if ( ! empty($this->options))
 			{
-				foreach ($this->value() as $value)
+				if ( ! array_key_exists($this->value(), $this->options))
 				{
-					if ( ! array_key_exists($value, $this->options))
-					{
-						return FALSE;
-					}
+					return FALSE;
 				}
 
 				return TRUE;
 			}
 
-			$members = $this->builder->filter('member_id', 'IN', $this->value())->all();
+			$members = $this->builder->filter('member_id', $this->value())->all();
 
 			return ($members->count() > 0);
 		}
@@ -211,7 +203,6 @@ class Username extends Filter {
 		if (is_null($value))
 		{
 			$value = $this->value();
-			$value = $value[0];
 
 			$value = (array_key_exists($value, $this->options)) ?
 				$this->options[$value] :
