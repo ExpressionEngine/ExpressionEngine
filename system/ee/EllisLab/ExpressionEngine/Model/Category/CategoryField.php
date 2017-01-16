@@ -40,6 +40,7 @@ class CategoryField extends FieldModel {
 		'field_required'       => 'boolString',
 		'field_show_fmt'       => 'boolString',
 		'field_order'          => 'int',
+		'field_settings'       => 'json'
 	);
 
 	protected static $_relationships = array(
@@ -77,16 +78,29 @@ class CategoryField extends FieldModel {
 	protected $field_text_direction;
 	protected $field_required;
 	protected $field_order;
-
+	protected $field_settings;
 
 	public function getSettingsValues()
 	{
 		$values = parent::getSettingsValues();
 
-		$this->getField()->setFormat($this->getProperty('field_default_fmt'));
+		$this->getField($values)->setFormat($this->getProperty('field_default_fmt'));
+
+		$values['field_settings'] = $this->getProperty('field_settings') ?: array();
+
 		$values['field_settings']['field_show_file_selector'] = 'n';
 
 		return $values;
+	}
+
+	public function set(array $data = array())
+	{
+		parent::set($data);
+
+		$field = $this->getField($this->getSettingsValues());
+		$this->setProperty('field_settings', $field->saveSettingsForm($data));
+
+		return $this;
 	}
 
 	public function getContentType()

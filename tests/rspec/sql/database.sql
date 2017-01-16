@@ -145,6 +145,7 @@ CREATE TABLE `exp_category_fields` (
   `field_text_direction` char(3) NOT NULL DEFAULT 'ltr',
   `field_required` char(1) NOT NULL DEFAULT 'n',
   `field_order` int(3) unsigned NOT NULL,
+  `field_settings` text NULL,
   PRIMARY KEY (`field_id`),
   KEY `site_id` (`site_id`),
   KEY `group_id` (`group_id`)
