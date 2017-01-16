@@ -158,7 +158,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		}
 
 		// Load from validation error
-		if (isset($_POST['value_label_pairs']['rows']) && $_POST['field_type'] == $field_type)
+		if (isset($_POST['value_label_pairs']['rows']) &&
+			((isset($_POST['field_type']) && $_POST['field_type'] == $field_type) OR (isset($_POST['m_field_type']) && $_POST['m_field_type'] == $field_type)))
 		{
 			foreach ($_POST['value_label_pairs']['rows'] as $row)
 			{
