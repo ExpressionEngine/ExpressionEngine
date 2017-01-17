@@ -265,7 +265,7 @@ class Api_channel_fields extends Api {
 										strtolower($file)));
 			}
 
-			// Include addon.setup.php in canse folks have defined constants in there
+			// Include addon.setup.php in case folks have defined constants in there
 			require_once $path.'addon.setup.php';
 			require_once $path.$file;
 
