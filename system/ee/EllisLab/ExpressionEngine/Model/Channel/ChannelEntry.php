@@ -145,7 +145,7 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public static function getExtraData($result_array, $store)
+	public static function getExtraData($result_array)
 	{
 		// If the query had `->with('Channel')` then we have the field groups
 		// we need, so pull those out of the result
@@ -172,7 +172,7 @@ class ChannelEntry extends ContentModel {
 				return $column['ChannelEntry__entry_id'];
 			}, $result_array);
 
-			$query = $store->rawQuery();
+			$query = ee('Model/Datastore')->rawQuery();
 
 			$main_table = "ChannelEntry_field_id_{$field_ids[0]}";
 

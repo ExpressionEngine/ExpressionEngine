@@ -50,7 +50,7 @@ class Select extends Query {
 		if (! empty($result_array)
             && method_exists($class, 'getExtraData'))
 		{
-			$result_array = $class::getExtraData($result_array, $this->store);
+			$result_array = $class::getExtraData($result_array);
 		}
 
 		$result = new Result(
