@@ -2660,6 +2660,10 @@ class Member {
 		ee()->load->library('typography');
 		ee()->typography->initialize();
 
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		ee()->api_channel_fields->fetch_installed_fieldtypes();
+
 		$cond = $default_fields;
 
 		foreach ($query->result_array() as $row)
@@ -2851,28 +2855,47 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
 				}
 
+				$field = ee()->api_channel_fields->get_single_field($val);
+				$val = $field['field_name'];
+
 				// parse custom member fields
 				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
 				{
-					ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-														$val,
-														ee()->typography->parse_type(
-															$row['m_field_id_'.$fields[$val]['0']],
-																				array(
-																						'text_format'	=> $fields[$val]['1'],
-																						'html_format'	=> 'safe',
-																						'auto_links'	=> 'y',
-																						'allow_img_url' => 'n'
-																					  )
-																			  ),
-														ee()->TMPL->tagdata
-													  );
+					ee()->TMPL->tagdata = $this->parseField(
+						$fields[$val]['0'],
+						$field,
+						$row['m_field_id_'.$fields[$val]['0']],
+						ee()->TMPL->tagdata,
+						$member_id
+					);
 				}
-				//else { echo 'm_field_id_'.$fields[$val]['0']; }
 			}
 		}
 
 		return ee()->TMPL->tagdata;
+	}
+
+	/**
+	 * Parse a custom member field
+	 *
+	 * @param	int		$field_id	Member field ID
+	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	mixed	$data		Data for this field
+	 * @param	string	$tagdata	Tagdata to perform the replacement in
+	 * @param	string	$member_id	ID for the member this data is associated
+	 * @return	string	String with variable parsed
+	 */
+	private function parseField($field_id, $field, $data, $tagdata, $member_id)
+	{
+		$member_field = ee('Model')->get('MemberField', $field_id)->first();
+
+		$row = array(
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		);
+
+		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
 	}
 
 	// --------------------------------------------------------------------
