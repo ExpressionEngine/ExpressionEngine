@@ -46,11 +46,11 @@ class Select extends Query {
 		$model = $this->expandAlias($this->root_alias);
 		$meta = $this->store->getMetaDataReader($model);
 		$class = $meta->getClass();
-		$table_per_field = $class::getMetaData('table_per_field');
 
-		if ($table_per_field === TRUE && ! empty($result_array))
+		if (! empty($result_array)
+            && method_exists($class, 'getExtraData'))
 		{
-			$result_array = $this->getFieldData($result_array);
+			$result_array = $class::getExtraData($result_array, $this->store);
 		}
 
 		$result = new Result(
@@ -60,68 +60,6 @@ class Select extends Query {
 		);
 
 		return $result;
-	}
-
-	protected function getFieldData($result_array)
-	{
-		$field_groups = array_map(function($column) {
-			if (array_key_exists('Channel__field_group', $column))
-			{
-				return $column['Channel__field_group'];
-			}
-		}, $result_array);
-
-		if (empty($field_groups))
-		{
-			return $result_array;
-		}
-
-		$fields = ee('Model')->get('ChannelField')
-			->fields('field_id')
-			->filter('group_id', 'IN', $field_groups)
-			->filter('field_data_in_channel_data', 'n')
-			->all();
-
-		if ($fields)
-		{
-			$field_ids = $fields->pluck('field_id');
-
-			$entry_ids = array_map(function($column) {
-				return $column['ChannelEntry__entry_id'];
-			}, $result_array);
-
-			$query = $this->store->rawQuery();
-
-			$main_table = "ChannelEntry_field_id_{$field_ids[0]}";
-
-			$query->from('channel_titles');
-			$query->select("channel_titles.entry_id as ChannelEntry__entry_id", FALSE);
-
-			foreach ($field_ids as $field_id)
-			{
-				$table_alias = "ChannelEntry_field_id_{$field_id}";
-
-				$query->select("{$table_alias}.data as ChannelEntry__field_id_{$field_id}", FALSE);
-				$query->select("{$table_alias}.metadata as ChannelEntry__field_ft_{$field_id}", FALSE);
-				$query->join("channel_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = channel_titles.entry_id", 'LEFT');
-			}
-
-			$query->where_in('channel_titles.entry_id', $entry_ids);
-
-			$data = $query->get()->result_array();
-
-			foreach ($data as $row)
-			{
-				array_walk($result_array, function (&$data, $key, $field_data) {
-					if ($data['ChannelEntry__entry_id'] == $field_data['ChannelEntry__entry_id'])
-					{
-						$data = array_merge($data, $field_data);
-					}
-				}, $row);
-			}
-		}
-
-		return $result_array;
 	}
 
 	/**
@@ -439,6 +377,19 @@ class Select extends Query {
 	 */
 	protected function processWiths($query, $from, $from_alias)
 	{
+		$model = $this->expandAlias($this->root_alias);
+		$meta = $this->store->getMetaDataReader($model);
+		$class = $meta->getClass();
+
+		$extra_withs = $class::getMetaData('auto_join');
+		if ($extra_withs)
+		{
+			foreach ($extra_withs as $with)
+			{
+				$this->builder->with($with);
+			}
+		}
+
 		$withs = $this->builder->getWiths();
 		$this->recurseWiths($query, $from, $from_alias, $withs);
 	}

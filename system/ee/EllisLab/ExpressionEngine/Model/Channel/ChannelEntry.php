@@ -23,7 +23,6 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
-	protected static $_table_per_field = TRUE;
 
 	protected static $_hook_id = 'channel_entry';
 
@@ -95,6 +94,8 @@ class ChannelEntry extends ContentModel {
 		)
 	);
 
+	protected static $_auto_join = array('Channel');
+
 	protected static $_validation_rules = array(
 		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required|validateMaxEntries',
@@ -143,6 +144,67 @@ class ChannelEntry extends ContentModel {
 	protected $edit_date;
 	protected $recent_comment_date;
 	protected $comment_total;
+
+	public static function getExtraData($result_array, $store)
+	{
+		// If the query had `->with('Channel')` then we have the field groups
+		// we need, so pull those out of the result
+		$field_groups = array_map(function($column) {
+			if (array_key_exists('Channel__field_group', $column))
+			{
+				return $column['Channel__field_group'];
+			}
+		}, $result_array);
+
+		$field_groups = array_unique($field_groups);
+
+		$fields = ee('Model')->get('ChannelField')
+			->fields('field_id')
+			->filter('group_id', 'IN', $field_groups)
+			->filter('field_data_in_channel_data', 'n')
+			->all();
+
+		if ($fields->count())
+		{
+			$field_ids = $fields->pluck('field_id');
+
+			$entry_ids = array_map(function($column) {
+				return $column['ChannelEntry__entry_id'];
+			}, $result_array);
+
+			$query = $store->rawQuery();
+
+			$main_table = "ChannelEntry_field_id_{$field_ids[0]}";
+
+			$query->from('channel_titles');
+			$query->select("channel_titles.entry_id as ChannelEntry__entry_id", FALSE);
+
+			foreach ($field_ids as $field_id)
+			{
+				$table_alias = "ChannelEntry_field_id_{$field_id}";
+
+				$query->select("{$table_alias}.data as ChannelEntry__field_id_{$field_id}", FALSE);
+				$query->select("{$table_alias}.metadata as ChannelEntry__field_ft_{$field_id}", FALSE);
+				$query->join("channel_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = channel_titles.entry_id", 'LEFT');
+			}
+
+			$query->where_in('channel_titles.entry_id', $entry_ids);
+
+			$data = $query->get()->result_array();
+
+			foreach ($data as $row)
+			{
+				array_walk($result_array, function (&$data, $key, $field_data) {
+					if ($data['ChannelEntry__entry_id'] == $field_data['ChannelEntry__entry_id'])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+		}
+
+		return $result_array;
+	}
 
 	public function set__entry_date($entry_date)
 	{
