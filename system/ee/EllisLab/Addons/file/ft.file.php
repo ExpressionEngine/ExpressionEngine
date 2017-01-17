@@ -540,6 +540,7 @@ JSC;
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
+			->order('name', 'asc')
 			->all()
 			->getDictionary('id', 'name');
 

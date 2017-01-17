@@ -1474,7 +1474,8 @@ GRID_FALLBACK;
 				$_POST['url_title'] = uniqid(
 					$this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(
 						ee()->input->post('title', TRUE),
-						ee()->config->item('word_separator')
+						ee()->config->item('word_separator'),
+						TRUE
 					),
 				TRUE);
 
@@ -1725,7 +1726,10 @@ GRID_FALLBACK;
 
 		if ( ! isset($_POST['url_title']))
 		{
-			$_POST['url_title'] = url_title($_POST['title']);
+			$_POST['url_title'] = url_title(
+						ee()->input->post('title', TRUE),
+						ee()->config->item('word_separator'),
+						TRUE);
 		}
 
 		//temporarily change site_id for cross-site forms

@@ -15,7 +15,7 @@
 			<?=form_error('search_term')?>
 		</div>
 	</fieldset>
-	<fieldset class="col-group required <?=form_error_class('replace_term')?>">
+	<fieldset class="col-group <?=form_error_class('replace_term')?>">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('sandr_replace_text')?></h3>
 		</div>
