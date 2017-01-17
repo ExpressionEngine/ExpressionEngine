@@ -131,7 +131,18 @@ class EE_Encrypt {
 	 */
 	function decode($string, $key = '')
 	{
-		return ee('Encrypt')->decode($string, $key);
+		$decoded = ee('Encrypt')->decode($string, $key);
+
+		// If this decrypt failed, it may have been encrypted with the old
+		// mcrypt library scheme. We'll try some wizardry then.
+		if ($decoded === FALSE)
+		{
+			ee()->load->library('encrypt');
+
+			$decoded = ee()->encrypt->mcrypt_decode(base64_decode($string), $key);
+		}
+
+		return $decoded;
 	}
 
 	// --------------------------------------------------------------------
