@@ -382,12 +382,14 @@ abstract class FieldModel extends Model {
 	{
 		$fieldtype = $this->getFieldtypeInstance();
 		$settings = $this->getSettingsValues();
+		$field_fmt = isset($this->field_fmt) ? $this->field_fmt : $this->field_default_fmt;
+		$settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' =>$field_fmt));
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
 			'content_id'	=> $content_id,
 			'content_type'	=> $content_type,
-			'field_fmt'		=> $this->field_fmt,
+			'field_fmt'		=> $field_fmt,
 			'settings'		=> $settings['field_settings']
 		));
 
