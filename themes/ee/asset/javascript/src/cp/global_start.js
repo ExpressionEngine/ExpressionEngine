@@ -295,6 +295,9 @@ $(window).bind('broadcast.setBasePath', function(event, data) {
 	EE.cp.setBasePath(data, true);
 });
 
+$(window).bind('broadcast.setRememberMe', function(event, remember) {
+	EE.hasRememberMe = remember;
+})
 
 EE.cp.refreshSessionData = function(event, base) {
 	if (base) {
@@ -624,6 +627,7 @@ EE.cp.broadcastEvents = (function() {
 		init: function() {
 			$(window).trigger('broadcast.setBasePath', EE.BASE);
 			$(window).trigger('broadcast.setCsrfToken', EE.CSRF_TOKEN);
+			$(window).trigger('broadcast.setRememberMe', EE.hasRememberMe);
 			$(window).trigger('broadcast.idleState', 'login');
 
 			this._bindEvents();
