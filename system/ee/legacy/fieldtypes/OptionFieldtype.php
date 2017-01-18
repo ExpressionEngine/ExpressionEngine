@@ -413,8 +413,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	 */
 	protected function processTypograpghy($string)
 	{
-		$text_format = ($this->content_type() == 'grid')
-			? $this->get_setting('field_fmt', 'none') : $this->row('field_ft_'.$this->field_id);
+		$text_format = $this->row('field_ft_'.$this->field_id) ?: $this->get_setting('field_fmt', 'none');
 
 		ee()->load->library('typography');
 

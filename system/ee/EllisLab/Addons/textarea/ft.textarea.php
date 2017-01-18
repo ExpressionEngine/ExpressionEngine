@@ -195,8 +195,7 @@ class Textarea_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$field_fmt = ($this->content_type() == 'grid')
-			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
+		$field_fmt = $this->row('field_ft_'.$this->field_id) ?: $this->get_setting('field_fmt', 'none');
 
 		ee()->load->library('typography');
 		return ee()->typography->parse_type(
