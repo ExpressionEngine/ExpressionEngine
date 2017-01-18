@@ -4010,26 +4010,57 @@ class Channel {
 					'convert_curly'	=> FALSE
 				));
 
-				// parse custom fields
-				foreach($this->catfields as $ccv)
+				$field_index = array();
+				foreach ($this->catfields as $cat_field)
 				{
-					if (isset($val['field_id_'.$ccv['field_id']]) AND $val['field_id_'.$ccv['field_id']] != '')
+					$field_index[$cat_field['field_name']] = $cat_field['field_id'];
+				}
+
+				// Cache category field models up front
+				$cat_field_models = ee('Model')->get('CategoryField', array_values($field_index))
+					->all()
+					->indexBy('field_id');
+
+				ee()->load->library('api');
+				ee()->legacy_api->instantiate('channel_fields');
+
+				foreach (ee()->TMPL->var_single as $tag)
+				{
+					$tag = ee()->api_channel_fields->get_single_field($tag);
+					$field_name = $tag['field_name'];
+
+					if ( ! isset($field_index[$field_name]))
 					{
-						$field_content = ee()->typography->parse_type(
-							$val['field_id_'.$ccv['field_id']],
+						continue;
+					}
+
+					$field_id = $field_index[$field_name];
+
+					if (isset($val['field_id_'.$field_id]))
+					{
+						$cat_field = $cat_field_models[$field_id];
+
+						$chunk = $cat_field->parse(
+							$val['field_id_'.$field_id],
+							$cat_vars['category_id'],
+							'category',
+							$tag['modifier'],
+							$chunk,
 							array(
-								'text_format'	=> $val['field_ft_'.$ccv['field_id']],
-								'html_format'	=> $val['field_html_formatting'],
-								'auto_links'	=> 'n',
-								'allow_img_url'	=> 'y'
+								'channel_html_formatting' => $val['field_html_formatting'],
+								'channel_auto_link_urls' => 'n',
+								'channel_allow_img_urls' => 'y'
 							)
 						);
-						$chunk = str_replace(LD.$ccv['field_name'].RD, $field_content, $chunk);
 					}
+					// Garbage collection
 					else
 					{
-						// garbage collection
-						$chunk = str_replace(LD.$ccv['field_name'].RD, '', $chunk);
+						if ($tag['modifier'])
+						{
+							$field_name = $field_name.':'.$tag['modifier'];
+						}
+						$chunk = str_replace(LD.$field_name.RD, '', $chunk);
 					}
 				}
 
