@@ -113,8 +113,9 @@ class Encrypt {
 	 */
 	public function decrypt($data, $key = '')
 	{
-		$data = $this->removeNoise($data, $key);
 		$key = ($key) ?: $this->default_key;
+
+		$data = $this->removeNoise($data, $key);
 
 		$iv_size = openssl_cipher_iv_length($this->method);
 
