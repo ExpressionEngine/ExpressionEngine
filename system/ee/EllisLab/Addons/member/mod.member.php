@@ -2662,7 +2662,6 @@ class Member {
 
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
-		ee()->api_channel_fields->fetch_installed_fieldtypes();
 
 		$cond = $default_fields;
 
