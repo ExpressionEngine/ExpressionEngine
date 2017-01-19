@@ -18,7 +18,8 @@
 			$('.file-field-filepicker', container).FilePicker({
 				callback: function(data, references) {
 					var input = references.input_value,
-						figure = references.input_img.closest('figure');
+						figure = references.input_img.closest('figure'),
+						name = references.input_img.closest('.fields-upload-chosen-file').next('.fields-upload-chosen-name');
 
 					// Close the modal
 					references.modal.find('.m-close').click();
@@ -38,7 +39,7 @@
 						extension = data.title.substring(data.title.lastIndexOf('.'), data.title.length);
 
 					// Fill in formatted caption
-					figure.find('figcaption').html('<b>'+basename+'</b>'+extension);
+					name.html('<b>'+basename+'</b>'+extension);
 
 					// Show the image
 					input.siblings('.fields-upload-chosen').removeClass('hidden');
