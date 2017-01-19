@@ -927,9 +927,11 @@ class Member_settings extends Member {
 
 		$result_row = $result->row_array();
 
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
 		if ($query->num_rows() > 0)
 		{
-			foreach ($query->result_array() as $row)
+			foreach ($member->getDisplay()->getFields() as $field)
 			{
 				$temp = $tmpl;
 
@@ -937,68 +939,21 @@ class Member_settings extends Member {
 				/**  Assign the data to the field
 				/** ----------------------------------------*/
 
-				$temp = str_replace('{field_id}', $row['m_field_id'], $temp);
+				$temp = str_replace('{field_id}', $field->getId(), $temp);
 
-				$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
+				$required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
 
-				$required  = ($row['m_field_required'] == 'n') ? '' : "<span class='alert'>*</span>&nbsp;";
-
-				if ($row['m_field_width'] == '')
-				{
-					$row['m_field_width'] == '100%';
-				}
-
-				$width = ( ! stristr($row['m_field_width'], 'px')  AND ! stristr($row['m_field_width'], '%')) ? $row['m_field_width'].'px' : $row['m_field_width'];
+				$temp = str_replace('{lang:profile_field}', $required.$field->getLabel(), $temp);
+				$temp = str_replace('{lang:profile_field_description}', $field->get('field_description'), $temp);
+				$temp = str_replace('{form:custom_profile_field}', $field->getForm(), $temp);
 
 				/** ----------------------------------------
 				/**  Render textarea fields
 				/** ----------------------------------------*/
 
-				if ($row['m_field_type'] == 'textarea')
+				if ($field->getTypeName() == 'textarea')
 				{
-					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
-
-					$tarea = "<textarea name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' class='textarea' cols='90' rows='{$rows}'>".$this->_form_prep_encoded($field_data)."</textarea>";
-
 					$temp = str_replace('<td ', "<td valign='top' ", $temp);
-					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
-					$temp = str_replace('{lang:profile_field_description}', $row['m_field_description'], $temp);
-					$temp = str_replace('{form:custom_profile_field}', $tarea, $temp);
-				}
-				elseif ($row['m_field_type'] == 'text')
-				{
-					/** ----------------------------------------
-					/**  Render text fields
-					/** ----------------------------------------*/
-
-					$input = "<input type='text' name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' value='".$this->_form_prep_encoded($field_data)."' maxlength='".$row['m_field_maxl']."' class='input' />";
-
-					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
-					$temp = str_replace('{lang:profile_field_description}', $row['m_field_description'], $temp);
-					$temp = str_replace('{form:custom_profile_field}', $input, $temp);
-				}
-				elseif ($row['m_field_type'] == 'select')
-				{
-					/** ----------------------------------------
-					/**  Render pull-down menues
-					/** ----------------------------------------*/
-
-					$menu = "<select name='m_field_id_".$row['m_field_id']."' id='m_field_id_".$row['m_field_id']."' class='select'>\n";
-
-					foreach (explode("\n", trim($row['m_field_list_items'])) as $v)
-					{
-						$v = $this->_form_prep_encoded(trim($v));
-
-						$selected = ($field_data == $v) ? " selected='selected'" : '';
-
-						$menu .= "<option value='{$v}'{$selected}>".$v."</option>\n";
-					}
-
-					$menu .= "</select>\n";
-
-					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
-					$temp = str_replace('{lang:profile_field_description}', $row['m_field_description'], $temp);
-					$temp = str_replace('{form:custom_profile_field}', $menu, $temp);
 				}
 
 				$r .= $temp;
