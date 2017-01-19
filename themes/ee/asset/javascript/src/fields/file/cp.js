@@ -35,11 +35,8 @@
 						references.input_img.attr('src', data.thumb_path);
 					}
 
-					var basename = data.title.substring(0, data.title.lastIndexOf('.')),
-						extension = data.title.substring(data.title.lastIndexOf('.'), data.title.length);
-
 					// Fill in formatted caption
-					name.html('<b>'+basename+'</b>'+extension);
+					name.html('<p><b>'+data.title+'</b></p>');
 
 					// Show the image
 					input.siblings('.fields-upload-chosen').removeClass('hidden');
