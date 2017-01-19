@@ -372,7 +372,15 @@ class Fields extends Members\Members {
 
 		if ( ! empty($_POST))
 		{
-			$field->set($_POST);
+			// m_ prefix dance
+			foreach ($_POST as $key => $value)
+			{
+				if ($field->hasProperty($key) OR $field->hasProperty('m_'.$key))
+				{
+					$field->$key = $value;
+				}
+			}
+
 			$result = $field->validate();
 
 			if (AJAX_REQUEST)
