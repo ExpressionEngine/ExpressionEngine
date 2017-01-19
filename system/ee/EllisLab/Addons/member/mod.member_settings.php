@@ -757,27 +757,40 @@ class Member_settings extends Member {
 			/**  Parse single variables
 			/** ----------------------------------------*/
 
+			$member_field_ids = array();
+			foreach ($query->result_array() as $row)
+			{
+				$member_field_ids[] = $row['m_field_id'];
+			}
+
+			$this->member_fields = ee('Model')->get('MemberField', $member_field_ids)
+				->all()
+				->indexBy('m_field_id');
+
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('channel_fields');
+
 			foreach ($this->var_single as $key => $val)
 			{
+				$field = ee()->api_channel_fields->get_single_field($key);
+
 				foreach ($query->result_array() as $row)
 				{
-					if ($row['m_field_name'] == $key)
+					if ($row['m_field_name'] == $field['field_name'])
 					{
 						$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
 
-						if ($field_data != '')
-						{
-							$field_data = ee()->typography->parse_type($field_data,
-																		 array(
-																					'text_format'	=> $row['m_field_fmt'],
-																					'html_format'	=> 'none',
-																					'auto_links'	=> 'n',
-																					'allow_img_url' => 'n'
-																				)
-																		);
-						}
-
-						$content = $this->_var_swap_single($val, $field_data, $content);
+						$content = $this->parseField(
+							$row['m_field_id'],
+							$field,
+							$field_data,
+							$content,
+							$this->cur_id,
+							array(
+								'channel_html_formatting' => 'none',
+								'channel_auto_link_urls' => 'n'
+							)
+						);
 					}
 				}
 			}
@@ -824,6 +837,20 @@ class Member_settings extends Member {
 									)
 							);
 					}
+
+					$member_field = $this->member_fields[$row['m_field_id']];
+					$temp_string = LD.$member_field->field_name.RD;
+					$field_data = $this->parseField(
+						$row['m_field_id'],
+						array('field_name' => 'field_data', 'modifier' => ''),
+						$field_data,
+						$temp_string,
+						$this->cur_id,
+						array(
+							'channel_html_formatting' => 'none',
+							'channel_auto_link_urls' => 'n'
+						)
+					);
 
 					$temp = str_replace('{field_name}', $row['m_field_label'], $temp);
 					$temp = str_replace('{field_description}', $row['m_field_description'], $temp);
@@ -933,6 +960,11 @@ class Member_settings extends Member {
 		{
 			foreach ($member->getDisplay()->getFields() as $field)
 			{
+				if (ee()->session->userdata['group_id'] != 1 && $field->get('field_public') != 'y')
+				{
+					continue;
+				}
+
 				$temp = $tmpl;
 
 				/** ----------------------------------------

@@ -2906,7 +2906,7 @@ class Member {
 	 * @param	string	$member_id	ID for the member this data is associated
 	 * @return	string	String with variable parsed
 	 */
-	private function parseField($field_id, $field, $data, $tagdata, $member_id)
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
 	{
 		if ( ! isset($this->member_fields[$field_id]))
 		{
@@ -2915,11 +2915,12 @@ class Member {
 
 		$member_field = $this->member_fields[$field_id];
 
-		$row = array(
+		$default_row = array(
 			'channel_html_formatting' => 'safe',
 			'channel_auto_link_urls' => 'y',
 			'channel_allow_img_urls' => 'n'
 		);
+		$row = array_merge($default_row, $row);
 
 		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
 	}
