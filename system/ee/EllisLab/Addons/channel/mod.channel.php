@@ -4058,6 +4058,9 @@ class Channel {
 			$field_index[$cat_field['field_name']] = $cat_field['field_id'];
 		}
 
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
 		foreach (ee()->TMPL->var_single as $tag)
 		{
 			$tag = ee()->api_channel_fields->get_single_field($tag);
@@ -4108,10 +4111,22 @@ class Channel {
 	{
 		$this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models');
 
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+			return $field['field_name'];
+		}, ee()->TMPL->var_single);
+
+		// Get field IDs for the category fields we need to fetch
 		$field_ids = array();
 		foreach ($this->catfields as $cat_field)
 		{
-			if ( ! isset($this->cat_field_models[$cat_field['field_id']]))
+			if (in_array($cat_field['field_name'], $clean_field_names) &&
+				! isset($this->cat_field_models[$cat_field['field_id']]))
 			{
 				$field_ids[] = $cat_field['field_id'];
 			}
@@ -4122,10 +4137,7 @@ class Channel {
 			return;
 		}
 
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-
-		$this->cat_field_models = ee('Model')->get('CategoryField', $field_ids)
+		$this->cat_field_models = ee('Model')->get('CategoryField', array_unique($field_ids))
 			->all()
 			->indexBy('field_id');
 
