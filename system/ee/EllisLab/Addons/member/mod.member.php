@@ -2665,6 +2665,28 @@ class Member {
 
 		$cond = $default_fields;
 
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+			return $field['field_name'];
+		}, ee()->TMPL->var_single);
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			$member_field_ids[] = $fields[$field_name][0];
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
 		foreach ($query->result_array() as $row)
 		{
 			$cond['avatar']	= $avatar;
@@ -2886,7 +2908,12 @@ class Member {
 	 */
 	private function parseField($field_id, $field, $data, $tagdata, $member_id)
 	{
-		$member_field = ee('Model')->get('MemberField', $field_id)->first();
+		if ( ! isset($this->member_fields[$field_id]))
+		{
+			return $tagdata;
+		}
+
+		$member_field = $this->member_fields[$field_id];
 
 		$row = array(
 			'channel_html_formatting' => 'safe',
