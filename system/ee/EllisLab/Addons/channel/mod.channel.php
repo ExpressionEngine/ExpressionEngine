@@ -2456,6 +2456,8 @@ class Channel {
 			'disable' => $disable
 		);
 
+		$this->cacheCategoryFieldModels();
+
 		ee()->session->set_cache('mod_channel', 'active', $this);
 		$this->return_data = $parser->parse($this, $data, $config);
 
@@ -4042,9 +4044,10 @@ class Channel {
 	 * @param	int		$category_id	Category ID
 	 * @param	array	$data			Array that usually contains pertinant info
 	 * @param	string	$chunk			Tagdata currently being modified
+	 * @param	array	$variables		Array of variables found in the string to be parsed
 	 * @return	string	String with category fields parsed
 	 */
-	private function parseCategoryFields($category_id, $data, $chunk)
+	public function parseCategoryFields($category_id, $data, $chunk, $variables = array())
 	{
 		// Load typography library for custom fields
 		ee()->load->library('typography');
@@ -4061,7 +4064,12 @@ class Channel {
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
 
-		foreach (ee()->TMPL->var_single as $tag)
+		if (empty($variables))
+		{
+			$variables = ee()->TMPL->var_single;
+		}
+
+		foreach ($variables as $tag)
 		{
 			$tag = ee()->api_channel_fields->get_single_field($tag);
 			$field_name = $tag['field_name'];
@@ -4109,7 +4117,7 @@ class Channel {
 	 */
 	private function cacheCategoryFieldModels()
 	{
-		$this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models');
+		$this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
 
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
@@ -4137,7 +4145,7 @@ class Channel {
 			return;
 		}
 
-		$this->cat_field_models = ee('Model')->get('CategoryField', array_unique($field_ids))
+		$this->cat_field_models += ee('Model')->get('CategoryField', array_unique($field_ids))
 			->all()
 			->indexBy('field_id');
 
