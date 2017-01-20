@@ -2676,7 +2676,10 @@ class Member {
 		$member_field_ids = array();
 		foreach ($clean_field_names as $field_name)
 		{
-			$member_field_ids[] = $fields[$field_name][0];
+			if (isset($fields[$field_name][0]))
+			{
+				$member_field_ids[] = $fields[$field_name][0];
+			}
 		}
 
 		// Cache member fields here before we start parsing
