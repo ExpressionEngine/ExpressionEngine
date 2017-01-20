@@ -559,6 +559,7 @@ class Channel_form_lib
 					}
 					elseif (in_array($key, $this->checkboxes))
 					{
+						$checkbox_fields[] = $key;
 						$this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
 					}
 					elseif (property_exists($this->entry, $name) OR $this->entry->hasCustomField($name))
@@ -1493,6 +1494,12 @@ GRID_FALLBACK;
 			{
 				if ( ! isset($_POST[$checkbox]))
 				{
+					if ($checkbox == 'allow_comments')
+					{
+						$_POST[$checkbox] = 'n';
+						continue;
+					}
+
 					$_POST[$checkbox] = '';
 				}
 			}
