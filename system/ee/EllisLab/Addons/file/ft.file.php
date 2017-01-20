@@ -226,6 +226,7 @@ class File_ft extends EE_Fieldtype {
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
+				'title' => ($file) ? $file->title : '',
 				'is_image' => ($file && $file->isImage()),
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => $fp->getUrl(),
