@@ -25,7 +25,7 @@
  */
 class EE_Channel_custom_member_field_parser implements EE_Channel_parser_component {
 
-	protected $processed_member_fields = array();
+	protected $member_field_models = array();
 
 	/**
 	 * Check if member fields are enabled.
@@ -51,7 +51,21 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		$this->processed_member_fields = array();
+		$this->member_field_models = array();
+
+		$member_field_ids = array();
+		foreach ($pre->channel()->mfields as $field_name => $attrs)
+		{
+			$member_field_ids[] = $attrs[0];
+		}
+
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_field_models = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
 		return NULL;
 	}
 
@@ -78,26 +92,32 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 
 		$key = preg_replace('/^'.$prefix.'/', '', $key);
 
-		//  parse custom member fields
-		if (isset($mfields[$key]) && array_key_exists('m_field_id_'.$mfields[$key][0], $data))
-		{
-			if ( ! isset($this->processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$key][0]]))
-			{
-				$this->processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$key][0]] = ee()->typography->parse_type(
-					$data['m_field_id_'.$mfields[$key][0]],
-					array(
-						'text_format'	=> $mfields[$key][1],
-						'html_format'	=> 'safe',
-						'auto_links'	=> 'y',
-						'allow_img_url' => 'n'
-					)
-				);
-			}
+		$field = ee()->api_channel_fields->get_single_field($key);
 
-			$tagdata = str_replace(
-				LD.$val.RD,
-				$this->processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$key][0]],
-				$tagdata
+		if ( ! isset($mfields[$field['field_name']]))
+		{
+			return $tagdata;
+		}
+
+		$field_id = $mfields[$field['field_name']][0];
+
+		//  parse custom member fields
+		if (array_key_exists('m_field_id_'.$field_id, $data)
+			&& isset($this->member_field_models[$field_id]))
+		{
+			$member_field = $this->member_field_models[$field_id];
+
+			$tagdata = $member_field->parse(
+				$data['m_field_id_'.$field_id],
+				$data['member_id'],
+				'member',
+				$field['modifier'],
+				$tagdata,
+				array(
+					'channel_html_formatting' => 'safe',
+					'channel_auto_link_urls' => 'y',
+					'channel_allow_img_urls' => 'n'
+				)
 			);
 		}
 
