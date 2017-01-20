@@ -547,6 +547,7 @@ class EE_Schema {
 			m_field_show_fmt char(1) NOT NULL default 'y',
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
+			m_field_settings text NULL,
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 
@@ -876,6 +877,7 @@ class EE_Schema {
 			`field_text_direction` CHAR(3) NOT NULL default 'ltr',
 			`field_required` char(1) NOT NULL default 'n',
 			`field_order` int(3) unsigned NOT NULL,
+			`field_settings` text NULL,
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)

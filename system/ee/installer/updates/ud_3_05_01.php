@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 3.2.1
+ * @since		Version 3.5.1
  * @filesource
  */
 
@@ -36,7 +36,7 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'install_required_fieldtypes',
+				'addFieldSettingsColumns'
 			)
 		);
 
@@ -48,26 +48,27 @@ class Updater {
 		return TRUE;
 	}
 
-	/**
-	 * Ensure required modules are installed
-	 * @return void
-	 */
-	private function install_required_fieldtypes()
+	private function addFieldSettingsColumns()
 	{
-		ee()->load->library('addons/addons_installer');
-		ee()->load->library('extensions');
+		ee()->smartforge->add_column(
+			'category_fields',
+			array(
+				'field_settings' => array(
+					'type' => 'text',
+					'null' => TRUE
+				)
+			)
+		);
 
-		$installed_fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
-
-		$required_fieldtypes = array('select', 'text', 'textarea', 'date', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
-
-		foreach ($required_fieldtypes as $fieldtype)
-		{
-			if ( ! in_array($fieldtype, $installed_fieldtypes))
-			{
-				ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE);
-			}
-		}
+		ee()->smartforge->add_column(
+			'member_fields',
+			array(
+				'm_field_settings' => array(
+					'type' => 'text',
+					'null' => TRUE
+				)
+			)
+		);
 	}
 }
 

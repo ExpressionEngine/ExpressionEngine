@@ -251,7 +251,7 @@ class Api_channel_fields extends Api {
 
 			foreach ($paths as $path)
 			{
-				if (file_exists($path.$file))
+				if (file_exists($path.$file) && file_exists($path.'addon.setup.php'))
 				{
 					$found_path = TRUE;
 
@@ -265,6 +265,8 @@ class Api_channel_fields extends Api {
 										strtolower($file)));
 			}
 
+			// Include addon.setup.php in case folks have defined constants in there
+			require_once $path.'addon.setup.php';
 			require_once $path.$file;
 
 			$this->ft_paths[$field_type] = $path;
