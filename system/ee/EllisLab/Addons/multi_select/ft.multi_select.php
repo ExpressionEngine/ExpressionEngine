@@ -117,8 +117,6 @@ class Multi_select_ft extends OptionFieldtype {
 		ee()->load->helper('custom_field');
 		$data = decode_multi_field($data);
 
-		ee()->load->library('typography');
-
 		if ($tagdata)
 		{
 			return $this->_parse_multi($data, $params, $tagdata);

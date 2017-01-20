@@ -129,13 +129,7 @@ class Select_ft extends OptionFieldtype {
 	 */
 	public function replace_value($data, $params = array(), $tagdata = FALSE)
 	{
-		// Experimental parameter, do not use
-		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
-		{
-			return ee()->functions->encode_ee_tags($data);
-		}
-
-		return $data;
+		return $this->replace_tag($data, $params, $tagdata);
 	}
 
 	/**
@@ -143,6 +137,14 @@ class Select_ft extends OptionFieldtype {
 	 */
 	public function replace_label($data, $params = array(), $tagdata = FALSE)
 	{
+		$pairs = $this->get_setting('value_label_pairs');
+		if (isset($pairs[$data]))
+		{
+			$data = $pairs[$data];
+		}
+
+		$data = $this->processTypograpghy($data);
+
 		return $this->replace_tag($data, $params, $tagdata);
 	}
 

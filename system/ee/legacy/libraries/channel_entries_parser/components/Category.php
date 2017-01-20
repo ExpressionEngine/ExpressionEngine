@@ -217,13 +217,15 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						'active'                 => ($active_cat == $v[0] || $active_cat == $v[6])
 					);
 
+					$cond = $cat_vars;
+
 					// add custom fields for conditionals prep
 					foreach ($obj->channel()->catfields as $cv)
 					{
-						$cat_vars[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
+						$cond[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
 					}
 
-					$temp = ee()->functions->prep_conditionals($temp, $cat_vars);
+					$temp = ee()->functions->prep_conditionals($temp, $cond);
 
 					// and parse the variables
 					foreach ($cat_vars as $cat_var => $cat_val)
@@ -231,30 +233,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						$temp = str_replace(LD.$cat_var.RD, $cat_val, $temp);
 					}
 
-					foreach($obj->channel()->catfields as $cv2)
-					{
-						if (isset($v['field_id_'.$cv2['field_id']]) AND $v['field_id_'.$cv2['field_id']] != '')
-						{
-							$field_content = ee()->typography->parse_type(
-								$v['field_id_'.$cv2['field_id']],
-								array(
-									'text_format'		=> $v['field_ft_'.$cv2['field_id']],
-									'html_format'		=> $v['field_html_formatting'],
-									'auto_links'		=> 'n',
-									'allow_img_url'	=> 'y'
-								)
-							);
-
-							$temp = str_replace(LD.$cv2['field_name'].RD, $field_content, $temp);
-						}
-						else
-						{
-							// garbage collection
-							$temp = str_replace(LD.$cv2['field_name'].RD, '', $temp);
-						}
-
-						$temp = reduce_double_slashes($temp);
-					}
+					$variables = ee()->functions->assign_variables($temp);
+					$temp = $obj->channel()->parseCategoryFields($v[0], $v, $temp, array_keys($variables['var_single']));
 
 					$cats .= $temp;
 
