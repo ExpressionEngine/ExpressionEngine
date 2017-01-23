@@ -34,6 +34,13 @@ class Select extends Query {
 	protected $relations = array();
 	protected $model_fields = array();
 
+	protected function getClass()
+	{
+		$model = $this->expandAlias($this->root_alias);
+		$meta = $this->store->getMetaDataReader($model);
+		return $meta->getClass();
+	}
+
 	/**
 	 *
 	 */
@@ -43,9 +50,7 @@ class Select extends Query {
 
 		$result_array = $query->get()->result_array();
 
-		$model = $this->expandAlias($this->root_alias);
-		$meta = $this->store->getMetaDataReader($model);
-		$class = $meta->getClass();
+		$class = $this->getClass();
 
 		if (! empty($result_array)
             && method_exists($class, 'getExtraData'))
@@ -75,6 +80,14 @@ class Select extends Query {
 
 		$this->root_alias = $alias;
 		$this->selectModel($query, $from, $alias);
+
+		$class = $this->getClass();
+
+		if (method_exists($class, 'augmentQuery'))
+		{
+			$this->model_fields = $class::augmentQuery($this->builder, $query, $this->model_fields);
+		}
+
 		$this->processWiths($query, $from, $alias);
 
 		// lazy load adds a where condition
@@ -377,9 +390,7 @@ class Select extends Query {
 	 */
 	protected function processWiths($query, $from, $from_alias)
 	{
-		$model = $this->expandAlias($this->root_alias);
-		$meta = $this->store->getMetaDataReader($model);
-		$class = $meta->getClass();
+		$class = $this->getClass();
 
 		$extra_withs = $class::getMetaData('auto_join');
 		if ($extra_withs)
