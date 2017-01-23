@@ -125,7 +125,10 @@ class Api_channel_fields extends Api {
 
 		foreach($fts as $key => $data)
 		{
-			$this->field_types[$key] = $this->include_handler($key);
+			if (($this->field_types[$key] = $this->include_handler($key)) === FALSE)
+			{
+				continue;
+			}
 
 			if (isset($data['settings']))
 			{
@@ -251,7 +254,7 @@ class Api_channel_fields extends Api {
 
 			foreach ($paths as $path)
 			{
-				if (file_exists($path.$file) && file_exists($path.'addon.setup.php'))
+				if (file_exists($path.$file))
 				{
 					$found_path = TRUE;
 
@@ -265,8 +268,11 @@ class Api_channel_fields extends Api {
 										strtolower($file)));
 			}
 
-			// Include addon.setup.php in case folks have defined constants in there
-			require_once $path.'addon.setup.php';
+			if (INSTALLER && strpos($path, PATH_THIRD) !== FALSE)
+			{
+				return FALSE;
+			}
+
 			require_once $path.$file;
 
 			$this->ft_paths[$field_type] = $path;
@@ -306,7 +312,8 @@ class Api_channel_fields extends Api {
 
 		// Now that we know that we're definitely working
 		// with a field_type name. Look for it.
-		if ( ! isset($this->field_types[$field_type]))
+		if ( ! isset($this->field_types[$field_type]) OR
+			$this->field_types[$field_type] === FALSE)
 		{
 			return FALSE;
 		}
