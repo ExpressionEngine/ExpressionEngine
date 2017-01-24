@@ -119,7 +119,6 @@ abstract class FieldModel extends Model {
 	public function save()
 	{
 		parent::save();
-		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -127,6 +126,8 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterInsert()
 	{
+		$this->callPostSaveSettings();
+
 		$ft = $this->getFieldtypeInstance();
 
 		$data = $this->getValues();
@@ -160,6 +161,8 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterUpdate($changed)
 	{
+		$this->callPostSaveSettings();
+
 		$old_type = (isset($changed['field_type'])) ? $changed['field_type'] : $this->field_type;
 		$old_action = (isset($changed['field_type'])) ? 'delete' : 'get_info';
 
