@@ -237,22 +237,25 @@ class ChannelEntry extends ContentModel {
 			}
 		}
 
-		$field_ids = array_unique($field_ids);
-
-		$fields = ee('Model')->get('ChannelField')
-			->fields('field_id')
-			->filter('field_id', 'IN', $field_ids)
-			->filter('field_data_in_channel_data', 'n')
-			->all();
-
-		foreach ($fields->pluck('field_id') as $field_id)
+		if ( ! empty($field_ids))
 		{
-			$table_alias = "ChannelEntry_field_id_{$field_id}";
-			$column_alias = "ChannelEntry__field_id_{$field_id}";
+			$field_ids = array_unique($field_ids);
 
-			$query->select("{$table_alias}.data as {$column_alias}", FALSE);
-			$query->join("channel_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$model_fields['ChannelEntry']['ChannelEntry__entry_id']}", 'LEFT');
-			$model_fields['ChannelEntry'][$column_alias] = $table_alias . '.data';
+			$fields = ee('Model')->get('ChannelField')
+				->fields('field_id')
+				->filter('field_id', 'IN', $field_ids)
+				->filter('field_data_in_channel_data', 'n')
+				->all();
+
+			foreach ($fields->pluck('field_id') as $field_id)
+			{
+				$table_alias = "ChannelEntry_field_id_{$field_id}";
+				$column_alias = "ChannelEntry__field_id_{$field_id}";
+
+				$query->select("{$table_alias}.data as {$column_alias}", FALSE);
+				$query->join("channel_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$model_fields['ChannelEntry']['ChannelEntry__entry_id']}", 'LEFT');
+				$model_fields['ChannelEntry'][$column_alias] = $table_alias . '.data';
+			}
 		}
 
 		return $model_fields;
