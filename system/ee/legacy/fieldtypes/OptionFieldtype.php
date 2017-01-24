@@ -89,16 +89,15 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			if (isset($data['value_label_pairs']['rows']))
 			{
 				$data['value_label_pairs'] = $data['value_label_pairs']['rows'];
-			}
 
-			if ( ! isset($data['value_label_pairs']))
-			{
-				$data['value_label_pairs'] = array();
+				foreach ($data['value_label_pairs'] as $row)
+				{
+					$pairs[$row['value']] = $row['label'];
+				}
 			}
-
-			foreach ($data['value_label_pairs'] as $row)
+			elseif (isset($data['value_label_pairs']))
 			{
-				$pairs[$row['value']] = $row['label'];
+				$pairs = $data['value_label_pairs'];
 			}
 
 			if ($this->content_type() == 'grid')
