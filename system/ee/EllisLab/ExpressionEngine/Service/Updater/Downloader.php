@@ -197,8 +197,24 @@ class Downloader {
 
 		if ( ! empty($paths))
 		{
+			// This bit of code before the exception truncates the full server
+			// path from the path strings and shortens them to just their parent
+			// theme or system folder
+			$search = array_map(function($theme_path)
+			{
+				return realpath($theme_path.'../../').'/';
+			}, $theme_paths);
+
+			$search[] = realpath(SYSPATH.'../').'/';
+			$search = array_unique($search);
+
+			$paths = array_map(function($path) use ($search)
+			{
+				return str_replace($search, '', $path);
+			}, $paths);
+
 			throw new UpdaterException(
-				"The following paths are not writable:\n" . implode("\n", $paths),
+				"The following paths are not writable:\n " . implode("\n", $paths),
 			1);
 		}
 	}
