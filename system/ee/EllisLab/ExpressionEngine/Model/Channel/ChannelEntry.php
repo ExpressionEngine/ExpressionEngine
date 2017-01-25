@@ -423,20 +423,19 @@ class ChannelEntry extends ContentModel {
 		{
 			$this->allow_comments = $this->Channel->deft_comments;
 		}
-
-		$this->saveFieldData();
 	}
 
     /**
      * Find all the fields that are stored in their own tables. For those that
 	 * are dirty (have changed) we update or insert the changes into their
-	 * tables. As this requires a list of dirty properties this needs to happen
-	 * before save/insert/update because just prior to the after events this
-	 * object will be marked clean and all changes will be lost.
+	 * tables. If the list of changed properties is not supplied we will get
+	 * the list of dirty properties.
+	 *
+	 * @param array $changed An associative array of class properties that have changed
      */
-	protected function saveFieldData()
+	protected function saveFieldData($changed = NULL)
 	{
-		$dirty = $this->getDirty();
+		$dirty = ($changed) ?: $this->getDirty();
 
         // Optimization: if there are no dirty fields, there's nothing to do
         if (empty($dirty))
@@ -563,11 +562,14 @@ class ChannelEntry extends ContentModel {
 				$this->getId()
 			);
 		}
+
+		$this->saveFieldData($this->getValues());
 	}
 
 	public function onAfterUpdate($changed)
 	{
 		$this->saveVersion();
+		$this->saveFieldData($changed);
 	}
 
 	public function onBeforeDelete()
