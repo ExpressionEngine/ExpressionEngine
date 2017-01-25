@@ -446,50 +446,54 @@ class ChannelEntry extends ContentModel {
 
 		foreach ($this->Channel->CustomFields as $field)
 		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->field_data_in_channel_data)
+			{
+				continue;
+			}
+
             $field_id = $field->field_id;
 			$data_field = "field_id_{$field_id}";
 			$meta_data_field = "field_ft_{$field_id}";
 
-			if ($field->field_data_in_channel_data === FALSE
-				&& (array_key_exists($data_field, $dirty)
-					|| array_key_exists($meta_data_field, $dirty)
-					)
-				)
+			$values = array();
+
+			if (array_key_exists($data_field, $dirty))
 			{
-    			$values = array();
+				$values['data'] = $this->$data_field;
+			}
 
+			if (array_key_exists($meta_data_field, $dirty))
+			{
+				$values['metadata'] = $this->$meta_data_field;
+			}
 
-    			if (array_key_exists($data_field, $dirty))
-    			{
-    				$values['data'] = $this->$data_field;
-    			}
+			// Skip this field if neither it nor its meta data changed
+			if (empty($values))
+			{
+				continue;
+			}
 
-    			if (array_key_exists($meta_data_field, $dirty))
-    			{
-    				$values['metadata'] = $this->$meta_data_field;
-    			}
+			// If there was data before, we update
+			// If there was no data before, we insert
+			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
 
-    			// If there was data before, we update
-    			// If there was no data before, we insert
-    			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
+            $update = ( ! is_null($this->getBackup($data_field)) && ! is_null($this->hasBackup($meta_data_field)));
 
-                $update = ( ! is_null($this->getBackup($data_field)) && ! is_null($this->hasBackup($meta_data_field)));
+			$query = ee('Model/Datastore')->rawQuery();
 
-    			$query = ee('Model/Datastore')->rawQuery();
-
-    			if ($update)
-    			{
-        			$query->set($values);
-    				$query->where('entry_id', $this->getId());
-    				$query->update("channel_data_field_{$field_id}");
-    			}
-    			else
-    			{
-    				$values['entry_id'] = $this->getId();
-        			$query->set($values);
-    				$query->insert("channel_data_field_{$field_id}");
-    			}
-            }
+			if ($update)
+			{
+    			$query->set($values);
+				$query->where('entry_id', $this->getId());
+				$query->update("channel_data_field_{$field_id}");
+			}
+			else
+			{
+				$values['entry_id'] = $this->getId();
+    			$query->set($values);
+				$query->insert("channel_data_field_{$field_id}");
+			}
 		}
 	}
 
