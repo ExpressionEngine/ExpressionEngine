@@ -496,6 +496,42 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
+	/**
+	 * Deletes entry data in the field tables.
+	 */
+	protected function deleteFieldData()
+	{
+		$tables = array();
+
+		$fields = $this->Channel->CustomFields;
+
+		if ($fields->count() == 0)
+		{
+			$fields = $this->getModelFacade()
+				->get('Channel', $this->channel_id)
+				->first()
+				->CustomFields;
+		}
+
+		foreach ($fields as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->field_data_in_channel_data)
+			{
+				continue;
+			}
+
+			$tables[] = "channel_data_field_{$field->field_id}";
+		}
+
+		if ( ! empty($tables))
+		{
+			ee('Model/Datastore')->rawQuery()
+				->where('entry_id', $this->getId())
+				->delete($tables);
+		}
+	}
+
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
@@ -596,6 +632,8 @@ class ChannelEntry extends ContentModel {
 			// restore our package and view paths
 			ee()->load->remove_package_path($info->getPath());
 		}
+
+		$this->deleteFieldData();
 	}
 
 	public function onAfterDelete()
