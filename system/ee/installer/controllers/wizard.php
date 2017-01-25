@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.5.0';	// The version being installed
+	public $version           = '3.5.1';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -1635,9 +1635,11 @@ class Wizard extends CI_Controller {
 			'server_offset'             => '',
 			'default_site_timezone'     => date_default_timezone_get(),
 			'mail_protocol'             => 'mail',
+			'email_newline'             => '\n', // single-quoted for portability
 			'smtp_server'               => '',
 			'smtp_username'             => '',
 			'smtp_password'             => '',
+			'email_smtp_crypto'         => 'ssl',
 			'email_debug'               => 'n',
 			'email_charset'             => 'utf-8',
 			'email_batchmode'           => 'n',
@@ -1784,9 +1786,11 @@ class Wizard extends CI_Controller {
 			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',
+			'email_newline',
 			'smtp_server',
 			'smtp_username',
 			'smtp_password',
+			'email_smtp_crypto',
 			'email_debug',
 			'email_charset',
 			'email_batchmode',

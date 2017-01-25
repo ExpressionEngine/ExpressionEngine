@@ -77,10 +77,12 @@ class SystemPreferences extends CustomType {
 	protected $date_format;
 	protected $time_format;
 	protected $mail_protocol;
+	protected $email_newline;
 	protected $smtp_server;
 	protected $smtp_port;
 	protected $smtp_username;
 	protected $smtp_password;
+	protected $email_smtp_crypto;
 	protected $email_debug;
 	protected $email_charset;
 	protected $email_batchmode;

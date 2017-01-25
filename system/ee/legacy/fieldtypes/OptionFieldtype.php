@@ -158,7 +158,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		}
 
 		// Load from validation error
-		if (isset($_POST['value_label_pairs']['rows']) && $_POST['field_type'] == $field_type)
+		if (isset($_POST['value_label_pairs']['rows']) &&
+			((isset($_POST['field_type']) && $_POST['field_type'] == $field_type) OR (isset($_POST['m_field_type']) && $_POST['m_field_type'] == $field_type)))
 		{
 			foreach ($_POST['value_label_pairs']['rows'] as $row)
 			{
@@ -395,13 +396,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$pairs = $this->get_setting('value_label_pairs');
-		if (isset($pairs[$data]))
-		{
-			$data = $pairs[$data];
-		}
-
-		return $this->processTypograpghy($data);
+		return $data;
 	}
 
 	/**
@@ -412,8 +407,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	 */
 	protected function processTypograpghy($string)
 	{
-		$text_format = ($this->content_type() == 'grid')
-			? $this->get_setting('field_fmt', 'none') : $this->row('field_ft_'.$this->field_id);
+		$text_format = $this->row('field_ft_'.$this->field_id) ?: $this->get_setting('field_fmt', 'none');
 
 		ee()->load->library('typography');
 
@@ -520,14 +514,12 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 				if (isset($pairs[$item]))
 				{
-					$vars['item']       = $pairs[$item];
 					$vars['item:label'] = $pairs[$item];
 				}
 
 				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
 				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
 
-				$vars['item'] = $this->processTypograpghy($vars['item']);
 				$vars['item:label'] = $this->processTypograpghy($vars['item:label']);
 
 				$chunk .= ee()->functions->var_swap($tmp, $vars);

@@ -423,6 +423,13 @@ class Export {
 					}
 				}
 			}
+			elseif ($column['col_type'] == 'file')
+			{
+				if ($column['col_settings']['allowed_directories'] != 'all')
+				{
+					$this->exportUploadDestination($column['col_settings']['allowed_directories']);
+				}
+			}
 
 			$col = new StdClass();
 

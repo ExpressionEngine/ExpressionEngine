@@ -328,7 +328,9 @@ class FieldFacade {
 			'field_name'			=> $field_name
 		);
 
-		$settings = array_merge($info, $settings, $info['field_settings']);
+		$field_settings = empty($info['field_settings']) ? array() : $info['field_settings'];
+
+		$settings = array_merge($info, $settings, $field_settings);
 
 		ee()->legacy_api->instantiate('channel_fields');
 		ee()->api_channel_fields->set_settings($info['field_id'], $settings);

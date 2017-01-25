@@ -226,6 +226,7 @@ class File_ft extends EE_Fieldtype {
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
+				'title' => ($file) ? $file->title : '',
 				'is_image' => ($file && $file->isImage()),
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => $fp->getUrl(),
@@ -416,7 +417,10 @@ JSC;
 			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
 		}
 
-		$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
+		if (isset($file_info['file_id']))
+		{
+			$file_info['id_path'] = array('/'.$file_info['file_id'], array('path_variable' => TRUE));
+		}
 
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE && isset($file_info['file_id']))
@@ -537,6 +541,7 @@ JSC;
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
+			->order('name', 'asc')
 			->all()
 			->getDictionary('id', 'name');
 

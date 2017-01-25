@@ -2660,7 +2660,35 @@ class Member {
 		ee()->load->library('typography');
 		ee()->typography->initialize();
 
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
 		$cond = $default_fields;
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+			return $field['field_name'];
+		}, ee()->TMPL->var_single);
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($fields[$field_name][0]))
+			{
+				$member_field_ids[] = $fields[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
 
 		foreach ($query->result_array() as $row)
 		{
@@ -2851,28 +2879,53 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
 				}
 
+				$field = ee()->api_channel_fields->get_single_field($val);
+				$val = $field['field_name'];
+
 				// parse custom member fields
 				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
 				{
-					ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-														$val,
-														ee()->typography->parse_type(
-															$row['m_field_id_'.$fields[$val]['0']],
-																				array(
-																						'text_format'	=> $fields[$val]['1'],
-																						'html_format'	=> 'safe',
-																						'auto_links'	=> 'y',
-																						'allow_img_url' => 'n'
-																					  )
-																			  ),
-														ee()->TMPL->tagdata
-													  );
+					ee()->TMPL->tagdata = $this->parseField(
+						$fields[$val]['0'],
+						$field,
+						$row['m_field_id_'.$fields[$val]['0']],
+						ee()->TMPL->tagdata,
+						$member_id
+					);
 				}
-				//else { echo 'm_field_id_'.$fields[$val]['0']; }
 			}
 		}
 
 		return ee()->TMPL->tagdata;
+	}
+
+	/**
+	 * Parse a custom member field
+	 *
+	 * @param	int		$field_id	Member field ID
+	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	mixed	$data		Data for this field
+	 * @param	string	$tagdata	Tagdata to perform the replacement in
+	 * @param	string	$member_id	ID for the member this data is associated
+	 * @return	string	String with variable parsed
+	 */
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
+	{
+		if ( ! isset($this->member_fields[$field_id]))
+		{
+			return $tagdata;
+		}
+
+		$member_field = $this->member_fields[$field_id];
+
+		$default_row = array(
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		);
+		$row = array_merge($default_row, $row);
+
+		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
 	}
 
 	// --------------------------------------------------------------------
