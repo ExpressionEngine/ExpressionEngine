@@ -215,7 +215,7 @@ $lang = array(
 
 'email_charset' => 'Character encoding',
 
-'email_charset_desc' => 'Email require character encoding to be properly formatted. UTF-8 is recommended.',
+'email_charset_desc' => 'Email requires character encoding to be properly formatted. UTF-8 is recommended.',
 
 'mail_protocol' => 'Protocol',
 
@@ -227,7 +227,7 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
-'smtp_port' => 'Server Port',
+'smtp_port' => 'Server port',
 
 'sending_options' => 'Sending Options',
 
@@ -239,11 +239,25 @@ $lang = array(
 
 'word_wrap_desc' => 'When set to <b>enable</b>, the system will wrap long lines of text to a more readable width.',
 
-'php_mail' => 'PHP Mail',
+'php_mail' => 'PHP mail',
 
 'sendmail' => 'Sendmail',
 
 'smtp' => 'SMTP',
+
+'email_smtp_crypto' => 'Connection type',
+
+'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
+
+'ssl' => 'SSL (ssl://)',
+
+'tls' => 'STARTTLS',
+
+'unencrypted' => 'Unencrypted (not recommended)',
+
+'email_newline' => 'Newline character',
+
+'email_newline_desc' => '\\\n provides the widest compatibility; if this setting does not work for you, refer to your email provider for instructions.',
 
 'plain_text' => 'Plain Text',
 
@@ -384,9 +398,9 @@ $lang = array(
 
 'comment_word_censoring_desc' => 'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
 
-'comment_moderation_override' => 'Moderate expired entries?',
+'comment_moderation_override' => 'Moderate after comments expire?',
 
-'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an expired entry will be submitted as closed and require review by a moderator.',
+'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an entry with comments expired will be submitted as closed and require review by a moderator.',
 
 'comment_edit_time_limit' => 'Comment edit time limit (in seconds)',
 

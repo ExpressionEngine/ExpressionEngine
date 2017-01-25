@@ -85,6 +85,16 @@ class Member_register extends Member {
 			// Loop through the query result
 			$str = '';
 
+			$member_field_ids = array();
+			foreach ($query->result_array() as $row)
+			{
+				$member_field_ids[] = $row['m_field_id'];
+			}
+
+			$member_fields = ee('Model')->get('MemberField', $member_field_ids)
+				->all()
+				->indexBy('m_field_id');
+
 			foreach ($query->result_array() as $row)
 			{
 				$field  = '';
@@ -116,53 +126,10 @@ class Member_register extends Member {
 
 				// Parse input fields
 
-				// Set field width
-				if (strpos($row['m_field_width'], 'px') === FALSE &&
-					strpos($row['m_field_width'], '%') === FALSE)
-				{
-					$width = $row['m_field_width'].'px';
-				}
-				else
-				{
-					$width = $row['m_field_width'];
-				}
-
-				//  Textarea fields
-				if ($row['m_field_type'] == 'textarea')
-				{
-					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
-
-					$field = "<textarea style=\"width:{$width};\" name=\"m_field_id_".$row['m_field_id']."\"  cols='50' rows='{$rows}' class=\"textarea\" ></textarea>";
-				}
-				else
-				{
-					//  Text fields
-					if ($row['m_field_type'] == 'text')
-					{
-						$maxlength = ($row['m_field_maxl'] == 0) ? '100' : $row['m_field_maxl'];
-
-						$field = "<input type=\"text\" name=\"m_field_id_".$row['m_field_id']."\" value=\"\" class=\"input\" maxlength=\"$maxlength\" size=\"40\" style=\"width:{$width};\" />";
-					}
-					elseif ($row['m_field_type'] == 'select')
-					{
-						//  Drop-down fields
-						$select_list = trim($row['m_field_list_items']);
-
-						if ($select_list != '')
-						{
-							$field = "<select name=\"m_field_id_".$row['m_field_id']."\" class=\"select\">";
-
-							foreach (explode("\n", $select_list) as $v)
-							{
-								$v = trim($v);
-
-								 $field .= "<option value=\"$v\">$v</option>";
-							}
-
-							 $field .= "</select>";
-						}
-					}
-				}
+				ee()->load->helper('form');
+				$field = $member_fields[$row['m_field_id']]->getField();
+				$field->setName('m_field_id_'.$row['m_field_id']);
+				$field = $field->getForm();
 
 				$temp = str_replace("{field}", $field, $temp);
 
@@ -316,6 +283,16 @@ class Member_register extends Member {
 
 		if ($query->num_rows() > 0)
 		{
+			$member_field_ids = array();
+			foreach ($query->result_array() as $row)
+			{
+				$member_field_ids[] = $row['m_field_id'];
+			}
+
+			$member_fields = ee('Model')->get('MemberField', $member_field_ids)
+				->all()
+				->indexBy('m_field_id');
+
 			foreach ($query->result_array() as $row)
 			{
 				$field_name = 'm_field_id_'.$row['m_field_id'];
@@ -326,9 +303,20 @@ class Member_register extends Member {
 				// Basic validations
 				if ($row['m_field_type'] == 'select' && $valid)
 				{
-					// Ensure their selection is actually a valid choice
-					$options = explode("\n", $row['m_field_list_items']);
+					$field_model = $member_fields[$row['m_field_id']];
+					$field_settings = $field_model->getField()->getItem('field_settings');
 
+					// Get field options
+					if (isset($field_settings['value_label_pairs']) && ! empty($field_settings['value_label_pairs']))
+					{
+						$options = array_keys($field_settings['value_label_pairs']);
+					}
+					else
+					{
+						$options = explode("\n", $row['m_field_list_items']);
+					}
+
+					// Ensure their selection is actually a valid choice
 					if (! in_array(htmlentities($_POST[$field_name]), $options))
 					{
 						$valid = FALSE;
@@ -381,7 +369,7 @@ class Member_register extends Member {
 		// Assign the data
 		$data = array(
 			'username'		=> trim_nbs(ee()->input->post('username')),
-			'password'		=> sha1($_POST['password']),
+			'password'		=> ee()->input->post('password'),
 			'ip_address'	=> ee()->input->ip_address(),
 			'join_date'		=> ee()->localize->now,
 			'email'			=> trim_nbs(ee()->input->post('email')),
@@ -488,6 +476,10 @@ class Member_register extends Member {
 			return ee()->output->show_user_error('submission', $errors);
 		}
 
+		ee()->load->library('auth');
+		$hashed_password = ee()->auth->hash_password($member->password);
+		$member->password = $hashed_password['password'];
+		$member->salt = $hashed_password['salt'];
 
 		// Do we require captcha?
 		if (ee('Captcha')->shouldRequireCaptcha())

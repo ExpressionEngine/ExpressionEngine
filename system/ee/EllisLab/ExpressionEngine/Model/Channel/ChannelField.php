@@ -170,7 +170,7 @@ class ChannelField extends FieldModel {
 				$field_info = array(
 					'field'     => 'field_id_' . $this->field_id,
 					'visible'   => TRUE,
-					'collapsed' => FALSE
+					'collapsed' => $this->getProperty('field_is_hidden')
 				);
 				$field_layout[0]['fields'][] = $field_info;
 

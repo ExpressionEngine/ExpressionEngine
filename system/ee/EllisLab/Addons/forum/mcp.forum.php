@@ -181,6 +181,7 @@ class Forum_mcp extends CP_Controller {
 					'limit'             => 0,
 					'reorder'           => TRUE,
 					'reorder_header'    => TRUE,
+					'checkbox_header'   => TRUE,
 					'sortable'          => FALSE,
 					'class'             => $class,
 					'wrap'              => FALSE,
@@ -199,7 +200,12 @@ class Forum_mcp extends CP_Controller {
 							'type'	=> Table::COL_TOOLBAR,
 						),
 						array(
-							'type'	=> Table::COL_CHECKBOX
+							'type'	=> Table::COL_CHECKBOX,
+							'content' => form_checkbox(array(
+								'name' => 'selection[]',
+								'value' => $category->getId(),
+								'data-confirm' => lang('forum') . ' <b>' . htmlentities($category->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
+							))
 						)
 					)
 				);
@@ -229,7 +235,7 @@ class Forum_mcp extends CP_Controller {
 							'name' => 'selection[]',
 							'value' => $forum->forum_id,
 							'data'	=> array(
-								'confirm' => lang('forum') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
+								'confirm' => lang('forum') . ' <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
 							)
 						)
 					);

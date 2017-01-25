@@ -432,6 +432,8 @@ class Channel {
 				}
 			}
 
+			$this->cacheCategoryFieldModels();
+
 			$field_sqla = ", cg.field_html_formatting, fd.* ";
 			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
 							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
@@ -2454,6 +2456,8 @@ class Channel {
 			'disable' => $disable
 		);
 
+		$this->cacheCategoryFieldModels();
+
 		ee()->session->set_cache('mod_channel', 'active', $this);
 		$this->return_data = $parser->parse($this, $data, $config);
 
@@ -2788,6 +2792,8 @@ class Channel {
 					}
 				}
 
+				$this->cacheCategoryFieldModels();
+
 				$field_sqla = ", cg.field_html_formatting, fd.* ";
 				$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
 								LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
@@ -3060,34 +3066,7 @@ class Channel {
 					}
 				}
 
-				// Load typography library for custom fields
-				ee()->load->library('typography');
-				ee()->typography->initialize(array(
-					'convert_curly'	=> FALSE
-				));
-
-				// parse custom fields
-				foreach($this->catfields as $cv)
-				{
-					if (isset($val['field_id_'.$cv['field_id']]) AND $val['field_id_'.$cv['field_id']] != '')
-					{
-						$field_content = ee()->typography->parse_type(
-							$val['field_id_'.$cv['field_id']],
-							array(
-								'text_format'		=> $val['field_ft_'.$cv['field_id']],
-								'html_format'		=> $val['field_html_formatting'],
-								'auto_links'		=> 'n',
-								'allow_img_url'	=> 'y'
-							)
-						);
-						$chunk = str_replace(LD.$cv['field_name'].RD, $field_content, $chunk);
-					}
-					else
-					{
-						// garbage collection
-						$chunk = str_replace(LD.$cv['field_name'].RD, '', $chunk);
-					}
-				}
+				$chunk = $this->parseCategoryFields($cat_vars['category_id'], $val, $chunk);
 
 				/** --------------------------------
 				/**  {count}
@@ -3382,6 +3361,8 @@ class Channel {
 					}
 				}
 
+				$this->cacheCategoryFieldModels();
+
 				$field_sqla = ", cg.field_html_formatting, fd.* ";
 				$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
 								LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
@@ -3523,34 +3504,7 @@ class Channel {
 							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
-						// Load typography library for custom fields
-						ee()->load->library('typography');
-						ee()->typography->initialize(array(
-							'convert_curly'	=> FALSE
-						));
-
-						// parse custom fields
-						foreach($this->catfields as $cfv)
-						{
-							if (isset($row['field_id_'.$cfv['field_id']]) AND $row['field_id_'.$cfv['field_id']] != '')
-							{
-								$field_content = ee()->typography->parse_type(
-									$row['field_id_'.$cfv['field_id']],
-									array(
-										'text_format'	=> $row['field_ft_'.$cfv['field_id']],
-										'html_format'	=> $row['field_html_formatting'],
-										'auto_links'	=> 'n',
-										'allow_img_url'	=> 'y'
-									)
-								);
-								$chunk = str_replace(LD.$cfv['field_name'].RD, $field_content, $chunk);
-							}
-							else
-							{
-								// garbage collection
-								$chunk = str_replace(LD.$cfv['field_name'].RD, '', $chunk);
-							}
-						}
+						$chunk = $this->parseCategoryFields($cat_vars['category_id'], $row, $chunk);
 
 						// Check to see if we need to parse {filedir_n}
 						if (strpos($chunk, '{filedir_') !== FALSE)
@@ -3675,6 +3629,8 @@ class Channel {
 					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
 				}
 			}
+
+			$this->cacheCategoryFieldModels();
 
 			$field_sqla = ", cg.field_html_formatting, fd.* ";
 			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
@@ -4004,35 +3960,7 @@ class Channel {
 					}
 				}
 
-				// Load typography library for custom fields
-				ee()->load->library('typography');
-				ee()->typography->initialize(array(
-					'convert_curly'	=> FALSE
-				));
-
-				// parse custom fields
-				foreach($this->catfields as $ccv)
-				{
-					if (isset($val['field_id_'.$ccv['field_id']]) AND $val['field_id_'.$ccv['field_id']] != '')
-					{
-						$field_content = ee()->typography->parse_type(
-							$val['field_id_'.$ccv['field_id']],
-							array(
-								'text_format'	=> $val['field_ft_'.$ccv['field_id']],
-								'html_format'	=> $val['field_html_formatting'],
-								'auto_links'	=> 'n',
-								'allow_img_url'	=> 'y'
-							)
-						);
-						$chunk = str_replace(LD.$ccv['field_name'].RD, $field_content, $chunk);
-					}
-					else
-					{
-						// garbage collection
-						$chunk = str_replace(LD.$ccv['field_name'].RD, '', $chunk);
-					}
-				}
-
+				$chunk = $this->parseCategoryFields($cat_vars['category_id'], $val, $chunk);
 
 				/** --------------------------------
 				/**  {count}
@@ -4108,6 +4036,120 @@ class Channel {
 			}
 		}
 		return $open;
+	}
+
+	/**
+	 * Parse category fields
+	 *
+	 * @param	int		$category_id	Category ID
+	 * @param	array	$data			Array that usually contains pertinant info
+	 * @param	string	$chunk			Tagdata currently being modified
+	 * @param	array	$variables		Array of variables found in the string to be parsed
+	 * @return	string	String with category fields parsed
+	 */
+	public function parseCategoryFields($category_id, $data, $chunk, $variables = array())
+	{
+		// Load typography library for custom fields
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'convert_curly'	=> FALSE
+		));
+
+		$field_index = array();
+		foreach ($this->catfields as $cat_field)
+		{
+			$field_index[$cat_field['field_name']] = $cat_field['field_id'];
+		}
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		if (empty($variables))
+		{
+			$variables = ee()->TMPL->var_single;
+		}
+
+		foreach ($variables as $tag)
+		{
+			$tag = ee()->api_channel_fields->get_single_field($tag);
+			$field_name = $tag['field_name'];
+
+			if ( ! isset($field_index[$field_name]))
+			{
+				continue;
+			}
+
+			$field_id = $field_index[$field_name];
+
+			if (isset($data['field_id_'.$field_id]))
+			{
+				$cat_field = $this->cat_field_models[$field_id];
+
+				$chunk = $cat_field->parse(
+					$data['field_id_'.$field_id],
+					$category_id,
+					'category',
+					$tag['modifier'],
+					$chunk,
+					array(
+						'channel_html_formatting' => $data['field_html_formatting'],
+						'channel_auto_link_urls' => 'n',
+						'channel_allow_img_urls' => 'y'
+					)
+				);
+			}
+			// Garbage collection
+			else
+			{
+				if ($tag['modifier'])
+				{
+					$field_name = $field_name.':'.$tag['modifier'];
+				}
+				$chunk = str_replace(LD.$field_name.RD, '', $chunk);
+			}
+		}
+
+		return $chunk;
+	}
+
+	/**
+	 * Called after $this->catfields is populated, caches associated CategoryField models
+	 */
+	private function cacheCategoryFieldModels()
+	{
+		$this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+			return $field['field_name'];
+		}, ee()->TMPL->var_single);
+
+		// Get field IDs for the category fields we need to fetch
+		$field_ids = array();
+		foreach ($this->catfields as $cat_field)
+		{
+			if (in_array($cat_field['field_name'], $clean_field_names) &&
+				! isset($this->cat_field_models[$cat_field['field_id']]))
+			{
+				$field_ids[] = $cat_field['field_id'];
+			}
+		}
+
+		if (empty($field_ids))
+		{
+			return;
+		}
+
+		$this->cat_field_models += ee('Model')->get('CategoryField', array_unique($field_ids))
+			->all()
+			->indexBy('field_id');
+
+		ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
 	}
 
 	// ------------------------------------------------------------------------
@@ -4294,6 +4336,8 @@ class Channel {
 				}
 			}
 
+			$this->cacheCategoryFieldModels();
+
 			$field_sqla = ", cg.field_html_formatting, fd.* ";
 			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
 							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
@@ -4365,34 +4409,7 @@ class Channel {
 			ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 		}
 
-		// Load typography library for custom fields
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'convert_curly'	=> FALSE
-		));
-
-		// parse custom fields
-		foreach($this->catfields as $ccv)
-		{
-			if ($query->row('field_id_'.$ccv['field_id']) AND $query->row('field_id_'.$ccv['field_id']) != '')
-			{
-				$field_content = ee()->typography->parse_type(
-					$query->row('field_id_'.$ccv['field_id']),
-					array(
-						'text_format'	=> $query->row('field_ft_'.$ccv['field_id']),
-						'html_format'	=> $query->row('field_html_formatting'),
-						'auto_links'	=> 'n',
-						'allow_img_url'	=> 'y'
-					)
-				);
-				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, $field_content, ee()->TMPL->tagdata);
-			}
-			else
-			{
-				// garbage collection
-				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, '', ee()->TMPL->tagdata);
-			}
-		}
+		ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], $row, ee()->TMPL->tagdata);
 
 		return ee()->TMPL->tagdata;
 	}

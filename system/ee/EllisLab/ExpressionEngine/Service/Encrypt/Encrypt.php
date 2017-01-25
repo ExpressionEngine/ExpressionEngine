@@ -101,7 +101,7 @@ class Encrypt {
 	{
 		$key = ($key) ?: $this->default_key;
 		$iv = $this->generateInitializationVector();
-		return $iv.openssl_encrypt($string, $this->method, $key, $this->options, $iv);
+		return $this->addNoise($iv.openssl_encrypt($string, $this->method, $key, $this->options, $iv), $key);
 	}
 
 	/**
@@ -115,12 +115,83 @@ class Encrypt {
 	{
 		$key = ($key) ?: $this->default_key;
 
+		$data = $this->removeNoise($data, $key);
+
 		$iv_size = openssl_cipher_iv_length($this->method);
 
 		$iv = ($this->mb_available) ? mb_substr($data, 0, $iv_size, 'ascii') : substr($data, 0, $iv_size);
 		$data = ($this->mb_available) ? mb_substr($data, $iv_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $iv_size);
 
 		return openssl_decrypt($data, $this->method, $key, $this->options, $iv);
+	}
+
+	/**
+	 * Adds permuted noise to the IV + encrypted data to protect
+	 * against Man-in-the-middle attacks on CBC mode ciphers
+	 * http://www.ciphersbyritter.com/GLOSSARY.HTM#IV
+	 *
+	 * Function description
+	 *
+	 * @access	private
+	 * @param	string
+	 * @param	string
+	 * @return	string
+	 */
+	protected function addNoise($data, $key)
+	{
+		$keyhash = sha1($key);
+		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$str = '';
+		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+
+        for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
+		{
+			if ($j >= $keylen)
+			{
+				$j = 0;
+			}
+
+			$str .= chr((ord($data[$i]) + ord($keyhash[$j])) % 256);
+		}
+
+		return $str;
+	}
+
+	/**
+	 * Removes permuted noise from the IV + encrypted data, reversing
+	 * _add_cipher_noise()
+	 *
+	 * Function description
+	 *
+	 * @access	public
+	 * @param	type
+	 * @return	type
+	 */
+	protected function removeNoise($data, $key)
+	{
+		$keyhash = sha1($key);
+		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$str = '';
+		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+
+		for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
+		{
+			if ($j >= $keylen)
+			{
+				$j = 0;
+			}
+
+			$temp = ord($data[$i]) - ord($keyhash[$j]);
+
+			if ($temp < 0)
+			{
+				$temp = $temp + 256;
+			}
+
+			$str .= chr($temp);
+		}
+
+		return $str;
 	}
 
 	/**

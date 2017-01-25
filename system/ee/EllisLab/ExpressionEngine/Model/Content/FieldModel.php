@@ -119,7 +119,6 @@ abstract class FieldModel extends Model {
 	public function save()
 	{
 		parent::save();
-		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -128,6 +127,17 @@ abstract class FieldModel extends Model {
 	public function onAfterInsert()
 	{
 		$this->createTable();
+		$this->callPostSaveSettings();
+
+		$ft = $this->getFieldtypeInstance();
+
+		$data = $this->getValues();
+		$data['ee_action'] = 'add';
+
+		$columns = $ft->settings_modify_column($data);
+		$columns = $this->ensureDefaultColumns($columns);
+
+		$this->createColumns($columns);
 	}
 
 	/**
@@ -160,6 +170,8 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterUpdate($changed)
 	{
+		$this->callPostSaveSettings();
+
 		$old_type = (isset($changed['field_type'])) ? $changed['field_type'] : $this->field_type;
 		$old_action = (isset($changed['field_type'])) ? 'delete' : 'get_info';
 
@@ -297,7 +309,6 @@ abstract class FieldModel extends Model {
 			return;
 		}
 
-		$columns = $this->ensureDefaultColumns($columns);
 		$columns = array_keys($columns);
 
 		$data_table = $this->getDataTable();
@@ -405,6 +416,52 @@ abstract class FieldModel extends Model {
 	{
 		ee()->load->library('smartforge');
 		ee()->smartforge->drop_table($this->getTableName());
+	}
+
+	/**
+	 * TEMPORARY, VOLATILE, DO NOT USE
+	 *
+	 * @param	mixed	$data			Data for this field
+	 * @param	int		$content_id		Content ID to pass to the fieldtype
+	 * @param	string	$content_type	Content type to pass to the fieldtype
+	 * @param	string	$modifier		Variable modifier, if present
+	 * @param	string	$tagdata		Tagdata to perform the replacement in
+	 * @param	string	$row			Row array to set on the fieldtype
+	 * @return	string	String with variable parsed
+	 */
+	public function parse($data, $content_id, $content_type, $modifier, $tagdata, $row)
+	{
+		$fieldtype = $this->getFieldtypeInstance();
+		$settings = $this->getSettingsValues();
+		$field_fmt = isset($this->field_fmt) ? $this->field_fmt : $this->field_default_fmt;
+		$settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' =>$field_fmt));
+
+		$fieldtype->_init(array(
+			'row'			=> $row,
+			'content_id'	=> $content_id,
+			'content_type'	=> $content_type,
+			'field_fmt'		=> $field_fmt,
+			'settings'		=> $settings['field_settings']
+		));
+
+		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
+
+		if (method_exists($fieldtype, $parse_fnc))
+		{
+			$data = ee()->api_channel_fields->apply($parse_fnc, array(
+				$data,
+				array(),
+				FALSE
+			));
+		}
+
+		$tag = $this->field_name;
+		if ($modifier)
+		{
+			$tag = $tag.':'.$modifier;
+		}
+
+		return str_replace(LD.$tag.RD, $data, $tagdata);
 	}
 }
 

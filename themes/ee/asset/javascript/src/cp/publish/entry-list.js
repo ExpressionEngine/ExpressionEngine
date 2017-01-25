@@ -40,6 +40,10 @@ $(document).ready(function () {
 
 	// Typing into the search form
 	$('input[name="search"]').on('interact', _.debounce(function() {
+		if (location.protocol === 'https:' &&
+			navigator.userAgent.indexOf('Safari') > -1) {
+			return;
+		}
 		$(this).closest('form').submit();
 	}, 150));
 
