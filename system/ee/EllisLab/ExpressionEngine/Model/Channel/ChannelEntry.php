@@ -485,13 +485,13 @@ class ChannelEntry extends ContentModel {
 			{
     			$query->set($values);
 				$query->where('entry_id', $this->getId());
-				$query->update("{$field->getDataTable()}_field_{$field_id}");
+				$query->update($field->getTableName());
 			}
 			else
 			{
 				$values['entry_id'] = $this->getId();
     			$query->set($values);
-				$query->insert("{$field->getDataTable()}_field_{$field_id}");
+				$query->insert($field->getTableName());
 			}
 		}
 	}
@@ -521,7 +521,7 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$tables[] = "{$field->getDataTable()}_field_{$field->field_id}";
+			$tables[] = $field->getTableName();
 		}
 
 		if ( ! empty($tables))
