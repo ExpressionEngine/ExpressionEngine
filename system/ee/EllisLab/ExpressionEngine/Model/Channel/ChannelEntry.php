@@ -423,6 +423,74 @@ class ChannelEntry extends ContentModel {
 		{
 			$this->allow_comments = $this->Channel->deft_comments;
 		}
+
+		$this->saveFieldData();
+	}
+
+    /**
+     * Find all the fields that are stored in their own tables. For those that
+	 * are dirty (have changed) we update or insert the changes into their
+	 * tables. As this requires a list of dirty properties this needs to happen
+	 * before save/insert/update because just prior to the after events this
+	 * object will be marked clean and all changes will be lost.
+     */
+	protected function saveFieldData()
+	{
+		$dirty = $this->getDirty();
+
+        // Optimization: if there are no dirty fields, there's nothing to do
+        if (empty($dirty))
+        {
+            return;
+        }
+
+		foreach ($this->Channel->CustomFields as $field)
+		{
+            $field_id = $field->field_id;
+			$data_field = "field_id_{$field_id}";
+			$meta_data_field = "field_ft_{$field_id}";
+
+			if ($field->field_data_in_channel_data === FALSE
+				&& (array_key_exists($data_field, $dirty)
+					|| array_key_exists($meta_data_field, $dirty)
+					)
+				)
+			{
+    			$values = array();
+
+
+    			if (array_key_exists($data_field, $dirty))
+    			{
+    				$values['data'] = $this->$data_field;
+    			}
+
+    			if (array_key_exists($meta_data_field, $dirty))
+    			{
+    				$values['metadata'] = $this->$meta_data_field;
+    			}
+
+    			// If there was data before, we update
+    			// If there was no data before, we insert
+    			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
+
+                $update = ( ! is_null($this->getBackup($data_field)) && ! is_null($this->hasBackup($meta_data_field)));
+
+    			$query = ee('Model/Datastore')->rawQuery();
+
+    			if ($update)
+    			{
+        			$query->set($values);
+    				$query->where('entry_id', $this->getId());
+    				$query->update("channel_data_field_{$field_id}");
+    			}
+    			else
+    			{
+    				$values['entry_id'] = $this->getId();
+        			$query->set($values);
+    				$query->insert("channel_data_field_{$field_id}");
+    			}
+            }
+		}
 	}
 
 	public function onAfterSave()
