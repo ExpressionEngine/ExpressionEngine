@@ -128,16 +128,6 @@ abstract class FieldModel extends Model {
 	{
 		$this->createTable();
 		$this->callPostSaveSettings();
-
-		$ft = $this->getFieldtypeInstance();
-
-		$data = $this->getValues();
-		$data['ee_action'] = 'add';
-
-		$columns = $ft->settings_modify_column($data);
-		$columns = $this->ensureDefaultColumns($columns);
-
-		$this->createColumns($columns);
 	}
 
 	/**
@@ -267,7 +257,6 @@ abstract class FieldModel extends Model {
 
 		$this->dropColumns($drop);
 		$this->modifyColumns($change);
-		$this->createColumns($new);
 	}
 
 	/**
