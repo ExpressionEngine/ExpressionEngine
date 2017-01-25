@@ -37,6 +37,66 @@ class Updater extends CP_Controller {
 	 */
 	public function index()
 	{
+		ee()->load->library('el_pings');
+		$version_file = ee()->el_pings->get_version_info();
+		$to_version = $version_file[0][0];
+
+		if (version_compare(APP_VER, $to_version, '>='))
+		{
+			//return ee()->functions->redirect(ee('CP/URL', 'homepage'));
+		}
+
+		$preflight_error = NULL;
+		$next_step = NULL;
+		try
+		{
+			$runner = ee('Updater/Runner');
+			$runner->runStep($runner->getFirstStep());
+			$next_step = $runner->getNextStep();
+		}
+		catch (\Exception $e)
+		{
+			// TODO: Would be cool if UpdaterException returned formatted message
+			// for web vs CLI
+			return $this->warn($e->getMessage());
+		}
+
+		ee()->load->helper('text');
+
+		$vars = [
+			'cp_page_title'   => lang('updating'),
+			'site_name'       => ee()->config->item('site_name'),
+			'current_version' => formatted_version(APP_VER),
+			'to_version'      => formatted_version($version_file[0][0]),
+			'error'           => $preflight_error,
+			'next_step'       => $next_step
+		];
+
+		if ($next_step)
+		{
+			ee()->cp->add_js_script(array(
+				'file' => array('cp/updater'),
+			));
+		}
+
+		return ee('View')->make('updater/index')->render($vars);
+	}
+
+	protected function warn($error_message)
+	{
+		$vars = [
+			'cp_page_title'   => lang('updating'),
+			'error_message'   => $error_message
+		];
+
+		return ee('View')->make('updater/warn')->render($vars);
+	}
+
+	/**
+	 * AJAX endpoint for the updater
+	 */
+	public function run()
+	{
 		// TODO: Can we catch a PHP timeout and report that to the user?
 		// TODO: Prolly just restrict super admins to auto-updating
 
@@ -46,7 +106,7 @@ class Updater extends CP_Controller {
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
-			$step = $runner->getFirstStep();
+			// TODO: Error out here, should always have a step
 		}
 
 		try
