@@ -58,7 +58,7 @@ class Updater extends CP_Controller {
 		{
 			// TODO: Would be cool if UpdaterException returned formatted message
 			// for web vs CLI
-			return $this->warn($e->getMessage());
+			$preflight_error = $e->getMessage();
 		}
 
 		ee()->load->helper('text');
@@ -68,7 +68,7 @@ class Updater extends CP_Controller {
 			'site_name'       => ee()->config->item('site_name'),
 			'current_version' => formatted_version(APP_VER),
 			'to_version'      => formatted_version($version_file[0][0]),
-			'error'           => $preflight_error,
+			'warn_message'    => $preflight_error,
 			'next_step'       => $next_step
 		];
 
@@ -80,16 +80,6 @@ class Updater extends CP_Controller {
 		}
 
 		return ee('View')->make('updater/index')->render($vars);
-	}
-
-	protected function warn($error_message)
-	{
-		$vars = [
-			'cp_page_title'   => lang('updating'),
-			'error_message'   => $error_message
-		];
-
-		return ee('View')->make('updater/warn')->render($vars);
 	}
 
 	/**
