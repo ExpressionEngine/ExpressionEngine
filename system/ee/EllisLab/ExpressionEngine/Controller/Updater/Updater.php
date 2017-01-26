@@ -72,13 +72,6 @@ class Updater extends CP_Controller {
 			'next_step'       => $next_step
 		];
 
-		if ($next_step)
-		{
-			ee()->cp->add_js_script(array(
-				'file' => array('cp/updater'),
-			));
-		}
-
 		return ee('View')->make('updater/index')->render($vars);
 	}
 
@@ -90,14 +83,14 @@ class Updater extends CP_Controller {
 		// TODO: Can we catch a PHP timeout and report that to the user?
 		// TODO: Prolly just restrict super admins to auto-updating
 
-		$runner = ee('Updater/Runner');
-
 		$step = ee()->input->get('step');
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
-			// TODO: Error out here, should always have a step
+			return;
 		}
+
+		$runner = ee('Updater/Runner');
 
 		try
 		{
@@ -115,22 +108,18 @@ class Updater extends CP_Controller {
 			];
 		}
 
-		// Language and markup for front-end; each string
-		// is what is sent back AFTER the corresponding key
-		// step name has run
 		$messages = [
-			'preflight' => 'Downloading update<span>...</span>',
-			'download' => 'Unpacking update<span>...</span>',
-			'unpack' => 'Backing up database<span>...</span>'
+			'unpack' => 'Unpacking update',
+			'updateFiles' => 'Updating files'
 		];
 
 		// If there is no next step, provide something so that
 		// the AJAX hits the micro app
-		$next_step = $runner->getNextStep() ?: 'backupDatabase';
+		$next_step = $runner->getNextStep() ?: 'updateFiles';
 
 		return [
 			'messageType' => 'success',
-			'message' => $messages[$step],
+			'message' => $messages[$next_step],
 			'nextStep' => $next_step
 		];
 	}

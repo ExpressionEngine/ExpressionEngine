@@ -34,16 +34,16 @@ class Updater {
 	/**
 	 * Request end-point for updater tasks
 	 */
-	public function index($step = '')
+	public function run($step = '')
 	{
-		$runner = new Runner();
-
 		$step = isset($_GET['step']) ? $_GET['step'] : FALSE;
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
-			$step = $runner->getFirstStep();
+			return;
 		}
+
+		$runner = new Runner();
 
 		try
 		{
@@ -61,25 +61,26 @@ class Updater {
 		// is what is sent back AFTER the corresponding key
 		// step name has run
 		$messages = [
-			'backupDatabase' => 'Backing up database<span>...</span>',
-			'updateFiles' => 'Files updated!',
-			'updateDatabase' => 'Running database updates...',
-			'rollback' => 'Rolling back install...',
-			'restoreDatabase' => 'Restoring database...',
+			'backupDatabase' => 'Backing up database',
+			'updateDatabase' => 'Running database updates',
+			'rollback' => 'Rolling back install',
+			'restoreDatabase' => 'Restoring database',
 		];
 
+		$next_step = $runner->getNextStep();
+
 		// TODO: Make better
-		if (strpos($step, 'backupDatabase') === 0)
+		if (strpos($next_step, 'backupDatabase') === 0)
 		{
 			$message = $messages['backupDatabase'];
 		}
-		elseif (strpos($step, 'updateDatabase') === 0)
+		elseif (strpos($next_step, 'updateDatabase') === 0)
 		{
 			$message = $messages['updateDatabase'];
 		}
 		else
 		{
-			$message = $messages[$step];
+			$message = $messages[$next_step];
 		}
 
 		return json_encode([
