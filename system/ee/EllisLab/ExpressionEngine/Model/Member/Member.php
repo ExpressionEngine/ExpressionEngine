@@ -125,7 +125,9 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
+		'afterInsert',
 		'beforeUpdate',
+		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -219,6 +221,11 @@ class Member extends ContentModel {
 		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
 	}
 
+	public function onAfterInsert()
+	{
+		$this->saveFieldData($this->getValues());
+	}
+
 	/**
 	 * Log email and password changes
 	 */
@@ -258,6 +265,11 @@ class Member extends ContentModel {
 		}
 	}
 
+	public function onAfterUpdate($changed)
+	{
+		$this->saveFieldData($changed);
+	}
+
 	/**
 	 * Zero-out member ID data in assoicated files
 	 */
@@ -268,6 +280,8 @@ class Member extends ContentModel {
 
 		$this->ModifiedFiles->modified_by_member_id = 0;
 		$this->ModifiedFiles->save();
+
+		$this->deleteFieldData();
 	}
 
 	/**
@@ -594,6 +608,27 @@ class Member extends ContentModel {
 		}
 
 		return TRUE;
+	}
+
+
+	/**
+	 * Gets a collection of MemberField objects
+	 *
+	 * @return Collection A collection of MemberField objects
+	 */
+	protected function getFieldModels()
+	{
+		$fields = $this->MemberGroup->getCustomFields();
+
+		if (empty($fields))
+		{
+			$fields = $this->getModelFacade()
+				->get('MemberGroup', $this->group_id)
+				->first()
+				->getCustomFields();
+		}
+
+		return $fields;
 	}
 }
 

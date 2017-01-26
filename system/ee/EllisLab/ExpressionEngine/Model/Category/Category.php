@@ -78,7 +78,10 @@ class Category extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'afterInsert',
+		'beforeUpdate',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -129,6 +132,21 @@ class Category extends ContentModel {
 		}
 	}
 
+	public function onAfterInsert()
+	{
+		$this->saveFieldData($this->getValues());
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		$this->saveFieldData($changed);
+	}
+
+	public function onBeforeDelete()
+	{
+		$this->deleteFieldData();
+	}
+
 	/**
 	 * Converts the fields into facades
 	 *
@@ -144,6 +162,25 @@ class Category extends ContentModel {
 		return parent::addFacade($id, $info, $name_prefix);
 	}
 
+	/**
+	 * Gets a collection of CategoryGroup objects
+	 *
+	 * @return Collection A collection of CategoryGroup objects
+	 */
+	protected function getFieldModels()
+	{
+		$fields = $this->CategoryGroup->CategoryFields;
+
+		if ($fields->count() == 0)
+		{
+			$fields = $this->getModelFacade()
+				->get('CategoryGroup', $this->group_id)
+				->first()
+				->CategoryFields;
+		}
+
+		return $fields;
+	}
 }
 
 // EOF

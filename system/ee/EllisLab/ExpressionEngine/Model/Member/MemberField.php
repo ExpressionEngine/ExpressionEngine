@@ -40,13 +40,15 @@ class MemberField extends FieldModel {
 	);
 
 	protected static $_validation_rules = array(
-		'm_field_type'  => 'required|enum[text,textarea,select]',
-		'm_field_label' => 'required|xss|noHtml',
-		'm_field_name'  => 'required|alphaDash|unique'
+		'm_field_type'        => 'required|enum[text,textarea,select]',
+		'm_field_label'       => 'required|xss|noHtml',
+		'm_field_name'        => 'required|alphaDash|unique',
+		'm_legacy_field_data' => 'enum[y,n]',
 	);
 
 	protected static $_typed_columns = array(
-		'm_field_settings' => 'json'
+		'm_field_settings'    => 'json',
+		'm_legacy_field_data' => 'boolString',
 	);
 
 	protected $m_field_id;
@@ -68,6 +70,7 @@ class MemberField extends FieldModel {
 	protected $m_field_order;
 	protected $m_field_text_direction;
 	protected $m_field_settings;
+	protected $m_legacy_field_data;
 
 	public function getSettingsValues()
 	{
