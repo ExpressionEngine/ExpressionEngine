@@ -427,7 +427,7 @@ abstract class ContentModel extends VariableColumnModel {
 		foreach ($this->getFieldModels() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
-			if ($field->field_data_in_channel_data)
+			if ($field->legacy_field_data)
 			{
 				continue;
 			}
@@ -486,7 +486,7 @@ abstract class ContentModel extends VariableColumnModel {
 		foreach ($this->getFieldModels() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
-			if ($field->field_data_in_channel_data)
+			if ($field->legacy_field_data)
 			{
 				continue;
 			}

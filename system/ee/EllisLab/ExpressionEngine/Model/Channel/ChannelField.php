@@ -46,7 +46,7 @@ class ChannelField extends FieldModel {
 		'field_show_fmt'       => 'boolString',
 		'field_order'          => 'int',
 		'field_settings'       => 'base64Serialized',
-		'field_data_in_channel_data' => 'boolString',
+		'legacy_field_data'    => 'boolString',
 	);
 
 	protected static $_relationships = array(
@@ -78,7 +78,7 @@ class ChannelField extends FieldModel {
 		'field_is_hidden'      => 'enum[y,n]',
 		'field_show_fmt'       => 'enum[y,n]',
 		'field_order'          => 'integer',
-		'field_data_in_channel_data'   => 'enum[y,n]',
+		'legacy_field_data'    => 'enum[y,n]',
 	);
 
 	protected static $_events = array(
@@ -109,7 +109,7 @@ class ChannelField extends FieldModel {
 	protected $field_order;
 	protected $field_content_type;
 	protected $field_settings;
-	protected $field_data_in_channel_data;
+	protected $legacy_field_data;
 
 	public function getStructure()
 	{

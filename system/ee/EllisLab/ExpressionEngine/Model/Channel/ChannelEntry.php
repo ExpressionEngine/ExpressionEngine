@@ -161,7 +161,7 @@ class ChannelEntry extends ContentModel {
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_id')
 			->filter('group_id', 'IN', $field_groups)
-			->filter('field_data_in_channel_data', 'n')
+			->filter('legacy_field_data', 'n')
 			->all();
 
 		if ($fields->count())
@@ -244,7 +244,7 @@ class ChannelEntry extends ContentModel {
 			$fields = ee('Model')->get('ChannelField')
 				->fields('field_id')
 				->filter('field_id', 'IN', $field_ids)
-				->filter('field_data_in_channel_data', 'n')
+				->filter('legacy_field_data', 'n')
 				->all();
 
 			foreach ($fields->pluck('field_id') as $field_id)

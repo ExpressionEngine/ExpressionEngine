@@ -135,8 +135,8 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		if ($this->hasProperty('field_data_in_channel_data')
-			&& $this->getProperty('field_data_in_channel_data') == FALSE)
+		if ($this->hasProperty('legacy_field_data')
+			&& $this->getProperty('legacy_field_data') == FALSE)
 		{
 			$this->dropTable();
 		}
