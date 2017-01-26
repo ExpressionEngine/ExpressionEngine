@@ -397,6 +397,111 @@ abstract class ContentModel extends VariableColumnModel {
 		$this->_field_facades[$name] = $facade;
 	}
 
+	/**
+	 * Gets a collection of FieldModel objects (channel, member, category fields)
+	 *
+	 * @return Collection A collection of FieldModel objects
+	 */
+	abstract protected function getFieldModels();
+
+    /**
+     * Find all the fields that are stored in their own tables. For those that
+	 * are dirty (have changed) we update or insert the changes into their
+	 * tables. If the list of changed properties is not supplied we will get
+	 * the list of dirty properties.
+	 *
+	 * @param array $changed An associative array of class properties that have changed
+     */
+	protected function saveFieldData($changed = NULL)
+	{
+		$dirty = ($changed) ?: $this->getDirty();
+
+		// var_dump($changed, $this->getDirty(), $_POST); die();
+
+        // Optimization: if there are no dirty fields, there's nothing to do
+        if (empty($dirty))
+        {
+            return;
+        }
+
+		foreach ($this->getFieldModels() as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->field_data_in_channel_data)
+			{
+				continue;
+			}
+
+			$data_field = $field->getColumnPrefix().'field_id_'.$field->field_id;
+			$meta_data_field = $field->getColumnPrefix().'field_ft_'.$field->field_id;
+
+			$values = array();
+
+			if (array_key_exists($data_field, $dirty))
+			{
+				$values['data'] = $this->$data_field;
+			}
+
+			if (array_key_exists($meta_data_field, $dirty))
+			{
+				$values['metadata'] = $this->$meta_data_field;
+			}
+
+			// Skip this field if neither it nor its meta data changed
+			if (empty($values))
+			{
+				continue;
+			}
+
+			// If there was data before, we update
+			// If there was no data before, we insert
+			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
+
+            $update = ( ! is_null($this->getBackup($data_field)) && ! is_null($this->hasBackup($meta_data_field)));
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			if ($update)
+			{
+    			$query->set($values);
+				$query->where('entry_id', $this->getId());
+				$query->update($field->getTableName());
+			}
+			else
+			{
+				$values['entry_id'] = $this->getId();
+    			$query->set($values);
+				$query->insert($field->getTableName());
+			}
+		}
+	}
+
+	/**
+	 * Deletes entry data in the field tables.
+	 */
+	protected function deleteFieldData()
+	{
+		$tables = array();
+
+		foreach ($this->getFieldModels() as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->field_data_in_channel_data)
+			{
+				continue;
+			}
+
+			$tables[] = $field->getTableName();
+		}
+
+		if ( ! empty($tables))
+		{
+			ee('Model/Datastore')->rawQuery()
+				->where('entry_id', $this->getId())
+				->delete($tables);
+		}
+	}
+
 }
 
 // EOF
