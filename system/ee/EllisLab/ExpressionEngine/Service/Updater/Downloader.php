@@ -202,10 +202,12 @@ class Downloader {
 			// theme or system folder
 			$search = array_map(function($theme_path)
 			{
-				return realpath($theme_path.'../../').'/';
+				$real_path = realpath($theme_path.'../../');
+				return $real_path ? $real_path.'/': $theme_path;
 			}, $theme_paths);
 
-			$search[] = realpath(SYSPATH.'../').'/';
+			$syspath = realpath(SYSPATH.'../');
+			$search[] = $syspath ? $syspath.'/' : SYSPATH;
 			$search = array_unique($search);
 
 			$paths = array_map(function($path) use ($search)
