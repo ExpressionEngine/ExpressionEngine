@@ -10,48 +10,25 @@
  * @filesource
  */
 
-(function($) {
-
-"use strict";
-
 var Updater = {
 
-	init: function() {
-		this._overlay = $('.update-overlay');
-		this._success_overlay = $('.update-success-overlay');
-		this._issue_overlay = $('.update-issue-overlay');
-		this._bindUpdateButton($('p.update-btn a.submit'));
-	},
-
-	_bindUpdateButton: function(button) {
-		var that = this;
-
-		button.on('click', function(event) {
-			event.preventDefault();
-
-			that._presentOverlay();
-		});
-	},
-
-	_presentOverlay: function() {
-		this._overlay.addClass('update-open');
-		$('.update-status1').fadeIn(100);
-
-		this._requestUpdate();
+	runStep: function(step) {
+		this._requestUpdate(step);
 	},
 
 	_requestUpdate: function(step) {
-		var that = this,
-			action = EE.BASE + '&C=updater';
-
-		if (step !== undefined) {
-			action += '&step='+step;
+		if (step === undefined) {
+			return;
 		}
+
+		var that = this,
+			action = EE.BASE + '&C=updater&M=run&step='+step;
 
 		$.ajax({
 			type: 'POST',
 			url: action,
 			dataType: 'json',
+			headers: { 'X-CSRF-TOKEN': EE.CSRF_TOKEN },
 			success: function(result) {
 				if (result.messageType == 'success') {
 					that._updateStatus(result.message);
@@ -60,33 +37,34 @@ var Updater = {
 					}
 				}
 				if (result.messageType == 'error') {
-					that._showError(result.message);
+					console.log(result.message);
 				}
 			},
 			error: function(data) {
-				that._showError(data.message);
+				console.log(data);
 			}
 		});
 	},
 
 	_updateStatus: function(message) {
-		var process_container = $('.update-process', this._overlay),
-			current_message = $('p:visible', process_container),
-			next_message = $('p:hidden', process_container);
+		var progress_list = $('.updater-steps'),
+			work_class = 'updater-step-work',
+			pass_class = 'updater-step-pass',
+			current_item = $('.'+work_class, progress_list);
 
-		next_message.html(message);
+		if (current_item.text() == message) {
+			return;
+		}
 
-		current_message.fadeOut(100);
-		next_message.fadeIn(100);
+		// Mark previous item as finished
+		current_item.removeClass(work_class)
+			.addClass(pass_class)
+			.find('span')
+			.remove();
+
+		// Create new item
+		var new_item = $('<li/>', { class: work_class }).html(message + '<span>...</span>');
+
+		progress_list.append(new_item);
 	},
-
-	_showError: function(message) {
-		this._overlay.removeClass('update-open');
-
-		$('p', this._issue_overlay).first().html(message);
-
-		this._issue_overlay.addClass('update-open');
-	}
 }
-
-})(jQuery);

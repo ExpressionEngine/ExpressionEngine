@@ -23,3 +23,13 @@
 </div>
 
 <style type="text/css"> .hidden { display: none} </style>
+
+<?php if ($next_step):
+	echo ee()->javascript->get_global()
+		. ee()->view->script_tag('jquery/jquery.js')
+		. ee()->view->script_tag('cp/updater.js');
+	?>
+	<script type="text/javascript">
+		Updater.runStep('<?=$next_step?>');
+	</script>
+<?php endif ?>
