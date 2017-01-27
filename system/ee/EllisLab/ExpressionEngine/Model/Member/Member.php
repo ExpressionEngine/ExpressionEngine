@@ -212,6 +212,55 @@ class Member extends ContentModel {
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
 
+	public static function getExtraData($result_array)
+	{
+		$fields = ee('Model')->get('MemberField')
+			->fields('field_id')
+			->filter('m_legacy_field_data', 'n')
+			->all();
+
+		if ($fields->count())
+		{
+			$field_ids = $fields->pluck('field_id');
+
+			$member_ids = array_map(function($column) {
+				return $column['Member__member_id'];
+			}, $result_array);
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			$main_table = "Member_field_id_{$field_ids[0]}";
+
+			$query->from('members');
+			$query->select("members.member_id as Member__member_id", FALSE);
+
+			foreach ($field_ids as $field_id)
+			{
+				$table_alias = "Member_field_id_{$field_id}";
+
+				$query->select("{$table_alias}.data as Member__m_field_id_{$field_id}", FALSE);
+				$query->select("{$table_alias}.metadata as Member__m_field_ft_{$field_id}", FALSE);
+				$query->join("member_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = members.member_id", 'LEFT');
+			}
+
+			$query->where_in('members.member_id', $member_ids);
+
+			$data = $query->get()->result_array();
+
+			foreach ($data as $row)
+			{
+				array_walk($result_array, function (&$data, $key, $field_data) {
+					if ($data['Member__member_id'] == $field_data['Member__member_id'])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+		}
+
+		return $result_array;
+	}
+
 	/**
 	 * Generate unique ID and crypt key for new members
 	 */
