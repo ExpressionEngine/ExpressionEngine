@@ -31,9 +31,11 @@ var Updater = {
 			headers: { 'X-CSRF-TOKEN': EE.CSRF_TOKEN },
 			success: function(result) {
 				if (result.messageType == 'success') {
-					that._updateStatus(result.message);
 					if (result.nextStep !== undefined && result.nextStep !== false) {
+						that._updateStatus(result.message);
 						that._requestUpdate(result.nextStep);
+					} else if (result.nextStep === false) {
+						that._showSuccess();
 					}
 				}
 				if (result.messageType == 'error') {
@@ -67,4 +69,9 @@ var Updater = {
 
 		progress_list.append(new_item);
 	},
+
+	_showSuccess: function() {
+		$('.box').addClass('hidden');
+		$('.box.success').removeClass('hidden');
+	}
 }

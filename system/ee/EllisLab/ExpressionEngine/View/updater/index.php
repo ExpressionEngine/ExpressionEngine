@@ -22,6 +22,14 @@
 	</div>
 </div>
 
+<div class="box success hidden">
+	<h1>Update Complete!<span class="icon-success"></span></h1>
+	<div class="updater-msg">
+		<p><b><?=$site_name?></b> has been updated.</p>
+		<p class="msg-choices"><a href="">Log In</a></p>
+	</div>
+</div>
+
 <style type="text/css"> .hidden { display: none} </style>
 
 <?php if ($next_step):
