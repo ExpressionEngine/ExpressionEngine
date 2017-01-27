@@ -95,6 +95,65 @@ class Category extends ContentModel {
 	protected $cat_image;
 	protected $cat_order;
 
+	public static function getExtraData($result_array)
+	{
+		$field_groups = array_map(function($column) {
+			if (array_key_exists('Category__group_id', $column))
+			{
+				return $column['Category__group_id'];
+			}
+		}, $result_array);
+
+		$field_groups = array_unique($field_groups);
+
+		$fields = ee('Model')->get('CategoryField')
+			->fields('field_id')
+			->filter('group_id', 'IN', $field_groups)
+			->filter('legacy_field_data', 'n')
+			->all();
+
+		if ($fields->count())
+		{
+			$field_ids = $fields->pluck('field_id');
+
+			$cat_ids = array_map(function($column) {
+				return $column['Category__cat_id'];
+			}, $result_array);
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			$main_table = "Category_field_id_{$cat_ids[0]}";
+
+			$query->from('categories');
+			$query->select("categories.cat_id as Category__cat_id", FALSE);
+
+			foreach ($field_ids as $field_id)
+			{
+				$table_alias = "Category_field_id_{$field_id}";
+
+				$query->select("{$table_alias}.data as Category__field_id_{$field_id}", FALSE);
+				$query->select("{$table_alias}.metadata as Category__field_rt_{$field_id}", FALSE);
+				$query->join("category_field_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = categories.cat_id", 'LEFT');
+			}
+
+			$query->where_in('categories.cat_id', $cat_ids);
+
+			$data = $query->get()->result_array();
+
+			foreach ($data as $row)
+			{
+				array_walk($result_array, function (&$data, $key, $field_data) {
+					if ($data['Category__cat_id'] == $field_data['Category__cat_id'])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+		}
+
+		return $result_array;
+	}
+
 	/**
 	 * A link back to the owning category group object.
 	 *
