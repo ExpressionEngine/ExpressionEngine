@@ -137,7 +137,7 @@ class Category extends ContentModel {
 		$this->saveFieldData($this->getValues());
 	}
 
-	public function onAfterUpdate($changed)
+	public function onBeforeUpdate($changed)
 	{
 		$this->saveFieldData($changed);
 	}
