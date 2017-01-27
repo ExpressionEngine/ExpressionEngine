@@ -229,7 +229,7 @@ class Member extends ContentModel {
 
 			$query = ee('Model/Datastore')->rawQuery();
 
-			$main_table = "Member_field_id_{$field_ids[0]}";
+			$main_table = "Member_field_id_{$member_ids[0]}";
 
 			$query->from('members');
 			$query->select("members.member_id as Member__member_id", FALSE);
