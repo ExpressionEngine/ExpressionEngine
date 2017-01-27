@@ -68,19 +68,23 @@ class Updater {
 		];
 
 		$next_step = $runner->getNextStep();
+		$message = '';
 
-		// TODO: Make better
-		if (strpos($next_step, 'backupDatabase') === 0)
+		if ($next_step)
 		{
-			$message = $messages['backupDatabase'];
-		}
-		elseif (strpos($next_step, 'updateDatabase') === 0)
-		{
-			$message = $messages['updateDatabase'];
-		}
-		else
-		{
-			$message = $messages[$next_step];
+			// TODO: Make better
+			if (strpos($next_step, 'backupDatabase') === 0)
+			{
+				$message = $messages['backupDatabase'];
+			}
+			elseif (strpos($next_step, 'updateDatabase') === 0)
+			{
+				$message = $messages['updateDatabase'];
+			}
+			else
+			{
+				$message = $messages[$next_step];
+			}
 		}
 
 		return json_encode([
