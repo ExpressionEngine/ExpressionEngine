@@ -14,11 +14,11 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 	public function testDecodeOfMcryptedData()
 	{
 		$text = "ExpressionEngine";
-		$key = md5("EllisLab");
+		$key = "EllisLab";
 
 		$legacy = new EE_Encrypt();
 
-		$encoded = base64_encode($legacy->mcrypt_encode($text, $key));
+		$encoded = base64_encode($legacy->mcrypt_encode($text, md5($key)));
 		$this->assertEquals($legacy->decode($encoded, $key), $text);
 	}
 }
