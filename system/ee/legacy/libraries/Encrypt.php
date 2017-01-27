@@ -137,6 +137,7 @@ class EE_Encrypt {
 		// mcrypt library scheme. We'll try some wizardry then.
 		if ($decoded === FALSE)
 		{
+			$key = $this->get_key($key);
 			$decoded = $this->mcrypt_decode(base64_decode($string), $key);
 		}
 
