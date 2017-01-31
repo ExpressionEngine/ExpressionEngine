@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'File Manger / Crop File' do
+feature 'File Manager / Crop File' do
 
 	before(:all) do
 		# Create backups of these folders so we can restore them after each test

@@ -27,7 +27,11 @@ $(document).ready(function () {
 				$(modalIs + " .checklist").append('<li>' + confirm_text + '</li>');
 			}
 
-			var checked = $(this).parents('form').find('td input:checked, li input:checked');
+			var checked = $(this).parents('form').find('th input:checked, td input:checked, li input:checked');
+
+			checked = checked.filter(function(i, el) {
+				return $(el).attr('value') !== undefined;
+			});
 
 			if (checked.length < 6) {
 				checked.each(function() {

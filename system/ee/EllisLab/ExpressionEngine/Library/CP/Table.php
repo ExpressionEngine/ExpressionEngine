@@ -60,9 +60,13 @@ class Table {
 	 * 'total_rows' - Total rows in the dataset regardless of limit or page number
 	 * 'sortable' - Whether or not to allow the columns to sort the table, this can
 	 * 		also be controlled on a column-by-column basis
-	 *
 	 * 'grid_input' - Whether or not this table is being used as a Grid input UI
-	 * 'reorder' - Whether or not to allow this Grid to have its rows reordered
+	 * 'reorder' - Whether or not to allow this table to have its rows reordered
+	 * 'reorder_header' - Whether or not to show a reorder handle in the table's
+	 * 		header, i.e. if an entire table was reorderable with other tables
+	 * 'checkbox_header' - For checkbox columns, will also show a checkbox in
+	 * 		the header when there is no data, i.e. when a table represents an
+	 * 		entity that can have actions applied to it (edge case setting)
 	 *
 	 * @param	array 	$config	See above for options
 	 */
@@ -86,6 +90,7 @@ class Table {
 			'grid_input'        => FALSE,
 			'reorder'           => FALSE,
 			'reorder_header'    => FALSE,
+			'checkbox_header'   => FALSE,
 			'class'             => '',
 			'attrs'				=> array(),
 			'no_results'        => array(
@@ -683,30 +688,20 @@ class Table {
 			$base_url->setQueryStringVariable($this->config['sort_dir_qs_var'], $this->getSortDir());
 		}
 
-		return array(
-			'base_url'          => $base_url,
-			'lang_cols'         => $this->config['lang_cols'],
-			'search'            => $this->config['search'],
-			'wrap'              => $this->config['wrap'],
-			'no_results'        => $this->config['no_results'],
-			'limit'             => $this->config['limit'],
-			'page'              => $this->config['page'],
-			'total_rows'        => $this->config['total_rows'],
-			'grid_input'        => $this->config['grid_input'],
-			'reorder'           => $this->config['reorder'],
-			'reorder_header'    => $this->config['reorder_header'],
-			'class'             => $this->config['class'],
-			'table_attrs'       => $this->config['attrs'],
-			'sortable'          => $this->config['sortable'],
-			'subheadings'       => ($this->config['subheadings'] && empty($this->config['search'])),
-			'sort_col'          => $this->getSortCol(),
-			'sort_col_qs_var'   => $this->config['sort_col_qs_var'],
-			'sort_dir'          => $this->getSortDir(),
-			'sort_dir_qs_var'   => $this->config['sort_dir_qs_var'],
-			'columns'           => $this->columns,
-			'data'              => $this->data,
-			'action_buttons'    => $this->action_buttons,
-			'action_content'    => $this->action_content
+		$view_vars = $this->config;
+		return array_merge(
+			$view_vars,
+			array(
+				'base_url'       => $base_url,
+				'sort_col'       => $this->getSortCol(),
+				'sort_dir'       => $this->getSortDir(),
+				'table_attrs'    => $this->config['attrs'],
+				'columns'        => $this->columns,
+				'data'           => $this->data,
+				'action_buttons' => $this->action_buttons,
+				'action_content' => $this->action_content,
+				'subheadings'    => ($this->config['subheadings'] && empty($this->config['search'])),
+			)
 		);
 	}
 

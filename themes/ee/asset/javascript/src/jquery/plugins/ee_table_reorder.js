@@ -56,7 +56,7 @@ $.fn.eeTableReorder = function(params) {
 				sortableContainer: 'tbody',
 				handle: 'td.reorder-col',
 				cancel: 'td.sort-cancel',
-				item: 'tr'
+				item: '> tr'
 			},
 			config = {};
 

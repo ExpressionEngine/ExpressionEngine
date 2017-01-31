@@ -129,7 +129,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'total_rows'        => 2,
 			'grid_input'        => FALSE,
 			'reorder'           => FALSE,
-			'reorder_header' => FALSE,
+			'reorder_header'    => FALSE,
 			'class'             => '',
 			'table_attrs'       => array(),
 			'sortable'          => TRUE,
@@ -138,7 +138,11 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'action_buttons'    => array(),
 			'action_content'    => NULL,
 			'sort_col_qs_var'   => 'sort_col',
-			'sort_dir_qs_var'   => 'sort_dir'
+			'sort_dir_qs_var'   => 'sort_dir',
+			'autosort'          => FALSE,
+			'autosearch'        => FALSE,
+			'checkbox_header'   => FALSE,
+			'attrs'             => array()
 		);
 
 		// We should get this entire array back when we ask for
@@ -386,7 +390,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'total_rows'        => 2,
 			'grid_input'        => FALSE,
 			'reorder'           => FALSE,
-			'reorder_header' => FALSE,
+			'reorder_header'    => FALSE,
 			'class'             => '',
 			'table_attrs'       => array(),
 			'sortable'          => TRUE,
@@ -396,6 +400,10 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'action_content'    => NULL,
 			'sort_col_qs_var'   => 'sort_col',
 			'sort_dir_qs_var'   => 'sort_dir',
+			'autosort'          => TRUE,
+			'autosearch'        => FALSE,
+			'checkbox_header'   => FALSE,
+			'attrs'             => array(),
 			'data'              => array(
 				array(
 					'attrs' => array(),
@@ -495,7 +503,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'total_rows'        => 1,
 			'grid_input'        => FALSE,
 			'reorder'           => FALSE,
-			'reorder_header' => FALSE,
+			'reorder_header'    => FALSE,
 			'class'             => '',
 			'table_attrs'       => array('data-test' => 'test'),
 			'sortable'          => TRUE,
@@ -505,6 +513,10 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'action_content'    => NULL,
 			'sort_col_qs_var'   => 'sort_col',
 			'sort_dir_qs_var'   => 'sort_dir',
+			'autosort'          => TRUE,
+			'autosearch'        => TRUE,
+			'checkbox_header'   => FALSE,
+			'attrs'             => array('data-test' => 'test'),
 			'data'              => array(
 				array(
 					'attrs' => array(),
@@ -970,6 +982,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$return[] = array($config, $data, $expected, $columns, 'Test subheadings');
 
 		$config['autosort'] = TRUE;
+		$expected['autosort'] = TRUE;
 		$expected['data'] = array(
 			'heading1' => array(
 				array(
@@ -1211,6 +1224,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$config['autosearch'] = TRUE;
 		$config['search'] = 'col 1';
+		$expected['autosearch'] = TRUE;
 		$expected['search'] = 'col 1';
 		$expected['total_rows'] = 5;
 		$expected['subheadings'] = FALSE;

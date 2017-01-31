@@ -728,7 +728,7 @@ class EE_Loader {
 			// view paths only exist once, so we only remove it if all are gone
 			// or it was at the top.
 			if (array_search($removed, $this->_ci_library_paths) === FALSE OR
-				current($this->_ci_view_paths) == $removed + 'views/')
+				current($this->_ci_view_paths) == $removed . 'views/')
 			{
 				$void = array_shift($this->_ci_view_paths);
 			}

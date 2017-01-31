@@ -295,6 +295,9 @@ $(window).bind('broadcast.setBasePath', function(event, data) {
 	EE.cp.setBasePath(data, true);
 });
 
+$(window).bind('broadcast.setRememberMe', function(event, remember) {
+	EE.hasRememberMe = remember;
+})
 
 EE.cp.refreshSessionData = function(event, base) {
 	if (base) {
@@ -394,14 +397,14 @@ EE.insert_placeholders = function () {
  * Handle idle / inaction between windows
  *
  * This code relies heavily on timing. In order to reduce complexity everything is
- * handled in steps (ticks) of 15 seconds. We count for how many ticks we have been
+ * handled in steps (ticks) of 1 second. We count for how many ticks we have been
  * in a given state and act accordingly. This gives us reasonable timing information
  * without having to set, cancel, and track multiple timeouts.
  *
  * The conditions currently are as follows:
  *
- * - If an ee tab has focus we call it idle after 20 minutes of no interaction
- * - If no ee tab has focus, we call it idle after 40 minutes of no activity
+ * - If an ee tab has focus we call it idle after 30 minutes of no interaction
+ * - If no ee tab has focus, we call it idle after 45 minutes of no activity
  * - If they work around the modal (inspector), all request will land on the login page.
  * - Logging out of one tab will show the modal on all other tabs.
  * - Logging into the modal on one tab, will show it on all other tabs.
@@ -624,6 +627,7 @@ EE.cp.broadcastEvents = (function() {
 		init: function() {
 			$(window).trigger('broadcast.setBasePath', EE.BASE);
 			$(window).trigger('broadcast.setCsrfToken', EE.CSRF_TOKEN);
+			$(window).trigger('broadcast.setRememberMe', EE.hasRememberMe);
 			$(window).trigger('broadcast.idleState', 'login');
 
 			this._bindEvents();

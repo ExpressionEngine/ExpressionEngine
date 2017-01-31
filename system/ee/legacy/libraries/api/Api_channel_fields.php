@@ -125,7 +125,10 @@ class Api_channel_fields extends Api {
 
 		foreach($fts as $key => $data)
 		{
-			$this->field_types[$key] = $this->include_handler($key);
+			if (($this->field_types[$key] = $this->include_handler($key)) === FALSE)
+			{
+				continue;
+			}
 
 			if (isset($data['settings']))
 			{
@@ -265,6 +268,11 @@ class Api_channel_fields extends Api {
 										strtolower($file)));
 			}
 
+			if (INSTALLER && strpos($path, PATH_THIRD) !== FALSE)
+			{
+				return FALSE;
+			}
+
 			require_once $path.$file;
 
 			$this->ft_paths[$field_type] = $path;
@@ -304,7 +312,8 @@ class Api_channel_fields extends Api {
 
 		// Now that we know that we're definitely working
 		// with a field_type name. Look for it.
-		if ( ! isset($this->field_types[$field_type]))
+		if ( ! isset($this->field_types[$field_type]) OR
+			$this->field_types[$field_type] === FALSE)
 		{
 			return FALSE;
 		}

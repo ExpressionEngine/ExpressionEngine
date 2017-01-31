@@ -36,8 +36,8 @@
 				<?=form_password(array('dir' => 'ltr', 'name' => "new_password", 'id' => "new_password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</fieldset>
 			<fieldset class="last">
-				<?=lang('confirm_new_pw', 'confirm_new_pw')?>
-				<?=form_password(array('dir' => 'ltr', 'name' => "confirm_new_pw", 'id' => "confirm_new_pw", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<?=lang('confirm_new_pw', 'new_password_confirm')?>
+				<?=form_password(array('dir' => 'ltr', 'name' => "new_password_confirm", 'id' => "new_password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</fieldset>
 		<?php endif; ?>
 		<fieldset class="form-ctrls">

@@ -45,8 +45,12 @@ if ($wrap): ?>
 					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
-							<?php if ( ! empty($data)): // Hide checkbox if no data ?>
-								<input type="checkbox" title="select all">
+							<?php if ( ! empty($data) OR $checkbox_header): // Hide checkbox if no data ?>
+								<?php if (isset($settings['content'])): ?>
+									<?=$settings['content']?>
+								<?php else: ?>
+									<input type="checkbox" title="select all">
+								<?php endif ?>
 							<?php endif ?>
 						</th>
 					<?php else: ?>

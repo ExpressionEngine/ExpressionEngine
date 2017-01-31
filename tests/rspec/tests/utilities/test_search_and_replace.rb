@@ -25,52 +25,39 @@ feature 'Search and Replace' do
     should_have_error_text(@page.search_term, @field_required)
     should_have_form_errors(@page)
 
-    @page.replace_term.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    should_have_error_text(@page.search_term, @field_required)
-    should_have_error_text(@page.replace_term, @field_required)
-    should_have_form_errors(@page)
-
     @page.search_term.set 'Text'
     @page.search_term.trigger 'blur'
-    @page.wait_for_error_message_count(1)
+    @page.wait_for_error_message_count(0)
     should_have_no_error_text(@page.search_term)
-    should_have_error_text(@page.replace_term, @field_required)
-    should_have_form_errors(@page)
+    should_have_no_form_errors(@page)
 
     @page.replace_where.select 'Site Preferences (Choose from the following)'
-    @page.wait_for_error_message_count(2)
+    @page.wait_for_error_message_count(1)
     should_have_no_error_text(@page.search_term)
     should_have_error_text(@page.replace_where, @field_required)
-    should_have_error_text(@page.replace_term, @field_required)
     should_have_form_errors(@page)
 
     @page.password_auth.trigger 'blur'
-    @page.wait_for_error_message_count(3)
+    @page.wait_for_error_message_count(2)
     should_have_no_error_text(@page.search_term)
     should_have_error_text(@page.replace_where, @field_required)
-    should_have_error_text(@page.replace_term, @field_required)
     should_have_error_text(@page.password_auth, @field_required)
     should_have_form_errors(@page)
 
     @page.password_auth.set 'password'
     @page.password_auth.trigger 'blur'
-    @page.wait_for_error_message_count(2)
+    @page.wait_for_error_message_count(1)
 
     @page.password_auth.set 'test'
     @page.password_auth.trigger 'blur'
-    @page.wait_for_error_message_count(3)
+    @page.wait_for_error_message_count(2)
     should_have_no_error_text(@page.search_term)
     should_have_error_text(@page.replace_where, @field_required)
-    should_have_error_text(@page.replace_term, @field_required)
     should_have_error_text(@page.password_auth, 'The password entered is incorrect.')
     should_have_form_errors(@page)
 
     @page.password_auth.set 'password'
     @page.password_auth.trigger 'blur'
-    @page.wait_for_error_message_count(2)
-    @page.replace_term.set 'test'
-    @page.replace_term.trigger 'blur'
     @page.wait_for_error_message_count(1)
     @page.replace_where.select 'Channel Entry Titles'
     @page.wait_for_error_message_count(0)
@@ -97,7 +84,6 @@ feature 'Search and Replace' do
     @page.should have_text 'Attention: Search and replace not run'
     should_have_error_text(@page.search_term, @field_required)
     should_have_error_text(@page.replace_where, @field_required)
-    should_have_error_text(@page.replace_term, @field_required)
     should_have_error_text(@page.password_auth, @field_required)
     should_have_form_errors(@page)
 
@@ -105,9 +91,6 @@ feature 'Search and Replace' do
 
     @page.search_term.set 'Text'
     @page.search_term.trigger 'blur'
-    @page.wait_for_error_message_count(3)
-    @page.replace_term.set 'test'
-    @page.replace_term.trigger 'blur'
     @page.wait_for_error_message_count(2)
     @page.replace_where.select 'Channel Entry Titles'
     @page.wait_for_error_message_count(1)

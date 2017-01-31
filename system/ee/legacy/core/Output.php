@@ -534,7 +534,17 @@ class EE_Output {
 			$data['rate'] = $this->refresh_time;
 		}
 
-		$data['meta_refresh']	= ($data['redirect'] != '') ? "<meta http-equiv='refresh' content='".$data['rate']."; url=".ee('Security/XSS')->clean($data['redirect'])."'>" : '';
+		$data['meta_refresh'] = '';
+
+		if ($data['redirect'] != '')
+		{
+			$secure_redirect = ee('Security/XSS')->clean($data['redirect']);
+			$js_rate = $data['rate']*1000;
+
+			$data['meta_refresh'] = "<script type='text/javascript'>setTimeout(function(){document.location='".$secure_redirect."'},".$js_rate.')</script>';
+			$data['meta_refresh'] .= "<noscript><meta http-equiv='refresh' content='".$data['rate']."; url=".$secure_redirect."'></noscript>";
+		}
+
 		$data['charset']		= ee()->config->item('output_charset');
 
 		if (is_array($data['link']) AND count($data['link']) > 0)

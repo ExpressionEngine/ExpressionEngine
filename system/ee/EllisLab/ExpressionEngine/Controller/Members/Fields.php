@@ -372,26 +372,12 @@ class Fields extends Members\Members {
 
 		if ( ! empty($_POST))
 		{
-			// We have to do this dance of explicitly setting each property
-			// so that the MemberField model's magic set method will prefix
-			// the properties for us
-			foreach ($vars['sections'] as $section)
+			// m_ prefix dance
+			foreach ($_POST as $key => $value)
 			{
-				if ( ! isset($section[0]['fields']))
+				if ($field->hasProperty($key) OR $field->hasProperty('m_'.$key))
 				{
-					$section = array_pop($section);
-				}
-				foreach ($section as $setting)
-				{
-					if (is_string($setting))
-					{
-						continue;
-					}
-
-					foreach ($setting['fields'] as $field_name => $field_settings)
-					{
-						$field->$field_name = ee()->input->post($field_name);
-					}
+					$field->$key = $value;
 				}
 			}
 

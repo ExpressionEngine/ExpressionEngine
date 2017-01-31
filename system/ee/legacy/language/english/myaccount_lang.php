@@ -338,7 +338,7 @@ Used in the control panel only.',
 
 'missmatched_passwords' => 'The password and password confirmation do not match',
 
-'username_too_short' => 'Your username must be at least %x characters long',
+'username_too_short' => 'Your username must be at least %d characters long',
 
 'username_too_long' => 'Your username cannot be over '.USERNAME_MAX_LENGTH.' characters in length',
 
@@ -346,7 +346,7 @@ Used in the control panel only.',
 
 'email_too_long' => 'Your email address cannot be over '.USERNAME_MAX_LENGTH.' characters in length',
 
-'password_too_short' => 'Your password must be at least %x characters long',
+'password_too_short' => 'Your password must be at least %d characters long',
 
 'password_too_long' => 'Your password cannot be over '.PASSWORD_MAX_LENGTH.' characters in length',
 

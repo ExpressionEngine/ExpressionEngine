@@ -51,8 +51,7 @@ class Sandr extends Utilities {
 			),
 			array(
 				'field' => 'replace_term',
-				'label' => 'lang:sandr_replace_text',
-				'rules' => 'required'
+				'label' => 'lang:sandr_replace_text'
 			),
 			array(
 				'field' => 'replace_where',

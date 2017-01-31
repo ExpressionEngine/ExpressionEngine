@@ -437,7 +437,7 @@ class ChannelEntry extends ContentModel {
 		$data = array(
 			'entry_id'     => $this->entry_id,
 			'channel_id'   => $this->channel_id,
-			'author_id'    => $this->author_id ?: 1,
+			'author_id'    => ee()->session->userdata('member_id') ?: 1,
 			'version_date' => ee()->localize->now,
 			'version_data' => $_POST ?: $this->getValues()
 		);
@@ -970,7 +970,8 @@ class ChannelEntry extends ContentModel {
 		$statuses = ee('Model')->get('Status')
 			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $this->Channel->status_group);
+			->filter('group_id', $this->Channel->status_group)
+			->order('status_order');
 
 		$status_options = array();
 
