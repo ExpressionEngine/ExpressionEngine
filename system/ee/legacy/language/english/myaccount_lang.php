@@ -314,7 +314,7 @@ Used in the control panel only.',
 
 'new_password_confirm_desc' => 'Retype desired password, to confirm.',
 
-'existing_password' => 'Current Password',
+'existing_password' => 'Enter your Password',
 
 'invalid_email_address' => 'The email you submitted is not valid',
 
@@ -524,6 +524,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'site_index' => 'Site Index',
 
 'btn_login' => 'Login',
+
+'btn_authenticate_and_login' => 'Authenticate &amp; Login',
 
 'quick_links_ajax_reorder_fail' => 'Attention: Failed to save quick links order',
 'quick_links_ajax_reorder_fail_desc' => 'We failed to save your new quick links order. Refresh the page and make sure you\'re logged in.',
