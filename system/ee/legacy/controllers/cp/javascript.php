@@ -131,10 +131,12 @@ class Javascript extends CI_Controller {
 		{
 			if (($plugin = $this->input->get_post('plugin')) !== FALSE)
 			{
+				$plugin = ee()->security->sanitize_filename($plugin);
 				$file = PATH_JAVASCRIPT.'jquery/plugins/'.$plugin.'.js';
 			}
 			elseif (($ui = $this->input->get_post('ui')) !== FALSE)
 			{
+				$ui = ee()->security->sanitize_filename($ui);
 				$file = PATH_JAVASCRIPT.'jquery/ui/jquery.ui.'.$ui.'.js';
 			}
 		}
