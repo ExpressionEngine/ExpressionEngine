@@ -923,7 +923,7 @@ class EE_Input {
 			unset($_COOKIE['$Path']);
 			unset($_COOKIE['$Domain']);
 
-			$cookie_prefix = config_item('cookie_prefix');
+			$cookie_prefix = ( ! config_item('cookie_prefix')) ? 'exp_' : config_item('cookie_prefix');
 
 			foreach($_COOKIE as $key => $val)
 			{

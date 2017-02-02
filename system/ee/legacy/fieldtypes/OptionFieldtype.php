@@ -89,16 +89,15 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			if (isset($data['value_label_pairs']['rows']))
 			{
 				$data['value_label_pairs'] = $data['value_label_pairs']['rows'];
-			}
 
-			if ( ! isset($data['value_label_pairs']))
-			{
-				$data['value_label_pairs'] = array();
+				foreach ($data['value_label_pairs'] as $row)
+				{
+					$pairs[$row['value']] = $row['label'];
+				}
 			}
-
-			foreach ($data['value_label_pairs'] as $row)
+			elseif (isset($data['value_label_pairs']))
 			{
-				$pairs[$row['value']] = $row['label'];
+				$pairs = $data['value_label_pairs'];
 			}
 
 			if ($this->content_type() == 'grid')
@@ -407,14 +406,14 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	 */
 	protected function processTypograpghy($string)
 	{
-		$text_format = $this->row('field_ft_'.$this->field_id) ?: $this->get_setting('field_fmt', 'none');
+		$text_format = $this->get_setting('field_fmt') ?: $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
 
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($string),
 			array(
-				'text_format'	=> $text_format,
+				'text_format'	=> $text_format ?: 'none',
 				'html_format'	=> $this->row('channel_html_formatting', 'all'),
 				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
 				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')

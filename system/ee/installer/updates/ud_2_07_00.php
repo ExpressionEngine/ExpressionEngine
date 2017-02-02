@@ -852,8 +852,15 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// Get text type fields
 		ee()->db->where_in('field_type', array('text', 'textarea', 'checkboxes', 'multi_select', 'radio', 'select', 'file'));
 
-
 		$channel_fields = ee()->db->get('channel_fields');
+
+		$channel_fields_info = ee()->db->query('DESCRIBE `exp_channel_data`;')->result_array();
+
+		$column_types = array();
+		foreach ($channel_fields_info as $column)
+		{
+			$column_types[$column['Field']] = $column['Type'];
+		}
 
 		foreach ($channel_fields->result_array() as $field)
 		{
@@ -874,7 +881,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				array(
 					$field_name => array(
 						'name' 			=> $field_name,
-						'type' 			=> 'text',
+						'type' 			=> isset($column_types[$field_name]) ? $column_types[$field_name] : 'text',
 						'null' 			=> TRUE
 					)
 				)
