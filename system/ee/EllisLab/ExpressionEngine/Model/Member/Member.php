@@ -220,61 +220,6 @@ class Member extends ContentModel {
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
 
-	public static function augmentQuery($builder, $query, $model_fields)
-	{
-		$field_ids = array();
-
-		foreach ($builder->getFilters() as $filter)
-		{
-			$field = $filter[0];
-			if (strpos($field, 'm_field_id') === 0)
-			{
-				$field_ids[] = str_replace('m_field_id_', '', $field);
-			}
-		}
-
-		foreach (array_keys($builder->getSearch()) as $field)
-		{
-			if (strpos($field, 'm_field_id') === 0)
-			{
-				$field_ids[] = str_replace('m_field_id_', '', $field);
-			}
-		}
-
-		foreach ($builder->getOrders() as $order)
-		{
-			$field = $order[0];
-
-			if (strpos($field, 'm_field_id') === 0)
-			{
-				$field_ids[] = str_replace('m_field_id_', '', $field);
-			}
-		}
-
-		if ( ! empty($field_ids))
-		{
-			$field_ids = array_unique($field_ids);
-
-			$fields = ee('Model')->get('MemberField')
-				->fields('m_field_id')
-				->filter('m_field_id', 'IN', $field_ids)
-				->filter('m_legacy_field_data', 'n')
-				->all();
-
-			foreach ($fields->pluck('field_id') as $field_id)
-			{
-				$table_alias = "Member_field_id_{$field_id}";
-				$column_alias = "Member__m_field_id_{$field_id}";
-
-				$query->select("{$table_alias}.data as {$column_alias}", FALSE);
-				$query->join("member_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$model_fields['Member']['Member__member_id']}", 'LEFT');
-				$model_fields['Member'][$column_alias] = $table_alias . '.data';
-			}
-		}
-
-		return $model_fields;
-	}
-
 	/**
 	 * Generate unique ID and crypt key for new members
 	 */

@@ -84,9 +84,9 @@ class Select extends Query {
 
 		$class = $this->getClass();
 
-		if (method_exists($class, 'augmentQuery'))
+		if ( ! is_null($class::getMetaData('field_data')))
 		{
-			$this->model_fields = $class::augmentQuery($this->builder, $query, $this->model_fields);
+			$this->augmentQuery($query);
 		}
 
 		$this->processWiths($query, $from, $alias);
@@ -278,6 +278,72 @@ class Select extends Query {
 		}
 
 		return $result_array;
+	}
+
+	protected function augmentQuery($query)
+	{
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
+		$class = $meta->getClass();
+
+		$meta_field_data = $class::getMetaData('field_data');
+
+		$field_model = ee('Model')->make($meta_field_data['field_model']);
+
+		// let's make life a bit easier
+		$table_prefix      = $meta->getName();
+		$join_table_prefix = $field_model->getTableName();
+		$column_prefix     = $field_model->getColumnPrefix();
+		$parent_key        = "{$table_prefix}__{$meta_field_data['extra_data']['key_column']}";
+
+		$field_ids = array();
+
+		foreach ($this->builder->getFilters() as $filter)
+		{
+			$field = $filter[0];
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		foreach (array_keys($this->builder->getSearch()) as $field)
+		{
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		foreach ($this->builder->getOrders() as $order)
+		{
+			$field = $order[0];
+
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		if ( ! empty($field_ids))
+		{
+			$field_ids = array_unique($field_ids);
+
+			$fields = ee('Model')->get($meta_field_data['field_model'])
+				->fields($column_prefix.'field_id')
+				->filter($column_prefix.'field_id', 'IN', $field_ids)
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all();
+
+			foreach ($fields->pluck('field_id') as $field_id)
+			{
+				$table_alias = "{$table_prefix}_field_id_{$field_id}";
+				$column_alias = "{$table_prefix}__{$column_prefix}field_id_{$field_id}";
+
+				$query->select("{$table_alias}.data as {$column_alias}", FALSE);
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
+				$this->model_fields[$table_prefix][$column_alias] = $table_alias . '.data';
+			}
+		}
 	}
 
 	/**

@@ -104,63 +104,6 @@ class Category extends ContentModel {
 	protected $cat_image;
 	protected $cat_order;
 
-	public static function augmentQuery($builder, $query, $model_fields)
-	{
-		$field_ids = array();
-
-		foreach ($builder->getFilters() as $filter)
-		{
-			$field = $filter[0];
-			if (strpos($field, 'field_id') === 0)
-			{
-				$field_ids[] = str_replace('field_id_', '', $field);
-			}
-		}
-
-		foreach (array_keys($builder->getSearch()) as $field)
-		{
-			if (strpos($field, 'field_id') === 0)
-			{
-				$field_ids[] = str_replace('field_id_', '', $field);
-			}
-		}
-
-		foreach ($builder->getOrders() as $order)
-		{
-			$field = $order[0];
-
-			if (strpos($field, 'field_id') === 0)
-			{
-				$field_ids[] = str_replace('field_id_', '', $field);
-			}
-		}
-
-		if ( ! empty($field_ids))
-		{
-			$field_ids = array_unique($field_ids);
-
-			$fields = ee('Model')->get('CategoryField')
-				->fields('field_id')
-				->filter('field_id', 'IN', $field_ids)
-				->filter('legacy_field_data', 'n')
-				->all();
-
-			foreach ($fields->pluck('field_id') as $field_id)
-			{
-				$table_alias = "Category_field_id_{$field_id}";
-				$column_alias = "Category__field_id_{$field_id}";
-
-				$query->select("{$table_alias}.data as {$column_alias}", FALSE);
-				$query->join("category_field_data_field_{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$model_fields['Category']['Category__cat_id']}", 'LEFT');
-				$model_fields['Category'][$column_alias] = $table_alias . '.data';
-			}
-		}
-
-		return $model_fields;
-	}
-
-
-
 	/**
 	 * A link back to the owning category group object.
 	 *
