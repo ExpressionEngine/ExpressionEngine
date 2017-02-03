@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use LogicException;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -53,9 +54,9 @@ class Select extends Query {
 		$class = $this->getClass();
 
 		if (! empty($result_array)
-            && method_exists($class, 'getExtraData'))
+            && ! is_null($class::getMetaData('field_data')))
 		{
-			$result_array = $class::getExtraData($result_array);
+			$result_array = $this->getExtraData($result_array);
 		}
 
 		$result = new Result(
@@ -200,6 +201,83 @@ class Select extends Query {
 		}
 
 		return $queued_joins;
+	}
+
+	protected function getExtraData($result_array)
+	{
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
+		$class = $meta->getClass();
+
+		$meta_field_data = $class::getMetaData('field_data');
+
+		$field_model = ee('Model')->make($meta_field_data['field_model']);
+
+		// let's make life a bit easier
+		$item_key_column   = $meta->getName() . '__' . $meta->getPrimaryKey();
+		$table_prefix      = $meta->getName();
+		$join_table_prefix = $field_model->getTableName();
+		$column_prefix     = $field_model->getColumnPrefix();
+		$parent_key        = "{$meta_field_data['extra_data']['parent_table']}.{$meta_field_data['extra_data']['key_column']}";
+
+		$fields = ee('Model')->get($meta_field_data['field_model'])
+			->fields('field_id')
+			->filter($column_prefix.'legacy_field_data', 'n');
+
+		if (array_key_exists('group_column', $meta_field_data['extra_data']))
+		{
+			$field_groups = array_map(function($column) use($meta_field_data){
+				if (array_key_exists($meta_field_data['extra_data']['group_column'], $column))
+				{
+					return $column[$meta_field_data['extra_data']['group_column']];
+				}
+			}, $result_array);
+
+			$field_groups = array_unique($field_groups);
+			$fields = $fields->filter('group_id', 'IN', $field_groups);
+		}
+
+		$fields = $fields->all();
+
+		if ($fields->count())
+		{
+			$field_ids = $fields->pluck('field_id');
+
+			$entry_ids = array_map(function($column) use ($item_key_column){
+				return $column[$item_key_column];
+			}, $result_array);
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			$main_table = "{$table_prefix}_field_id_{$field_ids[0]}";
+
+			$query->from($meta_field_data['extra_data']['parent_table']);
+			$query->select("{$parent_key} as {$item_key_column}", FALSE);
+
+			foreach ($field_ids as $field_id)
+			{
+				$table_alias = "{$table_prefix}_field_id_{$field_id}";
+
+				$query->select("{$table_alias}.data as {$table_prefix}__{$column_prefix}field_id_{$field_id}", FALSE);
+				$query->select("{$table_alias}.metadata as {$table_prefix}__{$column_prefix}field_ft_{$field_id}", FALSE);
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$parent_key}", 'LEFT');
+			}
+
+			$query->where_in("{$parent_key}", $entry_ids);
+
+			$data = $query->get()->result_array();
+
+			foreach ($data as $row)
+			{
+				array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
+					if ($data[$item_key_column] == $field_data[$item_key_column])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+		}
+
+		return $result_array;
 	}
 
 	/**
