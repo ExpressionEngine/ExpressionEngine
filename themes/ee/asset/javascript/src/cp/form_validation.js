@@ -67,7 +67,10 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$(this._textInputSelectors, container).blur(function() {
+		$(this._textInputSelectors, container)
+			.not('*[data-ajax-validate=no]')
+			.blur(function() {
+
 			// Unbind keydown validation when the invalid field loses focus
 			$(this).data('validating', false);
 			var element = $(this);
@@ -77,7 +80,10 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).change(function() {
+		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container)
+			.not('*[data-ajax-validate=no]')
+			.change(function() {
+
 			var element = $(this);
 
 			setTimeout(function() {
