@@ -213,8 +213,8 @@ class Select extends Query {
 		$field_model = ee('Model')->make($meta_field_data['field_model']);
 
 		// let's make life a bit easier
-		$item_key_column   = $meta->getName() . '__' . $meta->getPrimaryKey();
-		$table_prefix      = $meta->getName();
+		$item_key_column   = $this->root_alias . '__' . $meta->getPrimaryKey();
+		$table_prefix      = $this->root_alias;
 		$join_table_prefix = $field_model->getTableName();
 		$column_prefix     = $field_model->getColumnPrefix();
 		$parent_key        = "{$meta_field_data['extra_data']['parent_table']}.{$meta_field_data['extra_data']['key_column']}";
