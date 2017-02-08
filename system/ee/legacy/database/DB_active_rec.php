@@ -393,11 +393,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param   boolean $escape Set to FALSE to prevent
 	 *                          CI_DB_driver::protect_identifiers() and
 	 *                          CI_DB_driver::escape()
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function where($key, $value = NULL, $escape = TRUE)
+	function where($key, $value = NULL, $escape = TRUE, $binary = FALSE)
 	{
-		return $this->_where($key, $value, 'AND ', $escape);
+		return $this->_where($key, $value, 'AND ', $escape, $binary);
 	}
 
 	// --------------------------------------------------------------------
@@ -417,11 +418,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param   boolean $escape Set to FALSE to prevent
 	 *                          CI_DB_driver::protect_identifiers() and
 	 *                          CI_DB_driver::escape()
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function or_where($key, $value = NULL, $escape = TRUE)
+	function or_where($key, $value = NULL, $escape = TRUE, $binary = FALSE)
 	{
-		return $this->_where($key, $value, 'OR ', $escape);
+		return $this->_where($key, $value, 'OR ', $escape, $binary);
 	}
 
 	// --------------------------------------------------------------------
@@ -441,9 +443,10 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param   boolean $escape Set to FALSE to prevent
 	 *                          CI_DB_driver::protect_identifiers() and
 	 *                          CI_DB_driver::escape()
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function _where($key, $value = NULL, $boolean_operator = 'AND ', $escape = NULL)
+	function _where($key, $value = NULL, $boolean_operator = 'AND ', $escape = NULL, $binary = FALSE)
 	{
 		if ( ! is_array($key))
 		{
@@ -464,6 +467,9 @@ class CI_DB_active_record extends CI_DB_driver {
 			// need boolean operators.  At least until a new group is opened.
 			$boolean_operator_prefix = ($this->ar_empty_group) ? '' : $boolean_operator;
 			$this->ar_empty_group = FALSE;
+
+			// For case-sensitive searches, prefix the column name with `binary `
+			$binary_prefix = $binary ? 'binary ' : '';
 
 			if (is_null($v) && ! $this->_has_operator($k))
 			{
@@ -490,11 +496,12 @@ class CI_DB_active_record extends CI_DB_driver {
 				$k = $this->_protect_identifiers($k, FALSE, $escape);
 			}
 
-			$this->ar_where[] = $boolean_operator_prefix.$k.$v;
+			$where = $boolean_operator_prefix.$binary_prefix.$k.$v;
+			$this->ar_where[] = $where;
 
 			if ($this->ar_caching === TRUE)
 			{
-				$this->ar_cache_where[] = $boolean_operator_prefix.$k.$v;
+				$this->ar_cache_where[] = $where;
 				$this->ar_cache_exists[] = 'where';
 			}
 
@@ -652,11 +659,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @access	public
 	 * @param	string $key The field for the WHERE IN clause
 	 * @param	array $values The values to search for
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function where_in($key, $values)
+	function where_in($key, $values, $binary = FALSE)
 	{
-		return $this->_where_in($key, $values);
+		return $this->_where_in($key, $values, FALSE, 'AND ', $binary);
 	}
 
 	// --------------------------------------------------------------------
@@ -670,11 +678,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @access	public
 	 * @param	string $key The field for the WHERE IN clause
 	 * @param	array $values The values to search for
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function or_where_in($key, $values)
+	function or_where_in($key, $values, $binary = FALSE)
 	{
-		return $this->_where_in($key, $values, FALSE, 'OR ');
+		return $this->_where_in($key, $values, FALSE, 'OR ', $binary);
 	}
 
 	// --------------------------------------------------------------------
@@ -688,11 +697,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @access	public
 	 * @param	string $key The field for the WHERE IN clause
 	 * @param	array $values The values to search for
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function where_not_in($key, $values)
+	function where_not_in($key, $values, $binary = FALSE)
 	{
-		return $this->_where_in($key, $values, TRUE);
+		return $this->_where_in($key, $values, TRUE, 'AND ', $binary);
 	}
 
 	// --------------------------------------------------------------------
@@ -706,11 +716,12 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @access	public
 	 * @param	string $key The field for the WHERE IN clause
 	 * @param	array $values The values to search for
+	 * @param	boolean $binary Whether or not to use a binary comparison
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function or_where_not_in($key, $values)
+	function or_where_not_in($key, $values, $binary = FALSE)
 	{
-		return $this->_where_in($key, $values, TRUE, 'OR ');
+		return $this->_where_in($key, $values, TRUE, 'OR ', $binary);
 	}
 
 	// --------------------------------------------------------------------
@@ -727,7 +738,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string $boolean_operator The operator to use ('AND'/'OR')
 	 * @return	CI_DB_active_record The active record object
 	 */
-	function _where_in($key = NULL, $values = NULL, $not = FALSE, $boolean_operator = 'AND ')
+	function _where_in($key = NULL, $values = NULL, $not = FALSE, $boolean_operator = 'AND ', $binary = FALSE)
 	{
 		if ($key === NULL OR $values === NULL)
 		{
@@ -747,9 +758,11 @@ class CI_DB_active_record extends CI_DB_driver {
 		}
 
 		$boolean_operator_prefix = ($this->ar_empty_group) ? '' : $boolean_operator;
+		$binary_prefix = $binary ? 'binary ' : '';
+
 		$this->ar_empty_group = FALSE;
 
-		$where_in = $boolean_operator_prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
+		$where_in = $boolean_operator_prefix . $binary_prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
 
 		$this->ar_where[] = $where_in;
 
