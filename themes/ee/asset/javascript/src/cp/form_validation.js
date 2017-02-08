@@ -247,7 +247,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
-		if (this.paused) {
+		if (this.paused || field.attr('name') === undefined) {
 			return;
 		}
 
