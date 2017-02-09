@@ -98,7 +98,10 @@ class Updater extends CP_Controller {
 		}
 		catch (\Exception $e)
 		{
-			$logger = new Service\Logger\File(PATH_CACHE.'ee_update/update.log', ee('Filesystem'));
+			$logger = new Service\Logger\File(
+				PATH_CACHE.'ee_update/update.log',
+				ee('Filesystem')
+			);
 			$updater_logger = new Service\Updater\Logger($logger);
 			$updater_logger->log($e->getMessage());
 
