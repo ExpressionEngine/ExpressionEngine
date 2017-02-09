@@ -86,6 +86,8 @@ class Css extends CI_Controller {
 	 */
 	private function _load_css_file($path, $file)
 	{
+		$file = ee()->security->sanitize_filename($file);
+
 		if ( ! file_exists($path.'css/'.$file.'.css'))
 		{
 			return FALSE;

@@ -294,10 +294,7 @@ abstract class AbstractPublish extends CP_Controller {
 		$entry->edit_date = ee()->localize->now;
 		$entry->save();
 
-		if ($action == 'create')
-		{
-			ee()->session->set_flashdata('entry_id', $entry->entry_id);
-		}
+		ee()->session->set_flashdata('entry_id', $entry->entry_id);
 
 		ee('CP/Alert')->makeInline('entry-form')
 			->asSuccess()
