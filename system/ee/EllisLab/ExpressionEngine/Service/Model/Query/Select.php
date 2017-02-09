@@ -313,8 +313,10 @@ class Select extends Query {
 			list($alias, $property) = explode('.', $property);
 			$from = $this->expandAlias($alias);
 		}
-		else {
+		else
+		{
 			$from = $this->builder->getFrom();
+			list($from, $alias) = $this->splitAlias($from);
 		}
 
 		$meta = $this->store->getMetaDataReader($from);
