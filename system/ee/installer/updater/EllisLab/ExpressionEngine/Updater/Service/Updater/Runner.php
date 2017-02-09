@@ -36,10 +36,12 @@ class Runner {
 	// through the browser
 	protected $steps = [
 		'updateFiles',
+		'checkForDbUpdates',
 		'backupDatabase',
 		'updateDatabase',
 		'rollback', // Temporary for testing
-		'restoreDatabase' // Temporary for testing
+		'restoreDatabase', // Temporary for testing
+		'selfDestruct'
 	];
 
 	// File updater singleton
@@ -55,15 +57,21 @@ class Runner {
 		$this->file_updater->updateFiles();
 	}
 
-	public function backupDatabase($table_name = NULL, $offset = 0)
+	public function checkForDbUpdates()
 	{
 		$db_updater = $this->makeDatabaseUpdaterService();
 		$affected_tables = $db_updater->getAffectedTables();
 
 		if (empty($affected_tables))
 		{
-			return;
+			return 'updateDatabase';
 		}
+	}
+
+	public function backupDatabase($table_name = NULL, $offset = 0)
+	{
+		$db_updater = $this->makeDatabaseUpdaterService();
+		$affected_tables = $db_updater->getAffectedTables();
 
 		// TODO: ensure this directory exists
 		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
@@ -124,10 +132,19 @@ class Runner {
 		ee('Database/Restore')->restoreLineByLine(PATH_CACHE.'ee_update/database.sql');
 	}
 
+	public function selfDestruct()
+	{
+		$filesystem = new Filesystem();
+		$filesystem->deleteDir(SYSPATH.'ee/updater');
+	}
+
 	protected function makeDatabaseUpdaterService()
 	{
 		// TODO: Inject logger into here
-		return new Service\Updater\DatabaseUpdater(ee()->config->item('app_version'), new Filesystem());
+		return new Service\Updater\DatabaseUpdater(
+			ee()->config->item('app_version'),
+			new Filesystem()
+		);
 	}
 
 	/**

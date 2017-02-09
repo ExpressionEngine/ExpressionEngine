@@ -57,14 +57,15 @@ class Updater {
 			]);
 		}
 
-		// Language and markup for front-end; each string
-		// is what is sent back AFTER the corresponding key
-		// step name has run
 		$messages = [
+			// This step isn't worth calling out, but needs to be a separate step
+			// so that we can bootstrap EE, so don't update the front-end message
+			'checkForDbUpdates' => '',
 			'backupDatabase' => 'Backing up database',
-			'updateDatabase' => 'Running database updates',
+			'updateDatabase' => 'Running updates',
 			'rollback' => 'Rolling back install',
 			'restoreDatabase' => 'Restoring database',
+			'selfDestruct' => 'Cleaning up',
 		];
 
 		$next_step = $runner->getNextStep();
@@ -72,7 +73,6 @@ class Updater {
 
 		if ($next_step)
 		{
-			// TODO: Make better
 			if (strpos($next_step, 'backupDatabase') === 0)
 			{
 				$message = $messages['backupDatabase'];
