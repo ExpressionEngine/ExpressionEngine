@@ -35,7 +35,7 @@ var Updater = {
 						that._updateStatus(result.message);
 						that._requestUpdate(result.nextStep);
 					} else if (result.nextStep === false) {
-						that._showSuccess();
+						window.location = EE.BASE;
 					}
 				}
 				if (result.messageType == 'error') {
