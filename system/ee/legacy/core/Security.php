@@ -105,6 +105,7 @@ class EE_Security {
 		}
 
 		$str = remove_invisible_characters($str, FALSE);
+		$str = preg_replace('/\.+[\/\\\]/', '', $str);
 		return stripslashes(str_replace($bad, '', $str));
 	}
 
