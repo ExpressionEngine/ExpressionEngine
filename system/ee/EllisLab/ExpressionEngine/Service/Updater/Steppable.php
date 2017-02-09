@@ -59,7 +59,7 @@ trait Steppable {
 		{
 			$index = array_search($this->currentStep, $this->steps);
 
-			if ($index === FALSE)
+			if ($index === FALSE OR in_array($return, $this->steps))
 			{
 				$this->nextStep = $return;
 				return;

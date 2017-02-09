@@ -107,6 +107,16 @@ class SteppableTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('nestedStep[argument]', $this->stepper->getNextStep());
 	}
+
+	// Step string parser should allow for another step to be returned with
+	// an argument
+	public function testSkippedSteps()
+	{
+		$this->stepper = new StepperSkipSteps();
+		$this->stepper->runStep('step1');
+
+		$this->assertEquals('step3', $this->stepper->getNextStep());
+	}
 }
 
 class Stepper {
@@ -125,6 +135,36 @@ class Stepper {
 	public function step1()
 	{
 		$this->step1_called = TRUE;
+	}
+
+	public function step2()
+	{
+		$this->step2_called = TRUE;
+	}
+
+	public function step3()
+	{
+		$this->step3_called = TRUE;
+	}
+}
+
+class StepperSkipSteps {
+	use Steppable;
+
+	public $steps = [
+		'step1',
+		'step2',
+		'step3'
+	];
+
+	public $step1_called = FALSE;
+	public $step2_called = FALSE;
+	public $step3_called = FALSE;
+
+	public function step1()
+	{
+		$this->step1_called = TRUE;
+		return 'step3';
 	}
 
 	public function step2()
