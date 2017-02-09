@@ -54,7 +54,7 @@ var Updater = {
 			pass_class = 'updater-step-pass',
 			current_item = $('.'+work_class, progress_list);
 
-		if (current_item.text().indexOf(message) !== -1) {
+		if (current_item.text().indexOf(message) !== -1 || message == '') {
 			return;
 		}
 
