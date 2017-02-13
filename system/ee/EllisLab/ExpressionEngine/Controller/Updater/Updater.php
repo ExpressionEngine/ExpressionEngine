@@ -41,7 +41,7 @@ class Updater extends CP_Controller {
 
 		if (version_compare(APP_VER, $to_version, '>='))
 		{
-			//return ee()->functions->redirect(ee('CP/URL', 'homepage'));
+			return ee()->functions->redirect(ee('CP/URL', 'homepage'));
 		}
 
 		$preflight_error = NULL;
