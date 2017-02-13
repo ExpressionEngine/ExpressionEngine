@@ -1288,7 +1288,7 @@ class EE_Session {
 				$signature = substr($cookie, -32);
 				$payload = substr($cookie, 0, -32);
 
-				if (md5($payload.$this->sess_crypt_key) === $signature)
+				if (hash_equals(md5($payload.$this->sess_crypt_key), $signature))
 				{
 					$this->flashdata = unserialize(stripslashes($payload));
 					$this->_age_flashdata();
