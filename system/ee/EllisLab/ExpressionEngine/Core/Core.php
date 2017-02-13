@@ -107,7 +107,7 @@ abstract class Core {
 	protected function bootOnly(Request $request)
 	{
 		// Boot installer instead of Core?
-		if (defined('INSTALLER'))
+		if (INSTALLER)
 		{
 			$routing = [
 				'directory' => '',
