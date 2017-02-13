@@ -901,7 +901,7 @@ abstract class EE_Fieldtype {
 		$field_options = array();
 
 		$pairs = $this->get_setting('value_label_pairs');
-		if ( ! empty($pairs))
+		if ( ! empty($pairs) OR $this->get_setting('field_pre_populate') === NULL)
 		{
 			return $pairs;
 		}
