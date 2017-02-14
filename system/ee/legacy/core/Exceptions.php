@@ -251,6 +251,18 @@ class EE_Exceptions {
 			$location = array_pop($location_parts);
 		}
 
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+			$_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+		{
+			$return = [
+				'messageType' => 'error',
+				'message' => $message,
+				'trace' => $trace
+			];
+			echo json_encode($return);
+			exit;
+		}
+
 		if (ob_get_level() > $this->ob_level + 1)
 		{
 			ob_end_flush();
