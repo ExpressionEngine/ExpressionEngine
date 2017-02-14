@@ -13,7 +13,14 @@
 var Updater = {
 
 	runStep: function(step) {
+		this._lastStep = $('.box.updating .updater-step-work').text();
 		this._requestUpdate(step);
+
+		$('.toggle').on('click',function(e) {
+			var toggleIs = $(this).attr('rel');
+			$('.'+toggleIs).toggle();
+			e.preventDefault();
+		});
 	},
 
 	_requestUpdate: function(step) {
@@ -37,13 +44,12 @@ var Updater = {
 					} else if (result.nextStep === false) {
 						window.location = EE.BASE;
 					}
-				}
-				if (result.messageType == 'error') {
-					console.log(result.message);
+				} else {
+					that._showError(result);
 				}
 			},
 			error: function(data) {
-				console.log(data);
+				that._showError(data.responseText);
 			}
 		});
 	},
@@ -54,6 +60,7 @@ var Updater = {
 			pass_class = 'updater-step-pass',
 			current_item = $('.'+work_class, progress_list);
 
+		// If no message or is blank, don't update
 		if (current_item.text().indexOf(message) !== -1 || message == '') {
 			return;
 		}
@@ -67,7 +74,46 @@ var Updater = {
 		// Create new item
 		var new_item = $('<li/>', { class: work_class }).html(message + '<span>...</span>');
 
+		this._lastStep = message;
+
 		progress_list.append(new_item);
+	},
+
+	_showError: function(error) {
+
+		if (typeof error != 'object') {
+			try {
+				error = JSON.parse(error);
+			} catch(err) {
+				error = {message: error, trace: []};
+			}
+		}
+
+		$('.box.updating').addClass('hidden');
+
+		var warn = $('.box.warn'),
+			trace_link = $('.updater-fade', warn),
+			trace_container = $('.updater-stack-trace', warn),
+			trace_exists = error.trace.length > 0;
+
+		warn.removeClass('hidden')
+			.find('.alert-notice p')
+			.html(error.message);
+
+		if (trace_exists) {
+			var list = $('<ul/>');
+			for (var i = 0; i < error.trace.length; i++) {
+				list.append(
+					$('<li/>').text(error.trace[i])
+				);
+			}
+			trace_container.append(list);
+		}
+
+		trace_link.toggleClass('hidden', ! trace_exists);
+		trace_container.toggleClass('hidden', ! trace_exists);
+
+		$('.stopped b', warn).html(this._lastStep);
 	},
 
 	_showSuccess: function() {
