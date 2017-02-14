@@ -49,6 +49,7 @@ class Updater extends CP_Controller {
 		try
 		{
 			$runner = ee('Updater/Runner');
+			// Run preflight first and go ahead and show those errors
 			$runner->runStep($runner->getFirstStep());
 			$next_step = $runner->getNextStep();
 		}
@@ -96,17 +97,16 @@ class Updater extends CP_Controller {
 		}
 		catch (\Exception $e)
 		{
+			// TODO: Abstract this out to Runner
 			$logger = new Service\Logger\File(
 				PATH_CACHE.'ee_update/update.log',
 				ee('Filesystem')
 			);
 			$updater_logger = new Service\Updater\Logger($logger);
 			$updater_logger->log($e->getMessage());
+			$updater_logger->log($e->getTraceAsString());
 
-			return [
-				'messageType' => 'error',
-				'message' => $e->getMessage()
-			];
+			throw $e;
 		}
 
 		$messages = [
