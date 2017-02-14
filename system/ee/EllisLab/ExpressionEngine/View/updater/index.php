@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/out'); ?>
 
-<div class="box<?php if ($warn_message !== NULL): ?> hidden<?php endif ?>">
+<div class="box updating<?php if ($warn_message !== NULL): ?> hidden<?php endif ?>">
 	<div class="updater-working">
 		<div class="updater-load"></div>
 		<h1>Updating <b><?=$site_name?></b> from <?=$current_version?> to <?=$to_version?></h1>
@@ -11,10 +11,11 @@
 </div>
 
 <div class="box warn<?php if ($warn_message === NULL): ?> hidden<?php endif ?>">
-	<h1>Update Stopped<span class="icon-issue"></span></h1>
+	<h1>Update Stopped <span class="updater-fade">(<a class="toggle" rel="updater-stack-trace" href="">view stack trace</a>)</span><span class="icon-issue"></span></h1>
+	<div class="updater-stack-trace"></div>
 	<div class="updater-msg">
 		<p>Oops, looks like the updater couldn't&nbsp;complete.</p>
-		<p>We stopped on <b>step name/phrase</b>.</p>
+		<p class="stopped">We stopped on <b>step name/phrase</b>.</p>
 		<div class="alert-notice">
 			<p><?=$warn_message?></p>
 		</div>
