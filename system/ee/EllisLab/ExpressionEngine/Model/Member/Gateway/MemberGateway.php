@@ -43,18 +43,6 @@ class MemberGateway extends Gateway {
 	protected $crypt_key;
 	protected $authcode;
 	protected $email;
-	protected $url;
-	protected $location;
-	protected $occupation;
-	protected $interests;
-	protected $bday_d;
-	protected $bday_m;
-	protected $bday_y;
-	protected $aol_im;
-	protected $yahoo_im;
-	protected $msn_im;
-	protected $icq;
-	protected $bio;
 	protected $signature;
 	protected $avatar_filename;
 	protected $avatar_width;
