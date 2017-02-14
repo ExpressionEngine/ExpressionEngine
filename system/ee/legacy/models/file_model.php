@@ -343,11 +343,11 @@ class File_model extends CI_Model {
 
 		if (is_array($file_name))
 		{
-			$this->db->where_in('file_name', $file_name);
+			$this->db->where_in('file_name', $file_name, TRUE);
 		}
 		else
 		{
-			$this->db->where("file_name = " . $this->db->escape($file_name) . " COLLATE utf8_bin");
+			$this->db->where('file_name', $file_name, TRUE, TRUE);
 		}
 
 		return $this->db->get('files');

@@ -359,7 +359,7 @@ class EE_Core {
 		// Update system stats
 		ee()->load->library('stats');
 
-		if (REQ == 'PAGE' && ee()->config->item('enable_online_user_tracking') != 'n')
+		if (REQ == 'PAGE' && bool_config_item('enable_online_user_tracking'))
 		{
 			ee()->stats->update_stats();
 		}

@@ -357,7 +357,7 @@ class Grid_lib {
 
 		$this->delete_rows($row_ids);
 
-		if ( ! empty($searchable_data))
+		if ( ! empty($searchable_data) && $this->content_type == 'channel')
 		{
 			ee()->load->helper('custom_field_helper');
 
