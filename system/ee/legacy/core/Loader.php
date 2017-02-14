@@ -841,7 +841,14 @@ class EE_Loader {
 			$this->_ci_cached_vars = array_merge($this->_ci_cached_vars, $_ci_vars);
 		}
 
-		$use_eval = ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE);
+		if (is_php('5.4.0'))
+		{
+			$use_eval = FALSE;
+		}
+		else
+		{
+			$use_eval = ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE);
+		}
 
 		/*
 		 * Buffer the output
