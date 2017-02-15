@@ -1226,6 +1226,8 @@ class Channel {
 
 		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT t.entry_id " : "t.entry_id ";
 
+		$sql_b .= ",exp_channels.field_group ";
+
 		if ($this->pagination->field_pagination == TRUE)
 		{
 			$sql_b .= ",wd.* ";
@@ -2283,47 +2285,54 @@ class Channel {
 			$this->sql .= $yearweek.', ';
 		}
 
-		// DO NOT CHANGE THE ORDER
-		// The exp_member_data table needs to be called before the exp_members table.
+		$entries = array();
+		$field_groups = array();
+
+		foreach ($query->result_array() as $row)
+		{
+			$entries[] = $row['entry_id'];
+			$field_groups[] = $row['field_group'];
+		}
+
+		$entries = array_unique($entries);
+		$field_groups = array_unique($field_groups);
 
 		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
 						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 						md.*,
-						wd.*
-				FROM exp_channel_titles		AS t
+						wd.*";
+
+		$from = " FROM exp_channel_titles		AS t
 				LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
 				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
 				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
 				LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
 
-		$this->sql .= "WHERE t.entry_id IN (";
+		$fields = ee('Model')->get('ChannelField')
+			->fields('field_id')
+			->filter('legacy_field_data', 'n')
+			->filter('group_id', 'IN', $field_groups)
+			->all();
 
-		$entries = array();
-
-		// Build ID numbers (checking for duplicates)
-
-		foreach ($query->result_array() as $row)
+		if ($fields->count())
 		{
-			if ( ! isset($entries[$row['entry_id']]))
+			$field_ids = $fields->pluck('field_id');
+			foreach ($field_ids as $field_id)
 			{
-				$entries[$row['entry_id']] = 'y';
+				$table = "exp_channel_data_field_{$field_id}";
+				$this->sql .= ", {$table}.data AS field_id_{$field_id}";
+				$this->sql .= ", {$table}.metadata AS field_ft_{$field_id}";
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
 			}
-			else
-			{
-				continue;
-			}
-
-			$this->sql .= $row['entry_id'].',';
 		}
 
+		$this->sql .= $from;
+
+		$this->sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+
 		//cache the entry_id
-		ee()->session->cache['channel']['entry_ids']	= array_keys($entries);
-
-		unset($query);
-		unset($entries);
-
-		$this->sql = substr($this->sql, 0, -1).') ';
+		ee()->session->cache['channel']['entry_ids'] = $entries;
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
