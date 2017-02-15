@@ -22,18 +22,10 @@ class Command {
 
 	public function start()
 	{
-		try
-		{
-			ee('Updater/Runner')->run();
-		}
-		catch (\Exception $e)
-		{
-			// TODO: Log to file
-			echo $e->getMessage();
-			exit;
-		}
+		ee('Updater/Runner')->run();
 
 		// TODO: Abstract into helper method to run other eecms CLI commands?
+		// TODO: test what happens when you run eecms.phar outside root dir
 		system('php eecms.phar upgrade --microapp --no-bootstrap');
 	}
 
@@ -46,15 +38,7 @@ class Command {
 			$step = $runner->getFirstStep();
 		}
 
-		try
-		{
-			$runner->runStep($step);
-		}
-		catch (\Exception $e)
-		{
-			// TODO: try to get logger, log message
-			echo $e->getMessage();
-		}
+		$runner->runStep($step);
 
 		if (($next_step = $runner->getNextStep()) !== FALSE)
 		{

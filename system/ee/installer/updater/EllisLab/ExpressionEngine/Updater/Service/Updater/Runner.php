@@ -29,7 +29,9 @@ use EllisLab\ExpressionEngine\Updater\Service;
  * @link		http://ellislab.com
  */
 class Runner {
-	use Service\Updater\Steppable;
+	use Service\Updater\Steppable {
+		runStep as runStepParent;
+	}
 
 	// The idea here is to separate the download and unpacking
 	// process into quick, hopefully low-memory tasks when accessed
@@ -135,6 +137,21 @@ class Runner {
 	{
 		$filesystem = new Filesystem();
 		$filesystem->deleteDir(SYSPATH.'ee/updater');
+	}
+
+	public function runStep($step)
+	{
+		try
+		{
+			$this->runStepParent($step);
+		}
+		catch (\Exception $e)
+		{
+			$this->logger->log($e->getMessage());
+			$this->logger->log($e->getTraceAsString());
+
+			throw $e;
+		}
 	}
 
 	protected function makeDatabaseUpdaterService()

@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
+use EllisLab\ExpressionEngine\Service\Updater\Logger;
 use EllisLab\ExpressionEngine\Service\Updater\Steppable;
 
 /**
@@ -28,7 +29,9 @@ use EllisLab\ExpressionEngine\Service\Updater\Steppable;
  * @link		http://ellislab.com
  */
 class Runner {
-	use Steppable;
+	use Steppable {
+		runStep as runStepParent;
+	}
 
 	// The idea here is to separate the download and unpacking
 	// process into quick, hopefully low-memory tasks when accessed
@@ -39,19 +42,21 @@ class Runner {
 		'unpack'
 	];
 
-	// Downloader singleton
 	protected $downloader;
+	protected $logger;
 
 	/**
 	 * @param	Downloader	$downloader	Updater downloader object
 	 */
-	public function __construct(Downloader $downloader)
+	public function __construct(Downloader $downloader, Logger $logger)
 	{
 		$this->downloader = $downloader;
+		$this->logger = $logger;
 	}
 
 	public function preflight()
 	{
+		$this->logger->truncate();
 		$this->downloader->preflight();
 	}
 
@@ -66,6 +71,21 @@ class Runner {
 		$this->downloader->verifyExtractedPackage();
 		$this->downloader->checkRequirements();
 		$this->downloader->moveUpdater();
+	}
+
+	public function runStep($step)
+	{
+		try
+		{
+			$this->runStepParent($step);
+		}
+		catch (\Exception $e)
+		{
+			$this->logger->log($e->getMessage());
+			$this->logger->log($e->getTraceAsString());
+
+			throw $e;
+		}
 	}
 }
 // EOF

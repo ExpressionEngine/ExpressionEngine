@@ -35,8 +35,17 @@ $supported_commands = ['upgrade'];
 if (isset($args[0]) && in_array($args[0], $supported_commands))
 {
 	$command = array_shift($args);
-	require_once 'phar://eecms.phar/'.$command.'.php';
-	new Command($args);
+
+	try
+	{
+		require_once 'phar://eecms.phar/'.$command.'.php';
+		new Command($args);
+	}
+	catch (\Exception $e)
+	{
+		echo $e->getMessage();
+		exit;
+	}
 }
 else
 {
