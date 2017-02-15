@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Logger\File;
 class Logger {
 
 	protected $file_logger = NULL;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -39,6 +39,14 @@ class Logger {
 	public function __construct(File $file_logger)
 	{
 		$this->file_logger = $file_logger;
+	}
+
+	/**
+	 * Truncate the log file
+	 */
+	public function truncate()
+	{
+		$this->file_logger->truncate();
 	}
 
 	/**
