@@ -215,8 +215,6 @@ return array(
 		'Updater/Downloader' => function($ee)
 		{
 			$filesystem = $ee->make('Filesystem');
-			$file_logger = new Logger\File(PATH_CACHE.'ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
-			$file_logger->truncate();
 
 			return new Updater\Downloader(
 				$ee->make('License')->getEELicense()->getData('license_number'),
@@ -227,15 +225,29 @@ return array(
 				new \ZipArchive(),
 				$ee->make('Config')->getFile(),
 				new Updater\Verifier($filesystem),
-				new Updater\Logger($file_logger),
+				$ee->make('Updater/Logger'),
 				new Updater\RequirementsCheckerLoader($filesystem),
 				$ee->make('Model')->get('Site')->all()
 			);
 		},
 
+		'Updater/Logger' => function($ee)
+		{
+			$file_logger = new Logger\File(
+				PATH_CACHE.'ee_update/update.log',
+				$ee->make('Filesystem'),
+				php_sapi_name() === 'cli'
+			);
+
+			return new Updater\Logger($file_logger);
+		},
+
 		'Updater/Runner' => function($ee)
 		{
-			return new Updater\Runner($ee->make('Updater/Downloader'));
+			return new Updater\Runner(
+				$ee->make('Updater/Downloader'),
+				$ee->make('Updater/Logger')
+			);
 		},
 
 		'Encrypt' => function($ee)
