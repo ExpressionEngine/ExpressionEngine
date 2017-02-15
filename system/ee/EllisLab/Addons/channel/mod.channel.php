@@ -436,7 +436,21 @@ class Channel {
 
 			$field_sqla = ", cg.field_html_formatting, fd.* ";
 			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
+							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
+
+			foreach ($this->cat_field_models as $cat_field)
+			{
+				if ($cat_field->legacy_field_data)
+				{
+					continue;
+				}
+
+				$table = "exp_category_field_data_field_{$cat_field->field_id}";
+
+				$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
+				$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
+				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.entry_id = c.cat_id ";
+			}
 		}
 		else
 		{
