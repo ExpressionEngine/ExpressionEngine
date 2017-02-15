@@ -44,17 +44,16 @@ class Runner {
 		'selfDestruct'
 	];
 
-	// File updater singleton
-	protected $file_updater;
+	protected $logger;
 
 	public function __construct()
 	{
-		$this->file_updater = $this->makeUpdaterService();
+		$this->logger = $this->makeLoggerService();
 	}
 
 	public function updateFiles()
 	{
-		$this->file_updater->updateFiles();
+		$this->makeUpdaterService()->updateFiles();
 	}
 
 	public function checkForDbUpdates()
@@ -124,7 +123,7 @@ class Runner {
 
 	public function rollback()
 	{
-		$this->file_updater->rollbackFiles();
+		$this->makeUpdaterService()->rollbackFiles();
 	}
 
 	public function restoreDatabase()
@@ -156,11 +155,24 @@ class Runner {
 		$filesystem = new Filesystem();
 		$config = new Service\Config\File(SYSPATH.'user/config/config.php');
 		$verifier = new Service\Updater\Verifier($filesystem);
-		// TODO: prolly need to put this cache path into the configs.json and load that here
-		$file_logger = new Service\Logger\File(SYSPATH.'user/cache/ee_update/update.log', $filesystem, php_sapi_name() === 'cli');
-		$updater_logger = new Service\Updater\Logger($file_logger);
 
-		return new Service\Updater\FileUpdater($filesystem, $config, $verifier, $updater_logger);
+		return new Service\Updater\FileUpdater(
+			$filesystem,
+			$config,
+			$verifier,
+			$this->logger
+		);
+	}
+
+	protected function makeLoggerService()
+	{
+		// TODO: prolly need to put this cache path into the configs.json and load that here?
+		$file_logger = new Service\Logger\File(
+			SYSPATH.'user/cache/ee_update/update.log',
+			new Filesystem(),
+			php_sapi_name() === 'cli'
+		);
+		return new Service\Updater\Logger($file_logger);
 	}
 }
 // EOF
