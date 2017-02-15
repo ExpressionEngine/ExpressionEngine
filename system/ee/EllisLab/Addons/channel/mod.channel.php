@@ -455,12 +455,10 @@ class Channel {
 
 		foreach ($this->query->result_array() as $row)
 		{
-			$sql .= "'".$row['entry_id']."',";
-
 			$categories[] = $row['entry_id'];
 		}
 
-		$sql = substr($sql, 0, -1).')';
+		$sql .= implode(array_unique($categories), ',') . ')';
 
 		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
