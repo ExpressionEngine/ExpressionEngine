@@ -49,7 +49,7 @@ var Updater = {
 				}
 			},
 			error: function(data) {
-				that._showError(data.responseText);
+				that._showError(data.responseText, 'issue');
 			}
 		});
 	},
@@ -79,7 +79,7 @@ var Updater = {
 		progress_list.append(new_item);
 	},
 
-	_showError: function(error) {
+	_showError: function(error, severity) {
 
 		if (typeof error != 'object') {
 			try {
@@ -91,12 +91,14 @@ var Updater = {
 
 		$('.box.updating').addClass('hidden');
 
-		var warn = $('.box.warn'),
-			trace_link = $('.updater-fade', warn),
-			trace_container = $('.updater-stack-trace', warn),
+		var issue_box = $('.box.updater-stopped'),
+			severity = severity || 'warn',
+			trace_link = $('.updater-fade', issue_box),
+			trace_container = $('.updater-stack-trace', issue_box),
 			trace_exists = error.trace.length > 0;
 
-		warn.removeClass('hidden')
+		issue_box.addClass(severity)
+			.removeClass('hidden')
 			.find('.alert-notice p')
 			.html(error.message);
 
@@ -113,7 +115,7 @@ var Updater = {
 		trace_link.toggleClass('hidden', ! trace_exists);
 		trace_container.toggleClass('hidden', ! trace_exists);
 
-		$('.stopped b', warn).html(this._lastStep);
+		$('.stopped b', issue_box).html(this._lastStep);
 	},
 
 	_showSuccess: function() {
