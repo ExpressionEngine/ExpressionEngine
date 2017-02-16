@@ -131,12 +131,11 @@ class Member_settings extends Member {
 
 		$select = 'm.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
 					m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename,
-					m.photo_width, m.photo_height, m.url, m.location, m.occupation, m.interests,
-					m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit,
+					m.photo_width, m.photo_height, m.join_date, m.last_visit,
 					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date,
 					m.total_entries, m.total_comments, m.total_forum_topics,
 					m.total_forum_posts, m.language, m.timezone,
-					m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
+					m.accept_user_email, m.accept_messages,
 					g.group_title, g.can_send_private_messages';
 
 		ee()->db->select($select);
@@ -995,7 +994,6 @@ class Member_settings extends Member {
 		/** ----------------------------------------
 		/**  Build the output data
 		/** ----------------------------------------*/
-		$query = ee()->db->query("SELECT bday_y, bday_m, bday_d, url, location, occupation, interests, aol_im, icq, yahoo_im, msn_im, bio FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		return  $this->_var_swap(
 			$this->_load_element('edit_profile_form'),
@@ -1004,19 +1002,6 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_profile'))
 				),
 				'path:update_profile'	=> $this->_member_path('update_profile'),
-				'form:birthday_year'	=> $this->_birthday_year($query->row('bday_y') ),
-				'form:birthday_month'	=> $this->_birthday_month($query->row('bday_m') ),
-				'form:birthday_day'		=> $this->_birthday_day($query->row('bday_d') ),
-				'url'					=> ($query->row('url')  == '') ? 'http://' : $this->_form_prep_encoded($query->row('url') ),
-				'location'				=> $this->_form_prep_encoded($query->row('location') ),
-				'occupation'			=> $this->_form_prep_encoded($query->row('occupation') ),
-				'interests'				=> $this->_form_prep_encoded($query->row('interests') ),
-				'aol_im'				=> $this->_form_prep_encoded($query->row('aol_im') ),
-				'icq'					=> $this->_form_prep_encoded($query->row('icq') ),
-				'icq_im'				=> $this->_form_prep_encoded($query->row('icq') ),
-				'yahoo_im'				=> $this->_form_prep_encoded($query->row('yahoo_im') ),
-				'msn_im'				=> $this->_form_prep_encoded($query->row('msn_im') ),
-				'bio'					=> $this->_form_prep_encoded($query->row('bio') ),
 				'custom_profile_fields'	=> $r
 			)
 		);
@@ -1082,60 +1067,7 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('submission', $errors);
 		 }
 
-		/** -------------------------------------
-		/**  Build query
-		/** -------------------------------------*/
-
-		if (isset($_POST['url']) AND $_POST['url'] == 'http://')
-		{
-			$_POST['url'] = '';
-		}
-
-		$fields = array(
-			'bday_y',
-			'bday_m',
-			'bday_d',
-			'url',
-			'location',
-			'occupation',
-			'interests',
-			'aol_im',
-			'icq',
-			'yahoo_im',
-			'msn_im',
-			'bio'
-		);
-
-		$data = array();
-
-		foreach ($fields as $val)
-		{
-			$data[$val] = (isset($_POST[$val])) ? ee('Security/XSS')->clean($_POST[$val]) : '';
-			unset($_POST[$val]);
-		}
-
-		ee()->load->helper('url');
-		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
-		$data['url'] = prep_url($data['url']);
-
-		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
-		{
-			ee()->load->helper('date');
-			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = days_in_month($data['bday_m'], $year);
-
-			if ($data['bday_d'] > $mdays)
-			{
-				$data['bday_d'] = $mdays;
-			}
-		}
-
 		unset($_POST['HTTP_REFERER']);
-
-		if (count($data) > 0)
-		{
-			ee()->member_model->update_member(ee()->session->userdata('member_id'), $data);
-		}
 
 		/** -------------------------------------
 		/**  Update the custom fields
@@ -1158,24 +1090,6 @@ class Member_settings extends Member {
 				ee()->member_model->update_member_data(ee()->session->userdata('member_id'), $m_data);
 			}
 		}
-
-		/** -------------------------------------
-		/**  Update comments
-		/** -------------------------------------*/
-
-		if ($data['location'] != "" OR $data['url'] != "")
-		{
-			if (ee()->db->table_exists('comments'))
-			{
-				$d = array(
-					'location'	=> $data['location'],
-					'url'		=> $data['url']
-				);
-
-				ee()->db->where('author_id', ee()->session->userdata('member_id'));
-				ee()->db->update('comments', $d);
-			}
-	  	}
 
 		/** -------------------------------------
 		/**  Success message

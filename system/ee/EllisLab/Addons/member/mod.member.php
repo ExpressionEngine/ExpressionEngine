@@ -2527,11 +2527,9 @@ class Member {
 		ee()->db->select('m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
 							m.avatar_filename, m.avatar_width, m.avatar_height,
 							m.photo_filename, m.photo_width, m.photo_height,
-							m.url, m.location, m.occupation, m.interests,
-							m.bio,
 							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
 							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, g.group_title');
+							m.language, m.timezone, g.group_title');
 		ee()->db->from(array('members m', 'member_groups g'));
 		ee()->db->where('m.member_id', $member_id);
 		ee()->db->where('g.site_id', ee()->config->item('site_id'));
@@ -2954,7 +2952,7 @@ class Member {
 			$ignored = ee()->session->userdata('ignore_list');
 		}
 
-		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
+		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
 							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
 							WHERE g.group_id = m.group_id
 							AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'

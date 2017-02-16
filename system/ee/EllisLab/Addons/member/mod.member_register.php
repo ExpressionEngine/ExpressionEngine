@@ -259,7 +259,7 @@ class Member_register extends Member {
 		// Set the default globals
 		$default = array(
 			'username', 'password', 'password_confirm', 'email',
-			'screen_name', 'url', 'location'
+			'screen_name'
 		);
 
 		foreach ($default as $val)
@@ -374,8 +374,6 @@ class Member_register extends Member {
 			'join_date'		=> ee()->localize->now,
 			'email'			=> trim_nbs(ee()->input->post('email')),
 			'screen_name'	=> trim_nbs(ee()->input->post('screen_name')),
-			'url'			=> prep_url(ee()->input->post('url')),
-			'location'		=> ee()->input->post('location'),
 
 			// overridden below if used as optional fields
 			'language'		=> (ee()->config->item('deft_lang')) ?: 'english',

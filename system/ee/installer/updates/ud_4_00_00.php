@@ -144,9 +144,20 @@ class Updater {
 		// Double check what this does with null
 		$move = array_filter($query->result_array());
 
-		if ( ! empty($move))
+		if (empty($move))
 		{
-			foreach ($fields as $name => $data)
+			return;
+		}
+
+		// Create custom fields
+		foreach ($fields as $name => $data)
+		{
+			if ( ! in_array($name, $move))
+			{
+				continue;
+			}
+
+			$new_fields[] = $name;
 
 			$field = ee('Model')->make('MemberField');
 			$field->field_type = 'text';
@@ -155,8 +166,27 @@ class Updater {
 			$field->description = $data['field_description'];
 
 			$field->save();
-
 		}
+
+
+		// Copy custom field data
+
+
+		$m_data = ee()->db->select('member_id, '. implode(', ' $new_fields))
+			->ee()->db->get('members')
+			->result_array();
+
+
+		ee()->db->update_batch('member_fields', $m_data, 'member_id');
+
+
+		// Drop rows from exp_members
+		foreach ($fields as $field => $data)
+		{
+			ee()->smartforge->drop_column('members', $field);
+		}
+
+
 	}
 }
 
