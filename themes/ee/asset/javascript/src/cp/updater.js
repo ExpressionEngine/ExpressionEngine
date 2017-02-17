@@ -95,12 +95,13 @@ var Updater = {
 			severity = severity || 'warn',
 			trace_link = $('.updater-fade', issue_box),
 			trace_container = $('.updater-stack-trace', issue_box),
-			trace_exists = error.trace.length > 0;
+			trace_exists = error.trace.length > 0,
+			message = error.message.replace("\n", '<br>');
 
 		issue_box.addClass(severity)
 			.removeClass('hidden')
 			.find('.alert-notice p')
-			.html(error.message);
+			.html(message);
 
 		if (trace_exists) {
 			var list = $('<ul/>');

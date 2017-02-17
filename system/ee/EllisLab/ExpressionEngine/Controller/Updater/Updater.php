@@ -55,9 +55,7 @@ class Updater extends CP_Controller {
 		}
 		catch (\Exception $e)
 		{
-			// TODO: Would be cool if UpdaterException returned formatted message
-			// for web vs CLI
-			$preflight_error = $e->getMessage();
+			$preflight_error = str_replace("\n", '<br>', $e->getMessage());
 		}
 
 		ee()->load->helper('text');
