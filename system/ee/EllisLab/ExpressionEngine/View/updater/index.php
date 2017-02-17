@@ -24,8 +24,6 @@
 	</div>
 </div>
 
-<style type="text/css"> .hidden { display: none } </style>
-
 <?php if ( ! $warn_message && $next_step):
 	echo ee()->javascript->get_global()
 		. ee()->view->script_tag('jquery/jquery.js')
