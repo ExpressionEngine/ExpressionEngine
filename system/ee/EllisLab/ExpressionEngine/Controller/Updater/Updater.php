@@ -35,6 +35,7 @@ class Updater extends CP_Controller {
 	 */
 	public function index()
 	{
+		ee()->lang->loadfile('updater');
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();
 		$to_version = $version_file[0][0];
@@ -46,13 +47,11 @@ class Updater extends CP_Controller {
 		}
 
 		$preflight_error = NULL;
-		$next_step = NULL;
+		$runner = ee('Updater/Runner');
 		try
 		{
 			// Run preflight first and go ahead and show those errors
-			$runner = ee('Updater/Runner');
 			$runner->runStep($runner->getFirstStep());
-			$next_step = $runner->getNextStep();
 		}
 		catch (\Exception $e)
 		{
@@ -67,10 +66,12 @@ class Updater extends CP_Controller {
 			'cp_page_title'   => lang('updating'),
 			'site_name'       => ee()->config->item('site_name'),
 			'current_version' => formatted_version(APP_VER),
-			'to_version'      => formatted_version($version_file[0][0]),
+			'to_version'      => formatted_version($to_version),
 			'warn_message'    => $preflight_error,
-			'next_step'       => $next_step
+			'next_step'       => $runner->getNextStep()
 		];
+
+		ee()->javascript->set_global('lang.fatal_error_caught', lang('fatal_error_caught'));
 
 		return ee('View')->make('updater/index')->render($vars);
 	}
@@ -80,9 +81,6 @@ class Updater extends CP_Controller {
 	 */
 	public function run()
 	{
-		// TODO: Can we catch a PHP timeout and report that to the user?
-		// TODO: Prolly just restrict super admins to auto-updating
-
 		$step = ee()->input->get('step');
 
 		if ($step === FALSE OR $step == 'undefined')
@@ -93,18 +91,14 @@ class Updater extends CP_Controller {
 		$runner = ee('Updater/Runner');
 		$runner->runStep($step);
 
-		$messages = [
-			'unpack' => 'Unpacking update',
-			'updateFiles' => 'Updating files'
-		];
-
-		// If there is no next step, provide something so that
-		// the AJAX hits the micro app
+		// If there is no next step, 'updateFiles' should be next in the micro app
 		$next_step = $runner->getNextStep() ?: 'updateFiles';
+
+		ee()->lang->loadfile('updater');
 
 		return [
 			'messageType' => 'success',
-			'message' => $messages[$next_step],
+			'message' => lang($next_step.'_step'),
 			'nextStep' => $next_step
 		];
 	}
