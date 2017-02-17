@@ -100,7 +100,6 @@ class Downloader {
 	{
 		$this->logger->log('Maximum execution time: '.@ini_get('max_execution_time'));
 		$this->logger->log('Memory limit: '.@ini_get('memory_limit'));
-		$this->logger->log('Free disk space (bytes): '.$this->filesystem->getFreeDiskSpace($this->path()));
 
 		$this->checkPermissions();
 		$this->cleanUpOldUpgrades();
@@ -154,6 +153,7 @@ class Downloader {
 	{
 		$this->logger->log('Checking free disk space');
 		$free_space = $this->filesystem->getFreeDiskSpace($this->path());
+		$this->logger->log('Free disk space (bytes): '.$free_space);
 
 		// Try to maintain at least 50MB free disk space
 		if ($free_space < 52428800)
