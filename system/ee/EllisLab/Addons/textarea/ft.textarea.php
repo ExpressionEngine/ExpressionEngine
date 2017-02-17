@@ -195,13 +195,13 @@ class Textarea_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$field_fmt = $this->row('field_ft_'.$this->field_id) ?: $this->get_setting('field_fmt', 'none');
+		$field_fmt = $this->get_setting('field_fmt') ?: $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
 		return ee()->typography->parse_type(
 			$data,
 			array(
-				'text_format'	=> $field_fmt,
+				'text_format'	=> $field_fmt ?: 'none',
 				'html_format'	=> $this->row('channel_html_formatting', 'all'),
 				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
 				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
@@ -325,11 +325,7 @@ class Textarea_ft extends EE_Fieldtype {
 				)
 			);
 
-			$emoticons_installed = ee('Model')->get('Module')
-				->filter('module_name', 'Emoticon')
-				->count();
-
-			if ( ! $emoticons_installed)
+			if ( ! ee('Addon')->get('emoticon')->isInstalled())
 			{
 				unset($field_tools['fields']['field_show_smileys']);
 			}

@@ -537,6 +537,7 @@ JSC;
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
 		$directory_choices = array('all' => lang('all'));
+
 		$directory_choices += ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -618,6 +619,26 @@ JSC;
 		}
 
 		return $grid_settings;
+	}
+
+	/**
+	 * Returns cached dropdown-ready array of upload directories
+	 */
+	private function getDirectories()
+	{
+		static $directories;
+
+		if (empty($directories))
+		{
+			$directories = ee('Model')->get('UploadDestination')
+				->fields('id', 'name')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('module_id', 0)
+				->all()
+				->getDictionary('id', 'name');
+		}
+
+		return $directories;
 	}
 
 	// --------------------------------------------------------------------

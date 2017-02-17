@@ -82,8 +82,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20170116');
-		define('APP_VER',		'3.5.1');
+		define('APP_BUILD',		'20161229');
+		define('APP_VER',		'4.0.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -359,7 +359,7 @@ class EE_Core {
 		// Update system stats
 		ee()->load->library('stats');
 
-		if (REQ == 'PAGE' && ee()->config->item('enable_online_user_tracking') != 'n')
+		if (REQ == 'PAGE' && bool_config_item('enable_online_user_tracking'))
 		{
 			ee()->stats->update_stats();
 		}

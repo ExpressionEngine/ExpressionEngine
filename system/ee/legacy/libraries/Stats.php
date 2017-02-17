@@ -618,7 +618,7 @@ class EE_Stats {
 	 */
 	function load_stats()
 	{
-		if (isset($this->_statdata))
+		if ( ! empty($this->_statdata))
 		{
 			return;
 		}

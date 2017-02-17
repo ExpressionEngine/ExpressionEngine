@@ -126,7 +126,7 @@ class Login extends Profile {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = sprintf(lang('login_as'), $this->member->screen_name);
-		ee()->view->save_btn_text = 'btn_login';
+		ee()->view->save_btn_text = 'btn_authenticate_and_login';
 		ee()->view->save_btn_text_working = 'btn_login_working';
 		ee()->cp->render('settings/form', $vars);
 	}

@@ -49,7 +49,7 @@ class Create extends Members {
 		}
 
 		$this->base_url = ee('CP/URL')->make($this->base_url);
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
 		if (ee()->session->userdata('group_id') != 1)

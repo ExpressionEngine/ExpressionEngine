@@ -139,6 +139,8 @@ class Login extends CP_Controller {
 
 		$this->view->cp_session_type = ee()->config->item('cp_session_type');
 
+		ee()->output->enable_profiler(FALSE);
+
 		$this->view->render('account/login');
 	}
 

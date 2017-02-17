@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 4.0
+ * @since		Version 4.0.0
  * @filesource
  */
 
@@ -37,6 +37,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'add_field_data_flag',
+				'removeMemberHomepageTable',
 			)
 		);
 
@@ -96,6 +97,11 @@ class Updater {
 				)
 			);
 		}
+    }
+
+	private function removeMemberHomepageTable()
+	{
+		ee()->smartforge->drop_table('member_homepage');
 	}
 }
 

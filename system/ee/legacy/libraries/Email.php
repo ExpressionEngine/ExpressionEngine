@@ -366,7 +366,7 @@ class EE_Email {
 	/**
 	 * Constructor
 	 */
-	function __construct($init = TRUE)
+	function __construct()
 	{
 		$this->charset = config_item('charset');
 
@@ -374,11 +374,6 @@ class EE_Email {
 		$this->_safe_mode = (bool) @ini_get('safe_mode');
 
 		$this->charset = strtoupper($this->charset);
-
-		if ($init != TRUE)
-		{
-			return;
-		}
 
 		$this->EE_initialize();
 	}

@@ -38,6 +38,7 @@ class File extends Model {
 	protected static $_primary_key = 'file_id';
 	protected static $_table_name = 'files';
 	protected static $_events = array('beforeDelete');
+	protected static $_binary_comparisons = array('file_name');
 
 	protected static $_hook_id = 'file';
 

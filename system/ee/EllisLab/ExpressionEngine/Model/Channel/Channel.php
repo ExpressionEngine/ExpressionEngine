@@ -96,6 +96,7 @@ class Channel extends StructureModel {
 
 	protected static $_validation_rules = array(
 		'site_id'                    => 'required|isNatural',
+		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|validateShortName',
 		'deft_comments'              => 'enum[y,n]',
 		'channel_require_membership' => 'enum[y,n]',
@@ -111,7 +112,7 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'enum[y,n]',
 		'comment_notify_authors'     => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
-		'max_entries'                => 'isNatural',
+		'max_entries'                => 'isNatural'
 	);
 
 	protected static $_events = array(
@@ -468,16 +469,6 @@ class Channel extends StructureModel {
 		if (preg_match('/[^a-z0-9\-\_]/i', $value))
 		{
 			return 'invalid_short_name';
-		}
-
-		$channel = $this->getModelFacade()->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_name', $value)
-			->filter('channel_id', '!=', $this->channel_id);
-
-		if ($channel->count() > 0)
-		{
-			return 'taken_channel_name';
 		}
 
 		return TRUE;

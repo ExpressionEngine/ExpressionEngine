@@ -354,6 +354,13 @@ $(document).ready(function(){
 			});
 		});
 
+		$('body').on('click', '.multi-select .ctrl-all input', function(){
+			$(this).closest('.multi-select')
+				.find('.choice input[type=checkbox]')
+				.prop('checked', $(this).is(':checked'))
+				.trigger('change');
+		});
+
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
 			if (event.target.nodeName != 'A') {

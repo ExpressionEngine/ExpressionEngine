@@ -304,7 +304,21 @@ abstract class AbstractPublish extends CP_Controller {
 
 		if (ee()->input->post('submit') == 'finish')
 		{
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+			$redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+
+			/* -------------------------------------
+			/*  'entry_submission_end' hook.
+			/*  - Redirect to a different URL when "Save & Finish" is clicked
+			/*  - Added 4.0.0
+			*/
+				if (ee()->extensions->active_hook('entry_submission_redirect'))
+				{
+					$redirect_url = ee()->extensions->call('entry_submission_redirect', $entry);
+				}
+			/*
+			/* -------------------------------------*/
+
+			ee()->functions->redirect($redirect_url);
 		}
 		else
 		{

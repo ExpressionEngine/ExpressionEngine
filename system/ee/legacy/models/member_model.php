@@ -434,9 +434,6 @@ class Member_model extends CI_Model {
 			$this->db->insert('member_data', array('member_id' => $member_id));
 		}
 
-		// Create a record in the member homepage table
-		$this->db->insert('member_homepage', array('member_id' => $member_id));
-
 		// ---------------------------------------------------------------
 		// 'member_create_end' hook.
 		// - Provides an opportunity for extra code to be executed after
@@ -628,7 +625,6 @@ class Member_model extends CI_Model {
 		$tables_fields = array(
 			'members'				=> 'member_id',
 			'member_data'			=> 'member_id',
-			'member_homepage'		=> 'member_id',
 			'message_data'			=> 'sender_id',
 			'message_folders'		=> 'member_id',
 			'message_listed'		=> 'member_id',
