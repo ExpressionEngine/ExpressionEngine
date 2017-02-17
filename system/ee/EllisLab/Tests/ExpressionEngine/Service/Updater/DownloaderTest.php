@@ -273,7 +273,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
 		$next_step = $this->downloader->downloadPackage();
-		$this->assertEquals('unzipPackage', $next_step);
 	}
 
 	public function testDownloadPackageExceptions()
@@ -391,7 +390,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->zip_archive->shouldReceive('close')->once();
 
 		$next_step = $this->downloader->unzipPackage();
-		$this->assertEquals('verifyExtractedPackage', $next_step);
 
 		$this->zip_archive->shouldReceive('open')
 			->with('cache/path/ee_update/ExpressionEngine.zip')
@@ -420,7 +418,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
 
 		$next_step = $this->downloader->verifyExtractedPackage();
-		$this->assertEquals('checkRequirements', $next_step);
 	}
 
 	public function testCheckRequirements()
@@ -435,7 +432,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
 		$next_step = $this->downloader->checkRequirements();
-		$this->assertEquals('moveUpdater', $next_step);
 
 		$failures = [
 			new MockRequirement('This thing is required.'),

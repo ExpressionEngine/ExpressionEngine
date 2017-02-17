@@ -260,8 +260,6 @@ class Downloader {
 		{
 			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('Package-Hash') . ' does not match ' . $hash, 7);
 		}
-
-		return 'unzipPackage';
 	}
 
 	/**
@@ -283,8 +281,6 @@ class Downloader {
 		{
 			throw new UpdaterException('Could not unzip update archive. ZipArchive error code: ' . $response, 8);
 		}
-
-		return 'verifyExtractedPackage';
 	}
 
 	/**
@@ -299,8 +295,6 @@ class Downloader {
 		$this->verifier->verifyPath($extracted_path, $extracted_path . '/' . $this->manifest_location);
 
 		$this->logger->log('Package contents successfully verified');
-
-		return 'checkRequirements';
 	}
 
 	/**
@@ -325,8 +319,6 @@ class Downloader {
 		}
 
 		$this->logger->log('Server requirements check passed with flying colors');
-
-		return 'moveUpdater';
 	}
 
 	/**
@@ -358,9 +350,6 @@ class Downloader {
 
 		// Got here? Take the site offline, we're ready to update
 		$this->takeSiteOffline();
-
-		// No further steps needed, Updater app will take over
-		return FALSE;
 	}
 
 	/**
