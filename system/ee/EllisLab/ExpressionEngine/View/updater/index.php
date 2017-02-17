@@ -5,7 +5,7 @@
 		<div class="updater-load"></div>
 		<h1><?=sprintf(lang('updating_to_from'), $site_name, $current_version, $to_version)?>
 		<ul class="updater-steps">
-			<li class="updater-step-work"><?=lang('download_step')?><span>...</span></li>
+			<li class="updater-step-work"><?=$first_step?><span>...</span></li>
 		</ul>
 	</div>
 </div>
@@ -15,7 +15,7 @@
 	<div class="updater-stack-trace"></div>
 	<div class="updater-msg">
 		<p><?=lang('could_not_complete')?></p>
-		<p class="stopped"><?=lang('we_stopped_on')?></p>
+		<p class="stopped"><?=sprintf(lang('we_stopped_on'), lang('preflight_check'))?></p>
 		<div class="alert-notice">
 			<p><?=$warn_message?></p>
 		</div>
@@ -26,7 +26,7 @@
 
 <style type="text/css"> .hidden { display: none } </style>
 
-<?php if ($next_step):
+<?php if ( ! $warn_message && $next_step):
 	echo ee()->javascript->get_global()
 		. ee()->view->script_tag('jquery/jquery.js')
 		. ee()->view->script_tag('cp/updater.js');

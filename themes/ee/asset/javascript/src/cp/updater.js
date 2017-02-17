@@ -115,7 +115,7 @@ var Updater = {
 		trace_link.toggleClass('hidden', ! trace_exists);
 		trace_container.toggleClass('hidden', ! trace_exists);
 
-		$('.stopped b', issue_box).html(this._lastStep);
+		$('.stopped', issue_box).html(EE.lang.we_stopped_on.replace('%s', this._lastStep));
 	},
 
 	_showSuccess: function() {

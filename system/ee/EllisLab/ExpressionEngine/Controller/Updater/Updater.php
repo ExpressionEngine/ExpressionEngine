@@ -62,16 +62,21 @@ class Updater extends CP_Controller {
 
 		ee()->load->helper('text');
 
+		$next_step = $runner->getNextStep();
 		$vars = [
 			'cp_page_title'   => lang('updating'),
 			'site_name'       => ee()->config->item('site_name'),
 			'current_version' => formatted_version(APP_VER),
 			'to_version'      => formatted_version($to_version),
 			'warn_message'    => $preflight_error,
-			'next_step'       => $runner->getNextStep()
+			'first_step'      => lang($next_step.'_step'),
+			'next_step'       => $next_step
 		];
 
-		ee()->javascript->set_global('lang.fatal_error_caught', lang('fatal_error_caught'));
+		ee()->javascript->set_global([
+			'lang.fatal_error_caught' => lang('fatal_error_caught'),
+			'lang.we_stopped_on' => lang('we_stopped_on')
+		]);
 
 		return ee('View')->make('updater/index')->render($vars);
 	}

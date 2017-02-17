@@ -29,6 +29,9 @@ $lang = array(
 'updating_to_from' =>
 'Updating <b>%s</b> from %s to %s',
 
+'preflight_check' =>
+'Preflight check',
+
 'download_step' =>
 'Downloading update',
 
