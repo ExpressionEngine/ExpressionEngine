@@ -266,87 +266,6 @@ class Member_memberlist extends Member {
 	}
 
 
-
-
-	/** ----------------------------------
-	/**  AIM Console
-	/** ----------------------------------*/
-	function aim_console()
-	{
-		$query = ee()->db->query("SELECT aol_im FROM exp_members WHERE member_id = '".ee()->db->escape_str($this->cur_id)."'");
-
-		if ($query->num_rows() == 0)
-		{
-			return;
-		}
-
-		$this->_set_page_title(ee()->lang->line('mbr_aim_console'));
-
-		return $this->_var_swap(
-			$this->_load_element('aim_console'),
-			array(
-				'aol_im'			=>	ee()->functions->encode_ee_tags($query->row('aol_im'), TRUE) ,
-				'lang:close_window'	=>	ee()->lang->line('mbr_close_window')
-			 )
-		);
-	}
-
-
-
-
-
-	/** ----------------------------------
-	/**  ICQ Console
-	/** ----------------------------------*/
-
-	function icq_console()
-	{
-		/** ---------------------------------
-		/**  Is the user logged in?
-		/** ---------------------------------*/
-
-		if (ee()->session->userdata('member_id') == 0)
-		{
-			return $this->profile_login_form($this->_member_path('self'));
-		}
-
-		$query = ee()->db->query("SELECT screen_name, icq FROM exp_members WHERE member_id = '{$this->cur_id}'");
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$data = array(
-			'hidden_fields' => array(
-				'to'		=> ee()->functions->encode_ee_tags($query->row('icq'), TRUE) ,
-				'from'		=> ee()->session->userdata['screen_name'],
-				'fromemail'	=> ''
-			),
-			'action' 		=> 'http://wwp.icq.com/scripts/WWPMsg.dll',
-			'secure' 		=> FALSE
-		);
-
-
-		$this->_set_page_title(ee()->lang->line('mbr_icq_console'));
-
-		return $this->_var_swap(
-			$this->_load_element('icq_console'),
-			array(
-				'form_declaration'	=>	ee()->functions->form_declaration($data),
-				'name'				=>	$query->row('screen_name') ,
-				'icq'				=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
-				'icq_im'			=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
-				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
-				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
-				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
-			)
-		);
-	}
-
-
-
-
 	/** ----------------------------------------
 	/**  Member List
 	/** ----------------------------------------*/
@@ -654,9 +573,6 @@ class Member_memberlist extends Member {
 				$temp = $this->_var_swap(
 					$temp,
 					array(
-						'aim_console'	=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$row['member_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'icq_console'	=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$row['member_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags($row['yahoo_im'], TRUE)."&amp;.src=pg",
 						'email_console'	=> "onclick=\"window.open('".$this->_member_path('email_console/'.$row['member_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 					)
 				);

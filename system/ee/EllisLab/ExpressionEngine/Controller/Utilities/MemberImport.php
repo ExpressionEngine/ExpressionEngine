@@ -427,36 +427,6 @@ class MemberImport extends Utilities {
 						{
 							$this->members[$i][$tag->tag] = $tag->value;
 						}
-						elseif ($tag->tag == 'birthday')
-						{
-							// We have a special XML format for birthdays that doesn't match the database fields
-							foreach($tag->children as $birthday)
-							{
-									switch ($birthday->tag)
-									{
-										case 'day':
-											$this->members[$i]['bday_d'] = $birthday->value;
-											break;
-										case 'month':
-											$this->members[$i]['bday_m'] = $birthday->value;
-											break;
-										case 'year':
-											$this->members[$i]['bday_y'] = $birthday->value;
-											break;
-										default:
-											$errors[] = array(lang('invalid_tag')." '&lt;".$birthday->tag."&gt;'");
-											break;
-									}
-							}
-
-
-							if ( ! isset($this->members[$i]['bday_d']) || ! isset($this->members[$i]['bday_m']) || ! isset($this->members[$i]['bday_y']))
-							{
-								$errors[] = array(lang('missing_birthday_child'));
-							}
-
-							$this->members[$i][$tag->tag] = $tag->value;
-						}
 						elseif (isset($this->default_custom_fields[$tag->tag]))
 						{
 							$this->members_custom[$i][$tag->tag] = $tag->value;

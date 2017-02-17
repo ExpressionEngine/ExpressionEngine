@@ -476,16 +476,6 @@ class Member_model extends CI_Model {
 		//
 		// ---------------------------------------------------------------
 
-		$default_null = array('bday_y',	'bday_m', 'bday_d');
-
-		foreach($default_null as $val)
-		{
-			if (isset($data[$val]) && $data[$val] == '')
-			{
-				$data[$val] = NULL;
-			}
-		}
-
 		if ( ! isset($additional_where[0]))
 		{
 			$additional_where = array($additional_where);

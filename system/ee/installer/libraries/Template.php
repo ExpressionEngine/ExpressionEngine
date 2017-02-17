@@ -82,14 +82,13 @@ class Installer_Template {
 
 
 		$channel_single_variables = array(
-    		'absolute_count', 'absolute_results', 'aol_im', 'author',
-			'author_id', 'avatar_image_height', 'avatar_image_width', 'avatar_url', 'bio',
-			'channel', 'channel_id', 'channel_short_name', 'yahoo_im', 'comment_auto_path',
+    		'absolute_count', 'absolute_results', 'author',
+			'author_id', 'avatar_image_height', 'avatar_image_width', 'avatar_url',
+			'channel', 'channel_id', 'channel_short_name','comment_auto_path',
 			'comment_entry_id_auto_path', 'comment_total', 'comment_url_title_auto_path',
 			'count', 'edit_date', 'email', 'entry_date', 'entry_id', 'entry_id_path',
 			'entry_site_id', 'expiration_date', 'forum_topic_id', 'gmt_entry_date',
-			'gmt_edit_date', 'icq', 'interests', 'ip_address', 'location',
-			'member_search_path', 'msn_im', 'occupation', 'page_uri', 'page_url',
+			'gmt_edit_date', 'ip_address', 'member_search_path', 'page_uri', 'page_url',
 			'permalink', 'photo_url', 'photo_image_height', 'photo_image_width',
 			'profile_path', 'recent_comment_date', 'relative_url', 'relative_date',
 			'screen_name', 'signature', 'signature_image_height', 'signature_image_url',

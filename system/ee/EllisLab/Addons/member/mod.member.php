@@ -47,7 +47,7 @@ class Member {
 						'public_profile', 'memberlist', 'do_member_search',
 						'member_search', 'register', 'smileys', 'login',
 						'unpw_update', 'email_console', 'send_email',
-						'aim_console', 'icq_console', 'forgot_password', 'reset_password',
+						'forgot_password', 'reset_password',
 						'delete', 'member_mini_search', 'do_member_mini_search',
 					);
 
@@ -63,13 +63,11 @@ class Member {
 					);
 
 	var $no_breadcrumb 		= array(
-						'email_console', 'send_email', 'aim_console',
-						'icq_console', 'member_mini_search', 'do_member_mini_search'
+						'email_console', 'send_email', 'member_mini_search', 'do_member_mini_search'
 					);
 
 	var $simple_page		= array(
-						'email_console', 'send_email', 'aim_console',
-						'icq_console', 'smileys', 'member_mini_search', 'do_member_mini_search'
+						'email_console', 'send_email', 'smileys', 'member_mini_search', 'do_member_mini_search'
 					);
 
 	var $page_title 		= '';
@@ -101,8 +99,6 @@ class Member {
 								'register'				=> 	'mbr_member_registration',
 								'email'					=>	'mbr_email_member',
 								'send_email'			=>	'mbr_send_email',
-								'aim'					=>	'mbr_aim_console',
-								'icq'					=>	'mbr_icq_console',
 								'profile_main'			=>	'mbr_my_account',
 								'edit_profile'			=>	'mbr_edit_your_profile',
 								'edit_email'			=>	'email_settings',
@@ -351,8 +347,6 @@ class Member {
 			'member_mini_search',
 			'do_member_mini_search',
 			'email_console',
-			'aim_console',
-			'icq_console',
 			'send_email',
 			'forgot_password',
 			'reset_password',
@@ -1633,50 +1627,6 @@ class Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * AIM Console
-	 */
-	public function aim_console()
-	{
-		if ( ! class_exists('Member_memberlist'))
-		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
-		}
-
-		$MM = new Member_memberlist();
-
-		foreach(get_object_vars($this) as $key => $value)
-		{
-			$MM->{$key} = $value;
-		}
-
-		return $MM->aim_console();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * ICQ Console
-	 */
-	public function icq_console()
-	{
-		if ( ! class_exists('Member_memberlist'))
-		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
-		}
-
-		$MM = new Member_memberlist();
-
-		foreach(get_object_vars($this) as $key => $value)
-		{
-			$MM->{$key} = $value;
-		}
-
-		return $MM->icq_console();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Member List
 	 */
 	public function memberlist()
@@ -2109,85 +2059,6 @@ class Member {
 		return ( ! isset($this->crumb_map[$item])) ? FALSE : $this->crumb_map[$item];
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create the "year" pull-down menu
-	 */
-	function _birthday_year($year = '')
-	{
-		$r = "<select name='bday_y' class='select'>\n";
-
-		$selected = ($year == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('year')."</option>\n";
-
-		for ($i = date('Y', ee()->localize->now); $i > 1904; $i--)
-		{
-			$selected = ($year == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".$i."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create the "month" pull-down menu
-	 */
-	function _birthday_month($month = '')
-	{
-		$months = array('01' => 'January','02' => 'February','03' => 'March', '04' => 'April', '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August', '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December');
-
-		$r = "<select name='bday_m' class='select'>\n";
-
-		$selected = ($month == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('month')."</option>\n";
-
-		for ($i = 1; $i < 13; $i++)
-		{
-			if (strlen($i) == 1)
-				$i = '0'.$i;
-
-			$selected = ($month == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".ee()->lang->line($months[$i])."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create the "day" pull-down menu
-	 */
-	function _birthday_day($day = '')
-	{
-		$r = "<select name='bday_d' class='select'>\n";
-
-		$selected = ($day == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('day')."</option>\n";
-
-		for ($i = 1; $i <= 31; $i++)
-		{
-			$selected = ($day == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".$i."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
 
 	// --------------------------------------------------------------------
 
@@ -2779,43 +2650,6 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}
 
-				//  {birthday}
-				if ($key == "birthday")
-				{
-					$birthday = '';
-
-					if ($default_fields['bday_m'] != '' AND $default_fields['bday_m'] != 0)
-					{
-						$month = (strlen($default_fields['bday_m']) == 1) ? '0'.$default_fields['bday_m'] : $default_fields['bday_m'];
-
-						$m = ee()->localize->localize_month($month);
-
-						$birthday .= ee()->lang->line($m['1']);
-
-						if ($default_fields['bday_d'] != '' AND $default_fields['bday_d'] != 0)
-						{
-							$birthday .= ' '.$default_fields['bday_d'];
-						}
-					}
-
-					if ($default_fields['bday_y'] != '' AND $default_fields['bday_y'] != 0)
-					{
-						if ($birthday != '')
-						{
-							$birthday .= ', ';
-						}
-
-						$birthday .= $default_fields['bday_y'];
-					}
-
-					if ($birthday == '')
-					{
-						$birthday = '';
-					}
-
-					ee()->TMPL->tagdata = $this->_var_swap_single($val, $birthday, ee()->TMPL->tagdata);
-				}
-
 				//  {timezone}
 				if ($key == "timezone")
 				{
@@ -2842,20 +2676,6 @@ class Member {
 					);
 				}
 
-				//  {bio}
-				if ($key == 'bio')
-				{
-					$bio = ee()->typography->parse_type($default_fields[$val],
-																 array(
-																			'text_format'   => 'xhtml',
-																			'html_format'   => 'safe',
-																			'auto_links'    => 'y',
-																			'allow_img_url' => 'n'
-																	   )
-																);
-
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, $bio, ee()->TMPL->tagdata);
-				}
 
 				// Special condideration for {total_forum_replies}, and
 				// {total_forum_posts} whose meanings do not match the

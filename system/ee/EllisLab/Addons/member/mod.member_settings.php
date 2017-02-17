@@ -379,9 +379,6 @@ class Member_settings extends Member {
 
 		$content = $this->_var_swap($content,
 										array(
-												'aim_console'			=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$this->cur_id)."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'icq_console'			=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$this->cur_id)."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'yahoo_console'			=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags(htmlentities($row['yahoo_im'], ENT_QUOTES, 'UTF-8'), TRUE) ."&amp;.src=pg",
 												'email_console'			=> "onclick=\"window.open('".$this->_member_path('email_console/'.$this->cur_id)."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 												'send_private_message'	=> $this->_member_path('messages/pm/'.$this->cur_id),
 												'search_path'			=> $search_path,
@@ -581,45 +578,6 @@ class Member_settings extends Member {
 				$content = $this->_var_swap_single($val, ee()->typography->encode_email($row['email'] ), $content);
 			}
 
-			/** ----------------------
-			/**  {birthday}
-			/** ----------------------*/
-
-			if ($key == "birthday")
-			{
-				$birthday = '';
-
-				if ($row['bday_m']  != '' AND $row['bday_m']  != 0)
-				{
-					$month = (strlen($row['bday_m'] ) == 1) ? '0'.$row['bday_m'] : $row['bday_m'];
-
-					$m = ee()->localize->localize_month($month);
-
-					$birthday .= ee()->lang->line($m['1']);
-
-					if ($row['bday_d'] != '' AND $row['bday_d']  != 0)
-					{
-						$birthday .= ' '.$row['bday_d'] ;
-					}
-				}
-
-				if ($row['bday_y']  != '' AND $row['bday_y']  != 0)
-				{
-					if ($birthday != '')
-					{
-						$birthday .= ', ';
-					}
-
-					$birthday .= $row['bday_y'] ;
-				}
-
-				if ($birthday == '')
-				{
-					$birthday = '';
-				}
-
-				$content = $this->_var_swap_single($val, $birthday, $content);
-			}
 
 			/** ----------------------
 			/**  {timezone}
@@ -641,24 +599,6 @@ class Member_settings extends Member {
 					ee()->localize->format_date($val, NULL, $timezone),
 					$content
 				);
-			}
-
-			/** ----------------------
-			/**  {bio}
-			/** ----------------------*/
-
-			if ($key == 'bio')
-			{
-				$bio = ee()->typography->parse_type($row[$val],
-															 array(
-																		'text_format'	=> 'xhtml',
-																		'html_format'	=> 'safe',
-																		'auto_links'	=> 'y',
-																		'allow_img_url' => 'n'
-																	)
-															);
-
-				$content = $this->_var_swap_single($key, $bio, $content);
 			}
 
 			// Special consideration for {total_forum_replies}, and

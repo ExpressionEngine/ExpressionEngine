@@ -242,45 +242,11 @@ Used in the control panel only.',
 
 'email_confirm' => 'Confirm Email Address',
 
-'url' => 'Personal website',
-
-'url_desc' => 'URL location of your personal website',
-
-'biography' => 'Biography',
-
-'biography_desc' => 'Your biography.',
-
-'birthday' => 'Birthday',
-
-'birthday_desc' => 'Your date of birth.',
-
-'year' => 'Year',
-
-'month' => 'Month',
-
-'day' => 'Day',
-
 'accept_admin_email' => 'From admins',
 
 'accept_user_email' => 'From other members',
 
 'notify_by_default' => 'When I post messages',
-
-'location' => 'Location',
-
-'location_desc' => 'Your physical location.',
-
-'occupation' => 'Occupation',
-
-'interests' => 'Interests',
-
-'icq' => 'ICQ',
-
-'aol_im' => 'AOL IM',
-
-'yahoo_im' => 'Yahoo IM',
-
-'msn_im' => 'MSN IM',
 
 'user_ip_address' => 'IP Address',
 

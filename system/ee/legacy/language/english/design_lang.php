@@ -758,8 +758,6 @@ You can drag and drop to rearrange the order.',
 
 'error_opening_template' => 'Error: Unable to open the template file in order to write its contents.',
 
-'aim_console' => 'AOL Instant Messenger Console',
-
 'breadcrumb' => 'Breadcrumb',
 
 'copyright' => 'Copyright Notice',
@@ -775,8 +773,6 @@ You can drag and drop to rearrange the order.',
 'forgot_form' => 'Forgot Password Form',
 
 'home_page' => 'Member Profile Home Page',
-
-'icq_console' => 'ICQ Console',
 
 'localization_form' => 'Localization Preferences Form',
 

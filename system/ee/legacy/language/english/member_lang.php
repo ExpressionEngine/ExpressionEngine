@@ -363,18 +363,6 @@ content associated with your account will also be deleted.',
 
 'mbr_email_short' => 'Email',
 
-'mbr_icq_console' => 'ICQ Console',
-
-'mbr_aim_console' => 'AOL IM',
-
-'mbr_aol' => 'AOL',
-
-'mbr_url' => 'URL',
-
-'mbr_msn_short' => 'MSN',
-
-'mbr_yahoo_short' => 'Yahoo',
-
 'mbr_screen_name' => 'Screen Name',
 
 'mbr_name' => 'Name',
@@ -435,10 +423,6 @@ content associated with your account will also be deleted.',
 
 'mbr_email' => 'Email',
 
-'mbr_location' => 'Location',
-
-'mbr_birthday' => 'Birthday',
-
 'mbr_your_stats' => 'Your Account Statistics',
 
 'mbr_edit_your_profile' => 'Edit Your Profile',
@@ -491,20 +475,6 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 
 'mbr_back_to_main' => 'Back to Main',
 
-'mbr_aol_im' => 'AOL Instant Messenger',
-
-'mbr_icq' => 'ICQ Number',
-
-'mbr_yahoo' => 'Yahoo Messenger',
-
-'mbr_msn' => 'MSN Messenger',
-
-'mbr_bio' => 'Member Bio',
-
-'mbr_interests' => 'Interests',
-
-'mbr_occupation' => 'Occupation',
-
 'mbr_email_member' => 'Email Console',
 
 'mbr_subject' => 'Email Subject',
@@ -530,14 +500,6 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 'mbr_good_email' => 'Your email has been successfully sent.',
 
 'mbr_send_self_copy' => 'Send me a copy of this email',
-
-'mbr_icq_number' => 'ICQ Number:',
-
-'mbr_icq_recipient' => 'Recipient:',
-
-'mbr_icq_subject' => 'Subject',
-
-'mbr_icq_message' => 'Message',
 
 'mbr_not_allowed_to_use_email_console' => 'You are not allowed to use the Email Console',
 

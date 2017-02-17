@@ -51,39 +51,6 @@ class Settings extends Profile {
 	{
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
-		// Birthday Options
-		$birthday['days'] = array();
-
-		$birthday['years'][''] = lang('year');
-
-		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
-		{
-		  $birthday['years'][$i] = $i;
-		}
-
-		$birthday['months'] = array(
-			''	 => lang('month'),
-			'01' => lang('January'),
-			'02' => lang('February'),
-			'03' => lang('March'),
-			'04' => lang('April'),
-			'05' => lang('May_l'),
-			'06' => lang('June'),
-			'07' => lang('July'),
-			'08' => lang('August'),
-			'09' => lang('September'),
-			'10' => lang('October'),
-			'11' => lang('November'),
-			'12' => lang('December')
-		);
-
-		$birthday['days'][''] = lang('day');
-
-		for ($i = 1; $i <= 31; $i++)
-		{
-		  $birthday['days'][$i] = $i;
-		}
-
 		$settings = array();
 
 		if ($this->member->parse_smileys == 'y')
@@ -169,48 +136,6 @@ class Settings extends Profile {
 		$vars['has_file_input'] = TRUE;
 		$vars['sections'] = array(
 			array(
-				array(
-					'title' => 'url',
-					'desc' => 'url_desc',
-					'fields' => array(
-						'url' => array('type' => 'text', 'value' => $this->member->url)
-					)
-				),
-				array(
-					'title' => 'location',
-					'desc' => 'location_desc',
-					'fields' => array(
-						'location' => array('type' => 'text', 'value' => $this->member->location)
-					)
-				),
-				array(
-					'title' => 'birthday',
-					'desc' => 'birthday_desc',
-					'fields' => array(
-						'bday_d' => array(
-							'type' => 'select',
-							'choices' => $birthday['days'],
-							'value' => $this->member->bday_d
-						),
-						'bday_m' => array(
-							'type' => 'select',
-							'choices' => $birthday['months'],
-							'value' => $this->member->bday_m
-						),
-						'bday_y' => array(
-							'type' => 'select',
-							'choices' => $birthday['years'],
-							'value' => $this->member->bday_y
-						)
-					)
-				),
-				array(
-					'title' => 'biography',
-					'desc' => 'biography_desc',
-					'fields' => array(
-						'bio' => array('type' => 'textarea', 'value' => $this->member->bio)
-					)
-				),
 				array(
 					'title' => 'language',
 					'desc' => 'language_desc',
