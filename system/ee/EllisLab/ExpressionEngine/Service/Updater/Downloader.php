@@ -177,7 +177,12 @@ class Downloader {
 		}, $this->getThemePaths());
 
 		$paths = array_merge(
-			[$this->path(), SYSPATH.'ee/'],
+			[
+				$this->path(),
+				SYSPATH.'ee',
+				$this->cachePath(),
+				SYSPATH.'user/config/config.php'
+			],
 			$this->filesystem->getDirectoryContents(SYSPATH.'ee/'),
 			$theme_paths
 		);
@@ -439,6 +444,23 @@ class Downloader {
 	 */
 	protected function path()
 	{
+		$cache_path = $this->cachePath() . 'ee_update/';
+
+		if ( ! is_dir($cache_path))
+		{
+			$this->filesystem->mkDir($cache_path);
+		}
+
+		return $cache_path;
+	}
+
+	/**
+	 * Gets app cache path
+	 *
+	 * @return	string	Path to cache folder
+	 */
+	protected function cachePath()
+	{
 		$cache_path = $this->config->get('cache_path');
 
 		if (empty($cache_path))
@@ -448,13 +470,6 @@ class Downloader {
 		else
 		{
 			$cache_path = rtrim($cache_path, DIRECTORY_SEPARATOR).'/';
-		}
-
-		$cache_path .= 'ee_update/';
-
-		if ( ! is_dir($cache_path))
-		{
-			$this->filesystem->mkDir($cache_path);
 		}
 
 		return $cache_path;

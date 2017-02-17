@@ -3,7 +3,7 @@
 <div class="box updating<?php if ($warn_message !== NULL): ?> hidden<?php endif ?>">
 	<div class="updater-working">
 		<div class="updater-load"></div>
-		<h1><?=sprintf(lang('updating_to_from'), $site_name, $current_version, $to_version)?>
+		<h1><?=sprintf(lang('updating_to_from'), $site_name, $current_version, $to_version)?></h1>
 		<ul class="updater-steps">
 			<li class="updater-step-work"><?=$first_step?><span>...</span></li>
 		</ul>
