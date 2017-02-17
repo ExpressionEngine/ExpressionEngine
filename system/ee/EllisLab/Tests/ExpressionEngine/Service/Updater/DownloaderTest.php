@@ -77,20 +77,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	public function testGetUpdate()
-	{
-		$downloader = $this->getPartialMock('preflight,downloadPackage,unzipPackage,verifyExtractedPackage,checkRequirements,moveUpdater');
-
-		$downloader->shouldReceive('preflight')->once()->andReturn('downloadPackage');
-		$downloader->shouldReceive('downloadPackage')->once()->andReturn('unzipPackage');
-		$downloader->shouldReceive('unzipPackage')->once()->andReturn('verifyExtractedPackage');
-		$downloader->shouldReceive('verifyExtractedPackage')->once()->andReturn('checkRequirements');
-		$downloader->shouldReceive('checkRequirements')->once()->andReturn('moveUpdater');
-		$downloader->shouldReceive('moveUpdater')->once()->andReturn(FALSE);
-
-		$downloader->getUpdate();
-	}
-
 	public function testPreflight()
 	{
 		$this->config->shouldReceive('get')

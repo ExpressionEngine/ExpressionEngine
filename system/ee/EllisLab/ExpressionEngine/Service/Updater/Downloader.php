@@ -93,20 +93,6 @@ class Downloader {
 	}
 
 	/**
-	 * Performs all steps to download, extract, and verify the update in succession,
-	 * meant for CLI use
-	 */
-	public function getUpdate()
-	{
-		$step = $this->preflight();
-
-		while ($step !== FALSE)
-		{
-			$step = $this->$step();
-		}
-	}
-
-	/**
 	 * Preflight checks such as checking permissions, taking the site offline,
 	 * and cleaning up past update attempts
 	 */
