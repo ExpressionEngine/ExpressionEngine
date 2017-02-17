@@ -98,13 +98,13 @@ class Downloader {
 	 */
 	public function preflight()
 	{
-		// TODO: Maybe try to log free disk space, too
 		$this->logger->log('Maximum execution time: '.@ini_get('max_execution_time'));
 		$this->logger->log('Memory limit: '.@ini_get('memory_limit'));
+		$this->logger->log('Free disk space (bytes): '.$this->filesystem->getFreeDiskSpace($this->path()));
 
+		$this->checkPermissions();
 		$this->cleanUpOldUpgrades();
 		$this->checkDiskSpace();
-		$this->checkPermissions();
 
 		return 'downloadPackage';
 	}
@@ -115,8 +115,6 @@ class Downloader {
 	protected function cleanUpOldUpgrades()
 	{
 		$this->logger->log('Cleaning up upgrade working directory');
-
-		// TODO: Check to see if we even have permission to do these things
 
 		// Delete any old zip archives
 		if ($this->filesystem->isFile($this->getArchiveFilePath()))
