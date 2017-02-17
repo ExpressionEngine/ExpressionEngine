@@ -355,6 +355,11 @@ abstract class FieldModel extends Model {
 		return $this->getDataTable() . '_field_' . $this->getId();
 	}
 
+	protected function getForeignKey()
+	{
+		return 'entry_id';
+	}
+
 	/**
 	 * Create the table for the field
 	 */
@@ -371,7 +376,7 @@ abstract class FieldModel extends Model {
 					'unsigned'       => TRUE,
 					'auto_increment' => TRUE
 				),
-				'entry_id' => array(
+				$this->getForeignKey() => array(
 					'type'           => 'int',
 					'constraint'     => 10,
 					'null'           => FALSE,
@@ -394,7 +399,7 @@ abstract class FieldModel extends Model {
 			)
 		);
 		ee()->dbforge->add_key('id', TRUE);
-		ee()->dbforge->add_key('entry_id');
+		ee()->dbforge->add_key($this->getForeignKey());
 		ee()->smartforge->create_table($this->getTableName());
 	}
 

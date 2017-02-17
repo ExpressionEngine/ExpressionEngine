@@ -111,6 +111,11 @@ class CategoryField extends FieldModel {
 		return 'category';
 	}
 
+	protected function getForeignKey()
+	{
+		return 'cat_id';
+	}
+
 	/**
 	 * New fields get appended
 	 */

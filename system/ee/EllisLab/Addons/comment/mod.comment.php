@@ -621,7 +621,7 @@ class Comment {
 		foreach ($mfields as $field_id)
 		{
 			$table = "exp_member_data_field_{$field_id}";
-			ee()->db->join($table, "{$table}.entry_id = members.member_id",	'left');
+			ee()->db->join($table, "{$table}.member_id = members.member_id", 'left');
 		}
 
 		ee()->db->where_in('comments.comment_id', $result_ids);

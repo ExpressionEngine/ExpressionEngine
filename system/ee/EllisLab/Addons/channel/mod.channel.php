@@ -449,7 +449,7 @@ class Channel {
 
 				$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
 				$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
-				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.entry_id = c.cat_id ";
+				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
 			}
 		}
 		else
@@ -2330,7 +2330,7 @@ class Channel {
 				$table = "exp_member_data_field_{$field_id}";
 				$this->sql .= ", {$table}.data AS m_field_id_{$field_id}";
 				$this->sql .= ", {$table}.metadata AS m_field_ft_{$field_id}";
-				$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.entry_id ";
+				$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
 			}
 		}
 
@@ -2843,7 +2843,7 @@ class Channel {
 
 					$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
 					$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
-					$field_sqlb .= "LEFT JOIN {$table} ON {$table}.entry_id = c.cat_id ";
+					$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
 				}
 			}
 			else
@@ -3426,7 +3426,7 @@ class Channel {
 
 					$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
 					$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
-					$field_sqlb .= "LEFT JOIN {$table} ON {$table}.entry_id = c.cat_id ";
+					$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
 				}
 			}
 			else
@@ -3709,7 +3709,7 @@ class Channel {
 
 				$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
 				$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
-				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.entry_id = c.cat_id ";
+				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
 			}
 		}
 		else
@@ -4430,7 +4430,7 @@ class Channel {
 
 				$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
 				$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
-				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.entry_id = c.cat_id ";
+				$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
 			}
 		}
 		else

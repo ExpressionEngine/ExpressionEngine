@@ -162,6 +162,11 @@ class MemberField extends FieldModel {
 		return 'm_';
 	}
 
+	protected function getForeignKey()
+	{
+		return 'member_id';
+	}
+
 	/**
 	 * Override the set method so we can auto-prefix our properties
 	 *

@@ -259,7 +259,7 @@ class Select extends Query {
 
 				$query->select("{$table_alias}.data as {$table_prefix}__{$column_prefix}field_id_{$field_id}", FALSE);
 				$query->select("{$table_alias}.metadata as {$table_prefix}__{$column_prefix}field_ft_{$field_id}", FALSE);
-				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$parent_key}", 'LEFT');
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$parent_key}", 'LEFT');
 			}
 
 			$query->where_in("{$parent_key}", $entry_ids);
