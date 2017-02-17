@@ -45,6 +45,10 @@ class MemberField extends FieldModel {
 		'm_field_name'  => 'required|alphaDash|unique'
 	);
 
+	protected static $_typed_columns = array(
+		'm_field_settings' => 'json'
+	);
+
 	protected $m_field_id;
 	protected $m_field_name;
 	protected $m_field_label;
@@ -63,18 +67,17 @@ class MemberField extends FieldModel {
 	protected $m_field_show_fmt;
 	protected $m_field_order;
 	protected $m_field_text_direction;
+	protected $m_field_settings;
 
 	public function getSettingsValues()
 	{
 		$values = parent::getSettingsValues();
+
+		$this->getField($values)->setFormat($this->getProperty('m_field_fmt'));
+
+		$values['field_settings'] = $this->getProperty('m_field_settings') ?: array();
+
 		$values['field_settings']['field_show_file_selector'] = 'n';
-
-		foreach (array('field_list_items', 'field_ta_rows', 'field_maxl', 'field_show_fmt', 'field_text_direction') as $setting)
-		{
-			$values['field_settings'][$setting] = $this->getProperty('m_'.$setting);
-		}
-
-		$this->getField()->setFormat($this->getProperty('m_field_fmt'));
 
 		return $values;
 	}
@@ -89,6 +92,16 @@ class MemberField extends FieldModel {
 		}
 
 		return $values;
+	}
+
+	public function set(array $data = array())
+	{
+		parent::set($data);
+
+		$field = $this->getField($this->getSettingsValues());
+		$this->setProperty('m_field_settings', $field->saveSettingsForm($data));
+
+		return $this;
 	}
 
 	/**

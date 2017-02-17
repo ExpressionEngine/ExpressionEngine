@@ -354,6 +354,13 @@ $(document).ready(function(){
 			});
 		});
 
+		$('body').on('click', '.multi-select .ctrl-all input', function(){
+			$(this).closest('.multi-select')
+				.find('.choice input[type=checkbox]')
+				.prop('checked', $(this).is(':checked'))
+				.trigger('change');
+		});
+
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
 			if (event.target.nodeName != 'A') {
@@ -367,7 +374,7 @@ $(document).ready(function(){
 		});
 
 		// Toggle the bulk actions
-		$('body').on('change', 'table tr td:last-child input[type=checkbox]', function() {
+		$('body').on('change', 'table tr td:last-child input[type=checkbox], table tr th:last-child input[type=checkbox]', function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 			if ($(this).parents('table').find('input:checked').length == 0) {
 				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();

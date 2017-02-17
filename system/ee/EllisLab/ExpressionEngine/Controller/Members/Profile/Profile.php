@@ -189,6 +189,7 @@ class Profile extends CP_Controller {
 						$heirs = ee('Model')->get('Member')
 							->fields('username', 'screen_name')
 							->filter('group_id', 'IN', array(1, $this->member->MemberGroup->getId()))
+							->filter('member_id', '!=', $this->member->getId())
 							->all();
 
 						foreach ($heirs as $heir)

@@ -425,6 +425,11 @@ class EE_FTP {
 		{
 			foreach ($list as $item)
 			{
+				if (in_array($item, array('.', '..')))
+				{
+					continue;
+				}
+
 				// If we can't delete the item it's probaly a folder so
 				// we'll recursively call delete_dir()
 				if ( ! @ftp_delete($this->conn_id, $item))

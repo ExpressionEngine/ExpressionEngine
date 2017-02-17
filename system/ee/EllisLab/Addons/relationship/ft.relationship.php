@@ -381,7 +381,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$channels = $this->channels;
 		}
 
-		if (REQ != 'CP' && $this->settings['allow_multiple'] == 0)
+		if (REQ != 'CP')
 		{
 			$options[''] = '--';
 
@@ -390,7 +390,14 @@ class Relationship_ft extends EE_Fieldtype {
 				$options[$entry->entry_id] = $entry->title;
 			}
 
-			return form_dropdown($field_name.'[data][]', $options, current($selected));
+			if ($this->settings['allow_multiple'] == 0)
+			{
+				return form_dropdown($field_name.'[data][]', $options, current($selected));
+			}
+			else
+			{
+				return form_multiselect($field_name.'[data][]', $options, $selected);
+			}
 		}
 
 		ee()->cp->add_js_script(array(

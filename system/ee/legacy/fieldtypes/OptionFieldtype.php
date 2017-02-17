@@ -89,16 +89,15 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			if (isset($data['value_label_pairs']['rows']))
 			{
 				$data['value_label_pairs'] = $data['value_label_pairs']['rows'];
-			}
 
-			if ( ! isset($data['value_label_pairs']))
-			{
-				$data['value_label_pairs'] = array();
+				foreach ($data['value_label_pairs'] as $row)
+				{
+					$pairs[$row['value']] = $row['label'];
+				}
 			}
-
-			foreach ($data['value_label_pairs'] as $row)
+			elseif (isset($data['value_label_pairs']))
 			{
-				$pairs[$row['value']] = $row['label'];
+				$pairs = $data['value_label_pairs'];
 			}
 
 			if ($this->content_type() == 'grid')
@@ -158,7 +157,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		}
 
 		// Load from validation error
-		if (isset($_POST['value_label_pairs']['rows']) && $_POST['field_type'] == $field_type)
+		if (isset($_POST['value_label_pairs']['rows']) &&
+			((isset($_POST['field_type']) && $_POST['field_type'] == $field_type) OR (isset($_POST['m_field_type']) && $_POST['m_field_type'] == $field_type)))
 		{
 			foreach ($_POST['value_label_pairs']['rows'] as $row)
 			{
@@ -395,13 +395,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$pairs = $this->get_setting('value_label_pairs');
-		if (isset($pairs[$data]))
-		{
-			$data = $pairs[$data];
-		}
-
-		return $this->processTypograpghy($data);
+		return $data;
 	}
 
 	/**
@@ -412,15 +406,14 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 	 */
 	protected function processTypograpghy($string)
 	{
-		$text_format = ($this->content_type() == 'grid')
-			? $this->get_setting('field_fmt', 'none') : $this->row('field_ft_'.$this->field_id);
+		$text_format = $this->get_setting('field_fmt') ?: $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
 
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($string),
 			array(
-				'text_format'	=> $text_format,
+				'text_format'	=> $text_format ?: 'none',
 				'html_format'	=> $this->row('channel_html_formatting', 'all'),
 				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
 				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
@@ -520,14 +513,12 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 				if (isset($pairs[$item]))
 				{
-					$vars['item']       = $pairs[$item];
 					$vars['item:label'] = $pairs[$item];
 				}
 
 				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
 				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
 
-				$vars['item'] = $this->processTypograpghy($vars['item']);
 				$vars['item:label'] = $this->processTypograpghy($vars['item:label']);
 
 				$chunk .= ee()->functions->var_swap($tmp, $vars);

@@ -128,8 +128,7 @@ EE.cp.form_group_toggle = function(element) {
 		"always-hidden": false
 	};
 
-	// Show the selected group and enable its inputs
-	$.each(config, function (key, data) {
+	var toggle = function (key, data) {
 		var field_targets = $('*[data-group="'+data+'"]');
 		var section_targets = $('*[data-section-group="'+data+'"]');
 
@@ -138,7 +137,17 @@ EE.cp.form_group_toggle = function(element) {
 		}
 		toggleFields(field_targets, hidden[data] ? false : (key == value));
 		toggleSections(section_targets, states[data]);
+	};
+
+	// Hide all the toggled fields and sections
+	$.each(config, function (key, data) {
+		if (key != value) {
+			toggle(key, data);
+		}
 	});
+
+	// Show the selected fields and sections
+	toggle(value, config[value]);
 
 	// The reset the form .last values
 	var form = $(element).closest('form');
