@@ -138,6 +138,8 @@ class EE_Template {
 			'email', 'ip_address', 'location', 'total_entries',
 			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
 		);
+
+		$this->marker = md5(ee()->config->site_url().$this->marker);
 	}
 
 	// --------------------------------------------------------------------
@@ -1474,6 +1476,22 @@ class EE_Template {
 								ee()->remove('TMPL');
 								ee()->set('TMPL', $this);
 							}
+						}
+					}
+				}
+
+				// did marker tags get caught in here?
+				if (strpos($this->tag_data[$i]['chunk'], $this->marker) !== FALSE)
+				{
+					foreach ($this->tag_data as $index => $tag_data)
+					{
+						$marker = 'M'.$index.$this->marker;
+						if (strpos($this->tag_data[$i]['chunk'], $marker) !== FALSE)
+						{
+							$this->tag_data[$i]['chunk'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['chunk']);
+							$this->tag_data[$i]['block'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['block']);
+							$this->tag_data[$i]['no_results'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['no_results']);
+							$this->tag_data[$i]['no_results_block'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['no_results_block']);
 						}
 					}
 				}
