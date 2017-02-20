@@ -38,6 +38,17 @@ class Text extends Formatter {
 		$this->content = htmlspecialchars($this->content, ENT_QUOTES, 'UTF-8');
 		return $this;
 	}
+
+	/**
+	 * Converts all applicable characters to HTML entities
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function convertToEntities()
+	{
+		$this->content = htmlentities($this->content, ENT_QUOTES, 'UTF-8');
+		return $this;
+	}
 }
 
 // EOF
