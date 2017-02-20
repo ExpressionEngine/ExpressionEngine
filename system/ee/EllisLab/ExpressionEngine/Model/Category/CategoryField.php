@@ -55,8 +55,8 @@ class CategoryField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'field_type'     => 'required|enum[text,textarea,select]',
-		'field_label'    => 'required|xss|noHtml',
-		'field_name'     => 'required|alphaDash|unique[site_id]',
+		'field_label'    => 'required|xss|noHtml|maxLength[50]',
+		'field_name'     => 'required|alphaDash|unique[site_id]|maxLength[32]',
 		'field_ta_rows'  => 'integer',
 		'field_maxl'     => 'integer',
 		'field_required' => 'enum[y,n]',

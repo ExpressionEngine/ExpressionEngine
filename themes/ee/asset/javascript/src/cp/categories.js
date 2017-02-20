@@ -37,27 +37,27 @@ $(document).ready(function () {
 	// Category management tools toggle
 	$('body').on('click', '.toggle-tools a.toggle-btn', function (e) {
 		e.preventDefault();
-		var cat_container = $(this).parents('.nestable');
+		var cat_container = $(this).parents('.nestable'),
+			turning_on = $(this).hasClass('off'),
+			list_reorder = $('.list-reorder', cat_container),
+			toolbar = $('.toolbar', cat_container);
+
+		$(this).toggleClass('off', ! turning_on);
+		$(this).toggleClass('on', turning_on);
+		$('.form-ctrls button').toggleClass('disable', turning_on);
+		$('input[type=checkbox]', cat_container).prop('disabled', turning_on);
 
 		// On
-		if ($(this).hasClass('off')) {
-			$(this).removeClass('off');
-			$(this).addClass('on');
-
-			$('.list-reorder', cat_container).clearQueue().animate({
+		if (turning_on) {
+			list_reorder.clearQueue().animate({
 				'margin-left': '-10px'
 			}, 400);
-			$('.toolbar', cat_container).stop().fadeIn();
-			$('input[type=checkbox]', cat_container).prop('disabled', true);
-		} else { // Off
-			$(this).removeClass('on');
-			$(this).addClass('off');
-
-			$('.list-reorder', cat_container).clearQueue().animate({
+			toolbar.stop().fadeIn();
+		} else { // Off\
+			list_reorder.clearQueue().animate({
 				'margin-left': '-50px'
 			}, 400);
-			$('.toolbar', cat_container).stop().fadeOut();
-			$('input[type=checkbox]', cat_container).prop('disabled', false);
+			toolbar.stop().fadeOut();
 		}
 	});
 
