@@ -245,7 +245,7 @@ class Profile extends CP_Controller {
 		{
 			foreach ($settings as $setting)
 			{
-				if ( ! empty($setting['fields']))
+				if ( ! empty($setting['fields']) && is_array($setting['fields']))
 				{
 					foreach ($setting['fields'] as $field_name => $field)
 					{
