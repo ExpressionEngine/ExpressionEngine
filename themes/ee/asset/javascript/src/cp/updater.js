@@ -49,7 +49,19 @@ var Updater = {
 				}
 			},
 			error: function(data) {
-				that._showError(data.responseText, 'issue');
+				error = data.responseJSON;
+				if (error === undefined) {
+					try {
+						error = JSON.parse(data.responseText);
+					} catch(err) {
+						error = {
+							messageType: 'error',
+							message: data.responseText,
+							trace: []
+						};
+					}
+				}
+				that._showError(error, 'warn');
 			}
 		});
 	},
@@ -81,22 +93,14 @@ var Updater = {
 
 	_showError: function(error, severity) {
 
-		if (typeof error != 'object') {
-			try {
-				error = JSON.parse(error);
-			} catch(err) {
-				error = {message: error, trace: []};
-			}
-		}
-
 		$('.box.updating').addClass('hidden');
 
 		var issue_box = $('.box.updater-stopped'),
 			severity = severity || 'warn',
 			trace_link = $('.updater-fade', issue_box),
 			trace_container = $('.updater-stack-trace', issue_box),
-			trace_exists = error.trace.length > 0,
-			message = error.message.replace("\n", '<br>');
+			trace_exists = error.trace !== undefined && error.trace.length > 0,
+			message = error.message.replace(/(?:\r\n|\r|\n)/g, '<br />');
 
 		issue_box.addClass(severity)
 			.removeClass('hidden')
