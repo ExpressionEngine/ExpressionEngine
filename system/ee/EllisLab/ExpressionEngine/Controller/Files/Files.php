@@ -361,8 +361,14 @@ class Files extends AbstractFilesController {
 			{
 				$src = $file->getAbsolutePath();
 
+				// The default is to use the file name as the title, and if we
+				// did that then we should update it since we are replacing.
+				if ($file->title == $file->file_name)
+				{
+					$file->title = $original_name;
+				}
+
 				$file->file_name = $original_name;
-				$file->title = $original_name;
 				$file->save();
 
 				ee('Filesystem')->copy($src, $file->getAbsolutePath());
