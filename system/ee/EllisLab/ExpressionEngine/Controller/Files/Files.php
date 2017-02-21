@@ -210,20 +210,21 @@ class Files extends AbstractFilesController {
 				{
 					$file = ee('Model')->get('File', $upload_response['file_id'])->first();
 
+					$file->upload_location_id = $dir_id;
+					$file->site_id = ee()->config->item('site_id');
+
+					// Validate handles setting properties...
+					$this->validateFile($file);
+
 					// The upload process will automatically rename files in the
 					// event of a filename collision. Should that happen we need
 					// to ask the user if they wish to rename the file or
 					// replace the file
 					if ($file->file_name != $upload_response['orig_name'])
 					{
-						return $this->overwriteOrRename($file, $upload_response['orig_name']);
+						ee()->session->set_flashdata('original_name', $upload_response['orig_name']);
+						ee()->functions->redirect(ee('CP/URL')->make('files/finish-upload/' . $file->file_id));
 					}
-
-					$file->upload_location_id = $dir_id;
-					$file->site_id = ee()->config->item('site_id');
-
-					// Validate handles setting properties...
-					$this->validateFile($file);
 
 					$this->saveFileAndRedirect($file, TRUE);
 				}
@@ -287,6 +288,12 @@ class Files extends AbstractFilesController {
 		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$original_name = ee()->session->flashdata('original_name');
+		if ($original_name)
+		{
+			return $this->overwriteOrRename($file, $original_name);
 		}
 
 		$upload_options = ee()->input->post('upload_options');
