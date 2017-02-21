@@ -181,6 +181,8 @@ class Upload {
 			->cannotClose()
 			->now();
 
+		$checked_radio = ee()->input->post('upload_options') ?: 'append';
+
 		$sections = array(
 			array(
 				array(
@@ -195,11 +197,13 @@ class Upload {
 							'name' => 'upload_options',
 							'choices' => array(
 								'rename' => 'rename'
-							)
+							),
+							'value' => $checked_radio
 						),
 						'rename_custom' => array(
 							'type' => 'text',
-							'placeholder' => $file->file_name
+							'placeholder' => $file->file_name,
+							'value' => ee()->input->post('rename_custom')
 						),
 						'upload_options_2' => array(
 							'type' => 'radio',
@@ -207,7 +211,8 @@ class Upload {
 							'choices' => array(
 								'replace' => 'replace',
 								'append' => sprintf(lang('append'), $file->file_name)
-							)
+							),
+							'value' => $checked_radio
 						)
 					)
 				)
