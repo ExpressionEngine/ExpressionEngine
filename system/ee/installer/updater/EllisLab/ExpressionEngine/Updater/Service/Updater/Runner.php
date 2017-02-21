@@ -42,7 +42,6 @@ class Runner {
 		'backupDatabase',
 		'updateDatabase',
 		'rollback', // Temporary for testing
-		'restoreDatabase', // Temporary for testing
 		'selfDestruct'
 	];
 
@@ -126,6 +125,11 @@ class Runner {
 	public function rollback()
 	{
 		$this->makeUpdaterService()->rollbackFiles();
+
+		if (file_exists(PATH_CACHE.'ee_update/database.sql'))
+		{
+			return 'restoreDatabase';
+		}
 	}
 
 	public function restoreDatabase()
