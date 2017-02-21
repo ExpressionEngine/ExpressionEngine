@@ -222,6 +222,7 @@ class Files extends AbstractFilesController {
 					// replace the file
 					if ($file->file_name != $upload_response['orig_name'])
 					{
+						$file->save();
 						ee()->session->set_flashdata('original_name', $upload_response['orig_name']);
 						ee()->functions->redirect(ee('CP/URL')->make('files/finish-upload/' . $file->file_id));
 					}
