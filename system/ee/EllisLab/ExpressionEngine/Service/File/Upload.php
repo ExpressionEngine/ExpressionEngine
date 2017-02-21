@@ -144,12 +144,12 @@ class Upload {
 					)
 				)
 			);
-			
+
 			if (ee()->cp->allowed_group('can_create_categories'))
 			{
 				$field['example'] = '<a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="'.$cat_group->getId().'" href="#">'.lang('btn_add_category').'</a>';
 			}
-			
+
 			$sections[0][] = $field;
 		}
 
@@ -163,6 +163,57 @@ class Upload {
 		ee('Category')->addCategoryModals();
 
 		return $html;
+	}
+
+	/**
+	 * Creates and returns the HTML to rename or overwrite a file.
+	 *
+	 * @param obj $file A File Model object
+	 * @param string $original_name The original name of the file
+	 * @return string HTML
+	 */
+	public function getRenameOrReplaceform(FileModel $file, $original_name)
+	{
+		$sections = array(
+			array(
+				ee('CP/Alert')->makeInline('rename-or-replace')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody(sprintf(lang('file_conflict_desc'), $original_name))
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'upload_options',
+					'fields' => array(
+						'original_name' => array(
+							'type' => 'hidden',
+							'value' => $original_name
+						),
+						'upload_options_1' => array(
+							'type' => 'radio',
+							'name' => 'upload_options',
+							'choices' => array(
+								'rename' => 'rename'
+							)
+						),
+						'rename_custom' => array(
+							'type' => 'text',
+							'placeholder' => $file->file_name
+						),
+						'upload_options_2' => array(
+							'type' => 'radio',
+							'name' => 'upload_options',
+							'choices' => array(
+								'replace' => 'replace',
+								'append' => sprintf(lang('append'), $file->file_name)
+							)
+						)
+					)
+				)
+			)
+		);
+
+		return $sections;
 	}
 }
 

@@ -209,6 +209,16 @@ class Files extends AbstractFilesController {
 				else
 				{
 					$file = ee('Model')->get('File', $upload_response['file_id'])->first();
+
+					// The upload process will automatically rename files in the
+					// event of a filename collision. Should that happen we need
+					// to ask the user if they wish to rename the file or
+					// replace the file
+					if ($file->file_name != $upload_response['orig_name'])
+					{
+						return $this->overwriteOrRename($file, $upload_response['orig_name']);
+					}
+
 					$file->upload_location_id = $dir_id;
 					$file->site_id = ee()->config->item('site_id');
 
@@ -239,6 +249,89 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_page_title = lang('file_upload');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function overwriteOrRename($file, $original_name)
+	{
+		$vars = array(
+			'required' => TRUE,
+			'base_url' => ee('CP/URL')->make('files/finish-upload/' . $file->file_id),
+			'save_btn_text' => 'btn_finish_upload',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name)
+		);
+
+		$this->generateSidebar($file->upload_location_id);
+		$this->stdHeader();
+		ee()->view->cp_page_title = lang('file_upload_stopped');
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	public function finishUpload($file_id)
+	{
+		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$file = ee('Model')->get('File', $file_id)->first();
+
+		if ( ! $file)
+		{
+			show_error(lang('no_file'));
+		}
+
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$upload_options = ee()->input->post('upload_options');
+		$original_name  = ee()->input->post('original_name');
+
+		if ($upload_options == 'rename')
+		{
+			$new_name = ee()->input->post('rename_custom');
+
+			if (empty($new_name))
+			{
+				// Oops!
+			}
+
+			// PUNT! @TODO Break away from the old Filemanger Library
+			ee()->load->library('filemanager');
+			$rename_file = ee()->filemanager->rename_file($file_id, $new_name, $original_name);
+
+			if ( ! $rename_file['success'])
+			{
+				// Oops!
+			}
+
+			// The filemanager updated the database, and the saveFileAndRedirect
+			// should have fresh data for the alert.
+			$file = ee('Model')->get('File', $file_id)->first();
+		}
+		elseif ($upload_options == 'replace')
+		{
+			$original = ee('Model')->get('File')
+				->filter('file_name', $original_name)
+				->filter('site_id', $file->site_id)
+				->filter('upload_location_id', $file->upload_location_id)
+				->first();
+
+			if ( ! $original)
+			{
+				// Um, no.
+			}
+
+			ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
+			$file->delete();
+
+			$file = $original;
+		}
+
+		$this->saveFileAndRedirect($file, TRUE);
 	}
 
 	public function rmdir()

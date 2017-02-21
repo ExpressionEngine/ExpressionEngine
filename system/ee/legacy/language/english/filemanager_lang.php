@@ -66,6 +66,22 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
+'file_upload_stopped' => 'File Upload Stopped',
+
+'file_conflict' => 'File conflict found',
+
+'file_conflict_desc' => 'A file named <b>%s</b> already exists in this directory.',
+
+'upload_options' => 'Upload options',
+
+'rename' => 'Rename <em>newer</em> file',
+
+'replace' => 'Replace <em>older</em> file <i>&mdash; destructive action</i>',
+
+'append' => 'Append numeral to <em>newer</em> file <i>&mdash; example: %s</i>',
+
+'btn_finish_upload' => 'Finish Upload',
+
 // sidebar
 'zero_directories_found' => 'No <b>Directories</b> found',
 
