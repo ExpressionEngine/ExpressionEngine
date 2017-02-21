@@ -76,7 +76,9 @@ $lang = array(
 
 'rename' => 'Rename <em>newer</em> file',
 
-'replace' => 'Replace <em>older</em> file <i>&mdash; destructive action</i>',
+'replace' => 'Replace <em>older</em> file only <i>&mdash; destructive action</i>',
+
+'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
 
 'append' => 'Append numeral to <em>newer</em> file <i>&mdash; example: %s</i>',
 

@@ -329,7 +329,7 @@ abstract class AbstractFiles extends CP_Controller {
 		return $result;
 	}
 
-	protected function saveFileAndRedirect(File $file, $is_new = FALSE)
+	protected function saveFileAndRedirect(File $file, $is_new = FALSE, $extra_success_message = '')
 	{
 		$action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
 
@@ -344,11 +344,17 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$file->save();
 
-		ee('CP/Alert')->makeInline('shared-form')
+		$alert = ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_success'))
-			->addToBody(sprintf(lang($action . '_success_desc'), $file->title))
-			->defer();
+			->addToBody(sprintf(lang($action . '_success_desc'), $file->title));
+
+		if ( ! empty($extra_success_message))
+		{
+			$alert->addToBody($extra_success_message);
+		}
+
+		$alert->defer();
 
 		if ($action == 'upload_filedata')
 		{

@@ -296,6 +296,8 @@ class Files extends AbstractFilesController {
 			return $this->overwriteOrRename($file, $original_name);
 		}
 
+		$extra_success_message = '';
+
 		$upload_options = ee()->input->post('upload_options');
 		$original_name  = ee()->input->post('original_name');
 
@@ -375,6 +377,14 @@ class Files extends AbstractFilesController {
 			}
 			else
 			{
+				if ($file->description
+					|| $file->credit
+					|| $file->location
+					|| $file->Categories->count() > 0)
+				{
+					$extra_success_message = lang('replace_no_metadata');
+				}
+
 				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
 				$file->delete();
 
