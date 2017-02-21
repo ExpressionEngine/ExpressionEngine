@@ -40,22 +40,12 @@ class Updater {
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
+			// TODO: Show a more helpful message here?
 			return;
 		}
 
 		$runner = new Runner();
-
-		try
-		{
-			$runner->runStep($step);
-		}
-		catch (\Exception $e)
-		{
-			return json_encode([
-				'messageType' => 'error',
-				'message' => $e->getMessage()
-			]);
-		}
+		$runner->runStep($step);
 
 		$messages = [
 			// This step isn't worth calling out, but needs to be a separate step

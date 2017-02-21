@@ -124,7 +124,22 @@ else
 		$directory = (isset($_GET['D']) && $_GET['D'] !== 'cp') ? $_GET['D'] : 'updater';
 		$controller = (isset($_GET['C'])) ? $_GET['C'] : 'updater';
 		$method = (isset($_GET['M'])) ? $_GET['M'] : 'index';
-		routeRequest($directory, $controller, $method);
+
+		try
+		{
+			routeRequest($directory, $controller, $method);
+		}
+		catch (\Exception $e)
+		{
+			set_status_header(500);
+			$return = [
+				'messageType' => 'error',
+				'message' => $e->getMessage(),
+				'trace' => explode("\n", $e->getTraceAsString())
+			];
+			echo json_encode($return);
+			exit;
+		}
 	}
 
 	function routeRequest($directory, $controller, $method = '')
