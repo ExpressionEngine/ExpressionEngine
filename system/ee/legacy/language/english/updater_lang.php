@@ -41,6 +41,31 @@ $lang = array(
 'updateFiles_step' =>
 'Updating files',
 
+'could_not_download' =>
+'Could not download update. Your internet connection may be down, or otherwise cannot reach the ExpressionEngine servers.
+
+Status code returned: %s',
+
+'unexpected_mime' =>
+'Could not download update. The server returned an unexpected content type:
+
+%s',
+
+'missing_hash_header' =>
+'Could not verify update file, "Package-Hash" header was not found in the response.',
+
+'could_not_verify_hash' =>
+'Could not verify the integrity of the downloaded update file. Expected hash:
+
+%s
+
+But got hash:
+
+%s',
+
+'try_again_later' =>
+'Try again in a few minutes or contact support if the problem persists.',
+
 ''=>''
 );
 

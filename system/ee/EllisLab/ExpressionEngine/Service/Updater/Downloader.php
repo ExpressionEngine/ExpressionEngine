@@ -104,8 +104,6 @@ class Downloader {
 		$this->checkPermissions();
 		$this->cleanUpOldUpgrades();
 		$this->checkDiskSpace();
-
-		return 'downloadPackage';
 	}
 
 	/**
@@ -255,17 +253,23 @@ class Downloader {
 		// Make sure everything looks normal
 		if ($curl->getHeader('http_code') != '200')
 		{
-			throw new UpdaterException('Could not download update. Status code: ' . $curl->getHeader('http_code'), 4);
+			throw new UpdaterException(
+				sprintf(lang('could_not_download')."\n\n".lang('try_again_later'),
+				$curl->getHeader('http_code')),
+			4);
 		}
 
 		if (trim($curl->getHeader('Content-Type'), '"') != 'application/zip')
 		{
-			throw new UpdaterException('Could not download update. Unexpected MIME type response: ' . $curl->getHeader('Content-Type'), 5);
+			throw new UpdaterException(
+				sprintf(lang('unexpected_mime')."\n\n".lang('try_again_later'),
+				$curl->getHeader('Content-Type')),
+			5);
 		}
 
 		if ( ! $curl->getHeader('Package-Hash'))
 		{
-			throw new UpdaterException('Could not find hash header to verify zip archive integrity.', 6);
+			throw new UpdaterException( lang('missing_hash_header')."\n\n".lang('try_again_later'), 6);
 		}
 
 		// Write the file
@@ -277,7 +281,13 @@ class Downloader {
 		// Make sure the file's SHA1 matches what we were given in the header
 		if (trim($curl->getHeader('Package-Hash'), '"') != $hash)
 		{
-			throw new UpdaterException('Could not verify zip archive integrity. Given hash ' . $curl->getHeader('Package-Hash') . ' does not match ' . $hash, 7);
+			throw new UpdaterException(
+				sprintf(
+					lang('could_not_verify_hash')."\n\n".lang('try_again_later'),
+					trim($curl->getHeader('Package-Hash'), '"'),
+					$hash
+				),
+			7);
 		}
 	}
 
