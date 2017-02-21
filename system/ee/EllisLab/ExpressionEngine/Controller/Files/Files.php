@@ -328,7 +328,7 @@ class Files extends AbstractFilesController {
 					->withTitle(lang('file_conflict'))
 					->addToBody(lang('file_exists_replacement_error'))
 					->now();
-				return $this->overwriteOrRename($file, $original_name);
+				return $this->overwriteOrRename($file, $new_name);
 			}
 
 			// PUNT! @TODO Break away from the old Filemanger Library
