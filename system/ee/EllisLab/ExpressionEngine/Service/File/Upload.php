@@ -196,6 +196,7 @@ class Upload {
 							'type' => 'radio',
 							'name' => 'upload_options',
 							'choices' => array(
+								'append' => sprintf(lang('append'), $file->file_name),
 								'rename' => 'rename'
 							),
 							'value' => $checked_radio
@@ -210,7 +211,6 @@ class Upload {
 							'name' => 'upload_options',
 							'choices' => array(
 								'replace' => 'replace',
-								'append' => sprintf(lang('append'), $file->file_name)
 							),
 							'value' => $checked_radio
 						)
