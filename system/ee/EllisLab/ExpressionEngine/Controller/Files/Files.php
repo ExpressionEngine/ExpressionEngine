@@ -378,10 +378,10 @@ class Files extends AbstractFilesController {
 			}
 			else
 			{
-				if ($file->description
-					|| $file->credit
-					|| $file->location
-					|| $file->Categories->count() > 0)
+				if (($file->description && ($file->description != $original->description))
+					|| ($file->credit && ($file->credit != $original->credit))
+					|| ($file->location && ($file->location != $original->location))
+					|| ($file->Categories->count() > 0 && ($file->Categories->count() != $file->Categories->count())))
 				{
 					$extra_success_message = lang('replace_no_metadata');
 				}
@@ -393,7 +393,7 @@ class Files extends AbstractFilesController {
 			}
 		}
 
-		$this->saveFileAndRedirect($file, TRUE);
+		$this->saveFileAndRedirect($file, TRUE, $extra_success_message);
 	}
 
 	public function rmdir()
