@@ -174,14 +174,15 @@ class Upload {
 	 */
 	public function getRenameOrReplaceform(FileModel $file, $original_name)
 	{
+		ee('CP/Alert')->makeInline('rename-or-replace')
+			->asIssue()
+			->withTitle(lang('file_conflict'))
+			->addToBody(sprintf(lang('file_conflict_desc'), $original_name))
+			->cannotClose()
+			->now();
+
 		$sections = array(
 			array(
-				ee('CP/Alert')->makeInline('rename-or-replace')
-					->asIssue()
-					->withTitle(lang('file_conflict'))
-					->addToBody(sprintf(lang('file_conflict_desc'), $original_name))
-					->cannotClose()
-					->render(),
 				array(
 					'title' => 'upload_options',
 					'fields' => array(

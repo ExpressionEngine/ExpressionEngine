@@ -275,7 +275,9 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$file = ee('Model')->get('File', $file_id)->first();
+		$file = ee('Model')->get('File', $file_id)
+			->with('UploadDestination')
+			->first();
 
 		if ( ! $file)
 		{
@@ -294,9 +296,32 @@ class Files extends AbstractFilesController {
 		{
 			$new_name = ee()->input->post('rename_custom');
 
+			$original_extension = substr($original_name, strrpos($original_name, '.'));
+			$new_extension = substr($new_name, strrpos($new_name, '.'));
+
+			if ($new_extension != $original_extension)
+			{
+				$new_name .= $original_extension;
+			}
+
 			if (empty($new_name))
 			{
-				// Oops!
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody(lang('no_filename'))
+					->now();
+				return $this->overwriteOrRename($file, $original_name);
+			}
+
+			if ($file->UploadDestination->getFilesystem()->exists($new_name))
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody(lang('file_exists_replacement_error'))
+					->now();
+				return $this->overwriteOrRename($file, $original_name);
 			}
 
 			// PUNT! @TODO Break away from the old Filemanger Library
@@ -305,7 +330,12 @@ class Files extends AbstractFilesController {
 
 			if ( ! $rename_file['success'])
 			{
-				// Oops!
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody($rename_file['error'])
+					->now();
+				return $this->overwriteOrRename($file, $original_name);
 			}
 
 			// The filemanager updated the database, and the saveFileAndRedirect
@@ -322,13 +352,21 @@ class Files extends AbstractFilesController {
 
 			if ( ! $original)
 			{
-				// Um, no.
+				$src = $file->getAbsolutePath();
+
+				$file->file_name = $original_name;
+				$file->title = $original_name;
+				$file->save();
+
+				ee('Filesystem')->copy($src, $file->getAbsolutePath());
 			}
+			else
+			{
+				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
+				$file->delete();
 
-			ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
-			$file->delete();
-
-			$file = $original;
+				$file = $original;
+			}
 		}
 
 		$this->saveFileAndRedirect($file, TRUE);
