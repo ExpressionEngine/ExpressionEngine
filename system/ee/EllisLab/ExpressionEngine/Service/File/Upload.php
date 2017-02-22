@@ -174,7 +174,9 @@ class Upload {
 	 */
 	public function getRenameOrReplaceform(FileModel $file, $original_name)
 	{
-		if (empty(ee('CP/Alert')->get('shared-form')))
+		$alert = ee('CP/Alert')->get('shared-form');
+
+		if (empty($alert))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
@@ -224,6 +226,11 @@ class Upload {
 		);
 
 		return $sections;
+	}
+
+	public function uploadTo($dir_id)
+	{
+
 	}
 }
 
