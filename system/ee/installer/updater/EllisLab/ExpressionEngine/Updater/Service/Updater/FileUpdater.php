@@ -125,32 +125,17 @@ class FileUpdater {
 		$hash_manifiest = SYSPATH . 'ee/updater/hash-manifest';
 		$exclusions = ['system/ee/installer/updater'];
 
-		try {
-			$this->verifier->verifyPath(
-				SYSPATH . 'ee/',
-				$hash_manifiest,
-				'system/ee',
-				$exclusions
-			);
+		$this->verifier->verifyPath(
+			SYSPATH . 'ee/',
+			$hash_manifiest,
+			'system/ee',
+			$exclusions
+		);
 
-			if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		{
+			foreach ($this->configs['theme_paths'] as $theme_path)
 			{
-				foreach ($this->configs['theme_paths'] as $theme_path)
-				{
-					$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-
-					$this->verifier->verifyPath(
-						$theme_path,
-						$hash_manifiest,
-						'themes/ee',
-						$exclusions
-					);
-				}
-			}
-			// Otherwise, just move the themes to the one themes folder
-			else
-			{
-				$theme_path = array_values($this->configs['theme_paths'])[0];
 				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
 				$this->verifier->verifyPath(
@@ -161,11 +146,18 @@ class FileUpdater {
 				);
 			}
 		}
-		catch (UpdaterException $e)
+		// Otherwise, just move the themes to the one themes folder
+		else
 		{
-			$this->logger->log('There was an error verifying the new installation\'s files: '.$e->getMessage());
-			$this->rollbackFiles();
-			throw new UpdaterException($e->getMessage(), $e->getCode());
+			$theme_path = array_values($this->configs['theme_paths'])[0];
+			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+
+			$this->verifier->verifyPath(
+				$theme_path,
+				$hash_manifiest,
+				'themes/ee',
+				$exclusions
+			);
 		}
 
 		$this->logger->log('New ExpressionEngine files successfully verified');
