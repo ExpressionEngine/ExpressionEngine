@@ -98,6 +98,7 @@ class Fields extends Members\Members {
 			'text' => lang('text_input'),
 			'textarea' => lang('textarea'),
 			'select' => lang('select_dropdown'),
+			'date' => lang('date')			
 		);
 
 		foreach ($fields as $field)
@@ -278,11 +279,13 @@ class Fields extends Members\Members {
 						'm_field_type' => array(
 							'type' => 'select',
 							'choices' => array(
+								'date'     => lang('date'),
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
 								'select'   => lang('select_dropdown')
 							),
 							'group_toggle' => array(
+								'date' => 'date',
 								'text' => 'text',
 								'textarea' => 'textarea',
 								'select' => 'select'
@@ -360,7 +363,7 @@ class Fields extends Members\Members {
 		$vars['sections'] = array_merge($vars['sections'], $field->getSettingsForm());
 
 		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		foreach (array('date', 'text', 'textarea', 'select') as $fieldtype)
 		{
 			if ($field->field_type != $fieldtype)
 			{
