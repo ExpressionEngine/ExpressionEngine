@@ -789,6 +789,43 @@ class Comment {
 
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
+
+////////
+
+				
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+			return $field['field_name'];
+		}, ee()->TMPL->var_single);
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($fields[$field_name][0]))
+			{
+				$member_field_ids[] = $fields[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
+
+var_dump($member_field_ids);
+
+////////////
+
 			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
@@ -1173,6 +1210,27 @@ class Comment {
 				/** ----------------------------------------
 				/**  parse custom member fields
 				/** ----------------------------------------*/
+////
+
+				$field = ee()->api_channel_fields->get_single_field($val);
+				$val = $field['field_name'];
+
+				// parse custom member fields
+				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+				{
+					ee()->TMPL->tagdata = $this->parseField(
+						$fields[$val]['0'],
+						$field,
+						$row['m_field_id_'.$fields[$val]['0']],
+						ee()->TMPL->tagdata,
+						$member_id
+					);
+				}
+
+/////
+
+
+/*
 
 				if ( isset($mfields[$val]))
 				{
@@ -1188,15 +1246,16 @@ class Comment {
 						$tagdata
 					);
 				}
+*/
 
 				/** ----------------------------------------
 				/**  Clean up left over member variables
 				/** ----------------------------------------*/
 
-				if (in_array($val, $member_vars))
-				{
-					$tagdata = str_replace(LD.$val.RD, '', $tagdata);
-				}
+//				if (in_array($val, $member_vars))
+//				{
+//					$tagdata = str_replace(LD.$val.RD, '', $tagdata);
+//				}
 			}
 
 			if ($this->show_anchor == TRUE)
@@ -1228,6 +1287,37 @@ class Comment {
 			return $return;
 		}
 	}
+
+
+	/**
+	 * Parse a custom member field
+	 *
+	 * @param	int		$field_id	Member field ID
+	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	mixed	$data		Data for this field
+	 * @param	string	$tagdata	Tagdata to perform the replacement in
+	 * @param	string	$member_id	ID for the member this data is associated
+	 * @return	string	String with variable parsed
+	 */
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
+	{
+		if ( ! isset($this->member_fields[$field_id]))
+		{
+			return $tagdata;
+		}
+
+		$member_field = $this->member_fields[$field_id];
+
+		$default_row = array(
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		);
+		$row = array_merge($default_row, $row);
+
+		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
+	}
+
 
 
 	// --------------------------------------------------------------------
