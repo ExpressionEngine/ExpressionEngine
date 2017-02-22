@@ -325,7 +325,19 @@ class Downloader {
 
 		$extracted_path = $this->getExtractedArchivePath();
 
-		$this->verifier->verifyPath($extracted_path, $extracted_path . '/' . $this->manifest_location);
+		try {
+			$this->verifier->verifyPath(
+				$extracted_path,
+				$extracted_path . '/' . $this->manifest_location
+			);
+		}
+		catch (UpdaterException $e)
+		{
+			throw new UpdaterException(
+				sprintf(lang('failed_verifying_extracted_archive'), $e->getMessage())."\n\n".lang('try_again_later'),
+				$e->getCode()
+			);
+		}
 
 		$this->logger->log('Package contents successfully verified');
 	}
@@ -380,7 +392,11 @@ class Downloader {
 		{
 			// Remove the updater
 			$this->filesystem->deleteDir(SYSPATH.'ee/updater');
-			throw new UpdaterException($e->getMessage(), $e->getCode());
+
+			throw new UpdaterException(
+				sprintf(lang('failed_moving_updater'), $e->getMessage())."\n\n".lang('try_again_later'),
+				$e->getCode()
+			);
 		}
 
 		// Got here? Take the site offline, we're ready to update

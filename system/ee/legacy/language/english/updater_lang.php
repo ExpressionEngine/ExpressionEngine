@@ -69,13 +69,23 @@ But got hash:
 'could_not_unzip' =>
 'Could not unzip update archive. ZipArchive returned error code: %s',
 
-'could_not_find_files_in_archive' =>
+'could_not_find_files' =>
 'The following files could not be found:
 
 %s',
 
 'could_not_verify_file_integrity' =>
 'The integrity of the following files could not be verified:
+
+%s',
+
+'failed_verifying_extracted_archive' =>
+'There was a problem verifying the integrity of the extracted update file.
+
+%s',
+
+'failed_moving_updater' =>
+'There was a problem moving the updater into place.
 
 %s',
 

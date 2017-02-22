@@ -102,7 +102,7 @@ class Verifier {
 		{
 			throw new UpdaterException(
 				sprintf(
-					lang('could_not_find_files_in_archive')."\n\n".lang('try_again_later'),
+					lang('could_not_find_files'),
 					implode("\n", $missing_files)
 				),
 			9);
@@ -112,7 +112,7 @@ class Verifier {
 		{
 			throw new UpdaterException(
 				sprintf(
-					lang('could_not_verify_file_integrity')."\n\n".lang('try_again_later'),
+					lang('could_not_verify_file_integrity'),
 					implode("\n", $corrupt_files)
 				),
 			10);
