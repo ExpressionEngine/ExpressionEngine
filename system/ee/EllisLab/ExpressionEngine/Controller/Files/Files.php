@@ -258,8 +258,6 @@ class Files extends AbstractFilesController {
 		$vars = array(
 			'required' => TRUE,
 			'base_url' => ee('CP/URL')->make('files/finish-upload/' . $file->file_id),
-			'save_btn_text' => 'btn_finish_upload',
-			'save_btn_text_working' => 'btn_saving',
 			'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name),
 			'buttons' => array(
 				array(
