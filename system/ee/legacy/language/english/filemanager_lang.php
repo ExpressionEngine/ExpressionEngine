@@ -64,6 +64,8 @@ $lang = array(
 
 'no_file' => 'No file selected',
 
+'no_filename' => 'A new filename was not submitted.',
+
 'no_upload_destination' => 'No upload destination found',
 
 'file_upload_stopped' => 'File Upload Stopped',
@@ -83,6 +85,8 @@ $lang = array(
 'append' => 'Append numeral to <em>newer</em> file <i>&mdash; example: %s</i>',
 
 'btn_finish_upload' => 'Finish Upload',
+
+'btn_cancel_upload' => 'Cancel Upload',
 
 // sidebar
 'zero_directories_found' => 'No <b>Directories</b> found',

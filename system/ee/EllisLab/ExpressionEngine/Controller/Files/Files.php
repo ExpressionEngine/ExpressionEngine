@@ -260,12 +260,33 @@ class Files extends AbstractFilesController {
 			'base_url' => ee('CP/URL')->make('files/finish-upload/' . $file->file_id),
 			'save_btn_text' => 'btn_finish_upload',
 			'save_btn_text_working' => 'btn_saving',
-			'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name)
+			'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name),
+			'buttons' => array(
+				array(
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'finish',
+					'text'    => 'btn_finish_upload',
+					'working' => 'btn_saving'
+				),
+				array(
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'cancel',
+					'class'   => 'draft',
+					'text'    => 'btn_cancel_upload',
+					'working' => 'btn_canceling'
+				),
+			),
 		);
 
 		$this->generateSidebar($file->upload_location_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_upload_stopped');
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/files/overwrite_rename'),
+		));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -295,6 +316,13 @@ class Files extends AbstractFilesController {
 		if ($original_name)
 		{
 			return $this->overwriteOrRename($file, $original_name);
+		}
+
+		if (ee()->input->post('submit') == 'cancel')
+		{
+			$file->delete();
+			ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
+			return;
 		}
 
 		$extra_success_message = '';
