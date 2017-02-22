@@ -40,7 +40,7 @@ class MemberField extends FieldModel {
 	);
 
 	protected static $_validation_rules = array(
-		'm_field_type'  => 'required|enum[text,textarea,select]',
+		'm_field_type'  => 'required|enum[text,textarea,select,date]',
 		'm_field_label' => 'required|xss|noHtml',
 		'm_field_name'  => 'required|alphaDash|unique'
 	);
