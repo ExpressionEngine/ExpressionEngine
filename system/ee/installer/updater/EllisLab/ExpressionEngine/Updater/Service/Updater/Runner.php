@@ -142,6 +142,7 @@ class Runner {
 	public function selfDestruct()
 	{
 		$filesystem = new Filesystem();
+		$filesystem->deleteDir($this->makeUpdaterService()->path());
 		$filesystem->deleteDir(SYSPATH.'ee/updater');
 	}
 

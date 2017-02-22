@@ -319,7 +319,7 @@ class FileUpdater {
 	 *
 	 * @return	string	Path to folder in the cache folder for working with updates
 	 */
-	protected function path()
+	public function path()
 	{
 		$cache_path = $this->config->get('cache_path');
 
