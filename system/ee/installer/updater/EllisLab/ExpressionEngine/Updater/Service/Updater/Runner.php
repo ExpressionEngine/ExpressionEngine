@@ -135,6 +135,8 @@ class Runner {
 	public function restoreDatabase()
 	{
 		ee('Database/Restore')->restoreLineByLine(PATH_CACHE.'ee_update/database.sql');
+
+		return 'selfDestruct';
 	}
 
 	public function selfDestruct()
