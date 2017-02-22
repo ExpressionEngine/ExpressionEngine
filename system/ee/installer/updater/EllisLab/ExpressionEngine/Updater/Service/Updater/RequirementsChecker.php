@@ -53,51 +53,55 @@ class RequirementsChecker
 		);
 
 		// MySQL version and PDO
-		$mysql = new Requirement('Your MySQL version does not meet the minimum requirement of '.$this->minimum_mysql.'.');
-		$this->requirements[] = $mysql->setCallback(function($requirement)
-		{
-			if ( ! class_exists('PDO'))
+		$this->requirements[] = new Requirement(
+			'Your MySQL version does not meet the minimum requirement of '.$this->minimum_mysql.'.',
+			function($requirement)
 			{
-				$requirement->setMessage('Your PHP installation does not have <a href="http://php.net/manual/en/book.pdo.php">PDO</a> enabled.');
-				return FALSE;
-			}
-
-			try
-			{
-				$pdo = $this->connectToDbUsingConfig($this->db_config);
-			}
-			catch (Exception $e)
-			{
-				// If they're using localhost, fall back to 127.0.0.1
-				if ($this->db_config['hostname'] == 'localhost')
+				if ( ! class_exists('PDO'))
 				{
-					$this->db_config['hostname'] = '127.0.0.1';
+					$requirement->setMessage('Your PHP installation does not have <a href="http://php.net/manual/en/book.pdo.php">PDO</a> enabled.');
+					return FALSE;
+				}
+
+				try
+				{
 					$pdo = $this->connectToDbUsingConfig($this->db_config);
 				}
-			}
+				catch (Exception $e)
+				{
+					// If they're using localhost, fall back to 127.0.0.1
+					if ($this->db_config['hostname'] == 'localhost')
+					{
+						$this->db_config['hostname'] = '127.0.0.1';
+						$pdo = $this->connectToDbUsingConfig($this->db_config);
+					}
+				}
 
-			if ( ! isset($pdo) OR ! $pdo)
-			{
-				throw new Exception('Could not connect to the database using the credentials provided.', 12);
-			}
+				if ( ! isset($pdo) OR ! $pdo)
+				{
+					throw new Exception('Could not connect to the database using the credentials provided.', 12);
+				}
 
-			return (version_compare($pdo->getAttribute(PDO::ATTR_SERVER_VERSION), $this->minimum_mysql, '>=') === TRUE);
-		});
+				return (version_compare($pdo->getAttribute(PDO::ATTR_SERVER_VERSION), $this->minimum_mysql, '>=') === TRUE);
+			}
+		);
 
 		// Memory limit
-		$memory_limit = new Requirement('ExpressionEngine requires at least 32MB of memory allocated to PHP.');
-		$this->requirements[] = $memory_limit->setCallback(function()
-		{
-			$memory_limit = @ini_get('memory_limit');
-			sscanf($memory_limit, "%d%s", $limit, $unit);
-
-			if (strtolower($unit) == 'm')
+		$this->requirements[] = new Requirement(
+			'ExpressionEngine requires at least 32MB of memory allocated to PHP.',
+			function()
 			{
-				return ($limit >= 32);
-			}
+				$memory_limit = @ini_get('memory_limit');
+				sscanf($memory_limit, "%d%s", $limit, $unit);
 
-			return TRUE;
-		});
+				if (strtolower($unit) == 'm')
+				{
+					return ($limit >= 32);
+				}
+
+				return TRUE;
+			}
+		);
 
 		// JSON extension
 		$this->requirements[] = new Requirement(
@@ -193,25 +197,13 @@ class Requirement
 	 * Constructor
 	 *
 	 * @param	string	$message	Message to display if this requirement fails
-	 * @return	boolean	$result		Success or failure indicator of requirement test
+	 * @return	mixed	$result		Callable to run to test requirement, or
+	 *   pre-derermined boolean of requirement result
 	 */
 	public function __construct($message, $result = FALSE)
 	{
 		$this->message = $message;
-		$this->result = $result;
-	}
-
-	/**
-	 * Specify a callback to use as the test for this requirement
-	 *
-	 * @param	Callable	$callback	Closure to use to test this requirement, receives
-	 *   the parent Requirement object as an argument and must return a boolean
-	 * @return	Requirement	The current Requirement object
-	 */
-	public function setCallback(Callable $callback)
-	{
-		$this->result = $callback($this);
-		return $this;
+		$this->result = is_callable($result) ? $result($this) : $result;
 	}
 
 	/**
