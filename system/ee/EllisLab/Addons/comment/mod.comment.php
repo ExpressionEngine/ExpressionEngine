@@ -670,6 +670,66 @@ class Comment {
 		}
 
 
+
+
+
+
+////////////
+
+
+
+////////
+
+		// Fetch the custom member field definitions
+		$m_fields = array();
+
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = ee()->db->get('member_fields');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$m_fields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
+			}
+		}
+				
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		$single_field_data = array();
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			
+			$field = ee()->api_channel_fields->get_single_field($field);
+			
+			return $field['field_name'];
+		}, array_flip(ee()->TMPL->var_single));
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($m_fields[$field_name][0]))
+			{
+				$member_field_ids[] = $m_fields[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
+
+//////////
+
+
+
 		/** ----------------------------------------
 		/**  Start the processing loop
 		/** ----------------------------------------*/
@@ -771,6 +831,31 @@ class Comment {
 			}
 
 			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
+			
+			// could parse the member variables here instead of var_single loop?
+
+/*
+			foreach ($clean_field_names as $mfield_name)
+			{
+			
+				$field = ee()->api_channel_fields->get_single_field($mfield_name);
+				$val = $field['field_name'];
+
+				// parse custom member fields
+				if (isset($m_fields[$val]) && array_key_exists('m_field_id_'.$m_fields[$val]['0'], $row))
+				{
+					
+					$tagdata = $this->parseField(
+						$m_fields[$val]['0'],
+						$field,
+						$row['m_field_id_'.$m_fields[$val]['0']],
+						$tagdata,
+						$row['author_id']
+					);
+				}
+			}			
+			
+*/			
 
 			/** ----------------------------------------
 			/**  parse comment date and "last edit" date
@@ -790,47 +875,16 @@ class Comment {
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
 
-////////
+//print_r(ee()->TMPL->var_single);
 
-				
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-
-		// Get field names present in the template, sans modifiers
-		$clean_field_names = array_map(function($field)
-		{
-			$field = ee()->api_channel_fields->get_single_field($field);
-			return $field['field_name'];
-		}, ee()->TMPL->var_single);
-
-		// Get field IDs for the member fields we need to fetch
-		$member_field_ids = array();
-		foreach ($clean_field_names as $field_name)
-		{
-			if (isset($fields[$field_name][0]))
-			{
-				$member_field_ids[] = $fields[$field_name][0];
-			}
-		}
-
-		// Cache member fields here before we start parsing
-		if ( ! empty($member_field_ids))
-		{
-			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
-				->all()
-				->indexBy('field_id');
-		}
-
-
-var_dump($member_field_ids);
-
-////////////
 
 			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
+
+
 
 				/** ----------------------------------------
 				/**  parse {switch} variable
@@ -1212,20 +1266,33 @@ var_dump($member_field_ids);
 				/** ----------------------------------------*/
 ////
 
-				$field = ee()->api_channel_fields->get_single_field($val);
+
+				$field = ee()->api_channel_fields->get_single_field($key);
 				$val = $field['field_name'];
 
+//echo '<pre>';
+//var_dump($val);
+//print_r($single_field_data);
+//var_dump($field);
+//print_r($row);
+//echo '</pre>';
+
+
+
 				// parse custom member fields
-				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+				if (isset($m_fields[$val]) && array_key_exists('m_field_id_'.$m_fields[$val]['0'], $row))
 				{
-					ee()->TMPL->tagdata = $this->parseField(
-						$fields[$val]['0'],
+			
+					$tagdata = $this->parseField(
+						$m_fields[$val]['0'],
 						$field,
-						$row['m_field_id_'.$fields[$val]['0']],
-						ee()->TMPL->tagdata,
-						$member_id
+						$row['m_field_id_'.$m_fields[$val]['0']],
+						$tagdata,
+						$row['author_id']
 					);
 				}
+
+
 
 /////
 
@@ -1252,10 +1319,10 @@ var_dump($member_field_ids);
 				/**  Clean up left over member variables
 				/** ----------------------------------------*/
 
-//				if (in_array($val, $member_vars))
-//				{
-//					$tagdata = str_replace(LD.$val.RD, '', $tagdata);
-//				}
+				if (in_array($val, $member_vars))
+				{
+					$tagdata = str_replace(LD.$val.RD, '', $tagdata);
+				}
 			}
 
 			if ($this->show_anchor == TRUE)
@@ -1301,12 +1368,15 @@ var_dump($member_field_ids);
 	 */
 	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
 	{
+
 		if ( ! isset($this->member_fields[$field_id]))
 		{
+
 			return $tagdata;
 		}
 
 		$member_field = $this->member_fields[$field_id];
+		
 
 		$default_row = array(
 			'channel_html_formatting' => 'safe',
@@ -1314,6 +1384,9 @@ var_dump($member_field_ids);
 			'channel_allow_img_urls' => 'n'
 		);
 		$row = array_merge($default_row, $row);
+
+print_r($field);
+
 
 		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
 	}
