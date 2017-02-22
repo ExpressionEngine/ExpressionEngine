@@ -145,90 +145,28 @@ class Files extends AbstractFilesController {
 
 		$errors = NULL;
 
-		$dir = ee('Model')->get('UploadDestination', $dir_id)
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
+		$result = ee('File')->makeUpload()->uploadTo($dir_id);
 
-		if ( ! $dir)
+		$file = $result['file'];
+
+		if ($result['posted'])
 		{
-			show_error(lang('no_upload_destination'));
-		}
+			$errors = $result['validation_result'];
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! $dir->exists())
-		{
-			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
-			ee('CP/Alert')->makeStandard()
-				->asIssue()
-				->withTitle(lang('file_not_found'))
-				->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
-				->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
-				->now();
-
-			show_404();
-		}
-
-		// Check permissions on the directory
-		if ( ! $dir->isWritable())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('dir_not_writable'))
-				->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
-				->now();
-		}
-
-		$file = ee('Model')->make('File');
-		$file->UploadDestination = $dir;
-
-		$result = $this->validateFile($file);
-
-		if ($result instanceOf ValidationResult)
-		{
-			$errors = $result;
-
-			if ($result->isValid())
+			if ($result['uploaded'])
 			{
-				// This is going to get ugly...apologies
-
-				// PUNT! @TODO Break away from the old Filemanger Library
-				ee()->load->library('filemanager');
-				$upload_response = ee()->filemanager->upload_file($dir_id, 'file');
-				if (isset($upload_response['error']))
+				// The upload process will automatically rename files in the
+				// event of a filename collision. Should that happen we need
+				// to ask the user if they wish to rename the file or
+				// replace the file
+				if ($file->file_name != $result['upload_response']['orig_name'])
 				{
-					ee('CP/Alert')->makeInline('shared-form')
-						->asIssue()
-						->withTitle(lang('upload_filedata_error'))
-						->addToBody($upload_response['error'])
-						->now();
+					$file->save();
+					ee()->session->set_flashdata('original_name', $result['upload_response']['orig_name']);
+					ee()->functions->redirect(ee('CP/URL')->make('files/finish-upload/' . $file->file_id));
 				}
-				else
-				{
-					$file = ee('Model')->get('File', $upload_response['file_id'])->first();
 
-					$file->upload_location_id = $dir_id;
-					$file->site_id = ee()->config->item('site_id');
-
-					// Validate handles setting properties...
-					$this->validateFile($file);
-
-					// The upload process will automatically rename files in the
-					// event of a filename collision. Should that happen we need
-					// to ask the user if they wish to rename the file or
-					// replace the file
-					if ($file->file_name != $upload_response['orig_name'])
-					{
-						$file->save();
-						ee()->session->set_flashdata('original_name', $upload_response['orig_name']);
-						ee()->functions->redirect(ee('CP/URL')->make('files/finish-upload/' . $file->file_id));
-					}
-
-					$this->saveFileAndRedirect($file, TRUE);
-				}
+				$this->saveFileAndRedirect($file, TRUE);
 			}
 		}
 
