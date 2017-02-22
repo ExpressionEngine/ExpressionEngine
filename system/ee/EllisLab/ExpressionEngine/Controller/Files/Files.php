@@ -306,14 +306,6 @@ class Files extends AbstractFilesController {
 		{
 			$new_name = ee()->input->post('rename_custom');
 
-			$original_extension = substr($original_name, strrpos($original_name, '.'));
-			$new_extension = substr($new_name, strrpos($new_name, '.'));
-
-			if ($new_extension != $original_extension)
-			{
-				$new_name .= $original_extension;
-			}
-
 			if (empty($new_name))
 			{
 				ee('CP/Alert')->makeInline('shared-form')
@@ -322,6 +314,14 @@ class Files extends AbstractFilesController {
 					->addToBody(lang('no_filename'))
 					->now();
 				return $this->overwriteOrRename($file, $original_name);
+			}
+
+			$original_extension = substr($original_name, strrpos($original_name, '.'));
+			$new_extension = substr($new_name, strrpos($new_name, '.'));
+
+			if ($new_extension != $original_extension)
+			{
+				$new_name .= $original_extension;
 			}
 
 			if ($file->UploadDestination->getFilesystem()->exists($new_name))
