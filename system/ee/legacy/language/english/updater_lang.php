@@ -54,7 +54,7 @@ Status code returned: %s',
 'missing_hash_header' =>
 'Could not verify update file, "Package-Hash" header was not found in the response.',
 
-'could_not_verify_hash' =>
+'could_not_verify_download' =>
 'Could not verify the integrity of the downloaded update file. Expected hash:
 
 %s
@@ -65,6 +65,26 @@ But got hash:
 
 'try_again_later' =>
 'Try again in a few minutes or contact support if the problem persists.',
+
+'could_not_unzip' =>
+'Could not unzip update archive. ZipArchive returned error code: %s',
+
+'could_not_find_files_in_archive' =>
+'The following files could not be found:
+
+%s',
+
+'could_not_verify_file_integrity' =>
+'The integrity of the following files could not be verified:
+
+%s',
+
+'requirements_failed' =>
+'Your server has failed the requirements for this version of ExpressionEngine:
+
+- %s
+
+Correct the issues above and try updating again.',
 
 ''=>''
 );

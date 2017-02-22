@@ -100,12 +100,22 @@ class Verifier {
 
 		if ( ! empty($missing_files))
 		{
-			throw new UpdaterException('Files missing from archive: ' . implode(', ', $missing_files), 9);
+			throw new UpdaterException(
+				sprintf(
+					lang('could_not_find_files_in_archive')."\n\n".lang('try_again_later'),
+					implode("\n", $missing_files)
+				),
+			9);
 		}
 
 		if ( ! empty($corrupt_files))
 		{
-			throw new UpdaterException('File integrity check failed for files: ' . implode(', ', $corrupt_files), 10);
+			throw new UpdaterException(
+				sprintf(
+					lang('could_not_verify_file_integrity')."\n\n".lang('try_again_later'),
+					implode("\n", $corrupt_files)
+				),
+			10);
 		}
 
 		return TRUE;

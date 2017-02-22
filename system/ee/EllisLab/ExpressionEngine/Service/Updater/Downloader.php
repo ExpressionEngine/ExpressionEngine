@@ -283,7 +283,7 @@ class Downloader {
 		{
 			throw new UpdaterException(
 				sprintf(
-					lang('could_not_verify_hash')."\n\n".lang('try_again_later'),
+					lang('could_not_verify_download')."\n\n".lang('try_again_later'),
 					trim($curl->getHeader('Package-Hash'), '"'),
 					$hash
 				),
@@ -308,7 +308,11 @@ class Downloader {
 		}
 		else
 		{
-			throw new UpdaterException('Could not unzip update archive. ZipArchive error code: ' . $response, 8);
+			throw new UpdaterException(
+				sprintf(
+					lang('could_not_unzip')."\n\n".lang('try_again_later'), $response
+				),
+			8);
 		}
 	}
 
@@ -344,7 +348,9 @@ class Downloader {
 				return $requirement->getMessage();
 			}, $result);
 
-			throw new UpdaterException("Your server has failed the requirements for this version of ExpressionEngine: \n" . implode("\n", $failed), 14);
+			throw new UpdaterException(
+				sprintf(lang('requirements_failed'), implode("\n- ", $failed)),
+			14);
 		}
 
 		$this->logger->log('Server requirements check passed with flying colors');
