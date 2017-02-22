@@ -174,12 +174,15 @@ class Upload {
 	 */
 	public function getRenameOrReplaceform(FileModel $file, $original_name)
 	{
-		ee('CP/Alert')->makeInline('shared-form')
-			->asIssue()
-			->withTitle(lang('file_conflict'))
-			->addToBody(sprintf(lang('file_conflict_desc'), $original_name))
-			->cannotClose()
-			->now();
+		if (empty(ee('CP/Alert')->get('shared-form')))
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('file_conflict'))
+				->addToBody(sprintf(lang('file_conflict_desc'), $original_name))
+				->cannotClose()
+				->now();
+		}
 
 		$checked_radio = ee()->input->post('upload_options') ?: 'append';
 
