@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Model\File\File as FileModel;
 use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 class Upload {
 
@@ -230,7 +231,127 @@ class Upload {
 
 	public function uploadTo($dir_id)
 	{
+		$dir = ee('Model')->get('UploadDestination', $dir_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
+		if ( ! $dir)
+		{
+			show_error(lang('no_upload_destination'));
+		}
+
+		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! $dir->exists())
+		{
+			$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+			ee('CP/Alert')->makeStandard()
+				->asIssue()
+				->withTitle(lang('file_not_found'))
+				->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+				->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
+				->now();
+
+			show_404();
+		}
+
+		$posted = FALSE;
+
+		// Check permissions on the directory
+		if ( ! $dir->isWritable())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('dir_not_writable'))
+				->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
+				->now();
+		}
+
+		$file = ee('Model')->make('File');
+		$file->UploadDestination = $dir;
+
+		$result = $this->validateFile($file);
+
+		$upload_response = array();
+		$uploaded = FALSE;
+
+		if ($result instanceOf ValidationResult)
+		{
+			$posted = TRUE;
+
+			if ($result->isValid())
+			{
+				// This is going to get ugly...apologies
+
+				// PUNT! @TODO Break away from the old Filemanger Library
+				ee()->load->library('filemanager');
+				$upload_response = ee()->filemanager->upload_file($dir_id, 'file');
+				if (isset($upload_response['error']))
+				{
+					ee('CP/Alert')->makeInline('shared-form')
+						->asIssue()
+						->withTitle(lang('upload_filedata_error'))
+						->addToBody($upload_response['error'])
+						->now();
+				}
+				else
+				{
+					$uploaded = TRUE;
+					$file = ee('Model')->get('File', $upload_response['file_id'])->first();
+
+					$file->upload_location_id = $dir_id;
+					$file->site_id = ee()->config->item('site_id');
+
+					// Validate handles setting properties...
+					$this->validateFile($file);
+				}
+			}
+		}
+
+		return array(
+			'file'              => $file,
+			'posted'            => $posted,
+			'uploaded'          => $uploaded,
+			'validation_result' => $result,
+			'upload_response'   => $upload_response
+		);
+	}
+
+	public function validateFile(FileModel $file)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
+
+		$file->set($_POST);
+		$file->title = (ee()->input->post('title')) ?: $file->file_name;
+
+		$cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
+		$file->setCategoriesFromPost($cats);
+
+		$result = $file->validate();
+
+		if ($response = ee('Validation')->ajax($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_error'))
+				->addToBody(lang($action . '_error_desc'))
+				->now();
+		}
+
+		return $result;
 	}
 }
 

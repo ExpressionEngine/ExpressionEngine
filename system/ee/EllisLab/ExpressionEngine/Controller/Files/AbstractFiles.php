@@ -297,36 +297,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 	protected function validateFile(File $file)
 	{
-		if (empty($_POST))
-		{
-			return FALSE;
-		}
-
-		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
-
-		$file->set($_POST);
-		$file->title = (ee()->input->post('title')) ?: $file->file_name;
-
-		$cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
-		$file->setCategoriesFromPost($cats);
-
-		$result = $file->validate();
-
-		if ($response = $this->ajaxValidation($result))
-		{
-			ee()->output->send_ajax_response($response);
-		}
-
-		if ($result->failed())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang($action . '_error'))
-				->addToBody(lang($action . '_error_desc'))
-				->now();
-		}
-
-		return $result;
+		return ee('File')->makeUpload()->validateFile($file);
 	}
 
 	protected function saveFileAndRedirect(File $file, $is_new = FALSE, $extra_success_message = '')
