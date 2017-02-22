@@ -122,28 +122,16 @@ class FileUpdater {
 	{
 		$this->logger->log('Verifying the integrity of the new ExpressionEngine files');
 
-		$hash_manifiest = SYSPATH . 'ee/updater/hash-manifest';
-		$exclusions = ['system/ee/installer/updater'];
+		$this->verifyFiles(SYSPATH . 'ee/', 'system/ee');
 
-		$this->verifier->verifyPath(
-			SYSPATH . 'ee/',
-			$hash_manifiest,
-			'system/ee',
-			$exclusions
-		);
-
+		// Multiple themes paths?
 		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
 		{
 			foreach ($this->configs['theme_paths'] as $theme_path)
 			{
 				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
-				$this->verifier->verifyPath(
-					$theme_path,
-					$hash_manifiest,
-					'themes/ee',
-					$exclusions
-				);
+				$this->verifyFiles($theme_path, 'themes/ee');
 			}
 		}
 		// Otherwise, just move the themes to the one themes folder
@@ -152,15 +140,26 @@ class FileUpdater {
 			$theme_path = array_values($this->configs['theme_paths'])[0];
 			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
-			$this->verifier->verifyPath(
-				$theme_path,
-				$hash_manifiest,
-				'themes/ee',
-				$exclusions
-			);
+			$this->verifyFiles($theme_path, 'themes/ee');
 		}
 
 		$this->logger->log('New ExpressionEngine files successfully verified');
+	}
+
+	/**
+	 * Verifies the newly-moved files made it over intact
+	 *
+	 * @param	string	$path		Local server path to verify
+	 * @param	string	$ref_path	Relative path in the manifest file to compare against
+	 */
+	private function verifyFiles($path, $ref_path)
+	{
+		$this->verifier->verifyPath(
+			$path,
+			SYSPATH . 'ee/updater/hash-manifest',
+			$ref_path,
+			['system/ee/installer/updater']
+		);
 	}
 
 	/**
