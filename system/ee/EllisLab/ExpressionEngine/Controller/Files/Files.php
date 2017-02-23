@@ -254,110 +254,23 @@ class Files extends AbstractFilesController {
 			return $this->overwriteOrRename($file, $original_name);
 		}
 
-		if (ee()->input->post('submit') == 'cancel')
+		$result = ee('File')->makeUpload()->resolveNameConflict($file_id);
+
+		if (isset($result['cancel']) && $result['cancel'])
 		{
-			$file->delete();
 			ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 			return;
 		}
 
-		$extra_success_message = '';
-
-		$upload_options = ee()->input->post('upload_options');
-		$original_name  = ee()->input->post('original_name');
-
-		if ($upload_options == 'rename')
+		if ($result['success'])
 		{
-			$new_name = ee()->input->post('rename_custom');
-
-			if (empty($new_name))
-			{
-				ee('CP/Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('file_conflict'))
-					->addToBody(lang('no_filename'))
-					->now();
-				return $this->overwriteOrRename($file, $original_name);
-			}
-
-			$original_extension = substr($original_name, strrpos($original_name, '.'));
-			$new_extension = substr($new_name, strrpos($new_name, '.'));
-
-			if ($new_extension != $original_extension)
-			{
-				$new_name .= $original_extension;
-			}
-
-			if ($file->UploadDestination->getFilesystem()->exists($new_name))
-			{
-				ee('CP/Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('file_conflict'))
-					->addToBody(lang('file_exists_replacement_error'))
-					->now();
-				return $this->overwriteOrRename($file, $new_name);
-			}
-
-			// PUNT! @TODO Break away from the old Filemanger Library
-			ee()->load->library('filemanager');
-			$rename_file = ee()->filemanager->rename_file($file_id, $new_name, $original_name);
-
-			if ( ! $rename_file['success'])
-			{
-				ee('CP/Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('file_conflict'))
-					->addToBody($rename_file['error'])
-					->now();
-				return $this->overwriteOrRename($file, $original_name);
-			}
-
-			// The filemanager updated the database, and the saveFileAndRedirect
-			// should have fresh data for the alert.
-			$file = ee('Model')->get('File', $file_id)->first();
+			$extra_success_message = isset($result['extra_success_message']) ? $result['extra_success_message'] : '';
+			$this->saveFileAndRedirect($result['params']['file'], TRUE, $extra_success_message);
 		}
-		elseif ($upload_options == 'replace')
+		else
 		{
-			$original = ee('Model')->get('File')
-				->filter('file_name', $original_name)
-				->filter('site_id', $file->site_id)
-				->filter('upload_location_id', $file->upload_location_id)
-				->first();
-
-			if ( ! $original)
-			{
-				$src = $file->getAbsolutePath();
-
-				// The default is to use the file name as the title, and if we
-				// did that then we should update it since we are replacing.
-				if ($file->title == $file->file_name)
-				{
-					$file->title = $original_name;
-				}
-
-				$file->file_name = $original_name;
-				$file->save();
-
-				ee('Filesystem')->copy($src, $file->getAbsolutePath());
-			}
-			else
-			{
-				if (($file->description && ($file->description != $original->description))
-					|| ($file->credit && ($file->credit != $original->credit))
-					|| ($file->location && ($file->location != $original->location))
-					|| ($file->Categories->count() > 0 && ($file->Categories->count() != $file->Categories->count())))
-				{
-					$extra_success_message = lang('replace_no_metadata');
-				}
-
-				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
-				$file->delete();
-
-				$file = $original;
-			}
+			$this->overwriteOrRename($result['params']['file'], $result['params']['name']);
 		}
-
-		$this->saveFileAndRedirect($file, TRUE, $extra_success_message);
 	}
 
 	public function rmdir()

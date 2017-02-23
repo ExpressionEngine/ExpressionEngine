@@ -403,17 +403,6 @@ class Filepicker_mcp {
 
 		$file = $result['file'];
 
-		$vars = array(
-			'required' => TRUE,
-			'ajax_validate' => TRUE,
-			'has_file_input' => TRUE,
-			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
-			'save_btn_text' => 'btn_upload_file',
-			'save_btn_text_working' => 'btn_uploading',
-			'sections' => array(),
-			'cp_page_title' => lang('file_upload')
-		);
-
 		if ($result['posted'])
 		{
 			$errors = $result['validation_result'];
@@ -426,60 +415,102 @@ class Filepicker_mcp {
 				// replace the file
 				if ($file->file_name != $result['upload_response']['orig_name'])
 				{
-					unset($vars['ajax_validate'], $vars['has_file_input']);
-					$vars['sections'] = ee('File')->makeUpload()->getRenameOrReplaceform($file, $result['upload_response']['orig_name']);
-					$vars['buttons'] = array(
-						array(
-							'name'    => 'submit',
-							'type'    => 'submit',
-							'value'   => 'finish',
-							'text'    => 'btn_finish_upload',
-							'working' => 'btn_saving'
-						),
-						array(
-							'name'    => 'submit',
-							'type'    => 'submit',
-							'value'   => 'cancel',
-							'class'   => 'draft',
-							'text'    => 'btn_cancel_upload',
-							'working' => 'btn_canceling'
-						),
-					);
-
 					$file->save();
+					return $this->overwriteOrRename($file, $result['upload_response']['orig_name']);
 				}
-				else
-				{
-					// Save!
-					if ($file->isNew())
-					{
-						$file->uploaded_by_member_id = ee()->session->userdata('member_id');
-						$file->upload_date = ee()->localize->now;
-					}
 
-					$file->modified_by_member_id = ee()->session->userdata('member_id');
-					$file->modified_date = ee()->localize->now;
-
-					$file->save();
-
-					return $this->fileInfo($file->getId());
-				}
+				return $this->saveAndReturn($file);
 			}
 		}
 
-		if (empty($vars['sections']))
-		{
-			$vars['tabs'] = array(
+		$vars = array(
+			'required' => TRUE,
+			'ajax_validate' => TRUE,
+			'has_file_input' => TRUE,
+			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
+			'save_btn_text' => 'btn_upload_file',
+			'save_btn_text_working' => 'btn_uploading',
+			'sections' => array(),
+			'tabs' => array(
 				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
 				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
-			);
-		}
+			),
+			'cp_page_title' => lang('file_upload')
+		);
 
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
 		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
 		ee()->output->enable_profiler(FALSE);
 		ee()->output->_display($out);
 		exit();
+	}
+
+	protected function overwriteOrRename($file, $original_name)
+	{
+		$vars = array(
+			'required' => TRUE,
+			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'finish-upload/' . $file->file_id),
+			'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name),
+			'buttons' => array(
+				array(
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'finish',
+					'text'    => 'btn_finish_upload',
+					'working' => 'btn_saving'
+				),
+				array(
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'cancel',
+					'class'   => 'draft',
+					'text'    => 'btn_cancel_upload',
+					'working' => 'btn_canceling'
+				),
+			),
+			'cp_page_title' => lang('file_upload_stopped')
+		);
+
+		$out = ee()->cp->render('_shared/form', $vars, TRUE);
+		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
+		ee()->output->enable_profiler(FALSE);
+		ee()->output->_display($out);
+		exit();
+	}
+
+	public function finishUpload($file_id)
+	{
+		$result = ee('File')->makeUpload()->resolveNameConflict($file_id);
+
+		if (isset($result['cancel']) && $result['cancel'])
+		{
+			// close the modal and move on?
+		}
+
+		if ($result['success'])
+		{
+			return $this->saveAndReturn($result['params']['file']);
+		}
+		else
+		{
+			return $this->overwriteOrRename($result['params']['file'], $result['params']['name']);
+		}
+	}
+
+	protected function saveAndReturn($file)
+	{
+		if ($file->isNew())
+		{
+			$file->uploaded_by_member_id = ee()->session->userdata('member_id');
+			$file->upload_date = ee()->localize->now;
+		}
+
+		$file->modified_by_member_id = ee()->session->userdata('member_id');
+		$file->modified_date = ee()->localize->now;
+
+		$file->save();
+
+		return $this->fileInfo($file->getId());
 	}
 
 	protected function ajaxValidation(ValidationResult $result)

@@ -320,6 +320,136 @@ class Upload {
 		);
 	}
 
+	public function resolveNameConflict($file_id)
+	{
+		$file = ee('Model')->get('File', $file_id)
+			->with('UploadDestination')
+			->first();
+
+		if ( ! $file)
+		{
+			show_error(lang('no_file'));
+		}
+
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if (ee()->input->post('submit') == 'cancel')
+		{
+			$file->delete();
+			return array('cancel' => TRUE);
+		}
+
+		$upload_options = ee()->input->post('upload_options');
+		$original_name  = ee()->input->post('original_name');
+
+		$result = array(
+			'success' => FALSE,
+			'params' => array(
+				'file' => $file,
+				'name' => $original_name
+			)
+		);
+
+		if ($upload_options == 'rename')
+		{
+			$new_name = ee()->input->post('rename_custom');
+
+			if (empty($new_name))
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody(lang('no_filename'))
+					->now();
+				return $result;
+			}
+
+			$original_extension = substr($original_name, strrpos($original_name, '.'));
+			$new_extension = substr($new_name, strrpos($new_name, '.'));
+
+			if ($new_extension != $original_extension)
+			{
+				$new_name .= $original_extension;
+			}
+
+			if ($file->UploadDestination->getFilesystem()->exists($new_name))
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody(lang('file_exists_replacement_error'))
+					->now();
+
+				$result['params']['name'] = $new_name;
+				return $result;
+			}
+
+			// PUNT! @TODO Break away from the old Filemanger Library
+			ee()->load->library('filemanager');
+			$rename_file = ee()->filemanager->rename_file($file_id, $new_name, $original_name);
+
+			if ( ! $rename_file['success'])
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('file_conflict'))
+					->addToBody($rename_file['error'])
+					->now();
+				return $result;
+			}
+
+			// The filemanager updated the database, and the saveFileAndRedirect
+			// should have fresh data for the alert.
+			$file = ee('Model')->get('File', $file_id)->first();
+		}
+		elseif ($upload_options == 'replace')
+		{
+			$original = ee('Model')->get('File')
+				->filter('file_name', $original_name)
+				->filter('site_id', $file->site_id)
+				->filter('upload_location_id', $file->upload_location_id)
+				->first();
+
+			if ( ! $original)
+			{
+				$src = $file->getAbsolutePath();
+
+				// The default is to use the file name as the title, and if we
+				// did that then we should update it since we are replacing.
+				if ($file->title == $file->file_name)
+				{
+					$file->title = $original_name;
+				}
+
+				$file->file_name = $original_name;
+				$file->save();
+
+				ee('Filesystem')->copy($src, $file->getAbsolutePath());
+			}
+			else
+			{
+				if (($file->description && ($file->description != $original->description))
+					|| ($file->credit && ($file->credit != $original->credit))
+					|| ($file->location && ($file->location != $original->location))
+					|| ($file->Categories->count() > 0 && ($file->Categories->count() != $file->Categories->count())))
+				{
+					$result['extra_success_message'] = lang('replace_no_metadata');
+				}
+
+				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
+				$file->delete();
+
+				$result['params']['file'] = $original;
+			}
+		}
+
+		$result['success'] = TRUE;
+		return $result;
+	}
+
 	public function validateFile(FileModel $file)
 	{
 		if (empty($_POST))
