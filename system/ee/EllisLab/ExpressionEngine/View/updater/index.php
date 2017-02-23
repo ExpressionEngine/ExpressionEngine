@@ -19,8 +19,8 @@
 		<div class="alert-notice">
 			<p><?=$warn_message?></p>
 		</div>
-		<p class="msg-choices"><?=sprintf(lang('troubleshoot'), '')?></p>
-		<!-- <p class="msg-choices"><a href=""><?=sprintf(lang('rollback_to'), '3.5.0')?></a></p> -->
+		<p class="msg-choices warn-choices hidden"><?=sprintf(lang('troubleshoot'), '')?></p>
+		<p class="msg-choices issue-choices hidden"><a href="" rel="rollback"><?=sprintf(lang('rollback_to'), strip_tags($current_version))?></a></p>
 	</div>
 </div>
 
@@ -30,6 +30,7 @@
 		. ee()->view->script_tag('cp/updater.js');
 	?>
 	<script type="text/javascript">
+		Updater.init();
 		Updater.runStep('<?=$next_step?>');
 	</script>
 <?php endif ?>

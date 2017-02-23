@@ -12,22 +12,31 @@
 
 var Updater = {
 
-	runStep: function(step) {
+	init: function ()
+	{
 		this._lastStep = $('.box.updating .updater-step-work').text();
 		this._updaterInPlace = false;
-		this._requestUpdate(step);
+		var that = this;
 
-		$('.toggle').on('click',function(e) {
+		$('.toggle').on('click', function(e) {
+			e.preventDefault();
 			var toggleIs = $(this).attr('rel');
 			$('.'+toggleIs).toggle();
+		});
+
+		$('a[rel=rollback]').on('click', function(e) {
 			e.preventDefault();
+			that.runStep('rollback');
 		});
 	},
 
-	_requestUpdate: function(step) {
+	runStep: function(step) {
 		if (step === undefined) {
 			return;
 		}
+
+		$('.box.updating').removeClass('hidden');
+		$('.box.updater-stopped').addClass('hidden');
 
 		var that = this,
 			action = EE.BASE + '&C=updater&M=run&step='+step;
@@ -41,11 +50,11 @@ var Updater = {
 				if (result.messageType == 'success') {
 					if (result.nextStep !== undefined && result.nextStep !== false) {
 						that._updateStatus(result.message);
-						that._requestUpdate(result.nextStep);
+						that.runStep(result.nextStep);
 
 						// If the updater is in place, we'll consider all errors 'issues'
-						if ( ! this._updaterInPlace && result.nextStep == 'updateFiles') {
-							this._updaterInPlace = true;
+						if ( ! that._updaterInPlace && result.nextStep == 'updateFiles') {
+							that._updaterInPlace = true;
 						}
 					} else if (result.nextStep === false) {
 						window.location = EE.BASE;
@@ -112,6 +121,10 @@ var Updater = {
 			.removeClass('hidden')
 			.find('.alert-notice p')
 			.html(message);
+
+		$('p.msg-choices').addClass('hidden')
+			.filter('.'+severity+'-choices')
+			.removeClass('hidden');
 
 		if (trace_exists) {
 			var list = $('<ul/>');
