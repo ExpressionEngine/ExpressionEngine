@@ -54,6 +54,7 @@ class Runner {
 		$this->logger = $logger;
 	}
 
+	// She packed my bags last night...
 	public function preflight()
 	{
 		$this->logger->truncate();
@@ -73,6 +74,9 @@ class Runner {
 		$this->downloader->moveUpdater();
 	}
 
+	/**
+	 * Catch-all exception handler for updater steps to log errors
+	 */
 	public function runStep($step)
 	{
 		try
@@ -84,6 +88,7 @@ class Runner {
 			$this->logger->log($e->getMessage());
 			$this->logger->log($e->getTraceAsString());
 
+			// Send it up the chain
 			throw $e;
 		}
 	}
