@@ -413,10 +413,10 @@ class Filepicker_mcp {
 				// event of a filename collision. Should that happen we need
 				// to ask the user if they wish to rename the file or
 				// replace the file
-				if ($file->file_name != $result['upload_response']['orig_name'])
+				if ($file->file_name != $result['upload_response']['file_data_orig_name'])
 				{
 					$file->save();
-					return $this->overwriteOrRename($file, $result['upload_response']['orig_name']);
+					return $this->overwriteOrRename($file, $result['upload_response']['file_data_orig_name']);
 				}
 
 				return $this->saveAndReturn($file);
