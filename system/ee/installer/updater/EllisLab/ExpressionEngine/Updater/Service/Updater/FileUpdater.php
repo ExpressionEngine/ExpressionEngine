@@ -51,9 +51,38 @@ class FileUpdater {
 
 	public function updateFiles()
 	{
-		$this->backupExistingInstallFiles();
-		$this->moveNewInstallFiles();
-		$this->verifyNewFiles();
+		try {
+			$this->backupExistingInstallFiles();
+		}
+		catch (\Exception $e)
+		{
+			throw new UpdaterException(
+				"There was a problem backing up your installation:\n\n".$e->getMessage(),
+				$e->getCode()
+			);
+		}
+
+		try {
+			$this->moveNewInstallFiles();
+		}
+		catch (\Exception $e)
+		{
+			throw new UpdaterException(
+				"There was a problem moving over the new ExpressionEngine files:\n\n".$e->getMessage(),
+				$e->getCode()
+			);
+		}
+
+		try {
+			$this->verifyNewFiles();
+		}
+		catch (\Exception $e)
+		{
+			throw new UpdaterException(
+				"There was a problem verifying the new ExpressionEngine files have been successfully put into place:\n\n".$e->getMessage(),
+				$e->getCode()
+			);
+		}
 	}
 
 	/**
