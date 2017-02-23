@@ -484,7 +484,7 @@ class Filepicker_mcp {
 
 		if (isset($result['cancel']) && $result['cancel'])
 		{
-			// close the modal and move on?
+			ee()->output->send_ajax_response($result);
 		}
 
 		if ($result['success'])
