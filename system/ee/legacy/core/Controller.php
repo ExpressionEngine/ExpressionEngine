@@ -131,7 +131,7 @@ class CP_Controller extends EE_Controller {
 	 */
 	protected function ajaxValidation(ValidationResult $result)
 	{
-		return ee('Validation')->ajax($reuslt);
+		return ee('Validation')->ajax($result);
 	}
 
 }
