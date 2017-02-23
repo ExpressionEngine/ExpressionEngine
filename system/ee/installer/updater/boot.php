@@ -141,6 +141,12 @@ else
 			exit;
 		}
 	}
+	else {
+		set_error_handler(function ($code, $message, $file, $line)
+		{
+			throw new Exception($message."\n\n".$file.':'.$line);
+		});
+	}
 
 	function routeRequest($directory, $controller, $method = '')
 	{
