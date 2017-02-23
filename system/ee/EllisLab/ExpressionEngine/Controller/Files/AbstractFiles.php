@@ -300,7 +300,7 @@ abstract class AbstractFiles extends CP_Controller {
 		return ee('File')->makeUpload()->validateFile($file);
 	}
 
-	protected function saveFileAndRedirect(File $file, $is_new = FALSE, $extra_success_message = '')
+	protected function saveFileAndRedirect(File $file, $is_new = FALSE, $sub_alert = NULL)
 	{
 		$action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
 
@@ -320,9 +320,9 @@ abstract class AbstractFiles extends CP_Controller {
 			->withTitle(lang($action . '_success'))
 			->addToBody(sprintf(lang($action . '_success_desc'), $file->title));
 
-		if ( ! empty($extra_success_message))
+		if ($sub_alert)
 		{
-			$alert->addToBody($extra_success_message);
+			$alert->setSubAlert($sub_alert);
 		}
 
 		$alert->defer();

@@ -448,7 +448,7 @@ class Upload {
 					|| ($file->location && ($file->location != $original->location))
 					|| ($file->Categories->count() > 0 && ($file->Categories->count() != $file->Categories->count())))
 				{
-					$result['extra_success_message'] = lang('replace_no_metadata');
+					$result['warning'] = lang('replace_no_metadata');
 				}
 
 				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());

@@ -264,8 +264,14 @@ class Files extends AbstractFilesController {
 
 		if ($result['success'])
 		{
-			$extra_success_message = isset($result['extra_success_message']) ? $result['extra_success_message'] : '';
-			$this->saveFileAndRedirect($result['params']['file'], TRUE, $extra_success_message);
+			$alert = NULL;
+			if ($result['warning'])
+			{
+				$alert = ee('CP/Alert')->makeInline('metadata')
+					->asWarning()
+					->addToBody($result['warning']);
+			}
+			$this->saveFileAndRedirect($result['params']['file'], TRUE, $alert);
 		}
 		else
 		{
