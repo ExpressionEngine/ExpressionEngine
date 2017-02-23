@@ -17,6 +17,12 @@ class Command {
 			return;
 		}
 
+		if (isset($params['rollback']))
+		{
+			$this->updaterMicroapp('rollback');
+			return;
+		}
+
 		$this->start();
 	}
 
