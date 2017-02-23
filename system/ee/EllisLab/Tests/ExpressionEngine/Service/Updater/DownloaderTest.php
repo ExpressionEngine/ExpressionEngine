@@ -457,8 +457,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		catch (UpdaterException $e)
 		{
 			$this->assertEquals(14, $e->getCode());
-			$this->assertContains('This thing is required.', $e->getMessage());
-			$this->assertContains('So is this.', $e->getMessage());
 		}
 	}
 
@@ -519,7 +517,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		catch (UpdaterException $e)
 		{
 			$this->assertEquals(23, $e->getCode());
-			$this->assertEquals('Something bad happened.', $e->getMessage());
 		}
 	}
 
