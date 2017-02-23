@@ -119,6 +119,8 @@
 			var bindFrameUnload = function() {
 				$(frame[0].contentWindow).on('unload', function() {
 					frame.hide();
+					$('.box', modal).height('auto');
+					$(modal).height('auto');
 				});
 			};
 
