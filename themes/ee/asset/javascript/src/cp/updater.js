@@ -14,6 +14,7 @@ var Updater = {
 
 	runStep: function(step) {
 		this._lastStep = $('.box.updating .updater-step-work').text();
+		this._updaterInPlace = false;
 		this._requestUpdate(step);
 
 		$('.toggle').on('click',function(e) {
@@ -41,6 +42,11 @@ var Updater = {
 					if (result.nextStep !== undefined && result.nextStep !== false) {
 						that._updateStatus(result.message);
 						that._requestUpdate(result.nextStep);
+
+						// If the updater is in place, we'll consider all errors 'issues'
+						if ( ! this._updaterInPlace && result.nextStep == 'updateFiles') {
+							this._updaterInPlace = true;
+						}
 					} else if (result.nextStep === false) {
 						window.location = EE.BASE;
 					}
@@ -61,7 +67,7 @@ var Updater = {
 						};
 					}
 				}
-				that._showError(error, 'warn');
+				that._showError(error);
 			}
 		});
 	},
@@ -96,7 +102,7 @@ var Updater = {
 		$('.box.updating').addClass('hidden');
 
 		var issue_box = $('.box.updater-stopped'),
-			severity = severity || 'warn',
+			severity = this._updaterInPlace ? 'issue' : 'warn',
 			trace_link = $('.updater-fade', issue_box),
 			trace_container = $('.updater-stack-trace', issue_box),
 			trace_exists = error.trace !== undefined && error.trace.length > 0,
