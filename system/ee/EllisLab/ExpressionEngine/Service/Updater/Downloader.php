@@ -303,7 +303,7 @@ class Downloader {
 				$extracted_path . '/' . $this->manifest_location
 			);
 		}
-		catch (UpdaterException $e)
+		catch (\Exception $e)
 		{
 			throw new UpdaterException(
 				sprintf(lang('failed_verifying_extracted_archive'), $e->getMessage())."\n\n".lang('try_again_later'),
@@ -360,7 +360,7 @@ class Downloader {
 				'system/ee/installer/updater'
 			);
 		}
-		catch (UpdaterException $e)
+		catch (\Exception $e)
 		{
 			// Remove the updater
 			$this->filesystem->deleteDir(SYSPATH.'ee/updater');
