@@ -72,9 +72,9 @@ class Runner {
 	{
 		$db_updater = $this->makeDatabaseUpdaterService();
 		$affected_tables = $db_updater->getAffectedTables();
+		$working_file = PATH_CACHE.'ee_update/database_backing_up.sql';
 
-		// TODO: ensure this directory exists
-		$backup = ee('Database/Backup', PATH_CACHE.'ee_update/database.sql');
+		$backup = ee('Database/Backup', $working_file);
 		$backup->makeCompactFile();
 		$backup->setTablesToBackup($affected_tables);
 
@@ -92,6 +92,15 @@ class Runner {
 		{
 			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
 		}
+
+		// Rename this file so that we know it's a complete backup
+		$filesystem = new Filesystem();
+		$destination = PATH_CACHE.'ee_update/database.sql';
+		if ($filesystem->isFile($destination))
+		{
+			$filesystem->delete($destination);
+		}
+		$filesystem->move($working_file, $desination);
 
 		return 'updateDatabase';
 	}
