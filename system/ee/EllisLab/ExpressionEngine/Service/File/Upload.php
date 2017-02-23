@@ -401,9 +401,20 @@ class Upload {
 				return $result;
 			}
 
+			$title = ($file->title == $file->file_name) ? NULL : $file->title;
+
 			// The filemanager updated the database, and the saveFileAndRedirect
 			// should have fresh data for the alert.
 			$file = ee('Model')->get('File', $file_id)->first();
+
+			// The filemanager will, on occasion, alter the title of the file
+			// even if we had something set. It's annoying but happens.
+			if ($title)
+			{
+				$file->title = $title;
+				$file->save();
+			}
+
 			$result['params']['file'] = $file;
 		}
 		elseif ($upload_options == 'replace')
