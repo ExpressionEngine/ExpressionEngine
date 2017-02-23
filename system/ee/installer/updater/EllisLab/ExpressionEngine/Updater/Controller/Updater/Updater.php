@@ -34,14 +34,13 @@ class Updater {
 	/**
 	 * Request end-point for updater tasks
 	 */
-	public function run($step = '')
+	public function run()
 	{
 		$step = isset($_GET['step']) ? $_GET['step'] : FALSE;
 
 		if ($step === FALSE OR $step == 'undefined')
 		{
-			// TODO: Show a more helpful message here?
-			return;
+			return 'The updater folder is still present. Delete the folder at system/ee/updater to access the control panel.';
 		}
 
 		$runner = new Runner();
