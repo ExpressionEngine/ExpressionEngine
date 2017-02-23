@@ -113,35 +113,7 @@ class Downloader {
 	{
 		$this->logger->log('Cleaning up upgrade working directory');
 
-		// Delete any old zip archives
-		if ($this->filesystem->isFile($this->getArchiveFilePath()))
-		{
-			$this->logger->log('Old zip archives found, deleting');
-			$this->filesystem->delete($this->getArchiveFilePath());
-		}
-
-		// Delete old extracted archives
-		if ($this->filesystem->isDir($this->getExtractedArchivePath()))
-		{
-			$this->logger->log('Old extracted archives found, deleting');
-			$this->filesystem->delete($this->getExtractedArchivePath());
-		}
-
-		// Delete any old SQL backups
-		$sql_path = $this->path().'database.sql';
-		if ($this->filesystem->isFile($sql_path))
-		{
-			$this->logger->log('Old SQL backup found, deleting');
-			$this->filesystem->delete($sql_path);
-		}
-
-		// Delete old extracted archives
-		$backup_path = $this->path().'backups';
-		if ($this->filesystem->isDir($backup_path))
-		{
-			$this->logger->log('Old file backup folders found, deleting');
-			$this->filesystem->delete($backup_path);
-		}
+		$this->filesystem->delete($this->path());
 	}
 
 	/**
