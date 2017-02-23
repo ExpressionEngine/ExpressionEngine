@@ -404,6 +404,7 @@ class Upload {
 			// The filemanager updated the database, and the saveFileAndRedirect
 			// should have fresh data for the alert.
 			$file = ee('Model')->get('File', $file_id)->first();
+			$result['params']['file'] = $file;
 		}
 		elseif ($upload_options == 'replace')
 		{
