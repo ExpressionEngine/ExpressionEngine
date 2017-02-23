@@ -100,7 +100,7 @@ class Runner {
 		{
 			$filesystem->delete($destination);
 		}
-		$filesystem->move($working_file, $desination);
+		$filesystem->rename($working_file, $destination);
 
 		return 'updateDatabase';
 	}
