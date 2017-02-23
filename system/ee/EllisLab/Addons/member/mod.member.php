@@ -152,6 +152,10 @@ class Member {
 	{
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
+
+		// For custom fields that use the template library
+		ee()->load->library('template', NULL, 'TMPL');
+
 		ee()->functions->template_type = 'webpage';
 
 		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
@@ -2513,6 +2517,7 @@ class Member {
 			}
 		}
 
+
 		ee()->db->where('member_id', $member_id);
 		$query = ee()->db->get('member_data');
 
@@ -2538,8 +2543,10 @@ class Member {
 		$clean_field_names = array_map(function($field)
 		{
 			$field = ee()->api_channel_fields->get_single_field($field);
+
+
 			return $field['field_name'];
-		}, ee()->TMPL->var_single);
+		}, array_flip(ee()->TMPL->var_single));
 
 		// Get field IDs for the member fields we need to fetch
 		$member_field_ids = array();
@@ -2584,6 +2591,8 @@ class Member {
 				// parse default member data
 
 				//  Format URLs
+// not in default fields any more
+/*
 				if ($key == 'url')
 				{
 					if (substr($default_fields['url'], 0, 4) != "http" && strpos($default_fields['url'], '://') === FALSE)
@@ -2591,6 +2600,7 @@ class Member {
 						$default_fields['url'] = "http://".$default_fields['url'];
 					}
 				}
+*/
 
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
@@ -2697,7 +2707,7 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
 				}
 
-				$field = ee()->api_channel_fields->get_single_field($val);
+				$field = ee()->api_channel_fields->get_single_field($key);
 				$val = $field['field_name'];
 
 				// parse custom member fields
@@ -2708,7 +2718,9 @@ class Member {
 						$field,
 						$row['m_field_id_'.$fields[$val]['0']],
 						ee()->TMPL->tagdata,
-						$member_id
+						$member_id,
+						array(),
+						$key
 					);
 				}
 			}
@@ -2727,7 +2739,7 @@ class Member {
 	 * @param	string	$member_id	ID for the member this data is associated
 	 * @return	string	String with variable parsed
 	 */
-	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
 	{
 		if ( ! isset($this->member_fields[$field_id]))
 		{
@@ -2743,7 +2755,7 @@ class Member {
 		);
 		$row = array_merge($default_row, $row);
 
-		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
+		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
 	}
 
 	// --------------------------------------------------------------------

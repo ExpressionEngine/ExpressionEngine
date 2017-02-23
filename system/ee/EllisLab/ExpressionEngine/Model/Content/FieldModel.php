@@ -376,17 +376,20 @@ abstract class FieldModel extends Model {
 	 * @param	mixed	$data			Data for this field
 	 * @param	int		$content_id		Content ID to pass to the fieldtype
 	 * @param	string	$content_type	Content type to pass to the fieldtype
-	 * @param	string	$modifier		Variable modifier, if present
+	 * @param	array	$variable_mods		Variable modifiers and parameters, if present
 	 * @param	string	$tagdata		Tagdata to perform the replacement in
 	 * @param	string	$row			Row array to set on the fieldtype
 	 * @return	string	String with variable parsed
 	 */
-	public function parse($data, $content_id, $content_type, $modifier, $tagdata, $row)
+	public function parse($data, $content_id, $content_type, $variable_mods, $tagdata, $row, $tag = FALSE)
 	{
+
 		$fieldtype = $this->getFieldtypeInstance();
 		$settings = $this->getSettingsValues();
 		$field_fmt = isset($this->field_fmt) ? $this->field_fmt : $this->field_default_fmt;
 		$settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' =>$field_fmt));
+		$modifier = ( ! empty($variable_mods['modifier'])) ? $variable_mods['modifier'] : '';
+		$params =  ( ! empty($variable_mods['params'])) ? $variable_mods['params'] : array();
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
@@ -397,14 +400,18 @@ abstract class FieldModel extends Model {
 		));
 
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
-
 		if (method_exists($fieldtype, $parse_fnc))
 		{
 			$data = ee()->api_channel_fields->apply($parse_fnc, array(
 				$data,
-				array(),
+				$params,
 				FALSE
 			));
+		}
+
+		if ($tag)
+		{
+			return str_replace(LD.$tag.RD, $data, $tagdata);
 		}
 
 		$tag = $this->field_name;

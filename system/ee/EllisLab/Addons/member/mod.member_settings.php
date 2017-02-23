@@ -494,6 +494,10 @@ class Member_settings extends Member {
 			/** ----------------------------------------
 			/**  Format URLs
 			/** ----------------------------------------*/
+// need exception
+/*
+
+
 			if ($key == 'url')
 			{
 				if (strncmp($row['url'], 'http', 4) != 0 && strpos($row['url'], '://') === FALSE)
@@ -501,6 +505,8 @@ class Member_settings extends Member {
 					$row['url'] = "http://".$row['url'] ;
 				}
 			}
+
+*/
 
 			/** ----------------------------------------
 			/**  "last_visit"
@@ -728,7 +734,8 @@ class Member_settings extends Member {
 							array(
 								'channel_html_formatting' => 'none',
 								'channel_auto_link_urls' => 'n'
-							)
+							),
+							$key
 						);
 					}
 				}
