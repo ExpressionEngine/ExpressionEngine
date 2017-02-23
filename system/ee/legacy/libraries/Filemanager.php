@@ -2252,6 +2252,8 @@ class Filemanager {
 			$directory_id
 		);
 
+		$new_file_name = str_replace($upload_directory['server_path'], '', $file_path);
+
 		// If renaming the file sparked an error return it
 		if (is_array($file_path))
 		{
