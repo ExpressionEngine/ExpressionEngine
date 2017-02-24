@@ -134,6 +134,7 @@ abstract class FieldModel extends Model {
 		$data['ee_action'] = 'add';
 
 		$columns = $ft->settings_modify_column($data);
+		$columns = $this->ensurePrefixColumns($columns);
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
@@ -150,6 +151,7 @@ abstract class FieldModel extends Model {
 		$data['ee_action'] = 'delete';
 
 		$columns = $ft->settings_modify_column($data);
+		$columns = $this->ensurePrefixColumns($columns);
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->dropColumns($columns);
@@ -214,6 +216,28 @@ abstract class FieldModel extends Model {
 		$facade = new FieldFacade($this->getId(), $values);
 		$facade->setContentType($this->getContentType());
 		return $facade->getNativeField();
+	}
+
+
+	/**
+	 * Ensure data column names from fieldtypes are prefixed
+	 */
+	protected function ensurePrefixColumns($columns)
+	{
+		// ensure they are prefixed
+		$pre = $this->getColumnPrefix();
+		$pre_length = strlen($pre);
+
+		foreach ($columns as $fname => $vals)
+		{
+			if (strncmp($fname, $pre, $pre_length) !== 0)
+			{
+				$columns[$pre.$fname] = $vals;
+				unset($columns[$fname]);
+			}
+		}
+
+		return $columns;
 	}
 
 	/**
