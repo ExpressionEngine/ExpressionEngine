@@ -350,18 +350,7 @@ class FileUpdater {
 	 */
 	public function path()
 	{
-		$cache_path = $this->config->get('cache_path');
-
-		if (empty($cache_path))
-		{
-			$cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache/';
-		}
-		else
-		{
-			$cache_path = rtrim($cache_path, DIRECTORY_SEPARATOR).'/';
-		}
-
-		return $cache_path . 'ee_update/';
+		return PATH_CACHE . 'ee_update/';
 	}
 
 	/**

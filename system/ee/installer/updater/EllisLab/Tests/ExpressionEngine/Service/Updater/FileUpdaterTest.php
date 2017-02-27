@@ -17,16 +17,18 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->logger->shouldReceive('log');
 
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
-
-		$configs_path = 'cache/path/ee_update/configs.json';
+		$configs_path = PATH_CACHE.'ee_update/configs.json';
 		$this->filesystem->shouldReceive('exists')->with($configs_path)->andReturn(TRUE);
-		$this->filesystem->shouldReceive('read')->with($configs_path)->andReturn('{"update_path":"\/cache\/path\/ee_update\/","archive_path":"\/cache\/path\/ee_update\/ExpressionEngine","theme_paths":{"1":"\/themes\/"}}');
+		$this->filesystem->shouldReceive('read')->with($configs_path)->andReturn(
+				json_encode([
+				'update_path' => PATH_CACHE.'ee_update/',
+				'archive_path' => PATH_CACHE.'ee_update/ExpressionEngine',
+				'theme_paths' => ['/themes/']
+			])
+		);
 
-		$this->archive_path = '/cache/path/ee_update/ExpressionEngine/';
-		$this->backups_path = 'cache/path/ee_update/backups/';
+		$this->archive_path = PATH_CACHE.'ee_update/ExpressionEngine/';
+		$this->backups_path = PATH_CACHE.'ee_update/backups/';
 
 		$this->fileupdater = new FileUpdater($this->filesystem, $this->config, $this->verifier, $this->logger);
 	}
@@ -365,12 +367,12 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$this->shouldCallMove(
-			'cache/path/ee_update/backups/system_ee/',
+			PATH_CACHE.'ee_update/backups/system_ee/',
 			SYSPATH.'ee/'
 		);
 
 		$this->shouldCallMove(
-			'cache/path/ee_update/backups/themes_ee/',
+			PATH_CACHE.'ee_update/backups/themes_ee/',
 			'/themes/ee/'
 		);
 	}

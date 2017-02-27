@@ -9,6 +9,7 @@ $project_base = realpath(dirname(__FILE__).'/../../../../../').'/';
 // Path constants
 define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
+define('PATH_CACHE', SYSPATH.'user/cache/');
 define('APPPATH',  BASEPATH);
 
 // application constants

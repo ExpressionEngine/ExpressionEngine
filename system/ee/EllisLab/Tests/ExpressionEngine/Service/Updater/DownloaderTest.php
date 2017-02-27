@@ -80,16 +80,13 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	public function testPreflight()
 	{
 		return;
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
 
 		$this->config->shouldReceive('get')
 			->with('theme_folder_path')
 			->andReturn(NULL);
 
 		$this->filesystem->shouldReceive('getFreeDiskSpace')
-			->with('cache/path/ee_update/')
+			->with(PATH_CACHE.'ee_update/')
 			->andReturn(1048576000)
 			->once();
 
@@ -145,12 +142,12 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn(TRUE);
 
 		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/')
+			->with(PATH_CACHE.'')
 			->andReturn(TRUE)
 			->once();
 
 		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/ee_update/')
+			->with(PATH_CACHE.'ee_update/')
 			->andReturn(TRUE)
 			->once();
 
@@ -167,7 +164,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->downloader->preflight();
 
 		$this->filesystem->shouldReceive('getFreeDiskSpace')
-			->with('cache/path/ee_update/')
+			->with(PATH_CACHE.'ee_update/')
 			->andReturn(1234)
 			->once();
 
@@ -188,7 +185,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$this->filesystem->shouldReceive('getFreeDiskSpace')
-			->with('cache/path/ee_update/')
+			->with(PATH_CACHE.'ee_update/')
 			->andReturn(1048576000);
 
 		$this->filesystem->shouldReceive('mkDir');
@@ -197,7 +194,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('delete');
 
 		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/ee_update/')
+			->with(PATH_CACHE.'ee_update/')
 			->andReturn(TRUE)
 			->once();
 
@@ -212,7 +209,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('delete');
 
 		$this->filesystem->shouldReceive('isWritable')
-			->with('cache/path/ee_update/')
+			->with(PATH_CACHE.'ee_update/')
 			->andReturn(FALSE)
 			->once();
 
@@ -229,7 +226,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		catch (UpdaterException $e)
 		{
 			$this->assertEquals(1, $e->getCode());
-			$this->assertContains('cache/path/ee_update/', $e->getMessage());
+			$this->assertContains(PATH_CACHE.'ee_update/', $e->getMessage());
 		}
 	}
 
@@ -263,17 +260,14 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->once()
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
 		$this->filesystem->shouldReceive('mkDir');
 
 		$this->filesystem->shouldReceive('write')
-			->with('cache/path/ee_update/ExpressionEngine.zip', 'some data', TRUE)
+			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip', 'some data', TRUE)
 			->once();
 
 		$this->filesystem->shouldReceive('sha1File')
-			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
@@ -356,16 +350,14 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
 		$this->config->shouldReceive('set')->with('is_site_on', 'n');
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
+
 		$this->filesystem->shouldReceive('mkDir');
 
 		$this->filesystem->shouldReceive('write')
-			->with('cache/path/ee_update/ExpressionEngine.zip', 'some data', TRUE);
+			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip', 'some data', TRUE);
 
 		$this->filesystem->shouldReceive('sha1File')
-			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn('bad hash');
 
@@ -382,19 +374,16 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testUnzipPackage()
 	{
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
 
 		$this->zip_archive->shouldReceive('open')
-			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn(TRUE);
 
 		$this->zip_archive->shouldReceive('extractTo')
-			->with('cache/path/ee_update/ExpressionEngine')
+			->with(PATH_CACHE.'ee_update/ExpressionEngine')
 			->once();
 
 		$this->zip_archive->shouldReceive('close')->once();
@@ -402,7 +391,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->downloader->unzipPackage();
 
 		$this->zip_archive->shouldReceive('open')
-			->with('cache/path/ee_update/ExpressionEngine.zip')
+			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn(2);
 
@@ -419,26 +408,20 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testVerifyExtractedPackage()
 	{
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
 
-		$this->verifier->shouldReceive('verifyPath')->with('cache/path/ee_update/ExpressionEngine', 'cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
+		$this->verifier->shouldReceive('verifyPath')->with(PATH_CACHE.'ee_update/ExpressionEngine', PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
 
 		$this->downloader->verifyExtractedPackage();
 	}
 
 	public function testCheckRequirements()
 	{
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/ExpressionEngine');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
 
-		$this->requirements->shouldReceive('setClassPath')->with('cache/path/ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
 		$this->downloader->checkRequirements();
@@ -462,12 +445,9 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testMoveUpdater()
 	{
-		$this->config->shouldReceive('get')
-			->with('cache_path')
-			->andReturn('cache/path/');
-		$this->filesystem->shouldReceive('mkDir')->with('cache/path/ee_update/');
+		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
 		$this->filesystem->shouldReceive('rename')->with(
-			'cache/path/ee_update/ExpressionEngine/system/ee/installer/updater',
+			PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater',
 			SYSPATH.'ee/updater'
 		);
 
@@ -477,10 +457,10 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn(NULL);
 		$this->sites->shouldReceive('getIterator')->andReturn($this->getSitesIterator());
 		$this->filesystem->shouldReceive('write')->with(
-			'cache/path/ee_update/configs.json',
+			PATH_CACHE.'ee_update/configs.json',
 			json_encode([
-				'update_path' => 'cache/path/ee_update/',
-				'archive_path' => 'cache/path/ee_update/ExpressionEngine',
+				'update_path' => PATH_CACHE.'ee_update/',
+				'archive_path' => PATH_CACHE.'ee_update/ExpressionEngine',
 				'theme_paths' => [
 					1 => '/some/theme/path',
 					2 => '/some/theme/path2'

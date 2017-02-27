@@ -178,7 +178,7 @@ class Downloader {
 			[
 				$this->path(),
 				SYSPATH.'ee',
-				$this->cachePath(),
+				PATH_CACHE,
 				SYSPATH.'user/config/config.php'
 			],
 			$this->filesystem->getDirectoryContents(SYSPATH.'ee/'),
@@ -476,32 +476,11 @@ class Downloader {
 	 */
 	protected function path()
 	{
-		$cache_path = $this->cachePath() . 'ee_update/';
+		$cache_path = PATH_CACHE . 'ee_update/';
 
 		if ( ! is_dir($cache_path))
 		{
 			$this->filesystem->mkDir($cache_path);
-		}
-
-		return $cache_path;
-	}
-
-	/**
-	 * Gets app cache path
-	 *
-	 * @return	string	Path to cache folder
-	 */
-	protected function cachePath()
-	{
-		$cache_path = $this->config->get('cache_path');
-
-		if (empty($cache_path))
-		{
-			$cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache/';
-		}
-		else
-		{
-			$cache_path = rtrim($cache_path, DIRECTORY_SEPARATOR).'/';
 		}
 
 		return $cache_path;
