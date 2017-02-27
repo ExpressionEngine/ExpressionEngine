@@ -188,6 +188,148 @@ class Updater {
 		}
 
 	}
+	
+	
+	private function _update_relationship_tags()
+	{
+		ee()->remove('template');
+		require_once(APPPATH . 'libraries/Template.php');
+		ee()->set('template', new Installer_Template());
+
+		// Since we don't have consistent destructors,
+		// we'll keep this here.
+		$installer_config = ee()->config;
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
+
+		// We need to figure out which template to load.
+		// Need to check the edit date.
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		// related_entries
+		// Foreach template
+		foreach($templates as $template)
+		{
+			// If there aren't any related entries tags, then we don't need to continue.
+			if (strpos($template->template_data, 'related_entries') === FALSE
+				&& strpos($template->template_data, 'reverse_related_entries') === FALSE)
+			{
+				continue;
+			}
+
+			// Find the {related_entries} and {reverse_related_entries} tags
+			// (match pairs and wrapped tags)
+			$template->template_data = ee()->template->replace_related_entries_tags($template->template_data);
+
+			// save the template
+			// if saving to file, save the file
+			if ($template->loaded_from_file)
+			{
+				ee()->template_model->save_to_file($template);
+			}
+			else
+			{
+				ee()->template_model->save_to_database($template);
+			}
+		}
+
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
+	}
+
+
+
+
+
+	private function _warn_about_layout_contents()
+	{
+		ee()->update_notices->setVersion('2.9');
+		ee()->update_notices->header('{layout:contents} reserved variable is strictly enforced.');
+		ee()->update_notices->item(' Checking for templates to review ...');
+
+		ee()->remove('template');
+		require_once(APPPATH . 'libraries/Template.php');
+		ee()->set('template', new Installer_Template());
+
+		$installer_config = ee()->config;
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
+
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		$warnings = array();
+		foreach ($templates as $template)
+		{
+			// This catches any {layout=} and {layout:set} tags
+			if (preg_match_all('/('.LD.'layout\s*)(.*?)'.RD.'/s', $template->template_data, $matches, PREG_SET_ORDER))
+			{
+				foreach ($matches as $match)
+				{
+					$params = ee()->functions->assign_parameters($match[2]);
+
+					// If any of the parameters indicate it's trying to
+					// set the contents variable, log the template name
+					if (isset($params['contents']) OR
+						(isset($params['name']) && $params['name'] == 'contents'))
+					{
+						$warnings[] = $template->get_group()->group_name.'/'.$template->template_name;
+					}
+				}
+			}
+		}
+
+		// Output a list of templates that are setting layout:contents
+		if ( ! empty($warnings))
+		{
+			ee()->update_notices->item('The following templates are manually setting the {layout:contents} variable, please use a different variable name.<br>'.implode('<br>', $warnings));
+		}
+
+		ee()->update_notices->item('Done.');
+
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
+	}
+
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update Relationship Tags in Snippets, Missed in Previous Update
+	 *
+	 * 	Pulls snippets from the database, examines them for any relationship tags,
+	 * updates them and then saves them back to the database.
+	 *
+	 * @return void
+	 */
+	protected function _update_relationship_tags_in_snippets()
+	{
+		if ( ! class_exists('Installer_Template'))
+		{
+			require_once(APPPATH . 'libraries/Template.php');
+		}
+		ee()->remove('template');
+		ee()->set('template', new Installer_Template());
+
+		ee()->load->model('snippet_model');
+		$snippets = ee()->snippet_model->fetch();
+
+		foreach($snippets as $snippet)
+		{
+			// If there aren't any related entries tags, then we don't need to continue.
+			if (strpos($snippet->snippet_contents, 'related_entries') === FALSE
+				&& strpos($snippet->snippet_contents, 'reverse_related_entries') === FALSE)
+			{
+				continue;
+			}
+
+			$snippet->snippet_contents = ee()->template->replace_related_entries_tags($snippet->snippet_contents);
+			ee()->snippet_model->save($snippet);
+		}
+	}
+
+
+	
+	
 }
 
 // EOF
