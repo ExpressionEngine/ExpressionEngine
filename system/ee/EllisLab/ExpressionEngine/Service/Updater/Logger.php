@@ -27,27 +27,7 @@ use EllisLab\ExpressionEngine\Service\Logger\File;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Logger {
-
-	protected $file_logger = NULL;
-
-	/**
-	 * Constructor
-	 *
-	 * @param	Logger\File	$logger	File logger object
-	 */
-	public function __construct(File $file_logger)
-	{
-		$this->file_logger = $file_logger;
-	}
-
-	/**
-	 * Truncate the log file
-	 */
-	public function truncate()
-	{
-		$this->file_logger->truncate();
-	}
+class Logger extends File {
 
 	/**
 	 * Formats the log message with pertanent information before
@@ -60,7 +40,7 @@ class Logger {
 		// TODO: Add memory usage
 		$message = '['.date('Y-M-d H:i:s O').'] ' . $message;
 
-		$this->file_logger->log($message);
+		parent::log($message);
 	}
 }
 

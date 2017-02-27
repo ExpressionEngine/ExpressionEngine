@@ -233,13 +233,11 @@ return array(
 
 		'Updater/Logger' => function($ee)
 		{
-			$file_logger = new Logger\File(
+			return new Updater\Logger(
 				PATH_CACHE.'ee_update/update.log',
 				$ee->make('Filesystem'),
 				php_sapi_name() === 'cli'
 			);
-
-			return new Updater\Logger($file_logger);
 		},
 
 		'Updater/Runner' => function($ee)

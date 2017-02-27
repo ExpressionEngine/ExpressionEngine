@@ -200,12 +200,11 @@ class Runner {
 	protected function makeLoggerService()
 	{
 		// TODO: prolly need to put this cache path into the configs.json and load that here?
-		$file_logger = new Service\Logger\File(
+		return new Service\Updater\Logger(
 			SYSPATH.'user/cache/ee_update/update.log',
 			new Filesystem(),
 			php_sapi_name() === 'cli'
 		);
-		return new Service\Updater\Logger($file_logger);
 	}
 }
 // EOF
