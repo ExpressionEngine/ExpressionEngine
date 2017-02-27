@@ -66,6 +66,9 @@ class Runner {
 		{
 			return 'updateDatabase';
 		}
+
+		$this->makeLoggerService()
+			->log('Backing up tables: '.implode(', ', $affected_tables));
 	}
 
 	public function backupDatabase($table_name = NULL, $offset = 0)
@@ -80,6 +83,9 @@ class Runner {
 
 		if (empty($table_name))
 		{
+			$this->makeLoggerService()
+				->log('Starting database backup to file: ' . $working_file);
+
 			$backup->startFile();
 			$backup->writeDropAndCreateStatements();
 		}
@@ -90,6 +96,9 @@ class Runner {
 		// offset to start from
 		if ($returned !== FALSE)
 		{
+			$this->makeLoggerService()
+				->log('Continuing backup at table '.$table_name.', offset '.$offset);
+
 			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
 		}
 
@@ -102,6 +111,9 @@ class Runner {
 		}
 		$filesystem->rename($working_file, $destination);
 
+		$this->makeLoggerService()
+			->log('Database backup complete: ' . $destination);
+
 		return 'updateDatabase';
 	}
 
@@ -113,14 +125,12 @@ class Runner {
 		{
 			ee()->load->library('smartforge');
 
-			if ( ! $step)
-			{
-				$db_updater->runStep($db_updater->getFirstStep());
-			}
-			else
-			{
-				$db_updater->runStep($step);
-			}
+			$step = $step ?: $db_updater->getFirstStep();
+
+			$this->makeLoggerService()
+				->log('Running database update step: ' . $step);
+
+			$db_updater->runStep($step);
 
 			if ($db_updater->getNextStep())
 			{
@@ -172,7 +182,6 @@ class Runner {
 
 	protected function makeDatabaseUpdaterService()
 	{
-		// TODO: Inject logger into here
 		return new Service\Updater\DatabaseUpdater(
 			ee()->config->item('app_version'),
 			new Filesystem()

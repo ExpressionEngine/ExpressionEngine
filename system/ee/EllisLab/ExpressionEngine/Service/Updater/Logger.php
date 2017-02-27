@@ -37,7 +37,6 @@ class Logger extends File {
 	 */
 	public function log($message)
 	{
-		// TODO: Add memory usage
 		$message = '['.date('Y-M-d H:i:s O').'] ' . $message;
 
 		parent::log($message);
