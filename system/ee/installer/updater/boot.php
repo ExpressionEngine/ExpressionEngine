@@ -12,8 +12,6 @@ if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
 }
 else
 {
-	// TODO: We need to figure out how to include the latest boot.common helper functions
-	// after the old ones were already included in the CLI bootstrap
 	if ( ! function_exists('is_php'))
 	{
 		require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
