@@ -211,7 +211,7 @@ class Upload {
 							'type' => 'text',
 							'placeholder' => $file->file_name,
 							'value' => ee()->input->post('rename_custom'),
-							'attrs' => 'onfocus="$(this).prev().click()"'
+							'attrs' => 'onfocus="$(this).prev().children().prop(\'checked\', true).trigger(\'change\')"'
 						),
 						'upload_options_2' => array(
 							'type' => 'radio',
