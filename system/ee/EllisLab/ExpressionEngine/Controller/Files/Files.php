@@ -265,7 +265,7 @@ class Files extends AbstractFilesController {
 		if ($result['success'])
 		{
 			$alert = NULL;
-			if ($result['warning'])
+			if (isset($result['warning']))
 			{
 				$alert = ee('CP/Alert')->makeInline('metadata')
 					->asWarning()
