@@ -76,6 +76,7 @@ class Runner {
 		$db_updater = $this->makeDatabaseUpdaterService();
 		$affected_tables = $db_updater->getAffectedTables();
 		$working_file = PATH_CACHE.'ee_update/database_backing_up.sql';
+		$logger = $this->makeLoggerService();
 
 		$backup = ee('Database/Backup', $working_file);
 		$backup->makeCompactFile();
@@ -83,8 +84,7 @@ class Runner {
 
 		if (empty($table_name))
 		{
-			$this->makeLoggerService()
-				->log('Starting database backup to file: ' . $working_file);
+			$logger->log('Starting database backup to file: ' . $working_file);
 
 			$backup->startFile();
 			$backup->writeDropAndCreateStatements();
@@ -96,8 +96,7 @@ class Runner {
 		// offset to start from
 		if ($returned !== FALSE)
 		{
-			$this->makeLoggerService()
-				->log('Continuing backup at table '.$table_name.', offset '.$offset);
+			$logger->log('Continuing backup at table '.$table_name.', offset '.$offset);
 
 			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
 		}
@@ -111,8 +110,7 @@ class Runner {
 		}
 		$filesystem->rename($working_file, $destination);
 
-		$this->makeLoggerService()
-			->log('Database backup complete: ' . $destination);
+		$logger->log('Database backup complete: ' . $destination);
 
 		return 'updateDatabase';
 	}
