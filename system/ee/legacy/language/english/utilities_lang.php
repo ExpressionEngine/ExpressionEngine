@@ -113,7 +113,7 @@ $lang = array(
 'translate_btn' 		=>	'Save Translations',
 'translations_saved'	=>	'Translations Saved',
 'translate_error'		=> 'Attention: translation not saved',
-'translate_error_desc'	=> 'We were unable to save the translation, pelase review and fix errors below.',
+'translate_error_desc'	=> 'We were unable to save the translation, please review and fix errors below.',
 
 /**
  * PHP Info
