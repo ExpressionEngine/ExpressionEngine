@@ -129,7 +129,7 @@ class File extends ConfigWithDefaults {
 	 */
 	public function set($path, $value)
 	{
-		$this->setArrayValue($this->config, $path, $value);
+		$this->config = $this->setArrayValue($path, $value, $this->config);
 	}
 
 	/**
@@ -157,11 +157,12 @@ class File extends ConfigWithDefaults {
 	/**
 	 * Set a nested array value given a dot-separated path
 	 *
-	 * @param array &$array  Array to traverse and set value in
-	 * @param string $path   Dot-separated path
-	 * @param mixed  $value  Value to set, pass in NULL to unset
+	 * @param  string $path   Dot-separated path
+	 * @param  mixed  $value  Value to set, pass in NULL to unset
+	 * @param  array  $array  Array to traverse and set value in
+	 * @return array  Resulting array
 	 */
-	private function setArrayValue(&$array, $path, $value)
+	private function setArrayValue($path, $value, $array = [])
 	{
 		$path = explode('.', $path);
 
@@ -186,6 +187,8 @@ class File extends ConfigWithDefaults {
 		{
 			$i = $value;
 		}
+
+		return $array;
 	}
 }
 
