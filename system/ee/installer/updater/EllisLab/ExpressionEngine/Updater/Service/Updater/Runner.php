@@ -160,9 +160,12 @@ class Runner {
 
 	public function selfDestruct()
 	{
-		$filesystem = new Filesystem();
-		$filesystem->deleteDir($this->makeUpdaterService()->path());
-		$filesystem->deleteDir(SYSPATH.'ee/updater');
+		$config = ee('Config')->getFile();
+		$config->set('is_system_on', 'y', TRUE);
+		$config->set('app_version', APP_VER, TRUE);
+
+		ee('Filesystem')->deleteDir($this->makeUpdaterService()->path());
+		ee('Filesystem')->deleteDir(SYSPATH.'ee/updater');
 	}
 
 	public function runStep($step)

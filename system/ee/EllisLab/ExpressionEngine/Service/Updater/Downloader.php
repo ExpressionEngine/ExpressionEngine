@@ -232,8 +232,7 @@ class Downloader {
 	{
 		$this->logger->log('Taking the site offline');
 
-		// TODO: This isn't actually writing to the file
-		$this->config->set('is_system_on', 'n');
+		$this->config->set('is_system_on', 'n', TRUE);
 	}
 
 	/**
