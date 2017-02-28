@@ -452,6 +452,15 @@ class Upload {
 				}
 
 				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
+				ee('Filesystem')->copy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
+
+				foreach ($file->UploadDestination->FileDimensions as $fd)
+				{
+					$src  = $fd->getAbsolutePath() . $file->file_name;
+					$dest = $fd->getAbsolutePath() . $original->file_name;
+					ee('Filesystem')->copy($src, $dest);
+				}
+
 				$file->delete();
 
 				$result['params']['file'] = $original;
