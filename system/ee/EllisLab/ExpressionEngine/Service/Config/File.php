@@ -127,9 +127,16 @@ class File extends ConfigWithDefaults {
 	 * @param  mixed  $value   The value to set
 	 * @return void
 	 */
-	public function set($path, $value)
+	public function set($path, $value, $write_to_file = FALSE)
 	{
 		$this->config = $this->setArrayValue($path, $value, $this->config);
+
+		if ($write_to_file)
+		{
+			ee()->config->_update_config(
+				$this->setArrayValue($path, $value)
+			);
+		}
 	}
 
 	/**
