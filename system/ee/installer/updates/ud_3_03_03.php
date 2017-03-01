@@ -77,16 +77,16 @@ class Updater {
 	 */
 	private function update_category_fields()
 	{
-		$category_fields = ee('Model')->get('CategoryField')
-			->all()
-			->indexBy('field_id');
+		$category_fields = ee()->db->select('field_id', 'field_default_fmt')
+			->get('category_fields')
+			->result_array();
 
-		foreach ($category_fields as $id => $field)
+		foreach ($category_fields as $row)
 		{
 			ee()->db->update(
 				'category_field_data',
-				array('field_ft_'.$id => $field->field_default_fmt),
-				array('field_ft_'.$id => NULL)
+				array('field_ft_'.$row['field_id'] => $row['field_default_fmt']),
+				array('field_ft_'.$row['field_id'] => NULL)
 			);
 		}
 	}
