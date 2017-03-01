@@ -35,7 +35,7 @@ abstract class FieldModel extends Model {
 
 		if (empty($field_type))
 		{
-			throw new \Exception('Cannot get field of unknown type.');
+			throw new \Exception('Cannot get field of unknown type "' . $field_type . '".');
 		}
 
 		if ( ! isset($this->_field_facade) ||
