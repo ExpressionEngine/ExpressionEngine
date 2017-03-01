@@ -131,24 +131,7 @@ class CP_Controller extends EE_Controller {
 	 */
 	protected function ajaxValidation(ValidationResult $result)
 	{
-		if (ee()->input->is_ajax_request())
-		{
-			$field = ee()->input->post('ee_fv_field');
-
-			// Get the parent field name
-			$field = preg_replace('/\[.+?\]/', '', $field);
-
-			if ($result->hasErrors($field))
-			{
-				return array('error' => $result->renderError($field));
-			}
-			else
-			{
-				return array('success');
-			}
-		}
-
-		return NULL;
+		return ee('Validation')->ajax($result);
 	}
 
 }

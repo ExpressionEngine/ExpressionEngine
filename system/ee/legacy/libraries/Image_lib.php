@@ -1126,8 +1126,8 @@ class EE_Image_lib {
 		}
 
 		// Set base X and Y axis values
-		$x_axis = $this->wm_hor_offset + $x_padding;
-		$y_axis = $this->wm_vrt_offset + $y_padding;
+		$x_axis = (int) $this->wm_hor_offset + (int) $x_padding;
+		$y_axis = (int) $this->wm_vrt_offset + (int) $y_padding;
 
 		// Set verticle alignment
 		if ($this->wm_use_drop_shadow == FALSE)
