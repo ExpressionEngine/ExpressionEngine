@@ -38,6 +38,7 @@ class File extends Model {
 	protected static $_primary_key = 'file_id';
 	protected static $_table_name = 'files';
 	protected static $_events = array('beforeDelete');
+	protected static $_binary_comparisons = array('file_name');
 
 	protected static $_hook_id = 'file';
 
@@ -201,7 +202,7 @@ class File extends Model {
 			// Remove any manipulated files as well
 			foreach ($this->UploadDestination->FileDimensions as $file_dimension)
 			{
-				$file = rtrim($this->UploadDestination->server_path, '/') . '/_' . $file_dimension->short_name . '/' . $this->file_name;
+				$file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $this->file_name;
 
 				if (file_exists($file))
 				{

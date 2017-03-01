@@ -92,6 +92,11 @@ class FileDimension extends Model {
 	 */
 	public function getNewDimensionsOfFile(File $file)
 	{
+		if ( ! $file->isImage())
+		{
+			return FALSE;
+		}
+
 		ee()->load->library('image_lib');
 		ee()->image_lib->clear();
 
@@ -198,12 +203,35 @@ class FileDimension extends Model {
 		ee()->image_lib->initialize($config);
 
 		$dimensions = array(
-			'height' => ee()->image_lib->height,
-			'width'  => ee()->image_lib->width,
+			'height' => round(ee()->image_lib->height),
+			'width'  => round(ee()->image_lib->width),
 		);
 
 		return $dimensions;
 	}
+
+	/**
+	 * Uses the upload destination's server path to compute the absolute
+	 * path of the dirctory
+	 *
+	 * @return string The absolute path to the directory
+	 */
+	public function getAbsolutePath()
+	{
+		return rtrim($this->UploadDestination->server_path, '/') . '/_' . $this->short_name . '/';
+	}
+
+	/**
+	 * Uses the upload destination's url to compute the absolute URL of
+	 * the directory
+	 *
+	 * @return string The absolute URL to the directory
+	 */
+	public function getAbsoluteURL()
+	{
+		return rtrim($this->UploadDestination->url, '/') . '/_' . rawurlencode($this->short_name) . '/';
+	}
+
 }
 
 // EOF

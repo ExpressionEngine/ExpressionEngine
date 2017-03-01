@@ -357,7 +357,7 @@ feature 'RTE Settings' do
     @page.should have_alert
     @page.alert[:class].should include "issue"
     @page.alert.text.should include "Tool set error"
-    @page.alert.text.should include "We were unable to save the tool set, pelase review and fix errors below."
+    @page.alert.text.should include "We were unable to save the tool set, please review and fix errors below."
 
       should_have_form_errors(@page)
 
@@ -376,7 +376,7 @@ feature 'RTE Settings' do
     @page.should have_alert
     @page.alert[:class].should include "issue"
     @page.alert.text.should include "Tool set error"
-    @page.alert.text.should include "We were unable to save the tool set, pelase review and fix errors below."
+    @page.alert.text.should include "We were unable to save the tool set, please review and fix errors below."
 
       should_have_form_errors(@page)
 
@@ -396,7 +396,7 @@ feature 'RTE Settings' do
     @page.should have_alert
     @page.alert[:class].should include "issue"
     @page.alert.text.should include "Tool set error"
-    @page.alert.text.should include "We were unable to save the tool set, pelase review and fix errors below."
+    @page.alert.text.should include "We were unable to save the tool set, please review and fix errors below."
 
       should_have_form_errors(@page)
 

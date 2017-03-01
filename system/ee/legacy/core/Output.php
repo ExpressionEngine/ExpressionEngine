@@ -539,6 +539,7 @@ class EE_Output {
 		if ($data['redirect'] != '')
 		{
 			$secure_redirect = ee('Security/XSS')->clean($data['redirect']);
+			$secure_redirect = htmlentities($secure_redirect, ENT_QUOTES, 'UTF-8');
 			$js_rate = $data['rate']*1000;
 
 			$data['meta_refresh'] = "<script type='text/javascript'>setTimeout(function(){document.location='".$secure_redirect."'},".$js_rate.')</script>';
@@ -554,6 +555,7 @@ class EE_Output {
 			$ltitle = ($refresh_msg == '') ? $data['link']['1'] : $refresh_msg;
 
 			$url = (strtolower($data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : ee('Security/XSS')->clean($data['link']['0']);
+			$url = htmlentities($url, ENT_QUOTES, 'UTF-8');
 
 			$data['link'] = "<a href='".$url."'>".$ltitle."</a>";
 		}

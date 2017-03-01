@@ -2252,6 +2252,8 @@ class Filemanager {
 			$directory_id
 		);
 
+		$new_file_name = str_replace($upload_directory['server_path'], '', $file_path);
+
 		// If renaming the file sparked an error return it
 		if (is_array($file_path))
 		{
@@ -2361,7 +2363,7 @@ class Filemanager {
 		$config = array(
 			'upload_path'	=> $upload_directory['server_path'],
 			'allowed_types'	=> (ee()->session->userdata('group_id') == 1) ? 'all' : $upload_directory['allowed_types'],
-			'max_size'		=> round($upload_directory['max_size']*1024, 3),
+			'max_size'		=> round((int) $upload_directory['max_size']*1024, 3),
 			'max_width'		=> $upload_directory['max_width'],
 			'max_height'	=> $upload_directory['max_height']
 		);

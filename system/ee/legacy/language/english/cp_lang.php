@@ -303,6 +303,7 @@ $lang = array(
 'btn_save' => 'Save %s',
 'btn_save_and_close' => 'Save &amp; Close',
 'btn_saving' => 'Saving...',
+'btn_canceling' => 'Canceling...',
 'no_found' => 'No <b>%s</b> found.',
 'filters' => 'filters',
 'clear_filters' => 'Clear filters',

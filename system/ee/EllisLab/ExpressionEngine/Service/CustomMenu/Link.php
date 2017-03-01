@@ -42,7 +42,11 @@ class Link {
 
 		$base = ee('CP/URL')->make('')->compile();
 
-		if (strpos($url, '://') === FALSE && strpos($url, $base) !== 0)
+		if (is_a($url, 'EllisLab\ExpressionEngine\Library\CP\URL'))
+		{
+			$url = $url->compile();
+		}
+		elseif (strpos($url, '://') === FALSE && strpos($url, $base) !== 0)
 		{
 			$url = ee('CP/URL')->make($url)->compile();
 		}

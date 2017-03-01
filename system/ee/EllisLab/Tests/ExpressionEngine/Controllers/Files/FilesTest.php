@@ -23,7 +23,7 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('directory', 'export', 'index', 'rmdir', 'upload'), $controller_methods);
+		$this->assertEquals(array('directory', 'export', 'finishupload', 'index', 'rmdir', 'upload'), $controller_methods);
 	}
 
 }

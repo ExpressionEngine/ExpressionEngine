@@ -309,14 +309,16 @@ $(document).ready(function(){
 		});
 
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap', function(e) {
-			// fade out the overlay
-			$('.overlay').fadeOut('slow');
-			// fade out the modal
-			$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
+			if ($(e.target).is(":visible")) {
+				// fade out the overlay
+				$('.overlay').fadeOut('slow');
+				// fade out the modal
+				$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-			if ( ! $(this).is('.modal-form-wrap'))
-			{
-				$(document).scrollTop($(this).data('scroll'));
+				if ( ! $(this).is('.modal-form-wrap'))
+				{
+					$(document).scrollTop($(this).data('scroll'));
+				}
 			}
 		});
 
@@ -352,6 +354,13 @@ $(document).ready(function(){
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});
+		});
+
+		$('body').on('click', '.multi-select .ctrl-all input', function(){
+			$(this).closest('.multi-select')
+				.find('.choice input[type=checkbox]')
+				.prop('checked', $(this).is(':checked'))
+				.trigger('change');
 		});
 
 		// Highlight table rows when checked

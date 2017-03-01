@@ -64,7 +64,29 @@ $lang = array(
 
 'no_file' => 'No file selected',
 
+'no_filename' => 'A new filename was not submitted.',
+
 'no_upload_destination' => 'No upload destination found',
+
+'file_upload_stopped' => 'File Upload Stopped',
+
+'file_conflict' => 'File conflict found',
+
+'file_conflict_desc' => 'A file named <b>%s</b> already exists in this directory.',
+
+'upload_options' => 'Upload options',
+
+'rename' => 'Rename <em>newer</em> file',
+
+'replace' => 'Replace <em>older</em> file only <i>&mdash; destructive action</i>',
+
+'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
+
+'append' => 'Append numeral to <em>newer</em> file <i>&mdash; example: %s</i>',
+
+'btn_finish_upload' => 'Finish Upload',
+
+'btn_cancel_upload' => 'Cancel Upload',
 
 // sidebar
 'zero_directories_found' => 'No <b>Directories</b> found',
@@ -92,7 +114,7 @@ $lang = array(
 
 'file_categories_desc' => 'Categorize this file.',
 
-'no_categories_assigned_file_desc' => 'There are no categories assigned to this file. <a href="%s">Assign a category group.</a>',
+'no_categories_assigned_file_desc' => 'There are no categories assigned to this file. <a href="%s" rel="external">Assign a category group.</a>',
 
 'success' => 'Success',
 
@@ -499,7 +521,7 @@ $lang = array(
 'rotate_flip_hor'		=> 'Flip horizontally',
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
-'file_exists_replacement_error' => 'A file with this name exists but is not available in the database for overwriting.',
+'file_exists_replacement_error' => 'A file with this name already exists.',
 
 'resize_over_confirmation' => 'Resizing this image to a larger size than the source will result in a lower quality image. Are you sure you want to do that?',
 

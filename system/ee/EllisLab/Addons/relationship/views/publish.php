@@ -25,7 +25,7 @@
 			</ul>
 		</div>
 		<?php endif; ?>
-		<input class="relate-search" type="text" name="search" placeholder="<?=lang('search_available_entries')?>">
+		<input class="relate-search" type="text" name="search" placeholder="<?=lang('search_available_entries')?>" data-ajax-validate="no">
 	</div>
 	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}" data-search="{entry-title-lower}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php
@@ -36,10 +36,10 @@
 			<div class="no-results<?php if ( ! empty($entries)) echo " hidden" ?>">
 				<?=lang('no_entries_found')?>
 				<?php if (count($channels) == 1): ?>
-				<a class="btn action" href="<?=ee('CP/URL')->make('publish/create/' . $channels[0]->channel_id)?>" data-channel-id="<?=$channels[0]->channel_id?>"><?=lang('btn_create_new')?></a>
+				<a class="btn action" href="<?=ee('CP/URL')->make('publish/create/' . $channels[0]->channel_id)?>" data-channel-id="<?=$channels[0]->channel_id?>" target="_blank"><?=lang('btn_create_new')?></a>
 				<?php else: ?>
 					<?php foreach($channels as $channel): ?>
-						<a class="btn action hidden" href="<?=ee('CP/URL')->make('publish/create/' . $channel->channel_id)?>" data-channel-id="<?=$channel->channel_id?>"><?=lang('btn_create_new')?></a>
+						<a class="btn action hidden" href="<?=ee('CP/URL')->make('publish/create/' . $channel->channel_id)?>" data-channel-id="<?=$channel->channel_id?>" target="_blank"><?=lang('btn_create_new')?></a>
 					<?php endforeach; ?>
 				<div class="filters">
 					<ul>
@@ -105,7 +105,7 @@
 <div class="col w-8 relate-wrap<?php if ( ! count($related)) echo " empty"; ?> last">
 	<h4><?=lang('items_related_to')?></h4>
 	<div class="relate-actions">
-		<input class="relate-search" name="search_related" type="text" placeholder="<?=lang('search_related_entries')?>">
+		<input class="relate-search" name="search_related" type="text" placeholder="<?=lang('search_related_entries')?>" data-ajax-validate="no">
 	</div>
 	<div class="scroll-wrap">
 		<?php if (count($related)): ?>

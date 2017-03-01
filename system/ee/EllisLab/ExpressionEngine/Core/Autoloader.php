@@ -91,6 +91,11 @@ class Autoloader {
 		// @todo this prefix handling will not do sub-namespaces correctly
 		foreach ($this->prefixes as $prefix => $path)
 		{
+			if (empty($prefix))
+			{
+				throw new \Exception("No namespace specified for add-on: {$path}");
+			}
+
 			if (strpos($class, $prefix) === 0)
 			{
 				// From inside to out: Strip off the prefix from the namespace, turn the namespace into
