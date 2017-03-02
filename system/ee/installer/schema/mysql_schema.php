@@ -510,6 +510,7 @@ class EE_Schema {
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
+			m_legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 
@@ -710,6 +711,7 @@ class EE_Schema {
 			field_order int(3) unsigned NOT NULL,
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
+			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
@@ -840,6 +842,7 @@ class EE_Schema {
 			`field_required` char(1) NOT NULL default 'n',
 			`field_order` int(3) unsigned NOT NULL,
 			`field_settings` text NULL,
+			`legacy_field_data` char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)

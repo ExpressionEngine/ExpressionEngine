@@ -70,6 +70,15 @@ class Category extends ContentModel {
 		)
 	);
 
+	protected static $_field_data = array(
+		'field_model'   => 'CategoryField',
+		'extra_data'    => array(
+			'group_column' => 'Category__group_id',
+			'parent_table' => 'categories',
+			'key_column'   => 'cat_id'
+		)
+	);
+
 	protected static $_validation_rules = array(
 		'cat_name'			=> 'required|noHtml|xss',
 		'cat_url_title'		=> 'required|alphaDash|unique[group_id]',
@@ -78,7 +87,10 @@ class Category extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'afterInsert',
+		'beforeUpdate',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -129,6 +141,21 @@ class Category extends ContentModel {
 		}
 	}
 
+	public function onAfterInsert()
+	{
+		$this->saveFieldData($this->getValues());
+	}
+
+	public function onBeforeUpdate($changed)
+	{
+		$this->saveFieldData($changed);
+	}
+
+	public function onBeforeDelete()
+	{
+		$this->deleteFieldData();
+	}
+
 	/**
 	 * Converts the fields into facades
 	 *
@@ -144,6 +171,25 @@ class Category extends ContentModel {
 		return parent::addFacade($id, $info, $name_prefix);
 	}
 
+	/**
+	 * Gets a collection of CategoryGroup objects
+	 *
+	 * @return Collection A collection of CategoryGroup objects
+	 */
+	protected function getFieldModels()
+	{
+		$fields = $this->CategoryGroup->CategoryFields;
+
+		if ($fields->count() == 0)
+		{
+			$fields = $this->getModelFacade()
+				->get('CategoryGroup', $this->group_id)
+				->first()
+				->CategoryFields;
+		}
+
+		return $fields;
+	}
 }
 
 // EOF

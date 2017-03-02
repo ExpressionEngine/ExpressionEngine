@@ -36,6 +36,7 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
+				'add_field_data_flag',
 				'removeMemberHomepageTable',
 				'moveMemberFields'
 			)
@@ -48,6 +49,56 @@ class Updater {
 
 		return TRUE;
 	}
+
+	/**
+	 * Adds a column to exp_channel_fields, exp_member_fields, and
+	 * exp_category_fields tables that indicates if the
+	 * data is in the legacy data tables or their own table.
+	 */
+	private function add_field_data_flag()
+	{
+		if ( ! ee()->db->field_exists('legacy_field_data', 'category_fields'))
+		{
+			ee()->smartforge->add_column(
+				'category_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('legacy_field_data', 'channel_fields'))
+		{
+			ee()->smartforge->add_column(
+				'channel_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('m_legacy_field_data', 'member_fields'))
+		{
+			ee()->smartforge->add_column(
+				'member_fields',
+				array(
+					'm_legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+		}
+    }
 
 	private function removeMemberHomepageTable()
 	{

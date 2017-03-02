@@ -420,29 +420,7 @@ class Channel {
 	  */
 	public function fetch_categories()
 	{
-		if ($this->enable['category_fields'] === TRUE)
-		{
-			$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-				}
-			}
-
-			$this->cacheCategoryFieldModels();
-
-			$field_sqla = ", cg.field_html_formatting, fd.* ";
-			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
-		}
-		else
-		{
-			$field_sqla = '';
-			$field_sqlb = '';
-		}
+		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
 
 		$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description, c.parent_id,
 						p.cat_id, p.entry_id, c.group_id {$field_sqla}
@@ -455,12 +433,10 @@ class Channel {
 
 		foreach ($this->query->result_array() as $row)
 		{
-			$sql .= "'".$row['entry_id']."',";
-
 			$categories[] = $row['entry_id'];
 		}
 
-		$sql = substr($sql, 0, -1).')';
+		$sql .= implode(array_unique($categories), ',') . ')';
 
 		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -1225,6 +1201,8 @@ class Channel {
 		$sql_a = "SELECT ";
 
 		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT t.entry_id " : "t.entry_id ";
+
+		$sql_b .= ",exp_channels.field_group ";
 
 		if ($this->pagination->field_pagination == TRUE)
 		{
@@ -2283,47 +2261,67 @@ class Channel {
 			$this->sql .= $yearweek.', ';
 		}
 
-		// DO NOT CHANGE THE ORDER
-		// The exp_member_data table needs to be called before the exp_members table.
-
-		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
-						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
-						m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id,
-						md.*,
-						wd.*
-				FROM exp_channel_titles		AS t
-				LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
-				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
-				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
-				LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
-
-		$this->sql .= "WHERE t.entry_id IN (";
-
 		$entries = array();
-
-		// Build ID numbers (checking for duplicates)
+		$field_groups = array();
 
 		foreach ($query->result_array() as $row)
 		{
-			if ( ! isset($entries[$row['entry_id']]))
-			{
-				$entries[$row['entry_id']] = 'y';
-			}
-			else
-			{
-				continue;
-			}
-
-			$this->sql .= $row['entry_id'].',';
+			$entries[] = $row['entry_id'];
+			$field_groups[] = $row['field_group'];
 		}
 
+		$entries = array_unique($entries);
+		$field_groups = array_unique($field_groups);
+
+		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
+						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
+						wd.*";
+
+		$from = " FROM exp_channel_titles		AS t
+				LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
+				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
+				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id ";
+
+		if ( ! empty($this->mfields))
+		{
+			$this->sql .= ", md.* ";
+			$from .= "LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
+
+			foreach ($this->mfields as $mfield)
+			{
+				$field_id = $mfield[0];
+				$table = "exp_member_data_field_{$field_id}";
+				$this->sql .= ", {$table}.data AS m_field_id_{$field_id}";
+				$this->sql .= ", {$table}.metadata AS m_field_ft_{$field_id}";
+				$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
+			}
+		}
+
+		$fields = ee('Model')->get('ChannelField')
+			->fields('field_id')
+			->filter('legacy_field_data', 'n')
+			->filter('group_id', 'IN', $field_groups)
+			->all();
+
+		if ($fields->count())
+		{
+			$field_ids = $fields->pluck('field_id');
+			foreach ($field_ids as $field_id)
+			{
+				$table = "exp_channel_data_field_{$field_id}";
+				$this->sql .= ", {$table}.data AS field_id_{$field_id}";
+				$this->sql .= ", {$table}.metadata AS field_ft_{$field_id}";
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+			}
+		}
+
+		$this->sql .= $from;
+
+		$this->sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+
 		//cache the entry_id
-		ee()->session->cache['channel']['entry_ids']	= array_keys($entries);
-
-		unset($query);
-		unset($entries);
-
-		$this->sql = substr($this->sql, 0, -1).') ';
+		ee()->session->cache['channel']['entry_ids'] = $entries;
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
@@ -2778,31 +2776,7 @@ class Channel {
 		{
 			// fetch category field names and id's
 
-			if ($this->enable['category_fields'] === TRUE)
-			{
-				$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields
-									WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')");
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-					}
-				}
-
-				$this->cacheCategoryFieldModels();
-
-				$field_sqla = ", cg.field_html_formatting, fd.* ";
-				$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-								LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
-			}
-			else
-			{
-				$field_sqla = '';
-				$field_sqlb = '';
-			}
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
 
 			$show_empty = ee()->TMPL->fetch_param('show_empty');
 
@@ -3346,32 +3320,7 @@ class Channel {
 		else
 		{
 			// fetch category field names and id's
-
-			if ($this->enable['category_fields'] === TRUE)
-			{
-				$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields
-									WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')");
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-					}
-				}
-
-				$this->cacheCategoryFieldModels();
-
-				$field_sqla = ", cg.field_html_formatting, fd.* ";
-				$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-								LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
-			}
-			else
-			{
-				$field_sqla = '';
-				$field_sqlb = '';
-			}
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
 
 			$sql = "SELECT DISTINCT (c.cat_id), c.group_id, c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id, c.cat_order {$field_sqla}
 					FROM (exp_categories AS c";
@@ -3615,32 +3564,7 @@ class Channel {
 			return FALSE;
 		}
 
-		if ($this->enable['category_fields'] === TRUE)
-		{
-			$query = ee()->db->query("SELECT field_id, field_name
-								FROM exp_category_fields
-								WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-								AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."')");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-				}
-			}
-
-			$this->cacheCategoryFieldModels();
-
-			$field_sqla = ", cg.field_html_formatting, fd.* ";
-			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
-		}
-		else
-		{
-			$field_sqla = '';
-			$field_sqlb = '';
-		}
+		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
 
 		/** -----------------------------------
 		/**  Are we showing empty categories
@@ -4323,24 +4247,7 @@ class Channel {
 				return ee()->TMPL->no_results();
 			}
 
-			$query = ee()->db->query("SELECT field_id, field_name
-								FROM exp_category_fields
-								WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-								AND group_id = '".$gquery->row('group_id')."'");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-				}
-			}
-
-			$this->cacheCategoryFieldModels();
-
-			$field_sqla = ", cg.field_html_formatting, fd.* ";
-			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($gquery->row('group_id'));
 		}
 		else
 		{
@@ -5441,6 +5348,53 @@ class Channel {
 		ee()->load->library('channel_form/channel_form_lib');
 		ee()->load->library('channel_form/channel_form_javascript');
 		return ee()->channel_form_javascript->combo_load();
+	}
+
+	private function generateCategoryFieldSQL($group_ids = '')
+	{
+		if ($this->enable['category_fields'] !== TRUE)
+		{
+			return array('', '');
+		}
+
+		$sql = "SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')";
+
+		if ( ! empty($group_ids))
+		{
+			$sql .= " AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')";
+		}
+
+		$query = ee()->db->query($sql);
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
+			}
+		}
+
+		$this->cacheCategoryFieldModels();
+
+		$field_sqla = ", cg.field_html_formatting, fd.* ";
+		$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
+						LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
+
+		foreach ($this->cat_field_models as $cat_field)
+		{
+			if ($cat_field->legacy_field_data)
+			{
+				continue;
+			}
+
+			$table = "exp_category_field_data_field_{$cat_field->field_id}";
+
+			$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
+			$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
+			$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
+		}
+
+		return array($field_sqla, $field_sqlb);
 	}
 }
 // END CLASS

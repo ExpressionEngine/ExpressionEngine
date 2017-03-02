@@ -94,6 +94,17 @@ class ChannelEntry extends ContentModel {
 		)
 	);
 
+	protected static $_auto_join = array('Channel');
+
+	protected static $_field_data = array(
+		'field_model'   => 'ChannelField',
+		'extra_data'    => array(
+			'group_column' => 'Channel__field_group',
+			'parent_table' => 'channel_titles',
+			'key_column'   => 'entry_id'
+		)
+	);
+
 	protected static $_validation_rules = array(
 		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required|validateMaxEntries',
@@ -307,6 +318,26 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
+	/**
+	 * Gets a collection of ChannelField objects
+	 *
+	 * @return Collection A collection of ChannelField objects
+	 */
+	protected function getFieldModels()
+	{
+		$fields = $this->Channel->CustomFields;
+
+		if ($fields->count() == 0)
+		{
+			$fields = $this->getModelFacade()
+				->get('Channel', $this->channel_id)
+				->first()
+				->CustomFields;
+		}
+
+		return $fields;
+	}
+
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
@@ -373,11 +404,14 @@ class ChannelEntry extends ContentModel {
 				$this->getId()
 			);
 		}
+
+		$this->saveFieldData($this->getValues());
 	}
 
 	public function onAfterUpdate($changed)
 	{
 		$this->saveVersion();
+		$this->saveFieldData($changed);
 	}
 
 	public function onBeforeDelete()
@@ -404,6 +438,8 @@ class ChannelEntry extends ContentModel {
 			// restore our package and view paths
 			ee()->load->remove_package_path($info->getPath());
 		}
+
+		$this->deleteFieldData();
 	}
 
 	public function onAfterDelete()
