@@ -695,24 +695,6 @@ class MemberImport extends Utilities {
 			$counter++;
 		}
 
-		/** -------------------------------------
-		/**  Add records to exp_member_data tables for all imported members
-		/** -------------------------------------*/
-
-		$values = '';
-
-		foreach ($new_ids as $key => $val)
-		{
-			$values .= "('$key'),";
-		}
-
-		$values = substr($values, 0, -1);
-
-		if ($custom_fields == FALSE)
-		{
-			$this->db->query("INSERT INTO exp_member_data (member_id) VALUES ".$values);
-		}
-
 		//  Update Statistics
 		$this->stats->update_member_stats();
 
