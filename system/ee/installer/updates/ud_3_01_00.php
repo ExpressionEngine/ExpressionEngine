@@ -392,13 +392,25 @@ class Updater {
 	 */
 	private function synchronize_layouts()
 	{
-		$layouts = ee('Model')->get('ChannelLayout')->all();
+		$custom_fields = array();
+
+		$layouts = ee('Model')->get('ChannelLayout')
+			->with('Channel')
+			->all();
 
 		foreach ($layouts as $layout)
 		{
 			// Account for any new fields that have been added to the channel
 			// since the last edit
-			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
+
+			$query = ee()->db->select('field_id')
+				->where('group_id', $layout->Channel->field_group)
+				->get('channel_fields');
+
+			foreach ($query->result_array() as $row)
+			{
+				$custom_fields[$row['field_id']] = $row['field_id'];
+			}
 
 			foreach ($layout->field_layout as $section)
 			{

@@ -208,6 +208,27 @@ class Select extends Query {
 		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
 		$class = $meta->getClass();
 
+		$fields = $this->getFields();
+
+		// Bail if this query is selecting specific fields and none of those
+		// fields would be found in the field data tables
+		if ( ! empty($fields))
+		{
+			$found = FALSE;
+			foreach ($fields as $field)
+			{
+				if (strpos($field, 'field_id_') !== FALSE)
+				{
+					$found = TRUE;
+				}
+			}
+
+			if ( ! $found)
+			{
+				return;
+			}
+		}
+
 		$meta_field_data = $class::getMetaData('field_data');
 
 		$field_model = ee('Model')->make($meta_field_data['field_model']);
