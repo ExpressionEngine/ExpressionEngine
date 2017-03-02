@@ -45,6 +45,8 @@ $lang = array(
 
 'username' => 'Username',
 
+'username_filter' => 'username',
+
 'password' => 'Password',
 
 'logged_back_in'	=>
@@ -205,6 +207,7 @@ $lang = array(
 'page' 							=>	'Page',
 'channel' 						=>	'Channel',
 'site' 							=>	'Site',
+'site_filter' 					=>	'site',
 
 'most_recent_entry' 			=>	'Most Recent Entry',
 'most_recent_comment' 			=>	'Most Recent Comment',

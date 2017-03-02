@@ -50,7 +50,7 @@ class Username extends Filter {
 	public function __construct($usernames = array())
 	{
 		$this->name = 'filter_by_username';
-		$this->label = 'username';
+		$this->label = 'username_filter';
 		$this->placeholder = lang('filter_by_username');
 		$this->options = $usernames;
 	}
