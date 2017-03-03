@@ -4095,7 +4095,7 @@ class Channel {
 						'channel_html_formatting' => $data['field_html_formatting'],
 						'channel_auto_link_urls' => 'n',
 						'channel_allow_img_urls' => 'y',
-						'field_ft_'.$field_id => $data['m_field_ft_'.$field_id]
+						'field_ft_'.$field_id => $data['field_ft_'.$field_id]
 					)
 				);
 			}
