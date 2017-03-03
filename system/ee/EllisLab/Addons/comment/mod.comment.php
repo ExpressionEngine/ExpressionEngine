@@ -612,7 +612,7 @@ class Comment {
 			{
 				continue;
 			}
-			
+
 			$table = "exp_member_data_field_{$field_id}";
 			$select .= ", {$table}.data AS m_field_id_{$field_id}";
 			$select .= ", {$table}.metadata AS m_field_ft_{$field_id}";
@@ -694,17 +694,6 @@ class Comment {
 		{
 			$member_cond_vars[$var] = '';
 		}
-
-
-
-
-
-
-////////////
-
-
-
-////////
 
 		// Fetch the custom member field definitions
 		$m_fields = array();
@@ -1306,7 +1295,7 @@ class Comment {
 	}
 
 	/**
-	 * Called after $this->catfields is populated, caches associated CategoryField models
+	 * Called after $m_fields is populated, caches associated MemberField models
 	 */
 	private function cacheMemberFieldModels($m_fields)
 	{
@@ -1343,8 +1332,7 @@ class Comment {
 				->indexBy('field_id');
 		}
 
-
-
+		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
 	}
 
 	/**

@@ -2294,7 +2294,7 @@ class Channel {
 				{
 					continue;
 				}
-				
+
 				$field_id = $mfield[0];
 				$table = "exp_member_data_field_{$field_id}";
 				$this->sql .= ", {$table}.data AS m_field_id_{$field_id}";
@@ -2460,8 +2460,6 @@ class Channel {
 		);
 
 		$this->cacheCategoryFieldModels();
-		
-		$this->cacheMemberFieldModels();
 
 		ee()->session->set_cache('mod_channel', 'active', $this);
 		$this->return_data = $parser->parse($this, $data, $config);
@@ -4043,50 +4041,6 @@ class Channel {
 		return $chunk;
 	}
 
-
-	/**
-	 * Called after $this->mfields is populated, caches associated CategoryField models
-	 */
-	private function cacheMemberFieldModels()
-	{
-		$this->member_field_models = ee()->session->cache(__CLASS__, 'member_field_models') ?: array();
-
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-		$single_field_data = array();
-
-		// Get field names present in the template, sans modifiers
-		$clean_field_names = array_map(function($field)
-		{
-			
-			$field = ee()->api_channel_fields->get_single_field($field);
-			
-			return $field['field_name'];
-		}, array_flip(ee()->TMPL->var_single));
-
-		// Get field IDs for the member fields we need to fetch
-		$member_field_ids = array();
-		foreach ($clean_field_names as $field_name)
-		{
-			if (isset($m_fields[$field_name][0]))
-			{
-				$member_field_ids[] = $m_fields[$field_name][0];
-			}
-		}
-		
-		if (empty($member_field_ids))
-		{
-			return;
-		}		
-
-		// Cache member fields here before we start parsing
-		$this->member_field_models += ee('Model')->get('MemberField', array_unique($member_field_ids))
-				->all()
-				->indexBy('field_id');
-
-		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
-
-	}
 
 	/**
 	 * Called after $this->catfields is populated, caches associated CategoryField models
