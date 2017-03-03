@@ -163,18 +163,59 @@ class Updater {
 			'bday_y' => array()
 			);
 
+		// Safety check- does field already exist as a custom field
+		$existing = ee('Model')->get('MemberField')->fields('m_field_name')->all();
+		$map = array();
+
+		if (count($existing) > 0)
+		{
+			foreach ($existing as $mfield)
+			{
+				$map[$mfield->m_field_name] = $mfield->field_id;
+			}
+		}
+
+		$member_columns = ee()->db->list_fields('members');
+
+		$member_table_fields = array();
+		$vars = 0;
 		foreach ($fields as $field => $data)
 		{
+			// does field still exist in exp_members
+			// if not, there isn't much we can do
+			if (in_array($field, $member_columns))
+			{
+				$member_table_fields[] = $field;
+			}
+			else
+			{
+				continue;
+			}
+
+			// member field already exists
+			if (in_array($field, array_keys($map)))
+			{
+					continue;
+			}
+
+			$vars++;
 			ee()->db->select_max($field);
 		}
 
-		$query = ee()->db->get('members');
-		$move = $query->row_array();
+		$make = array();
+		if ($vars > 0)
+		{
+			$query = ee()->db->get('members');
+			$make = $query->row_array();
 
-		// Removes all false and null, including 0
-		$move = array_filter($move);
+			// Removes all false and null, including 0
+			$make = array_filter($make);
+		}
 
-		if (empty($move))
+
+		// All fields either exist AND are no longer in exp_members
+		// Bail out
+		if (empty($member_table_fields) OR empty($make))
 		{
 			return;
 		}
@@ -183,7 +224,7 @@ class Updater {
 		$birthday = FALSE;
 		foreach (array('bday_d', 'bday_m', 'bday_y') as $bday)
 		{
-			if (array_key_exists($bday, $move))
+			if (array_key_exists($bday, $make))
 			{
 				$fields['birthday'] = array(
 					'field_label' => lang('birthday'),
@@ -191,56 +232,103 @@ class Updater {
 					'field_type' => 'date'
 				);
 
-				$move['birthday'] = TRUE;
-
+				$make['birthday'] = TRUE;
 				$birthday = TRUE;
+				break;
 			}
-
-			unset($move[$bday]);
 		}
 
-
-		// Safety check- does field already exist in exp_member_fields
-		$existing = ee('Model')->get('MemberField')->fields('m_field_name')->all()->pluck('m_field_name');
-
+		unset($make['bday_y']);
+		unset($make['bday_m']);
+		unset($make['bday_d']);
 
 		ee()->load->library('api');
 
 		// Create custom fields
-		foreach ($move as $name => $val)
+		foreach ($make as $name => $val)
 		{
-			if (in_array($name, $existing) OR in_array($name, array('bday_d', 'bday_m', 'bday_y')))
+			if (in_array($name, array_keys($map)) OR in_array($name, array('bday_d', 'bday_m', 'bday_y')))
 			{
 				continue;
 			}
 
-			$new_fields[] = $name;
-
 			$field = ee('Model')->make('MemberField');
 
 			$field->m_field_type = $fields[$name]['field_type'];
-
 
 			$field->m_field_label = $fields[$name]['field_label'];
 			$field->m_field_name = $name;
 			$field->m_field_description = $fields[$name]['field_description'];
 
 			$field->save();
+
+			$map[$field->m_field_name] = $field->field_id;
 		}
 
 
 		// Copy custom field data
-		// Seth can do this via select into query- need to merge.
+
+		// Should work for everything except birthday
+		foreach ($make as $field_name => $vals)
+		{
+			if ($field_name == 'birthday')
+			{
+				continue;
+			}
+
+			// ARGH- how to handle re-inserting
+			// If you rerun it, it just inserts again
+			// for all but birthday, do a count, skip if it has any?
+			if (ee()->db->count_all_results('member_data_field_'.$map[$field_name]) !== 0)
+			{
+				continue;
+			}
+
+
+			$sql = 'INSERT INTO exp_member_data_field_'.$map[$field_name].' (member_id, data)
+					SELECT m.member_id, m.'.$field_name.' FROM exp_members m';
+			ee()->db->query($sql);
+		}
+
+		if ($birthday AND ee()->db->count_all_results('member_data_field_'.$map['birthday']) == 0)
+		{
+			ee()->db->select('member_id, bday_d, bday_m, bday_y');
+			$query = ee()->db->get('members');
+
+			foreach ($query->result() as $row)
+			{
+				if (empty($row->bday_y) AND empty($row->bday_m) AND empty($row->bday_d))
+				{
+					$r['member_id'] = $row->member_id;
+					$r['data'] = 0;
+				}
+				else
+				{
+					$year = ( ! empty($row->bday_y) AND strlen($row->bday_y) == 4) ? $row->bday_y : '1900';
+					$month = ( ! empty($row->bday_m)) ? str_pad($row->bday_m, 2,"0", STR_PAD_LEFT) : '01';
+					$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
+
+					$r['member_id'] = $row->member_id;
+					$r['data'] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
+
+				}
+				$data[] = $r;
+			}
+
+			ee()->db->insert_batch(
+				'member_data_field_'.$map['birthday'], $data
+				);
+		}
+
 
 		// Drop columns from exp_members
 		foreach ($fields as $field => $data)
 		{
 			ee()->smartforge->drop_column('members', $field);
 		}
-
 	}
-	
-	
+
+
 	private function _update_relationship_tags()
 	{
 		ee()->remove('template');
@@ -379,8 +467,8 @@ class Updater {
 	}
 
 
-	
-	
+
+
 }
 
 // EOF
