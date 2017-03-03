@@ -225,7 +225,7 @@ class Select extends Query {
 
 			if ( ! $found)
 			{
-				return;
+				return $result_array;
 			}
 		}
 
