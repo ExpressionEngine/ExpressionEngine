@@ -69,6 +69,7 @@ class Updater {
 					)
 				)
 			);
+			ee()->db->update('category_fields', array('legacy_field_data' => 'y'));
 		}
 
 		if ( ! ee()->db->field_exists('legacy_field_data', 'channel_fields'))
@@ -83,6 +84,7 @@ class Updater {
 					)
 				)
 			);
+			ee()->db->update('channel_fields', array('legacy_field_data' => 'y'));
 		}
 
 		if ( ! ee()->db->field_exists('m_legacy_field_data', 'member_fields'))
@@ -97,6 +99,7 @@ class Updater {
 					)
 				)
 			);
+			ee()->db->update('member_fields', array('m_legacy_field_data' => 'y'));
 		}
     }
 
