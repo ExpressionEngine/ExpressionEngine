@@ -388,7 +388,7 @@ class Channel {
 	  */
 	public function fetch_custom_member_fields()
 	{
-		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data');
 		$query = ee()->db->get('member_fields');
 
 		$fields_present = FALSE;
@@ -402,7 +402,7 @@ class Channel {
 				$fields_present = TRUE;
 			}
 
-			$this->mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
+			$this->mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_legacy_field_data']);
 		}
 
 		// If we can find no instance of the variable, then let's not process them at all.
@@ -2275,7 +2275,7 @@ class Channel {
 
 		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
-						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
+						m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id,
 						wd.*";
 
 		$from = " FROM exp_channel_titles		AS t
@@ -2290,6 +2290,11 @@ class Channel {
 
 			foreach ($this->mfields as $mfield)
 			{
+				if ($mfield[2] == 'y')
+				{
+					continue;
+				}
+				
 				$field_id = $mfield[0];
 				$table = "exp_member_data_field_{$field_id}";
 				$this->sql .= ", {$table}.data AS m_field_id_{$field_id}";
@@ -2455,6 +2460,8 @@ class Channel {
 		);
 
 		$this->cacheCategoryFieldModels();
+		
+		$this->cacheMemberFieldModels();
 
 		ee()->session->set_cache('mod_channel', 'active', $this);
 		$this->return_data = $parser->parse($this, $data, $config);
@@ -4036,6 +4043,51 @@ class Channel {
 		return $chunk;
 	}
 
+
+	/**
+	 * Called after $this->mfields is populated, caches associated CategoryField models
+	 */
+	private function cacheMemberFieldModels()
+	{
+		$this->member_field_models = ee()->session->cache(__CLASS__, 'member_field_models') ?: array();
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		$single_field_data = array();
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			
+			$field = ee()->api_channel_fields->get_single_field($field);
+			
+			return $field['field_name'];
+		}, array_flip(ee()->TMPL->var_single));
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($m_fields[$field_name][0]))
+			{
+				$member_field_ids[] = $m_fields[$field_name][0];
+			}
+		}
+		
+		if (empty($member_field_ids))
+		{
+			return;
+		}		
+
+		// Cache member fields here before we start parsing
+		$this->member_field_models += ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+
+		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
+
+	}
+
 	/**
 	 * Called after $this->catfields is populated, caches associated CategoryField models
 	 */
@@ -4051,7 +4103,7 @@ class Channel {
 		{
 			$field = ee()->api_channel_fields->get_single_field($field);
 			return $field['field_name'];
-		}, ee()->TMPL->var_single);
+		}, array_flip(ee()->TMPL->var_single));
 
 		// Get field IDs for the category fields we need to fetch
 		$field_ids = array();
