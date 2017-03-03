@@ -31,8 +31,7 @@ class Command {
 		ee('Updater/Runner')->run();
 
 		// TODO: Abstract into helper method to run other eecms CLI commands?
-		// TODO: test what happens when you run eecms.phar outside root dir
-		system('php eecms.phar upgrade --microapp --no-bootstrap');
+		system('php '.SYSPATH.'ee/eecms.phar upgrade --microapp --no-bootstrap');
 	}
 
 	public function updaterMicroapp($step = NULL)
@@ -48,7 +47,7 @@ class Command {
 
 		if (($next_step = $runner->getNextStep()) !== FALSE)
 		{
-			$cmd = 'php eecms.phar upgrade --microapp --step="'.$next_step.'"';
+			$cmd = 'php '.SYSPATH.'ee/eecms.phar upgrade --microapp --step="'.$next_step.'"';
 
 			if (strpos($next_step, 'updateDatabase') === FALSE)
 			{

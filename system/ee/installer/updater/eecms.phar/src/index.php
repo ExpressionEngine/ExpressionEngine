@@ -1,10 +1,12 @@
 <?php
 
-require_once 'phar://eecms.phar/bootstrap.php';
+require_once __DIR__.'/bootstrap.php';
 
-$project_base = realpath('../').'/';
+$project_base = realpath(str_replace('phar://', '', dirname(__DIR__)).'/../').'/';
 
 // TODO: Add some test to make sure the CLI file hasn't been moved out of system/ee and complain if it has
+
+// TODO: Don't update if there isn't an update available, CLI doesn't seem to know this
 
 // Path constants
 define('SELF', basename(__FILE__));
