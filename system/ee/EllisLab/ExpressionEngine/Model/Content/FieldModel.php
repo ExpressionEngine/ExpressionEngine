@@ -390,6 +390,7 @@ abstract class FieldModel extends Model {
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
+			'field_id'		=> $this->getId(),
 			'content_id'	=> $content_id,
 			'content_type'	=> $content_type,
 			'field_fmt'		=> $field_fmt,

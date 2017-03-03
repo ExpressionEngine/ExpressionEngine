@@ -116,7 +116,8 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 				array(
 					'channel_html_formatting' => 'safe',
 					'channel_auto_link_urls' => 'y',
-					'channel_allow_img_urls' => 'n'
+					'channel_allow_img_urls' => 'n',
+					'field_ft_'.$field_id => $data['m_field_ft_'.$field_id]
 				)
 			);
 		}

@@ -55,8 +55,8 @@ class CategoryField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'field_type'     => 'required|enum[text,textarea,select]',
-		'field_label'    => 'required|xss|noHtml',
-		'field_name'     => 'required|alphaDash|unique[site_id]',
+		'field_label'    => 'required|xss|noHtml|maxLength[50]',
+		'field_name'     => 'required|alphaDash|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
 		'field_ta_rows'  => 'integer',
 		'field_maxl'     => 'integer',
 		'field_required' => 'enum[y,n]',
@@ -151,6 +151,20 @@ class CategoryField extends FieldModel {
 	{
 		return 'category_field_data';
 	}
+
+	/**
+	 * Validate the field name to avoid variable name collisions
+	 */
+	public function validateNameIsNotReserved($key, $value, $params, $rule)
+	{
+		if (in_array($value, ee()->cp->invalid_custom_field_names()))
+		{
+			return lang('reserved_word');
+		}
+
+		return TRUE;
+	}
+
 }
 
 // EOF

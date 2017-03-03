@@ -785,7 +785,7 @@ class Member_auth extends Member {
 
 		// Create a new DB record with the temporary reset code
 		$rand = ee()->functions->random('alnum', 8);
-		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
+		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => ee()->localize->now);
 		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
 
 		// Build the email message

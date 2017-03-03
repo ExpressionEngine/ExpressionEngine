@@ -81,7 +81,12 @@ class Profile extends CP_Controller {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('members'));
 
 		ee()->view->header = array(
-			'title' => sprintf(lang('profile_header'), $this->member->username)
+			'title' => sprintf(lang('profile_header'),
+				htmlentities($this->member->username, ENT_QUOTES, 'UTF-8'),
+				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
+				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
+				$this->member->ip_address
+			)
 		);
 	}
 
@@ -155,6 +160,8 @@ class Profile extends CP_Controller {
 		{
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();
+
+			$list->addItem(lang('view_activity'), ee('CP/URL')->make('members/profile/activity', $this->query_string));
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
@@ -245,7 +252,7 @@ class Profile extends CP_Controller {
 		{
 			foreach ($settings as $setting)
 			{
-				if ( ! empty($setting['fields']))
+				if ( ! empty($setting['fields']) && is_array($setting['fields']))
 				{
 					foreach ($setting['fields'] as $field_name => $field)
 					{

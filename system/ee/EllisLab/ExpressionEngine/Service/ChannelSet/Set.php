@@ -567,6 +567,13 @@ class Set {
 	 */
 	private function loadChannelField(\SplFileInfo $file)
 	{
+		static $fieldtypes = array();
+
+		if (empty($fieldtypes))
+		{
+			$fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+		}
+
 		$name = $file->getFilename();
 
 		if (substr_count($name, '.') !== 1)
@@ -575,6 +582,11 @@ class Set {
 		}
 
 		list($name, $type) = explode('.', $name);
+
+		if ( ! in_array($type, $fieldtypes))
+		{
+			throw new ImportException("Fieldtype not installed: {$type}");
+		}
 
 		$data = json_decode(file_get_contents($file->getRealPath()), TRUE);
 

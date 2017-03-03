@@ -257,6 +257,7 @@ class Select extends Query {
 	{
 		list($property, $operator, $value, $connective) = $filter;
 
+		$binary = $this->isBinaryComparison($property);
 		$property = $this->translateProperty($property);
 
 		$fn = 'where';
@@ -289,12 +290,37 @@ class Select extends Query {
 					break;
 			}
 
-			$query->$fn("{$property} {$operator} NULL");
+			$query->$fn("{$property} {$operator} NULL", NULL, TRUE, $binary);
 		}
 		else
 		{
-			$query->$fn("{$property} {$operator}", $value);
+			$query->$fn("{$property} {$operator}", $value, TRUE, $binary);
 		}
+	}
+
+	/**
+	 * Given a property name, which can be aliased, returns whether or not the
+	 * property is set to be compared in a binary fashion, typically for
+	 * case-sensitivity purposes
+	 *
+	 * @param string $property Property name, optionally aliased
+	 * @param boolean
+	 */
+	protected function isBinaryComparison($property)
+	{
+		if (strpos($property, '.') !== FALSE)
+		{
+			list($alias, $property) = explode('.', $property);
+			$from = $this->expandAlias($alias);
+		}
+		else
+		{
+			$from = $this->builder->getFrom();
+			list($from, $alias) = $this->splitAlias($from);
+		}
+
+		$meta = $this->store->getMetaDataReader($from);
+		return in_array($property, $meta->getBinaryComparisons());
 	}
 
 	/**

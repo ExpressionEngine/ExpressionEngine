@@ -195,13 +195,11 @@ class Textarea_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$field_fmt = $this->get_setting('field_fmt') ?: $this->row('field_ft_'.$this->field_id);
-
 		ee()->load->library('typography');
 		return ee()->typography->parse_type(
 			$data,
 			array(
-				'text_format'	=> $field_fmt ?: 'none',
+				'text_format'	=> $this->get_format(),
 				'html_format'	=> $this->row('channel_html_formatting', 'all'),
 				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
 				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')

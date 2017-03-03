@@ -914,7 +914,10 @@ class EE_Upload {
 		// If renaming a file, it should have same file type suffix as the original
 		if ($type_match === TRUE)
 		{
-			if (sizeof(explode('.', $this->file_name)) == 1 OR (array_pop(explode('.', $this->file_name)) != array_pop(explode('.', $original_file))))
+			$filename_parts = explode('.', $this->file_name);
+			$original_parts = explode('.', $original_file);
+
+			if (sizeof($filename_parts) == 1 OR (array_pop($filename_parts) != array_pop($original_parts)))
 			{
 				$this->set_error('invalid_filetype');
 				return FALSE;

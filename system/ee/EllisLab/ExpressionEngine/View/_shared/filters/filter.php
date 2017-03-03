@@ -1,5 +1,5 @@
 <a class="has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
-	<?=strtolower(lang($label))?>
+	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
 	<?php endif; ?>
