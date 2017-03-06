@@ -19,7 +19,7 @@
 		<div class="alert-notice">
 			<p><?=$warn_message?></p>
 		</div>
-		<p class="msg-choices warn-choices hidden"><?=sprintf(lang('troubleshoot'), '')?></p>
+		<p class="msg-choices warn-choices <?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('troubleshoot'), '', ee('CP/URL')->make('homepage'))?></p>
 		<p class="msg-choices issue-choices hidden"><a href="" rel="rollback"><?=sprintf(lang('rollback_to'), strip_tags($current_version))?></a></p>
 	</div>
 </div>

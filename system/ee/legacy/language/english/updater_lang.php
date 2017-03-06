@@ -15,7 +15,7 @@ $lang = array(
 '<a href="%s">Click here</a> for instructions to manually rollback from this point.',
 
 'troubleshoot' =>
-'Troubleshoot, then <a href="%s">Continue</a>',
+'Troubleshoot, then <a href="%s">Continue</a>, or <a href="%s">Return to&nbsp;CP</a>',
 
 'rollback_to' =>
 'Rollback to %s',
