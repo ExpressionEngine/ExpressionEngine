@@ -26,6 +26,15 @@ class Command {
 
 	public function start()
 	{
+		ee()->load->library('el_pings');
+		$version_file = ee()->el_pings->get_version_info();
+		$to_version = $version_file[0][0];
+
+		if (version_compare(APP_VER, $to_version, '>='))
+		{
+			exit('ExpressionEngine '.APP_VER.' is already up-to-date!');
+		}
+
 		// Preflight checks, download and unpack update
 		ee('Updater/Runner')->run();
 
