@@ -5,7 +5,7 @@ if (substr(__DIR__, -14, 14) !== '/ee/eecms.phar')
 	exit('eecms.phar must be kept in your /system/ee directory.');
 }
 
-require_once __DIR__.'/bootstrap.php';
+require_once __DIR__.'/helpers.php';
 
 $project_base = realpath(str_replace('phar://', '', dirname(__DIR__)).'/../').'/';
 
