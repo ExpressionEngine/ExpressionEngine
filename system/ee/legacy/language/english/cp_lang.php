@@ -359,6 +359,12 @@ $lang = array(
 'auto_br' => 'Auto line break',
 'xhtml' => 'XHTML',
 
+'update_completed' =>
+'ExpressionEngine has been successfully updated to version %s!',
+
+'update_completed_desc' =>
+'To see what\'s new in ExpressionEngine %s, take a look at the <a href="%s" rel="external">changelog</a>.',
+
 /**
  * Footer
  */

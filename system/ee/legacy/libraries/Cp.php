@@ -235,6 +235,21 @@ class Cp {
 		ee()->view->ee_license = $license;
 		$sidebar = ee('CP/Sidebar')->render();
 
+		if (ee('Request')->get('update') == 'completed')
+		{
+			ee('CP/Alert')->makeBanner('update-completed')
+				->asSuccess()
+				->withTitle(sprintf(lang('update_completed'), APP_VER))
+				->addToBody(sprintf(
+					lang('update_completed_desc'),
+					APP_VER,
+					ee()->cp->masked_url(
+						'https://docs.expressionengine.com/latest/about/changelog.html'
+					)
+				))
+				->now();
+		}
+
 		if ( ! empty($sidebar))
 		{
 			ee()->view->left_nav = $sidebar;

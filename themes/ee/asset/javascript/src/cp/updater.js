@@ -57,7 +57,7 @@ var Updater = {
 							that._updaterInPlace = true;
 						}
 					} else if (result.nextStep === false) {
-						window.location = EE.BASE;
+						window.location = EE.BASE + '&update=completed';
 					}
 				} else {
 					that._showError(result);
