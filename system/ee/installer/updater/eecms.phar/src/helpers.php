@@ -52,4 +52,15 @@ function parseArguments()
 	return $out;
 }
 
+/**
+ * Runs a an eecms.phar command externally from the current process/scope
+ *
+ * @param	string	$command	Command to run, string that normally follows
+ *   "eecms.phar" on the command line
+ */
+function runCommandExternally($command)
+{
+	system('php '.SYSPATH.'ee/eecms.phar ' . $command);
+}
+
 // EOF

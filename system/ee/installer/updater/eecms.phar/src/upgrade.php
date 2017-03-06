@@ -13,14 +13,12 @@ class Command {
 		if (isset($params['microapp']))
 		{
 			$step = (isset($params['step'])) ? $params['step'] : NULL;
-			$this->updaterMicroapp($step);
-			return;
+			return $this->updaterMicroapp($step);
 		}
 
 		if (isset($params['rollback']))
 		{
-			$this->updaterMicroapp('rollback');
-			return;
+			return $this->updaterMicroapp('rollback');
 		}
 
 		$this->start();
@@ -28,10 +26,11 @@ class Command {
 
 	public function start()
 	{
+		// Preflight checks, download and unpack update
 		ee('Updater/Runner')->run();
 
-		// TODO: Abstract into helper method to run other eecms CLI commands?
-		system('php '.SYSPATH.'ee/eecms.phar upgrade --microapp --no-bootstrap');
+		// Launch into microapp
+		runCommandExternally('upgrade --microapp --no-bootstrap');
 	}
 
 	public function updaterMicroapp($step = NULL)
@@ -47,14 +46,14 @@ class Command {
 
 		if (($next_step = $runner->getNextStep()) !== FALSE)
 		{
-			$cmd = 'php '.SYSPATH.'ee/eecms.phar upgrade --microapp --step="'.$next_step.'"';
+			$cmd = 'upgrade --microapp --step="'.$next_step.'"';
 
 			if (strpos($next_step, 'updateDatabase') === FALSE)
 			{
 				$cmd .= ' --no-bootstrap';
 			}
 
-			system($cmd);
+			runCommandExternally($cmd);
 		}
 	}
 }
