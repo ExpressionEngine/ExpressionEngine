@@ -15,10 +15,16 @@ $lang = array(
 '<a href="%s">Click here</a> for instructions to manually rollback from this point.',
 
 'troubleshoot' =>
-'Troubleshoot, then <a href="%s">Continue</a>, or <a href="%s">Return to&nbsp;CP</a>',
+'Troubleshoot, then <a href="%s">Continue</a>',
+
+'or_return_to_cp' =>
+'Or, <a href="%s">return to the control panel</a>.',
 
 'rollback_to' =>
 'Rollback to %s',
+
+'cannot_rollback' =>
+'Having trouble rolling back? <a href="%s" target="_blank">Find out</a> how to get your install back up and running again.',
 
 'view_stack_trace' =>
 'view stack trace',

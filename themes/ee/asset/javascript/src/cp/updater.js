@@ -122,9 +122,8 @@ var Updater = {
 			.find('.alert-notice p')
 			.html(message);
 
-		$('p.msg-choices').addClass('hidden')
-			.filter('.'+severity+'-choices')
-			.removeClass('hidden');
+		$('p[class$=-choices]').addClass('hidden');
+		$('p.'+severity+'-choices').removeClass('hidden');
 
 		if (trace_exists) {
 			var list = $('<ul/>');
