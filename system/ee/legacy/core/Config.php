@@ -318,7 +318,7 @@ class EE_Config {
 				return;
 			}
 
-			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
+			show_error("Site Error:  Unable to Load Site Preferences from the Database; No Preferences Found", 503);
 		}
 
 		// Reset Core Preferences back to their Pre-Database State
