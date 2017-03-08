@@ -28,13 +28,14 @@
 	</div>
 </div>
 
-<?php if ( ! $warn_message && $next_step):
-	echo ee()->javascript->get_global()
-		. ee()->view->script_tag('jquery/jquery.js')
-		. ee()->view->script_tag('cp/updater.js');
-	?>
-	<script type="text/javascript">
-		Updater.init();
+<?=ee()->javascript->get_global()
+	. ee()->view->script_tag('jquery/jquery.js')
+	. ee()->view->script_tag('cp/updater.js');
+?>
+
+<script type="text/javascript">
+	Updater.init();
+	<?php if ( ! $warn_message && $next_step): ?>
 		Updater.runStep('<?=$next_step?>');
-	</script>
-<?php endif ?>
+	<?php endif ?>
+</script>

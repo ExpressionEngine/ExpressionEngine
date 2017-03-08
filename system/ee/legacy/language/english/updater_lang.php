@@ -15,7 +15,7 @@ $lang = array(
 '<a href="%s">Click here</a> for instructions to manually rollback from this point.',
 
 'troubleshoot' =>
-'Troubleshoot, then <a href="%s">Continue</a>',
+'Troubleshoot, then <a href="#" data-post-url="%s">Continue</a>',
 
 'or_return_to_cp' =>
 'Or, <a href="%s">return to the control panel</a>.',

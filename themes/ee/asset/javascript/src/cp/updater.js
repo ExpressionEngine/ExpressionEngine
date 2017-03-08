@@ -30,6 +30,20 @@ var Updater = {
 			that._rollingBack = true;
 			that.runStep('rollback');
 		});
+
+		$('body').on('click', 'a[data-post-url]', function(event) {
+			event.preventDefault();
+
+			var form = $('<form/>', {
+				action: $(this).data('postUrl'),
+				method: 'post'
+			});
+			form.append($('<input/>', {
+				name: 'csrf_token',
+				value: EE.CSRF_TOKEN
+			}));
+			form.appendTo('body').submit();
+		});
 	},
 
 	runStep: function(step) {

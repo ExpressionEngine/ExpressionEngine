@@ -35,6 +35,11 @@ class Updater extends CP_Controller {
 	 */
 	public function index()
 	{
+		if (ee('Request')->method() != 'POST')
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
 		ee()->lang->loadfile('updater');
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();

@@ -34,7 +34,7 @@
 								<em><?=lang('build') . ' ' . $new_version['build']?></em>
 							</p>
 								<a href="" class="close">&#10006;</a>
-								<p class="update-btn"><a class="btn submit" href="<?=ee('CP/URL', 'updater')?>">Update Now</a></p>
+								<p class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>">Update Now</a></p>
 								<div class="status out"><?=lang('out_of_date')?></div>
 							<?php else: ?>
 								<a href="" class="close">&#10006;</a>
