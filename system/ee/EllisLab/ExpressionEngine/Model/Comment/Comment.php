@@ -92,8 +92,6 @@ class Comment extends Model {
 		{
 			$this->Author->updateAuthorStats();
 		}
-
-		$this->updateCommentStats();
 	}
 
 	public function onAfterDelete()
@@ -115,6 +113,7 @@ class Comment extends Model {
 
 	public function onAfterSave()
 	{
+		$this->updateCommentStats();
 		ee()->functions->clear_caching('all');
 	}
 
