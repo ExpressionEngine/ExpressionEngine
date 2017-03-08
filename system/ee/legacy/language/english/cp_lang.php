@@ -365,6 +365,12 @@ $lang = array(
 'update_completed_desc' =>
 'To see what\'s new in ExpressionEngine %s, take a look at the <a href="%s" rel="external">changelog</a>.',
 
+'update_rolledback' =>
+'ExpressionEngine has been rolled back to version %s',
+
+'update_rolledback_desc' =>
+'Contact support if you continue having trouble updating, or you can <a href="%s" rel="external">manually update</a>.',
+
 /**
  * Footer
  */

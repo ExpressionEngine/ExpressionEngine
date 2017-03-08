@@ -218,6 +218,7 @@ class Cp {
 			ee()->view->new_version = $new_version;
 		}
 
+		$this->addUpdateBanner();
 		$this->_notices();
 
 		ee()->view->formatted_version = formatted_version(APP_VER);
@@ -234,21 +235,6 @@ class Cp {
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
 		$sidebar = ee('CP/Sidebar')->render();
-
-		if (ee('Request')->get('update') == 'completed')
-		{
-			ee('CP/Alert')->makeBanner('update-completed')
-				->asSuccess()
-				->withTitle(sprintf(lang('update_completed'), APP_VER))
-				->addToBody(sprintf(
-					lang('update_completed_desc'),
-					APP_VER,
-					ee()->cp->masked_url(
-						'https://docs.expressionengine.com/latest/about/changelog.html'
-					)
-				))
-				->now();
-		}
 
 		if ( ! empty($sidebar))
 		{
@@ -333,6 +319,38 @@ class Cp {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Shows a banner indicating the result of a one-click upgrade
+	 */
+	protected function addUpdateBanner()
+	{
+		if (ee('Request')->get('update') == 'completed')
+		{
+			ee('CP/Alert')->makeBanner('update-completed')
+				->asSuccess()
+				->withTitle(sprintf(lang('update_completed'), APP_VER))
+				->addToBody(sprintf(
+					lang('update_completed_desc'),
+					APP_VER,
+					ee()->cp->masked_url(
+						'https://docs.expressionengine.com/v4/about/changelog.html'
+					)
+				))
+				->now();
+		}
+		elseif (ee('Request')->get('update') == 'rolledback')
+		{
+			ee('CP/Alert')->makeBanner('update-rolledback')
+				->asWarning()
+				->withTitle(sprintf(lang('update_rolledback'), APP_VER))
+				->addToBody(sprintf(
+					lang('update_rolledback_desc'),
+					'https://docs.expressionengine.com/v4/installation/update.html'
+				))
+				->now();
+		}
+	}
 
 	/**
 	 * Run a number of checks/tests and display any notices

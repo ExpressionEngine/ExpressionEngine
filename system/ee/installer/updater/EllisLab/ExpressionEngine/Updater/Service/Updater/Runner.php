@@ -135,6 +135,7 @@ class Runner {
 			}
 		}
 
+		// Temporary for testing, change to 'selfDestruct' later
 		return 'rollback';
 	}
 
