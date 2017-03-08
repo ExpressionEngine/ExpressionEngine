@@ -11,7 +11,7 @@
 </div>
 
 <div class="box updater-stopped<?php if ($warn_message === NULL): ?> hidden<?php endif ?>">
-	<h1><?=lang('update_stopped')?> <span class="updater-fade">(<a class="toggle" rel="updater-stack-trace" href=""><?=lang('view_stack_trace')?></a>)</span><span class="icon-issue"></span></h1>
+	<h1><?=lang('update_stopped')?> <span class="updater-fade hidden">(<a class="toggle" rel="updater-stack-trace" href=""><?=lang('view_stack_trace')?></a>)</span><span class="icon-issue"></span></h1>
 	<div class="updater-stack-trace"></div>
 	<div class="updater-msg">
 		<p><?=lang('could_not_complete')?></p>
