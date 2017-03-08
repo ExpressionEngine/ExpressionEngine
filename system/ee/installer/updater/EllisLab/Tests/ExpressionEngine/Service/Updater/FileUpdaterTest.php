@@ -11,7 +11,6 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem');
-		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Updater\Service\Config\File');
 		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Updater\Service\Updater\Verifier');
 		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Updater\Service\Updater\Logger');
 
@@ -30,7 +29,7 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 		$this->archive_path = PATH_CACHE.'ee_update/ExpressionEngine/';
 		$this->backups_path = PATH_CACHE.'ee_update/backups/';
 
-		$this->fileupdater = new FileUpdater($this->filesystem, $this->config, $this->verifier, $this->logger);
+		$this->fileupdater = new FileUpdater($this->filesystem, $this->verifier, $this->logger);
 	}
 
 	public function testBackupExistingInstallFiles()

@@ -197,12 +197,10 @@ class Runner {
 	protected function makeUpdaterService()
 	{
 		$filesystem = new Filesystem();
-		$config = new Service\Config\File(SYSPATH.'user/config/config.php');
 		$verifier = new Service\Updater\Verifier($filesystem);
 
 		return new Service\Updater\FileUpdater(
 			$filesystem,
-			$config,
 			$verifier,
 			$this->logger
 		);

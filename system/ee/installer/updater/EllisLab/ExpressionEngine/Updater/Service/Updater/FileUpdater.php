@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 use EllisLab\ExpressionEngine\Updater\Service\Updater\Logger;
 use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Updater\Service\Config\File;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,17 +32,15 @@ use EllisLab\ExpressionEngine\Updater\Service\Config\File;
 class FileUpdater {
 
 	protected $filesystem = NULL;
-	protected $config = NULL;
 	protected $verifier = NULL;
 	protected $logger = NULL;
 
 	// Public for unit testing :/
 	public $configs = [];
 
-	public function __construct(Filesystem $filesystem, File $config, Verifier $verifier, Logger $logger)
+	public function __construct(Filesystem $filesystem, Verifier $verifier, Logger $logger)
 	{
 		$this->filesystem = $filesystem;
-		$this->config = $config;
 		$this->verifier = $verifier;
 		$this->logger = $logger;
 		$this->configs = $this->parseConfigs();
