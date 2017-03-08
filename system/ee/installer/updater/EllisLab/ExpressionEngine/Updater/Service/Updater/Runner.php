@@ -41,7 +41,6 @@ class Runner {
 		'checkForDbUpdates',
 		'backupDatabase',
 		'updateDatabase',
-		'rollback', // Temporary for testing
 		'selfDestruct'
 	];
 
@@ -147,6 +146,8 @@ class Runner {
 		{
 			return 'restoreDatabase';
 		}
+
+		return 'selfDestruct';
 	}
 
 	public function restoreDatabase()
