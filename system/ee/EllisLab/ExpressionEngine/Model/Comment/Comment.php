@@ -148,6 +148,15 @@ class Comment extends Model {
 		// entry won't exist if we deleted comments because we deleted the entry
 		if ($this->Entry)
 		{
+
+			// There are times, espcially when deleting a ChannelEntry, that
+			// the related entry object isn't fully loaded, so we'll need
+			// to reload it before working on it.
+			if (is_null($this->Entry->Channel))
+			{
+				$this->getAssociation('Entry')->markForReload();
+			}
+
 			$this->Entry->comment_total = $total_entry_comments;
 			$this->Entry->save();
 		}
