@@ -1,5 +1,8 @@
 <?php
 
+// In case a default isn't set on the server
+date_default_timezone_set('UTC');
+
 // Load full EE as bootstrap if we're running database updates
 if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
 	isset($_GET['step']) &&
