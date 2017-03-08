@@ -55,7 +55,7 @@ class Updater {
 		$email_newline = $this->setEmailNewlineSafely(ee()->config->item('email_newline'));
 		$email_smtp_crypto = (string) ee()->config->item('email_smtp_crypto');
 
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 		$msm_config->update_site_prefs(array(
 			'email_newline' => $email_newline,
 			'email_smtp_crypto' => $email_smtp_crypto
