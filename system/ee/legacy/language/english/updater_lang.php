@@ -41,6 +41,13 @@ $lang = array(
 'updateFiles_step' =>
 'Updating files',
 
+'files_not_writable' =>
+'The following paths are not writable:
+
+%s
+
+To troubleshoot, visit the documentation on <a href="%s" target="_blank">updating ExpressionEngine</a>.',
+
 'could_not_download' =>
 'Could not download update. Your internet connection may be down, or otherwise cannot reach the ExpressionEngine servers.
 

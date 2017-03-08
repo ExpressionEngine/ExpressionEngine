@@ -218,9 +218,11 @@ class Downloader {
 				return str_replace($search, '', $path);
 			}, $paths);
 
-			throw new UpdaterException(
-				"The following paths are not writable:\n " . implode("\n", $paths),
-			1);
+			throw new UpdaterException(sprintf(
+				lang('files_not_writable'),
+				implode("\n", $paths),
+				'https://docs.expressionengine.com/latest/installation/update.html'
+			), 1);
 		}
 	}
 
