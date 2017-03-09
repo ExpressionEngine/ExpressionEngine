@@ -60,6 +60,11 @@ function parseArguments()
  */
 function runCommandExternally($command)
 {
+	if (CLI_VERBOSE)
+	{
+		$command .= ' -v';
+	}
+
 	system('php '.SYSPATH.'ee/eecms ' . $command);
 }
 

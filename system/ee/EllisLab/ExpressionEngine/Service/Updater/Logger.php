@@ -39,6 +39,11 @@ class Logger extends File {
 	{
 		$message = '['.date('Y-M-d H:i:s O').'] ' . $message;
 
+		if (defined('CLI_VERBOSE') && CLI_VERBOSE)
+		{
+			echo $message . "\n";
+		}
+
 		parent::log($message);
 	}
 }
