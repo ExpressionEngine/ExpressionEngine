@@ -476,7 +476,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			'system/ee/installer/updater'
 		)->once();
 
-		$this->config->shouldReceive('set')->with('is_system_on', 'n')->once();
+		$this->config->shouldReceive('set')->with('is_system_on', 'n', true)->once();
 
 		$this->downloader->moveUpdater();
 
