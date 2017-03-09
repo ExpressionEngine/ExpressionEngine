@@ -57,7 +57,7 @@ class Command {
 		{
 			$cmd = 'upgrade --microapp --step="'.$next_step.'"';
 
-			if (strpos($next_step, 'updateDatabase') === FALSE)
+			if ($next_step == 'updateFiles' OR $next_step == 'rollback')
 			{
 				$cmd .= ' --no-bootstrap';
 			}
