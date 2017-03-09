@@ -1,8 +1,13 @@
 <?php
 
-if (substr(__DIR__, -14, 14) !== '/ee/eecms.phar')
+if (strpos(__DIR__, '/ee/eecms') === FALSE)
 {
-	exit('eecms.phar must be kept in your /system/ee directory.');
+	exit('The eecms utility must be kept in your /system/ee directory.');
+}
+
+if (version_compare(phpversion(), '5.4', '<'))
+{
+	exit('The command line version of PHP is less than the required version of 5.4.');
 }
 
 require_once __DIR__.'/helpers.php';

@@ -60,7 +60,7 @@ function parseArguments()
  */
 function runCommandExternally($command)
 {
-	system('php '.SYSPATH.'ee/eecms.phar ' . $command);
+	system('php '.SYSPATH.'ee/eecms ' . $command);
 }
 
 // EOF
