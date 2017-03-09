@@ -31,7 +31,6 @@ class File {
 
 	protected $file_path = NULL;
 	protected $filesystem = NULL;
-	protected $stdout = FALSE;
 
 	/**
 	 * Constructor
@@ -39,11 +38,10 @@ class File {
 	 * @param	string		$file_path	Path to log file
 	 * @param	Filesystem	$filesystem	Filesystem library object
 	 */
-	public function __construct($file_path, Filesystem $filesystem, $stdout = FALSE)
+	public function __construct($file_path, Filesystem $filesystem)
 	{
 		$this->file_path = $file_path;
 		$this->filesystem = $filesystem;
-		$this->stdout = $stdout;
 
 		$log_path = $this->filesystem->dirname($this->file_path);
 
@@ -62,8 +60,7 @@ class File {
 	}
 
 	/**
-	 * Writes log message to file and optionally echos the message if $stdout
-	 * class property is set to TRUE
+	 * Writes log message to file
 	 *
 	 * @param	string		$message	Message to log
 	 */
@@ -72,11 +69,6 @@ class File {
 		$message .= "\n";
 
 		$this->filesystem->write($this->file_path, $message, FALSE, TRUE);
-
-		if ($this->stdout)
-		{
-			echo $message;
-		}
 	}
 
 	/**
