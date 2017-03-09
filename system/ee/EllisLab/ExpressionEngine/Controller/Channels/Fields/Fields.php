@@ -62,6 +62,11 @@ class Fields extends AbstractChannelsController {
 			->filter('group_id', $group_id)
 			->first();
 
+		if ( ! $group)
+		{
+			show_404();
+		}
+
 		$base_url = ee('CP/URL', 'channels/fields/'.$group_id);
 
 		$vars = array(
@@ -102,6 +107,15 @@ class Fields extends AbstractChannelsController {
 		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$group = ee('Model')->get('ChannelFieldGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ( ! $group)
+		{
+			show_404();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
