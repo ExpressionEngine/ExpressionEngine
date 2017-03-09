@@ -548,7 +548,7 @@ class Member_memberlist extends Member {
 		/**  Run the full query and process result
 		/** ----------------------------------------*/
 
-		$sql = str_replace('WHERE', $.' WHERE', $sql);
+		$sql = str_replace('WHERE', $mcf_sql.' WHERE', $sql);
 		$query = ee()->db->query($f_sql.$sql);
 
 		$str = '';
@@ -564,11 +564,6 @@ class Member_memberlist extends Member {
 
 				$temp = str_replace("{member_css}", $style, $temp);
 				$temp = str_replace("{path:profile}", $this->_member_path($row['member_id']), $temp);
-
-				if ($row['url'] != '' AND substr($row['url'], 0, 4) != "http")
-				{
-					$row['url'] = "http://".$row['url'];
-				}
 
 				$temp = $this->_var_swap(
 					$temp,

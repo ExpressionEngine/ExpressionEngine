@@ -1949,7 +1949,7 @@ class Forum_Core extends Forum {
 
 		$tquery = ee()->db->query("SELECT f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
 									 t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-							  		 m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
+							  		 m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
 							FROM (exp_forums f, exp_forum_topics t, exp_members m)
 							LEFT JOIN exp_members em ON t.topic_edit_author = em.member_id
 							WHERE f.forum_id = t.forum_id
@@ -2568,7 +2568,7 @@ class Forum_Core extends Forum {
 			t.topic_date AS date, t.topic_edit_date AS edit_date,
 			t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
 			m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
-			m.total_forum_posts, m.location, m.email, m.accept_user_email,
+			m.total_forum_posts, m.email, m.accept_user_email,
 			m.signature, m.sig_img_filename, m.sig_img_width,
 			m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
 			m.photo_filename, m.photo_width, m.photo_height');
@@ -2943,7 +2943,7 @@ class Forum_Core extends Forum {
 			}
 
 			$pquery = ee()->db->query("SELECT p.post_id, p.forum_id, p.author_id, p.ip_address, p.body, p.parse_smileys, p.post_date AS date, p.post_edit_date AS edit_date, p.post_edit_author AS edit_author_id, em.screen_name AS edit_author,
-				m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
+				m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
 				f.forum_display_edit_date
 				FROM (exp_forum_posts p, exp_members m, exp_forums f)
 				LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
