@@ -38,7 +38,8 @@ class Member extends ContentModel {
 		'LastAuthoredTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'Template',
-			'to_key' => 'last_author_id'
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
 		),
 		'AuthoredChannelEntries' => array(
 			'type' => 'hasMany',
@@ -48,7 +49,8 @@ class Member extends ContentModel {
 		'LastAuthoredSpecialtyTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'SpecialtyTemplate',
-			'to_key' => 'last_author_id'
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
 		),
 		'UploadedFiles' => array(
 			'type' => 'hasMany',
@@ -92,7 +94,8 @@ class Member extends ContentModel {
 		'TemplateRevisions' => array(
 			'type' => 'hasMany',
 			'model' => 'RevisionTracker',
-			'to_key' => 'item_author_id'
+			'to_key' => 'item_author_id',
+			'weak' => TRUE
 		),
 		'SiteStatsIfLastMember' => array(
 			'type' => 'hasOne',

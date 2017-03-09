@@ -57,7 +57,8 @@ class Template extends FileSyncedModel {
 		'LastAuthor' => array(
 			'type'     => 'BelongsTo',
 			'model'    => 'Member',
-			'from_key' => 'last_author_id'
+			'from_key' => 'last_author_id',
+			'weak'     => TRUE
 		),
 		'NoAccess' => array(
 			'type'  => 'HasAndBelongsToMany',
