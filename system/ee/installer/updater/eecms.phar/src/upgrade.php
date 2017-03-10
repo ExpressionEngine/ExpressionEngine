@@ -35,6 +35,13 @@ class Command {
 			exit('ExpressionEngine '.APP_VER.' is already up-to-date!');
 		}
 
+		echo "There is a new version of ExpressionEngine available: " . $to_version . "\n";
+		echo "Would you like to upgrade? (y/n): ";
+		$stdin = trim(fgets(STDIN));
+		if( ! in_array($stdin, ['yes', 'y'])){
+			exit;
+		}
+
 		// Preflight checks, download and unpack update
 		ee('Updater/Runner')->run();
 
