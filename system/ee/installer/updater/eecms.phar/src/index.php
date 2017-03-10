@@ -21,16 +21,11 @@ define('SELF', basename(__FILE__));
 define('SYSPATH', $project_base);
 define('SYSDIR', basename($project_base));
 define('DEBUG', 1);
+define('REQ', 'CLI');
 define('CLI_VERBOSE', isset($args['v']) OR isset($args['verbose']));
 
 if ( ! isset($args['no-bootstrap']))
 {
-	// Currently needed for installer conditional in boot.php
-	if ( ! defined('REQ'))
-	{
-		define('REQ', 'CP');
-	}
-
 	$bootstrap = SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 	if (file_exists($bootstrap))
 	{
