@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
 use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Updater\Service;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\Logger;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -155,7 +156,10 @@ class Runner {
 
 	public function restoreDatabase()
 	{
-		ee('Database/Restore')->restoreLineByLine(PATH_CACHE.'ee_update/database.sql');
+		$db_path = PATH_CACHE.'ee_update/database.sql';
+		$this->logger->log('Importing SQL from backup: ' . $db_path);
+
+		ee('Database/Restore')->restoreLineByLine($db_path);
 
 		return 'selfDestruct';
 	}
@@ -166,12 +170,26 @@ class Runner {
 		$config->set('is_system_on', 'y', TRUE);
 		$config->set('app_version', APP_VER, TRUE);
 
-		ee('Filesystem')->deleteDir($this->makeUpdaterService()->path());
+		$working_dir = $this->makeUpdaterService()->path();
+		$this->logger->log('Deleting updater working directory: ' . $working_dir);
+		ee('Filesystem')->deleteDir($working_dir);
+
 		ee('Filesystem')->deleteDir(SYSPATH.'ee/updater');
+
+		if (REQ == 'CLI')
+		{
+			$this->logger->stdout('Successfully updated to ExpressionEngine ' . APP_VER, Logger::SUCCESS);
+		}
 	}
 
 	public function runStep($step)
 	{
+		$message = $this->getLanguageForStep($step);
+		if (strpos($step, '[') === FALSE)
+		{
+			$this->logger->stdout($message.'...');
+		}
+
 		try
 		{
 			$this->runStepParent($step);

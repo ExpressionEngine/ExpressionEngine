@@ -79,6 +79,8 @@ class Runner {
 	 */
 	public function runStep($step)
 	{
+		$this->logger->stdout($this->getLanguageForStep($step));
+
 		try
 		{
 			$this->runStepParent($step);
