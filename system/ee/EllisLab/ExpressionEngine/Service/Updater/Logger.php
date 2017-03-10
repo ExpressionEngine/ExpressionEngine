@@ -76,7 +76,7 @@ class Logger extends File {
 
 		if (REQ == 'CLI' && ! empty($message))
 		{
-			$message = "\033".$arrow."==> \033" . $text . $message . "...\n";
+			$message = "\033".$arrow."==> \033" . $text . $message . "\n";
 
 			$stdout = fopen('php://stdout', 'w');
 			fwrite($stdout, $message);
