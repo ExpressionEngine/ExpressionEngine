@@ -46,40 +46,12 @@ class Updater {
 		$runner = new Runner();
 		$runner->runStep($step);
 
-		$messages = [
-			// This step isn't worth calling out, but needs to be a separate step
-			// so that we can bootstrap EE, so don't update the front-end message
-			'checkForDbUpdates' => '',
-			'backupDatabase' => 'Backing up database',
-			'updateDatabase' => 'Running updates',
-			'rollback' => 'Rolling back install',
-			'restoreDatabase' => 'Restoring database',
-			'selfDestruct' => 'Cleaning up',
-		];
-
 		$next_step = $runner->getNextStep();
-		$message = '';
-
-		if ($next_step)
-		{
-			if (strpos($next_step, 'backupDatabase') === 0)
-			{
-				$message = $messages['backupDatabase'];
-			}
-			elseif (strpos($next_step, 'updateDatabase') === 0)
-			{
-				$message = $messages['updateDatabase'];
-			}
-			else
-			{
-				$message = $messages[$next_step];
-			}
-		}
 
 		return json_encode([
 			'messageType' => 'success',
-			'message' => $message,
-			'nextStep' => $runner->getNextStep()
+			'message' => $runner->getLanguageForStep($next_step),
+			'nextStep' => $next_step
 		]);
 	}
 }

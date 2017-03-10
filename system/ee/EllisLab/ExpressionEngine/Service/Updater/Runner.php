@@ -92,5 +92,11 @@ class Runner {
 			throw $e;
 		}
 	}
+
+	public function getLanguageForStep($step)
+	{
+		ee()->lang->loadfile('updater');
+		return lang($step.'_step');
+	}
 }
 // EOF

@@ -183,6 +183,35 @@ class Runner {
 		}
 	}
 
+	public function getLanguageForStep($step)
+	{
+		if ($step)
+		{
+			if (strpos($step, 'backupDatabase') === 0)
+			{
+				$step = 'backupDatabase';
+			}
+			elseif (strpos($step, 'updateDatabase') === 0)
+			{
+				$step = 'updateDatabase';
+			}
+		}
+
+		$messages = [
+			// This step isn't worth calling out, but needs to be a separate step
+			// so that we can bootstrap EE, so don't update the front-end message
+			'updateFiles' => 'Updating files',
+			'checkForDbUpdates' => '',
+			'backupDatabase' => 'Backing up database',
+			'updateDatabase' => 'Running updates',
+			'rollback' => 'Rolling back install',
+			'restoreDatabase' => 'Restoring database',
+			'selfDestruct' => 'Cleaning up',
+		];
+
+		return isset($messages[$step]) ? $messages[$step] : '';
+	}
+
 	protected function makeDatabaseUpdaterService()
 	{
 		return new Service\Updater\DatabaseUpdater(

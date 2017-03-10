@@ -72,7 +72,7 @@ class Updater extends CP_Controller {
 			'current_version' => formatted_version(APP_VER),
 			'to_version'      => formatted_version($to_version),
 			'warn_message'    => $preflight_error,
-			'first_step'      => lang($next_step.'_step'),
+			'first_step'      => $runner->getLanguageForStep($next_step),
 			'next_step'       => $next_step
 		];
 
@@ -106,7 +106,7 @@ class Updater extends CP_Controller {
 
 		return [
 			'messageType' => 'success',
-			'message' => lang($next_step.'_step'),
+			'message' => $runner->getLanguageForStep($next_step),
 			'nextStep' => $next_step
 		];
 	}

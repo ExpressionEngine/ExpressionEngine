@@ -15,7 +15,7 @@
 	<div class="updater-stack-trace"></div>
 	<div class="updater-msg">
 		<p><?=lang('could_not_complete')?></p>
-		<p class="stopped"><?=sprintf(lang('we_stopped_on'), lang('preflight_check'))?></p>
+		<p class="stopped"><?=sprintf(lang('we_stopped_on'), lang('preflight_step'))?></p>
 		<div class="alert-notice">
 			<p><?=$warn_message?></p>
 		</div>
