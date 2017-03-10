@@ -185,7 +185,7 @@ class Runner {
 	public function runStep($step)
 	{
 		$message = $this->getLanguageForStep($step);
-		if (strpos($step, '[') === FALSE)
+		if ( ! empty($message) && strpos($step, '[') === FALSE)
 		{
 			$this->logger->stdout($message.'...');
 		}
@@ -218,10 +218,7 @@ class Runner {
 		}
 
 		$messages = [
-			// This step isn't worth calling out, but needs to be a separate step
-			// so that we can bootstrap EE, so don't update the front-end message
 			'updateFiles' => 'Updating files',
-			'checkForDbUpdates' => '',
 			'backupDatabase' => 'Backing up database',
 			'updateDatabase' => 'Running updates',
 			'rollback' => 'Rolling back install',
