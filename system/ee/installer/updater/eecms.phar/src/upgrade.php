@@ -53,10 +53,13 @@ class Command {
 
 		$runner->runStep($step);
 
+		// Perform each step as its own command so we can control the scope of
+		// files loaded into the app's memory
 		if (($next_step = $runner->getNextStep()) !== FALSE)
 		{
 			$cmd = 'upgrade --microapp --step="'.$next_step.'"';
 
+			// We can't rely on loading EE during these steps
 			if ($next_step == 'updateFiles' OR $next_step == 'rollback')
 			{
 				$cmd .= ' --no-bootstrap';
