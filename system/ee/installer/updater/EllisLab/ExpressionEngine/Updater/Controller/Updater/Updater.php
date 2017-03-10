@@ -38,7 +38,9 @@ class Updater {
 	{
 		$step = isset($_GET['step']) ? $_GET['step'] : FALSE;
 
-		if ($step === FALSE OR $step == 'undefined')
+		if ($step === FALSE OR
+			$step == 'undefined' OR
+			strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST')
 		{
 			return 'The updater folder is still present. Delete the folder at system/ee/updater to access the control panel.';
 		}
