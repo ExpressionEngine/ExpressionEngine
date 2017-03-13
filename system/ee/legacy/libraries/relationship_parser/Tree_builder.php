@@ -353,7 +353,7 @@ class EE_relationship_tree_builder {
 				'tag_info'	  => array(),
 				'entry_ids'	  => array(),
 				'params'	  => $params,
-				'shortcut'	  => $is_only_relationship ? FALSE : $tag,
+				'shortcut'	  => $is_only_relationship ? FALSE : ltrim($tag, ':'),
 				'open_tag'	  => $match[0],
 				'in_grid'	  => $in_grid,
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
