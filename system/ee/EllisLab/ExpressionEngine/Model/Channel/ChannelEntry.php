@@ -112,7 +112,6 @@ class ChannelEntry extends ContentModel {
 		'beforeSave',
 		'afterDelete',
 		'afterInsert',
-		'afterUpdate',
 		'afterSave',
 	);
 
@@ -375,11 +374,6 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	public function onAfterUpdate($changed)
-	{
-		$this->saveVersion();
-	}
-
 	public function onBeforeDelete()
 	{
 		parent::onBeforeDelete();
@@ -425,14 +419,20 @@ class ChannelEntry extends ContentModel {
 			return;
 		}
 
-		if ($this->Versions->count() == $this->Channel->max_revisions)
-		{
-			$version = $this->Versions->sortBy('version_date')->first();
-			if ($version)
-			{
-				$version->delete();
-			}
-		}
+        if ($this->Versions->count() >= $this->Channel->max_revisions)
+        {
+            $diff = $this->Versions->count() - $this->Channel->max_revisions;
+            $diff++; // We are going to add one, so remove one more
+
+
+            $versions = $this->Versions->sortBy('version_date')->asArray();
+            $versions = array_slice($versions, 0, $diff);
+
+            foreach ($versions as $version)
+            {
+                $version->delete();
+            }
+        }
 
 		$data = array(
 			'entry_id'     => $this->entry_id,
