@@ -548,12 +548,19 @@ class EE_relationship_tree_builder {
 
 				if ($i == 0 && $leaf['L0_grid_col_id'])
 				{
-					$field_name = $this->grid_relationship_names[$field_id];
+					$names = $this->grid_relationship_names;
 				}
 				else
 				{
-					$field_name = $this->relationship_field_names[$field_id];
+					$names = $this->relationship_field_names;
 				}
+
+				if ( ! isset($names[$field_id]))
+				{
+					break;
+				}
+
+				$field_name = $names[$field_id];
 
 				if ( ! isset($parsed_leaves[$i]))
 				{
