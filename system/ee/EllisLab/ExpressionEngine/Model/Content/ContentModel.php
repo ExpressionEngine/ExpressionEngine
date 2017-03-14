@@ -461,15 +461,18 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$query = ee('Model/Datastore')->rawQuery();
 
+			$meta = self::getMetaData('field_data');
+			$key_column = $meta['extra_data']['key_column'];
+
 			if ($update)
 			{
     			$query->set($values);
-				$query->where('entry_id', $this->getId());
+				$query->where($key_column, $this->getId());
 				$query->update($field->getTableName());
 			}
 			else
 			{
-				$values['entry_id'] = $this->getId();
+				$values[$key_column] = $this->getId();
     			$query->set($values);
 				$query->insert($field->getTableName());
 			}
