@@ -10,6 +10,9 @@ if (version_compare(phpversion(), '5.4', '<'))
 	exit('The command line version of PHP is less than the required version of 5.4.');
 }
 
+// In case a default isn't set on the server
+date_default_timezone_set('UTC');
+
 require_once __DIR__.'/helpers.php';
 
 $project_base = realpath(str_replace('phar://', '', dirname(__DIR__)).'/../').'/';
