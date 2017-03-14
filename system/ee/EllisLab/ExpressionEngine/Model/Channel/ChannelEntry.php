@@ -113,6 +113,7 @@ class ChannelEntry extends ContentModel {
 		'afterDelete',
 		'afterInsert',
 		'afterSave',
+		'afterUpdate'
 	);
 
 	// Properties
@@ -312,41 +313,8 @@ class ChannelEntry extends ContentModel {
 		$this->Autosaves->delete();
 
 		$this->updateEntryStats();
-
-		// Some Tabs might call ee()->api_channel_fields
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-
-		foreach ($this->getModulesWithTabs() as $name => $info)
-		{
-			ee()->load->add_package_path($info->getPath(), FALSE);
-
-			include_once($info->getPath() . '/tab.' . $name . '.php');
-			$class_name = ucfirst($name) . '_tab';
-			$OBJ = new $class_name();
-
-			if (method_exists($OBJ, 'save') === TRUE)
-			{
-				$fields = $OBJ->display($this->channel_id, $this->entry_id);
-
-				$values = array();
-				foreach(array_keys($fields) as $field)
-				{
-					$property = $name . '__' . $field;
-					$values[$field] = $this->$property;
-				}
-
-				$OBJ->save($this, $values);
-			}
-
-			// restore our package and view paths
-			ee()->load->remove_package_path($info->getPath());
-		}
-
-		if ($this->getProperty('versioning_enabled'))
-		{
-			$this->saveVersion();
-		}
+		$this->saveTabData();
+		$this->saveVersion();
 
 		// clear caches
 		if (ee()->config->item('new_posts_clear_caches') == 'y')
@@ -371,6 +339,14 @@ class ChannelEntry extends ContentModel {
 				$this->Channel->getId(),
 				$this->getId()
 			);
+		}
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		if (array_key_exists('author_id', $changed))
+		{
+			$this->Author->updateAuthorStats();
 		}
 	}
 
@@ -412,9 +388,63 @@ class ChannelEntry extends ContentModel {
 		$this->updateEntryStats();
 	}
 
+	public function saveTabData()
+	{
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			ee()->load->add_package_path($info->getPath(), FALSE);
+
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'save') === TRUE)
+			{
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				$values = array();
+				foreach(array_keys($fields) as $field)
+				{
+					$property = $name . '__' . $field;
+
+					if ($this->$property)
+					{
+						$values[$field] = $this->$property;
+					}
+					elseif ($this->hasCustomField($property))
+					{
+						$values[$field] = $this->getCustomField($property)->getData();
+					}
+					else
+					{
+						$values[$field] = NULL;
+					}
+				}
+
+				$OBJ->save($this, $values);
+			}
+
+			// restore our package and view paths
+			ee()->load->remove_package_path($info->getPath());
+		}
+	}
+
 	public function saveVersion()
 	{
 		if ( ! $this->getProperty('versioning_enabled'))
+		{
+			return;
+		}
+
+		$data = $this->getValues();
+
+		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
+
+		if ($data == $last_version->version_data)
 		{
 			return;
 		}
@@ -423,7 +453,6 @@ class ChannelEntry extends ContentModel {
         {
             $diff = $this->Versions->count() - $this->Channel->max_revisions;
             $diff++; // We are going to add one, so remove one more
-
 
             $versions = $this->Versions->sortBy('version_date')->asArray();
             $versions = array_slice($versions, 0, $diff);
@@ -439,7 +468,7 @@ class ChannelEntry extends ContentModel {
 			'channel_id'   => $this->channel_id,
 			'author_id'    => ee()->session->userdata('member_id') ?: 1,
 			'version_date' => ee()->localize->now,
-			'version_data' => $_POST ?: $this->getValues()
+			'version_data' => $data
 		);
 
 		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
