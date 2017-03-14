@@ -10,18 +10,28 @@ class Command {
 
 	public function __construct($params = [])
 	{
-		if (isset($params['microapp']))
-		{
-			$step = (isset($params['step'])) ? $params['step'] : NULL;
-			return $this->updaterMicroapp($step);
-		}
+		set_error_handler(array($this, 'showError'));
 
-		if (isset($params['rollback']))
+		try
 		{
-			return $this->updaterMicroapp('rollback');
-		}
+			if (isset($params['microapp']))
+			{
+				$step = (isset($params['step'])) ? $params['step'] : NULL;
+				return $this->updaterMicroapp($step);
+			}
 
-		$this->start();
+			if (isset($params['rollback']))
+			{
+				return $this->updaterMicroapp('rollback');
+			}
+
+			$this->start();
+		}
+		catch (\Exception $e)
+		{
+			$this->showError($e->getCode(), $e->getMessage());
+			exit;
+		}
 	}
 
 	public function start()
@@ -75,6 +85,20 @@ class Command {
 
 			runCommandExternally($cmd);
 		}
+	}
+
+	public function showError($code, $error, $file = NULL, $line = NULL)
+	{
+		$message = "We could not complete the update because an error has occured:\n\033[0m";
+		$message .= strip_tags($error);
+
+		if ($file && $line)
+		{
+			$message .= "\n\n".$file.':'.$line;
+		}
+
+		stdout($message, CLI_STDOUT_FAILURE);
+		exit;
 	}
 }
 
