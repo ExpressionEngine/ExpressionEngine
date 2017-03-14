@@ -1170,11 +1170,19 @@ class Members extends CP_Controller {
 		{
 			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
 
-			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
+			// We need to update the versions first else we'll trigger a new
+			// version when we update the entries
+			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
+
+			foreach ($entries as $entry)
+			{
+				$entry->version_data['author_id'] = $heir->getId();
+			}
+
 			$entries->Author = $heir;
 			$entries->save();
 
-			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
+			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
 			$entries->Author = $heir;
 			$entries->save();
 
