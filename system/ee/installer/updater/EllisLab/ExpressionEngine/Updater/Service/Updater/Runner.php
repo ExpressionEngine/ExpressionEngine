@@ -176,18 +176,15 @@ class Runner {
 
 		ee('Filesystem')->deleteDir(SYSPATH.'ee/updater');
 
-		if (REQ == 'CLI')
-		{
-			$this->logger->stdout('Successfully updated to ExpressionEngine ' . APP_VER, Logger::SUCCESS);
-		}
+		if (REQ == 'CLI') stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
 	}
 
 	public function runStep($step)
 	{
 		$message = $this->getLanguageForStep($step);
-		if ( ! empty($message) && strpos($step, '[') === FALSE)
+		if (REQ == 'CLI' && ! empty($message) && strpos($step, '[') === FALSE)
 		{
-			$this->logger->stdout($message.'...');
+			stdout($message.'...', CLI_STDOUT_BOLD);
 		}
 
 		try

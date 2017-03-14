@@ -79,7 +79,7 @@ class Runner {
 	 */
 	public function runStep($step)
 	{
-		$this->logger->stdout($this->getLanguageForStep($step).'...');
+		if (REQ == 'CLI') stdout($this->getLanguageForStep($step).'...', CLI_STDOUT_BOLD);
 
 		try
 		{
