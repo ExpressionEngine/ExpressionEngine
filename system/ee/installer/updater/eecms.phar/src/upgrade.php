@@ -75,10 +75,15 @@ class Command {
 		// files loaded into the app's memory
 		if (($next_step = $runner->getNextStep()) !== FALSE)
 		{
+			if ($next_step == 'rollback')
+			{
+				return runCommandExternally('upgrade --rollback');
+			}
+
 			$cmd = 'upgrade --microapp --step="'.$next_step.'"';
 
 			// We can't rely on loading EE during these steps
-			if ($next_step == 'updateFiles' OR $next_step == 'rollback')
+			if ($next_step == 'updateFiles')
 			{
 				$cmd .= ' --no-bootstrap';
 			}

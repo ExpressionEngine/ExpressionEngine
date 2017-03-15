@@ -27,7 +27,8 @@ define('DEBUG', 1);
 define('REQ', 'CLI');
 define('CLI_VERBOSE', isset($args['v']) OR isset($args['verbose']));
 
-if ( ! isset($args['no-bootstrap']))
+if ( ! isset($args['no-bootstrap']) && !
+	(in_array('upgrade', $args) && isset($args['rollback'])))
 {
 	$bootstrap = SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 	if (file_exists($bootstrap))
