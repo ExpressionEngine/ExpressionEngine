@@ -144,7 +144,18 @@ class Runner {
 
 	public function rollback()
 	{
-		$this->makeUpdaterService()->rollbackFiles();
+		$file_updater = $this->makeUpdaterService();
+		$filesystem = new Filesystem();
+		$backup_path = $file_updater->getBackupsPath() . 'system_ee/';
+
+		// See if there are backups to restore in case we are attempting to
+		// rollback after a failed database restore, which happens AFTER files
+		// have already been rolled back
+		if ($filesystem->isDir($backup_path) &&
+			count($filesystem->getDirectoryContents($backup_path)))
+		{
+			$file_updater->rollbackFiles();
+		}
 
 		if (file_exists(PATH_CACHE.'ee_update/database.sql'))
 		{

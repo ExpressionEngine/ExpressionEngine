@@ -334,7 +334,7 @@ class FileUpdater {
 	 *
 	 * @return	string	Path to backups folder
 	 */
-	protected function getBackupsPath()
+	public function getBackupsPath()
 	{
 		return $this->path() . 'backups/';
 	}
