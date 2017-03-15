@@ -245,6 +245,15 @@ class Members extends CP_Controller {
 
 		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
 
+		$count = $members->count();
+
+		// Add this last to get the right $count
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $this->perpage; // Offset is 0 indexed
+
+		$members->limit($this->perpage)
+			->offset($offset);
+
 		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
 		$table->setNoResultsText('no_pending_members_found');
 
@@ -253,10 +262,10 @@ class Members extends CP_Controller {
 
 		if ( ! empty($vars['table']['data']))
 		{
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			$vars['pagination'] = ee('CP/Pagination', $count)
 				->perPage($vars['table']['limit'])
 				->currentPage($vars['table']['page'])
-				->render($base_url);
+			->render($base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
@@ -295,6 +304,15 @@ class Members extends CP_Controller {
 			->filter('group_id', 2)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
+		$count = $members->count();
+
+		// Add this last to get the right $count
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $this->perpage; // Offset is 0 indexed
+
+		$members->limit($this->perpage)
+			->offset($offset);
+
 		$table = $this->buildTableFromMemberQuery($members);
 		$table->setNoResultsText('no_banned_members_found');
 
@@ -303,7 +321,7 @@ class Members extends CP_Controller {
 
 		if ( ! empty($vars['table']['data']))
 		{
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			$vars['pagination'] = ee('CP/Pagination', $count)
 				->perPage($vars['table']['limit'])
 				->currentPage($vars['table']['page'])
 				->render($base_url);
