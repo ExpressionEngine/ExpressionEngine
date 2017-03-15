@@ -52,11 +52,18 @@ class Runner {
 		$this->logger = $this->makeLoggerService();
 	}
 
+	/**
+	 * Updates this install's ExpressionEngine files to the new ones
+	 */
 	public function updateFiles()
 	{
 		$this->makeUpdaterService()->updateFiles();
 	}
 
+	/**
+	 * Check to see if there are any database updates that warrant creating a
+	 * backup of the database
+	 */
 	public function checkForDbUpdates()
 	{
 		$db_updater = $this->makeDatabaseUpdaterService();
@@ -71,6 +78,10 @@ class Runner {
 			->log('Backing up tables: '.implode(', ', $affected_tables));
 	}
 
+	/**
+	 * Makes a partial database backup based on which tables the update files
+	 * have marked as being affected
+	 */
 	public function backupDatabase($table_name = NULL, $offset = 0)
 	{
 		$db_updater = $this->makeDatabaseUpdaterService();
@@ -115,6 +126,9 @@ class Runner {
 		return 'updateDatabase';
 	}
 
+	/**
+	 * Performs database updates (the ud_x_xx_xx.php files)
+	 */
 	public function updateDatabase($step = NULL)
 	{
 		$db_updater = $this->makeDatabaseUpdaterService();
@@ -142,6 +156,10 @@ class Runner {
 		return 'rollback';
 	}
 
+	/**
+	 * Rolls back the installation's files to the backups, and optionally kicks
+	 * off a database restore if a backup file exists
+	 */
 	public function rollback()
 	{
 		$file_updater = $this->makeUpdaterService();
@@ -165,6 +183,9 @@ class Runner {
 		return 'selfDestruct';
 	}
 
+	/**
+	 * Restore database from backup
+	 */
 	public function restoreDatabase()
 	{
 		$db_path = PATH_CACHE.'ee_update/database.sql';
@@ -175,6 +196,10 @@ class Runner {
 		return 'selfDestruct';
 	}
 
+	/**
+	 * Cleans up and supporting update files, turns the system back on, and
+	 * updates app_version
+	 */
 	public function selfDestruct()
 	{
 		$config = ee('Config')->getFile();
@@ -190,6 +215,9 @@ class Runner {
 		if (REQ == 'CLI') stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
 	}
 
+	/**
+	 * Overrides Steppable's runStep to be a catch-all for exceptions
+	 */
 	public function runStep($step)
 	{
 		$message = $this->getLanguageForStep($step);
@@ -211,6 +239,10 @@ class Runner {
 		}
 	}
 
+	/**
+	 * Gets status language for a given step of the update process, this
+	 * language is used to display status for both GUI and CLI updates
+	 */
 	public function getLanguageForStep($step)
 	{
 		if ($step)
@@ -237,6 +269,9 @@ class Runner {
 		return isset($messages[$step]) ? $messages[$step] : '';
 	}
 
+	/**
+	 * Makes DatabaseUpdater service
+	 */
 	protected function makeDatabaseUpdaterService()
 	{
 		return new Service\Updater\DatabaseUpdater(
@@ -246,8 +281,7 @@ class Runner {
 	}
 
 	/**
-	 * Since we don't (yet?) have a dependency injection container, this gathers
-	 * dependencies and makes the file updater service for the Runner class to use
+	 * Makes FileUpdater service
 	 */
 	protected function makeUpdaterService()
 	{
@@ -261,6 +295,9 @@ class Runner {
 		);
 	}
 
+	/**
+	 * Makes Updater\Logger service
+	 */
 	protected function makeLoggerService()
 	{
 		return new Service\Updater\Logger(
