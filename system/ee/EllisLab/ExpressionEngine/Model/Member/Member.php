@@ -262,7 +262,7 @@ class Member extends ContentModel {
 	}
 
 	/**
-	 * Zero-out member ID data in assoicated files
+	 * Zero-out member ID data in associated models
 	 */
 	public function onBeforeDelete()
 	{
@@ -271,6 +271,12 @@ class Member extends ContentModel {
 
 		$this->ModifiedFiles->modified_by_member_id = 0;
 		$this->ModifiedFiles->save();
+
+		$this->LastAuthoredSpecialtyTemplates->last_author_id = 0;
+		$this->LastAuthoredSpecialtyTemplates->save();
+
+		$this->LastAuthoredTemplates->last_author_id = 0;
+		$this->LastAuthoredTemplates->save();
 	}
 
 	/**
