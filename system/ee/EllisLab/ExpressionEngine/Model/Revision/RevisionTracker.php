@@ -47,7 +47,8 @@ class RevisionTracker extends Model {
 		'Author' => array(
 			'type' => 'belongsTo',
 			'model' => 'Member',
-			'from_key' => 'item_author_id'
+			'from_key' => 'item_author_id',
+			'weak' => TRUE
 		),
 	);
 

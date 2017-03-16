@@ -207,7 +207,7 @@ class Email extends AbstractDesignController {
 			),
 			array(
 				'title' => '',
-				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
+				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? lang('author_unknown') : $author->screen_name),
 				'wide' => TRUE,
 				'fields' => array(
 					'template_data' => array(

@@ -404,7 +404,7 @@ class Template extends AbstractDesignController {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->item_date),
-					$version->getAuthorName(),
+					($version->getAuthorName()) ?: lang('author_unknown'),
 					$toolbar
 				)
 			);
@@ -789,7 +789,7 @@ class Template extends AbstractDesignController {
 		$section = array(
 			array(
 				'title' => '',
-				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
+				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? lang('author_unknown') : $author->screen_name),
 				'wide' => TRUE,
 				'fields' => array(
 					'template_data' => array(
