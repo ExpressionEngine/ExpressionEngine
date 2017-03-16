@@ -277,6 +277,9 @@ class Member extends ContentModel {
 
 		$this->LastAuthoredTemplates->last_author_id = 0;
 		$this->LastAuthoredTemplates->save();
+
+		$this->TemplateRevisions->item_author_id = 0;
+		$this->TemplateRevisions->save();
 	}
 
 	/**
