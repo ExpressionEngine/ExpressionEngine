@@ -47,6 +47,11 @@ class Javascript_loader {
 	{
 		ee()->output->enable_profiler(FALSE);
 
+		if (isset(ee()->TMPL->debugging))
+		{
+			ee()->TMPL->debugging = FALSE;
+		}
+
 		$contents	= '';
 		$types		= array(
 			'ui'		=> PATH_JAVASCRIPT.'jquery/ui/jquery.ui.',
