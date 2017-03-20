@@ -586,7 +586,6 @@ class Comment {
 			foreach ($query->result_array() as $row)
 			{
 				$mfields[$row['m_field_name']] = $row['m_field_id'];
-				$mfields_data[$row['m_field_id']] = $row['m_legacy_field_data'];
 			}
 		}
 
