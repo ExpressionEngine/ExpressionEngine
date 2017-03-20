@@ -999,7 +999,14 @@ class EE_Input {
 		if ( ! preg_match("/^[a-z0-9:_\/ -]+$/i", $str))
 		{
 			set_status_header(503);
-			exit('Disallowed Key Characters.');
+			$error = 'Disallowed Key Characters';
+
+			if (DEBUG)
+			{
+				$error .= ': '.htmlentities($str, ENT_QUOTES, 'UTF-8');
+			}
+
+			exit($error);
 		}
 
 		// Clean UTF-8 if supported
