@@ -288,8 +288,9 @@ class Updater {
 			}
 
 
-			$sql = 'INSERT INTO exp_member_data_field_'.$map[$field_name].' (member_id, data)
-					SELECT m.member_id, m.'.$field_name.' FROM exp_members m';
+			$sql = 'INSERT INTO exp_member_data_field_'.$map[$field_name].' (member_id, m_field_id_'.$map[$field_name].')
+                SELECT m.member_id, m.'.$field_name.' FROM exp_members m';
+
 			ee()->db->query($sql);
 		}
 
@@ -303,7 +304,7 @@ class Updater {
 				if (empty($row->bday_y) AND empty($row->bday_m) AND empty($row->bday_d))
 				{
 					$r['member_id'] = $row->member_id;
-					$r['data'] = 0;
+					$r['m_field_id_'.$map['birthday']] = 0;
 				}
 				else
 				{
@@ -312,7 +313,7 @@ class Updater {
 					$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
 
 					$r['member_id'] = $row->member_id;
-					$r['data'] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
+					$r['m_field_id_'.$map['birthday']] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
 
 				}
 				$data[] = $r;
