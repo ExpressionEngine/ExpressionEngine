@@ -448,6 +448,7 @@ abstract class FieldModel extends Model {
 
 		if (method_exists($fieldtype, $parse_fnc))
 		{
+			ee()->api_channel_fields->setup_handler($this->field_type, TRUE);
 			$data = ee()->api_channel_fields->apply($parse_fnc, array(
 				$data,
 				array(),
