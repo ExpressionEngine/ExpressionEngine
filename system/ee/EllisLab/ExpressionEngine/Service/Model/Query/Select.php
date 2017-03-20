@@ -241,7 +241,6 @@ class Select extends Query {
 		$parent_key        = "{$meta_field_data['extra_data']['parent_table']}.{$meta_field_data['extra_data']['key_column']}";
 
 		$fields = ee('Model')->get($meta_field_data['field_model'])
-			->fields('field_id')
 			->filter($column_prefix.'legacy_field_data', 'n');
 
 		if (array_key_exists('group_column', $meta_field_data['extra_data']))
@@ -261,25 +260,28 @@ class Select extends Query {
 
 		if ($fields->count())
 		{
-			$field_ids = $fields->pluck('field_id');
-
 			$entry_ids = array_map(function($column) use ($item_key_column){
 				return $column[$item_key_column];
 			}, $result_array);
 
 			$query = ee('Model/Datastore')->rawQuery();
 
-			$main_table = "{$table_prefix}_field_id_{$field_ids[0]}";
+			$main_table = "{$table_prefix}_field_id_{$fields[0]->field_id}";
 
 			$query->from($meta_field_data['extra_data']['parent_table']);
 			$query->select("{$parent_key} as {$item_key_column}", FALSE);
 
-			foreach ($field_ids as $field_id)
+			foreach ($fields as $field)
 			{
+				$field_id = $field->getId();
+
 				$table_alias = "{$table_prefix}_field_id_{$field_id}";
 
-				$query->select("{$table_alias}.data as {$table_prefix}__{$column_prefix}field_id_{$field_id}", FALSE);
-				$query->select("{$table_alias}.metadata as {$table_prefix}__{$column_prefix}field_ft_{$field_id}", FALSE);
+				foreach ($field->getColumnNames() as $column)
+				{
+					$query->select("{$table_alias}.{$column} as {$table_prefix}__{$column}", FALSE);
+				}
+
 				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$parent_key}", 'LEFT');
 			}
 
@@ -360,9 +362,9 @@ class Select extends Query {
 				$table_alias = "{$table_prefix}_field_id_{$field_id}";
 				$column_alias = "{$table_prefix}__{$column_prefix}field_id_{$field_id}";
 
-				$query->select("{$table_alias}.data as {$column_alias}", FALSE);
-				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.entry_id = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
-				$this->model_fields[$table_prefix][$column_alias] = $table_alias . '.data';
+				$query->select("{$table_alias}.{$column_prefix}field_id_{$field_id} as {$column_alias}", FALSE);
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
+				$this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
 			}
 		}
 	}

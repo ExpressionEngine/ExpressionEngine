@@ -142,15 +142,7 @@ abstract class FieldModel extends Model {
 		}
 		else
 		{
-			$ft = $this->getFieldtypeInstance();
-
-			$data = $this->getValues();
-			$data['ee_action'] = 'delete';
-
-			$columns = $ft->settings_modify_column($data);
-			$columns = $this->ensurePrefixColumns($columns);
-			$columns = $this->ensureDefaultColumns($columns);
-			$this->dropColumns($columns);
+			$this->dropColumns($this->getColumns());
 		}
 	}
 
@@ -213,28 +205,6 @@ abstract class FieldModel extends Model {
 		$facade = new FieldFacade($this->getId(), $values);
 		$facade->setContentType($this->getContentType());
 		return $facade->getNativeField();
-	}
-
-
-	/**
-	 * Ensure data column names from fieldtypes are prefixed
-	 */
-	protected function ensurePrefixColumns($columns)
-	{
-		// ensure they are prefixed
-		$pre = $this->getColumnPrefix();
-		$pre_length = strlen($pre);
-
-		foreach ($columns as $fname => $vals)
-		{
-			if (strncmp($fname, $pre, $pre_length) !== 0)
-			{
-				$columns[$pre.$fname] = $vals;
-				unset($columns[$fname]);
-			}
-		}
-
-		return $columns;
 	}
 
 	/**
@@ -362,6 +332,26 @@ abstract class FieldModel extends Model {
 		return $columns;
 	}
 
+	private function getColumns()
+	{
+		$ft = $this->getFieldtypeInstance();
+		$data = $this->getValues();
+		$data['ee_action'] = 'add';
+		$columns = array();
+
+		foreach($ft->settings_modify_column($data) as $key => $values)
+		{
+			$columns[$this->getColumnPrefix().$key] = $values;
+		}
+
+		return $this->ensureDefaultColumns($columns);
+	}
+
+	public function getColumnNames()
+	{
+		return array_keys($this->getColumns());
+	}
+
 	/**
 	 * Set a prefix on the default columns we manage for fields
 	 *
@@ -406,18 +396,10 @@ abstract class FieldModel extends Model {
 				'constraint' => '5',
 				'null'       => FALSE,
 				'default'    => 'en-US' // @TODO Have this match the default language of the site
-			),
-			'data' => array(
-				'type' => 'text',
-				'null' => TRUE
-			),
-			'metadata' => array(
-				'type' => 'tinytext',
-				'null' => TRUE
 			)
 		);
 
-		$fields = array_merge($fields, $this->mapDataColumnDefinitions());
+		$fields = array_merge($fields, $this->getColumns());
 
 		ee()->load->dbforge();
 		ee()->load->library('smartforge');
@@ -425,65 +407,6 @@ abstract class FieldModel extends Model {
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key($this->getForeignKey());
 		ee()->smartforge->create_table($this->getTableName());
-	}
-
-	private function mapDataColumnDefinitions()
-	{
-		$map = array(
-			'data' => array(
-				'field_id_' . $this->getId(),
-				'data'
-			),
-			'metadata' => array(
-				'field_ft_' . $this->getId(),
-				'metadata'
-			)
-		);
-
-		$fields = array();
-
-		// Fieldtypes have a history of changing and/or augmenting their storage
-		$ft = $this->getFieldtypeInstance();
-		$data = $this->getValues();
-		$data['ee_action'] = 'add';
-		$columns = $ft->settings_modify_column($data);
-
-		// Assumption #1: a column containing the data was assigned, this was
-		// either named "field_id_#" for pre v4 fieldtypes or it was named
-		// "data"
-		foreach ($map['data'] as $field_name)
-		{
-			if (isset($columns[$field_name]))
-			{
-				$fields['data'] = $columns[$field_name];
-				unset($columns[$field_name]);
-			}
-		}
-
-		// Assumption #2: only two columns were assigned so the remaining column
-		// must contain the metadata
-		if (count($columns) == 1)
-		{
-			$fields['metadata'] = array_pop($columns);
-		}
-		// If the assumption is wrong then we'll look for a "field_ft_#" or
-		// "metadata" column definition and use that.
-		else
-		{
-			foreach ($map['metadata'] as $field_name)
-			{
-				if (isset($columns[$field_name]))
-				{
-					$fields['metadata'] = $columns[$field_name];
-					unset($columns[$field_name]);
-				}
-			}
-		}
-
-		// Guess what? If more than 2 columns were defined that fieldtype is
-		// SOL. :(
-
-		return $fields;
 	}
 
 	/**
@@ -501,20 +424,17 @@ abstract class FieldModel extends Model {
 	 * @param	mixed	$data			Data for this field
 	 * @param	int		$content_id		Content ID to pass to the fieldtype
 	 * @param	string	$content_type	Content type to pass to the fieldtype
-	 * @param	array	$variable_mods		Variable modifiers and parameters, if present
+	 * @param	string	$modifier		Variable modifier, if present
 	 * @param	string	$tagdata		Tagdata to perform the replacement in
 	 * @param	string	$row			Row array to set on the fieldtype
 	 * @return	string	String with variable parsed
 	 */
-	public function parse($data, $content_id, $content_type, $variable_mods, $tagdata, $row, $tag = FALSE)
+	public function parse($data, $content_id, $content_type, $modifier, $tagdata, $row)
 	{
-
 		$fieldtype = $this->getFieldtypeInstance();
 		$settings = $this->getSettingsValues();
 		$field_fmt = isset($this->field_fmt) ? $this->field_fmt : $this->field_default_fmt;
 		$settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' =>$field_fmt));
-		$modifier = ( ! empty($variable_mods['modifier'])) ? $variable_mods['modifier'] : '';
-		$params =  ( ! empty($variable_mods['params'])) ? $variable_mods['params'] : array();
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
@@ -525,18 +445,14 @@ abstract class FieldModel extends Model {
 		));
 
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
+
 		if (method_exists($fieldtype, $parse_fnc))
 		{
 			$data = ee()->api_channel_fields->apply($parse_fnc, array(
 				$data,
-				$params,
+				array(),
 				FALSE
 			));
-		}
-
-		if ($tag)
-		{
-			return str_replace(LD.$tag.RD, $data, $tagdata);
 		}
 
 		$tag = $this->field_name;

@@ -50,6 +50,7 @@ class Textarea_ft extends EE_Fieldtype {
 			&& ! ee()->session->cache(__CLASS__, 'markitup_initialized'))
 		{
 			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
+				->fields('member_id')
 				->first();
 			$buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
 

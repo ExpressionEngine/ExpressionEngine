@@ -432,19 +432,23 @@ abstract class ContentModel extends VariableColumnModel {
 				continue;
 			}
 
-			$data_field = $field->getColumnPrefix().'field_id_'.$field->field_id;
-			$meta_data_field = $field->getColumnPrefix().'field_ft_'.$field->field_id;
-
 			$values = array();
+			// If there was data before, we update
+			// If there was no data before, we insert
+			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
+			$update = FALSE;
 
-			if (array_key_exists($data_field, $dirty))
+			foreach ($field->getColumnNames() as $column)
 			{
-				$values['data'] = $this->$data_field;
-			}
+				if (array_key_exists($column, $dirty))
+				{
+					$values[$column] = $this->$column;
+				}
 
-			if (array_key_exists($meta_data_field, $dirty))
-			{
-				$values['metadata'] = $this->$meta_data_field;
+				if ($this->hasBackup($column))
+				{
+					$update = TRUE;
+				}
 			}
 
 			// Skip this field if neither it nor its meta data changed
@@ -453,23 +457,20 @@ abstract class ContentModel extends VariableColumnModel {
 				continue;
 			}
 
-			// If there was data before, we update
-			// If there was no data before, we insert
-			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
-
-            $update = ( ! is_null($this->getBackup($data_field)) && ! is_null($this->hasBackup($meta_data_field)));
-
 			$query = ee('Model/Datastore')->rawQuery();
+
+			$meta = self::getMetaData('field_data');
+			$key_column = $meta['extra_data']['key_column'];
 
 			if ($update)
 			{
     			$query->set($values);
-				$query->where('entry_id', $this->getId());
+				$query->where($key_column, $this->getId());
 				$query->update($field->getTableName());
 			}
 			else
 			{
-				$values['entry_id'] = $this->getId();
+				$values[$key_column] = $this->getId();
     			$query->set($values);
 				$query->insert($field->getTableName());
 			}
