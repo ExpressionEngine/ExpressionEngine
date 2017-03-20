@@ -366,6 +366,9 @@ class Channel extends StructureModel {
 						else
 						{
 							unset($field_layout[$i]['fields'][$j]);
+
+							// Re-index to ensure flat, zero-indexed array
+							$field_layout[$i]['fields'] = array_values($field_layout[$i]['fields']);
 						}
 					}
 				}
