@@ -648,6 +648,7 @@ class Grid_lib {
 
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;
+		$ft_api->fetch_installed_fieldtypes();
 
 		foreach ($fieldtypes as $field_short_name => $field_name)
 		{
