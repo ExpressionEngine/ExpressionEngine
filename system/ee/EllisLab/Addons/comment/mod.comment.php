@@ -615,11 +615,10 @@ class Comment {
 				unset($values['location'], $values['site_id']);
 				$values['c_location'] = $comment->location;
 				$values['comment_site_id'] = $comment->site_id;
-				if ($comment->Author)
-				{
-					$values = array_merge($values, $comment->Author->getValues());
-				}
-				$results[] = $values;
+
+				$author = ($comment->Author) ?: ee('Model')->make('Member');
+
+				$results[] = array_merge($values, $author->getValues());
 			}
 
 			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
