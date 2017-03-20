@@ -2292,26 +2292,28 @@ class Channel {
 			{
 				$field_id = $mfield[0];
 				$table = "exp_member_data_field_{$field_id}";
-				$this->sql .= ", {$table}.data AS m_field_id_{$field_id}";
-				$this->sql .= ", {$table}.metadata AS m_field_ft_{$field_id}";
+				$this->sql .= ", {$table}.*";
 				$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
 			}
 		}
 
 		$fields = ee('Model')->get('ChannelField')
-			->fields('field_id')
 			->filter('legacy_field_data', 'n')
 			->filter('group_id', 'IN', $field_groups)
 			->all();
 
 		if ($fields->count())
 		{
-			$field_ids = $fields->pluck('field_id');
-			foreach ($field_ids as $field_id)
+			foreach ($fields as $field)
 			{
+				$field_id = $field->getId();
 				$table = "exp_channel_data_field_{$field_id}";
-				$this->sql .= ", {$table}.data AS field_id_{$field_id}";
-				$this->sql .= ", {$table}.metadata AS field_ft_{$field_id}";
+
+				foreach ($field->getColumnNames() as $column)
+				{
+					$this->sql .= ", {$table}.{$column}";
+				}
+
 				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
 			}
 		}
@@ -5389,8 +5391,11 @@ class Channel {
 
 			$table = "exp_category_field_data_field_{$cat_field->field_id}";
 
-			$field_sqla .= ", {$table}.data AS field_id_{$cat_field->field_id} ";
-			$field_sqla .= ", {$table}.metadata AS field_ft_{$cat_field->field_id} ";
+			foreach ($cat_field->getColumnNames() as $column)
+			{
+				$field_sqla .= ", {$table}.{$column}";
+			}
+
 			$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
 		}
 
