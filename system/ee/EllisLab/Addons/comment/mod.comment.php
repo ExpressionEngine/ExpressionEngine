@@ -606,7 +606,7 @@ class Comment {
 			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id, channel_titles.allow_comments, channel_titles.comment_expiration_date,
 			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name, channels.comment_system_enabled';
 
-		foreach ($mfields_data as $field_id)
+		foreach ($mfields as $field_id)
 		{
 			$table = "exp_member_data_field_{$field_id}";
 			$select .= ", {$table}.data AS m_field_id_{$field_id}";
@@ -620,7 +620,7 @@ class Comment {
 		ee()->db->join('members',			'members.member_id = comments.author_id',		'left');
 		ee()->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
 
-		foreach ($mfields_data as $field_id)
+		foreach ($mfields as $field_id)
 		{
 			$table = "exp_member_data_field_{$field_id}";
 			ee()->db->join($table, "{$table}.member_id = members.member_id", 'left');
