@@ -31,6 +31,8 @@ class Homepage extends CP_Controller {
 
 	public function index()
 	{
+		$this->redirectIfNoSegments();
+
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		$stats = ee('Model')->get('Stats')
@@ -151,6 +153,23 @@ class Homepage extends CP_Controller {
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
+	}
+
+	/**
+	 * If we arrive to this controller's index as a result of being the default
+	 * controller, check to see if there is a default homepage we should be
+	 * redirecting to instead
+	 */
+	private function redirectIfNoSegments()
+	{
+		$member_home_url = ee('Model')->get('Member', ee()->session->userdata('member_id'))
+			->first()
+			->getCPHomepageURL();
+
+		if (empty(ee()->uri->segments) && $member_home_url->path != 'homepage')
+		{
+			$this->functions->redirect($member_home_url);
+		}
 	}
 
 	public function acceptChecksums()
