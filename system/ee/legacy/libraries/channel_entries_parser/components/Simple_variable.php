@@ -73,6 +73,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
+
+//		print_r($obj->channel()->mfields);
+
 		$overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);
 		$data['channel_url'] = parse_config_variables($data['channel_url'], $overrides);
 		$data['comment_url'] = parse_config_variables($data['comment_url'], $overrides);
@@ -86,7 +89,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		if (strpos($tag, 'url') !== FALSE)
 		{
-			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix);
+			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix, $obj->channel()->mfields);
 		}
 
 
@@ -302,8 +305,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 *
 	 * @return String	The processed tagdata
 	 */
-	protected function _urls($data, $tagdata, $key, $val, $prefix)
+	protected function _urls($data, $tagdata, $key, $val, $prefix, $mfields)
 	{
+			// URL was moved to a custom member field or dropped
+			$member_url = (isset($mfields['url'])) ? $data['m_field_id_'.$mfields['url'][0]] : '';
+
 		if ($key == $prefix.'url_title')
 		{
 			$tagdata = str_replace(LD.$val.RD, $data['url_title'], $tagdata);
@@ -340,7 +346,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {url_or_email}
 		elseif ($key == $prefix."url_or_email")
 		{
-			$tagdata = str_replace(LD.$val.RD, ($data['url'] != '') ? $data['url'] : $data['email'], $tagdata);
+			$tagdata = str_replace(LD.$val.RD, ($member_url != '') ? $member_url : $data['email'], $tagdata);
 		}
 
 		//  {url_or_email_as_author}
@@ -348,9 +354,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
-			if ($data['url'] != '')
+			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$data['url']."\">".$name."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$name."</a>", $tagdata);
 			}
 			else
 			{
@@ -361,9 +367,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {url_or_email_as_link}
 		elseif ($key == $prefix."url_or_email_as_link")
 		{
-			if ($data['url'] != '')
+			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$data['url']."\">".$data['url']."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$data['url']."</a>", $tagdata);
 			}
 			else
 			{

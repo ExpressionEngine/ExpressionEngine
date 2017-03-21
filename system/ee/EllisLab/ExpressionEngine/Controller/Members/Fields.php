@@ -98,7 +98,8 @@ class Fields extends Members\Members {
 			'text' => lang('text_input'),
 			'textarea' => lang('textarea'),
 			'select' => lang('select_dropdown'),
-			'date' => lang('date')			
+			'date' => lang('date'),
+			'url' => lang('url')			
 		);
 
 		foreach ($fields as $field)
@@ -282,7 +283,8 @@ class Fields extends Members\Members {
 								'date'     => lang('date'),
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
-								'select'   => lang('select_dropdown')
+								'select'   => lang('select_dropdown'),
+								'url'   => lang('url'),
 							),
 							'group_toggle' => array(
 								'date' => 'date',
