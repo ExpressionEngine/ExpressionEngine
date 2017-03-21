@@ -1178,44 +1178,33 @@ class Comment {
 				/** ----------------------------------------
 				/**  parse custom member fields
 				/** ----------------------------------------*/
-////
-
-
 
 				$field = ee()->api_channel_fields->get_single_field($key);
 				$val2 = $field['field_name'];
 
-
-
 				// parse custom member fields
-				if (isset($m_fields[$val2]) && array_key_exists('m_field_id_'.$m_fields[$val2]['0'], $row))
+				if (isset($m_fields[$val2]))
 				{
-
-					$tagdata = $this->parseField(
-						$m_fields[$val2]['0'],
-						$field,
-						$row['m_field_id_'.$m_fields[$val2]['0']],
-						$tagdata,
-						$row['author_id'],
-						array(),
-						$key
-					);
-				}
-
-
-				if ( isset($mfields[$val]))
-				{
-					// Since comments do not necessarily require registration, and since
-					// you are allowed to put custom member variables in comments,
-					// we delete them if no such row exists
-
-					$return_val = (isset($row['m_field_id_'.$mfields[$val]])) ? $row['m_field_id_'.$mfields[$val]] : '';
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$val,
-						$return_val,
+					if (array_key_exists('m_field_id_'.$m_fields[$val2]['0'], $row))
+					{
+						$tagdata = $this->parseField(
+							$m_fields[$val2]['0'],
+							$field,
+							$row['m_field_id_'.$m_fields[$val2]['0']],
+							$tagdata,
+							$row['author_id'],
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						$tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
 						$tagdata
-					);
+						);
+					}
 				}
 
 				/** ----------------------------------------
