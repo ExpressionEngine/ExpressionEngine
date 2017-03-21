@@ -578,7 +578,6 @@ class Comment {
 		/** ----------------------------------------*/
 
 		ee()->db->select('m_field_id, m_field_name');
-		// ee()->db->where('m_legacy_field_data', 'n');
 		$query = ee()->db->get('member_fields');
 
 		if ($query->num_rows() > 0)
