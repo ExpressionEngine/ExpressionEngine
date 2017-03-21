@@ -110,12 +110,11 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$errors = NULL;
+		$field = ee('Model')->make('ChannelField', compact($group_id));
 
 		if ( ! empty($_POST))
 		{
-			$field = $this->setWithPost(
-				ee('Model')->make('ChannelField', compact($group_id))
-			);
+			$field = $this->setWithPost($field);
 			$result = $field->validate();
 
 			if ($response = $this->ajaxValidation($result))
@@ -153,7 +152,7 @@ class Fields extends AbstractChannelsController {
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('channels/fields/create/' . $group_id),
-			'sections' => $this->form(),
+			'sections' => $this->form($field),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',
 			'form_hidden' => array(
