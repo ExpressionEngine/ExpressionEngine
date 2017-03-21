@@ -600,7 +600,7 @@ class Comment {
 		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
 		$comments = ee('Model')->get('Comment', $result_ids)
-			->with('Channel')
+			->with('Author', 'Channel')
 			->order($order_by, $this_sort)
 			->all();
 
