@@ -2399,39 +2399,34 @@ class Member {
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
 
 		// Default Member Data
-		ee()->db->select('m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
-							m.avatar_filename, m.avatar_width, m.avatar_height,
-							m.photo_filename, m.photo_width, m.photo_height,
-							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
-							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, g.group_title');
-		ee()->db->from(array('members m', 'member_groups g'));
-		ee()->db->where('m.member_id', $member_id);
-		ee()->db->where('g.site_id', ee()->config->item('site_id'));
-		ee()->db->where('m.group_id = g.group_id');
-		$query = ee()->db->get();
+		$member = ee('Model')->get('Member', $member_id)
+			->first();
 
-		if ($query->num_rows() == 0)
+		$total_results = count($member);
+
+		if ($total_results == 0)
 		{
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$default_fields = $query->row_array();
+		$results = $member->getValues();
+
+		$default_fields = $results;
 
 		// Is there an avatar?
-		if (ee()->config->item('enable_avatars') == 'y' AND $query->row('avatar_filename') != '')
+		if (ee()->config->item('enable_avatars') == 'y' AND $results['avatar_filename'] != '')
 		{
 			$avatar_url = ee()->config->slash_item('avatar_url');
 			$avatar_fs_path = ee()->config->slash_item('avatar_path');
 
-			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			if (file_exists($avatar_fs_path.'default/'.$results['avatar_filename']))
 			{
 				$avatar_url .= 'default/';
 			}
 
-			$avatar_path	= $avatar_url.$query->row('avatar_filename');
-			$avatar_width	= $query->row('avatar_width');
-			$avatar_height	= $query->row('avatar_height');
+			$avatar_path	= $avatar_url.$results['avatar_filename'];
+			$avatar_width	= $results['avatar_width'];
+			$avatar_height	= $results['avatar_height'];
 			$avatar			= TRUE;
 		}
 		else
@@ -2443,11 +2438,11 @@ class Member {
 		}
 
 		// Is there a member photo?
-		if (ee()->config->item('enable_photos') == 'y' AND $query->row('photo_filename') != '')
+		if (ee()->config->item('enable_photos') == 'y' AND $results['photo_filename'] != '')
 		{
-			$photo_path		= ee()->config->item('photo_url').$query->row('photo_filename');
-			$photo_width	= $query->row('photo_width');
-			$photo_height	= $query->row('photo_height');
+			$photo_path		= ee()->config->item('photo_url').$results['photo_filename'];
+			$photo_width	= $results['photo_width'];
+			$photo_height	= $results['photo_height'];
 			$photo			= TRUE;
 		}
 		else
@@ -2459,11 +2454,11 @@ class Member {
 		}
 
 		// Is there a signature image?
-		if (ee()->config->item('enable_signatures') == 'y' AND $query->row('sig_img_filename') != '')
+		if (ee()->config->item('enable_signatures') == 'y' AND $results['sig_img_filename'] != '')
 		{
-			$sig_img_path	= ee()->config->item('sig_img_url').$query->row('sig_img_filename');
-			$sig_img_width	= $query->row('sig_img_width');
-			$sig_img_height	= $query->row('sig_img_height');
+			$sig_img_path	= ee()->config->item('sig_img_url').$results['sig_img_filename'];
+			$sig_img_width	= $results['sig_img_width'];
+			$sig_img_height	= $results['sig_img_height'];
 			$sig_img_image	= TRUE;
 		}
 		else
@@ -2481,22 +2476,22 @@ class Member {
 		}
 		else
 		{
-			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($query->row('member_id'));
+			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($results['member_id']);
 		}
 
 		$more_fields = array(
 							'send_private_message'	=> $this->_member_path('messages/pm/'.$member_id),
 							'search_path'			=> $search_path,
 							'avatar_url'			=> $avatar_path,
-							'avatar_filename'		=> $query->row('avatar_filename'),
+							'avatar_filename'		=> $results['avatar_filename'],
 							'avatar_width'			=> $avatar_width,
 							'avatar_height'			=> $avatar_height,
 							'photo_url'				=> $photo_path,
-							'photo_filename'		=> $query->row('photo_filename'),
+							'photo_filename'		=> $results['photo_filename'],
 							'photo_width'			=> $photo_width,
 							'photo_height'			=> $photo_height,
 							'signature_image_url'		=> $sig_img_path,
-							'signature_image_filename'	=> $query->row('sig_img_filename'),
+							'signature_image_filename'	=> $results['sig_img_filename'],
 							'signature_image_width'		=> $sig_img_width,
 							'signature_image_height'	=> $sig_img_height
 						);
@@ -2517,20 +2512,6 @@ class Member {
 			}
 		}
 
-
-		ee()->db->where('member_id', $member_id);
-		$query = ee()->db->get('member_data');
-
-		if ($query->num_rows() == 0)
-		{
-			foreach ($fields as $key => $val)
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single($key, '', ee()->TMPL->tagdata);
-			}
-
-			return ee()->TMPL->tagdata;
-		}
-
 		ee()->load->library('typography');
 		ee()->typography->initialize();
 
@@ -2543,7 +2524,6 @@ class Member {
 		$clean_field_names = array_map(function($field)
 		{
 			$field = ee()->api_channel_fields->get_single_field($field);
-
 
 			return $field['field_name'];
 		}, array_flip(ee()->TMPL->var_single));
@@ -2566,22 +2546,10 @@ class Member {
 				->indexBy('field_id');
 		}
 
-		foreach ($query->result_array() as $row)
+		foreach (array($results) as $row)
 		{
 			$cond['avatar']	= $avatar;
 			$cond['photo'] = $photo;
-
-			foreach($fields as $key =>  $value)
-			{
-				$cond[$key] = ee()->typography->parse_type($row['m_field_id_'.$value['0']],
-												array(
-													  'text_format'	=> $value['1'],
-													  'html_format'	=> 'safe',
-													  'auto_links'	=> 'y',
-													  'allow_img_url' => 'n'
-													 )
-										  	  );
-			}
 
 			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 
@@ -2589,18 +2557,6 @@ class Member {
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// parse default member data
-
-				//  Format URLs
-// not in default fields any more
-/*
-				if ($key == 'url')
-				{
-					if (substr($default_fields['url'], 0, 4) != "http" && strpos($default_fields['url'], '://') === FALSE)
-					{
-						$default_fields['url'] = "http://".$default_fields['url'];
-					}
-				}
-*/
 
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
@@ -2707,21 +2663,33 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
 				}
 
+				// Custom member fields
 				$field = ee()->api_channel_fields->get_single_field($key);
 				$val = $field['field_name'];
 
 				// parse custom member fields
-				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+				if (isset($fields[$val]))
 				{
-					ee()->TMPL->tagdata = $this->parseField(
-						$fields[$val]['0'],
-						$field,
-						$row['m_field_id_'.$fields[$val]['0']],
-						ee()->TMPL->tagdata,
-						$member_id,
-						array(),
-						$key
-					);
+					if (array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+					{
+						ee()->TMPL->tagdata = $this->parseField(
+							$fields[$val]['0'],
+							$field,
+							$row['m_field_id_'.$fields[$val]['0']],
+							ee()->TMPL->tagdata,
+							$member_id,
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
+						ee()->TMPL->tagdata
+						);
+					}
 				}
 			}
 		}
@@ -2741,6 +2709,7 @@ class Member {
 	 */
 	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
 	{
+
 		if ( ! isset($this->member_fields[$field_id]))
 		{
 			return $tagdata;

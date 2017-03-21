@@ -438,6 +438,12 @@ abstract class FieldModel extends Model {
 		$modifier = ( ! empty($variable_mods['modifier'])) ? $variable_mods['modifier'] : '';
 		$params =  ( ! empty($variable_mods['params'])) ? $variable_mods['params'] : array();
 
+		if ($this->field_type == 'date')
+		{
+			// Set 0 to blank, kill any formatting
+			//$row['field_ft_'.$dval] = 'none';
+			$data = ($data == 0) ? '' : $data;
+		}
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
