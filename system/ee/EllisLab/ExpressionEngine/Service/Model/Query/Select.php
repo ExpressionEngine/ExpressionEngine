@@ -35,9 +35,10 @@ class Select extends Query {
 	protected $relations = array();
 	protected $model_fields = array();
 
-	protected function getClass()
+	protected function getClass($alias = '')
 	{
-		$model = $this->expandAlias($this->root_alias);
+		$alias = ($alias) ?: $this->root_alias;
+		$model = $this->expandAlias($alias);
 		$meta = $this->store->getMetaDataReader($model);
 		return $meta->getClass();
 	}
@@ -51,12 +52,18 @@ class Select extends Query {
 
 		$result_array = $query->get()->result_array();
 
-		$class = $this->getClass();
-
-		if (! empty($result_array)
-            && ! is_null($class::getMetaData('field_data')))
+		if ( ! empty($result_array))
 		{
-			$result_array = $this->getExtraData($result_array);
+			$withs = $this->builder->getWiths();
+			$aliases = array_merge(array($this->root_alias), array_keys($withs));
+			foreach ($aliases as $alias)
+			{
+				$class = $this->getClass($alias);
+				if ( ! is_null($class::getMetaData('field_data')))
+				{
+					$result_array = $this->getExtraData($alias, $result_array);
+				}
+			}
 		}
 
 		$result = new Result(
@@ -203,9 +210,9 @@ class Select extends Query {
 		return $queued_joins;
 	}
 
-	protected function getExtraData($result_array)
+	protected function getExtraData($alias, $result_array)
 	{
-		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($alias));
 		$class = $meta->getClass();
 
 		$fields = $this->getFields();
@@ -234,8 +241,8 @@ class Select extends Query {
 		$field_model = ee('Model')->make($meta_field_data['field_model']);
 
 		// let's make life a bit easier
-		$item_key_column   = $this->root_alias . '__' . $meta->getPrimaryKey();
-		$table_prefix      = $this->root_alias;
+		$item_key_column   = $alias . '__' . $meta->getPrimaryKey();
+		$table_prefix      = $alias;
 		$join_table_prefix = $field_model->getTableName();
 		$column_prefix     = $field_model->getColumnPrefix();
 		$parent_key        = "{$meta_field_data['extra_data']['parent_table']}.{$meta_field_data['extra_data']['key_column']}";
@@ -260,7 +267,7 @@ class Select extends Query {
 
 		if ($fields->count())
 		{
-			$entry_ids = array_map(function($column) use ($item_key_column){
+			$entry_ids = array_map(function($column) use ($item_key_column) {
 				return $column[$item_key_column];
 			}, $result_array);
 
