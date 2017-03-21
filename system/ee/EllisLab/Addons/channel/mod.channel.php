@@ -388,7 +388,8 @@ class Channel {
 	  */
 	public function fetch_custom_member_fields()
 	{
-		ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data');
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		ee()->db->where('m_legacy_field_data', 'n');
 		$query = ee()->db->get('member_fields');
 
 		$fields_present = FALSE;
@@ -402,7 +403,7 @@ class Channel {
 				$fields_present = TRUE;
 			}
 
-			$this->mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_legacy_field_data']);
+			$this->mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
 		}
 
 		// If we can find no instance of the variable, then let's not process them at all.
@@ -2290,11 +2291,6 @@ class Channel {
 
 			foreach ($this->mfields as $mfield)
 			{
-				if ($mfield[2] == 'y')
-				{
-					continue;
-				}
-
 				$field_id = $mfield[0];
 				$table = "exp_member_data_field_{$field_id}";
 				$this->sql .= ", {$table}.*";
