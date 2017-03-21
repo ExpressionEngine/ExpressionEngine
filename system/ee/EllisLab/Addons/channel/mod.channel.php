@@ -389,6 +389,7 @@ class Channel {
 	public function fetch_custom_member_fields()
 	{
 		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		ee()->db->where('m_legacy_field_data', 'n');
 		$query = ee()->db->get('member_fields');
 
 		$fields_present = FALSE;
