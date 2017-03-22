@@ -231,8 +231,8 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		$all_fields = $this->relationship_field_names;
-		$all_fields = implode('|', $all_fields).'|parents|siblings';
+		$all_fields = array_merge($this->relationship_field_names, array('parents', 'siblings'));
+		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
 		// {rel:pre:fix:tag:modified param="value"}
