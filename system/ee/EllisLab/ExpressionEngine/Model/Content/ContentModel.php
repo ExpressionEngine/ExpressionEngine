@@ -441,6 +441,12 @@ abstract class ContentModel extends VariableColumnModel {
 				if (array_key_exists($column, $dirty))
 				{
 					$values[$column] = $this->$column;
+
+					// If the previous data was not null then we are updating
+					if ( ! is_null($dirty[$column]))
+					{
+						$update = TRUE;
+					}
 				}
 				else
 				{
@@ -450,13 +456,6 @@ abstract class ContentModel extends VariableColumnModel {
 					{
 						$update = TRUE;
 					}
-				}
-
-				// If we have backup data for this column, then we are updating
-				// the column and thus updating the row.
-				if ($this->hasBackup($column))
-				{
-					$update = TRUE;
 				}
 			}
 
