@@ -58,9 +58,10 @@ class Select extends Query {
 			$aliases = array_merge(array($this->root_alias), array_keys($withs));
 			foreach ($aliases as $alias)
 			{
-				if (strpos($alias, ' as ') !== FALSE)
+				if (stripos($alias, ' as ') !== FALSE)
 				{
-					list($relation, $alias) = explode(' as ', $alias);
+					$parts = explode(' ', $alias);
+					$alias = end($parts);
 				}
 
 				$class = $this->getClass($alias);
