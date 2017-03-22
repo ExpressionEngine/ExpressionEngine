@@ -416,8 +416,6 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		$dirty = ($changed) ?: $this->getDirty();
 
-		// var_dump($changed, $this->getDirty(), $_POST); die();
-
         // Optimization: if there are no dirty fields, there's nothing to do
         if (empty($dirty))
         {
@@ -444,7 +442,18 @@ abstract class ContentModel extends VariableColumnModel {
 				{
 					$values[$column] = $this->$column;
 				}
+				else
+				{
+					// If this column's data is not dirty, and it is also not
+					// empty, then we are updating the field.
+					if (! empty($this->$column))
+					{
+						$update = TRUE;
+					}
+				}
 
+				// If we have backup data for this column, then we are updating
+				// the column and thus updating the row.
 				if ($this->hasBackup($column))
 				{
 					$update = TRUE;
