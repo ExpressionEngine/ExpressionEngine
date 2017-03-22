@@ -58,6 +58,11 @@ class Select extends Query {
 			$aliases = array_merge(array($this->root_alias), array_keys($withs));
 			foreach ($aliases as $alias)
 			{
+				if (strpos($alias, ' as ') !== FALSE)
+				{
+					list($relation, $alias) = explode(' as ', $alias);
+				}
+
 				$class = $this->getClass($alias);
 				if ( ! is_null($class::getMetaData('field_data')))
 				{
