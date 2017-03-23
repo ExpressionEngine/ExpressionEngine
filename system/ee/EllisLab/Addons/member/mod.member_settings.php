@@ -128,7 +128,7 @@ class Member_settings extends Member {
 		/** ----------------------------------------
 		/**  Fetch the member data
 		/** ----------------------------------------*/
-
+/*
 		$select = 'm.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
 					m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename,
 					m.photo_width, m.photo_height, m.join_date, m.last_visit,
@@ -143,24 +143,33 @@ class Member_settings extends Member {
 		ee()->db->where('m.member_id', (int)$this->cur_id);
 		ee()->db->where('g.site_id', ee()->config->item('site_id'));
 		ee()->db->where('m.group_id', 'g.group_id', FALSE);
+*/
+
+		// Default Member Data
+		$not_in = array(3, 4);
 
 		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
-			ee()->db->where('m.group_id !=', 2);
+    		$not_in[] = 2;
 		}
+		
+		ee()->load->model('member_model');
 
-		ee()->db->where('m.group_id !=', 3);
-		ee()->db->where('m.group_id !=', 4);
+		$member = ee('Model')->get('Member', (int)$this->cur_id)
+    		->with('MemberGroup')
+    		->filter('group_id', 'NOT IN', $not_in)
+			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
+    		->first();
+		
+		$total_results = count($member);
 
-		$query = ee()->db->get();
-
-		if ($query->num_rows() == 0)
+		if ($total_results == 0)
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
 
 		// Fetch the row
-		$row = $query->row_array();
+		$row = array_merge($member->getValues(), $member->MemberGroup->getValues());
 
 		/** ----------------------------------------
 		/**  Fetch the template
@@ -403,6 +412,8 @@ class Member_settings extends Member {
 		$this->var_pair		= $vars['var_pair'];
 
 		$this->var_cond = ee()->functions->assign_conditional_variables($content, '/');
+
+
 
 		/** ----------------------------------------
 		/**  Parse conditional pairs
@@ -652,19 +663,54 @@ class Member_settings extends Member {
 		if ($query->num_rows() > 0)
 		{
 			$fnames = array();
+			
+			$result_row = $row;
 
 			foreach ($query->result_array() as $row)
 			{
-				$fnames[$row['m_field_name']] = $row['m_field_id'];
-			}
+				$fnames[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
+			}			
 
-			$result = ee()->db->query("SELECT * FROM exp_member_data WHERE member_id = '{$this->cur_id}'");
+
+		ee()->load->library('typography');
+		ee()->typography->initialize();
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		$cond = $default_fields;
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+
+			return $field['field_name'];
+		}, array_flip(ee()->TMPL->var_single));
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($fnames[$field_name][0]))
+			{
+				$member_field_ids[] = $fnames[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
+			
 
 			/** ----------------------------------------
 			/**  Parse conditionals for custom fields
 			/** ----------------------------------------*/
-
-			$result_row = $result->row_array();
 
 			foreach ($this->var_cond as $val)
 			{
@@ -702,6 +748,8 @@ class Member_settings extends Member {
 			/**  Parse single variables
 			/** ----------------------------------------*/
 
+/*
+
 			$member_field_ids = array();
 			foreach ($query->result_array() as $row)
 			{
@@ -715,27 +763,36 @@ class Member_settings extends Member {
 			ee()->load->library('api');
 			ee()->legacy_api->instantiate('channel_fields');
 
+*/
+
 			foreach ($this->var_single as $key => $val)
 			{
+
+				// Custom member fields
 				$field = ee()->api_channel_fields->get_single_field($key);
+				$val = $field['field_name'];
 
-				foreach ($query->result_array() as $row)
+				// parse custom member fields
+				if (isset($fields[$val]))
 				{
-					if ($row['m_field_name'] == $field['field_name'])
+					if (array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
 					{
-						$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
-
-						$content = $this->parseField(
-							$row['m_field_id'],
+						ee()->TMPL->tagdata = $this->parseField(
+							$fields[$val]['0'],
 							$field,
-							$field_data,
-							$content,
-							$this->cur_id,
-							array(
-								'channel_html_formatting' => 'none',
-								'channel_auto_link_urls' => 'n'
-							),
+							$row['m_field_id_'.$fields[$val]['0']],
+							ee()->TMPL->tagdata,
+							$member_id,
+							array(),
 							$key
+						);
+					}
+					else
+					{
+						ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
+						ee()->TMPL->tagdata
 						);
 					}
 				}
