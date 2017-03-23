@@ -2133,12 +2133,19 @@ GRID_FALLBACK;
 			return;
 		}
 
+		$selected = '';
+
+		if ($this->entry->entry_id OR ! empty($this->channel->deft_category))
+		{
+			$selected = $this->entry->Categories->pluck('cat_id');
+		}
+
 		// Load up the library and figure out what belongs and what's selected
 		ee()->load->library(array('api', 'file_field'));
 		ee()->legacy_api->instantiate('channel_categories');
 		$category_list = ee()->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
-			$this->entry->Categories->pluck('cat_id')
+			$selected
 		);
 
 		$categories = array();
