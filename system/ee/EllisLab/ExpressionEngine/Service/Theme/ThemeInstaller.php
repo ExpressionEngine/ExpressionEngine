@@ -34,6 +34,11 @@ class ThemeInstaller {
 	private $site_url;
 
 	/**
+	 * @var string The absolute base path
+	 */
+	private $base_path;
+
+	/**
 	 * @var string The absolute theme path
 	 */
 	private $theme_path;
@@ -88,6 +93,15 @@ class ThemeInstaller {
 	public function setThemePath($theme_path)
 	{
 		$this->theme_path = rtrim($theme_path, '/').'/';
+	}
+
+	/**
+	 * Set the theme path, most likely from a constant
+	 * @param string $theme_path The theme path
+	 */
+	public function setBasePath($base_path)
+	{
+		$this->base_path = rtrim($base_path, '/').'/';
 	}
 
 	/**
@@ -358,7 +372,7 @@ class ThemeInstaller {
 	 */
 	private function createUploadDestinations($theme_name, $upload_locations)
 	{
-		$img_url = $this->site_url."themes/ee/site/{$theme_name}/";
+		$img_url = "{base_url}themes/ee/site/{$theme_name}/";
 		$img_path = $this->theme_path."ee/site/{$theme_name}/";
 
 		foreach ($upload_locations as $upload_location_data)
@@ -369,7 +383,7 @@ class ThemeInstaller {
 			$upload_destination->site_id = 1;
 			$upload_destination->name = $upload_location_data->name;
 			$upload_destination->url = $img_url.$upload_location_data->path;
-			$upload_destination->server_path = $path;
+			$upload_destination->server_path = str_replace($this->base_path, '{base_path}', $path);
 			$upload_destination->save();
 
 			$this->model_data['upload_destination'][strtolower($upload_destination->name)] = $upload_destination;
@@ -408,6 +422,10 @@ class ThemeInstaller {
 		$field_group_path = $this->theme_path."ee/site/{$theme_name}/custom_fields/";
 		$field_groups = directory_map($field_group_path);
 
+		// Sorting file listing as a temporary workaround where the order of
+		// files may cause an exception
+		ksort($field_groups);
+
 		foreach ($field_groups as $group_name => $fields)
 		{
 			$field_group = ee('Model')->make('ChannelFieldGroup');
@@ -416,6 +434,7 @@ class ThemeInstaller {
 
 			$this->model_data['field_group'][$field_group->group_name] = $field_group;
 
+			sort($fields);
 			foreach ($fields as $file_name)
 			{
 				// reset for Grid fields

@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\Profiler;
 use EE_Lang;
 use EE_URI;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
+use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -32,6 +33,11 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 class Profiler {
 
 	/**
+	 * @var object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 **/
+	protected $fmt_factory;
+
+	/**
 	 * @var the section objects to render
 	 */
 	protected $sections = array();
@@ -48,15 +54,18 @@ class Profiler {
 
 	/**
 	 * Constructor
-	 * Inject:
-	 *   EE_Lang $lang for loadfile()
-	 *   ViewFactory $view_factory A ViewFactory object for making and rendering views
+	 *
+	 * @param object $lang EE_Lang
+	 * @param object $view_factory EllisLab\ExpressionEngine\Service\View\ViewFactory
+	 * @param object $uri EE_URI
+	 * @param object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
 	 */
-	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri)
+	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri, FormatterFactory $fmt_factory)
 	{
 		$lang->loadfile('profiler');
 		$this->view_factory = $view_factory;
 		$this->uri = $uri;
+		$this->fmt_factory = $fmt_factory;
 	}
 
 	/**
@@ -89,7 +98,7 @@ class Profiler {
 		}
 
 		// create the section and set its data
-		$section = new $class($section_name);
+		$section = new $class($section_name, $this->fmt_factory);
 		call_user_func_array(array($section, 'setData'), $args);
 
 		$this->sections[] = $section;

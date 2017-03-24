@@ -6,6 +6,7 @@ use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
+use EllisLab\ExpressionEngine\Library\Data\SerializableEntity;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
@@ -35,7 +36,7 @@ use EllisLab\ExpressionEngine\Service\Event\Subscriber;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Model extends Entity implements Subscriber, ValidationAware {
+class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 
 	/**
@@ -72,6 +73,11 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	 * @var Cache of variable types - can be class names or objects
 	 */
 	protected $_property_types = array();
+
+	/**
+	 * @var Cache of foreign key names
+	 */
+	protected $_foreign_keys = array();
 
 	/**
 	 * @var Type names and their corresponding classes
@@ -127,10 +133,12 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	 */
 	protected function initialize()
 	{
-		$this->addFilter('get', array($this, 'typedGet'));
-		$this->addFilter('set', array($this, 'typedSet'));
-		$this->addFilter('fill', array($this, 'typedLoad'));
-		$this->addFilter('store', array($this, 'typedStore'));
+		// not a typo, 'this' is replaced with $this to prevent
+		// a memory leak - long term these need to move to a better place
+		$this->addFilter('get', array('this', 'typedGet'));
+		$this->addFilter('set', array('this', 'typedSetAndForeignKeys'));
+		$this->addFilter('fill', array('this', 'typedLoad'));
+		$this->addFilter('store', array('this', 'typedStore'));
 
 		if ($publish_as = $this->getMetaData('hook_id'))
 		{
@@ -260,6 +268,11 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		$this->_new = is_null($id);
 
 		$this->emit('setId', $id);
+
+		foreach ($this->getAllBootedAssociations() as $association)
+		{
+			$association->idHasChanged();
+		}
 
 		return $this;
 	}
@@ -451,20 +464,24 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	 */
 	public function validate()
 	{
-		if ( ! isset($this->_validator))
+		$validator = $this->getValidator();
+
+		if ( ! isset($validator))
 		{
 			return TRUE;
 		}
+
+		$this->ensureValidationAliases();
 
 		$this->emit('beforeValidate');
 
 		if ($this->isNew())
 		{
-			$result = $this->_validator->validate($this);
+			$result = $validator->validate($this);
 		}
 		else
 		{
-			$result = $this->_validator->validatePartial($this);
+			$result = $validator->validatePartial($this);
 		}
 
 		$this->emit('afterValidate');
@@ -482,12 +499,6 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	{
 		$this->_validator = $validator;
 
-		// alias unique to the validateUnique callback
-		$validator->defineRule('unique', array($this, 'validateUnique'));
-
-		// alias uniqueWithinSiblings to the validateUniqueWithinSiblings callback
-		$validator->defineRule('uniqueWithinSiblings', array($this, 'validateUniqueWithinSiblings'));
-
 		return $this;
 	}
 
@@ -499,6 +510,25 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	public function getValidator()
 	{
 		return $this->_validator;
+	}
+
+	/**
+	 * Alias some validate* rules to the unprefixed name.
+	 *
+	 * This used to be done in the validation setter, but that ends up being a
+	 * bit of a waste of work and sets up a circular reference that's not easily
+	 * garbage collected. This is much easier.
+	 */
+	private function ensureValidationAliases()
+	{
+		if ( ! $this->_validator->hasCustomRule('unique'))
+		{
+			// alias unique to the validateUnique callback
+			$this->_validator->defineRule('unique', array($this, 'validateUnique'));
+
+			// alias uniqueWithinSiblings to the validateUniqueWithinSiblings callback
+			$this->_validator->defineRule('uniqueWithinSiblings', array($this, 'validateUniqueWithinSiblings'));
+		}
 	}
 
 	/**
@@ -678,11 +708,17 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		return $value;
 	}
 
-	public function typedSet($value, $name)
+	public function typedSetAndForeignKeys($value, $name)
 	{
 		if ($type = $this->getTypeFor($name))
 		{
-			return $type->set($value);
+			$value = $type->set($value);
+		}
+
+		if (array_key_exists($name, $this->_foreign_keys))
+		{
+			$assoc = $this->getAssociation($this->_foreign_keys[$name]);
+			$assoc->foreignKeyChanged($value);
 		}
 
 		return $value;
@@ -742,11 +778,60 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	}
 
 	/**
+	 * Getter for serialization
+	 *
+	 * @return Mixed Data to serialize
+	 */
+	protected function getSerializeData()
+	{
+		return array(
+			'name' => $this->getName(),
+			'values' => parent::getSerializeData()
+		);
+	}
+
+	/**
+	 * Overridable setter for unserialization
+	 *
+	 * @param Mixed $data Data returned from `getSerializedData`
+	 * @return void
+	 */
+	public function setSerializeData($data)
+	{
+		// datastore requires a name
+		$this->setName($data['name']);
+
+		// set all of the external dependencies
+		ee('Model')->make($this);
+
+		parent::setSerializeData($data['values']);
+	}
+
+	/**
 	 * Interface method to implement Event\Subscriber
 	 */
 	public function getSubscribedEvents()
 	{
 		return $this->getMetaData('events') ?: array();
+	}
+
+	/**
+	 * Override emit for subscribed events. This keeps us from circularly referencing
+	 * ourselves in the event emitter.
+	 */
+	public function emit(/*$event, ...$args */)
+	{
+		$args = func_get_args();
+		$event = $args[0];
+
+		// handle events we're subscribed to
+		if (in_array($event, $this->getSubscribedEvents()))
+		{
+			$method = 'on'.ucfirst($event);
+			call_user_func_array(array($this, $method), array_slice($args, 1));
+		}
+
+		call_user_func_array('parent::emit', $args);
 	}
 
 	/**
@@ -756,7 +841,35 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	*/
 	public function getAllAssociations()
 	{
+		foreach ($this->_associations as $name => $assoc)
+		{
+			if ( ! $assoc->isBooted())
+			{
+				$assoc->boot($this);
+			}
+		}
+
 		return $this->_associations;
+	}
+
+	/**
+	* Get all booted associations
+	*
+	* @return array associations
+	*/
+	public function getAllBootedAssociations()
+	{
+		$assocs = array();
+
+		foreach ($this->_associations as $name => $assoc)
+		{
+			if ($assoc->isBooted())
+			{
+				$assocs[$name] = $assoc;
+			}
+		}
+
+		return $assocs;
 	}
 
 	/**
@@ -778,7 +891,14 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	*/
 	public function getAssociation($name)
 	{
-		return $this->_associations[$name];
+		$assoc = $this->_associations[$name];
+
+		if ( ! $assoc->isBooted())
+		{
+			$assoc->boot($this);
+		}
+
+		return $assoc;
 	}
 
 	/**
@@ -791,6 +911,14 @@ class Model extends Entity implements Subscriber, ValidationAware {
 	public function setAssociation($name, Association $association)
 	{
 		$association->setFacade($this->getModelFacade());
+
+		// check for a foreign key to listen to
+		$fk = $association->getForeignKey();
+
+		if ($fk != $this->getPrimaryKey())
+		{
+			$this->addForeignKey($fk, $name);
+		}
 
 		$this->_associations[$name] = $association;
 
@@ -813,6 +941,13 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		return $this->setAssociation($as, $this->getAssociation($association));
 	}
 
+	/**
+	 * Add a foreign key
+	 */
+	public function addForeignKey($key, $assoc_name)
+	{
+		$this->_foreign_keys[$key] = $assoc_name;
+	}
 
 	/**
 	 * Create a new query tied to this object
@@ -824,6 +959,10 @@ class Model extends Entity implements Subscriber, ValidationAware {
 		return $this->_facade->get($this);
 	}
 
+	/**
+	 * Provide a bit of debugging information when printing a model, but
+	 * don't show any potentially sensitive information.
+	 */
 	public function __toString()
 	{
 		return spl_object_hash($this).':'.$this->getName().':'.$this->getId();

@@ -63,7 +63,9 @@
 
 			newText = newTextTemp;
 
-			newText = newText.replace('/<(.*?)>/g', '');
+			newText = newText.replace(/<(.*?)>/g, ''); // Strip HTML
+			newText = newText.replace(/&[a-zA-Z]+;/g, ''); // Strip HTML entites
+			newText = newText.replace(/\[\/?(b|i|u|del|em|ins|strong|pre|code|abbr|span|sup|sub|color|size|strike|url|email|style)\b=?.*?\]/g, ''); // Strip valid inline BBCode
 			newText = newText.replace(/\s+/g, separator);
 			newText = newText.replace(/\//g, separator);
 			newText = newText.replace(/[^a-z0-9\-\._]/g, '');
@@ -78,6 +80,7 @@
 
 			if (url_title) {
 				$(url_title).val(newText.substring(0, 75));
+				$(url_title).trigger('change');
 			}
 		});
 	};

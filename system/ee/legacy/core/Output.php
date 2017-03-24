@@ -372,6 +372,27 @@ class EE_Output {
 			}
 		}
 
+		if (REQ == 'PAGE')
+		{
+			/* -------------------------------------------
+			/*	Hidden Configuration Variables
+			/*	- remove_unparsed_vars => Whether or not to remove unparsed EE variables
+			/*  This is most helpful if you wish for debug to be set to 0, as EE will not
+			/*  strip out javascript.
+			/* -------------------------------------------*/
+			$remove_vars = (ee()->config->item('remove_unparsed_vars') == 'y');
+			$this->remove_unparsed_variables($remove_vars);
+
+			if (ee()->config->item('debug') == 0 &&
+				$this->remove_unparsed_variables === TRUE)
+			{
+				$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
+			}
+
+			// Garbage Collection
+			ee()->core->_garbage_collection();
+		}
+
 		// --------------------------------------------------------------------
 
 		echo $output;  // Send it to the browser!
@@ -513,7 +534,17 @@ class EE_Output {
 			$data['rate'] = $this->refresh_time;
 		}
 
-		$data['meta_refresh']	= ($data['redirect'] != '') ? "<meta http-equiv='refresh' content='".$data['rate']."; url=".ee('Security/XSS')->clean($data['redirect'])."'>" : '';
+		$data['meta_refresh'] = '';
+
+		if ($data['redirect'] != '')
+		{
+			$secure_redirect = ee('Security/XSS')->clean($data['redirect']);
+			$js_rate = $data['rate']*1000;
+
+			$data['meta_refresh'] = "<script type='text/javascript'>setTimeout(function(){document.location='".$secure_redirect."'},".$js_rate.')</script>';
+			$data['meta_refresh'] .= "<noscript><meta http-equiv='refresh' content='".$data['rate']."; url=".$secure_redirect."'></noscript>";
+		}
+
 		$data['charset']		= ee()->config->item('output_charset');
 
 		if (is_array($data['link']) AND count($data['link']) > 0)
@@ -578,6 +609,7 @@ class EE_Output {
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+		$this->set_status_header(403);
 
 		if ($type != 'off')
 		{

@@ -60,9 +60,13 @@ class Table {
 	 * 'total_rows' - Total rows in the dataset regardless of limit or page number
 	 * 'sortable' - Whether or not to allow the columns to sort the table, this can
 	 * 		also be controlled on a column-by-column basis
-	 *
 	 * 'grid_input' - Whether or not this table is being used as a Grid input UI
-	 * 'reorder' - Whether or not to allow this Grid to have its rows reordered
+	 * 'reorder' - Whether or not to allow this table to have its rows reordered
+	 * 'reorder_header' - Whether or not to show a reorder handle in the table's
+	 * 		header, i.e. if an entire table was reorderable with other tables
+	 * 'checkbox_header' - For checkbox columns, will also show a checkbox in
+	 * 		the header when there is no data, i.e. when a table represents an
+	 * 		entity that can have actions applied to it (edge case setting)
 	 *
 	 * @param	array 	$config	See above for options
 	 */
@@ -86,6 +90,7 @@ class Table {
 			'grid_input'        => FALSE,
 			'reorder'           => FALSE,
 			'reorder_header'    => FALSE,
+			'checkbox_header'   => FALSE,
 			'class'             => '',
 			'attrs'				=> array(),
 			'no_results'        => array(
@@ -543,6 +548,7 @@ class Table {
 
 	/**
 	 * Compare two values automatically
+	 *
 	 * @param  Mixed $a Left value
 	 * @param  Mixed $b Right value
 	 * @return Integer  Comparison result (-1, 0, 1) based on the two values passed in
@@ -562,9 +568,18 @@ class Table {
 			$date_a = $this->localize->string_to_timestamp($a, TRUE, $date_format);
 			$date_b = $this->localize->string_to_timestamp($b, TRUE, $date_format);
 
+			// Check for disk size
+			$sizes = array('KB', 'MB', 'GB', 'TB', 'PB');
+			$size_a = strtoupper(substr(strip_tags($a), -2));
+			$size_b = strtoupper(substr(strip_tags($b), -2));
+
 			if ($date_a !== FALSE && $date_b !== FALSE)
 			{
 				$cmp = $date_a - $date_b;
+			}
+			elseif (in_array($size_a, $sizes) && in_array($size_b, $sizes))
+			{
+				$cmp = $this->convertToBytes($a) - $this->convertToBytes($b);
 			}
 			else
 			{
@@ -574,6 +589,34 @@ class Table {
 
 		return $cmp;
 	}
+
+	/**
+	 * Given a disk size string such as "12 GB", "23.0 MB", "42KB", etc,
+	 * converts to bytes for sort comparison
+	 *
+	 * @param	string	$size	Disk size string
+	 * @return	Integer	Number of bytes the size string represents
+	 */
+	private function convertToBytes($size)
+	{
+		$number = trim(substr(strip_tags($size), 0, -2));
+
+		switch(trim(strtoupper(substr(strip_tags($size), -2))))
+		{
+			case 'KB':
+				return $number * 1024;
+			case 'MB':
+				return $number * pow(1024,2);
+			case 'GB':
+				return $number * pow(1024,3);
+			case 'TB':
+				return $number * pow(1024,4);
+			case 'PB':
+				return $number * pow(1024,5);
+			default:
+				return $size;
+		}
+}
 
 	/**
 	 * If the entire data set is passed to the table object, the table
@@ -645,30 +688,20 @@ class Table {
 			$base_url->setQueryStringVariable($this->config['sort_dir_qs_var'], $this->getSortDir());
 		}
 
-		return array(
-			'base_url'          => $base_url,
-			'lang_cols'         => $this->config['lang_cols'],
-			'search'            => $this->config['search'],
-			'wrap'              => $this->config['wrap'],
-			'no_results'        => $this->config['no_results'],
-			'limit'             => $this->config['limit'],
-			'page'              => $this->config['page'],
-			'total_rows'        => $this->config['total_rows'],
-			'grid_input'        => $this->config['grid_input'],
-			'reorder'           => $this->config['reorder'],
-			'reorder_header'    => $this->config['reorder_header'],
-			'class'             => $this->config['class'],
-			'table_attrs'       => $this->config['attrs'],
-			'sortable'          => $this->config['sortable'],
-			'subheadings'       => ($this->config['subheadings'] && empty($this->config['search'])),
-			'sort_col'          => $this->getSortCol(),
-			'sort_col_qs_var'   => $this->config['sort_col_qs_var'],
-			'sort_dir'          => $this->getSortDir(),
-			'sort_dir_qs_var'   => $this->config['sort_dir_qs_var'],
-			'columns'           => $this->columns,
-			'data'              => $this->data,
-			'action_buttons'    => $this->action_buttons,
-			'action_content'    => $this->action_content
+		$view_vars = $this->config;
+		return array_merge(
+			$view_vars,
+			array(
+				'base_url'       => $base_url,
+				'sort_col'       => $this->getSortCol(),
+				'sort_dir'       => $this->getSortDir(),
+				'table_attrs'    => $this->config['attrs'],
+				'columns'        => $this->columns,
+				'data'           => $this->data,
+				'action_buttons' => $this->action_buttons,
+				'action_content' => $this->action_content,
+				'subheadings'    => ($this->config['subheadings'] && empty($this->config['search'])),
+			)
 		);
 	}
 
@@ -716,12 +749,13 @@ class Table {
 	 * @param	string	$action_link	Link for action button to create a new item
 	 * @return  void
 	 */
-	public function setNoResultsText($text, $action_text = '', $action_link = '')
+	public function setNoResultsText($text, $action_text = '', $action_link = '', $external = FALSE)
 	{
 		$this->config['no_results'] = array(
 			'text'			=> $text,
 			'action_text'	=> $action_text,
-			'action_link'	=> $action_link
+			'action_link'	=> $action_link,
+			'external'		=> $external
 		);
 	}
 

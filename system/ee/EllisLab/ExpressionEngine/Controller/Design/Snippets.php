@@ -43,7 +43,7 @@ class Snippets extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->generateSidebar('partials');
@@ -176,7 +176,7 @@ class Snippets extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_template_partials'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars = array(
@@ -292,7 +292,7 @@ class Snippets extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_template_partials'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$snippet = ee('Model')->get('Snippet')
@@ -315,7 +315,7 @@ class Snippets extends AbstractDesignController {
 				'old_name' => $snippet->snippet_name
 			),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('partial')),
-			'save_btn_text_working' => 'btn_edit_partial_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -429,7 +429,7 @@ class Snippets extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_template_partials'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($snippet_ids))

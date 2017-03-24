@@ -62,10 +62,20 @@
 			<?=ee('CP/Alert')->getAllInlines()?>
 			<?php if ($extra_publish_controls): ?>
 				<fieldset class="form-ctrls top">
-					<?php if ($entry->Channel->enable_versioning): ?>
-					<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
-					<?php endif; ?>
-					<?=cp_form_submit($button_text, lang('btn_saving'))?>
+					<?php
+						$class = 'btn';
+						$disabled = '';
+
+						if ((isset($errors) && $errors->isNotValid()))
+						{
+							$class = 'btn disable';
+							$disabled = 'disabled="disabled"';
+						}
+
+						$just_save = trim(sprintf(lang('btn_save'), ''));
+					?>
+					<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="edit" data-submit-text="<?=$just_save?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : $just_save?></button>
+					<button class="<?=$class?>" <?=$disabled?> name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_save_and_close')?>" data-work-text="<?=lang('btn_saving')?>"><?=($disabled) ? lang('btn_fix_errors') : lang('btn_save_and_close')?></button>
 				</fieldset>
 			<?php endif ?>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
@@ -123,7 +133,7 @@
 						<em<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>><?=$field->getInstructions()?></em>
 						<?php if ($field->get('field_id') == 'categories' &&
 								$entry->Channel->cat_group &&
-								ee()->cp->allowed_group('can_edit_categories')): ?>
+								ee()->cp->allowed_group('can_create_categories')): ?>
 							<p><a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="<?=$field->get('group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php endif; ?>
 					</div>

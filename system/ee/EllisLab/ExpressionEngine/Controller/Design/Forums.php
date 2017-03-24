@@ -45,7 +45,7 @@ class Forums extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->stdHeader();
@@ -89,7 +89,7 @@ class Forums extends AbstractDesignController {
 		{
 			$path = $base_path . '/' . $dir;
 
-			if ( ! is_array($files))
+			if ( ! is_array($files) OR $dir == 'images')
 			{
 				continue;
 			}
@@ -161,10 +161,10 @@ class Forums extends AbstractDesignController {
 		}
 		else
 		{
-			foreach (array_keys($files) as $file)
-			{
-				$dir = array_shift($files);
+			$theme_path = ee('Theme')->getPath('forum/');
 
+			foreach (array_keys($files) as $dir)
+			{
 				if (is_dir($theme_path . $dir))
 				{
 					return $dir;

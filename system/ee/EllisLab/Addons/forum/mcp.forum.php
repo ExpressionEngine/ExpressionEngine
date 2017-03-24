@@ -181,6 +181,7 @@ class Forum_mcp extends CP_Controller {
 					'limit'             => 0,
 					'reorder'           => TRUE,
 					'reorder_header'    => TRUE,
+					'checkbox_header'   => TRUE,
 					'sortable'          => FALSE,
 					'class'             => $class,
 					'wrap'              => FALSE,
@@ -189,7 +190,7 @@ class Forum_mcp extends CP_Controller {
 				$table = ee('CP/Table', $table_config);
 				$table->setColumns(
 					array(
-						$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
+						$category->forum_name.form_hidden('order[]', $category->forum_id) => array(
 							'encode' => FALSE
 						),
 						$this->getStatusWidget($category->forum_status) => array(
@@ -199,7 +200,12 @@ class Forum_mcp extends CP_Controller {
 							'type'	=> Table::COL_TOOLBAR,
 						),
 						array(
-							'type'	=> Table::COL_CHECKBOX
+							'type'	=> Table::COL_CHECKBOX,
+							'content' => form_checkbox(array(
+								'name' => 'selection[]',
+								'value' => $category->getId(),
+								'data-confirm' => lang('forum') . ' <b>' . htmlentities($category->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
+							))
 						)
 					)
 				);
@@ -229,7 +235,7 @@ class Forum_mcp extends CP_Controller {
 							'name' => 'selection[]',
 							'value' => $forum->forum_id,
 							'data'	=> array(
-								'confirm' => lang('forum') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
+								'confirm' => lang('forum') . ' <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
 							)
 						)
 					);
@@ -264,10 +270,7 @@ class Forum_mcp extends CP_Controller {
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/addons/forums/reorder',
-			),
-			'plugin' => array(
-				'ee_table_reorder',
-			),
+			)
 		));
 
 		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
@@ -297,31 +300,30 @@ class Forum_mcp extends CP_Controller {
 
 		if ( ! AJAX_REQUEST OR ! $board OR (empty($new_order['order']) && empty($new_order['cat_order'])))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if (isset($new_order['order']))
-		{
-			$order = $new_order['order'];
-			$collection = $board->Forums->indexBy('forum_id');
-		}
-		else
-		{
-			$order = $new_order['cat_order'];
-			$collection = $board->Categories->indexBy('forum_id');
-		}
+		$order = $new_order['order'];
+		$collection = $board->Forums->indexBy('forum_id');
 
 		$i = 1;
+		$current_category = NULL;
 		foreach ($order as $forum_id)
 		{
-			// Only update status orders that have changed
-			if (isset($collection[$forum_id]) && $collection[$forum_id]->forum_order != $i)
+			// stale form, POST fiddling, perhaps
+			if ( ! isset($collection[$forum_id]))
 			{
-				$collection[$forum_id]->forum_order = $i;
-				$collection[$forum_id]->save();
+				continue;
 			}
 
-			$i++;
+			if ($collection[$forum_id]->forum_is_cat)
+			{
+				$current_category = $forum_id;
+			}
+
+			$collection[$forum_id]->forum_order = $i++;
+			$collection[$forum_id]->forum_parent = ($forum_id == $current_category) ? 0 : $current_category;
+			$collection[$forum_id]->save();
 		}
 
 		ee()->output->send_ajax_response(NULL);
@@ -1072,6 +1074,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$sections = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -1780,6 +1786,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$vars['sections'] = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -2296,6 +2306,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$vars['sections'] = array(
 			array(
@@ -2902,6 +2916,10 @@ class Forum_mcp extends CP_Controller {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -3289,6 +3307,10 @@ class Forum_mcp extends CP_Controller {
 			->order('group_title', 'asc')
 			->all()
 			->getDictionary('group_id', 'group_title');
+
+		$member_groups = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups);
 
 		$sections = array(
 			array(

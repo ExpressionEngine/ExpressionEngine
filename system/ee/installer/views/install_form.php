@@ -82,7 +82,7 @@
 		<h3><?=lang('username')?></h3>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="username" type="text" value="<?=set_value('username')?>" maxlength="50">
+		<input name="username" type="text" value="<?=set_value('username')?>" maxlength="<?=USERNAME_MAX_LENGTH?>">
 		<?=form_error('username');?>
 	</div>
 </fieldset>

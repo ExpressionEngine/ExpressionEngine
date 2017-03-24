@@ -573,6 +573,22 @@ class Comment {
 		$mfields = array();
 
 		/** ----------------------------------------
+		/**  Fetch custom member field IDs
+		/** ----------------------------------------*/
+
+		ee()->db->select('m_field_id, m_field_name');
+		// ee()->db->where('m_legacy_field_data', 'n');
+		$query = ee()->db->get('member_fields');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$mfields[$row['m_field_name']] = $row['m_field_id'];
+			}
+		}
+
+		/** ----------------------------------------
 		/**  "Search by Member" link
 		/** ----------------------------------------*/
 		// We use this with the {member_search_path} variable
@@ -583,58 +599,32 @@ class Comment {
 
 		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
-		ee()->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.site_id AS comment_site_id,
-			members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
-			member_data.*,
-			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id, channel_titles.allow_comments, channel_titles.comment_expiration_date,
-			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name, channels.comment_system_enabled'
-		);
+		$comments = ee('Model')->get('Comment', $result_ids)
+			->with('Author', 'Channel')
+			->order($order_by, $this_sort)
+			->all();
 
-		ee()->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
-		ee()->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
-		ee()->db->join('members',			'members.member_id = comments.author_id',		'left');
-		ee()->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
+		$total_results = count($comments);
 
-		ee()->db->where_in('comments.comment_id', $result_ids);
-		ee()->db->order_by($order_by, $this_sort);
-
-		$query = ee()->db->get('comments');
-
-		$total_results = $query->num_rows();
-
-		if ($query->num_rows() > 0)
+		if ($total_results)
 		{
-			$results = $query->result_array();
-
-			// Potentially a lot of information
-			$query->free_result();
-
-			// -------------------------------------------
-			// 'comment_entries_query_result' hook.
-			//  - Take the whole query result array, do what you wish
-			//  - Added 3.1.0
-			//
-				if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
-				{
-					$results = ee()->extensions->call('comment_entries_query_result', $results);
-					if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
-				}
-			//
-			// -------------------------------------------
-		}
-
-		/** ----------------------------------------
-		/**  Fetch custom member field IDs
-		/** ----------------------------------------*/
-
-		ee()->db->select('m_field_id, m_field_name');
-		$query = ee()->db->get('member_fields');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
+			$results = array();
+			foreach ($comments as $comment)
 			{
-				$mfields[$row['m_field_name']] = $row['m_field_id'];
+				$values = array_merge($comment->getValues(), $comment->Channel->getValues());
+				unset($values['location'], $values['site_id']);
+				$values['c_location'] = $comment->location;
+				$values['comment_site_id'] = $comment->site_id;
+
+				$author = ($comment->Author) ?: ee('Model')->make('Member');
+
+				$results[] = array_merge($values, $author->getValues());
+			}
+
+			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
+			{
+				$results = ee()->extensions->call('comment_entries_query_result', $results);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
 		}
 
@@ -3284,10 +3274,10 @@ $.fn.CommentEditor = function(options) {
 		var id = this.id.replace('comment_', ''),
 		parent = $(this);
 
-		parent.find(OPT.showEditor).click(function() { showEditor(id); return false; });
-		parent.find(OPT.hideEditor).click(function() { hideEditor(id); return false; });
-		parent.find(OPT.saveComment).click(function() { saveComment(id); return false; });
-		parent.find(OPT.closeComment).click(function() { closeComment(id); return false; });
+		parent.find(OPT.showEditor).click(function(e) { e.preventDefault(); showEditor(id); });
+		parent.find(OPT.hideEditor).click(function(e) { e.preventDefault(); hideEditor(id); });
+		parent.find(OPT.saveComment).click(function(e) { e.preventDefault(); saveComment(id); });
+		parent.find(OPT.closeComment).click(function(e) { e.preventDefault(); closeComment(id); });
 	});
 
 	function showEditor(id) {

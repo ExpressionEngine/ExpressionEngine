@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'File Manger / Upload File' do
+feature 'File Manager / Upload File' do
 
   before(:each) do
     @md_file = File.expand_path('support/file/README.md')

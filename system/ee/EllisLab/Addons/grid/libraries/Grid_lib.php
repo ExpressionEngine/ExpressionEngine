@@ -74,34 +74,6 @@ class Grid_lib {
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
-		if (AJAX_REQUEST)
-		{
-			$column_id = ee()->input->post('column_id');
-			$row_id = ee()->input->post('row_id');
-
-			if ($column_id)
-			{
-				if ($row_id)
-				{
-					if ( ! array_key_exists($row_id, $rows))
-					{
-						$row_id = 'row_id_'.$row_id;
-					}
-
-					if (array_key_exists($row_id, $rows))
-					{
-						$html = $this->_publish_field_cell($columns[$column_id], $rows[$row_id]);
-					}
-				}
-				else
-				{
-					$html = $this->_publish_field_cell($columns[$column_id]);
-				}
-
-				return $grid->namespaceForGrid($html, $row_id);
-			}
-		}
-
 		$column_headings = array();
 		$blank_column = array();
 		foreach ($columns as $column)
@@ -332,7 +304,7 @@ class Grid_lib {
 		$searchable_data = array();
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE);
 		$rows = $rows[$this->entry_id];
 
 		// Remove deleted rows from $rows
@@ -380,12 +352,12 @@ class Grid_lib {
 		$row_ids = array();
 		foreach ($deleted_rows as $row)
 		{
-			$row_ids[] = $row['row_id'];
+			$row_ids[$this->entry_id][] = $row['row_id'];
 		}
 
 		$this->delete_rows($row_ids);
 
-		if ( ! empty($searchable_data))
+		if ( ! empty($searchable_data) && $this->content_type == 'channel')
 		{
 			ee()->load->helper('custom_field_helper');
 
@@ -419,14 +391,23 @@ class Grid_lib {
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// Call delete/grid_delete on each affected fieldtype and send along
-		// the row IDs
-		foreach ($columns as $column)
+		// the row IDs for each entry deleted
+		foreach ($row_ids as $entry_id => $rows)
 		{
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
-			ee()->grid_parser->call('delete', $row_ids);
-		}
+			foreach ($columns as $column)
+			{
+				ee()->grid_parser->instantiate_fieldtype(
+					$column,
+					NULL,
+					$this->field_id,
+					$entry_id,
+					$this->content_type
+				);
+				ee()->grid_parser->call('delete', $rows);
+			}
 
-		ee()->grid_model->delete_rows($row_ids, $this->field_id, $this->content_type);
+			ee()->grid_model->delete_rows($rows, $this->field_id, $this->content_type);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -470,6 +451,17 @@ class Grid_lib {
 		elseif (isset($data['rows']))
 		{
 			$data = $data['rows'];
+		}
+
+		// In EE3, Channel Form populates the field_name property of its
+		// fieldtypes with the actual field_name on field display, but on
+		// submit, field_name is actually the field ID. Trouble is, POST is
+		// organized by field name instead of field ID, but we don't know our
+		// field name, so we need to get it so we can properly traverse POST
+		// and FILES. Hopefully will be back to consistent in EE4.
+		if (REQ !== 'CP' && $this->field_name == 'field_id_'.$this->field_id)
+		{
+			$this->field_name = ee('Model')->get('ChannelField', $this->field_id)->first()->field_name;
 		}
 
 		// Make a copy of the files array so we can spoof it per field below
@@ -522,19 +514,23 @@ class Grid_lib {
 
 				if (isset($files_backup[$grid_field_name]))
 				{
-					$newfiles = array();
-
 					foreach ($files_backup[$grid_field_name] as $files_key => $value)
 					{
 						if (isset($value['rows'][$row_id][$col_id]))
 						{
-							$newfiles[$files_key] = $value['rows'][$row_id][$col_id];
+							$_FILES[$col_id][$files_key] = $value['rows'][$row_id][$col_id];
 						}
 					}
 
-					$_FILES[$col_id] = $newfiles;
+					// Hack for File fields in Channel form to get uploading
+					// working properly. This is the same hack done in
+					// Channel_form_lib for regular File fields
+					if (REQ !== 'CP' && $column['col_type'] === 'file')
+					{
+						$img = ee()->file_field->validate($_FILES[$col_id]['name'], $col_id);
+						$row[$col_id] = isset($img['value']) ?  $img['value'] : '';
+					}
 				}
-
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = ee()->grid_parser->call($method, $row[$col_id]);
@@ -652,6 +648,7 @@ class Grid_lib {
 
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;
+		$ft_api->fetch_installed_fieldtypes();
 
 		foreach ($fieldtypes as $field_short_name => $field_name)
 		{

@@ -50,7 +50,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_create_new_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$group = ee('Model')->get('TemplateGroup')
@@ -65,7 +65,7 @@ class Template extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$existing_templates = array(
@@ -201,7 +201,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_edit_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$template = ee('Model')->get('Template', $template_id)
@@ -228,51 +228,54 @@ class Template extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$template_result = $this->validateTemplate($template);
-		$route_result = $this->validateTemplateRoute($template);
-		$result = $this->combineResults($template_result, $route_result);
+        if ( ! empty($_POST))
+        {
+    		$template_result = $this->validateTemplate($template);
+    		$route_result = $this->validateTemplateRoute($template);
+    		$result = $this->combineResults($template_result, $route_result);
 
-		if ($result instanceOf ValidationResult)
-		{
-			$errors = $result;
+    		if ($result instanceOf ValidationResult)
+    		{
+    			$errors = $result;
 
-			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
-			{
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
-			}
+    			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
+    			{
+    				if ($result->hasErrors($field))
+    				{
+    					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+    				}
+    				else
+    				{
+    					ee()->output->send_ajax_response('success');
+    				}
+    				exit;
+    			}
 
-			if ($result->isValid())
-			{
-				$template->save();
-				// Save a new revision
-				$this->saveNewTemplateRevision($template);
+    			if ($result->isValid())
+    			{
+    				$template->save();
+    				// Save a new revision
+    				$this->saveNewTemplateRevision($template);
 
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('update_template_success'))
-					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
-					->defer();
+    				ee('CP/Alert')->makeInline('shared-form')
+    					->asSuccess()
+    					->withTitle(lang('update_template_success'))
+    					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+    					->defer();
 
-				if (ee()->input->post('submit') == 'finish')
-				{
-					ee()->session->set_flashdata('template_id', $template->template_id);
-					ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
-				}
+    				if (ee()->input->post('submit') == 'finish')
+    				{
+    					ee()->session->set_flashdata('template_id', $template->template_id);
+    					ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+    				}
 
-				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
-			}
-		}
+    				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+    			}
+    		}
+        }
 
 		$vars = array(
 			'ajax_validate' => TRUE,
@@ -419,7 +422,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_edit_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$template = ee('Model')->get('Template', $template_id)
@@ -435,51 +438,54 @@ class Template extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$template_result = $this->validateTemplate($template);
-		$route_result = $this->validateTemplateRoute($template);
-		$result = $this->combineResults($template_result, $route_result);
+        if ( ! empty($_POST))
+        {
+    		$template_result = $this->validateTemplate($template);
+    		$route_result = $this->validateTemplateRoute($template);
+    		$result = $this->combineResults($template_result, $route_result);
 
-		if ($result instanceOf ValidationResult)
-		{
-			$errors = $result;
+    		if ($result instanceOf ValidationResult)
+    		{
+    			$errors = $result;
 
-			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
-			{
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
-			}
+    			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
+    			{
+    				if ($result->hasErrors($field))
+    				{
+    					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+    				}
+    				else
+    				{
+    					ee()->output->send_ajax_response('success');
+    				}
+    				exit;
+    			}
 
-			if ($result->isValid())
-			{
-				$template->save();
+    			if ($result->isValid())
+    			{
+    				$template->save();
 
-				if (isset($_POST['save_modal']))
-				{
-					return array(
-						'messageType' => 'success',
-					);
-				}
+    				if (isset($_POST['save_modal']))
+    				{
+    					return array(
+    						'messageType' => 'success',
+    					);
+    				}
 
-				$alert = ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('update_template_success'))
-					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
-					->defer();
+    				$alert = ee('CP/Alert')->makeInline('shared-form')
+    					->asSuccess()
+    					->withTitle(lang('update_template_success'))
+    					->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+    					->defer();
 
-				ee()->session->set_flashdata('template_id', $template->template_id);
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
-			}
-		}
+    				ee()->session->set_flashdata('template_id', $template->template_id);
+    				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+    			}
+    		}
+        }
 
 		$vars = array(
 			'ajax_validate' => TRUE,
@@ -970,6 +976,10 @@ class Template extends AbstractDesignController {
 			->filter('group_id', '!=', 1)
 			->all();
 
+		$member_group_options = array_map(function($group_name) {
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $member_groups->getDictionary('group_id', 'group_title'));
+
 		$allowed_member_groups = array_diff(
 			$member_groups->pluck('group_id'),
 			$template->getNoAccess()->pluck('group_id')
@@ -985,7 +995,7 @@ class Template extends AbstractDesignController {
 						'allowed_member_groups' => array(
 							'type' => 'checkbox',
 							'wrap' => TRUE,
-							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
+							'choices' => $member_group_options,
 							'value' => $allowed_member_groups
 						)
 					)

@@ -39,7 +39,7 @@ class Sandr extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_data'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->library('form_validation');
@@ -51,8 +51,7 @@ class Sandr extends Utilities {
 			),
 			array(
 				'field' => 'replace_term',
-				'label' => 'lang:sandr_replace_text',
-				'rules' => 'required'
+				'label' => 'lang:sandr_replace_text'
 			),
 			array(
 				'field' => 'replace_where',

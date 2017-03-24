@@ -82,9 +82,9 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20160615');
+		define('APP_BUILD',		'20161229');
 		define('APP_VER',		'4.0.0');
-		define('APP_VER_ID',	'dp.1');
+		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -93,6 +93,7 @@ class EE_Core {
 		define('BR', 			'<br />');
 		define('NL',			"\n");
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
+		define('USERNAME_MAX_LENGTH', 75);
 		define('PASSWORD_MAX_LENGTH', 72);
 		define('DOC_URL',       'https://docs.expressionengine.com/v3/');
 
@@ -269,8 +270,8 @@ class EE_Core {
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
-			'search', 'simple_commerce', 'spam', 'stats'
+			'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
+			 'rte', 'search', 'simple_commerce', 'spam', 'stats'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
@@ -281,7 +282,7 @@ class EE_Core {
 			exit;
 		}
 
-		// Throttle and Blacklist Check
+		// Security Checks: Throttle, Blacklist, File Integrity, and iFraming
 		if (REQ != 'CP')
 		{
 			ee()->load->library('throttling');
@@ -292,6 +293,8 @@ class EE_Core {
 
 			ee()->load->library('file_integrity');
 			ee()->file_integrity->create_bootstrap_checksum();
+
+			$this->setFrameHeaders();
 		}
 
 		ee()->load->library('remember');
@@ -356,7 +359,7 @@ class EE_Core {
 		// Update system stats
 		ee()->load->library('stats');
 
-		if (REQ == 'PAGE' && ee()->config->item('enable_online_user_tracking') != 'n')
+		if (REQ == 'PAGE' && bool_config_item('enable_online_user_tracking'))
 		{
 			ee()->stats->update_stats();
 		}
@@ -676,12 +679,6 @@ class EE_Core {
 
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
-
-		// Record the New Relic transaction
-		$this->set_newrelic_transaction(function() {
-			$template = ee()->TMPL->templates_loaded[0];
-			return "{$template['group_name']}/{$template['template_name']}";
-		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -764,6 +761,34 @@ class EE_Core {
 				ee()->newrelic->set_appname();
 				ee()->newrelic->name_transaction($transaction_name);
 			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set iFrame Headers
+	 *
+	 * A security precaution to prevent iFraming of the site to protect
+	 * against clickjacking. By default we use SAMEORIGIN so that iframe
+	 * designs are still possible.
+	 *
+	 * @return	void
+	 */
+	private function setFrameHeaders()
+	{
+		$frame_options = ee()->config->item('x_frame_options');
+		$frame_options = strtoupper($frame_options);
+
+		// if not specified or invalid value, default to SAMEORIGIN
+		if ( ! in_array($frame_options, array('DENY', 'SAMEORIGIN', 'NONE')))
+		{
+			$frame_options = 'SAMEORIGIN';
+		}
+
+		if ($frame_options != 'NONE')
+		{
+			ee()->output->set_header('X-Frame-Options: '.$frame_options);
 		}
 	}
 

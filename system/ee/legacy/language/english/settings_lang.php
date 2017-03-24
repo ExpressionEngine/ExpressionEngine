@@ -30,6 +30,8 @@ $lang = array(
 
 'word_censoring' => 'Word Censoring',
 
+'menu_manager' => 'Menu Manager',
+
 'members' => 'Members',
 
 'messages' => 'Messages',
@@ -213,7 +215,7 @@ $lang = array(
 
 'email_charset' => 'Character encoding',
 
-'email_charset_desc' => 'Email require character encoding to be properly formatted. UTF-8 is recommended.',
+'email_charset_desc' => 'Email requires character encoding to be properly formatted. UTF-8 is recommended.',
 
 'mail_protocol' => 'Protocol',
 
@@ -225,7 +227,7 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
-'smtp_port' => 'Server Port',
+'smtp_port' => 'Server port',
 
 'sending_options' => 'Sending Options',
 
@@ -237,11 +239,25 @@ $lang = array(
 
 'word_wrap_desc' => 'When set to <b>enable</b>, the system will wrap long lines of text to a more readable width.',
 
-'php_mail' => 'PHP Mail',
+'php_mail' => 'PHP mail',
 
 'sendmail' => 'Sendmail',
 
 'smtp' => 'SMTP',
+
+'email_smtp_crypto' => 'Connection type',
+
+'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
+
+'ssl' => 'SSL (ssl://)',
+
+'tls' => 'STARTTLS',
+
+'unencrypted' => 'Unencrypted (not recommended)',
+
+'email_newline' => 'Newline character',
+
+'email_newline_desc' => '\\\n provides the widest compatibility; if this setting does not work for you, refer to your email provider for instructions.',
 
 'plain_text' => 'Plain Text',
 
@@ -260,6 +276,10 @@ $lang = array(
 'show_profiler' => 'Enable debugging?',
 
 'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+
+'enable_devlog_alerts' => 'Enable Developer Log Alerts?',
+
+'enable_devlog_alerts_desc' => 'When set to <b>enable</b>, super admins will see control panel alerts when new <a href="%s">Developer Log</a> items need action. Currently <b>%s item(s)</b> are logged.',
 
 'output_options' => 'Output Options',
 
@@ -378,9 +398,9 @@ $lang = array(
 
 'comment_word_censoring_desc' => 'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
 
-'comment_moderation_override' => 'Moderate expired entries?',
+'comment_moderation_override' => 'Moderate after comments expire?',
 
-'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an expired entry will be submitted as closed and require review by a moderator.',
+'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an entry with comments expired will be submitted as closed and require review by a moderator.',
 
 'comment_edit_time_limit' => 'Comment edit time limit (in seconds)',
 
@@ -520,6 +540,46 @@ $lang = array(
 'mbr_notification_emails' => 'Notification recipients',
 
 'mbr_notification_emails_desc' => 'Separate multiple Emails with a comma.',
+
+/**
+ * Menu Manager
+ */
+
+'menu_sets' => 'Menu Sets',
+'menu_set' => 'Menu Set',
+'edit_menu_set' => 'Edit Menu Set',
+'create_menu_set' => 'Create Menu Set',
+'menu_set_updated' => 'Menu Set Updated',
+'menu_set_created' => 'Menu Set Created',
+'menu_set_created_desc' => 'The menu set <b>%s</b> has been updated.',
+'menu_set_updated_desc' => 'The menu set <b>%s</b> has been updated.',
+'menu_sets_removed' => 'Menu Sets removed',
+'menu_sets_removed_desc' => '%d menu sets were removed.',
+'no_menu_items' => 'No <b>Menu Items</b> found.',
+'create_menu_item' => 'Create Menu Item',
+'set_name' => 'Name',
+'set_assigned' => 'Assigned',
+'assigned_to' => 'assigned to',
+'set_member_groups' => 'Member group(s)?',
+'set_member_groups_desc' => 'Choose the member group(s) to apply this menu to.',
+'menu_options' => 'Menu Options',
+'menu_items' => 'Menu Items',
+'menu_items_desc' => 'Manage this menu sets contents',
+'menu_type' => 'Type',
+'menu_addon' => 'Add-On',
+'menu_single' => 'Single Link',
+'menu_dropdown' => 'Dropdown',
+'submenu' => 'Submenu',
+'submenu_desc' => 'Links in dropdown',
+'menu_label' => 'Name',
+'menu_label_desc' => 'Link label',
+'menu_url' => '<abbr title="Uniform Resource Locator">URL</abbr>',
+'menu_url_desc' => 'Link <abbr title="Uniform Resource Locator">URL</abbr>',
+'menu_addon' => 'Add-On',
+'menu_addon_desc' => 'Navigation from installed Add-Ons',
+'menu_no_addons' => 'No <b>Add-ons with menus</b> found.',
+'edit_menu_item' => 'Edit Menu Item',
+'add_menu_item' => 'Add Menu Item',
 
 /**
  * Messages
@@ -673,9 +733,9 @@ $lang = array(
 
 'un_min_len_desc' => 'Minimum number of characters required for new members\' usernames.',
 
-'allow_multi_logins' => 'Allow multiple logins?',
+'allow_multi_logins' => 'Allow multiple sessions?',
 
-'allow_multi_logins_desc' => 'When set to <b>yes</b>, members will be able to login simultaneously using one account. If session type is set to <mark>Cookies only</mark>, this will not work.',
+'allow_multi_logins_desc' => 'When set to <b>no</b>, members will not be able to log in from another location or browser if they already have an active session.',
 
 'require_ip_for_login' => 'Require user agent and <abbr title="Internet Protocol">IP</abbr> for login?',
 

@@ -86,6 +86,10 @@ class EE_Typography {
 	// before it is passed through the parser.
 	private $quote_marker    = NULL;
 
+	// tag bracket constants for use in Safe HTML / BBcode parsing
+	const HTML_BRACKETS = 1;
+	const BBCODE_BRACKETS = 2;
+
 	/**
 	 * Constructor
 	 */
@@ -179,9 +183,13 @@ class EE_Typography {
 			'ins',
 			'strong',
 			'pre',
-			'code',
+			'code' => array('properties' => array('class', 'data-language')),
 			'blockquote',
-			'abbr' => array('property' => 'title')
+			'abbr' => array('properties' => array('title')),
+			'span' => array('properties' => array('class')),
+			'sup',
+			'sub',
+			'mark' => array('properties' => array('class'))
 		);
 
 		$this->safe_decode = array(
@@ -192,10 +200,14 @@ class EE_Typography {
 			'ins'        => 'ins',
 			'strong'     => 'strong',
 			'pre'        => 'pre',
+			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
 			'blockquote' => 'blockquote',
 			'quote'      => 'blockquote',
-			'QUOTE'      => 'blockquote'
+			'span'       => array('tag' => 'span', 'properties' => array('class')),
+			'sup'        => 'sup',
+			'sub'        => 'sub',
+			'mark'       => array('tag' => 'mark', 'properties' => array('class')),
 		);
 
 		// enable quote protection within braces for EE {variable="attributes"}
@@ -1046,14 +1058,16 @@ class EE_Typography {
 		// Convert allowed HTML to BBCode
 		foreach($this->safe_encode as $key => $val)
 		{
-			if ( ! is_numeric($key) && isset($val['property']))
+			if ( ! is_numeric($key) && isset($val['properties']))
 			{
-				if (preg_match("/<".$key.".*?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
+				// grab tag blocks, plus we need to match the full open tag
+				$matches = $this->matchFullTags($key, $str, self::HTML_BRACKETS);
+
+				foreach ($matches as $match)
 				{
-					$property = ee('Security/XSS')->clean($matches[2]);
-					$str = preg_replace(
-						"/<".$key.".*?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
-						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
+					$str = str_replace(
+						$match[0],
+						$this->buildTag($key, $val['properties'], $match[1], $match[2], self::BBCODE_BRACKETS),
 						$str
 					);
 				}
@@ -1097,6 +1111,102 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Build Tag
+	 *
+	 * @param string $name the tag name
+	 * @param array $allowed_attributes array of tag attributes to allow
+	 * @param string $attribute_str a string of tag attributes, e.g. foo="bar" bat="bag"
+	 * @param string $tagdata the tag's inner contents
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS, to use in the tags
+	 * @return string
+	 **/
+	private function buildTag($name, $allowed_attributes = array(), $attribute_str = '', $tagdata = '', $bracket_style = self::HTML_BRACKETS)
+	{
+		$tag_params = '';
+
+		// inside the opening tag block $tag_match[1], grab all parameters
+		$param_matches = $this->matchTagAttributes($attribute_str);
+
+		foreach ($param_matches as $p_match)
+		{
+			// only keep the ones we allow, ditch the rest
+			if (in_array($p_match[1], $allowed_attributes))
+			{
+				$attr_content = htmlspecialchars(
+					ee('Security/XSS')->clean($p_match[3]),
+					ENT_QUOTES,
+					'UTF-8'
+				);
+
+				$tag_params .= ' '.$p_match[1].'='.$p_match[2].$attr_content.$p_match[2];
+			}
+		}
+
+		list($ob, $cb) = $this->getBracketsByStyle($bracket_style);
+		return $ob.$name.$tag_params.$cb.$tagdata.$ob.'/'.$name.$cb;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Brackets By Style
+	 *
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @param bool $preg_quote Whether to return a preg_quoted version of the bracket
+	 * @return array [opening bracket, closing bracket]
+	 **/
+	private function getBracketsByStyle($bracket_style = self::HTML_BRACKETS, $preg_quote = FALSE)
+	{
+		switch ($bracket_style)
+		{
+			case self::BBCODE_BRACKETS:
+				$ob = ($preg_quote) ? '\[' : '[';
+				$cb = ($preg_quote) ? '\]' : ']';
+				break;
+			case self::HTML_BRACKETS:
+			default:
+				$ob = '<';
+				$cb = '>';
+		}
+
+		return array($ob, $cb);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Match Full Tags
+	 *
+	 * @param string $name the tag name
+	 * @param string $string the text to match against
+	 * @param int $bracket_style constant-based param, one of BBCODE_BRACKETS or HTML_BRACKETS
+	 * @return array preg_match_all() array of all <name> tags in $string
+	 **/
+	private function matchFullTags($name, $string, $bracket_style = self::HTML_BRACKETS)
+	{
+		list($ob, $cb) = $this->getBracketsByStyle($bracket_style, TRUE);
+		preg_match_all("/(${ob}${name}.*?${cb})(.*?)${ob}\/${name}${cb}/is", $string, $matches, PREG_SET_ORDER);
+
+		return $matches;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Match Tag Attributes
+	 *
+	 * @param string $open_tag the full open tag, e.g. <name foo="bar" bat="bag">
+	 * @return array preg_match_all() array of all tag parameters in $open_tag
+	 **/
+	private function matchTagAttributes($open_tag)
+	{
+		preg_match_all("/(\S+?)\s*=\s*(\"|\')([^\\2]*?)\\2/is", $open_tag, $attr_matches, PREG_SET_ORDER);
+		return $attr_matches;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Clean bbcode from Markdown style code blocks
 	 *
 	 * @param  String $str The string to pre-process
@@ -1110,8 +1220,21 @@ class EE_Typography {
 				array('&#91;', '&#93;'),
 				$matches[2]
 			);
+
+			// no choice, if Safe HTML format, we need to parse code blocks
+			// with our bbcode, or any brackets in Markdown code blocks will be
+			// double encoded, e.g. -&amp;gt;
+			if ($this->html_format == 'safe')
+			{
+				return '[code]'.$code.'[/code]';
+			}
+
 			return $matches[1].$code.$matches[1];
 		};
+
+		// make sure no one is sneaking things into links. XSS Clean won't pick these up since they aren't real markup
+		$str = $this->unencodeMarkdownLinks($str);
+		$str = $this->unencodeMarkdownReferenceLinks($str);
 
 		// Codefences
 		if (strpos($str, '```') !== FALSE
@@ -1176,6 +1299,230 @@ class EE_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Unencode Markdown Links
+	 *
+	 * Turns:
+	 * 		[Link](&#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;)
+	 * Into:
+	 * 		[Link](https://example.com/)
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownLinks($str)
+	{
+		// these are protected class properties of Markdown
+		// copied here to keep the regex below sane
+		$nested_brackets_depth = 6;
+		$nested_brackets_re =
+			str_repeat('(?>[^\[\]]+|\[', $nested_brackets_depth).
+			str_repeat('\])*', $nested_brackets_depth);
+
+		$nested_url_parenthesis_depth = 4;
+		$nested_url_parenthesis_re =
+			str_repeat('(?>[^()\s]+|\(', $nested_url_parenthesis_depth).
+			str_repeat('(?>\)))*', $nested_url_parenthesis_depth);
+
+		// regex from in-line style links in Markdown::doAnchors()
+		if ( ! $count = preg_match_all('{
+			(				# wrap whole match in $1
+			  \[
+				('.$nested_brackets_re.')	# link text = $2
+			  \]
+			  \(			# literal paren
+				[ \n]*
+				(?:
+					<(.+?)>	# href = $3
+				|
+					('.$nested_url_parenthesis_re.')	# href = $4
+				)
+				[ \n]*
+				(			# $5
+				  ([\'"])	# quote char = $6
+				  (.*?)		# Title = $7
+				  \6		# matching quote
+				  [ \n]*	# ignore any spaces/tabs between closing quote and )
+				)?			# title is optional
+			  \)
+			)
+			}xs',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 7; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$new = '['.
+						$link_matches[2][$key]. // link text
+					']('.
+						$link_matches[3][$key].$link_matches[4][$key]. // one of these will be the href
+						$link_matches[6][$key]. // " or '
+						$link_matches[7][$key]. // optional title= attribute
+						$link_matches[6][$key]. // " or '
+					')';
+
+			$str = str_replace($match, $new, $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unencode Markdown Reference Links
+	 *
+	 * Turns:
+	 * 		[1]: &#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;
+	 * Into:
+	 * 		[1]: https://example.com/
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownReferenceLinks($str)
+	{
+		// set to 1 less than Markdown's $tab_width property
+		$less_than_tab = 3;
+
+		// regex from Markdown::stripLinkDefinitions()
+		if ( ! $count = preg_match_all(
+			'{
+			^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:	# id = $1
+			  [ ]*
+			  \n?				# maybe *one* newline
+			  [ ]*
+			(?:
+			  <(.+?)>			# url = $2
+			|
+			  (\S+?)			# url = $3
+			)
+			  [ ]*
+			  \n?				# maybe one newline
+			  [ ]*
+			(?:
+				(?<=\s)			# lookbehind for whitespace
+				["(]
+				(.*?)			# title = $4
+				[")]
+				[ ]*
+			)?	# title is optional
+			(?:\n+|\Z)
+			}xm',
+			$str,
+			$link_matches)
+			)
+		{
+			return $str;
+		}
+
+		// decode entities in captures we will use for replacement
+		for ($i = 2; $i <= 4; $i++)
+		{
+			for ($j = 0; $j < $count; $j++)
+			{
+				$link_matches[$i][$j] = ee('Security/XSS')->entity_decode($link_matches[$i][$j]);
+			}
+		}
+
+		// replace original full match with the decoded version
+		foreach ($link_matches[0] as $key => $match)
+		{
+			$title = '';
+
+			if (empty($link_matches[4][$key]))
+			{
+				$title = '';
+			}
+			else
+			{
+				if (strpos($link_matches[4][$key], '"') !== FALSE)
+				{
+					$title = ' ('.$link_matches[4][$key].')';
+				}
+				else
+				{
+					$title = ' "'.$link_matches[4][$key].'"';
+				}
+			}
+
+			$newline = (substr($match, -1) === "\n") ? "\n" : '';
+
+			$new = '['.
+					$link_matches[1][$key]. // link id
+					']: '.
+					$link_matches[2][$key].$link_matches[3][$key]. // one of these will be the href
+					$title. // empty or optional title
+					$newline; // preserve newlines
+
+			$str = str_replace($match, $new, $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Formats an entry title for front-end presentation; things like converting
+	 * EE tag brackets, filtering for safe HTML, and converting characters to
+	 * their fancy alternatives
+	 *
+	 * @param String	Entry title
+	 * @return String	Formatted entry title
+	 */
+	public function formatTitle($title)
+	{
+		$title = str_replace(array('{', '}'), array('&#123;', '&#125;'), $title);
+
+		// Convert any unterminated `&` to `&amp;` in the title so that titles
+		// like "M&Ms" don't end up as "M&Ms;"
+		if (strpos($title, '&') !== FALSE &&
+			preg_match_all('#&([a-z]{2,})([\x00-\x20])*;?#i', $title, $matches))
+		{
+			foreach ($matches[0] as $i => $match)
+			{
+				if (strpos($match, ';') === FALSE)
+				{
+					$title = str_replace($match, '&amp;' . $matches[1][$i] . $matches[2][$i], $title);
+				}
+			}
+		}
+
+		// Strip unsafe HTML and attributes from title
+		// Preserve old HTML format, because yay singletons
+		$existing_format = $this->html_format;
+		$this->html_format = 'safe';
+		$title = $this->format_html($title);
+
+		// format_html() turns safe HTML into BBCode
+		$title = $this->decode_bbcode($title);
+
+		// Put back old format
+		$this->html_format = $existing_format;
+
+		// and finally some basic curly quotes, em dashes, etc.
+		$title = $this->format_characters($title);
+
+		return $title;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Markdown Post Process
 	 *
 	 * The markdown library tries to be clever and encodes & to &amp;, but we've
@@ -1214,11 +1561,16 @@ class EE_Typography {
 			str_repeat('(?>[^()]+|\(', 4).
 			str_repeat('(?>\)))*', 4);
 
-		if (preg_match_all('/\[.*?\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all('/\[(.*?)\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
 		{
 			foreach ($matches as $match)
 			{
-				$str = str_replace($match[1], str_replace(' ', '%20', $match[1]), $str);
+				// It felt too heavy handed to do a global replace of all URLs
+				// that matched, so (for now) we'll only replace the URLs that
+				// the REGEX matched. (that's why the '[]' are being
+				// concatenated)
+				$str = str_replace('['.$match[1].']', '['.$this->decodeIDN($match[1]).']', $str);
+				$str = str_replace($match[2], str_replace(' ', '%20', $match[2]), $str);
 			}
 		}
 
@@ -1348,15 +1700,14 @@ class EE_Typography {
 			$matches[6] = $punc_match[1];
 		}
 
-		return	$matches['1'].'[url=http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].']http'.
-				$matches['4'].'://'.
-				$matches['5'].
-				$matches['6'].'[/url]'.
-				$end.
-				$matches['7'];
+		$url = 'http'.
+			   $matches['4'].'://'.
+			   $matches['5'].
+			   $matches['6'];
+
+	   $url = $this->decodeIDN($url);
+
+	   return $matches['1'].'[url='.$url.']'.$url.'[/url]'.$end.$matches['7'];
 	}
 
 	// --------------------------------------------------------------------
@@ -1367,23 +1718,28 @@ class EE_Typography {
 	 */
 	public function decode_bbcode($str)
 	{
+
 		// Remap some deprecated tags with valid counterparts
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
+
+		// Abbr shorthand, the special snowflake:
+		// [abbr="some title"]ST[/abbr]
+		// we will let the standard properties whitelist below sanitize
+		if (strpos($str, '[abbr=') !== FALSE)
+		{
+			$str = preg_replace("/\[abbr=(\"|\')(.*?)\\1\](.*?)\[\/abbr\]/si", "[abbr title=\"\\2\"]\\3[/abbr]", $str);
+		}
 
 		// Decode BBCode array map
 		foreach($this->safe_decode as $key => $val)
 		{
+
 			if (is_array($val)
 				&& isset($val['properties'])
-				&& preg_match_all('/\['.$key.'=[\'"]?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
+				&& $matches = $this->matchFullTags($key, $str, self::BBCODE_BRACKETS))
 			{
 				foreach ($matches as $tag_match)
 				{
-					// Clean up the contents of the property
-					$tag_match[1] = htmlspecialchars(
-						ee('Security/XSS')->clean($tag_match[1])
-					);
-
 					// If there's any evidence of XSS then don't add anything
 					if (stripos($tag_match[0], '[removed]') !== FALSE)
 					{
@@ -1391,18 +1747,17 @@ class EE_Typography {
 					}
 					else
 					{
-						$tag = "<{$val['tag']}";
-						foreach ($val['properties'] as $property)
-						{
-							$tag .= " {$property}='{$tag_match[1]}'";
-						}
-						$tag .= ">";
-
-						$str = str_replace($tag_match[0], $tag, $str);
+						$str = str_replace(
+							$tag_match[0],
+							$this->buildTag($val['tag'], $val['properties'], $tag_match[1], $tag_match[2], self::HTML_BRACKETS),
+							$str
+						);
 					}
 				}
 			}
-			else
+
+			// Does this tag pair exist without attributes? Replace it
+			if (preg_match_all('/\['.$key.']?(.*?)[\'"]?\]/is', $str, $matches, PREG_SET_ORDER))
 			{
 				$val = (is_array($val)) ? $val['tag'] : $val;
 				$str = str_ireplace(
@@ -1418,38 +1773,6 @@ class EE_Typography {
 		/** -------------------------------------*/
 
 		$str = $this->_decode_code_tags($str);
-
-		/** -------------------------------------
-		/**  Decode color tags
-		/** -------------------------------------*/
-
-		if (strpos($str, '[color=') !== FALSE)
-		{
-			if ($this->use_span_tags == TRUE)
-			{
-				$str = preg_replace("/\[color=(.*?)\](.*?)\[\/color\]/si", "<span style=\"color:\\1;\">\\2</span>",$str);
-			}
-			else
-			{
-				$str = preg_replace("/\[color=(.*?)\](.*?)\[\/color\]/si", "<font color=\"\\1\">\\2</font>", $str);
-			}
-		}
-
-		/** -------------------------------------
-		/**  Decode size tags
-		/** -------------------------------------*/
-
-		if (strpos($str, '[size=') !== FALSE)
-		{
-			if ($this->use_span_tags == TRUE)
-			{
-				$str = preg_replace_callback("/\[size=(.*?)\](.*?)\[\/size\]/si", array($this, "font_matrix"),$str);
-			}
-			else
-			{
-				$str = preg_replace("/\[size=(.*?)\](.*?)\[\/size\]/si", "<font color=\"\\1\">\\2</font>", $str);
-			}
-		}
 
 		/** -------------------------------------
 		/**  Convert [url] tags to links
@@ -1556,7 +1879,7 @@ class EE_Typography {
 						$url = urlencode($url);
 					}
 
-					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$matches['2'][$i]."</a>", $str);
+					$str = str_replace($matches['0'][$i], '<a href="'.$bounce.trim($url).'"'.$extra.'>'.$this->decodeIDN($matches['2'][$i])."</a>", $str);
 				}
 			}
 		}
@@ -1599,6 +1922,32 @@ class EE_Typography {
 		}
 
 		/** -------------------------------------
+		/**  Decode color tags
+		/** -------------------------------------*/
+
+		if (strpos($str, '[color=') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\[color=(.*?)\](.*?)\[\/color\]/si",
+				array($this, 'cleanBBCodeAttributesColor'),
+				$str
+			);
+		}
+
+		/** -------------------------------------
+		/**  Decode size tags
+		/** -------------------------------------*/
+
+		if (strpos($str, '[size=') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\[size=(.*?)\](.*?)\[\/size\]/si",
+				array($this, 'cleanBBCodeAttributesSize'),
+				$str
+			);
+		}
+
+		/** -------------------------------------
 		/**  Style tags
 		/** -------------------------------------*/
 
@@ -1606,21 +1955,109 @@ class EE_Typography {
 
 		if (strpos($str, '[style=') !== FALSE)
 		{
-			$str = preg_replace("/\[style=(.*?)\](.*?)\[\/style\]/si", "<span class=\"\\1\">\\2</span>", $str);
+			$str = preg_replace_callback(
+				"/\[style=(.*?)\](.*?)\[\/style\]/si",
+				array($this, 'cleanBBCodeAttributesStyle'),
+				$str
+			);
 		}
 
-		/** ---------------------------------------
+		/** -------------------------------------
 		/**  Attributed quotes, used in the Forum module
-		/** ---------------------------------------*/
+		/** -------------------------------------*/
 
 		// [quote author="Brett" date="11231189803874"]...[/quote]
 
-		if (stripos($str, '[quote') !== FALSE)
+		if (stripos($str, '[quote ') !== FALSE)
 		{
-			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
+			$str = preg_replace_callback(
+				'/\[quote\s+author="(.*?)"\s+date="(.*?)"]/si',
+				array($this, 'cleanBBCodeAttributesQuote'),
+				$str
+			);
 		}
 
 		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [quote]
+	 *
+	 * @param array $matches preg_match of the valid opening [quote author="foo" date="12345678"]
+	 * @return string HTML blockquote open tag
+	 **/
+	private function cleanBBCodeAttributesQuote($matches)
+	{
+		$author = htmlentities($matches[1], ENT_QUOTES, 'UTF-8');
+		$date = filter_var($matches[2], FILTER_SANITIZE_NUMBER_INT);
+		return "<blockquote author=\"${author}\" date=\"${date}\">";
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [size]
+	 *
+	 * @param array $matches preg_match of a valid [size=3]text[/size]
+	 * @return string HTML span tag with a font-size applied
+	 **/
+	private function cleanBBCodeAttributesSize($matches)
+	{
+		switch($matches['1'])
+		{
+			case 1  : $size = '9px';
+				break;
+			case 2  : $size = '11px';
+				break;
+			case 3  : $size = '14px';
+				break;
+			case 4  : $size = '16px';
+				break;
+			case 5  : $size = '18px';
+				break;
+			case 6  : $size = '20px';
+				break;
+			default : $size = '11px';
+				break;
+		}
+
+		return '<span style="font-size:'.$size.';">'.$matches['2'].'</span>';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [color]
+	 *
+	 * @param array $matches preg_match of a valid [color=red]text[/color]
+	 * @return string HTML span tag with color applied
+	 **/
+	private function cleanBBCodeAttributesColor($matches)
+	{
+		return '<span style="color:'.
+			preg_replace('/[^a-z]/is', '', $matches[1]).
+			';">'.
+			$matches[2].
+			'</span>';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean BBCode Attributes from [style=some_class]
+	 *
+	 * @param array $matches preg_match of valid [style=some_class]text[/style]
+	 * @return string HTML span tag with a class attributed applied
+	 **/
+	private function cleanBBCodeAttributesStyle($matches)
+	{
+		return '<span class="'.
+			preg_replace('/[^ \w\-]/is', '', $matches[1]).
+			'">'.
+			$matches[2].
+			'</span>';
 	}
 
 	// --------------------------------------------------------------------
@@ -1739,25 +2176,10 @@ class EE_Typography {
 	 */
 	public function font_matrix($matches)
 	{
-		switch($matches['1'])
-		{
-			case 1  : $size = '9px';
-				break;
-			case 2  : $size = '11px';
-				break;
-			case 3  : $size = '14px';
-				break;
-			case 4  : $size = '16px';
-				break;
-			case 5  : $size = '18px';
-				break;
-			case 6  : $size = '20px';
-				break;
-			default : $size = '11px';
-				break;
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.4.0');
 
-		return "<span style=\"font-size:".$size.";\">".$matches['2']."</span>";
+		return $this->cleanBBCodeAttributesSize($matches);
 	}
 
 	// --------------------------------------------------------------------
@@ -2146,6 +2568,8 @@ while (--j >= 0)
 			}
 			else
 			{
+				// known, unsupported edge case:
+				// [code class="foo"]...[/code]
 				$str = str_replace(
 					array('[code]', '[/code]'),
 					array('<pre><code>', '</code></pre>'),
@@ -2188,12 +2612,15 @@ while (--j >= 0)
 			$post = (string) ee()->config->item('code_block_post');
 		}
 
+		// @todo remove ridiculous dance when PHP 5.3 is no longer supported
+		$that = $this;
+
 		return preg_replace_callback(
 			"/(\<pre\>\<code.*?\>)(.*?)(\<\/code\>\<\/pre\>)/is",
-			function ($matches) use ($pre, $post) {
+			function ($matches) use ($pre, $post, $that) {
 				$code = $matches[2];
 				$code = ee()->functions->encode_ee_tags($code, TRUE);
-				return $pre.$matches[1].$this->encode_tags($code).$matches[3].$post;
+				return $pre.$matches[1].$that->encode_tags($code).$matches[3].$post;
 			},
 			$str
 		);
@@ -2242,6 +2669,58 @@ while (--j >= 0)
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * If present we'll run `idn_to_ascii` on the the URL to protect against
+	 * homograph attacks.
+	 *
+	 * @param string $url A URL
+	 * @return string A decoded URL
+	 */
+	public function decodeIDN($url)
+	{
+		if ( ! function_exists('idn_to_ascii'))
+		{
+			return $url;
+		}
+
+		// Fill in protocol for protocol-relative URLs so that this method
+		// always returns a valid URL in the eyes of FILTER_VALIDATE_URL
+		if (strpos($url, '//') === 0)
+		{
+			$scheme = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+			$url = $scheme . ':' . $url;
+		}
+
+		// Amazingly, this will parse if passed 'http://example.com is fun!'
+		// but will not parse if passed 'I really like http://example.com'
+		$parts = parse_url($url);
+
+		// According to http://php.net/idn_to_ascii this should only be run
+		// on the domain and not the entire string.
+		if (isset($parts['host']))
+		{
+			$parts['host'] = idn_to_ascii($parts['host']);
+		}
+
+		return $this->unparse_url($parts);
+	}
+
+	/**
+	 * Copied from http://php.net/manual/en/function.parse-url.php#106731
+	 */
+	private function unparse_url($parsed_url) {
+	  $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+	  $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+	  $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+	  $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+	  $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+	  $pass     = ($user || $pass) ? "$pass@" : '';
+	  $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+	  $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+	  $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+	  return "$scheme$user$pass$host$port$path$query$fragment";
+	}
 
 }
 // END CLASS

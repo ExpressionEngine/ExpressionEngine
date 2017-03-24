@@ -17,7 +17,9 @@
 		function setupFileField(container) {
 			$('.file-field-filepicker', container).FilePicker({
 				callback: function(data, references) {
-					var input = references.input_value;
+					var input = references.input_value,
+						figure = references.input_img.closest('figure'),
+						name = references.input_img.closest('.fields-upload-chosen-file').next('.fields-upload-chosen-name');
 
 					// Close the modal
 					references.modal.find('.m-close').click();
@@ -25,41 +27,34 @@
 					// Assign the value {filedir_#}filename.ext
 					input.val('{filedir_' + data.upload_location_id + '}' + data.file_name).trigger('change');
 
-					input.siblings('figure').find('.toolbar .txt-only').remove();
+					figure.toggleClass('no-img', ! data.isImage);
+					figure.find('img').toggleClass('hidden', ! data.isImage);
 
 					if (data.isImage) {
 						// Set the thumbnail
-						references.input_img.show();
-						references.input_img.removeClass('hidden');
 						references.input_img.attr('src', data.thumb_path);
-
-						input.siblings('figure').removeClass('no-image');
-					} else {
-						input.siblings('figure').addClass('no-image');
-						references.input_img.hide();
-						input.siblings('figure')
-							.find('.toolbar')
-							.prepend('<li class="txt-only"><a href="#"><b>' + data.title + '</b></a></li>');
 					}
 
-					// Show the figure
-					input.siblings('figure').show();
+					// Fill in formatted caption
+					name.html('<p><b>'+data.title+'</b></p>');
+
+					// Show the image
+					input.siblings('.fields-upload-chosen').removeClass('hidden');
 
 					// Hide the upload button
-					input.siblings('p.solo-btn').hide();
+					input.siblings('.fields-upload-btn').addClass('hidden');
 
 					// Hide the "missing file" error
-					input.siblings('em').hide();
+					input.siblings('em').remove();
 				}
 			});
 
 			$('li.remove a').click(function (e) {
-				$(this).parents('li').siblings('.txt-only').remove();
-				var figure = $(this).closest('figure');
-				figure.hide();
-				figure.siblings('em').hide(); // Hide the "missing file" erorr
-				figure.siblings('input[type="hidden"]').val('').trigger('change');
-				figure.siblings('p.solo-btn').show();
+				var figure_container = $(this).closest('.fields-upload-chosen');
+				figure_container.addClass('hidden');
+				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
+				figure_container.siblings('input[type="hidden"]').val('').trigger('change');
+				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
 				e.preventDefault();
 			});
 		}
@@ -74,7 +69,7 @@
 			button.attr('data-input-value', input.attr('name'));
 			button.attr('data-input-image', safe_name);
 
-			$('.file-chosen img', cell).attr('id', safe_name);
+			$('.fields-upload-chosen img', cell).attr('id', safe_name);
 
 			setupFileField(cell);
 		});

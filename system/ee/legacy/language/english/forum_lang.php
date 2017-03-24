@@ -2,6 +2,10 @@
 
 $lang = array(
 
+'forums_removed' => 'Forums removed',
+
+'forums_removed_desc' => 'The following forums were removed:',
+
 'forum_module_name' => 'Discussion Forum',
 
 'forum_module_description' => 'Discussion Forum Module',

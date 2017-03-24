@@ -27,7 +27,11 @@ $(document).ready(function () {
 				$(modalIs + " .checklist").append('<li>' + confirm_text + '</li>');
 			}
 
-			var checked = $(this).parents('form').find('td input:checked, li input:checked');
+			var checked = $(this).parents('form').find('th input:checked, td input:checked, li input:checked');
+
+			checked = checked.filter(function(i, el) {
+				return $(el).attr('value') !== undefined;
+			});
 
 			if (checked.length < 6) {
 				checked.each(function() {
@@ -39,12 +43,24 @@ $(document).ready(function () {
 
 			// Add hidden <input> elements
 			checked.each(function() {
-				$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+				$(modalIs + " .checklist li:last").append(
+					$('<input/>').attr({
+						type: 'hidden',
+						name: $(this).attr('name'),
+						value: $(this).val()
+					})
+				);
 			});
 
 			if (typeof confirm_input != 'undefined') {
 				$("input[name='" + confirm_input + "']").each(function() {
-					$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+					$(modalIs + " .checklist li:last").append(
+						$('<input/>').attr({
+							type: 'hidden',
+							name: $(this).attr('name'),
+							value: $(this).val()
+						})
+					);
 				});
 			}
 

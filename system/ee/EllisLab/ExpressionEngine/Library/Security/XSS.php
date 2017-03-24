@@ -251,12 +251,17 @@ class XSS {
 
 			if (preg_match("/<a/i", $str))
 			{
-				$str = preg_replace_callback("#<a\s+([^>]*?)(>|$)#si", array($this, '_js_link_removal'), $str);
+				$str = preg_replace_callback("#<a\s*([^>]*?)(>|$)#si", array($this, '_js_link_removal'), $str);
 			}
 
 			if (preg_match("/<img/i", $str))
 			{
-				$str = preg_replace_callback("#<img\s+([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), $str);
+				$str = preg_replace_callback("#<img\s*([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), $str);
+			}
+
+			if (preg_match("/<svg/i", $str))
+			{
+				$str = preg_replace_callback("#<svg\s*([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), $str);
 			}
 
 			if (preg_match("/script/i", $str) OR preg_match("/xss/i", $str))
@@ -461,7 +466,7 @@ class XSS {
 			// replace illegal attribute strings that are inside an html tag
 			if (count($attribs) > 0)
 			{
-				$str = preg_replace("/<(\/?[^><]+?)([^A-Za-z<>\-])(.*?)(".implode('|', $attribs).")(.*?)([\s><])([><]*)/i", '<$1 $3$5$6$7', $str, -1, $count);
+				$str = preg_replace("/<(\/?[^><]+?)([^A-Za-z<>\-])(.*?)(".implode('|', $attribs).")(.*?)([\s><]*)([><]*)/i", '<$1 $3$5$6$7', $str, -1, $count);
 			}
 
 		} while ($count);

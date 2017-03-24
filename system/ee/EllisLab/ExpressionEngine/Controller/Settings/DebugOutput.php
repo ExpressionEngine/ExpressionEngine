@@ -63,6 +63,23 @@ class DebugOutput extends Settings {
 							)
 						)
 					)
+				),
+				array(
+					'title' => 'enable_devlog_alerts',
+					'desc' => sprintf(
+						lang('enable_devlog_alerts_desc'),
+						ee('CP/URL')->make('logs/developer'),
+						ee('Model')->get('DeveloperLog')->count()
+						),
+					'fields' => array(
+						'enable_devlog_alerts' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							)
+						)
+					)
 				)
 			),
 			'output_options' => array(

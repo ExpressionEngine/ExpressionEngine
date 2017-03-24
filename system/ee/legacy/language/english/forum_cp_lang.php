@@ -175,10 +175,6 @@ $lang = array(
 'text_formatting' => 'Text formatting',
 'text_formatting_desc' => 'Type of formatting for comment text.',
 
-'none' => 'None',
-'auto_br' => 'Auto &lt;br&gt;',
-'xhtml' => 'XHTML',
-
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
 'html_all' => 'Allow all HTML',

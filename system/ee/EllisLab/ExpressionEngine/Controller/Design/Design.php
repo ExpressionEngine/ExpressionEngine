@@ -123,7 +123,7 @@ class Design extends AbstractDesignController {
 			}
 			else
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
@@ -158,6 +158,7 @@ class Design extends AbstractDesignController {
 		ee()->javascript->set_global('templage_groups_reorder_url', ee('CP/URL')->make('design/reorder-groups')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
+			'plugin' => 'ui.touch.punch',
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/design/manager'
@@ -176,7 +177,7 @@ class Design extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_templates'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($template_ids))

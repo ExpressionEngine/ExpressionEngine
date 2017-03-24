@@ -1,6 +1,17 @@
 require './bootstrap.rb'
 
-feature 'File Manger / Edit File' do
+feature 'File Manager / Edit File' do
+
+  before(:all) do
+		# Create backups of these folders so we can restore them after each test
+		@upload_dir = File.expand_path('../../images/about/')
+		system('mkdir /tmp/about')
+		system('cp -r ' + @upload_dir + '/* /tmp/about')
+	end
+
+  after(:all) do
+    system('rm -rf /tmp/about')
+  end
 
   before(:each) do
     cp_session
@@ -38,8 +49,10 @@ feature 'File Manger / Edit File' do
   end
 
   after(:each) do
-    system('git checkout -- ../../images/about/')
-    system('chmod -R 777 ../../images/about/')
+    system('rm -rf ' + @upload_dir)
+    system('mkdir ' + @upload_dir)
+    system('cp -r /tmp/about/* ' + @upload_dir)
+    FileUtils.chmod_R 0777, @upload_dir
   end
 
   it 'shows the Edit Meta Data form' do

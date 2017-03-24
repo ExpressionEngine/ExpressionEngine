@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use LogicException;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -34,6 +35,14 @@ class Select extends Query {
 	protected $relations = array();
 	protected $model_fields = array();
 
+	protected function getClass($alias = '')
+	{
+		$alias = ($alias) ?: $this->root_alias;
+		$model = $this->expandAlias($alias);
+		$meta = $this->store->getMetaDataReader($model);
+		return $meta->getClass();
+	}
+
 	/**
 	 *
 	 */
@@ -41,12 +50,35 @@ class Select extends Query {
 	{
 		$query = $this->buildQuery();
 
-		return new Result(
-			$this->builder,
-			$query->get()->result_array(),
+		$result_array = $query->get()->result_array();
+
+		if ( ! empty($result_array))
+		{
+			$withs = $this->builder->getWiths();
+			$aliases = array_merge(array($this->root_alias), array_keys($withs));
+			foreach ($aliases as $alias)
+			{
+				if (stripos($alias, ' as ') !== FALSE)
+				{
+					$parts = explode(' ', $alias);
+					$alias = end($parts);
+				}
+
+				$class = $this->getClass($alias);
+				if ( ! is_null($class::getMetaData('field_data')))
+				{
+					$result_array = $this->getExtraData($alias, $result_array);
+				}
+			}
+		}
+
+		$result = new Result(
+			$result_array,
 			$this->aliases,
 			$this->relations
 		);
+
+		return $result;
 	}
 
 	/**
@@ -62,6 +94,14 @@ class Select extends Query {
 
 		$this->root_alias = $alias;
 		$this->selectModel($query, $from, $alias);
+
+		$class = $this->getClass();
+
+		if ( ! is_null($class::getMetaData('field_data')))
+		{
+			$this->augmentQuery($query);
+		}
+
 		$this->processWiths($query, $from, $alias);
 
 		// lazy load adds a where condition
@@ -176,6 +216,172 @@ class Select extends Query {
 		return $queued_joins;
 	}
 
+	protected function getExtraData($alias, $result_array)
+	{
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($alias));
+		$class = $meta->getClass();
+
+		$fields = $this->getFields();
+
+		// Bail if this query is selecting specific fields and none of those
+		// fields would be found in the field data tables
+		if ( ! empty($fields))
+		{
+			$found = FALSE;
+			foreach ($fields as $field)
+			{
+				if (strpos($field, 'field_id_') !== FALSE)
+				{
+					$found = TRUE;
+				}
+			}
+
+			if ( ! $found)
+			{
+				return $result_array;
+			}
+		}
+
+		$meta_field_data = $class::getMetaData('field_data');
+
+		$field_model = ee('Model')->make($meta_field_data['field_model']);
+
+		// let's make life a bit easier
+		$item_key_column   = $alias . '__' . $meta->getPrimaryKey();
+		$table_prefix      = $alias;
+		$join_table_prefix = $field_model->getTableName();
+		$column_prefix     = $field_model->getColumnPrefix();
+		$parent_key        = "{$meta_field_data['extra_data']['parent_table']}.{$meta_field_data['extra_data']['key_column']}";
+
+		$fields = ee('Model')->get($meta_field_data['field_model'])
+			->filter($column_prefix.'legacy_field_data', 'n');
+
+		if (array_key_exists('group_column', $meta_field_data['extra_data']))
+		{
+			$field_groups = array_map(function($column) use($meta_field_data){
+				if (array_key_exists($meta_field_data['extra_data']['group_column'], $column))
+				{
+					return $column[$meta_field_data['extra_data']['group_column']];
+				}
+			}, $result_array);
+
+			$field_groups = array_unique($field_groups);
+			$fields = $fields->filter('group_id', 'IN', $field_groups);
+		}
+
+		$fields = $fields->all();
+
+		if ($fields->count())
+		{
+			$entry_ids = array_map(function($column) use ($item_key_column) {
+				return $column[$item_key_column];
+			}, $result_array);
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			$main_table = "{$table_prefix}_field_id_{$fields[0]->field_id}";
+
+			$query->from($meta_field_data['extra_data']['parent_table']);
+			$query->select("{$parent_key} as {$item_key_column}", FALSE);
+
+			foreach ($fields as $field)
+			{
+				$field_id = $field->getId();
+
+				$table_alias = "{$table_prefix}_field_id_{$field_id}";
+
+				foreach ($field->getColumnNames() as $column)
+				{
+					$query->select("{$table_alias}.{$column} as {$table_prefix}__{$column}", FALSE);
+				}
+
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$parent_key}", 'LEFT');
+			}
+
+			$query->where_in("{$parent_key}", $entry_ids);
+
+			$data = $query->get()->result_array();
+
+			foreach ($data as $row)
+			{
+				array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
+					if ($data[$item_key_column] == $field_data[$item_key_column])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+		}
+
+		return $result_array;
+	}
+
+	protected function augmentQuery($query)
+	{
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
+		$class = $meta->getClass();
+
+		$meta_field_data = $class::getMetaData('field_data');
+
+		$field_model = ee('Model')->make($meta_field_data['field_model']);
+
+		// let's make life a bit easier
+		$table_prefix      = $meta->getName();
+		$join_table_prefix = $field_model->getTableName();
+		$column_prefix     = $field_model->getColumnPrefix();
+		$parent_key        = "{$table_prefix}__{$meta_field_data['extra_data']['key_column']}";
+
+		$field_ids = array();
+
+		foreach ($this->builder->getFilters() as $filter)
+		{
+			$field = $filter[0];
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		foreach (array_keys($this->builder->getSearch()) as $field)
+		{
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		foreach ($this->builder->getOrders() as $order)
+		{
+			$field = $order[0];
+
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		if ( ! empty($field_ids))
+		{
+			$field_ids = array_unique($field_ids);
+
+			$fields = ee('Model')->get($meta_field_data['field_model'])
+				->fields($column_prefix.'field_id')
+				->filter($column_prefix.'field_id', 'IN', $field_ids)
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all();
+
+			foreach ($fields->pluck('field_id') as $field_id)
+			{
+				$table_alias = "{$table_prefix}_field_id_{$field_id}";
+				$column_alias = "{$table_prefix}__{$column_prefix}field_id_{$field_id}";
+
+				$query->select("{$table_alias}.{$column_prefix}field_id_{$field_id} as {$column_alias}", FALSE);
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
+				$this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
+			}
+		}
+	}
+
 	/**
 	 * TODO only run this once!
 	 */
@@ -258,6 +464,7 @@ class Select extends Query {
 	{
 		list($property, $operator, $value, $connective) = $filter;
 
+		$binary = $this->isBinaryComparison($property);
 		$property = $this->translateProperty($property);
 
 		$fn = 'where';
@@ -290,12 +497,37 @@ class Select extends Query {
 					break;
 			}
 
-			$query->$fn("{$property} {$operator} NULL");
+			$query->$fn("{$property} {$operator} NULL", NULL, TRUE, $binary);
 		}
 		else
 		{
-			$query->$fn("{$property} {$operator}", $value);
+			$query->$fn("{$property} {$operator}", $value, TRUE, $binary);
 		}
+	}
+
+	/**
+	 * Given a property name, which can be aliased, returns whether or not the
+	 * property is set to be compared in a binary fashion, typically for
+	 * case-sensitivity purposes
+	 *
+	 * @param string $property Property name, optionally aliased
+	 * @param boolean
+	 */
+	protected function isBinaryComparison($property)
+	{
+		if (strpos($property, '.') !== FALSE)
+		{
+			list($alias, $property) = explode('.', $property);
+			$from = $this->expandAlias($alias);
+		}
+		else
+		{
+			$from = $this->builder->getFrom();
+			list($from, $alias) = $this->splitAlias($from);
+		}
+
+		$meta = $this->store->getMetaDataReader($from);
+		return in_array($property, $meta->getBinaryComparisons());
 	}
 
 	/**
@@ -364,6 +596,17 @@ class Select extends Query {
 	 */
 	protected function processWiths($query, $from, $from_alias)
 	{
+		$class = $this->getClass();
+
+		$extra_withs = $class::getMetaData('auto_join');
+		if ($extra_withs)
+		{
+			foreach ($extra_withs as $with)
+			{
+				$this->builder->with($with);
+			}
+		}
+
 		$withs = $this->builder->getWiths();
 		$this->recurseWiths($query, $from, $from_alias, $withs);
 	}

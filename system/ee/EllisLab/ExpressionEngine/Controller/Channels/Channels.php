@@ -77,7 +77,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$channel_ids = ee()->input->post('channels');
@@ -100,7 +100,7 @@ class Channels extends AbstractChannelsController {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('channels', ee()->cp->get_url_state()));
@@ -113,7 +113,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ($this->hasMaximumChannels())
@@ -121,7 +121,7 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('maximum_channels_reached'));
 		}
 
-		$this->form();
+		return $this->form();
 	}
 
 	/**
@@ -131,10 +131,10 @@ class Channels extends AbstractChannelsController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->form($channel_id);
+		return $this->form($channel_id);
 	}
 
 	/**
@@ -182,7 +182,7 @@ class Channels extends AbstractChannelsController {
 
 			if ( ! $channel)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -204,7 +204,8 @@ class Channels extends AbstractChannelsController {
 		// Category group options
 		$cat_group_options = array();
 		$category_groups = ee('Model')->get('CategoryGroup')
-			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0))
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
 			->order('group_name')
 			->all();
 		foreach ($category_groups as $group)
@@ -372,55 +373,43 @@ class Channels extends AbstractChannelsController {
 			)
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'channel_title',
-				'label' => 'lang:channel_title',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'channel_name',
-				'label' => 'lang:channel_short_name',
-				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
-			),
-			array(
-				'field' => 'max_entries',
-				'label' => 'lang:channel_max_entries',
-				'rules' => 'is_natural'
-			),
-		));
-
-		ee()->form_validation->validateNonTextInputs($vars['sections']);
-
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$channel = $this->saveChannel($channel);
+			$channel->set($_POST);
+			$channel->site_id = ee()->config->item('site_id');
+			$result = $channel->validate();
 
-			if (is_null($channel_id))
+			if ($response = $this->ajaxValidation($result))
 			{
-				ee()->session->set_flashdata('highlight_id', $channel->getId());
+				return $response;
 			}
 
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('channel_'.$alert_key))
-				->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
-				->defer();
+			if ($result->isValid())
+			{
+				$channel = $this->saveChannel($channel);
 
-			ee()->functions->redirect(ee('CP/URL')->make('channels'));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('channel_not_'.$alert_key))
-				->addToBody(lang('channel_not_'.$alert_key.'_desc'))
-				->now();
+				if (is_null($channel_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $channel->getId());
+				}
+
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('channel_'.$alert_key))
+					->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL')->make('channels'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('channel_not_'.$alert_key))
+					->addToBody(lang('channel_not_'.$alert_key.'_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->header = array(
@@ -441,36 +430,6 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * Custom validator for channel short name
-	 */
-	public function _validChannelName($str, $channel_id = NULL)
-	{
-		// Check short name characters
-		if (preg_match('/[^a-z0-9\-\_]/i', $str))
-		{
-			ee()->form_validation->set_message('_validChannelName', lang('invalid_short_name'));
-			return FALSE;
-		}
-
-		$channel = ee('Model')->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_name', $str);
-
-		if ( ! empty($channel_id))
-		{
-			$channel->filter('channel_id', '!=', $channel_id);
-		}
-
-		if ($channel->count() > 0)
-		{
-			ee()->form_validation->set_message('_validChannelName', lang('taken_channel_name'));
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 	/**
@@ -573,17 +532,19 @@ class Channels extends AbstractChannelsController {
 
 		if ( ! $channel)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! ee()->cp->allowed_group('can_edit_channels'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('TemplateGroup.group_name', 'ASC')
+			->order('template_name', 'ASC')
 			->all();
 
 		$live_look_template_options[0] = lang('no_live_look_template');

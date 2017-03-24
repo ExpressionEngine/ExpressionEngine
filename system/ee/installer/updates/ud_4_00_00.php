@@ -37,6 +37,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'emancipate_the_fields',
+				'add_field_data_flag',
+				'removeMemberHomepageTable',
 			)
 		);
 
@@ -169,6 +171,64 @@ class Updater {
 
 			ee()->smartforge->drop_column('channel_fields', 'group_id');
 		}
+	}
+
+	/**
+	 * Adds a column to exp_channel_fields, exp_member_fields, and
+	 * exp_category_fields tables that indicates if the
+	 * data is in the legacy data tables or their own table.
+	 */
+	private function add_field_data_flag()
+	{
+		if ( ! ee()->db->field_exists('legacy_field_data', 'category_fields'))
+		{
+			ee()->smartforge->add_column(
+				'category_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('category_fields', array('legacy_field_data' => 'y'));
+		}
+
+		if ( ! ee()->db->field_exists('legacy_field_data', 'channel_fields'))
+		{
+			ee()->smartforge->add_column(
+				'channel_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('channel_fields', array('legacy_field_data' => 'y'));
+		}
+
+		if ( ! ee()->db->field_exists('m_legacy_field_data', 'member_fields'))
+		{
+			ee()->smartforge->add_column(
+				'member_fields',
+				array(
+					'm_legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('member_fields', array('m_legacy_field_data' => 'y'));
+		}
+    }
+
+	private function removeMemberHomepageTable()
+	{
+		ee()->smartforge->drop_table('member_homepage');
 	}
 
 }

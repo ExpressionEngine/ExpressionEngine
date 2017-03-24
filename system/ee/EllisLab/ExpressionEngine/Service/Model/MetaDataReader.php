@@ -96,6 +96,17 @@ class MetaDataReader {
 	}
 
 	/**
+	 * Get binary_comparisons array
+	 */
+	public function getBinaryComparisons()
+	{
+		$class = $this->class;
+		$binary_comparisons = $class::getMetaData('binary_comparisons');
+
+		return $binary_comparisons ?: array();
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function publishesHooks()
@@ -148,7 +159,7 @@ class MetaDataReader {
 	}
 
 	/**
-	 *
+	 * @return array [TableName => [columns]]
 	 */
 	public function getTables($cached = TRUE)
 	{
@@ -174,7 +185,7 @@ class MetaDataReader {
 	}
 
 	/**
-	 *
+	 * Get a table for a given column
 	 */
 	public function getTableForField($field)
 	{

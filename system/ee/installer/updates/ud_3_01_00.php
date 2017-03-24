@@ -46,6 +46,7 @@ class Updater {
 				'update_collation_config',
 				'fix_table_collations',
 				'ensure_upload_directories_are_correct',
+				'add_channel_max_entries_columns',
 				'synchronize_layouts',
 				'template_routes_remove_empty'
 			)
@@ -348,19 +349,68 @@ class Updater {
 	}
 
 	/**
+	 * Adds the max_entries and total_records column to the exp_channels table
+	 * for the new Max Entries feature for Channels
+	 *
+	 * NOTE: These columns were added in 3.4 but they need to be added here for
+	 * folks upgrading from an earlier version because we access the Channel
+	 * model below, and a 3.4+ Channel model needs these columns present
+	 */
+	private function add_channel_max_entries_columns()
+	{
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'max_entries'      => array(
+					'type'         => 'int',
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
+				),
+			)
+		);
+
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'total_records'    => array(
+					'type'         => 'mediumint',
+					'constraint'   => 8,
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
+				),
+			),
+			'total_entries'
+		);
+	}
+
+	/**
 	 * Fields added after a layout was crated, never made it into the layout.
 	 *
 	 * @return void
 	 */
 	private function synchronize_layouts()
 	{
-		$layouts = ee('Model')->get('ChannelLayout')->all();
+		$custom_fields = array();
+
+		$layouts = ee('Model')->get('ChannelLayout')
+			->with('Channel')
+			->all();
 
 		foreach ($layouts as $layout)
 		{
 			// Account for any new fields that have been added to the channel
 			// since the last edit
-			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
+
+			$query = ee()->db->select('field_id')
+				->where('group_id', $layout->Channel->field_group)
+				->get('channel_fields');
+
+			foreach ($query->result_array() as $row)
+			{
+				$custom_fields[$row['field_id']] = $row['field_id'];
+			}
 
 			foreach ($layout->field_layout as $section)
 			{

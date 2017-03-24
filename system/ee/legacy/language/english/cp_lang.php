@@ -299,6 +299,7 @@ $lang = array(
 // Common
 'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 'btn_fix_errors' => 'Errors Found',
+'btn_authenticate_and_save' => 'Authenticate &amp; Save',
 'btn_save' => 'Save %s',
 'btn_save_and_close' => 'Save &amp; Close',
 'btn_saving' => 'Saving...',
@@ -351,6 +352,8 @@ $lang = array(
 'rev_date' => 'Date',
 'rev_author' => 'Author',
 'current' => 'Current',
+'auto_br' => 'Auto line break',
+'xhtml' => 'XHTML',
 
 /**
  * Footer

@@ -24,6 +24,8 @@
  */
 
  // default expiration of two weeks, in seconds
- $config['remember_me_ttl'] = 60*60*24*14;
+return array(
+    'remember_me_ttl' => 60*60*24*14
+);
 
 // EOF

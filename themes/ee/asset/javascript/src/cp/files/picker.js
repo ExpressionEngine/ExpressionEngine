@@ -45,8 +45,13 @@
 			}
 		});
 
-		$('.modal-file').off('click', '.filepicker-item, tbody > tr');
-		$('.modal-file').on('click', '.filepicker-item, tbody > tr', function(e) {
+		$('.modal-file').off('click', '.filepicker-item, tbody > tr:not(.tbl-action)');
+		$('.modal-file').on('click', '.filepicker-item, tbody > tr:not(.tbl-action)', function(e) {
+
+			if ($(e.target).is('a[rel=external]')) {
+				return true;
+			}
+
 			e.stopPropagation();
 			var id = $(this).data('id'),
 				file_url = $(this).data('url'),
@@ -149,6 +154,8 @@
 		this.off('click');
 
 		return this.each(function() {
+			$(this).data('picker-initialized', true);
+
 			$(this).on('click', function(){
 				var options = {};
 
@@ -190,6 +197,11 @@
 
 	$(document).ready(function () {
 		$('.filepicker').click(function (e) {
+			// Someone already call .FilePicker() on this? Don't
+			// bork their setup
+			if ($(this).data('picker-initialized')) {
+				return;
+			}
 			var modal = $("." + $(this).attr('rel')),
 				options = {
 					"source":      $(this),

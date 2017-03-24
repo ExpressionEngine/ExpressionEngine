@@ -277,14 +277,14 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
 			group_id smallint(4) NOT NULL default '0',
-			username varchar(50) NOT NULL,
-			screen_name varchar(50) NOT NULL,
-			password varchar(128) NOT NULL,
+			username varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
+			screen_name varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
+			password varchar(128) NOT NULL DEFAULT '',
 			salt varchar(128) NOT NULL DEFAULT '',
 			unique_id varchar(40) NOT NULL,
 			crypt_key varchar(40) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
-			email varchar(75) NOT NULL,
+			email varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
 			url varchar(150) NULL DEFAULT NULL,
 			location varchar(50) NULL DEFAULT NULL,
 			occupation varchar(80) NULL DEFAULT NULL,
@@ -360,37 +360,12 @@ class EE_Schema {
 			KEY `password` (`password`)
 		)";
 
-		// CP homepage layout
-		// Each member can have their own control panel layout.
-		// We store their preferences here.
-
-		$Q[] = "CREATE TABLE exp_member_homepage (
-			member_id int(10) unsigned NOT NULL,
-			recent_entries char(1) NOT NULL default 'l',
-			recent_entries_order int(3) unsigned NOT NULL default '0',
-			recent_comments char(1) NOT NULL default 'l',
-			recent_comments_order int(3) unsigned NOT NULL default '0',
-			recent_members char(1) NOT NULL default 'n',
-			recent_members_order int(3) unsigned NOT NULL default '0',
-			site_statistics char(1) NOT NULL default 'r',
-			site_statistics_order int(3) unsigned NOT NULL default '0',
-			member_search_form char(1) NOT NULL default 'n',
-			member_search_form_order int(3) unsigned NOT NULL default '0',
-			notepad char(1) NOT NULL default 'r',
-			notepad_order int(3) unsigned NOT NULL default '0',
-			bulletin_board char(1) NOT NULL default 'r',
-			bulletin_board_order int(3) unsigned NOT NULL default '0',
-			pmachine_news_feed char(1) NOT NULL default 'n',
-			pmachine_news_feed_order int(3) unsigned NOT NULL default '0',
-			PRIMARY KEY `member_id` (`member_id`)
-		)";
-
-
 		// Member Groups table
 
 		$Q[] = "CREATE TABLE exp_member_groups (
 			`group_id` smallint(4) unsigned NOT NULL,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
+			`menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
 			`group_title` varchar(100) NOT NULL,
 			`group_description` text NOT NULL,
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
@@ -546,6 +521,8 @@ class EE_Schema {
 			m_field_show_fmt char(1) NOT NULL default 'y',
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
+			m_field_settings text NULL,
+			m_legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 
@@ -570,6 +547,7 @@ class EE_Schema {
 			channel_description varchar(255) NULL DEFAULT NULL,
 			channel_lang varchar(12) NOT NULL,
 			total_entries mediumint(8) default '0' NOT NULL,
+			total_records mediumint(8) unsigned NOT NULL DEFAULT '0',
 			total_comments mediumint(8) default '0' NOT NULL,
 			last_entry_date int(10) unsigned default '0' NOT NULL,
 			last_comment_date int(10) unsigned default '0' NOT NULL,
@@ -751,6 +729,7 @@ class EE_Schema {
 			field_order int(3) unsigned NOT NULL,
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
+			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
@@ -892,6 +871,8 @@ class EE_Schema {
 			`field_text_direction` CHAR(3) NOT NULL default 'ltr',
 			`field_required` char(1) NOT NULL default 'n',
 			`field_order` int(3) unsigned NOT NULL,
+			`field_settings` text NULL,
+			`legacy_field_data` char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)
@@ -1395,6 +1376,27 @@ class EE_Schema {
 			KEY `field_id` (`field_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_menu_sets` (
+  			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  			`name` varchar(50) DEFAULT NULL,
+  			PRIMARY KEY (`set_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_menu_items` (
+		  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `parent_id` int(10) NOT NULL DEFAULT '0',
+		  `set_id` int(10) DEFAULT NULL,
+		  `name` varchar(50) DEFAULT NULL,
+		  `data` varchar(255) DEFAULT NULL,
+		  `type` varchar(10) DEFAULT NULL,
+		  `sort` int(5) NOT NULL DEFAULT '0',
+		  PRIMARY KEY (`item_id`),
+		  KEY `set_id` (`set_id`)
+	  	)";
+
+		// Default menu set
+		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
+
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		//  Specialty Templates
@@ -1442,9 +1444,6 @@ class EE_Schema {
 				'".$this->userdata['default_site_timezone']."',
 				'$quick_link',
 				'".ee()->db->escape_str($this->userdata['deft_lang'])."')";
-
-		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed)
-			VALUES ('1', '1', '2', '1', '2', 'l')";
 
 		$Q[] = "INSERT INTO exp_member_data (member_id) VALUES ('1')";
 
@@ -1631,7 +1630,10 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'open', '1', '009933')";
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'closed', '2', '990000')";
 
-		include(EE_APPPATH.'config/html_buttons.php');
+		$button_config = ee()->config->loadFile('html_buttons');
+
+		$installation_defaults = $button_config['defaults'];
+		$predefined_buttons = $button_config['buttons'];
 
 		$buttoncount = 1;
 

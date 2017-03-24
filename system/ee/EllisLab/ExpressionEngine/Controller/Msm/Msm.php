@@ -69,7 +69,7 @@ class Msm extends CP_Controller {
 	{
 		if ( count(ee()->session->userdata('assigned_sites')) == 0 )
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -90,7 +90,7 @@ class Msm extends CP_Controller {
 			ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
 				->cannotClose()
 				->now();
 		}
@@ -204,7 +204,7 @@ class Msm extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$license = ee('License')->getEELicense();
@@ -212,7 +212,7 @@ class Msm extends CP_Controller {
 
 		if ( ! $can_add && ! empty($_POST))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -232,91 +232,7 @@ class Msm extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				foreach(array('system', 'channel', 'template', 'member') as $type)
-				{
-					$prefs = 'site_' . $type . '_preferences';
-
-					foreach(ee()->config->divination($type) as $value)
-					{
-						$site->$prefs->$value = ee()->config->item($value);
-					}
-				}
-
-				$site->site_template_preferences->save_tmpl_files = 'n';
-				$site->site_template_preferences->tmpl_file_basepath = '';
-
 				$site->save();
-
-				// Create new site-specific stats by cloning site 1
-				$data = ee('Model')->get('Stats')
-					->filter('site_id', 1)
-					->first()
-					->getValues();
-
-				unset($data['stat_id']);
-				$data['site_id'] = $site->site_id;
-				$data['last_entry_date'] = 0;
-				$data['last_cache_clear'] = 0;
-
-				ee('Model')->make('Stats', $data)->save();
-
-				// Create new site-specific HTML buttons
-				$buttons = ee('Model')->get('HTMLButton')
-					->filter('site_id', 1)
-					->filter('member_id', 1)
-					->all();
-
-				foreach($buttons as $button)
-				{
-					$data = $button->getValues();
-					unset($data['id']);
-					$data['site_id'] = $site->site_id;
-
-					ee('Model')->make('HTMLButton', $data)->save();
-				}
-
-				// Create new site-specific specialty templates
-				$templates = ee('Model')->get('SpecialtyTemplate')
-					->filter('site_id', 1)
-					->all();
-
-				foreach($templates as $template)
-				{
-					$data = $template->getValues();
-					unset($data['template_id']);
-					$data['site_id'] = $site->site_id;
-
-					ee('Model')->make('SpecialtyTemplate', $data)->save();
-				}
-
-				// Create new site-specific member groups
-				// Not working yet -sb
-				// $groups = ee('Model')->get('MemberGroup')
-				// 	->filter('site_id', 1)
-				// 	->all();
-				//
-				// foreach($groups as $group)
-				// {
-				// 	$data = $group->getValues();
-				// 	$data['site_id'] = $site->site_id;
-				//
-				// 	ee('Model')->make('MemberGroup', $data)->save();
-				// }
-
-				// @TODO remove this once the above works
-				$query = ee()->db->get_where(
-					'member_groups',
-					array('site_id' => ee()->config->item('site_id'))
-				);
-
-				foreach ($query->result_array() as $row)
-				{
-					$data = $row;
-					$data['site_id'] = $site->site_id;
-
-					ee()->db->insert('member_groups', $data);
-				}
-
 
 				ee()->session->set_flashdata('site_id', $site->site_id);
 
@@ -382,7 +298,7 @@ class Msm extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_sites'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$site = ee('Model')->get('Site', $site_id)->first();
@@ -459,7 +375,7 @@ class Msm extends CP_Controller {
 			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
 				->cannotClose()
 				->render();
 			$sections[0][] = $alert;
@@ -471,7 +387,7 @@ class Msm extends CP_Controller {
 			'fields' => array(
 				'site_label' => array(
 					'type' => 'text',
-					'value' => $site->site_label,
+					'value' => $site->site_label ?: '',
 					'required' => TRUE,
 					'disabled' => $disabled
 				)
@@ -485,7 +401,7 @@ class Msm extends CP_Controller {
 			'fields' => array(
 				'site_name' => array(
 					'type' => 'text',
-					'value' => $site->site_name,
+					'value' => $site->site_name ?: '',
 					'required' => TRUE,
 					'disabled' => $disabled
 				)

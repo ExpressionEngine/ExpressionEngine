@@ -397,7 +397,9 @@ class Member_memberlist extends Member {
 		/**  Assign default variables
 		/** ----------------------------------------*/
 
-		$valid_order_bys = array('screen_name', 'total_comments', 'total_entries', 'total_posts', 'join_date');
+		// CP allows member_id, username, dates, member_group
+		// We'll convert username to screen_name and dates to join_date below
+		$valid_order_bys = array('screen_name', 'total_comments', 'total_entries', 'total_posts', 'join_date', 'member_id', 'member_group');
 
 		$sort_orders = array('asc', 'desc');
 
@@ -416,6 +418,10 @@ class Member_memberlist extends Member {
 		if ( ! ($order_by = ee()->input->post('order_by')))
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
+
+			// Normalizing cp available sorts
+			$order_by = ($order_by == 'username') ? 'screen_name' : $order_by;
+			$order_by = ($order_by == 'dates') ? 'join_date' : $order_by;
 		}
 
 		if (($row_count = (int) ee()->input->post('row_count')) === 0)
@@ -488,11 +494,22 @@ class Member_memberlist extends Member {
 		/**  Build the query
 		/** ----------------------------------------*/
 
-		$f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.url, m.location, m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.location, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.group_title ";
-		$p_sql	= "SELECT COUNT(member_id) AS count ";
-		$sql	= "FROM exp_members m, exp_member_groups g
-					WHERE m.group_id = g.group_id
-					AND g.group_id != '3'
+		if (array_intersect_key($fields, $this->var_single))
+		{
+			$mcf_select = ', md.*';
+			$mcf_sql = ' LEFT JOIN exp_member_data md ON md.member_id = m.member_id ';
+		}
+		else
+		{
+			$mcf_select = '';
+			$mcf_sql = '';
+		}
+
+		$f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.url, m.location, m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.location, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.group_title as member_group {$mcf_select} ";
+		$p_sql	= "SELECT COUNT(m.member_id) AS count ";
+		$sql	= "FROM exp_members m
+					LEFT JOIN exp_member_groups g ON g.group_id = m.group_id
+					WHERE g.group_id != '3'
 					AND g.group_id != '4'
 					AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
 					AND g.include_in_memberlist = 'y' ";
@@ -544,7 +561,12 @@ class Member_memberlist extends Member {
 
 		$query = ee()->db->query($p_sql.$sql);
 
-		if ($order_by == 'total_posts')
+		if ( ! in_array($sort_order, array('asc', 'desc')))
+		{
+			$sort_order = 'desc';
+		}
+
+		if ($order_by == 'total_posts' OR $order_by == 'member_group')
 		{
 			$sql .= " ORDER BY ".$order_by." ".$sort_order;
 		}
@@ -607,6 +629,7 @@ class Member_memberlist extends Member {
 		/**  Run the full query and process result
 		/** ----------------------------------------*/
 
+		$sql = str_replace('WHERE', $mcf_sql.' WHERE', $sql);
 		$query = ee()->db->query($f_sql.$sql);
 
 		$str = '';

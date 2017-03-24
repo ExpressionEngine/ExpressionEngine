@@ -314,7 +314,7 @@ Used in the control panel only.',
 
 'new_password_confirm_desc' => 'Retype desired password, to confirm.',
 
-'existing_password' => 'Current Password',
+'existing_password' => 'Enter your Password',
 
 'invalid_email_address' => 'The email you submitted is not valid',
 
@@ -338,11 +338,15 @@ Used in the control panel only.',
 
 'missmatched_passwords' => 'The password and password confirmation do not match',
 
-'username_too_short' => 'Your username must be at least %x characters long',
+'username_too_short' => 'Your username must be at least %d characters long',
 
-'username_too_long' => 'Your username cannot be over 50 characters in length',
+'username_too_long' => 'Your username cannot be over '.USERNAME_MAX_LENGTH.' characters in length',
 
-'password_too_short' => 'Your password must be at least %x characters long',
+'screenname_too_long' => 'Your screen name cannot be over '.USERNAME_MAX_LENGTH.' characters in length',
+
+'email_too_long' => 'Your email address cannot be over '.USERNAME_MAX_LENGTH.' characters in length',
+
+'password_too_short' => 'Your password must be at least %d characters long',
 
 'password_too_long' => 'Your password cannot be over '.PASSWORD_MAX_LENGTH.' characters in length',
 
@@ -501,8 +505,6 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
 
-'link_avatar' => ' Link to avatar',
-
 'rte_settings' => 'RTE Settings',
 
 'rte_enabled' => 'Enable Rich Text Editor?',
@@ -522,6 +524,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'site_index' => 'Site Index',
 
 'btn_login' => 'Login',
+
+'btn_authenticate_and_login' => 'Authenticate &amp; Login',
 
 'quick_links_ajax_reorder_fail' => 'Attention: Failed to save quick links order',
 'quick_links_ajax_reorder_fail_desc' => 'We failed to save your new quick links order. Refresh the page and make sure you\'re logged in.',

@@ -67,7 +67,13 @@ class Email extends Settings {
 				array(
 					'title' => 'email',
 					'fields' => array(
-						'email' => array('type' => 'text', 'value' => $this->member->email, 'required' => TRUE)
+						'email' => array(
+							'type' => 'text',
+							'value' => $this->member->email,
+							'required' => TRUE,
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
+						)
 					)
 				),
 				array(
@@ -120,7 +126,7 @@ class Email extends Settings {
 			array(
 				 'field'   => 'email',
 				 'label'   => 'lang:email',
-				 'rules'   => 'required|valid_email'
+				 'rules'   => 'required|valid_email|max_length['.USERNAME_MAX_LENGTH.']'
 			),
 			array(
 				 'field'   => 'current_password',
@@ -161,7 +167,7 @@ class Email extends Settings {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('email_settings');
-		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text = 'btn_authenticate_and_save';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}

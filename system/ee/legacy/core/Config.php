@@ -48,7 +48,7 @@ class EE_Config {
 	{
 		$this->config =& get_config();
 
-		$this->_config_paths = array(SYSPATH.'user/', APPPATH);
+		$this->_config_paths = array(SYSPATH.'user/');
 		$this->config_path = SYSPATH.'user/config/config.php';
 
 		$this->defaults = default_config_items();
@@ -188,7 +188,7 @@ class EE_Config {
 		$file = ($file == '') ? 'config' : str_replace('.php', '', $file);
 		$loaded = FALSE;
 
-		foreach($this->_config_paths as $path)
+		foreach ($this->_config_paths as $path)
 		{
 			$file_path = $path.'config/'.$file.'.php';
 
@@ -247,6 +247,31 @@ class EE_Config {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Load a single config file
+	 */
+	public function loadFile($file)
+	{
+		$file = str_replace('..', '', $file);
+		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
+		$userpath = SYSPATH.'user/config/'.$file.'.php';
+
+		$out = array();
+
+		if (file_exists($syspath))
+		{
+			$out = include $syspath;
+		}
+
+		if (file_exists($userpath))
+		{
+			$userout = include $userpath;
+			$out = array_replace_recursive($out, $userout);
+		}
+
+		return $out;
 	}
 
 	// --------------------------------------------------------------------
@@ -357,19 +382,23 @@ class EE_Config {
 		// lowercase version charset to use in HTML output
 		$config['output_charset'] = strtolower($this->item('charset'));
 
+		// translate more portable newline character representation into the real things
+		$config['email_newline_form_safe'] = $config['email_newline'];
+		$config['email_newline'] = $this->setEmailNewline($config['email_newline']);
+
 		if ($mutating)
 		{
 			$this->config = $config;
 
-		// master tracking override?
-		if ($this->item('disable_all_tracking') == 'y')
-		{
-			$this->disable_tracking();
-		}
+			// master tracking override?
+			if ($this->item('disable_all_tracking') == 'y')
+			{
+				$this->disable_tracking();
+			}
 
-		// If we just reloaded, then we reset a few things automatically
-		$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
-		ee('Database')->getLog()->saveQueries($save_queries);
+			// If we just reloaded, then we reset a few things automatically
+			$save_queries = ($this->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+			ee('Database')->getLog()->saveQueries($save_queries);
 		}
 		else
 		{
@@ -603,10 +632,12 @@ class EE_Config {
 			'date_format',
 			'time_format',
 			'mail_protocol',
+			'email_newline',
 			'smtp_server',
 			'smtp_port',
 			'smtp_username',
 			'smtp_password',
+			'email_smtp_crypto',
 			'email_debug',
 			'email_charset',
 			'email_batchmode',
@@ -983,7 +1014,14 @@ class EE_Config {
 				{
 					$changes = 'y';
 
-					$prefs[$value] = str_replace('\\', '/', $site_prefs[$value]);
+					$prefs[$value] = $site_prefs[$value];
+
+					// exception for email_newline, which uses backslashes, and is not a path variable
+					if ($value != 'email_newline')
+					{
+						$prefs[$value] = str_replace('\\', '/', $prefs[$value]);
+					}
+
 					unset($site_prefs[$value]);
 				}
 
@@ -1587,7 +1625,7 @@ class EE_Config {
 			$value = isset($values[$name]) ? $values[$name] : $this->item($name);
 
 			$sub = '';
-			$details = '';
+			$details = array();
 			$selected = '';
 
 			if (isset($subtext[$name]))
@@ -1939,6 +1977,27 @@ class EE_Config {
 		}
 	}
 
+	/**
+	 * Allows newlines to work whether stored as a single or double-quoted representation
+	 * @param string $newline The stored newline setting
+	 */
+	private function setEmailNewline($newline, $default = "\n")
+	{
+		switch ($newline)
+		{
+			case '\n':
+			case "\n":
+				return "\n";
+			case '\r\n':
+			case "\r\n":
+				return "\r\n";
+			case '\r':
+			case "\r":
+				return "\r";
+			default:
+				return $default;
+		}
+	}
 }
 // END CLASS
 

@@ -187,7 +187,11 @@ class MemberGroup extends StructureModel {
 			'pivot' => array(
 				'table' => 'email_cache_mg'
 			)
-		)
+		),
+		'MenuSet' => array(
+			'type' => 'belongsTo',
+			'from_key' => 'menu_set_id'
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -201,6 +205,7 @@ class MemberGroup extends StructureModel {
 	protected $group_title;
 	protected $group_description;
 	protected $is_locked;
+	protected $menu_set_id;
 	protected $can_view_offline_system;
 	protected $can_view_online_system;
 	protected $can_access_cp;
@@ -377,7 +382,8 @@ class MemberGroup extends StructureModel {
 			array(
 				'group_title' => $this->group_title,
 				'group_description' => $this->group_description,
-				'is_locked' => $this->is_locked
+				'is_locked' => $this->is_locked,
+				'menu_set_id' => $this->menu_set_id
 			),
 			array('group_id' => $this->group_id)
 		);
@@ -388,7 +394,16 @@ class MemberGroup extends StructureModel {
 	 */
 	public function getCustomFields()
 	{
-		return ee('Model')->get('MemberField')->all()->asArray();
+		$member_cfields = ee()->session->cache('EllisLab::MemberGroupModel', 'getCustomFields');
+
+		// might be empty, so need to be specific
+		if ( ! is_array($member_cfields))
+		{
+			$member_cfields = ee('Model')->get('MemberField')->all()->asArray();
+			ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', $member_cfields);
+		}
+
+		return $member_cfields;
 	}
 
 	/**

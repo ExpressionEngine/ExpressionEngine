@@ -42,7 +42,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
@@ -187,7 +187,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->model('member_model');
@@ -203,7 +203,7 @@ class MemberImport extends Utilities {
 
 		if ( ! empty($member_group))
 		{
-			$group_name = $member_group->group_title;
+			$group_name = htmlentities($member_group->group_title, ENT_QUOTES, 'UTF-8');
 		}
 
 		$data = array(
@@ -274,7 +274,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->lang->loadfile('member_import');
@@ -303,24 +303,20 @@ class MemberImport extends Utilities {
 		}
 
 		// Any custom fields exist
-		// TODO: MemberField model isn't ready, using query builder
-		$this->db->select('m_field_name, m_field_id');
-		$m_custom_fields = $this->db->get('member_fields');
 
-		if ($m_custom_fields->num_rows() > 0)
+		$m_custom_fields = ee('Model')->get('MemberField')
+			->fields('m_field_name', 'm_field_id')
+			->all();
+
+		foreach ($m_custom_fields as $row)
 		{
-			$custom_fields = TRUE;
-
-			foreach ($m_custom_fields->result() as $row)
+			if (isset($_POST['map'][$row->m_field_name]))
 			{
-				if (isset($_POST['map'][$row->m_field_name]))
-				{
-					$this->default_custom_fields[$_POST['map'][$row->m_field_name]] = $row->m_field_id;
-				}
-				else
-				{
-					$this->default_custom_fields[$row->m_field_name] = $row->m_field_id;
-				}
+				$this->default_custom_fields[$_POST['map'][$row->m_field_name]] = $row->m_field_id;
+			}
+			else
+			{
+				$this->default_custom_fields[$row->m_field_name] = $row->m_field_id;
 			}
 		}
 
@@ -369,7 +365,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->lang->loadfile('member_import');
@@ -614,7 +610,7 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Set our optional default values
@@ -632,10 +628,11 @@ class MemberImport extends Utilities {
 		$counter = 0;
 		$custom_fields = (count($this->default_custom_fields) > 0) ? TRUE : FALSE;
 
+
 		foreach ($this->members as $count => $member)
 		{
 			$data = array();
-			$dupe = FALSE;
+			$dupe = NULL;
 
 			foreach ($this->default_fields as $key => $val)
 			{
@@ -671,79 +668,32 @@ class MemberImport extends Utilities {
 
 			if (isset($data['member_id']))
 			{
+				$member_obj = ee('Model')->get('Member', $data['member_id'])->first();
+
 				if (isset($new_ids[$data['member_id']]))
 				{
 					/* -------------------------------------
 					/*  Grab the member so we can re-insert it after we
 					/*  take care of this nonsense
 					/* -------------------------------------*/
-					$dupe = TRUE;
-
-					if ($custom_fields == TRUE)
-					{
-						$tempcdata = $this->db->get_where('member_data', array('member_id' => $data['member_id']));
-					}
+					$dupe = $member_obj->getValues();
+					unset($dupe['member_id']);
+					ee('Model')->make('Member', $dupe)->save();
 				}
 			}
-			/* -------------------------------------
-			/*  Shove it in!
-			/*  We are using REPLACE as we want to overwrite existing members if a member id is specified
-			/* -------------------------------------*/
+			else
+			{
+				$member_obj = ee('Model')->make('Member');
+			}
 
-			$this->db->replace('members', $data);
-			$mid = $this->db->insert_id();
+			$member_obj->set($data)->save();
+			$mid = $member_obj->member_id;
 
 			//  Add the member id to the array of imported member id's
 			$new_ids[$mid] = $mid;
 
-			if ($custom_fields == TRUE)
-			{
-				$cdata['member_id'] = $mid;
-			}
-
-			//  Insert the old auto_incremented member, if necessary
-			if ($dupe === TRUE)
-			{
-				unset($tempdata->row['member_id']); // dump the member_id so it can auto_increment a new one
-				$this->db->insert('members', $tempdata->row);
-				$replace_mid = $this->db->insert_id();
-
-				$new_ids[$replace_mid] = '';
-
-				if ($custom_fields == TRUE)
-				{
-					$tempcdata->row['member_id'] = $replace_mid;
-					$this->db->insert('member_data', $tempcdata->row);
-				}
-			}
-
-			if ($custom_fields == TRUE)
-			{
-				$this->db->replace('member_data', $cdata);
-			}
-
 			$counter++;
 		}
-
-		/** -------------------------------------
-		/**  Add records to exp_member_data and exp_member_homepage tables for all imported members
-		/** -------------------------------------*/
-
-		$values = '';
-
-		foreach ($new_ids as $key => $val)
-		{
-			$values .= "('$key'),";
-		}
-
-		$values = substr($values, 0, -1);
-
-		if ($custom_fields == FALSE)
-		{
-			$this->db->query("INSERT INTO exp_member_data (member_id) VALUES ".$values);
-		}
-
-		$this->db->query("INSERT INTO exp_member_homepage (member_id) VALUES ".$values);
 
 		//  Update Statistics
 		$this->stats->update_member_stats();
@@ -876,14 +826,20 @@ class MemberImport extends Utilities {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_utilities'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->_create_custom_validation();
 
 		if ($this->form_validation->run() === FALSE)
 		{
-			return $this->member_import_confirm();
+			ee('CP/Alert')->makeInline()
+				->asIssue()
+				->withTitle(lang('member_import_error'))
+				->addToBody(lang('member_import_no_custom_fields_selected'))
+				->now();
+
+			return $this->memberImportConfirm();
 		}
 
 		$error = array();
@@ -893,24 +849,24 @@ class MemberImport extends Utilities {
 
 		foreach ($_POST['create_ids'] as $k => $v)
 		{
-			$data['m_field_name'] 		= $_POST['m_field_name'][$k];
-			$data['m_field_label'] 		= $_POST['m_field_label'][$k];
-			$data['m_field_description']= (isset($_POST['m_field_description'][$k])) ? $_POST['m_field_description'][$k]	: '';
-			$data['m_field_type'] 		= (isset($_POST['m_field_type'][$k])) ? $_POST['m_field_type'][$k] : 'text';
-			$data['m_field_list_items'] = (isset($_POST['m_field_list_items'][$k])) ? $_POST['m_field_list_items'][$k] : '';
-			$data['m_field_ta_rows'] 	= (isset($_POST['m_field_ta_rows'][$k])) ? $_POST['m_field_ta_rows'][$k] : '100';
-			$data['m_field_maxl'] 		= (isset($_POST['m_field_maxl'][$k])) ? $_POST['m_field_maxl'][$k] : '100';
-			$data['m_field_width'] 		= (isset($_POST['m_field_width'][$k])) ? $_POST['m_field_width'][$k] : '100%';
-			$data['m_field_search'] 	= 'y';
-			$data['m_field_required'] 	= (isset($_POST['required'][$k])) ? 'y' : 'n';
-			$data['m_field_public'] 	= (isset($_POST['public'][$k])) ? 'y' : 'n';
-			$data['m_field_reg'] 		= (isset($_POST['reg_form'][$k])) ? 'y' : 'n';
-			$data['m_field_fmt'] 		= (isset($_POST['m_field_fmt'][$k])) ? $_POST['m_field_fmt'][$k] : 'xhtml';
-			$data['m_field_order'] 		= (isset($_POST['m_field_order'][$k])) ? $_POST['m_field_order'][$k] : '';
+			$field = ee('Model')->make('MemberField');
 
-			$this->db->insert('member_fields', $data);
-			$field_id = $this->db->insert_id();
-			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$field_id.' text NULL DEFAULT NULL');
+			$field->m_field_name        = $_POST['m_field_name'][$k];
+			$field->m_field_label       = $_POST['m_field_label'][$k];
+			$field->m_field_description = (isset($_POST['m_field_description'][$k])) ? $_POST['m_field_description'][$k]	: '';
+			$field->m_field_type        = (isset($_POST['m_field_type'][$k])) ? $_POST['m_field_type'][$k] : 'text';
+			$field->m_field_list_items  = (isset($_POST['m_field_list_items'][$k])) ? $_POST['m_field_list_items'][$k] : '';
+			$field->m_field_ta_rows     = (isset($_POST['m_field_ta_rows'][$k])) ? $_POST['m_field_ta_rows'][$k] : '100';
+			$field->m_field_maxl        = (isset($_POST['m_field_maxl'][$k])) ? $_POST['m_field_maxl'][$k] : '100';
+			$field->m_field_width       = (isset($_POST['m_field_width'][$k])) ? $_POST['m_field_width'][$k] : '100%';
+			$field->m_field_search      = 'y';
+			$field->m_field_required    = (isset($_POST['required'][$k])) ? 'y' : 'n';
+			$field->m_field_public      = (isset($_POST['public'][$k])) ? 'y' : 'n';
+			$field->m_field_reg         = (isset($_POST['reg_form'][$k])) ? 'y' : 'n';
+			$field->m_field_fmt         = (isset($_POST['m_field_fmt'][$k])) ? $_POST['m_field_fmt'][$k] : 'xhtml';
+			$field->m_field_order       = (isset($_POST['m_field_order'][$k])) ? $_POST['m_field_order'][$k] : '';
+
+			$field->save();
 
 			$_POST['added_fields'][$_POST['m_field_name'][$k]] = $_POST['m_field_label'][$k];
 			//$_POST['xml_custom_fields'][$_POST['xml_field_name'][$k]] = $field_id;
@@ -970,7 +926,7 @@ class MemberImport extends Utilities {
 			}
 		}
 
-		ee()->form_validation->set_message('required', lang('s_required'));
+		ee()->form_validation->set_message('required', lang('member_import_no_custom_fields_selected'));
 	}
 }
 // END CLASS

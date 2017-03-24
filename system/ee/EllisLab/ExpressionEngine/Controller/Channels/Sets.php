@@ -186,9 +186,15 @@ class Sets extends AbstractChannelsController {
 		{
 			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
-			foreach ($model_errors['Channel Field'][0][2] as $error)
+			foreach (array('Channel Field', 'Category') as $type)
 			{
-				$errors[] = $error->getLanguageKey();
+				if (isset($model_errors[$type]))
+				{
+					foreach ($model_errors[$type][0][2] as $error)
+					{
+						$errors[] = $error->getLanguageKey();
+					}
+				}
 			}
 
 			ee('CP/Alert')->makeInline('shared-form')
@@ -254,7 +260,7 @@ class Sets extends AbstractChannelsController {
 
 				// Frequently the error is on the short_name, but in those cases
 				// you really want to edit the long name as well, so we'll show it.
-				if (isset($long_field))
+				if (isset($long_field) && isset($hidden[$key]))
 				{
 					$key = $model_name.'['.$ident.']['.$long_field.']';
 					$vars['sections'][$section.': '.$model->$title_field][] = array(

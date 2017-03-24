@@ -420,27 +420,7 @@ class Channel {
 	  */
 	public function fetch_categories()
 	{
-		if ($this->enable['category_fields'] === TRUE)
-		{
-			$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-				}
-			}
-
-			$field_sqla = ", cg.field_html_formatting, fd.* ";
-			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
-		}
-		else
-		{
-			$field_sqla = '';
-			$field_sqlb = '';
-		}
+		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
 
 		$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description, c.parent_id,
 						p.cat_id, p.entry_id, c.group_id {$field_sqla}
@@ -453,12 +433,10 @@ class Channel {
 
 		foreach ($this->query->result_array() as $row)
 		{
-			$sql .= "'".$row['entry_id']."',";
-
 			$categories[] = $row['entry_id'];
 		}
 
-		$sql = substr($sql, 0, -1).')';
+		$sql .= implode(array_unique($categories), ',') . ')';
 
 		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -836,7 +814,6 @@ class Channel {
 
 					if ($query->num_rows() > 0)
 					{
-						$valid = 'y';
 						$valid_cats = explode('|', $query->row('cat_group') );
 
 						foreach($query->result_array() as $row)
@@ -854,18 +831,10 @@ class Channel {
 
 							if (count($valid_cats) == 0)
 							{
-								$valid = 'n';
-								break;
+								return '';
 							}
 						}
-					}
-					else
-					{
-						$valid = 'n';
-					}
 
-					if ($valid == 'y')
-					{
 						// the category URL title should be the first segment left at this point in $qstring,
 						// but because prior to this feature being added, category names were used in URLs,
 						// and '/' is a valid character for category names.  If they have not updated their
@@ -898,6 +867,10 @@ class Channel {
 							{
 								$qstring = 'C'.$result->row('cat_id') ;
 								$cat_id = $result->row('cat_id');
+							}
+							else
+							{
+								return '';
 							}
 						}
 					}
@@ -1228,6 +1201,8 @@ class Channel {
 		$sql_a = "SELECT ";
 
 		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT t.entry_id " : "t.entry_id ";
+
+		$sql_b .= ",exp_channels.field_group ";
 
 		if ($this->pagination->field_pagination == TRUE)
 		{
@@ -2286,47 +2261,69 @@ class Channel {
 			$this->sql .= $yearweek.', ';
 		}
 
-		// DO NOT CHANGE THE ORDER
-		// The exp_member_data table needs to be called before the exp_members table.
+		$entries = array();
+		$field_groups = array();
+
+		foreach ($query->result_array() as $row)
+		{
+			$entries[] = $row['entry_id'];
+			$field_groups[] = $row['field_group'];
+		}
+
+		$entries = array_unique($entries);
+		$field_groups = array_unique($field_groups);
 
 		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
 						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
-						md.*,
-						wd.*
-				FROM exp_channel_titles		AS t
+						wd.*";
+
+		$from = " FROM exp_channel_titles		AS t
 				LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
 				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
-				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
-				LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
+				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id ";
 
-		$this->sql .= "WHERE t.entry_id IN (";
-
-		$entries = array();
-
-		// Build ID numbers (checking for duplicates)
-
-		foreach ($query->result_array() as $row)
+		if ( ! empty($this->mfields))
 		{
-			if ( ! isset($entries[$row['entry_id']]))
-			{
-				$entries[$row['entry_id']] = 'y';
-			}
-			else
-			{
-				continue;
-			}
+			$this->sql .= ", md.* ";
+			$from .= "LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
 
-			$this->sql .= $row['entry_id'].',';
+			foreach ($this->mfields as $mfield)
+			{
+				$field_id = $mfield[0];
+				$table = "exp_member_data_field_{$field_id}";
+				$this->sql .= ", {$table}.*";
+				$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
+			}
 		}
 
+		$fields = ee('Model')->get('ChannelField')
+			->filter('legacy_field_data', 'n')
+			->filter('group_id', 'IN', $field_groups)
+			->all();
+
+		if ($fields->count())
+		{
+			foreach ($fields as $field)
+			{
+				$field_id = $field->getId();
+				$table = "exp_channel_data_field_{$field_id}";
+
+				foreach ($field->getColumnNames() as $column)
+				{
+					$this->sql .= ", {$table}.{$column}";
+				}
+
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+			}
+		}
+
+		$this->sql .= $from;
+
+		$this->sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+
 		//cache the entry_id
-		ee()->session->cache['channel']['entry_ids']	= array_keys($entries);
-
-		unset($query);
-		unset($entries);
-
-		$this->sql = substr($this->sql, 0, -1).') ';
+		ee()->session->cache['channel']['entry_ids'] = $entries;
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
@@ -2458,6 +2455,8 @@ class Channel {
 			),
 			'disable' => $disable
 		);
+
+		$this->cacheCategoryFieldModels();
 
 		ee()->session->set_cache('mod_channel', 'active', $this);
 		$this->return_data = $parser->parse($this, $data, $config);
@@ -2779,29 +2778,7 @@ class Channel {
 		{
 			// fetch category field names and id's
 
-			if ($this->enable['category_fields'] === TRUE)
-			{
-				$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields
-									WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')");
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-					}
-				}
-
-				$field_sqla = ", cg.field_html_formatting, fd.* ";
-				$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-								LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
-			}
-			else
-			{
-				$field_sqla = '';
-				$field_sqlb = '';
-			}
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
 
 			$show_empty = ee()->TMPL->fetch_param('show_empty');
 
@@ -3002,6 +2979,8 @@ class Channel {
 			ee()->load->helper('segment');
 			$active_cat = parse_category($this->query_string);
 
+			ee()->load->library('typography');
+
 			foreach ($this->cat_array as $key => $val)
 			{
 				$chunk = ee()->TMPL->tagdata;
@@ -3010,7 +2989,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[5]);
 
 				$cat_vars = array(
-					'category_name'			=> $val[3],
+					'category_name'			=> ee()->typography->format_characters($val[3]),
 					'category_url_title'	=> $val[6],
 					'category_description'	=> $val[4],
 					'category_image'		=> $cat_image,
@@ -3063,34 +3042,7 @@ class Channel {
 					}
 				}
 
-				// Load typography library for custom fields
-				ee()->load->library('typography');
-				ee()->typography->initialize(array(
-					'convert_curly'	=> FALSE
-				));
-
-				// parse custom fields
-				foreach($this->catfields as $cv)
-				{
-					if (isset($val['field_id_'.$cv['field_id']]) AND $val['field_id_'.$cv['field_id']] != '')
-					{
-						$field_content = ee()->typography->parse_type(
-							$val['field_id_'.$cv['field_id']],
-							array(
-								'text_format'		=> $val['field_ft_'.$cv['field_id']],
-								'html_format'		=> $val['field_html_formatting'],
-								'auto_links'		=> 'n',
-								'allow_img_url'	=> 'y'
-							)
-						);
-						$chunk = str_replace(LD.$cv['field_name'].RD, $field_content, $chunk);
-					}
-					else
-					{
-						// garbage collection
-						$chunk = str_replace(LD.$cv['field_name'].RD, '', $chunk);
-					}
-				}
+				$chunk = $this->parseCategoryFields($cat_vars['category_id'], $val, $chunk);
 
 				/** --------------------------------
 				/**  {count}
@@ -3370,30 +3322,7 @@ class Channel {
 		else
 		{
 			// fetch category field names and id's
-
-			if ($this->enable['category_fields'] === TRUE)
-			{
-				$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields
-									WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')");
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-					}
-				}
-
-				$field_sqla = ", cg.field_html_formatting, fd.* ";
-				$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-								LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
-			}
-			else
-			{
-				$field_sqla = '';
-				$field_sqlb = '';
-			}
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
 
 			$sql = "SELECT DISTINCT (c.cat_id), c.group_id, c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id, c.cat_order {$field_sqla}
 					FROM (exp_categories AS c";
@@ -3467,6 +3396,8 @@ class Channel {
 				ee()->load->helper('segment');
 				$active_cat = parse_category($this->query_string);
 
+				ee()->load->library('typography');
+
 				foreach($query->result_array() as $row)
 				{
 					// We'll concatenate parsed category and title chunks here for
@@ -3482,7 +3413,7 @@ class Channel {
 						$cat_image = ee()->file_field->parse_string($row['cat_image']);
 
 						$cat_vars = array(
-							'category_name'			=> $row['cat_name'],
+							'category_name'			=> ee()->typography->format_characters($row['cat_name']),
 							'category_url_title'	=> $row['cat_url_title'],
 							'category_description'	=> $row['cat_description'],
 							'category_image'		=> $cat_image,
@@ -3524,34 +3455,7 @@ class Channel {
 							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
-						// Load typography library for custom fields
-						ee()->load->library('typography');
-						ee()->typography->initialize(array(
-							'convert_curly'	=> FALSE
-						));
-
-						// parse custom fields
-						foreach($this->catfields as $cfv)
-						{
-							if (isset($row['field_id_'.$cfv['field_id']]) AND $row['field_id_'.$cfv['field_id']] != '')
-							{
-								$field_content = ee()->typography->parse_type(
-									$row['field_id_'.$cfv['field_id']],
-									array(
-										'text_format'	=> $row['field_ft_'.$cfv['field_id']],
-										'html_format'	=> $row['field_html_formatting'],
-										'auto_links'	=> 'n',
-										'allow_img_url'	=> 'y'
-									)
-								);
-								$chunk = str_replace(LD.$cfv['field_name'].RD, $field_content, $chunk);
-							}
-							else
-							{
-								// garbage collection
-								$chunk = str_replace(LD.$cfv['field_name'].RD, '', $chunk);
-							}
-						}
+						$chunk = $this->parseCategoryFields($cat_vars['category_id'], $row, $chunk);
 
 						// Check to see if we need to parse {filedir_n}
 						if (strpos($chunk, '{filedir_') !== FALSE)
@@ -3569,7 +3473,7 @@ class Channel {
 						if ($trow['cat_id'] == $row['cat_id'])
 						{
 							$chunk = str_replace(array(LD.'title'.RD, LD.'category_name'.RD),
-												 array($trow['title'],$row['cat_name']),
+												 array($trow['title'],ee()->typography->format_characters($row['cat_name'])),
 												 $title_chunk);
 
 							foreach($t_path as $tkey => $tval)
@@ -3662,30 +3566,7 @@ class Channel {
 			return FALSE;
 		}
 
-		if ($this->enable['category_fields'] === TRUE)
-		{
-			$query = ee()->db->query("SELECT field_id, field_name
-								FROM exp_category_fields
-								WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-								AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."')");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-				}
-			}
-
-			$field_sqla = ", cg.field_html_formatting, fd.* ";
-			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
-		}
-		else
-		{
-			$field_sqla = '';
-			$field_sqlb = '';
-		}
+		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
 
 		/** -----------------------------------
 		/**  Are we showing empty categories
@@ -3950,8 +3831,10 @@ class Channel {
 				ee()->load->library('file_field');
 				$cat_image = ee()->file_field->parse_string($val[2]);
 
+				ee()->load->library('typography');
+
 				$cat_vars = array(
-					'category_name'			=> $val[1],
+					'category_name'			=> ee()->typography->format_characters($val[1]),
 					'category_url_title'	=> $val[4],
 					'category_description'	=> $val[3],
 					'category_image'		=> $cat_image,
@@ -4003,35 +3886,7 @@ class Channel {
 					}
 				}
 
-				// Load typography library for custom fields
-				ee()->load->library('typography');
-				ee()->typography->initialize(array(
-					'convert_curly'	=> FALSE
-				));
-
-				// parse custom fields
-				foreach($this->catfields as $ccv)
-				{
-					if (isset($val['field_id_'.$ccv['field_id']]) AND $val['field_id_'.$ccv['field_id']] != '')
-					{
-						$field_content = ee()->typography->parse_type(
-							$val['field_id_'.$ccv['field_id']],
-							array(
-								'text_format'	=> $val['field_ft_'.$ccv['field_id']],
-								'html_format'	=> $val['field_html_formatting'],
-								'auto_links'	=> 'n',
-								'allow_img_url'	=> 'y'
-							)
-						);
-						$chunk = str_replace(LD.$ccv['field_name'].RD, $field_content, $chunk);
-					}
-					else
-					{
-						// garbage collection
-						$chunk = str_replace(LD.$ccv['field_name'].RD, '', $chunk);
-					}
-				}
-
+				$chunk = $this->parseCategoryFields($cat_vars['category_id'], $val, $chunk);
 
 				/** --------------------------------
 				/**  {count}
@@ -4107,6 +3962,120 @@ class Channel {
 			}
 		}
 		return $open;
+	}
+
+	/**
+	 * Parse category fields
+	 *
+	 * @param	int		$category_id	Category ID
+	 * @param	array	$data			Array that usually contains pertinant info
+	 * @param	string	$chunk			Tagdata currently being modified
+	 * @param	array	$variables		Array of variables found in the string to be parsed
+	 * @return	string	String with category fields parsed
+	 */
+	public function parseCategoryFields($category_id, $data, $chunk, $variables = array())
+	{
+		// Load typography library for custom fields
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'convert_curly'	=> FALSE
+		));
+
+		$field_index = array();
+		foreach ($this->catfields as $cat_field)
+		{
+			$field_index[$cat_field['field_name']] = $cat_field['field_id'];
+		}
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		if (empty($variables))
+		{
+			$variables = ee()->TMPL->var_single;
+		}
+
+		foreach ($variables as $tag)
+		{
+			$tag = ee()->api_channel_fields->get_single_field($tag);
+			$field_name = $tag['field_name'];
+
+			if ( ! isset($field_index[$field_name]))
+			{
+				continue;
+			}
+
+			$field_id = $field_index[$field_name];
+
+			if (isset($data['field_id_'.$field_id]))
+			{
+				$cat_field = $this->cat_field_models[$field_id];
+
+				$chunk = $cat_field->parse(
+					$data['field_id_'.$field_id],
+					$category_id,
+					'category',
+					$tag['modifier'],
+					$chunk,
+					array(
+						'channel_html_formatting' => $data['field_html_formatting'],
+						'channel_auto_link_urls' => 'n',
+						'channel_allow_img_urls' => 'y'
+					)
+				);
+			}
+			// Garbage collection
+			else
+			{
+				if ($tag['modifier'])
+				{
+					$field_name = $field_name.':'.$tag['modifier'];
+				}
+				$chunk = str_replace(LD.$field_name.RD, '', $chunk);
+			}
+		}
+
+		return $chunk;
+	}
+
+	/**
+	 * Called after $this->catfields is populated, caches associated CategoryField models
+	 */
+	private function cacheCategoryFieldModels()
+	{
+		$this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+			$field = ee()->api_channel_fields->get_single_field($field);
+			return $field['field_name'];
+		}, ee()->TMPL->var_single);
+
+		// Get field IDs for the category fields we need to fetch
+		$field_ids = array();
+		foreach ($this->catfields as $cat_field)
+		{
+			if (in_array($cat_field['field_name'], $clean_field_names) &&
+				! isset($this->cat_field_models[$cat_field['field_id']]))
+			{
+				$field_ids[] = $cat_field['field_id'];
+			}
+		}
+
+		if (empty($field_ids))
+		{
+			return;
+		}
+
+		$this->cat_field_models += ee('Model')->get('CategoryField', array_unique($field_ids))
+			->all()
+			->indexBy('field_id');
+
+		ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
 	}
 
 	// ------------------------------------------------------------------------
@@ -4280,22 +4249,7 @@ class Channel {
 				return ee()->TMPL->no_results();
 			}
 
-			$query = ee()->db->query("SELECT field_id, field_name
-								FROM exp_category_fields
-								WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
-								AND group_id = '".$gquery->row('group_id')."'");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
-				}
-			}
-
-			$field_sqla = ", cg.field_html_formatting, fd.* ";
-			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
-							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($gquery->row('group_id'));
 		}
 		else
 		{
@@ -4318,8 +4272,10 @@ class Channel {
 		ee()->load->library('file_field');
 		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
 
+		ee()->load->library('typography');
+
 		$cat_vars = array(
-			'category_name'			=> $query->row('cat_name'),
+			'category_name'			=> ee()->typography->format_characters($query->row('cat_name')),
 			'category_url_title'	=> $query->row('cat_url_title'),
 			'category_description'	=> $query->row('cat_description'),
 			'category_image'		=> $cat_image,
@@ -4362,34 +4318,7 @@ class Channel {
 			ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 		}
 
-		// Load typography library for custom fields
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'convert_curly'	=> FALSE
-		));
-
-		// parse custom fields
-		foreach($this->catfields as $ccv)
-		{
-			if ($query->row('field_id_'.$ccv['field_id']) AND $query->row('field_id_'.$ccv['field_id']) != '')
-			{
-				$field_content = ee()->typography->parse_type(
-					$query->row('field_id_'.$ccv['field_id']),
-					array(
-						'text_format'	=> $query->row('field_ft_'.$ccv['field_id']),
-						'html_format'	=> $query->row('field_html_formatting'),
-						'auto_links'	=> 'n',
-						'allow_img_url'	=> 'y'
-					)
-				);
-				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, $field_content, ee()->TMPL->tagdata);
-			}
-			else
-			{
-				// garbage collection
-				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, '', ee()->TMPL->tagdata);
-			}
-		}
+		ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], $row, ee()->TMPL->tagdata);
 
 		return ee()->TMPL->tagdata;
 	}
@@ -4683,7 +4612,7 @@ class Channel {
 			'entry_id'						=> $query->row('entry_id'),
 			'id_path'						=> array($query->row('entry_id'), array('path_variable' => TRUE)),
 			'path'							=> array($query->row('url_title'), array('path_variable' => TRUE)),
-			'title'							=> $title,
+			'title'							=> ee()->typography->formatTitle($title),
 			'url_title'						=> $query->row('url_title'),
 			'channel_short_name'			=> $query->row('channel_name'),
 			'channel'						=> $query->row('channel_title'),
@@ -4939,53 +4868,62 @@ class Channel {
 
 	public function related_category_entries()
 	{
-		if ($this->query_string == '')
+		// grab url_title= parameter, fallback on entry_id= param
+		$current_entry = ee()->TMPL->fetch_param('url_title', ee()->TMPL->fetch_param('entry_id'));
+
+		// try to divine one if no parameter was given
+		if ( ! $current_entry)
 		{
-			return FALSE;
-		}
+			$current_entry = $this->query_string;
 
-		$qstring = $this->query_string;
+			/** --------------------------------------
+			/**  Remove page number
+			/** --------------------------------------*/
 
-		/** --------------------------------------
-		/**  Remove page number
-		/** --------------------------------------*/
+			if (preg_match("#/P\d+#", $current_entry, $match))
+			{
+				$current_entry = reduce_double_slashes(str_replace($match[0], '', $current_entry));
+			}
 
-		if (preg_match("#/P\d+#", $qstring, $match))
-		{
-			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
-		}
+			/** --------------------------------------
+			/**  Remove "N"
+			/** --------------------------------------*/
+			if (preg_match("#/N(\d+)#", $current_entry, $match))
+			{
+				$current_entry = reduce_double_slashes(str_replace($match[0], '', $current_entry));
+			}
 
-		/** --------------------------------------
-		/**  Remove "N"
-		/** --------------------------------------*/
-		if (preg_match("#/N(\d+)#", $qstring, $match))
-		{
-			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
-		}
+			/** --------------------------------------
+			/**  Make sure to only get one segment
+			/** --------------------------------------*/
 
-		/** --------------------------------------
-		/**  Make sure to only get one segment
-		/** --------------------------------------*/
-
-		if (strpos($qstring, '/') !== FALSE)
-		{
-			$qstring = substr($qstring, 0, strpos($qstring, '/'));
+			if (strpos($current_entry, '/') !== FALSE)
+			{
+				$current_entry = substr($current_entry, 0, strpos($current_entry, '/'));
+			}
 		}
 
 		/** ----------------------------------
 		/**  Find Categories for Entry
 		/** ----------------------------------*/
 
-		$sql = "SELECT exp_categories.cat_id, exp_categories.cat_name
-				FROM exp_channel_titles
-				INNER JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-				INNER JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-				WHERE exp_categories.cat_id IS NOT NULL
-				AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
+		$query = ee()->db->select('c.cat_id, c.cat_name')
+			->from('channel_titles t')
+			->join('category_posts p', 'p.entry_id = t.entry_id', 'INNER')
+			->join('categories c', 'p.cat_id = c.cat_id', 'INNER')
+			->where('c.cat_id IS NOT NULL')
+			->where_in('t.site_id', ee()->TMPL->site_ids);
 
-		$sql .= ( ! is_numeric($qstring)) ? "AND exp_channel_titles.url_title = '".ee()->db->escape_str($qstring)."' " : "AND exp_channel_titles.entry_id = '".ee()->db->escape_str($qstring)."' ";
+		if (is_numeric($current_entry))
+		{
+			$query->where('t.entry_id', $current_entry);
+		}
+		else
+		{
+			$query->where('t.url_title', $current_entry);
+		}
 
-		$query = ee()->db->query($sql);
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -5053,14 +4991,16 @@ class Channel {
 		$cats = substr($cats, 0, -1);
 
 		/** ----------------------------------
-		/**  Manually set paramters
+		/**  Manually set parameters
 		/** ----------------------------------*/
 
+		unset(ee()->TMPL->tagparams['entry_id']);
+		unset(ee()->TMPL->tagparams['url_title']);
 		ee()->TMPL->tagparams['category']		= $cats;
-		ee()->TMPL->tagparams['dynamic']			= 'off';
-		ee()->TMPL->tagparams['not_entry_id']	= $qstring; // Exclude the current entry
+		ee()->TMPL->tagparams['dynamic']		= 'off';
+		ee()->TMPL->tagparams['not_entry_id']	= $current_entry; // Exclude the current entry
 
-		// Set user submitted paramters
+		// Set user submitted parameters
 
 		$params = array('channel', 'username', 'status', 'orderby', 'sort');
 
@@ -5410,6 +5350,56 @@ class Channel {
 		ee()->load->library('channel_form/channel_form_lib');
 		ee()->load->library('channel_form/channel_form_javascript');
 		return ee()->channel_form_javascript->combo_load();
+	}
+
+	private function generateCategoryFieldSQL($group_ids = '')
+	{
+		if ($this->enable['category_fields'] !== TRUE)
+		{
+			return array('', '');
+		}
+
+		$sql = "SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')";
+
+		if ( ! empty($group_ids))
+		{
+			$sql .= " AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')";
+		}
+
+		$query = ee()->db->query($sql);
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
+			}
+		}
+
+		$this->cacheCategoryFieldModels();
+
+		$field_sqla = ", cg.field_html_formatting, fd.* ";
+		$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
+						LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
+
+		foreach ($this->cat_field_models as $cat_field)
+		{
+			if ($cat_field->legacy_field_data)
+			{
+				continue;
+			}
+
+			$table = "exp_category_field_data_field_{$cat_field->field_id}";
+
+			foreach ($cat_field->getColumnNames() as $column)
+			{
+				$field_sqla .= ", {$table}.{$column}";
+			}
+
+			$field_sqlb .= "LEFT JOIN {$table} ON {$table}.cat_id = c.cat_id ";
+		}
+
+		return array($field_sqla, $field_sqlb);
 	}
 }
 // END CLASS

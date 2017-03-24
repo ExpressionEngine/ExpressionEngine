@@ -44,12 +44,12 @@ class Routes extends AbstractDesignController {
 
 		if (IS_CORE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->config->item('enable_template_routes') == 'n')
@@ -214,8 +214,9 @@ class Routes extends AbstractDesignController {
 			->with(array('Template' => 'TemplateGroup'))
 			->filter('Template.site_id', ee()->config->item('site_id'))
 			->order('TemplateRoute.order', 'asc')
-			->all()
-			->indexBy('template_id');
+			->all();
+
+		$existing_routes_indexed = $existing_routes->indexBy('template_id');
 
 		$submitted = ee()->input->post('routes');
 
@@ -230,7 +231,15 @@ class Routes extends AbstractDesignController {
 		{
 			$data['route'] = trim($data['route']);
 
-			if (strpos($template_id, 'new_') === 0)
+			// Let them delete and re-add the same route
+			if (in_array($data['route'], $existing_routes->pluck('route')) &&
+				! in_array($data['route'], $routes->pluck('route')) &&
+				strpos($template_id, 'new_') === 0)
+			{
+				$route = $existing_routes->filter('route', $data['route'])->first();
+			}
+			// New route all together
+			elseif (strpos($template_id, 'new_') === 0)
 			{
 				$route = ee('Model')->make('TemplateRoute');
 				$route->Template = ee('Model')->get('Template', $data['template_id'])
@@ -239,7 +248,7 @@ class Routes extends AbstractDesignController {
 			}
 			else
 			{
-				$route = $existing_routes[str_replace('row_id_', '', $template_id)];
+				$route = $existing_routes_indexed[str_replace('row_id_', '', $template_id)];
 			}
 
 			$route->route = $data['route'];

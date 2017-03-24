@@ -36,6 +36,7 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
+				'addFieldSettingsColumns',
 				'update_category_fields',
 				'alter_is_locked',
 				'update_status_highlight'
@@ -51,22 +52,41 @@ class Updater {
 	}
 
 	/**
+	 * This column isn't needed until 3.5.1, but needs adding before we access
+	 * the CategoryField models below
+	 *
+	 * @return void
+	 */
+	private function addFieldSettingsColumns()
+	{
+		ee()->smartforge->add_column(
+			'category_fields',
+			array(
+				'field_settings' => array(
+					'type' => 'text',
+					'null' => TRUE
+				)
+			)
+		);
+	}
+
+	/**
 	 * Update category fields so their formatting is properly set
 	 *
 	 * @return void
 	 */
 	private function update_category_fields()
 	{
-		$category_fields = ee('Model')->get('CategoryField')
-			->all()
-			->indexBy('field_id');
+		$category_fields = ee()->db->select('field_id', 'field_default_fmt')
+			->get('category_fields')
+			->result_array();
 
-		foreach ($category_fields as $id => $field)
+		foreach ($category_fields as $row)
 		{
 			ee()->db->update(
 				'category_field_data',
-				array('field_ft_'.$id => $field->field_default_fmt),
-				array('field_ft_'.$id => NULL)
+				array('field_ft_'.$row['field_id'] => $row['field_default_fmt']),
+				array('field_ft_'.$row['field_id'] => NULL)
 			);
 		}
 	}

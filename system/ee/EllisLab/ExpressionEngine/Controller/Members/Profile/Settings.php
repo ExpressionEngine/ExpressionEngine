@@ -88,7 +88,7 @@ class Settings extends Profile {
 
 		if ($this->member->parse_smileys == 'y')
 		{
-			$settings[] = 'display_emoticons';
+			$settings[] = 'parse_smileys';
 		}
 
 		if ($this->member->display_avatars == 'y')
@@ -98,7 +98,7 @@ class Settings extends Profile {
 
 		if ($this->member->accept_messages == 'y')
 		{
-			$settings[] = 'allow_messages';
+			$settings[] = 'accept_messages';
 		}
 
 		$this->load->helper('html');
@@ -159,11 +159,6 @@ class Settings extends Profile {
 				)
 			);
 		}
-
-		$avatar_choices['link'] = array(
-			'label' => 'link_avatar',
-			'html' => form_input('link_avatar', 'http://')
-		);
 
 		$avatar_choose_lang_desc = lang('change_avatar_desc');
 		if (count($avatar_choices) == 1)
@@ -321,7 +316,7 @@ class Settings extends Profile {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -336,9 +331,6 @@ class Settings extends Profile {
 			case "choose":
 				$choice = ee()->input->post('avatar_filename');
 				$this->member->avatar_filename = $choice;
-				break;
-			case "link":
-				$this->member->avatar_filename = $this->uploadRemoteAvatar();
 				break;
 		}
 
@@ -373,9 +365,10 @@ class Settings extends Profile {
 			return;
 		}
 
-		// We don't have the suffix, so
-
-		$suffix = array_pop(explode('.', $_FILES['upload_avatar']['name']));
+		// We don't have the suffix, so first we explode to avoid passed by reference error
+		// Then we grab our suffix
+		$name_array = explode('.', $_FILES['upload_avatar']['name']);
+		$suffix = array_pop($name_array);
 
 		$name = $_FILES['upload_avatar']['name'];
 		$name = 'avatar_'.$this->member->member_id.'.'.$suffix;
@@ -407,46 +400,6 @@ class Settings extends Profile {
 
 		unlink($original);
 		$result = (array) ee()->upload;
-
-		return $filename;
-	}
-
-	private function uploadRemoteAvatar()
-	{
-		$url = ee()->input->post('link_avatar');
-		$directory = ee('Model')->get('UploadDestination')
-			->filter('name', 'Avatars')
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
-
-		if ( ! $directory)
-		{
-			return FALSE;
-		}
-
-    	$ch = curl_init($url);
-    	curl_setopt($ch, CURLOPT_HEADER, 0);
-    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    	curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
-    	$file = curl_exec($ch);
-    	curl_close($ch);
-
-		ee()->load->library('filemanager');
-
-		$file_path = ee()->filemanager->clean_filename(
-			basename($url),
-			$directory->id,
-			array('ignore_dupes' => FALSE)
-		);
-		$filename = basename($file_path);
-
-		// Upload the file
-		ee()->load->library('upload', array('upload_path' => dirname($file_path)));
-
-		if (ee()->upload->raw_upload($filename, $file) === FALSE)
-		{
-			return FALSE;
-		}
 
 		return $filename;
 	}

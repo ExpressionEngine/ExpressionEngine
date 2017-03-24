@@ -459,12 +459,6 @@ $lang = array(
 
 'newline_format' => 'Formatting:',
 
-'none' => 'None',
-
-'xhtml' => 'XHTML',
-
-'auto_br' => 'Auto &lt;br /&gt;',
-
 'link' => 'Link',
 
 'email' => 'Email',
@@ -738,7 +732,7 @@ $lang = array(
 'open_emoji' => 'open emoji',
 
 // Relationships
-'search_avilable_entries' => 'Search available entries',
+'search_available_entries' => 'Search available entries',
 'search_related_entries' => 'Search related entries',
 'item_to_relate_with' => 'Item to <strong>relate with</strong> this entry.',
 'items_to_relate_with' => 'Items to <strong>relate with</strong> this entry.',

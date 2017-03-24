@@ -1,5 +1,12 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+// Remove when PHP 5.3 is no longer supported
+if ( ! defined('OPENSSL_RAW_DATA'))
+{
+	define('OPENSSL_RAW_DATA', 1);
+}
+
+return array(
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -13,10 +20,10 @@
 | always be used to set the mode correctly.
 |
 */
-define('FILE_READ_MODE', 0644);
-define('FILE_WRITE_MODE', 0666);
-define('DIR_READ_MODE', 0755);
-define('DIR_WRITE_MODE', 0777);
+'FILE_READ_MODE' => 0644,
+'FILE_WRITE_MODE' => 0666,
+'DIR_READ_MODE' => 0755,
+'DIR_WRITE_MODE' => 0777,
 
 /*
 |--------------------------------------------------------------------------
@@ -26,13 +33,14 @@ define('DIR_WRITE_MODE', 0777);
 | These modes are used when working with fopen()/popen()
 |
 */
-define('FOPEN_READ', 							'rb');
-define('FOPEN_READ_WRITE',						'r+b');
-define('FOPEN_WRITE_CREATE_DESTRUCTIVE', 		'wb');	// truncates existing file data, use with care
-define('FOPEN_READ_WRITE_CREATE_DESTRUCTIVE', 	'w+b'); // truncates existing file data, use with care
-define('FOPEN_WRITE_CREATE', 					'ab');
-define('FOPEN_READ_WRITE_CREATE', 				'a+b');
-define('FOPEN_WRITE_CREATE_STRICT', 			'xb');
-define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
+'FOPEN_READ' => 							'rb',
+'FOPEN_READ_WRITE' =>						'r+b',
+'FOPEN_WRITE_CREATE_DESTRUCTIVE' => 		'wb',	// truncates existing file data, use with care
+'FOPEN_READ_WRITE_CREATE_DESTRUCTIVE' => 	'w+b', // truncates existing file data, use with care
+'FOPEN_WRITE_CREATE' => 					'ab',
+'FOPEN_READ_WRITE_CREATE' => 				'a+b',
+'FOPEN_WRITE_CREATE_STRICT' => 			'xb',
+'FOPEN_READ_WRITE_CREATE_STRICT' =>		'x+b',
 
+);
 // EOF

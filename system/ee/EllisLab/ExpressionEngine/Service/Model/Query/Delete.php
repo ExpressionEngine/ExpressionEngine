@@ -54,7 +54,7 @@ class Delete extends Query {
 			list($model, $alias) = $this->splitAlias($get);
 
 			$offset		= 0;
-			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model?
+			$batch_size = self::DELETE_BATCH_SIZE;
 
 			// TODO yuck. The relations have this info more correctly
 			// in their to and from keys. store that instead.
@@ -76,8 +76,19 @@ class Delete extends Query {
 			 // expensive recursion fallback
 			 if ($withs instanceOf \Closure)
 			 {
-				 $delete_collection = $withs($basic_query);
-				 $this->deleteCollection($delete_collection, $to_meta);
+				 do {
+					 $fetch_query = clone $basic_query;
+					 $fetch_query
+					 	->offset($offset)
+ 						->limit($batch_size);
+
+					$delete_collection = $withs($fetch_query);
+					$delete_ids = $this->deleteCollection($delete_collection, $to_meta);
+
+					$offset += $batch_size;
+				 }
+				 while (count($delete_ids) == $batch_size);
+
 				 continue;
 			 }
 
@@ -207,16 +218,25 @@ class Delete extends Query {
 		$this->delete_list = array();
 		$this->recursivePath($model, array());
 
+		// This list is processed bottom to top.
+		// Sort the branches by length, with the longest on the bottom, to
+		// create a depth-first delete.
+		// The main deletes are sandwiched by the weak and recursive deletes.
+		// Sort weak deletes to the bottom since we may disconnect on the side
+		// we end up deleting and while that is a bit redundant it is also the
+		// safest way to disconnect.
+		// Sort recursion to the top so that we handle those last and don't
+		// recurse continually before actually getting to work.
 		usort($this->delete_list, function($a, $b) {
 
 			if ($a[1] instanceOf \Closure)
 			{
-				return 5e10;
+				return ($a[2] == 'weak') ? 5e5 : -5e5;
 			}
 
 			if ($b[1] instanceOf \Closure)
 			{
-				return -5e10;
+				return ($b[2] == 'weak') ? -5e5 : 5e5;
 			}
 
 			return count($a[1]) - count($b[1]);
@@ -252,6 +272,15 @@ class Delete extends Query {
 
 		foreach ($relations as $name => $relation)
 		{
+			// If the relation is a belongsTo then we can stop looking.
+			// It may be tempting to let a weak relationship continue,
+			// but that would be incorrect and inefficient since the id
+			// holding side of the relationship is the being deleted anyways.
+			if ($relation instanceOf BelongsTo)
+			{
+				continue;
+			}
+
 			$inverse = $relation->getInverse();
 
 			if ($relation->isWeak())
@@ -262,7 +291,7 @@ class Delete extends Query {
 				$subpath = $path;
 				$subpath[] = $to_name;
 
-				$this->delete_list[] = array($to_model, $this->weak($inverse, $subpath));
+				$this->delete_list[] = array($to_model, $this->weak($inverse, $subpath), 'weak');
 				continue;
 			}
 
@@ -274,7 +303,7 @@ class Delete extends Query {
 				// check for recursion
 				if ($to_model == $model && $to_name == end($path))
 				{
-					$this->delete_list[] = array($to_model, $this->recursive($relation, $path));
+					$this->delete_list[] = array($to_model, $this->recursive($relation, $path), 'recursive');
 					continue;
 				}
 
@@ -323,6 +352,7 @@ class Delete extends Query {
 		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
+
 			$models = $query->with($withs)->all();
 
 			// TODO ideally we would grab the $model->$name's with just ids

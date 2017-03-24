@@ -50,7 +50,7 @@ class Group extends Profile {
 	public function index()
 	{
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
 		if (ee()->session->userdata('group_id') != 1)
@@ -65,7 +65,7 @@ class Group extends Profile {
 
 		if ( ! array_key_exists($this->member->group_id, $choices))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars['sections'] = array(
@@ -151,14 +151,14 @@ class Group extends Profile {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_group_assignment');
-		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text = 'btn_authenticate_and_save';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group);
+		$groups = ee('Model')->get('MemberGroup')->filter('group_id', $group);
 
 		if (ee()->session->userdata('group_id') != 1)
 		{

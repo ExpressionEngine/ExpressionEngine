@@ -87,6 +87,17 @@ class EE_Controller extends CI_Controller {
 		ee()->load->library('core');
 		ee()->core->bootstrap();
 		ee()->core->run_ee();
+
+		// -------------------------------------------
+		// 'core_boot' hook.
+		//  - Runs on every ExpressionEngine request
+		//
+			if (ee()->extensions->active_hook('core_boot') === TRUE)
+			{
+				ee()->extensions->call('core_boot');
+				if (ee()->extensions->end_script === TRUE) return;
+			}
+		// -------------------------------------------
 	}
 }
 

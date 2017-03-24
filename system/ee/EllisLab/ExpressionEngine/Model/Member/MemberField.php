@@ -35,13 +35,20 @@ class MemberField extends FieldModel {
 	protected static $_hook_id = 'member_field';
 
 	protected static $_events = array(
+		'afterSave',
 		'beforeInsert'
 	);
 
 	protected static $_validation_rules = array(
-		'm_field_type'  => 'required|enum[text,textarea,select]',
-		'm_field_label' => 'required|xss|noHtml',
-		'm_field_name'  => 'required|alphaDash|unique'
+		'm_field_type'        => 'required|enum[text,textarea,select]',
+		'm_field_label'       => 'required|xss|noHtml',
+		'm_field_name'        => 'required|alphaDash|unique',
+		'm_legacy_field_data' => 'enum[y,n]',
+	);
+
+	protected static $_typed_columns = array(
+		'm_field_settings'    => 'json',
+		'm_legacy_field_data' => 'boolString',
 	);
 
 	protected $m_field_id;
@@ -62,18 +69,18 @@ class MemberField extends FieldModel {
 	protected $m_field_show_fmt;
 	protected $m_field_order;
 	protected $m_field_text_direction;
+	protected $m_field_settings;
+	protected $m_legacy_field_data;
 
 	public function getSettingsValues()
 	{
 		$values = parent::getSettingsValues();
+
+		$this->getField($values)->setFormat($this->getProperty('m_field_fmt'));
+
+		$values['field_settings'] = $this->getProperty('m_field_settings') ?: array();
+
 		$values['field_settings']['field_show_file_selector'] = 'n';
-
-		foreach (array('field_list_items', 'field_ta_rows', 'field_maxl', 'field_show_fmt', 'field_text_direction') as $setting)
-		{
-			$values['field_settings'][$setting] = $this->getProperty('m_'.$setting);
-		}
-
-		$this->getField()->setFormat($this->getProperty('m_field_fmt'));
 
 		return $values;
 	}
@@ -88,6 +95,24 @@ class MemberField extends FieldModel {
 		}
 
 		return $values;
+	}
+
+	public function set(array $data = array())
+	{
+		parent::set($data);
+
+		$field = $this->getField($this->getSettingsValues());
+		$this->setProperty('m_field_settings', $field->saveSettingsForm($data));
+
+		return $this;
+	}
+
+	/**
+	 * Clear MemberGroup member field cache
+	 */
+	public function onAfterSave()
+	{
+		ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', NULL);
 	}
 
 	/**
@@ -135,6 +160,11 @@ class MemberField extends FieldModel {
 	public function getColumnPrefix()
 	{
 		return 'm_';
+	}
+
+	protected function getForeignKey()
+	{
+		return 'member_id';
 	}
 
 	/**

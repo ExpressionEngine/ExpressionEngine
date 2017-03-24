@@ -54,12 +54,10 @@ class Updater {
 	 */
 	private function install_required_fieldtypes()
 	{
-		ee()->load->library('addons');
 		ee()->load->library('addons/addons_installer');
 		ee()->load->library('extensions');
 
-		$installed_fieldtypes = ee()->addons->get_installed('fieldtypes');
-		$installed_fieldtypes = array_keys($installed_fieldtypes);
+		$installed_fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
 
 		$required_fieldtypes = array('select', 'text', 'textarea', 'date', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
 

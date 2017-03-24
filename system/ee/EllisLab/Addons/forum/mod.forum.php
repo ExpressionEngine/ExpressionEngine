@@ -848,6 +848,12 @@ class Forum {
 		// Grab theme.  Can be from a cookie or user pref
 		$forum_theme = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('forum_theme') : '';
 
+		// or overridden with a tag param in the template
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
+		{
+			$forum_theme = (ee()->TMPL->fetch_param('theme')) ?: $forum_theme;
+		}
+
 		// Maybe the theme is in a cookie?
 		if ($forum_theme == '')
 		{
@@ -1059,14 +1065,14 @@ class Forum {
 	 */
 	public function deny_if($cond, $str, $replace = '')
 	{
-		return preg_replace("/\{if\s+".$cond."\}.+?\{\/if\}/si", $replace, $str);
+		return str_replace("{if {$cond}}", "{if FALSE}", $str);
 	}
 
 	// --------------------------------------------------------------------
 
 	public function allow_if($cond, $str)
 	{
-		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
+		return str_replace("{if {$cond}}", "{if TRUE}", $str);
 	}
 
 	// --------------------------------------------------------------------
@@ -1202,6 +1208,8 @@ class Forum {
 			'current_id'		=> $this->current_id,
 			'current_page'		=> $this->current_page,
 			'pm_enabled'		=> EE_Messages::can_send_pm(),
+			'logged_in'			=> ee()->session->userdata('member_id') != 0,
+			'logged_out'		=> ee()->session->userdata('member_id') == 0
 		);
 
 		// parse certain board preferences as well
@@ -1237,11 +1245,12 @@ class Forum {
 				'path:view_new_topics'     => $this->forum_path('/new_topic_search'),
 				'path:view_active_topics'  => $this->forum_path('/active_topic_search'),
 				'path:view_pending_topics' => $this->forum_path('/view_pending_topics'),
-				'path:mark_all_read'       => $this->forum_path('/mark_all_read/'),
+				'path:mark_all_read'       => rtrim($this->forum_path('/mark_all_read/' . CSRF_TOKEN), '/'),
 				'path:do_search'           => $this->forum_path('/do_search/'),
 				'path:smileys'             => $this->forum_path('/smileys/'),
 				'path:rss'                 => $this->forum_path('/rss/'.$this->feed_ids),
 				'path:atom'                => $this->forum_path('/atom/'.$this->feed_ids),
+				'path:set_theme'           => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Forum', 'set_theme').'&board_id='.$this->fetch_pref('original_board_id'),
 				'recent_poster'            => $this->fetch_pref('board_recent_poster'),
 				'forum_name'               => $this->_convert_special_chars($this->fetch_pref('board_label'), TRUE),
 				'forum_url'                => $this->fetch_pref('board_forum_url'),
@@ -1252,31 +1261,13 @@ class Forum {
 				'path:theme_css'           => ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
 				'path:theme_js'            => ee('Theme')->getUrl('forum/'.$this->theme.'/theme/javascript/'),
 				'site_url'                 => ee()->config->item('site_url'),
+				'username_max_length'      => USERNAME_MAX_LENGTH,
 				'password_max_length'      => PASSWORD_MAX_LENGTH
 			)
 		);
 
-		// Evaluate the segment conditionals
-		if (preg_match("/".LD."if (".implode('|', array_keys($conds)).").*?".RD.".*?".LD."\/if".RD."/s", $str))
-		{
-			$str = ee()->functions->prep_conditionals($str, $conds, 'y');
-
-			// protect PHP tags within the conditional
-			// code block PHP tags are already protected, so we must double encode them
-			$str = str_replace(array('&lt;?', '?&gt;'), array('&amp;lt;?', '?&amp;gt;'), $str);
-			$str = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $str);
-
-			// convert our prepped EE conditionals to PHP
-			$str = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $str);
-			$str = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s*(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $str);
-
-			// Evaluate the php conditionals
-			$str = $this->parse_template_php($str);
-
-			// Bring back the old php tags and double encoded
-			$str = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $str);
-			$str = str_replace(array('&amp;lt;?', '?&amp;gt;'), array('&lt;?', '?&gt;'), $str);
-		}
+		// Evaluate the conditionals
+		$str = ee()->functions->prep_conditionals($str, $conds);
 
 		if ($this->fetch_pref('board_allow_php') == 'y' AND $this->fetch_pref('board_php_stage') == 'o')
 		{
@@ -2016,14 +2007,12 @@ class Forum {
 		// Load the XML Helper
 		ee()->load->helper('xml');
 
-		$path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Forum', 'set_theme').'&board_id='.$this->fetch_pref('original_board_id').'&theme=';
-
 		$str = '';
 		foreach ($this->fetch_theme_list() as $val)
 		{
 			$sel = ($this->theme == $val) ? ' selected="selected"' : '';
 
-			$str .= '<option value="'.xml_convert($path.$val).'"'.$sel.'>'.ucwords(str_replace('_', ' ', $val))."</option>\n";
+			$str .= '<option value="'.xml_convert($val).'"'.$sel.'>'.ucwords(str_replace('_', ' ', $val))."</option>\n";
 		}
 
 		return $str;
@@ -2036,7 +2025,12 @@ class Forum {
 	 */
 	public function set_theme()
 	{
-		$theme = ee()->input->get('theme');
+		if (empty($_POST))
+		{
+			return $this->trigger_error();
+		}
+
+		$theme = ee()->input->post('theme');
 
 		if ( ! preg_match("/^[a-z0-9\s_-]+$/i", $theme))
 		{

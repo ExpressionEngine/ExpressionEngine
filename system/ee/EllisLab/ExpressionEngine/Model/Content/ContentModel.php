@@ -19,6 +19,8 @@ abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
 		'afterSave',
+		'afterInsert',
+		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -68,6 +70,16 @@ abstract class ContentModel extends VariableColumnModel {
 		}
 
 		$this->_field_was_saved = array();
+	}
+
+	public function onAfterInsert()
+	{
+		$this->saveFieldData($this->getValues());
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		$this->saveFieldData($changed);
 	}
 
 	/**
@@ -395,6 +407,129 @@ abstract class ContentModel extends VariableColumnModel {
 		}
 
 		$this->_field_facades[$name] = $facade;
+	}
+
+	/**
+	 * Gets a collection of FieldModel objects (channel, member, category fields)
+	 *
+	 * @return Collection A collection of FieldModel objects
+	 */
+	abstract protected function getFieldModels();
+
+    /**
+     * Find all the fields that are stored in their own tables. For those that
+	 * are dirty (have changed) we update or insert the changes into their
+	 * tables. If the list of changed properties is not supplied we will get
+	 * the list of dirty properties.
+	 *
+	 * @param array $changed An associative array of class properties that have changed
+     */
+	protected function saveFieldData($changed = NULL)
+	{
+		$dirty = ($changed) ?: $this->getDirty();
+
+        // Optimization: if there are no dirty fields, there's nothing to do
+        if (empty($dirty))
+        {
+            return;
+        }
+
+		foreach ($this->getFieldModels() as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->legacy_field_data)
+			{
+				continue;
+			}
+
+			$values = array();
+			// If there was data before, we update
+			// If there was no data before, we insert
+			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
+			$update = FALSE;
+
+			foreach ($field->getColumnNames() as $column)
+			{
+				if (array_key_exists($column, $dirty))
+				{
+					$values[$column] = $this->$column;
+
+					// If the previous data was not null then we are updating
+					if ( ! is_null($dirty[$column]))
+					{
+						$update = TRUE;
+					}
+				}
+				else
+				{
+					// If this column's data is not dirty, and it is also not
+					// empty, then we are updating the field.
+					if (! empty($this->$column))
+					{
+						$update = TRUE;
+					}
+				}
+			}
+
+			// Skip this field if neither it nor its meta data changed
+			if (empty($values))
+			{
+				continue;
+			}
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			$meta = self::getMetaData('field_data');
+			$key_column = $meta['extra_data']['key_column'];
+
+			// When a new entity is saved, this will be triggered by an
+			// onAfterInsert event (else, we won't have id to link to).
+			// The primary key can only be marked dirty on an insert event,
+			// not an update.
+			if (array_key_exists($this->getPrimaryKey(), $dirty))
+			{
+				$update = FALSE;
+			}
+
+			if ($update)
+			{
+    			$query->set($values);
+				$query->where($key_column, $this->getId());
+				$query->update($field->getTableName());
+			}
+			else
+			{
+				$values[$key_column] = $this->getId();
+    			$query->set($values);
+				$query->insert($field->getTableName());
+			}
+		}
+	}
+
+	/**
+	 * Deletes entry data in the field tables.
+	 */
+	protected function deleteFieldData()
+	{
+		$tables = array();
+
+		foreach ($this->getFieldModels() as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->legacy_field_data)
+			{
+				continue;
+			}
+
+			$tables[] = $field->getTableName();
+		}
+
+		if ( ! empty($tables))
+		{
+			ee('Model/Datastore')->rawQuery()
+				->where('entry_id', $this->getId())
+				->delete($tables);
+		}
 	}
 
 }

@@ -67,7 +67,10 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$(this._textInputSelectors, container).blur(function() {
+		$(this._textInputSelectors, container)
+			.not('*[data-ajax-validate=no]')
+			.blur(function() {
+
 			// Unbind keydown validation when the invalid field loses focus
 			$(this).data('validating', false);
 			var element = $(this);
@@ -77,7 +80,10 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container)
+			.not('*[data-ajax-validate=no]')
+			.change(function() {
+
 			var element = $(this);
 
 			setTimeout(function() {
@@ -220,23 +226,6 @@ EE.cp.formValidation = {
 				button = form.find('.form-ctrls input.btn');
 
 			that.bindInputs(form);
-			that._dismissSuccessAlert(form);
-		});
-	},
-
-	/**
-	 * When a form element is interacted with after the form has been
-	 * successfully submitted, hide the success message
-	 */
-	_dismissSuccessAlert: function(form) {
-
-		$('input, select, textarea', form).change(function(event) {
-			var success = form.find('div.alert.success');
-
-			if (success.size() > 0)
-			{
-				success.remove();
-			}
 		});
 	},
 
@@ -247,7 +236,7 @@ EE.cp.formValidation = {
 	 */
 	_errorsExist: function(form) {
 
-		return ($('fieldset.invalid, td.invalid', form).size() != 0);
+		return ($('fieldset.invalid:visible, td.invalid:visible', form).size() != 0);
 	},
 
 	/**
@@ -258,7 +247,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
-		if (this.paused) {
+		if (this.paused || field.attr('name') === undefined) {
 			return;
 		}
 
@@ -266,7 +255,7 @@ EE.cp.formValidation = {
 
 		// Just reset the button for forms that don't validate over AJAX
 		if ( ! form.hasClass('ajax-validate')) {
-			this._toggleErrorForFields(form, field, 'success');
+			this._toggleErrorForFields(field, 'success');
 			return;
 		}
 
@@ -280,21 +269,40 @@ EE.cp.formValidation = {
 			type: 'POST',
 			dataType: 'json',
 			success: function (ret) {
-				that._toggleErrorForFields(form, field, ret);
+				that._toggleErrorForFields(field, ret);
 			}
 		});
 	},
 
 	/**
-	 * Shows/hides errors for fields based on result of validation
+	 * Given a field, marks the field as valid in the UI
 	 *
-	 * @param	{jQuery object}	form	jQuery object of form
-	 * @param	{jQuery object}	field	jQuery object of field validating
-	 * @param	{mixed}			message	Return from AJAX request
+	 * @param	{jQuery object}	field	jQuery object of field
 	 */
-	_toggleErrorForFields: function(form, field, message) {
+	markFieldValid: function(field) {
+		this._toggleErrorForFields(field, 'success');
+	},
 
-		var container = field.parents('div[class*=setting]').not('div[class=setting-note]'),
+	/**
+	 * Given a field, marks the field as invalid in the UI with an error message
+	 *
+	 * @param	{jQuery object}	field	jQuery object of field
+	 * @param	{mixed}			message	Error message to show by invalid field
+	 */
+	markFieldInvalid: function(field, message) {
+		this._toggleErrorForFields(field, message);
+	},
+
+	/**
+	 * Does all the UI DOM work necessary to mark a field (in)valid on the screen
+	 *
+	 * @param	{jQuery object}	field	jQuery object of field validating
+	 * @param	{mixed}			message	Return from AJAX request, 'success' marks a field as valid
+	 */
+	_toggleErrorForFields: function(field, message) {
+
+		var form = field.parents('form'),
+			container = field.parents('div[class*=setting]').not('div[class=setting-note]'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
@@ -329,6 +337,9 @@ EE.cp.formValidation = {
 				// more errors exist in the Grid
 				if (fieldset.parent().find('td.invalid').size() == 0) {
 					fieldset.removeClass('invalid');
+
+					// Remove error message below Grid field
+					container.parents('div.setting-field').find('> ' + errorClass).remove();
 				}
 			} else {
 				fieldset.removeClass('invalid');

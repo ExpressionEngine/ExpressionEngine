@@ -102,9 +102,9 @@ class Rte_ft extends EE_Fieldtype {
 			),
 			array(
 				'text_format'	=> 'xhtml',
-				'html_format'	=> isset($this->row['channel_html_formatting']) ? $this->row['channel_html_formatting'] : 'all',
-				'auto_links'	=> isset($this->row['channel_auto_link_urls']) ? $this->row['channel_auto_link_urls'] : 'n',
-				'allow_img_url' => isset($this->row['channel_allow_img_urls']) ? $this->row['channel_allow_img_urls'] : 'y'
+				'html_format'	=> $this->row('channel_html_formatting', 'all'),
+				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
 			)
 		);
 

@@ -5,14 +5,17 @@ use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl;
 use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\Encrypt;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
@@ -37,6 +40,11 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'Category' => function($ee)
+		{
+			return new Category\Factory;
+		},
 
 		'CP/CustomMenu' => function($ee)
 		{
@@ -63,7 +71,21 @@ return array(
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
+			ee()->lang->load('content');
 			$grid = new Library\CP\GridInput(
+				$config,
+				ee()->cp,
+				ee()->config,
+				ee()->javascript
+			);
+
+			return $grid;
+		},
+
+		'CP/MiniGridInput' => function($ee, $config = array())
+		{
+			ee()->lang->load('content');
+			$grid = new Library\CP\MiniGridInput(
 				$config,
 				ee()->cp,
 				ee()->config,
@@ -119,6 +141,11 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
+		'Format' => function($ee)
+		{
+			return new Formatter\FormatterFactory(ee()->lang);
+		},
+
 		'Curl' => function($ee)
 		{
 			return new Curl\RequestFactory();
@@ -159,7 +186,7 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri);
+			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
 		},
 
 		'Permission' => function($ee)
@@ -167,6 +194,13 @@ return array(
 			$userdata = ee()->session->userdata;
 			return new Permission\Permission($userdata);
 		},
+
+		'Encrypt' => function($ee)
+		{
+			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+
+			return new Encrypt\Encrypt($key);
+		}
 	),
 
 	'services.singletons' => array(
@@ -268,13 +302,13 @@ return array(
 				$installed_prefixes[] = $addon->getProvider()->getPrefix();
 			}
 
-			return new Model\DataStore(
-				$ee->make('Database'),
-				$app->getModels(),
-				$app->forward('getModelDependencies'),
-				$ee->getPrefix(),
-				$installed_prefixes
-			);
+			$config = new Model\Configuration();
+			$config->setDefaultPrefix($ee->getPrefix());
+			$config->setModelAliases($app->getModels());
+			$config->setEnabledPrefixes($installed_prefixes);
+			$config->setModelDependencies($app->forward('getModelDependencies'));
+
+			return new Model\DataStore($ee->make('Database'), $config);
 		},
 
 		'Request' => function($ee)
@@ -369,6 +403,10 @@ return array(
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
+
+			// ..\Menu
+			'MenuSet' => 'Model\Menu\MenuSet',
+			'MenuItem' => 'Model\Menu\MenuItem',
 
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',

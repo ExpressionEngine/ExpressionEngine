@@ -358,9 +358,6 @@ $lang = array(
 
 'strict_urls_exp' => 'This feature enforces stricter rules for your URLs, and interacts with the 404 feature below.  Please see user guide for info.',
 
-
-'none' => 'None',
-
 'save_tmpl_revisions' => 'Save Template Revisions',
 
 'sync_templates' => 'Synchronize Templates',

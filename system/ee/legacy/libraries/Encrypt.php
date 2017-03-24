@@ -114,18 +114,7 @@ class EE_Encrypt {
 	 */
 	function encode($string, $key = '')
 	{
-		$key = $this->get_key($key);
-
-		if ($this->_mcrypt_exists === TRUE)
-		{
-			$enc = $this->mcrypt_encode($string, $key);
-		}
-		else
-		{
-			$enc = $this->_xor_encode($string, $key);
-		}
-
-		return base64_encode($enc);
+		return ee('Encrypt')->encode($string, $key);
 	}
 
 	// --------------------------------------------------------------------
@@ -142,28 +131,17 @@ class EE_Encrypt {
 	 */
 	function decode($string, $key = '')
 	{
-		$key = $this->get_key($key);
+		$decoded = ee('Encrypt')->decode($string, $key);
 
-		if (preg_match('/[^a-zA-Z0-9\/\+=]/', $string))
+		// If this decrypt failed, it may have been encrypted with the old
+		// mcrypt library scheme. We'll try some wizardry then.
+		if ($decoded === FALSE)
 		{
-			return FALSE;
+			$key = $this->get_key($key);
+			$decoded = $this->mcrypt_decode(base64_decode($string), $key);
 		}
 
-		$dec = base64_decode($string);
-
-		if ($this->_mcrypt_exists === TRUE)
-		{
-			if (($dec = $this->mcrypt_decode($dec, $key)) === FALSE)
-			{
-				return FALSE;
-			}
-		}
-		else
-		{
-			$dec = $this->_xor_decode($dec, $key);
-		}
-
-		return $dec;
+		return $decoded;
 	}
 
 	// --------------------------------------------------------------------
@@ -548,17 +526,7 @@ class EE_Encrypt {
 
 	public function sign($data, $key = NULL, $algo = 'md5')
 	{
-		if (empty($data))
-		{
-			return NULL;
-		}
-
-		// do we want to start using encryption_key config if available?
-		$key = (empty($key)) ? ee()->db->username.ee()->db->password : $key;
-
-		$token = hash_hmac($algo, $data, $key);
-
-		return $token;
+		return ee('Encrypt')->sign($data, $key, $algo);
 	}
 
 	// --------------------------------------------------------------------
@@ -578,21 +546,7 @@ class EE_Encrypt {
 
 	public function verify_signature($data, $signed_data, $key = NULL, $algo = 'md5')
 	{
-		if (empty($data))
-		{
-			return NULL;
-		}
-
-		 $new_sig = $this->sign($data, $key, $algo);
-
-		// See PHP documentation not re timing attacks
-		// http://php.net/manual/en/function.hash-hmac.php#111435
-		if ($new_sig === $signed_data)
-		{
-			return TRUE;
-		}
-
-		return FALSE;
+		return ee('Encrypt')->verifySignature($data, $signed_data, $key, $algo);
 	}
 }
 

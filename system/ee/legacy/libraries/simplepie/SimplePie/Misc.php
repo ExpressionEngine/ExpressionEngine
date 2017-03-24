@@ -5,7 +5,7 @@
  * A PHP-Based RSS and Atom Feed Framework.
  * Takes the hard work out of managing a complete RSS/Atom solution.
  *
- * Copyright (c) 2004-2012, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
+ * Copyright (c) 2004-2016, Ryan Parman, Geoffrey Sneddon, Ryan McCue, and contributors
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -33,8 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package SimplePie
- * @version 1.3-dev
- * @copyright 2004-2012 Ryan Parman, Geoffrey Sneddon, Ryan McCue
+ * @copyright 2004-2016 Ryan Parman, Geoffrey Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Geoffrey Sneddon
  * @author Ryan McCue
@@ -80,61 +79,11 @@ class SimplePie_Misc
 	public static function absolutize_url($relative, $base)
 	{
 		$iri = SimplePie_IRI::absolutize(new SimplePie_IRI($base), $relative);
-		return $iri->get_iri();
-	}
-
-	public static function remove_dot_segments($input)
-	{
-		$output = '';
-		while (strpos($input, './') !== false || strpos($input, '/.') !== false || $input === '.' || $input === '..')
+		if ($iri === false)
 		{
-			// A: If the input buffer begins with a prefix of "../" or "./", then remove that prefix from the input buffer; otherwise,
-			if (strpos($input, '../') === 0)
-			{
-				$input = substr($input, 3);
-			}
-			elseif (strpos($input, './') === 0)
-			{
-				$input = substr($input, 2);
-			}
-			// B: if the input buffer begins with a prefix of "/./" or "/.", where "." is a complete path segment, then replace that prefix with "/" in the input buffer; otherwise,
-			elseif (strpos($input, '/./') === 0)
-			{
-				$input = substr_replace($input, '/', 0, 3);
-			}
-			elseif ($input === '/.')
-			{
-				$input = '/';
-			}
-			// C: if the input buffer begins with a prefix of "/../" or "/..", where ".." is a complete path segment, then replace that prefix with "/" in the input buffer and remove the last segment and its preceding "/" (if any) from the output buffer; otherwise,
-			elseif (strpos($input, '/../') === 0)
-			{
-				$input = substr_replace($input, '/', 0, 4);
-				$output = substr_replace($output, '', strrpos($output, '/'));
-			}
-			elseif ($input === '/..')
-			{
-				$input = '/';
-				$output = substr_replace($output, '', strrpos($output, '/'));
-			}
-			// D: if the input buffer consists only of "." or "..", then remove that from the input buffer; otherwise,
-			elseif ($input === '.' || $input === '..')
-			{
-				$input = '';
-			}
-			// E: move the first path segment in the input buffer to the end of the output buffer, including the initial "/" character (if any) and any subsequent characters up to, but not including, the next "/" character or the end of the input buffer
-			elseif (($pos = strpos($input, '/', 1)) !== false)
-			{
-				$output .= substr($input, 0, $pos);
-				$input = substr_replace($input, '', 0, $pos);
-			}
-			else
-			{
-				$output .= $input;
-				$input = '';
-			}
+			return false;
 		}
-		return $output . $input;
+		return $iri->get_uri();
 	}
 
 	/**
@@ -174,7 +123,7 @@ class SimplePie_Misc
 						{
 							$attribs[$j][2] = $attribs[$j][1];
 						}
-						$return[$i]['attribs'][strtolower($attribs[$j][1])]['data'] = SimplePie_Misc::entities_decode(end($attribs[$j]), 'UTF-8');
+						$return[$i]['attribs'][strtolower($attribs[$j][1])]['data'] = SimplePie_Misc::entities_decode(end($attribs[$j]));
 					}
 				}
 			}
@@ -188,7 +137,7 @@ class SimplePie_Misc
 		foreach ($element['attribs'] as $key => $value)
 		{
 			$key = strtolower($key);
-			$full .= " $key=\"" . htmlspecialchars($value['data']) . '"';
+			$full .= " $key=\"" . htmlspecialchars($value['data'], ENT_COMPAT, 'UTF-8') . '"';
 		}
 		if ($element['self_closing'])
 		{
@@ -274,33 +223,50 @@ class SimplePie_Misc
 		}
 	}
 
+	public static function array_merge_recursive($array1, $array2)
+	{
+		foreach ($array2 as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$array1[$key] = SimplePie_Misc::array_merge_recursive($array1[$key], $value);
+			}
+			else
+			{
+				$array1[$key] = $value;
+			}            
+		}
+		
+		return $array1;
+	}
+
 	public static function parse_url($url)
 	{
 		$iri = new SimplePie_IRI($url);
 		return array(
-			'scheme' => (string) $iri->get_scheme(),
-			'authority' => (string) $iri->get_authority(),
-			'path' => (string) $iri->get_path(),
-			'query' => (string) $iri->get_query(),
-			'fragment' => (string) $iri->get_fragment()
+			'scheme' => (string) $iri->scheme,
+			'authority' => (string) $iri->authority,
+			'path' => (string) $iri->path,
+			'query' => (string) $iri->query,
+			'fragment' => (string) $iri->fragment
 		);
 	}
 
 	public static function compress_parse_url($scheme = '', $authority = '', $path = '', $query = '', $fragment = '')
 	{
 		$iri = new SimplePie_IRI('');
-		$iri->set_scheme($scheme);
-		$iri->set_authority($authority);
-		$iri->set_path($path);
-		$iri->set_query($query);
-		$iri->set_fragment($fragment);
-		return $iri->get_iri();
+		$iri->scheme = $scheme;
+		$iri->authority = $authority;
+		$iri->path = $path;
+		$iri->query = $query;
+		$iri->fragment = $fragment;
+		return $iri->get_uri();
 	}
 
 	public static function normalize_url($url)
 	{
 		$iri = new SimplePie_IRI($url);
-		return $iri->get_iri();
+		return $iri->get_uri();
 	}
 
 	public static function percent_encoding_normalization($match)
@@ -367,8 +333,13 @@ class SimplePie_Misc
 		{
 			return $return;
  		}
-		// This is last, as behaviour of this varies with OS userland and PHP version
+		// This is third, as behaviour of this varies with OS userland and PHP version
 		elseif (function_exists('iconv') && ($return = SimplePie_Misc::change_encoding_iconv($data, $input, $output)))
+		{
+			return $return;
+		}
+		// This is last, as behaviour of this varies with OS userland and PHP version
+		elseif (class_exists('\UConverter') && ($return = SimplePie_Misc::change_encoding_uconverter($data, $input, $output)))
 		{
 			return $return;
 		}
@@ -388,6 +359,14 @@ class SimplePie_Misc
 		if ($output === 'windows-949')
 		{
 			$output = 'EUC-KR';
+		}
+		if ($input === 'Windows-31J')
+		{
+			$input = 'SJIS';
+		}
+		if ($output === 'Windows-31J')
+		{
+			$output = 'SJIS';
 		}
 
 		// Check that the encoding is supported
@@ -412,6 +391,17 @@ class SimplePie_Misc
 	protected static function change_encoding_iconv($data, $input, $output)
 	{
 		return @iconv($input, $output, $data);
+	}
+
+	/**
+	 * @param string $data
+	 * @param string $input
+	 * @param string $output
+	 * @return string|false
+	 */
+	protected static function change_encoding_uconverter($data, $input, $output)
+	{
+		return @\UConverter::transcode($data, $output, $input);
 	}
 
 	/**
@@ -1759,40 +1749,6 @@ class SimplePie_Misc
 		return $curl;
 	}
 
-	public static function is_subclass_of($class1, $class2)
-	{
-		if (func_num_args() !== 2)
-		{
-			trigger_error('Wrong parameter count for SimplePie_Misc::is_subclass_of()', E_USER_WARNING);
-		}
-		elseif (version_compare(PHP_VERSION, '5.0.3', '>=') || is_object($class1))
-		{
-			return is_subclass_of($class1, $class2);
-		}
-		elseif (is_string($class1) && is_string($class2))
-		{
-			if (class_exists($class1))
-			{
-				if (class_exists($class2))
-				{
-					$class2 = strtolower($class2);
-					while ($class1 = strtolower(get_parent_class($class1)))
-					{
-						if ($class1 === $class2)
-						{
-							return true;
-						}
-					}
-				}
-			}
-			else
-			{
-				trigger_error('Unknown class passed as parameter', E_USER_WARNNG);
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Strip HTML comments
 	 *
@@ -1908,18 +1864,6 @@ class SimplePie_Misc
 		}
 	}
 
-	public static function htmlspecialchars_decode($string, $quote_style)
-	{
-		if (function_exists('htmlspecialchars_decode'))
-		{
-			return htmlspecialchars_decode($string, $quote_style);
-		}
-		else
-		{
-			return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
-		}
-	}
-
 	public static function atom_03_construct_type($attribs)
 	{
 		if (isset($attribs['']['mode']) && strtolower(trim($attribs['']['mode']) === 'base64'))
@@ -2014,7 +1958,7 @@ class SimplePie_Misc
 		return (bool) preg_match('/^([A-Za-z0-9\-._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!$&\'()*+,;=@]|(%[0-9ABCDEF]{2}))+$/u', $string);
 	}
 
-	public static function space_seperated_tokens($string)
+	public static function space_separated_tokens($string)
 	{
 		$space_characters = "\x20\x09\x0A\x0B\x0C\x0D";
 		$string_length = strlen($string);
@@ -2031,48 +1975,6 @@ class SimplePie_Misc
 		}
 
 		return $tokens;
-	}
-
-	public static function array_unique($array)
-	{
-		if (version_compare(PHP_VERSION, '5.2', '>='))
-		{
-			return array_unique($array);
-		}
-		else
-		{
-			$array = (array) $array;
-			$new_array = array();
-			$new_array_strings = array();
-			foreach ($array as $key => $value)
-			{
-				if (is_object($value))
-				{
-					if (method_exists($value, '__toString'))
-					{
-						$cmp = $value->__toString();
-					}
-					else
-					{
-						trigger_error('Object of class ' . get_class($value) . ' could not be converted to string', E_USER_ERROR);
-					}
-				}
-				elseif (is_array($value))
-				{
-					$cmp = (string) reset($value);
-				}
-				else
-				{
-					$cmp = (string) $value;
-				}
-				if (!in_array($cmp, $new_array_strings))
-				{
-					$new_array[$key] = $value;
-					$new_array_strings[] = $cmp;
-				}
-			}
-			return $new_array;
-		}
 	}
 
 	/**
@@ -2151,7 +2053,7 @@ class SimplePie_Misc
 	 * @param SimplePie_Registry $registry Class registry
 	 * @return array Possible encodings
 	 */
-	public static function xml_encoding($data, &$registry)
+	public static function xml_encoding($data, $registry)
 	{
 		// UTF-32 Big Endian BOM
 		if (substr($data, 0, 4) === "\x00\x00\xFE\xFF")
@@ -2375,4 +2277,3 @@ function embed_wmedia(width, height, link) {
 	}
 }
 
-// EOF

@@ -38,7 +38,7 @@ class Group extends AbstractDesignController {
 
 		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->stdHeader();
@@ -48,7 +48,7 @@ class Group extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_template_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$groups = array(
@@ -135,6 +135,11 @@ class Group extends AbstractDesignController {
 			$group->group_name = ee()->input->post('group_name');
 			$group->is_site_default = ee()->input->post('make_default_group');
 
+			if ($this->session->userdata('group_id') != 1)
+			{
+				$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
+			}
+
 			$group->save();
 
 			$duplicate = FALSE;
@@ -208,7 +213,7 @@ class Group extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$group = ee('Model')->get('TemplateGroup')
@@ -223,7 +228,7 @@ class Group extends AbstractDesignController {
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars = array(
@@ -314,7 +319,7 @@ class Group extends AbstractDesignController {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$group = ee('Model')->get('TemplateGroup')
@@ -330,7 +335,7 @@ class Group extends AbstractDesignController {
 		{
 			if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			// Delete the group folder if it exists

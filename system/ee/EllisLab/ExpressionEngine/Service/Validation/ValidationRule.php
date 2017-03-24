@@ -17,7 +17,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Validation Rule Interface
+ * ExpressionEngine Validation Rule Base Class
  *
  * Represents a Validation Rule that can be applied to a value during any
  * Validation stage.  This can be either form validation or validation of data
@@ -29,7 +29,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  * such as "required|password".  The class definition would then look like
  * this::
  *
- * 	class Required extends ValidationRule {}
+ * 	class Required extends ValidationRule { ... }
  *
  * @package		ExpressionEngine
  * @subpackage	Validation
@@ -72,7 +72,7 @@ abstract class ValidationRule {
 	public function setAllValues(array $values) { /* blank */ }
 
 	/**
-	 *
+	 * Internal: Set any rule parameters
 	 */
 	public function setParameters(array $parameters)
 	{

@@ -397,7 +397,7 @@ class EE_Session {
 		$this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
 
 		$this->userdata['member_id']	= (int) $member_id;
-		$this->userdata['group_id']		= $member->MemberGroup->getId();
+		$this->userdata['group_id']		= (int) $member->MemberGroup->getId();
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
@@ -924,10 +924,8 @@ class EE_Session {
 				$tracker_token = $tracker['token'];
 				unset($tracker['token']);
 
-				ee()->load->library('encrypt');
-
 				// Check for funny business
-				if ( ! ee()->encrypt->verify_signature(implode('', $tracker), $tracker_token))
+				if ( ! ee('Encrypt')->verifySignature(implode('', $tracker), $tracker_token))
 				{
 					$tracker = array();
 				}
@@ -993,8 +991,7 @@ class EE_Session {
 		{
 			unset($tracker['token']);
 
-			ee()->load->library('encrypt');
-			$tracker['token'] = ee()->encrypt->sign(implode('', $tracker));
+			$tracker['token'] = ee('Encrypt')->sign(implode('', $tracker));
 		}
 
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
@@ -1291,7 +1288,7 @@ class EE_Session {
 				$signature = substr($cookie, -32);
 				$payload = substr($cookie, 0, -32);
 
-				if (md5($payload.$this->sess_crypt_key) == $signature)
+				if (hash_equals(md5($payload.$this->sess_crypt_key), $signature))
 				{
 					$this->flashdata = unserialize(stripslashes($payload));
 					$this->_age_flashdata();

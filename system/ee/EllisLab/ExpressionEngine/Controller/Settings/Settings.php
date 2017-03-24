@@ -43,7 +43,7 @@ class Settings extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('settings');
@@ -104,6 +104,7 @@ class Settings extends CP_Controller {
 		}
 
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
+		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
 
 		if (ee()->cp->allowed_group('can_access_members', 'can_admin_mbr_groups'))
 		{
@@ -166,17 +167,13 @@ class Settings extends CP_Controller {
 		// Make sure we're getting only the fields we asked for
 		foreach ($sections as $settings)
 		{
-			foreach ($settings as $setting)
+			if (isset($settings['settings']))
 			{
-				foreach ($setting['fields'] as $field_name => $field)
-				{
-					if (isset($field['save_in_config']) && $field['save_in_config'] === FALSE)
-					{
-						continue;
-					}
-
-					$fields[$field_name] = ee()->input->post($field_name);
-				}
+				$fields = array_merge($fields, $this->getFieldsForSettings($settings['settings']));
+			}
+			else
+			{
+				$fields = array_merge($fields, $this->getFieldsForSettings($settings));
 			}
 		}
 
@@ -191,6 +188,30 @@ class Settings extends CP_Controller {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Get the fields from settings' arrays
+	 * @param  array $settings Array of settings
+	 * @return array Array of [field_name] => [value]
+	 */
+	private function getFieldsForSettings($settings)
+	{
+		$fields = array();
+		foreach ($settings as $setting)
+		{
+			foreach ($setting['fields'] as $field_name => $field)
+			{
+				if (isset($field['save_in_config']) && $field['save_in_config'] === FALSE)
+				{
+					continue;
+				}
+
+				$fields[$field_name] = ee()->input->post($field_name);
+			}
+		}
+
+		return $fields;
 	}
 }
 // END CLASS

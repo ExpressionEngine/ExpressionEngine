@@ -37,7 +37,7 @@ class Addons extends CP_Controller {
 	var $params			= array();
 	var $base_url;
 
-	protected $assigned_modules = array();
+	public $assigned_modules = array();
 
 	/**
 	 * Constructor
@@ -55,12 +55,12 @@ class Addons extends CP_Controller {
 			{
 				if (! ee()->cp->allowed_group('can_access_files'))
 				{
-					show_error(lang('unauthorized_access'));
+					show_error(lang('unauthorized_access'), 403);
 				}
 			}
 			else
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 
@@ -69,7 +69,7 @@ class Addons extends CP_Controller {
 		$this->params['perpage'] = $this->perpage; // Set a default
 
 		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 
 		$this->base_url = ee('CP/URL')->make('addons');
 
@@ -81,6 +81,12 @@ class Addons extends CP_Controller {
 			->first()
 			->AssignedModules
 			->pluck('module_id');
+
+		// Make sure Filepicker is accessible for those who need it
+		if (ee()->cp->allowed_group('can_access_files'))
+		{
+			$this->assigned_modules[] = ee('Model')->get('Module')->filter('module_name', 'Filepicker')->first()->getId();
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -203,6 +209,21 @@ class Addons extends CP_Controller {
 		}
 
 		$addons = $this->getAllAddons();
+
+		// Filter list for non-super admins
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			$that = $this;
+			$addons['first'] = array_filter($addons['first'], function($addon) use ($that)
+			{
+				return (isset($addon['module_id']) && in_array($addon['module_id'], $that->assigned_modules));
+			});
+			$addons['third'] = array_filter($addons['third'], function($addon) use ($that)
+			{
+				return (isset($addon['module_id']) && in_array($addon['module_id'], $that->assigned_modules));
+			});
+		}
+
 		$developers = array_map(function($addon) { return $addon['developer']; }, $addons['third']);
 		array_unique($developers);
 
@@ -308,7 +329,13 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => $return_url->encode())),
+						'href' => '#',
+						'data-post-url' => ee('CP/URL')->make(
+							'addons/install/' . $info['package'],
+							array(
+								'return' => $return_url->encode()
+							)
+						),
 						'title' => lang('install'),
 						'content' => lang('install'),
 						'type' => 'txt-only',
@@ -352,7 +379,13 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => $return_url->encode())),
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make(
+								'addons/update/' . $info['package'],
+								array(
+									'return' => $return_url->encode()
+								)
+							),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -486,9 +519,10 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee('Request')->method() !== 'POST')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($addons))
@@ -525,12 +559,16 @@ class Addons extends CP_Controller {
 
 				if ($UPD->update($version) !== FALSE)
 				{
-					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
+					$new_version = $addon_info->getVersion();
+					if (version_compare($version, $new_version, '<'))
+					{
+						$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
 						->first();
-					$module->module_version = $addon_info->getVersion();
-					$module->save();
+						$module->module_version = $new_version;
+						$module->save();
 
-					$updated[$party][$addon] = $name;
+						$updated[$party][$addon] = $name;
+					}
 				}
 			}
 
@@ -647,9 +685,10 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+			ee('Request')->method() !== 'POST')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($addons))
@@ -761,7 +800,7 @@ class Addons extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($addons))
@@ -1564,7 +1603,7 @@ class Addons extends CP_Controller {
 			// Do they have access to this module?
 			if ( ! isset($module))
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$this->assertUserHasAccess($addon);
@@ -1627,7 +1666,7 @@ class Addons extends CP_Controller {
 	{
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$addon = ee()->security->sanitize_filename(strtolower($name));
@@ -1789,7 +1828,7 @@ class Addons extends CP_Controller {
 	{
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$addon = ee()->security->sanitize_filename(strtolower($name));
@@ -1866,7 +1905,7 @@ class Addons extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->api_channel_fields->fetch_installed_fieldtypes();
@@ -1908,7 +1947,7 @@ class Addons extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->api_channel_fields->fetch_installed_fieldtypes();
@@ -1959,15 +1998,10 @@ class Addons extends CP_Controller {
 
 		$module = $this->getModule($addon);
 
-		if ($addon == 'filepicker' && ee()->cp->allowed_group('can_access_files') && isset($module['module_id']))
-		{
-			$this->assigned_modules[] = $module['module_id'];
-		}
-
  		if ( ! isset($module['module_id'])
 			|| ! in_array($module['module_id'], $this->assigned_modules))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 }

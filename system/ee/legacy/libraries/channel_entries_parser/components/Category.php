@@ -155,6 +155,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					}
 				}
 
+				$filtered_categories = array();
+
 				foreach ($categories[$data['entry_id']] as $k => $v)
 				{
 					if (in_array($v[0], $not_these) OR (isset($v[5]) && in_array($v[5], $not_these_groups)))
@@ -167,6 +169,14 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						continue;
 					}
 
+					$filtered_categories[$k] = $v;
+				}
+
+				$count = 0;
+				$total_results = count($filtered_categories);
+
+				foreach ($filtered_categories as $k => $v)
+				{
 					$temp = $catval[0];
 
 					if (preg_match_all("#".LD."path=(.+?)".RD."#", $temp, $matches))
@@ -192,69 +202,39 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					$cat_image = ee()->file_field->parse_field($v[3]);
 
 					$cat_vars = array(
-						'category_name'			=> $v[2],
-						'category_url_title'	=> $v[6],
-						'category_description'	=> (isset($v[4])) ? $v[4] : '',
-						'category_group'		=> (isset($v[5])) ? $v[5] : '',
-						'category_image'		=> $cat_image['url'],
-						'category_id'			=> $v[0],
-						'parent_id'				=> $v[1],
-						'active'				=> ($active_cat == $v[0] || $active_cat == $v[6])
+						'category_count'         => ++$count,
+						'category_reverse_count' => $total_results - $count + 1,
+						'category_total_results' => $total_results,
+						'category_name'          => ee()->typography->format_characters(
+							ee()->functions->encode_ee_tags($v[2])
+						),
+						'category_url_title'     => $v[6],
+						'category_description'   => (isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
+						'category_group'         => (isset($v[5])) ? $v[5] : '',
+						'category_image'         => $cat_image['url'],
+						'category_id'            => $v[0],
+						'parent_id'              => $v[1],
+						'active'                 => ($active_cat == $v[0] || $active_cat == $v[6])
 					);
+
+					$cond = $cat_vars;
 
 					// add custom fields for conditionals prep
 					foreach ($obj->channel()->catfields as $cv)
 					{
-						$cat_vars[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
+						$cond[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
 					}
 
-					$temp = ee()->functions->prep_conditionals($temp, $cat_vars);
+					$temp = ee()->functions->prep_conditionals($temp, $cond);
 
-					$temp = str_replace(
-						array(
-							LD."category_id".RD,
-							LD."category_name".RD,
-							LD."category_url_title".RD,
-							LD."category_image".RD,
-							LD."category_group".RD,
-							LD.'category_description'.RD,
-							LD.'parent_id'.RD
-						),
-						array($v[0],
-							ee()->functions->encode_ee_tags($v[2]),
-							$v[6],
-							$cat_image['url'],
-							(isset($v[5])) ? $v[5] : '',
-							(isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
-							$v[1]
-						),
-						$temp
-					);
-
-					foreach($obj->channel()->catfields as $cv2)
+					// and parse the variables
+					foreach ($cat_vars as $cat_var => $cat_val)
 					{
-						if (isset($v['field_id_'.$cv2['field_id']]) AND $v['field_id_'.$cv2['field_id']] != '')
-						{
-							$field_content = ee()->typography->parse_type(
-								$v['field_id_'.$cv2['field_id']],
-								array(
-									'text_format'		=> $v['field_ft_'.$cv2['field_id']],
-									'html_format'		=> $v['field_html_formatting'],
-									'auto_links'		=> 'n',
-									'allow_img_url'	=> 'y'
-								)
-							);
-
-							$temp = str_replace(LD.$cv2['field_name'].RD, $field_content, $temp);
-						}
-						else
-						{
-							// garbage collection
-							$temp = str_replace(LD.$cv2['field_name'].RD, '', $temp);
-						}
-
-						$temp = reduce_double_slashes($temp);
+						$temp = str_replace(LD.$cat_var.RD, $cat_val, $temp);
 					}
+
+					$variables = ee()->functions->assign_variables($temp);
+					$temp = $obj->channel()->parseCategoryFields($v[0], $v, $temp, array_keys($variables['var_single']));
 
 					$cats .= $temp;
 

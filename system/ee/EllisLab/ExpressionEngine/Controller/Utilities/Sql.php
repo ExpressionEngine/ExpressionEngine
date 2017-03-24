@@ -38,7 +38,7 @@ class Sql extends Utilities {
 	{
 		if ( ! $this->cp->allowed_group('can_access_sql_manager'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (($action = ee()->input->post('table_action')) && ! ee()->input->post('search_form'))
@@ -53,7 +53,7 @@ class Sql extends Utilities {
 			// Must be either OPTIMIZE or REPAIR
 			elseif ( ! in_array($action, array('OPTIMIZE', 'REPAIR')))
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 			// Must have selected tables
 			elseif (empty($tables))
@@ -80,7 +80,10 @@ class Sql extends Utilities {
 					'view' => array(
 						'href' => ee('CP/URL')->make(
 							'utilities/query/run-query/'.$table['name'],
-							array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
+							array(
+								'thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])),
+								'signature' => ee('Encrypt')->sign('SELECT * FROM '.$table['name'])
+							)
 						),
 						'title' => lang('view')
 					)

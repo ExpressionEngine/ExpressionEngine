@@ -38,6 +38,10 @@ $lang = array(
 
 'edit_file_metadata' => 'Edit "%s" Meta Data',
 
+'file_data' => 'File Data',
+
+'categories' => 'Categories',
+
 'title' => 'Title',
 
 'description' => 'Description',
@@ -46,7 +50,7 @@ $lang = array(
 
 'location' => 'Location',
 
-'btn_edit_file_meta' => 'Edit File Meta',
+'btn_edit_file_meta' => 'Save File Meta',
 
 'edit_file_metadata_success' => 'File Meta Data Updated',
 
@@ -62,7 +66,11 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
+// sidebar
 'zero_directories_found' => 'No <b>Directories</b> found',
+
+// modal
+'zero_upload_directories_found' => 'No <b>upload directories</b> found.',
 
 'files_in_directory' => 'Files in <b>%s</b>',
 
@@ -82,11 +90,17 @@ $lang = array(
 'size_gb' => '<abbr title="Gigabyte">gb</abbr>',
 'size_tb' => '<abbr title="Terabyte">tb</abbr>',
 
+'file_categories_desc' => 'Categorize this file.',
+
+'no_categories_assigned_file_desc' => 'There are no categories assigned to this file. <a href="%s">Assign a category group.</a>',
+
 'success' => 'Success',
 
 'files_removed_desc' => 'The following files were removed',
 
 'btn_upload_file' => 'Upload File',
+
+'btn_uploading' => 'Uploading...',
 
 'upload_directory_removed' => 'Upload directory removed',
 
@@ -275,9 +289,9 @@ $lang = array(
 'upload_member_groups_desc' => 'The following user groups are allowed to upload to this directory.</em>
 <em>Super Administrators are <b>always</b> allowed.',
 
-'upload_category_groups' => 'Allowed category groups',
+'upload_category_groups' => 'Category groups',
 
-'upload_category_groups_desc' => 'The following category groups are allowed to upload to this directory.',
+'upload_category_groups_desc' => 'Allow files to be assigned to categories from the following groups.',
 
 'directory_saved' => 'Upload directory saved',
 

@@ -266,7 +266,7 @@ class Ip_to_nation_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cache_path = $this->_cache_path();
@@ -326,7 +326,7 @@ class Ip_to_nation_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$cache_files = $this->_cache_files('zip, gz');
@@ -334,7 +334,8 @@ class Ip_to_nation_mcp {
 		foreach ($cache_files as $file)
 		{
 			$filename = basename($file);
-			$ext = end(explode('.', $filename));
+			$parts = explode('.', $filename);
+			$ext = end($parts);
 
 			$fn = '_extract_'.$ext;
 			$this->$fn($filename);
@@ -351,7 +352,7 @@ class Ip_to_nation_mcp {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$files = $this->_cache_files('csv');
@@ -465,12 +466,8 @@ class Ip_to_nation_mcp {
 	 */
 	function _country_names()
 	{
-		if ( ! include(APPPATH.'config/countries.php'))
-		{
-			show_error(lang('countryfile_missing'));
-		}
-
-		return $countries;
+		$conf = ee()->config->loadFile('countries');
+		return $conf['countries'];
 	}
 
 	// ----------------------------------------------------------------------

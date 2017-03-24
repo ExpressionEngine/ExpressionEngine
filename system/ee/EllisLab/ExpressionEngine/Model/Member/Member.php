@@ -53,12 +53,14 @@ class Member extends ContentModel {
 		'UploadedFiles' => array(
 			'type' => 'hasMany',
 			'model' => 'File',
-			'to_key' => 'uploaded_by_member_id'
+			'to_key' => 'uploaded_by_member_id',
+			'weak' => TRUE
 		),
 		'ModifiedFiles' => array(
 			'type' => 'hasMany',
 			'model' => 'File',
-			'to_key' => 'modified_by_member_id'
+			'to_key' => 'modified_by_member_id',
+			'weak' => TRUE
 		),
 		'VersionedChannelEntries' => array(
 			'type' => 'hasMany',
@@ -97,13 +99,25 @@ class Member extends ContentModel {
 			'model' => 'Stats',
 			'to_key' => 'recent_member_id',
 			'weak' => TRUE
+		),
+		'CommentSubscriptions' => array(
+			'type' => 'hasMany',
+			'model' => 'CommentSubscription'
+		)
+	);
+
+	protected static $_field_data = array(
+		'field_model'   => 'MemberField',
+		'extra_data'    => array(
+			'parent_table' => 'members',
+			'key_column'   => 'member_id'
 		)
 	);
 
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
-		'username'        => 'required|unique|maxLength[50]|validateUsername',
-		'email'           => 'required|email|uniqueEmail',
+		'username'        => 'required|unique|validateUsername',
+		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
 		'date_format'     => 'validateDateFormat',
@@ -119,7 +133,8 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'beforeUpdate'
+		'beforeUpdate',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -245,8 +260,24 @@ class Member extends ContentModel {
 					$this->username,
 					$this->member_id
 				));
+
+				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
 		}
+	}
+
+	/**
+	 * Zero-out member ID data in assoicated files
+	 */
+	public function onBeforeDelete()
+	{
+		$this->UploadedFiles->uploaded_by_member_id = 0;
+		$this->UploadedFiles->save();
+
+		$this->ModifiedFiles->modified_by_member_id = 0;
+		$this->ModifiedFiles->save();
+
+		$this->deleteFieldData();
 	}
 
 	/**
@@ -312,26 +343,45 @@ class Member extends ContentModel {
 	 * use the default of 'homepage'. We prioritize on the Member's preferences
 	 * then the groups preferences, falling back to the default.
 	 *
+	 * @param	int	Optional site ID to get member homepage for, defaults to current site
 	 * @return EllisLab\ExpressionEngine\Library\CP\URL The URL
 	 */
-	public function getCPHomepageURL()
+	public function getCPHomepageURL($site_id = NULL)
 	{
 		$cp_homepage = NULL;
 
-		if ( ! empty($this->cp_homepage))
+		if ( ! $site_id)
 		{
 			$site_id = ee()->config->item('site_id');
+		}
 
+		// Make sure to get the correct site, revert once issue #1285 is fixed
+		$member_group = ee('Model')->get('MemberGroup')
+			->filter('group_id', $this->group_id)
+			->filter('site_id', $site_id)
+			->first();
+
+		if ( ! empty($this->cp_homepage))
+		{
 			$cp_homepage = $this->cp_homepage;
 			$cp_homepage_channel = $this->cp_homepage_channel;
-			$cp_homepage_channel = $cp_homepage_channel[$site_id];
 			$cp_homepage_custom = $this->cp_homepage_custom;
+
+			// Site created after setting was saved, no channel setting will be available
+			if ($this->cp_homepage == 'publish_form' && ! isset($cp_homepage_channel[$site_id]))
+			{
+				$cp_homepage = '';
+			}
+			else
+			{
+				$cp_homepage_channel = $cp_homepage_channel[$site_id];
+			}
 		}
-		elseif ( ! empty($this->MemberGroup->cp_homepage))
+		elseif ( ! empty($member_group->cp_homepage))
 		{
-			$cp_homepage = $this->MemberGroup->cp_homepage;
-			$cp_homepage_channel = $this->MemberGroup->cp_homepage_channel;
-			$cp_homepage_custom = $this->MemberGroup->cp_homepage_custom;
+			$cp_homepage = $member_group->cp_homepage;
+			$cp_homepage_channel = $member_group->cp_homepage_channel;
+			$cp_homepage_custom = $member_group->cp_homepage_custom;
 		}
 
 		switch ($cp_homepage) {
@@ -360,7 +410,13 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->MemberGroup;
+		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->group_id})"))
+		{
+			$structure = $this->MemberGroup;
+			ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", $structure);
+		}
+
+		return $structure;
 	}
 
 	/**
@@ -410,6 +466,11 @@ class Member extends ContentModel {
 			return sprintf(lang('username_too_short'), $un_length);
 		}
 
+		if (strlen($username) > USERNAME_MAX_LENGTH)
+		{
+			return 'username_too_long';
+		}
+
 		if ($this->isNew())
 		{
 			// Is username banned?
@@ -417,6 +478,19 @@ class Member extends ContentModel {
 			{
 				return 'username_taken';
 			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validation callback for email field
+	 */
+	public function validateEmail($key, $email)
+	{
+		if (strlen($email) > USERNAME_MAX_LENGTH)
+		{
+			return 'email_too_long';
 		}
 
 		return TRUE;
@@ -530,6 +604,27 @@ class Member extends ContentModel {
 		}
 
 		return TRUE;
+	}
+
+
+	/**
+	 * Gets a collection of MemberField objects
+	 *
+	 * @return Collection A collection of MemberField objects
+	 */
+	protected function getFieldModels()
+	{
+		$fields = $this->MemberGroup->getCustomFields();
+
+		if (empty($fields))
+		{
+			$fields = $this->getModelFacade()
+				->get('MemberGroup', $this->group_id)
+				->first()
+				->getCustomFields();
+		}
+
+		return $fields;
 	}
 }
 

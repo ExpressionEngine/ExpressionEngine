@@ -92,6 +92,11 @@ class FileDimension extends Model {
 	 */
 	public function getNewDimensionsOfFile(File $file)
 	{
+		if ( ! $file->isImage())
+		{
+			return FALSE;
+		}
+
 		ee()->load->library('image_lib');
 		ee()->image_lib->clear();
 
@@ -198,8 +203,8 @@ class FileDimension extends Model {
 		ee()->image_lib->initialize($config);
 
 		$dimensions = array(
-			'height' => ee()->image_lib->height,
-			'width'  => ee()->image_lib->width,
+			'height' => round(ee()->image_lib->height),
+			'width'  => round(ee()->image_lib->width),
 		);
 
 		return $dimensions;

@@ -104,6 +104,11 @@ class Builder {
 	 */
 	public function count()
 	{
+		if ($this->isFutile())
+		{
+			return 0;
+		}
+
 		return $this->datastore->countQuery($this);
 	}
 
@@ -144,7 +149,7 @@ class Builder {
 
 		if ($this->isFutile())
 		{
-			return new Result($this, array(), array(), array());
+			return new Result(array(), array(), array());
 		}
 
 		return $this->datastore

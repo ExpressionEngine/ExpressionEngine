@@ -42,7 +42,7 @@ class Developer extends Logs {
 	{
 		if ($this->session->userdata('group_id') != 1)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('delete'))
@@ -153,7 +153,7 @@ class Developer extends Logs {
 		// Set the page heading
 		if ( ! empty(ee()->view->search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 
 		ee()->view->header = array(

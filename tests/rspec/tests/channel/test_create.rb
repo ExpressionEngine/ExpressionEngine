@@ -9,7 +9,6 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @channel_name_error = 'Your channel name must contain only alpha-numeric characters and no spaces.'
-    @dupe_channel_name = 'This channel name is already taken.'
   end
 
   it 'shows the Channel Create/Edit page' do
@@ -57,7 +56,14 @@ feature 'Channel Create/Edit' do
     @page.channel_name.set 'news'
     @page.channel_name.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.channel_name, @dupe_channel_name)
+    should_have_error_text(@page.channel_name, @unique)
+    should_have_form_errors(@page)
+
+    # Duplicate channel title
+    @page.channel_title.set 'News'
+    @page.channel_title.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.channel_title, @unique)
     should_have_form_errors(@page)
   end
 
@@ -163,6 +169,24 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @page.channel_title.value.should == 'New channel'
+  end
+
+  # Issue #1010
+	it 'should allow setting field and status groups to None' do
+    @page.load_edit_for_channel(1)
+    no_php_js_errors
+
+    @page.status_group.select 'None'
+    @page.field_group.select 'None'
+
+    @page.submit
+    no_php_js_errors
+
+    @page.load_edit_for_channel(1)
+    no_php_js_errors
+
+    @page.status_group.value.should == ''
+    @page.field_group.value.should == ''
   end
 
   it 'should duplicate an existing channel' do

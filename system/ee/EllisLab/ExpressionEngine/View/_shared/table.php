@@ -17,7 +17,7 @@ if ($wrap): ?>
 			<td>
 				<?=lang($no_results['text'])?>
 				<?php if ( ! empty($no_results['action_text'])): ?>
-					<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+					<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 				<?php endif ?>
 			</td>
 		</tr>
@@ -34,18 +34,23 @@ if ($wrap): ?>
 				{
 					$colspan++;
 				}
-				
+
 				if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder"></span></th>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
+					$attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
 					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
-							<?php if ( ! empty($data)): // Hide checkbox if no data ?>
-								<input type="checkbox" title="select all">
+							<?php if ( ! empty($data) OR $checkbox_header): // Hide checkbox if no data ?>
+								<?php if (isset($settings['content'])): ?>
+									<?=$settings['content']?>
+								<?php else: ?>
+									<input type="checkbox" title="select all">
+								<?php endif ?>
 							<?php endif ?>
 						</th>
 					<?php else: ?>
@@ -64,7 +69,7 @@ if ($wrap): ?>
 							$header_class .= ' '.$settings['class'];
 						}
 						?>
-						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
+						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
@@ -97,7 +102,7 @@ if ($wrap): ?>
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a class="btn action" rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
@@ -147,11 +152,11 @@ if ($wrap): ?>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td>
 									<input
-										name="<?=$column['name']?>"
-										value="<?=$column['value']?>"
+										name="<?=form_prep($column['name'])?>"
+										value="<?=form_prep($column['value'])?>"
 										<?php if (isset($column['data'])):?>
 											<?php foreach ($column['data'] as $key => $value): ?>
-												data-<?=$key?>="<?=$value?>"
+												data-<?=$key?>="<?=form_prep($value)?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
 										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>
@@ -195,7 +200,7 @@ if ($wrap): ?>
 						<?php if ($grid_input): ?>
 							<td>
 								<ul class="toolbar">
-									<li class="remove"><a href="#" title="remove row"></a></li>
+									<li class="remove"><a href="#" rel="remove_row" title="remove row"></a></li>
 								</ul>
 							</td>
 						<?php endif ?>
@@ -222,6 +227,6 @@ if ($wrap): ?>
 
 <?php if ($grid_input && ! empty($data)): ?>
 	<ul class="toolbar">
-		<li class="add"><a href="#" title="<?=lang('add_new_row')?>"></a></li>
+		<li class="add"><a href="#" rel="add_row" title="<?=lang('add_new_row')?>"></a></li>
 	</ul>
 <?php endif ?>

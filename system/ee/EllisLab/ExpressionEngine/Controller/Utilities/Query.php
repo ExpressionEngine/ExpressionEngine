@@ -39,7 +39,7 @@ class Query extends Utilities {
 		// Super Admins only, please
 		if (ee()->session->userdata('group_id') != '1')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->load->library('form_validation');
@@ -98,6 +98,16 @@ class Query extends Utilities {
 			{
 				$sql = trim(base64_decode(rawurldecode($sql)));
 
+				if ( ! $signature = ee('Request')->get('signature'))
+				{
+					return $this->index(FALSE);
+				}
+
+				if ( ! ee('Encrypt')->verifySignature($sql, $signature))
+				{
+					return $this->index(FALSE);
+				}
+
 				if (strncasecmp($sql, 'SELECT ', 7) !== 0 &&
 					strncasecmp($sql, 'SHOW', 4) !== 0)
 				{
@@ -122,7 +132,7 @@ class Query extends Utilities {
 		{
 			if (strpos(strtoupper($sql), 'DELETE') !== FALSE OR strpos(strtoupper($sql), 'ALTER') !== FALSE OR strpos(strtoupper($sql), 'TRUNCATE') !== FALSE OR strpos(strtoupper($sql), 'DROP') !== FALSE)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 
@@ -244,13 +254,16 @@ class Query extends Utilities {
 
 		$base_url = ee('CP/URL')->make(
 			'utilities/query/run-query/'.$table_name,
-			array('thequery' => rawurlencode(base64_encode($sql)))
+			array(
+				'thequery' => rawurlencode(base64_encode($sql)),
+				'signature' => ee('Encrypt')->sign($sql)
+			)
 		);
 		$view_data = $table->viewData($base_url);
 		$data = $view_data['data'];
 		$vars['table'] = $view_data;
 
-		$vars['thequery'] = ee('Security/XSS')->clean($sql);
+		$vars['thequery'] = $sql;
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 		$vars['total_results'] = ($show_query) ? $vars['table']['total_rows'] : $vars['total_results'];
 

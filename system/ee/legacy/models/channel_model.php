@@ -510,19 +510,28 @@ class Channel_model extends CI_Model {
 	 * Generate the SQL for a numeric comparison search
 	 * <, >, <=, >= operators
 	 *
-	 * search:field=">=20"
+	 * search:field='>=20'
+	 * search:field='>3|<5'
 	 */
 	private function _numeric_comparison_search($terms, $col_name, $site_id)
 	{
-		if ( ! preg_match('/^([<>]=?)(\d+)/', $terms, $match))
+		preg_match_all('/([<>]=?)(\d+)/', $terms, $matches, PREG_SET_ORDER);
+
+		if (empty($matches))
 		{
 			return $this->_field_search($terms, $col_name, $site_id);
 		}
 
-		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+		$terms = array();
 
-		// col_name >= 20
-		return '(' . $site_id . ' ' . $col_name . ' ' . $match[1] . ' ' . $match[2] . ')';
+		foreach ($matches as $match)
+		{
+			// col_name >= 20
+			$terms[] = "{$col_name} {$match[1]} {$match[2]}";
+		}
+
+		$site_id = ($site_id !== FALSE) ? "( wd.site_id = {$site_id} AND " : '(';
+		return $site_id.implode(' AND ', $terms).')';
 	}
 
 	// --------------------------------------------------------------------

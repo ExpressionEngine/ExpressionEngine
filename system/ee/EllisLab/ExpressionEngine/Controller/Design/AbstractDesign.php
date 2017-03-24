@@ -45,7 +45,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('design');
@@ -226,7 +226,14 @@ abstract class AbstractDesign extends CP_Controller {
 	{
 		if ( ! $return)
 		{
-			$return = ee('CP/URL')->getCurrentUrl()->encode();
+			$return = ee('CP/URL')->getCurrentUrl();
+
+			if (isset($return->qs['return']))
+			{
+				unset($return->qs['return']);
+			}
+
+			$return = $return->encode();
 		}
 
 		$header = array(

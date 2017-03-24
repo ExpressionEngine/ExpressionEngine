@@ -43,7 +43,7 @@ class Communicate extends Utilities {
 
 		if ( ! ee()->cp->allowed_group('can_access_comm'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 	}
 
@@ -108,14 +108,15 @@ class Communicate extends Utilities {
 			foreach ($groups as $group)
 			{
 				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
+				$group_title = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
 
-				$vars['member_groups'][$group->group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
-				$vars['member_groups'][$group->group_title]['members'] = ee('Model')->get('Member')
+				$vars['member_groups'][$group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
+				$vars['member_groups'][$group_title]['members'] = ee('Model')->get('Member')
 					->filter('group_id', $group->group_id)
 					->count();
-				if ($vars['member_groups'][$group->group_title]['members'] == 0)
+				if ($vars['member_groups'][$group_title]['members'] == 0)
 				{
-					$vars['member_groups'][$group->group_title]['attrs']['disabled'] = 'disabled';
+					$vars['member_groups'][$group_title]['attrs']['disabled'] = 'disabled';
 				}
 			}
 		}
@@ -217,7 +218,7 @@ class Communicate extends Utilities {
 		$_POST['total_gl_recipients'] = count($groups);
 
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('subject', 'lang:subject', 'required');
+		ee()->form_validation->set_rules('subject', 'lang:subject', 'required|valid_xss_check');
 		ee()->form_validation->set_rules('message', 'lang:message', 'required');
 		ee()->form_validation->set_rules('from', 'lang:from', 'required|valid_email');
 		ee()->form_validation->set_rules('cc', 'lang:cc', 'valid_emails');
@@ -384,7 +385,7 @@ class Communicate extends Utilities {
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, TRUE);
 
 		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
@@ -429,7 +430,7 @@ class Communicate extends Utilities {
 
 		$this->deliverManyEmails($email);
 
-		if (empty($email->recipient_array))
+		if ($email->total_sent == count($email->recipient_array))
 		{
 			$debug_msg = ee()->email->print_debugger(array());
 
@@ -443,9 +444,9 @@ class Communicate extends Utilities {
 			$stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
 			$stats = str_replace("%y", ($email->total_sent), $stats);
 
-			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
+			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.(count($email->recipient_array)-$email->total_sent);
 
-			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, TRUE);
 
 			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
@@ -544,28 +545,28 @@ class Communicate extends Utilities {
 	 */
 	private function deliverManyEmails(EmailCache $email)
 	{
-		if (count($email->recipient_array) < 1)
+		$recipient_array = array_slice($email->recipient_array, $email->total_sent);
+		$number_to_send = count($recipient_array);
+
+		if ($number_to_send < 1)
 		{
 			return 0;
 		}
-
-		$number_to_send = count($email->recipient_array);
 
 		if (ee()->config->item('email_batchmode') == 'y')
 		{
 			$batch_size = (int) ee()->config->item('email_batch_size');
 
-			if ($batch_size > count($email->recipient_array))
+			if ($number_to_send > $batch_size)
 			{
 				$number_to_send = $batch_size;
 			}
 		}
 
-		$recipient_array = $email->recipient_array;
-
 		for ($x = 0; $x < $number_to_send; $x++)
 		{
 			$email_address = array_shift($recipient_array);
+
 			if ( ! $this->deliverEmail($email, $email_address))
 			{
 				$email->delete();
@@ -756,8 +757,12 @@ class Communicate extends Utilities {
 		$data = array();
 		foreach ($emails as $email)
 		{
+			// Prepare the $email object for use in the modal
+			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
+			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
+
 			$data[] = array(
-				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
+				$email->subject,
 				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
@@ -780,10 +785,6 @@ class Communicate extends Utilities {
 					)
 				)
 			);
-
-			// Prepare the $email object for use in the modal
-			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
 
 			ee()->load->library('typography');
 			ee()->typography->initialize(array(

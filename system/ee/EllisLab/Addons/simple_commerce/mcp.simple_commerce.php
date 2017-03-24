@@ -210,7 +210,7 @@ class Simple_commerce_mcp {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce', ee()->cp->get_url_state()));
@@ -318,7 +318,10 @@ class Simple_commerce_mcp {
 	 */
 	public function addItems()
 	{
-		$entry_ids = ee()->input->post('entries');
+		if ($entry_ids = ee()->input->post('entries'))
+		{
+			$entry_ids = array_filter($entry_ids, 'ctype_digit');
+		}
 
 		if ( ! ee()->input->post('items') && (empty($entry_ids) OR ee()->input->post('bulk_action') != 'add_item'))
 		{
@@ -332,6 +335,11 @@ class Simple_commerce_mcp {
 			$valid = TRUE;
 			foreach ($_POST['items'] as $entry_id => $item_data)
 			{
+				if ( ! is_int($entry_id))
+				{
+					continue;
+				}
+
 				$item = ee('Model')->make('simple_commerce:Item');
 				$item->set($item_data);
 				$item->ChannelEntry = ee('Model')->get('ChannelEntry', $entry_id)->first();
@@ -441,7 +449,7 @@ class Simple_commerce_mcp {
 
 		if ( ! $item)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! empty($_POST))
@@ -799,7 +807,7 @@ class Simple_commerce_mcp {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
@@ -840,7 +848,7 @@ class Simple_commerce_mcp {
 
 			if ( ! $purchase)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';
@@ -1128,7 +1136,7 @@ class Simple_commerce_mcp {
 		}
 		else
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
@@ -1169,7 +1177,7 @@ class Simple_commerce_mcp {
 
 			if ( ! $email_template)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 
 			$alert_key = 'updated';

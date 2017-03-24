@@ -728,7 +728,7 @@ class EE_Loader {
 			// view paths only exist once, so we only remove it if all are gone
 			// or it was at the top.
 			if (array_search($removed, $this->_ci_library_paths) === FALSE OR
-				current($this->_ci_view_paths) == $removed + 'views/')
+				current($this->_ci_view_paths) == $removed . 'views/')
 			{
 				$void = array_shift($this->_ci_view_paths);
 			}
@@ -1034,14 +1034,7 @@ class EE_Loader {
 		{
 			// We test for both uppercase and lowercase, for servers that
 			// are case-sensitive with regard to file names
-			if (file_exists(APPPATH.'config/'.strtolower($class).'.php'))
-			{
-				include_once(APPPATH.'config/'.strtolower($class).'.php');
-			}
-			elseif (file_exists(APPPATH.'config/'.ucfirst(strtolower($class)).'.php'))
-			{
-				include_once(APPPATH.'config/'.ucfirst(strtolower($class)).'.php');
-			}
+			$config = ee()->config->loadFile(strtolower($class));
 		}
 
 		if ($prefix == '')
@@ -1088,7 +1081,7 @@ class EE_Loader {
 		$this->_ci_classes[$class] = $classvar;
 
 		// Instantiate the class
-		if ($config !== NULL)
+		if ( ! empty($config))
 		{
 			$this->facade->set($classvar, new $name($config));
 		}

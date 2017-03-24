@@ -51,7 +51,7 @@ class Members extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('members');
@@ -201,7 +201,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$action = ee()->input->post('bulk_action');
@@ -240,7 +240,8 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
-			->filter('group_id', 4);
+			->filter('group_id', 4)
+			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
 		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
 
@@ -270,7 +271,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_ban_users'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -291,7 +292,8 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
-			->filter('group_id', 2);
+			->filter('group_id', 2)
+			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
 		$table = $this->buildTableFromMemberQuery($members);
 		$table->setNoResultsText('no_banned_members_found');
@@ -554,7 +556,14 @@ class Members extends CP_Controller {
 	{
 		$table = $this->initializeTable();
 
-		$members = $members->order($table->config['sort_col'], $table->config['sort_dir'])
+		$sort_map = array(
+			'member_id'    => 'member_id',
+			'username'     => 'username',
+			'dates'        => 'join_date',
+			'member_group' => 'group_id'
+		);
+
+		$members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
 			->all();
 
 		$data = array();
@@ -585,7 +594,8 @@ class Members extends CP_Controller {
 					if (ee()->cp->allowed_group('can_edit_members'))
 					{
 						$toolbar['approve'] = array(
-							'href' => ee('CP/URL')->make('members/approve/' . $member->member_id),
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member->member_id),
 							'title' => strtolower(lang('approve'))
 						);
 					}
@@ -708,13 +718,17 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'pending';
-					$toolbar['toolbar_items']['approve'] = array(
-						'href' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
-						'title' => strtolower(lang('approve'))
-					);
+					if (ee()->cp->allowed_group('can_edit_members'))
+					{
+						$toolbar['toolbar_items']['approve'] = array(
+							'href' => '#',
+							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
+							'title' => strtolower(lang('approve'))
+						);
+					}
 					break;
 				default:
-					$group = $groups[$member['group_id']];
+					$group = htmlentities($groups[$member['group_id']], ENT_QUOTES, 'UTF-8');
 			}
 
 			if (ee()->session->flashdata('highlight_id') == $member['member_id'])
@@ -786,9 +800,10 @@ class Members extends CP_Controller {
 	 */
 	public function approve($ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		if ( ! ee()->cp->allowed_group('can_edit_members') OR
+			ee('Request')->method() !== 'POST')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ( ! is_array($ids))
@@ -859,7 +874,7 @@ class Members extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$members = ee('Model')->get('Member', $ids)
@@ -925,7 +940,7 @@ class Members extends CP_Controller {
 		if ( ! ee()->cp->allowed_group('can_edit_members') OR
 			ee()->config->item('req_mbr_activation') !== 'email')
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$members = ee('Model')->get('Member', $ids)
@@ -990,6 +1005,7 @@ class Members extends CP_Controller {
 		$email_message = ee()->functions->var_swap($template->template_data, $swap);
 
 		ee()->email->wordwrap = TRUE;
+		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(
 			ee()->config->item('webmaster_email'),
 			ee()->config->item('webmaster_name')
@@ -1129,11 +1145,16 @@ class Members extends CP_Controller {
 		// Verify the member is allowed to delete
 		if ( ! ee()->cp->allowed_group('can_delete_members'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		//  Fetch member ID numbers and build the query
 		$member_ids = ee()->input->post('selection', TRUE);
+
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
 
 		if (in_array(ee()->session->userdata['member_id'], $member_ids))
 		{
@@ -1155,6 +1176,14 @@ class Members extends CP_Controller {
 
 			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
 			$entries->Author = $heir;
+			$entries->save();
+
+			$entries = ee('Model')->get('File')->filter('uploaded_by_member_id', 'IN', $member_ids)->all();
+			$entries->UploadAuthor = $heir;
+			$entries->save();
+
+			$entries = ee('Model')->get('File')->filter('modified_by_member_id', 'IN', $member_ids)->all();
+			$entries->ModifyAuthor = $heir;
 			$entries->save();
 
 			$heir->updateAuthorStats();

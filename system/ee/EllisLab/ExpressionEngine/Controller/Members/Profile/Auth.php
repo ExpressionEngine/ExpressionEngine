@@ -48,7 +48,9 @@ class Auth extends Settings {
 						'username' => array(
 							'type' => 'text',
 							'required' => TRUE,
-							'value' => $this->member->username
+							'value' => $this->member->username,
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				),
@@ -58,7 +60,9 @@ class Auth extends Settings {
 						'screen_name' => array(
 							'type' => 'text',
 							'required' => TRUE,
-							'value' => $this->member->screen_name
+							'value' => $this->member->screen_name,
+							'maxlength' => USERNAME_MAX_LENGTH,
+							'attrs' => 'autocomplete="off"'
 						)
 					)
 				)
@@ -161,7 +165,7 @@ class Auth extends Settings {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('auth_settings');
-		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text = 'btn_authenticate_and_save';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -180,7 +184,7 @@ class Auth extends Settings {
 		// validate for unallowed blank values
 		if (empty($_POST))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		// If the screen name field is empty, we'll assign is from the username field.

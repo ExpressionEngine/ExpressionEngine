@@ -52,7 +52,7 @@ class Groups extends Members\Members {
 
 		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->base_url = ee('CP/URL')->make('members/groups');
@@ -111,8 +111,16 @@ class Groups extends Members\Members {
 
 		$data = array();
 		$groupData = array();
-		$total = ee()->api->get('MemberGroup')->count();
-		$groups = ee()->api->get('MemberGroup')->order($sort_col, $sort_dir)->limit($perpage)->offset($offset);
+		$total = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count();
+
+		$groups = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order($sort_col, $sort_dir)
+			->limit($perpage)
+			->offset($offset);
+
 		$search = ee()->input->post('search');
 
 		if ( ! empty($search))
@@ -140,7 +148,7 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = ee('Model')->get('Member')->filter('group_id', $group->group_id)->count();
 			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
-			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+			$title = '<a href="' . $edit_link . '">' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</a>';
 
 			if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 			{
@@ -223,7 +231,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars = array(
@@ -240,7 +248,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->base_url = ee('CP/URL')->make('members/groups/create/', $this->query_string);
@@ -268,7 +276,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_edit_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
         $this->group = ee('Model')->get('MemberGroup')
@@ -278,7 +286,7 @@ class Groups extends Members\Members {
 
 		if ($this->group->is_locked == 'y' && ! $this->super_admin)
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->group_id = (int) $this->group->group_id;
@@ -302,7 +310,7 @@ class Groups extends Members\Members {
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$replacement = ee()->input->post('replacement');
@@ -319,11 +327,15 @@ class Groups extends Members\Members {
 		{
 			if ($group->is_locked == 'y' && ! $this->super_admin)
 			{
-				show_error(lang('unauthorized_access'));
+				show_error(lang('unauthorized_access'), 403);
 			}
 		}
 
 		$group_names = $group_info->pluck('group_title');
+		$group_names = array_map(function($group_name)
+		{
+			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
+		}, $group_names);
 
 
 		if (is_array($groups))
@@ -356,7 +368,7 @@ class Groups extends Members\Members {
 		//  Only super admins can delete member groups
 		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$groups = ee()->input->post('selection');
@@ -366,7 +378,7 @@ class Groups extends Members\Members {
 
 		if ( ! empty($no_delete))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$vars['groups'] = ee('Model')->get('MemberGroup', $groups)
@@ -397,7 +409,7 @@ class Groups extends Members\Members {
 	{
 		if (in_array($group_id, $this->no_delete))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->load->model('member_model');
@@ -538,7 +550,7 @@ class Groups extends Members\Members {
 		}
 
 		// Set our various permissions if we're not editing the Super Admin
-		if ($group->group_id !== 1)
+		if ($group->group_id != 1)
 		{
 			$group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
 			$group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
@@ -573,6 +585,10 @@ class Groups extends Members\Members {
 						{
 							$choices = array_keys($options['choices']);
 							$deselected = array_diff($choices, $submitted);
+
+							// Validate submitted against choices to prevent
+							// arbitrary properties from being set
+							$submitted = array_intersect($choices, $submitted);
 
 							foreach ($submitted as $item)
 							{
@@ -972,7 +988,8 @@ class Groups extends Members\Members {
 						'group'  => 'can_access_cp',
 						'fields' => array(
 							'can_view_homepage_news' => array(
-								'type' => 'yes_no'
+								'type' => 'yes_no',
+								'value' => element('can_view_homepage_news', $values)
 							)
 						)
 					)

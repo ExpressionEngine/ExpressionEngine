@@ -84,42 +84,16 @@ class EE_User_agent {
 	 */
 	function _load_agent_file()
 	{
-		if ( ! @include(APPPATH.'config/user_agents.php'))
-		{
-			return FALSE;
-		}
+		$agents = ee()->config->loadFile('user_agents');
 
-		$return = FALSE;
+		$this->platforms = $agents['platforms'];
+		$this->browsers = $agents['browsers'];
+		$this->mobiles = $agents['mobiles'];
+		$this->robots = $agents['robots'];
 
-		if (isset($platforms))
-		{
-			$this->platforms = $platforms;
-			unset($platforms);
-			$return = TRUE;
-		}
+		unset($agents);
 
-		if (isset($browsers))
-		{
-			$this->browsers = $browsers;
-			unset($browsers);
-			$return = TRUE;
-		}
-
-		if (isset($mobiles))
-		{
-			$this->mobiles = $mobiles;
-			unset($mobiles);
-			$return = TRUE;
-		}
-
-		if (isset($robots))
-		{
-			$this->robots = $robots;
-			unset($robots);
-			$return = TRUE;
-		}
-
-		return $return;
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

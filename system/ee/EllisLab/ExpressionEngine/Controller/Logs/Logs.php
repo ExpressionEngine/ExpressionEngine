@@ -48,7 +48,7 @@ class Logs extends CP_Controller {
 
 		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$this->base_url = ee('CP/URL')->make('logs');
@@ -64,10 +64,10 @@ class Logs extends CP_Controller {
 		$this->generateSidebar();
 
 		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
-			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$this->base_url->setQueryStringVariable('search', ee()->input->get_post('search'));
 		}
 	}
 
@@ -125,7 +125,7 @@ class Logs extends CP_Controller {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		$id = ee()->input->post('delete');

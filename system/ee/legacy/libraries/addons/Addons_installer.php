@@ -310,7 +310,7 @@ class Addons_installer {
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ($module == '')
@@ -359,7 +359,7 @@ class Addons_installer {
 	{
 		if ( ! ee()->cp->allowed_group('can_access_extensions'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if ($extension == '')
@@ -437,6 +437,20 @@ class Addons_installer {
 							$this->$method($fieldtype_name);
 
 							ee()->load->remove_package_path($fieldtype_settings['path']);
+						}
+
+						// Remove associated Channel fields and Grid columns
+						if ($action === 'uninstall' && $installed)
+						{
+							ee('Model')->get('ChannelField')
+								->filter('field_type', $fieldtype_name)
+								->delete();
+
+							if (ee()->addons_model->fieldtype_installed('grid'))
+							{
+								ee()->load->model('grid_model');
+								ee()->grid_model->delete_columns_of_type($fieldtype_name);
+							}
 						}
 					}
 				}

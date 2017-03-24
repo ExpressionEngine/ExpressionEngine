@@ -47,7 +47,7 @@ class Extensions extends Utilities {
 		if ( ! ee()->cp->allowed_group('can_access_addons')
 			OR ! ee()->cp->allowed_group('can_admin_addons'))
 		{
-			show_error(lang('unauthorized_access'));
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('addons');
@@ -55,7 +55,7 @@ class Extensions extends Utilities {
 		$this->params['perpage'] = $this->perpage; // Set a default
 
 		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 
 		$this->base_url = ee('CP/URL')->make('utilities/extensions');
 

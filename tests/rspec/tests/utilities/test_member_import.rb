@@ -10,7 +10,6 @@ feature 'Member Import' do
     @members_xml_custom = asset_path('member-import/members-custom.xml')
 
     @field_required = 'This field is required.'
-    @invalid_path_error = 'The path you submitted is not valid.'
 
     cp_session
     @page = MemberImport.new
@@ -44,7 +43,7 @@ feature 'Member Import' do
     @page.submit
 
     no_php_js_errors
-    should_have_error_text(@page.file_location, @invalid_path_error)
+    should_have_error_text(@page.file_location, $invalid_path)
     @page.should have_text 'Attention: Import not completed'
     should_have_form_errors(@page)
 
@@ -63,7 +62,7 @@ feature 'Member Import' do
 
     @page.file_location.set '/some/bogus/path'
     @page.file_location.trigger 'blur'
-    should_have_error_text(@page.file_location, @invalid_path_error)
+    should_have_error_text(@page.file_location, $invalid_path)
     should_have_form_errors(@page)
 
     @page.file_location.set @members_xml

@@ -900,7 +900,12 @@ abstract class EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ($this->get_setting('field_pre_populate') === FALSE)
+		$pairs = $this->get_setting('value_label_pairs');
+		if ( ! empty($pairs) OR $this->get_setting('field_pre_populate') === NULL)
+		{
+			return $pairs;
+		}
+		elseif ($this->get_setting('field_pre_populate') === FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
@@ -918,7 +923,6 @@ abstract class EE_Fieldtype {
 		else
 		{
 			// We need to pre-populate this menu from an another channel custom field
-
 			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
 			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
 			$pop_query = ee()->db->get('channel_data');
@@ -937,12 +941,10 @@ abstract class EE_Fieldtype {
 					 	continue;
 					}
 
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
 
-					$field_options[form_prep(trim($prow['field_id_'.$this->settings['field_pre_field_id']]))] = $pretitle;
+					$field_options[trim($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
 				}
 			}
 		}
