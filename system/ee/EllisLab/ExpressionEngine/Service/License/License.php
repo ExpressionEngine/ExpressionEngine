@@ -94,6 +94,12 @@ class License {
 	 */
 	public function getRawLicense()
 	{
+		if ( ! is_readable($this->path_to_license))
+		{
+			$this->errors['missing_license'] = "Cannot read your license file: {$this->path_to_license}";
+			return;
+		}
+
 		return file_get_contents($this->path_to_license);
 	}
 
@@ -114,12 +120,6 @@ class License {
 		// Reset the errors
 		unset($this->errors['missing_license']);
 		unset($this->errors['corrupt_license_file']);
-
-		if ( ! is_readable($this->path_to_license))
-		{
-			$this->errors['missing_license'] = "Cannot read your license file: {$this->path_to_license}";
-			return;
-		}
 
 		$license = json_decode(base64_decode($this->getRawLicense()), TRUE);
 
