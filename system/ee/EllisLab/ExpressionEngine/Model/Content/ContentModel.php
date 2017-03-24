@@ -19,6 +19,8 @@ abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
 		'afterSave',
+		'afterInsert',
+		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -68,6 +70,16 @@ abstract class ContentModel extends VariableColumnModel {
 		}
 
 		$this->_field_was_saved = array();
+	}
+
+	public function onAfterInsert()
+	{
+		$this->saveFieldData($this->getValues());
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		$this->saveFieldData($changed);
 	}
 
 	/**

@@ -88,8 +88,6 @@ class Category extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'afterInsert',
-		'beforeUpdate',
 		'beforeDelete'
 	);
 
@@ -139,16 +137,6 @@ class Category extends ContentModel {
 				->count();
 			$this->setProperty('cat_order', $count + 1);
 		}
-	}
-
-	public function onAfterInsert()
-	{
-		$this->saveFieldData($this->getValues());
-	}
-
-	public function onBeforeUpdate($changed)
-	{
-		$this->saveFieldData($changed);
 	}
 
 	public function onBeforeDelete()
