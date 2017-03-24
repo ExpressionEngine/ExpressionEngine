@@ -152,7 +152,7 @@ class Member_settings extends Member {
 		{
     		$not_in[] = 2;
 		}
-		
+
 		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
@@ -160,7 +160,7 @@ class Member_settings extends Member {
     		->filter('group_id', 'NOT IN', $not_in)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
     		->first();
-		
+
 		$total_results = count($member);
 
 		if ($total_results == 0)
@@ -643,70 +643,45 @@ class Member_settings extends Member {
 			}
 		}
 
-
 		/** -------------------------------------
 		/**  Do we have custom fields to show?
 		/** ------------------------------------*/
 		// Grab the data for the particular member
 
-		$sql = "SELECT m_field_id, m_field_name, m_field_label, m_field_description, m_field_fmt FROM  exp_member_fields ";
-
+		ee()->db->select('m_field_id, m_field_name, m_field_label, m_field_description, m_field_fmt, m_field_type');
 		if (ee()->session->userdata['group_id'] != 1)
 		{
-			$sql .= " WHERE m_field_public = 'y' ";
+			ee()->db->where('m_field_public = "y"');
 		}
-
-		$sql .= " ORDER BY m_field_order";
-
-		$query = ee()->db->query($sql);
+		ee()->db->order_by('m_field_order');
+		$query = ee()->db->get('member_fields');
 
 		if ($query->num_rows() > 0)
 		{
 			$fnames = array();
-			
+
 			$result_row = $row;
+			$member_field_ids = array();
 
 			foreach ($query->result_array() as $row)
 			{
-				$fnames[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
-			}			
-
-
-		ee()->load->library('typography');
-		ee()->typography->initialize();
-
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-
-		$cond = $default_fields;
-
-		// Get field names present in the template, sans modifiers
-		$clean_field_names = array_map(function($field)
-		{
-			$field = ee()->api_channel_fields->get_single_field($field);
-
-			return $field['field_name'];
-		}, array_flip(ee()->TMPL->var_single));
-
-		// Get field IDs for the member fields we need to fetch
-		$member_field_ids = array();
-		foreach ($clean_field_names as $field_name)
-		{
-			if (isset($fnames[$field_name][0]))
-			{
-				$member_field_ids[] = $fnames[$field_name][0];
+				$fnames[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_field_type']);
+				$member_field_ids[] = $row['m_field_id'];
 			}
-		}
 
-		// Cache member fields here before we start parsing
-		if ( ! empty($member_field_ids))
-		{
-			$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
-				->all()
-				->indexBy('field_id');
-		}
+			ee()->load->library('typography');
+			ee()->typography->initialize();
 
-			
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('channel_fields');
+
+			// Cache member fields here before we start parsing
+			if ( ! empty($member_field_ids))
+			{
+				$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+					->all()
+					->indexBy('field_id');
+			}
 
 			/** ----------------------------------------
 			/**  Parse conditionals for custom fields
@@ -747,40 +722,22 @@ class Member_settings extends Member {
 			/** ----------------------------------------
 			/**  Parse single variables
 			/** ----------------------------------------*/
-
-/*
-
-			$member_field_ids = array();
-			foreach ($query->result_array() as $row)
-			{
-				$member_field_ids[] = $row['m_field_id'];
-			}
-
-			$this->member_fields = ee('Model')->get('MemberField', $member_field_ids)
-				->all()
-				->indexBy('m_field_id');
-
-			ee()->load->library('api');
-			ee()->legacy_api->instantiate('channel_fields');
-
-*/
-
 			foreach ($this->var_single as $key => $val)
 			{
 
 				// Custom member fields
 				$field = ee()->api_channel_fields->get_single_field($key);
-				$val = $field['field_name'];
+				$fval = $field['field_name'];
 
 				// parse custom member fields
-				if (isset($fields[$val]))
+				if (isset($fnames[$fval]))
 				{
-					if (array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+					if (array_key_exists('m_field_id_'.$fnames[$fval]['0'], $result_row))
 					{
 						ee()->TMPL->tagdata = $this->parseField(
 							$fields[$val]['0'],
 							$field,
-							$row['m_field_id_'.$fields[$val]['0']],
+							$result_row['m_field_id_'.$fnames[$fval]['0']],
 							ee()->TMPL->tagdata,
 							$member_id,
 							array(),
@@ -804,59 +761,56 @@ class Member_settings extends Member {
 
 			$field_chunk = $this->_load_element('public_custom_profile_fields');
 
-			// Is there a chunk to parse?
 
+			// Is there a chunk to parse?
 			if ($query->num_rows() == 0)
 			{
 				$content = str_replace("/{custom_profile_fields}/s", '', $content);
 			}
 			else
 			{
-				ee()->load->library('typography');
-				ee()->typography->initialize();
-
 				$str = '';
 				$var_conds = ee()->functions->assign_conditional_variables($field_chunk);
 
-				foreach ($query->result_array() as $row)
+				foreach ($query->result_array() as $field_row)
 				{
 					$temp = $field_chunk;
 
-					$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
-
 					// enables conditionals on these variables
-					$row['field_label'] = $row['m_field_label'];
-					$row['field_description'] = $row['m_field_description'];
-					$row['field_data'] = $field_data;
+					$field_row['field_label'] = $field_row['m_field_label'];
+					$field_row['field_description'] = $field_row['m_field_description'];
 
-					if ($field_data != '')
+					// Custom member fields
+
+					// We fake the template data and make it simply be the tag
+					$temp_string = LD.$field_row['m_field_name'].RD;
+
+					if (array_key_exists('m_field_id_'.$field_row['m_field_id'], $result_row))
 					{
-						$field_data = ee()->typography->parse_type($field_data,
-							 array(
-										'text_format'   => $row['m_field_fmt'],
-										'html_format'   => 'safe',
-										'auto_links'    => 'y',
-										'allow_img_url' => 'n'
-									)
-							);
+						// Hard code date field modifier because this doesn't use real variables
+						$params = ($field_row['m_field_type'] == 'date') ? "%Y %m %d" : '';
+						$field = array(
+							'field_name' => $field_row['m_field_name'],
+							'params' => array('format' => $params, 'modifier' => '')
+						);
+
+						$field_data = $this->parseField(
+							$field_row['m_field_id'],
+							$field,
+							$result_row['m_field_id_'.$field_row['m_field_id']],
+							$temp_string,
+							$result_row['member_id']
+						);
+					}
+					else
+					{
+						$field_data = '';
 					}
 
-					$member_field = $this->member_fields[$row['m_field_id']];
-					$temp_string = LD.$member_field->field_name.RD;
-					$field_data = $this->parseField(
-						$row['m_field_id'],
-						array('field_name' => 'field_data', 'modifier' => ''),
-						$field_data,
-						$temp_string,
-						$this->cur_id,
-						array(
-							'channel_html_formatting' => 'none',
-							'channel_auto_link_urls' => 'n'
-						)
-					);
+					$field_row['field_data'] = $field_data;
 
-					$temp = str_replace('{field_name}', $row['m_field_label'], $temp);
-					$temp = str_replace('{field_description}', $row['m_field_description'], $temp);
+					$temp = str_replace('{field_name}', $field_row['m_field_label'], $temp);
+					$temp = str_replace('{field_description}', $field_row['m_field_description'], $temp);
 					$temp = str_replace('{field_data}', $field_data, $temp);
 
 					foreach ($var_conds as $val)
@@ -868,9 +822,9 @@ class Member_settings extends Member {
 						$lcond	= substr($cond, 0, strpos($cond, ' '));
 						$rcond	= substr($cond, strpos($cond, ' '));
 
-						if (array_key_exists($val['3'], $row))
+						if (array_key_exists($val['3'], $field_row))
 						{
-							$lcond = str_replace($val['3'], "\$row['".$val['3'] ."']", $lcond);
+							$lcond = str_replace($val['3'], "\$field_row['".$val['3'] ."']", $lcond);
 							$cond = $lcond.' '.$rcond;
 							$cond = str_replace("\|", "|", $cond);
 
@@ -885,16 +839,13 @@ class Member_settings extends Member {
 								$temp = preg_replace("/".LD.$val['0'].RD."(.*?)".LD.'\/if'.RD."/s", "", $temp);
 							}
 						}
-
 					}
 
 					$str .= $temp;
-
 				}
 
 				$content = str_replace("{custom_profile_fields}", $str, $content);
 			}
-
 		}
 		// END  if ($quey->num_rows() > 0)
 
@@ -916,27 +867,16 @@ class Member_settings extends Member {
 		// Load the form helper
 		ee()->load->helper('form');
 
+		// UGH- we need these 3 to get the data js or it throws a Legacy\Facade error
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->load->library('javascript');
+
 		/** ----------------------------------------
 		/**  Build the custom profile fields
 		/** ----------------------------------------*/
 
 		$tmpl = $this->_load_element('custom_profile_fields');
-
-		/** ----------------------------------------
-		/**  Fetch the data
-		/** ----------------------------------------*/
-
-		$sql = "SELECT * FROM exp_member_data WHERE member_id = '".ee()->session->userdata('member_id')."'";
-
-		$result = ee()->db->query($sql);
-
-		if ($result->num_rows() > 0)
-		{
-			foreach ($result->row_array() as $key => $val)
-			{
-				$$key = $val;
-			}
-		}
 
 		/** ----------------------------------------
 		/**  Fetch the field definitions
@@ -955,13 +895,15 @@ class Member_settings extends Member {
 
 		$query = ee()->db->query($sql);
 
-		$result_row = $result->row_array();
+//		$result_row = $result->row_array()
 
-		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
+		$result_row = $this->member->getValues();
 
 		if ($query->num_rows() > 0)
 		{
-			foreach ($member->getDisplay()->getFields() as $field)
+			foreach ($this->member->getDisplay()->getFields() as $field)
 			{
 				if (ee()->session->userdata['group_id'] != 1 && $field->get('field_public') != 'y')
 				{
@@ -1036,24 +978,6 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		// Are any required custom fields empty?
-		ee()->db->select('m_field_id, m_field_label');
-		ee()->db->where('m_field_required = "y"');
-		$query = ee()->db->get('member_fields');
-
-		 $errors = array();
-
-		 if ($query->num_rows() > 0)
-		 {
-			foreach ($query->result_array() as $row)
-			{
-				if (isset($_POST['m_field_id_'.$row['m_field_id']]) AND $_POST['m_field_id_'.$row['m_field_id']] == '')
-				{
-					$errors[] = ee()->lang->line('mbr_custom_field_empty').'&nbsp;'.$row['m_field_label'];
-				}
-			}
-		 }
-
 		/** ----------------------------------------
 		/**  Blacklist/Whitelist Check
 		/** ----------------------------------------*/
@@ -1063,37 +987,60 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 
-		/** -------------------------------------
-		/**  Show errors
-		/** -------------------------------------*/
-		 if (count($errors) > 0)
+
+		ee()->db->select('m_field_id, m_field_label, m_field_type, m_field_name');
+		ee()->db->where('m_field_public = "y"');
+		$query = ee()->db->get('member_fields');
+
+		 $errors = array();
+
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		//$member->set($data);
+
+		 if ($query->num_rows() > 0)
 		 {
-			return ee()->output->show_user_error('submission', $errors);
+			foreach ($query->result_array() as $row)
+			{
+				$fname = 'm_field_id_'.$row['m_field_id'];
+				$post = ee()->input->post($fname);
+
+				// Handle arrays of checkboxes as a special case;
+				if ($row['m_field_type'] == 'checkbox')
+				{
+					foreach ($row['choices']  as $property => $label)
+					{
+						$member->$fname = in_array($property, $post) ? 'y' : 'n';
+					}
+				}
+				else
+				{
+					if ($post !== FALSE)
+					{
+						// Check with Seth
+						$member->$fname = ee('Security/XSS')->clean($post);
+						//$member->$fname = $post;
+					}
+				}
+
+				// Set custom field format override if available, too
+				$ft_name = 'm_field_ft_'.$row['m_field_id'];
+				if (ee()->input->post($ft_name))
+				{
+					$member->{$ft_name} = ee()->input->post($ft_name);
+				}
+			}
 		 }
 
 		unset($_POST['HTTP_REFERER']);
 
-		/** -------------------------------------
-		/**  Update the custom fields
-		/** -------------------------------------*/
+		$result = $member->validate();
 
-		$m_data = array();
-
-		if (count($_POST) > 0)
+		if ($result->failed())
 		{
-			foreach ($_POST as $key => $val)
-			{
-				if (strncmp($key, 'm_field_id_', 11) == 0)
-				{
-					$m_data[$key] = ee('Security/XSS')->clean($val);
-				}
-			}
-
-			if (count($m_data) > 0)
-			{
-				ee()->member_model->update_member_data(ee()->session->userdata('member_id'), $m_data);
-			}
+			return ee()->output->show_user_error('general', $result->renderErrors());
 		}
+
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message
@@ -1106,8 +1053,6 @@ class Member_settings extends Member {
 			)
 		);
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Forum Preferences
