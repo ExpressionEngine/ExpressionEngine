@@ -20,7 +20,7 @@ abstract class Request {
 		{
 			if (substr($key, 0, 7) == "CURLOPT")
 			{
-				$this->config[$key] = $val;
+				$this->config[constant($key)] = $val;
 			}
 		}
 
