@@ -53,7 +53,7 @@ class Verifier {
 	 */
 	public function verifyPath($path, $hash_path, $subpath = '', Array $exclusions = [])
 	{
-		$hashmap = $this->createHashmap($this->filesystem->read($hash_path));
+		$hashmap = json_decode($this->filesystem->read($hash_path), TRUE);
 		$subpath = ltrim($subpath, '/');
 
 		$missing_files = [];
@@ -119,28 +119,6 @@ class Verifier {
 		}
 
 		return TRUE;
-	}
-
-	/**
-	 * Given a string of rows of hashes and filenames seprated by a single space,
-	 * creates an array indexed by file path of the corresponding hashes
-	 *
-	 * @param	string	$hashmap	Hash manifest file contents
-	 */
-	protected function createHashmap($hashmap)
-	{
-		$lines = explode("\n", $hashmap);
-
-		$hashmap = [];
-		foreach ($lines as $line) {
-			$line_parts = explode(' ', $line);
-			if (count($line_parts) == 2)
-			{
-				$hashmap[$line_parts[1]] = $line_parts[0];
-			}
-		}
-
-		return $hashmap;
 	}
 }
 

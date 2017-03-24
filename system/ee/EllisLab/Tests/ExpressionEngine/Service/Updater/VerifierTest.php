@@ -31,7 +31,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 
 		$this->filesystem->shouldReceive('read')
 			->with('manifest/path')
-			->andReturn($this->createHashmapString($hashmap));
+			->andReturn(json_encode($hashmap));
 
 		foreach ($hashmap as $file => $hash)
 		{
@@ -152,7 +152,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 
 		$this->filesystem->shouldReceive('read')
 			->with('manifest/path')
-			->andReturn($this->createHashmapString($hashmap));
+			->andReturn(json_encode($hashmap));
 
 		foreach ($hashmap as $file => $hash)
 		{
@@ -168,16 +168,5 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$this->assertEquals(TRUE, $this->verifier->verifyPath('some/path/some_other_path', 'manifest/path', '/some_other_path'));
-	}
-
-	public function createHashmapString(Array $hashmap)
-	{
-		$string = "";
-		foreach ($hashmap as $file => $hash)
-		{
-			$string .= "$hash $file\n";
-		}
-
-		return $string;
 	}
 }
