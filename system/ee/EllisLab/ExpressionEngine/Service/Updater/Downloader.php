@@ -276,8 +276,8 @@ class Downloader {
 		// Write the file
 		$this->filesystem->write($this->getArchiveFilePath(), $data, TRUE);
 
-		// Grab the zip's SHA1 hash to verify integrity
-		$hash = $this->filesystem->sha1File($this->getArchiveFilePath());
+		// Grab the zip's SHA384 hash to verify integrity
+		$hash = $this->filesystem->hashFile('sha384', $this->getArchiveFilePath());
 
 		// Make sure the file's SHA1 matches what we were given in the header
 		if (trim($curl->getHeader('Package-Hash'), '"') != $hash)

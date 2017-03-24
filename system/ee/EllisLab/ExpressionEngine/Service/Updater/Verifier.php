@@ -92,7 +92,7 @@ class Verifier {
 				$missing_files[] = $file_path;
 			}
 			// If so, does it have integrity?
-			else if ($this->filesystem->sha1File($absolute_file_path) !== $hash)
+			else if ($this->filesystem->hashFile('sha384', $absolute_file_path) !== $hash)
 			{
 				$corrupt_files[] = $file_path;
 			}

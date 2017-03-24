@@ -37,7 +37,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 		{
 			$file = 'some/path/'.$file;
 			$this->filesystem->shouldReceive('exists')->with($file)->andReturn(TRUE)->once();
-			$this->filesystem->shouldReceive('sha1File')->with($file)->andReturn($hash)->once();
+			$this->filesystem->shouldReceive('hashFile')->with('sha384', $file)->andReturn($hash)->once();
 		}
 
 		$this->assertEquals(TRUE, $this->verifier->verifyPath('some/path', 'manifest/path'));
@@ -51,7 +51,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(FALSE)->once();
 			} else {
 				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(TRUE)->once();
-				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+				$this->filesystem->shouldReceive('hashFile')->with('sha384', $file_path)->andReturn($hash)->once();
 			}
 		}
 
@@ -75,7 +75,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(FALSE)->once();
 			} else {
 				$this->filesystem->shouldReceive('exists')->with($file_path)->andReturn(TRUE)->once();
-				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+				$this->filesystem->shouldReceive('hashFile')->with('sha384', $file_path)->andReturn($hash)->once();
 			}
 		}
 
@@ -97,9 +97,9 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 			// Sabotage this file
 			if ($file == 'some/file2.ext')
 			{
-				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn('1234')->once();
+				$this->filesystem->shouldReceive('hashFile')->with('sha384', $file_path)->andReturn('1234')->once();
 			} else {
-				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+				$this->filesystem->shouldReceive('hashFile')->with('sha384', $file_path)->andReturn($hash)->once();
 			}
 		}
 
@@ -121,9 +121,9 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 			// Sabotage this file
 			if ($file != 'some/file2.ext')
 			{
-				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn('1234')->once();
+				$this->filesystem->shouldReceive('hashFile')->with('sha384', $file_path)->andReturn('1234')->once();
 			} else {
-				$this->filesystem->shouldReceive('sha1File')->with($file_path)->andReturn($hash)->once();
+				$this->filesystem->shouldReceive('hashFile')->with('sha384', $file_path)->andReturn($hash)->once();
 			}
 		}
 
@@ -164,7 +164,7 @@ class VerifierTest extends \PHPUnit_Framework_TestCase {
 
 			$file = 'some/path/some_other_path' . str_replace('some_other_path', '', $file);
 			$this->filesystem->shouldReceive('exists')->with($file)->andReturn(TRUE)->once();
-			$this->filesystem->shouldReceive('sha1File')->with($file)->andReturn($hash)->once();
+			$this->filesystem->shouldReceive('hashFile')->with('sha384', $file)->andReturn($hash)->once();
 		}
 
 		$this->assertEquals(TRUE, $this->verifier->verifyPath('some/path/some_other_path', 'manifest/path', '/some_other_path'));

@@ -266,8 +266,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip', 'some data', TRUE)
 			->once();
 
-		$this->filesystem->shouldReceive('sha1File')
-			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip')
+		$this->filesystem->shouldReceive('hashFile')
+			->with('sha384', PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
 
@@ -356,8 +356,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('write')
 			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip', 'some data', TRUE);
 
-		$this->filesystem->shouldReceive('sha1File')
-			->with(PATH_CACHE.'ee_update/ExpressionEngine.zip')
+		$this->filesystem->shouldReceive('hashFile')
+			->with('sha384', PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
 			->andReturn('bad hash');
 
