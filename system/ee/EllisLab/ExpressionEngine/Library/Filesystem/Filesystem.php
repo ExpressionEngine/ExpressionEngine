@@ -551,19 +551,20 @@ class Filesystem {
 	}
 
 	/**
-	 * Returns the SHA1 hash for a file
+	 * Returns a hash for a given file and hashing algorithm
 	 *
+	 * @param String $algo PHP hashing algorithm, as specified in hash_algos()
 	 * @param String $path Path to check
-	 * @return String SHA1 hash of file
+	 * @return String Hash of file
 	 */
-	public function sha1File($filename)
+	public function hashFile($algo, $filename)
 	{
 		if ( ! $this->exists($filename))
 		{
 			throw new FilesystemException("File does not exist: {$filename}");
 		}
 
-		return sha1_file($filename);
+		return hash_file($algo, $filename);
 	}
 
 	/**
