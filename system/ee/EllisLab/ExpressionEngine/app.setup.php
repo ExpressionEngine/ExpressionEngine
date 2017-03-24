@@ -217,9 +217,8 @@ return array(
 			$filesystem = $ee->make('Filesystem');
 
 			return new Updater\Downloader(
-				$ee->make('License')->getEELicense()->getData('license_number'),
-				// Will be dynamic later
-				'http://ee.dev/download.php',
+				$ee->make('License')->getEELicense(),
+				'http://ellislab.local/index.php?ACT=266',
 				$ee->make('Curl'),
 				$filesystem,
 				new \ZipArchive(),

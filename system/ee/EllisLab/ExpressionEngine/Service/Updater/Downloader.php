@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
 use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
+use EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl\RequestFactory;
 use EllisLab\ExpressionEngine\Service\Config\File;
@@ -34,16 +35,16 @@ use ZipArchive;
  */
 class Downloader {
 
-	protected $license_number = '';
-	protected $payload_url = '';
-	protected $curl = NULL;
-	protected $filesystem = NULL;
-	protected $zip_archive = NULL;
-	protected $config = NULL;
-	protected $verifier = NULL;
-	protected $logger = NULL;
-	protected $requirements = NULL;
-	protected $sites = NULL;
+	protected $license;
+	protected $payload_url;
+	protected $curl;
+	protected $filesystem;
+	protected $zip_archive;
+	protected $config;
+	protected $verifier;
+	protected $logger;
+	protected $requirements;
+	protected $sites;
 
 	protected $filename = 'ExpressionEngine.zip';
 	protected $extracted_folder = 'ExpressionEngine';
@@ -52,8 +53,7 @@ class Downloader {
 	/**
 	 * Constructor
 	 *
-	 * @param	string				$license_number	License number to send along
-	 * 	with the payload request
+	 * @param	ExpressionEngineLicense		$license		ExpressionEngineLicense object
 	 * @param	string						$payload_url	URL to request payload from
 	 * @param	Curl\RequestFactory			$curl			cURL service object
 	 * @param	Filesystem					$filesystem		Filesystem service object
@@ -64,19 +64,9 @@ class Downloader {
 	 * @param	RequirementsCheckerLoader	$requirements	Requirements checker loader object
 	 * @param	Collection					$sites			Collection of all the Site model objects
 	 */
-	public function __construct($license_number, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements, Collection $sites)
+	public function __construct(ExpressionEngineLicense $license, $payload_url, RequestFactory $curl, Filesystem $filesystem, ZipArchive $zip_archive, File $config, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements, Collection $sites)
 	{
-		if (empty($license_number) OR ! is_string($license_number))
-		{
-			throw new UpdaterException('Invalid license number argument.');
-		}
-
-		if (empty($payload_url) OR ! is_string($payload_url))
-		{
-			throw new UpdaterException('Invalid URL argument.');
-		}
-
-		$this->license_number = $license_number;
+		$this->license = $license;
 		$this->payload_url = $payload_url;
 		$this->curl = $curl;
 		$this->filesystem = $filesystem;
@@ -246,7 +236,11 @@ class Downloader {
 
 		$curl = $this->curl->post(
 			$this->payload_url,
-			['license' => $this->license_number]
+			[
+				'action' => 'download_update',
+				'license' => $this->license->getRawLicense(),
+				'version' => APP_VER
+			]
 		);
 
 		$data = $curl->exec();

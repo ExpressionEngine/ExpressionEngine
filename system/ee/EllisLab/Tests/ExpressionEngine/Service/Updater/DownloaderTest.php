@@ -10,6 +10,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
+		$this->license = Mockery::mock('EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense');
 		$this->curl = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\RequestFactory');
 		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->zip_archive = Mockery::mock('ZipArchive');
@@ -21,22 +22,22 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->logger->shouldReceive('log');
 
-		$this->license_number = '1234-1234-1234-1234';
 		$this->payload_url = 'http://0.0.0.0/ee.zip';
 
-		$this->downloader = new Downloader($this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites);
+		$this->downloader = new Downloader($this->license, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites);
 	}
 
 	private function getPartialMock($methods)
 	{
 		return Mockery::mock(
 			'EllisLab\ExpressionEngine\Service\Updater\Downloader['.$methods.']',
-			[$this->license_number, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites]
+			[$this->license, $this->payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites]
 		);
 	}
 
 	public function tearDown()
 	{
+		$this->license = NULL;
 		$this->curl = NULL;
 		$this->filesystem = NULL;
 		$this->zip_archive = NULL;
@@ -46,35 +47,6 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->logger = NULL;
 		$this->requirements = NULL;
 		$this->sites = NULL;
-	}
-
-	/**
-	 * @expectedException EllisLab\ExpressionEngine\Service\Updater\UpdaterException
-	 * @dataProvider badUpdaterConstructorProvider
-	 */
-	public function testBadConstructor($license_number, $payload_url)
-	{
-		$updater = new Downloader($license_number, $payload_url, $this->curl, $this->filesystem, $this->zip_archive, $this->config, $this->verifier, $this->logger, $this->requirements, $this->sites);
-	}
-
-	public function badUpdaterConstructorProvider()
-	{
-		// No license
-		$license_number = '';
-		$payload_url = 'http://0.0.0.0/ee.zip';
-
-		$return = [[$license_number, $payload_url]];
-
-		// No payload
-		$license_number = '1234-1234-1234-1234';
-		$payload_url = '';
-
-		// Nothing
-		$return[] = [$license_number, $payload_url];
-
-		$return[] = ['', ''];
-
-		return $return;
 	}
 
 	public function testPreflight()
@@ -234,9 +206,15 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	{
 		$request = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\PostRequest');
 
+		$this->license->shouldReceive('getRawLicense')->andReturn('1234');
+
 		$this->curl->shouldReceive('post')->with(
 				$this->payload_url,
-				['license' => $this->license_number]
+				[
+					'action' => 'download_update',
+					'license' => '1234',
+					'version' => APP_VER
+				]
 			)
 			->once()
 			->andReturn($request);
@@ -283,9 +261,15 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 	{
 		$request = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\PostRequest');
 
+		$this->license->shouldReceive('getRawLicense')->andReturn('1234');
+
 		$this->curl->shouldReceive('post')->with(
 				$this->payload_url,
-				['license' => $this->license_number]
+				[
+					'action' => 'download_update',
+					'license' => '1234',
+					'version' => APP_VER
+				]
 			)
 			->andReturn($request);
 

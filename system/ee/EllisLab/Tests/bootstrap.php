@@ -11,6 +11,7 @@ define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
 define('PATH_CACHE', SYSPATH.'user/cache/');
 define('APPPATH',  BASEPATH);
+define('APP_VER',  '4.0.0');
 define('PATH_THEMES', realpath(SYSPATH.'/../themes').'/');
 
 // application constants
