@@ -37,7 +37,6 @@ class Relationship_ft extends EE_Fieldtype {
 	protected $channels = array();
 	protected $entries = array();
 	protected $children = array();
-	protected $act_url = NULL;
 
 	/**
 	 * Validate Field
@@ -406,18 +405,8 @@ class Relationship_ft extends EE_Fieldtype {
 			'ui' => 'sortable'
 		));
 
-		if ( ! $this->act_url)
-		{
-			$action_id = ee('Model')->get('Action')
-				->filter('class', 'Relationship')
-				->filter('method', 'entryList')
-				->first()
-				->action_id;
-			$this->act_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id;
-		}
-
 		ee()->javascript->set_global(array(
-			'relationship.filter_url' => $this->act_url
+			'relationship.filter_url' => ee('CP/URL', 'addons/settings/relationship/ajax-filter')->compile()
 		));
 
 		if ($entry_id)

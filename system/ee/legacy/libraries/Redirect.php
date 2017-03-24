@@ -50,6 +50,9 @@ $url = ee()->typography->decodeIDN($_GET['URL']);
 
 $link = '<a rel="nofollow" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue to the new page</a>';
 
+// Make sure a filtered comparison later doesn't trip the URL as "changed" for URLs with query strings
+$link = str_replace('&amp;', '&', $link);
+
 // catch XSS as well as any HTML or malformed URLs. FILTER_VALIDATE_URL doesn't work with IDN,
 // so this will also fail if an IDN is used as a redirect on a server that is missing PHP's intl extension,
 // but that's okay, as it probably means this redirect was not created by the site owner

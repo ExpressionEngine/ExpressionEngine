@@ -231,8 +231,8 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		$all_fields = $this->relationship_field_names;
-		$all_fields = implode('|', $all_fields).'|parents|siblings';
+		$all_fields = array_merge($this->relationship_field_names, array('parents', 'siblings'));
+		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
 		// {rel:pre:fix:tag:modified param="value"}
@@ -353,7 +353,7 @@ class EE_relationship_tree_builder {
 				'tag_info'	  => array(),
 				'entry_ids'	  => array(),
 				'params'	  => $params,
-				'shortcut'	  => $is_only_relationship ? FALSE : $tag,
+				'shortcut'	  => $is_only_relationship ? FALSE : ltrim($tag, ':'),
 				'open_tag'	  => $match[0],
 				'in_grid'	  => $in_grid,
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
@@ -548,12 +548,19 @@ class EE_relationship_tree_builder {
 
 				if ($i == 0 && $leaf['L0_grid_col_id'])
 				{
-					$field_name = $this->grid_relationship_names[$field_id];
+					$names = $this->grid_relationship_names;
 				}
 				else
 				{
-					$field_name = $this->relationship_field_names[$field_id];
+					$names = $this->relationship_field_names;
 				}
+
+				if ( ! isset($names[$field_id]))
+				{
+					break;
+				}
+
+				$field_name = $names[$field_id];
 
 				if ( ! isset($parsed_leaves[$i]))
 				{

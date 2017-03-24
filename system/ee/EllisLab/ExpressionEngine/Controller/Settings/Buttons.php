@@ -273,6 +273,7 @@ class Buttons extends Settings {
 			}
 		}
 
+		$this->button->site_id = ee()->config->item('site_id');
 		$this->button->save();
 
 		ee()->session->set_flashdata('button_id', $this->button->id);
