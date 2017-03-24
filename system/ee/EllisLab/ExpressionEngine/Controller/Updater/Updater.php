@@ -43,7 +43,7 @@ class Updater extends CP_Controller {
 		ee()->lang->loadfile('updater');
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();
-		$to_version = $version_file[0][0];
+		$to_version = $version_file['latest_version'];
 
 		if (version_compare(APP_VER, $to_version, '>=') OR
 			ee()->session->userdata('group_id') != 1)

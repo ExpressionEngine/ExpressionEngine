@@ -278,8 +278,10 @@ class General extends Settings {
 	 */
 	public function versionCheck()
 	{
+		// TODO: does this work
 		ee()->load->library('el_pings');
-		$details = ee()->el_pings->get_version_info();
+		$version_info = ee()->el_pings->get_version_info();
+		$latet_version = $version_info['latest_version'];
 
 		// Error getting version
 		if ( ! $details)
@@ -292,16 +294,13 @@ class General extends Settings {
 		}
 		else
 		{
-			end($details);
-			$latest_version = current($details);
-
 			// New version available
-			if ($latest_version[0] > APP_VER)
+			if (version_compare(APP_VER, $latet_version, '<'))
 			{
 				$download_url = ee()->cp->masked_url('https://expressionengine.com/store/purchases');
 				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');
 
-				$desc = sprintf(lang('version_update_inst'), $latest_version[0], $download_url, $instruct_url);
+				$desc = sprintf(lang('version_update_inst'), $latest_version, $download_url, $instruct_url);
 
 				ee('CP/Alert')->makeBanner('version-update-available')
 					->asWarning()

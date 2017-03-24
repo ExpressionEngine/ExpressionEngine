@@ -107,28 +107,16 @@ class El_pings {
 
 		if ( ! $cached)
 		{
-			$version_file = array();
+			$version_file = ee('Curl')->post(
+				'http://ellislab.local/index.php?ACT=266',
+				[
+					'action' => 'check_new_version',
+					'license' => ee('License')->getEELicense()->getRawLicense(),
+					'version' => APP_VER,
+				]
+			)->exec();
 
-			if ( ! $version_info = $this->_do_ping('https://versions.ellislab.com/versions_ee3.txt'))
-			{
-				$version_file['error'] = TRUE;
-			}
-			else
-			{
-				$version_info = explode("\n", trim($version_info));
-
-				if (empty($version_info))
-				{
-					$version_file['error'] = TRUE;
-				}
-				else
-				{
-					foreach ($version_info as $version)
-					{
-						$version_file[] = explode('|', $version);
-					}
-				}
-			}
+			$version_file = json_decode($version_file, TRUE);
 
 			// Cache version information for a day
 			ee()->cache->save(
@@ -173,12 +161,12 @@ class El_pings {
 	 */
 	private function _is_valid_version_file($version_file)
 	{
-		if ( ! is_array($version_file))
+		if ( ! is_array($version_file) OR ! isset($version_file['latest_version']))
 		{
 			return FALSE;
 		}
 
-		foreach ($version_file as $version)
+		/*foreach ($version_file as $version)
 		{
 			if ( ! is_array($version) OR count($version) != 3)
 			{
@@ -192,7 +180,7 @@ class El_pings {
 					return FALSE;
 				}
 			}
-		}
+		}*/
 
 		return TRUE;
 	}

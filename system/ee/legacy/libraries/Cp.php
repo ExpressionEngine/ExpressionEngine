@@ -498,9 +498,9 @@ class Cp {
 		}
 
 		$version_info = array(
-			'version' => $version_file[0][0],
-			'build' => $version_file[0][1],
-			'security' => $version_file[0][2] == 'high',
+			'version' => $version_file['latest_version'],
+			'build' => '1234', // TODO
+			'security' => FALSE, // TODO
 		);
 
 		if (version_compare($version_info['version'], APP_VER) < 1)
