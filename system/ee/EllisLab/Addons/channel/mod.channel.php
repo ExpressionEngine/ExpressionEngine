@@ -1202,7 +1202,7 @@ class Channel {
 
 		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT t.entry_id " : "t.entry_id ";
 
-		$sql_b .= ",exp_channels.field_group ";
+		$sql_b .= ", exp_channels.channel_id ";
 
 		if ($this->pagination->field_pagination == TRUE)
 		{
@@ -2233,8 +2233,6 @@ class Channel {
 
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
-		//exit($sql_a.$sql_b.$sql);
-
 		if ($query->num_rows() == 0)
 		{
 			$this->sql = '';
@@ -2262,16 +2260,16 @@ class Channel {
 		}
 
 		$entries = array();
-		$field_groups = array();
+		$channel_ids = array();
 
 		foreach ($query->result_array() as $row)
 		{
 			$entries[] = $row['entry_id'];
-			$field_groups[] = $row['field_group'];
+			$channel_ids[] = $row['channel_id'];
 		}
 
 		$entries = array_unique($entries);
-		$field_groups = array_unique($field_groups);
+		$channel_ids = array_unique($channel_ids);
 
 		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
@@ -2297,25 +2295,34 @@ class Channel {
 			}
 		}
 
-		$fields = ee('Model')->get('ChannelField')
-			->filter('legacy_field_data', 'n')
-			->filter('group_id', 'IN', $field_groups)
+		$channels = ee('Model')->get('Channel', $channel_ids)
+			->with('FieldGroups', 'CustomFields')
 			->all();
 
-		if ($fields->count())
+		$fields = array();
+
+		foreach ($channels as $channel)
 		{
-			foreach ($fields as $field)
+			foreach ($channel->getCustomFields() as $field)
 			{
-				$field_id = $field->getId();
-				$table = "exp_channel_data_field_{$field_id}";
-
-				foreach ($field->getColumnNames() as $column)
+				if ( ! $field->legacy_field_data)
 				{
-					$this->sql .= ", {$table}.{$column}";
+					$fields[$field->field_id] = $field;
 				}
-
-				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
 			}
+		}
+
+		foreach ($fields as $field)
+		{
+			$field_id = $field->getId();
+			$table = "exp_channel_data_field_{$field_id}";
+
+			foreach ($field->getColumnNames() as $column)
+			{
+				$this->sql .= ", {$table}.{$column}";
+			}
+
+			$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
 		}
 
 		$this->sql .= $from;
