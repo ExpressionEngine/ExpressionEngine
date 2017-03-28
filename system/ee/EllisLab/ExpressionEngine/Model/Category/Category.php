@@ -71,8 +71,9 @@ class Category extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'CategoryField',
-		'extra_data'    => array(
+		'field_model'     => 'CategoryField',
+		'structure_model' => 'CategoryGroup',
+		'extra_data'      => array(
 			'group_column' => 'Category__group_id',
 			'parent_table' => 'categories',
 			'key_column'   => 'cat_id'

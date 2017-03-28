@@ -512,13 +512,13 @@ class Channel extends StructureModel {
 
 	public function getCustomFields()
 	{
-		$fields = $this->CustomFields;
+		$fields = $this->CustomFields->indexBy('field_name');
 
 		foreach ($this->FieldGroups as $field_group)
 		{
 			foreach($field_group->ChannelFields as $field)
 			{
-				$fields[] = $field;
+				$fields[$field->field_name] = $field;
 			}
 		}
 

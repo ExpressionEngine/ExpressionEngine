@@ -107,8 +107,9 @@ class Member extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'MemberField',
-		'extra_data'    => array(
+		'field_model'     => 'MemberField',
+		'structure_model' => 'MemberGroup',
+		'extra_data'      => array(
 			'parent_table' => 'members',
 			'key_column'   => 'member_id'
 		)
