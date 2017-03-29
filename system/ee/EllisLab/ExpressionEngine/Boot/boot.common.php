@@ -2,7 +2,7 @@
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
-include SYSDIR . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
+include SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
 
 /**
  * CodeIgniter
