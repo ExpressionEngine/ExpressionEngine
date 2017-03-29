@@ -1283,18 +1283,10 @@ class EE_Session {
 	{
 		if ($cookie = ee()->input->cookie('flash'))
 		{
-			if (strlen($cookie) > 32)
+			if ($this->flashdata = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie))
 			{
-				$signature = substr($cookie, -32);
-				$payload = substr($cookie, 0, -32);
-
-				if (hash_equals(md5($payload.$this->sess_crypt_key), $signature))
-				{
-					$this->flashdata = json_decode(stripslashes($payload), TRUE);
-					$this->_age_flashdata();
-
-					return;
-				}
+				$this->_age_flashdata();
+				return;
 			}
 		}
 
@@ -1322,17 +1314,11 @@ class EE_Session {
 	 */
 	protected function _set_flash_cookie()
 	{
-		// Don't want to hash the crypt key by itself
-		$payload = '';
-
 		if (count($this->flashdata) > 0)
 		{
-			// JSON_UNESCAPED_SLASHES not available until PHP 5.4
-			$payload = str_replace("\\/","/", json_encode($this->flashdata));
-			$payload = $payload.md5($payload.$this->sess_crypt_key);
+			$payload = ee('Encrypt/Cookie')->signCookieData($this->flashdata);
+			ee()->input->set_cookie('flash' , $payload, 86500);
 		}
-
-		ee()->input->set_cookie('flash' , $payload, 86500);
 	}
 
 	// --------------------------------------------------------------------
