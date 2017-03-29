@@ -127,9 +127,7 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'afterInsert',
 		'beforeUpdate',
-		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -211,11 +209,6 @@ class Member extends ContentModel {
 		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
 	}
 
-	public function onAfterInsert()
-	{
-		$this->saveFieldData($this->getValues());
-	}
-
 	/**
 	 * Log email and password changes
 	 */
@@ -253,11 +246,6 @@ class Member extends ContentModel {
 				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
 		}
-	}
-
-	public function onAfterUpdate($changed)
-	{
-		$this->saveFieldData($changed);
 	}
 
 	/**

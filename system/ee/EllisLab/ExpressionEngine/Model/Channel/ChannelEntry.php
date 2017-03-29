@@ -393,6 +393,7 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterInsert()
 	{
+		parent::onAfterInsert();
 		$this->Author->updateAuthorStats();
 
 		if ($this->Channel->channel_notify == 'y' && $this->Channel->channel_notify_emails != '')
@@ -404,14 +405,12 @@ class ChannelEntry extends ContentModel {
 				$this->getId()
 			);
 		}
-
-		$this->saveFieldData($this->getValues());
 	}
 
 	public function onAfterUpdate($changed)
 	{
+		parent::onAfterUpdate($changed);
 		$this->saveVersion();
-		$this->saveFieldData($changed);
 	}
 
 	public function onBeforeDelete()
