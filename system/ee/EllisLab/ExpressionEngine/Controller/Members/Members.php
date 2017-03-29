@@ -229,6 +229,8 @@ class Members extends CP_Controller {
 
 		$this->generateSidebar('pending');
 
+		$base_url = ee('CP/URL')->make('members/pending');
+
 		$vars = array(
 			'cp_page_title' => lang('pending_members'),
 			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
@@ -236,14 +238,69 @@ class Members extends CP_Controller {
 			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
 		);
 
-		$base_url = ee('CP/URL')->make('members/pending');
+		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
 			->filter('group_id', 4)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
+		$listings = $this->listingsPage($members, $base_url, $checkboxes);
+
+		$vars = array_merge($listings, $vars);
+
+		$this->set_view_header($base_url);
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove'),
+		));
+
+		ee()->cp->render('members/pending', $vars);
+	}
+
+	protected function listingsPage($members, $base_url, $checkboxes = NULL)
+	{
+		$vars = array();
+
+		// Allow them to tokenize searches
+		$search_terms = $this->_check_search_tokens(ee()->input->get_post('search'));
+
+		if ( ! empty($search_terms))
+		{
+			$default_search_in = array('screen_name', 'username', 'email', 'member_id');
+
+			$keywords = ee()->input->get_post('search');
+			$vars['search_terms'] = htmlentities($keywords, ENT_QUOTES, 'UTF-8');
+
+			// find the fields to search
+			if ( ! is_array($search_terms))
+			{
+				foreach ($default_search_in as $field)
+				{
+					$tokenized_search[$field] =  $search_terms;
+				}
+			}
+			else
+			{
+				$tokenized_search = $search_terms;
+			}
+
+			$count = 1;
+			$members->filterGroup();
+			foreach ($tokenized_search as $field => $term)
+			{
+					if ($count == 1)
+					{
+						$members->Filter($field, 'LIKE', '%' . $term . '%');
+					}
+					else
+					{
+						$members->orFilter($field, 'LIKE', '%' . $term . '%');
+					}
+					$count++;
+			}
+			$members->endFilterGroup();
+		}
 
 		$count = $members->count();
 
@@ -268,13 +325,11 @@ class Members extends CP_Controller {
 			->render($base_url);
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
-		));
 
-		ee()->cp->render('members/pending', $vars);
+		return $vars;
 	}
+
+
 
 	public function bans()
 	{
