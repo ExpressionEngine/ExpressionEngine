@@ -282,6 +282,11 @@ return array(
 			return $db;
 		},
 
+		'Encrypt/Cookie' => function($ee)
+		{
+			return new Encrypt\Cookie();
+		},
+
 		'File' => function($ee)
 		{
 			return new File\Factory();
