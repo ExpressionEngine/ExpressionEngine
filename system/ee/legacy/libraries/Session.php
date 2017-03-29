@@ -1290,7 +1290,7 @@ class EE_Session {
 
 				if (hash_equals(md5($payload.$this->sess_crypt_key), $signature))
 				{
-					$this->flashdata = unserialize(stripslashes($payload));
+					$this->flashdata = json_decode(stripslashes($payload), TRUE);
 					$this->_age_flashdata();
 
 					return;
@@ -1327,7 +1327,8 @@ class EE_Session {
 
 		if (count($this->flashdata) > 0)
 		{
-			$payload = serialize($this->flashdata);
+			// JSON_UNESCAPED_SLASHES not available until PHP 5.4
+			$payload = str_replace("\\/","/", json_encode($this->flashdata));
 			$payload = $payload.md5($payload.$this->sess_crypt_key);
 		}
 
