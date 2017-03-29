@@ -258,6 +258,16 @@ class Members extends CP_Controller {
 		ee()->cp->render('members/pending', $vars);
 	}
 
+
+	/**
+	 * Creates $vars array of filtered member Table/Pagination
+	 *
+	 * @param	Builder 	$members	Query builder object for Members
+	 * @param	object 		$base_url	CP/URL
+	 * @param	mixed 		$checkboxes	Optional T/F indicating permission to use checkboxes.
+	 *          default of NULL falls back on using can_delete_members permission
+	 * @return  $array 		$vars array of filtered member table data
+	 */
 	protected function listingsPage($members, $base_url, $checkboxes = NULL)
 	{
 		$vars = array();
