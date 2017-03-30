@@ -166,8 +166,6 @@ class Wizard extends CI_Controller {
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
 
-		$this->ci_config['encryption_key'] = ee('Encrypt')->generateKey();
-
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
 
@@ -1994,6 +1992,8 @@ class Wizard extends CI_Controller {
 		{
 			$config[$key] = $val;
 		}
+
+		$config['encryption_key'] = ee('Encrypt')->generateKey();
 
 		if (isset($config['site_index']))
 		{
