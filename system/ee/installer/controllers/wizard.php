@@ -1994,6 +1994,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$config['encryption_key'] = ee('Encrypt')->generateKey();
+		$config['session_crypt_key'] = ee('Encrypt')->generateKey();
 
 		if (isset($config['site_index']))
 		{
