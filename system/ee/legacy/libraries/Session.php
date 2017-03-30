@@ -117,7 +117,8 @@ class EE_Session {
 
 		$this->cookie_ttl = $this->_setup_cookie_ttl();
 
-		$this->sess_crypt_key = ee()->config->item('encryption_key');
+		$this->sess_crypt_key = ee()->config->item('session_crypt_key')
+			?: ee()->config->item('encryption_key');
 
 		// Set Default Session Values
 		// Set USER-DATA as GUEST until proven otherwise

@@ -36,12 +36,12 @@ class Cookie {
 	 */
 	public function getVerifiedCookieData($cookie)
 	{
-		$hash = $this->getCookieHash();
+		$hash_length = 96;
 
-		if (strlen($cookie) <= strlen($hash)) return NULL;
+		if (strlen($cookie) <= $hash_length) return NULL;
 
-		$signature = substr($cookie, -strlen($hash));
-		$payload = substr($cookie, 0, -strlen($hash));
+		$signature = substr($cookie, -$hash_length);
+		$payload = substr($cookie, 0, -$hash_length);
 
 		if (hash_equals($this->generateHashForCookieData($payload), $signature))
 		{
@@ -68,20 +68,6 @@ class Cookie {
 	}
 
 	/**
-	 * Hash to sign cookie data with
-	 *
-	 * @return string Hash
-	 */
-	protected function getCookieHash()
-	{
-		// TODO: This hash seed will need to change
-		return hash('sha384', ee('Model')->get('Site')
-			->first()
-			->getRawProperty('site_system_preferences')
-		);
-	}
-
-	/**
 	 * Creates signature of cookie data
 	 *
 	 * @return string Signature
@@ -90,7 +76,7 @@ class Cookie {
 	{
 		return ee('Encrypt')->sign(
 			$data,
-			$this->getCookieHash(),
+			ee()->config->item('session_crypt_key'),
 			'sha384'
 		);
 	}
