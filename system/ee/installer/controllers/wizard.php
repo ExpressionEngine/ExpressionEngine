@@ -839,7 +839,7 @@ class Wizard extends CI_Controller {
 		$hashed_password = ee()->auth->hash_password($this->userdata['password']);
 		$this->userdata['password']  = $hashed_password['password'];
 		$this->userdata['salt']      = $hashed_password['salt'];
-		$this->userdata['unique_id'] = random_string('encrypt');
+		$this->userdata['unique_id'] = ee('Encrypt')->generateKey();
 
 		// --------------------------------------------------------------------
 

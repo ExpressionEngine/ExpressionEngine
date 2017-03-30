@@ -380,7 +380,7 @@ class EE_Session {
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
 		{
-			$crypt_key = ee()->functions->random('encrypt', 16);
+			$crypt_key = ee('Encrypt')->generateKey();
 			ee()->db->update(
 				'members',
 				array('crypt_key' => $crypt_key),
