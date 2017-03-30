@@ -444,7 +444,7 @@ class ChannelEntry extends ContentModel {
 
 		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
 
-		if ($data == $last_version->version_data)
+		if ( ! empty($last_version) && $data == $last_version->version_data)
 		{
 			return;
 		}
