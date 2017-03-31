@@ -286,7 +286,7 @@ class Encrypt {
 	 */
 	public function generateKey()
 	{
-		return sha1(uniqid(random_int(PHP_INT_MIN, PHP_INT_MAX), TRUE));
+		return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), TRUE));
 	}
 }
 
