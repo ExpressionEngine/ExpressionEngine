@@ -214,7 +214,7 @@ class EntryList {
 	{
 		$settings = ee('Encrypt')->decode(
 			ee('Request')->post('settings'),
-			ee()->db->username.ee()->db->password
+			ee()->config->item('session_crypt_key')
 		);
 		$settings = json_decode($settings, TRUE);
 

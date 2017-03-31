@@ -356,7 +356,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$settings = json_encode($settings);
 		$settings = ee('Encrypt')->encode(
 			$settings,
-			ee()->db->username.ee()->db->password
+			ee()->config->item('session_crypt_key')
 		);
 
 		// Create a cache of channel names
