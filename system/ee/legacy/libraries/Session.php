@@ -926,7 +926,12 @@ class EE_Session {
 				unset($tracker['token']);
 
 				// Check for funny business
-				if ( ! ee('Encrypt')->verifySignature(implode('', $tracker), $tracker_token))
+				if ( ! ee('Encrypt')->verifySignature(
+					implode('', $tracker),
+					$tracker_token,
+					ee()->config->item('session_crypt_key'),
+					'sha384'
+				))
 				{
 					$tracker = array();
 				}
@@ -992,7 +997,11 @@ class EE_Session {
 		{
 			unset($tracker['token']);
 
-			$tracker['token'] = ee('Encrypt')->sign(implode('', $tracker));
+			$tracker['token'] = ee('Encrypt')->sign(
+				implode('', $tracker),
+				ee()->config->item('session_crypt_key'),
+				'sha384'
+			);
 		}
 
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
