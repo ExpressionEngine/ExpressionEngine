@@ -179,7 +179,9 @@ class Channel_form_lib
 
 		// Get the entry data, if an entry was specified
 		// the entry object will already exist if this is a submission error
-		if ( ! is_object($this->entry))
+		if ( ! is_object($this->entry)
+			|| $this->entry->entry_id != ee()->TMPL->fetch_param('entry_id')
+			|| $this->entry->Channel->getId() != $this->channel->getId())
 		{
 			$this->fetch_entry(
 				ee()->TMPL->fetch_param('entry_id'),
