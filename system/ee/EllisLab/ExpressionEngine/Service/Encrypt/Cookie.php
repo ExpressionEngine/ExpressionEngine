@@ -26,6 +26,12 @@ namespace EllisLab\ExpressionEngine\Service\Encrypt;
  */
 class Cookie {
 
+	// Length of sha384 hash
+	protected $hash_length = 96;
+
+	// Algorithm for hash generation
+	protected $hash_algo = 'sha384';
+
 	/**
 	 * Given raw cookie data appended with a signature, returns the verified,
 	 * decoded data
@@ -36,12 +42,10 @@ class Cookie {
 	 */
 	public function getVerifiedCookieData($cookie)
 	{
-		$hash_length = 96;
+		if (strlen($cookie) <= $this->hash_length) return NULL;
 
-		if (strlen($cookie) <= $hash_length) return NULL;
-
-		$signature = substr($cookie, -$hash_length);
-		$payload = substr($cookie, 0, -$hash_length);
+		$signature = substr($cookie, -$this->hash_length);
+		$payload = substr($cookie, 0, -$this->hash_length);
 
 		if (hash_equals($this->generateHashForCookieData($payload), $signature))
 		{
@@ -77,7 +81,7 @@ class Cookie {
 		return ee('Encrypt')->sign(
 			$data,
 			ee()->config->item('session_crypt_key'),
-			'sha384'
+			$this->hash_algo
 		);
 	}
 }
