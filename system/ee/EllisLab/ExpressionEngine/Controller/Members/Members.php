@@ -284,13 +284,13 @@ class Members extends CP_Controller {
 
 			if ( ! is_array($search_terms))
 			{
-				$members->search(['screen_name', 'username', 'email', 'member_id'], $search_terms);
+				$members->search(array('screen_name', 'username', 'email', 'member_id'), $search_terms);
 			}
 			else
 			{
 				foreach ($search_terms as $field => $term)
 				{
-					$members->search([$field], $term);
+					$members->search($field, $term);
 				}
 			}
 		}
