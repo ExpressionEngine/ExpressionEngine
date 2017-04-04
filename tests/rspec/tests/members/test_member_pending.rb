@@ -36,7 +36,7 @@ feature 'Pending Member List' do
   end
 
   it 'can decline a single pending member', :all_files => true do
-    member_name = @page.title_names[0].text
+    member_name = @page.usernames[0].text
 
     @page.pending[1].find('input[type="checkbox"]').set true
     @page.wait_until_bulk_action_visible
