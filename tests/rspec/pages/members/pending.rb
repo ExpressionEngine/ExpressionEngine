@@ -1,8 +1,4 @@
-class PendingMembers < ControlPanelPage
-
-  element :member_search, 'input[name=search]'
-  element :member_actions, 'select[name=bulk_action]'
-  element :member_table, 'table'
+class PendingMembers < MemberManagerPage
 
   def load
     main_menu.members_btn.click
