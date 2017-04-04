@@ -293,6 +293,13 @@ class Members extends CP_Controller {
 					$members->search($field, $term);
 				}
 			}
+
+			// Set search results heading
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$members->count(),
+				$vars['search_terms']
+			);
 		}
 
 		$count = $members->count();
