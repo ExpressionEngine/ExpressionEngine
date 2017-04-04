@@ -36,7 +36,8 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'normalizeFieldLayoutData'
+				'normalizeFieldLayoutData',
+				'addSessionCryptKey'
 			)
 		);
 
@@ -77,6 +78,23 @@ class Updater {
 
 			$layout->field_layout = $field_layout;
 			$layout->save();
+		}
+	}
+
+	/**
+	 * Adds `session_crypt_key` config item to define the key to be used for
+	 * session-related encryption such as cookie integrity and hidden form
+	 * inputs
+	 */
+	private function addSessionCryptKey()
+	{
+		$session_crypt_key = ee()->config->item('session_crypt_key');
+		if (empty($session_crypt_key))
+		{
+			ee()->config->update_site_prefs(
+				array('session_crypt_key' => ee('Encrypt')->generateKey()),
+				'all'
+			);
 		}
 	}
 }

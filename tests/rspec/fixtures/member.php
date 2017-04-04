@@ -1,6 +1,6 @@
 <?php
 
-require('bootstrap.php');
+require('config.php');
 
 $command = array_shift($argv);
 
@@ -40,6 +40,5 @@ $member->password = sha1("password");
 $member->salt = sha1("password");
 $member->language = 'english';
 $member->timezone = 'America/New_York';
-$member->unique_id = sha1(uniqid(mt_rand(), TRUE));
 $member->email = $email;
 $member->save();
