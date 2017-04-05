@@ -15,7 +15,7 @@ feature 'Statistics' do
   it "shows the Manage Statistics page" do
     @page.should have(4).rows # 3 rows + header
     @page.sources.map {|source| source.text}.should == ["Channel Entries", "Members", "Sites"]
-    @page.counts.map {|count| count.text}.should == ["10", "1", "1"]
+    @page.counts.map {|count| count.text}.should == ["10", "7", "1"]
   end
 
   it "can sort by source" do
@@ -30,7 +30,7 @@ feature 'Statistics' do
 
   it "can sort by count" do
     @page.all('a.sort')[1].click
-    @page.counts.map {|count| count.text}.should == ["1", "1", "10"]
+    @page.counts.map {|count| count.text}.should == ["1", "7", "10"]
     @page.content_table.find('th.highlight').text.should eq 'Record Count'
 
     @page.all('a.sort')[1].click
@@ -44,7 +44,7 @@ feature 'Statistics' do
 
     @page.should have(4).rows # 3 rows + header
     @page.sources.map {|source| source.text}.should == ["Channel Entries", "Members", "Sites"]
-    @page.counts.map {|count| count.text}.should == ["10", "2", "1"]
+    @page.counts.map {|count| count.text}.should == ["10", "8", "1"]
   end
 
   it "can sync one source" do
