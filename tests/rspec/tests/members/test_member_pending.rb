@@ -19,7 +19,7 @@ feature 'Pending Member List' do
     @page.search_submit_button.click
     no_php_js_errors
 
-    @page.first_party_heading.text.should eq 'Search Results we found 1 results for "pending1"'
+    @page.heading.text.should eq 'Search Results we found 1 results for "pending1"'
     @page.phrase_search.value.should eq 'pending1'
     @page.should have_text 'pending1'
     @page.should have(1).members
@@ -29,7 +29,7 @@ feature 'Pending Member List' do
     @page.phrase_search.set 'admin'
     @page.search_submit_button.click
 
-    @page.first_party_heading.text.should eq 'Search Results we found 0 results for "admin"'
+    @page.heading.text.should eq 'Search Results we found 0 results for "admin"'
     @page.phrase_search.value.should eq 'admin'
     @page.should have_no_results
     @page.should_not have_pagination
@@ -38,7 +38,7 @@ feature 'Pending Member List' do
    it 'displays an itemzied modal when attempting to decline 1 member' do
     member_name = @page.usernames[0].text
 
-    @page.members[1].find('input[type="checkbox"]').set true
+    @page.members[0].find('input[type="checkbox"]').set true
     @page.wait_until_bulk_action_visible
     @page.bulk_action.select "Decline"
     @page.action_submit_button.click
@@ -53,7 +53,7 @@ feature 'Pending Member List' do
   it 'can decline a single pending member' do
     member_name = @page.usernames[0].text
 
-    @page.pending[1].find('input[type="checkbox"]').set true
+    @page.members[0].find('input[type="checkbox"]').set true
     @page.wait_until_bulk_action_visible
     @page.bulk_action.select "Decline"
     @page.action_submit_button.click

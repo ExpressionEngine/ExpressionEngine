@@ -1,6 +1,7 @@
 class MemberManagerPage < ControlPanelPage
 
   # Title/header box elements
+  element :heading, 'div.col.w-12 div.box form h1'
   element :phrase_search, 'fieldset.tbl-search input[name=search]'
   element :search_submit_button, 'fieldset.tbl-search input.submit'
 
