@@ -325,14 +325,13 @@ class Updater {
 				);
 		}
 
-
 		// Drop columns from exp_members
 		foreach ($fields as $field => $data)
 		{
 			ee()->smartforge->drop_column('members', $field);
 		}
 	}
-	
+
 	private function warnAboutBirthdayTag()
 	{
 		ee()->update_notices->setVersion('4.0');
@@ -361,16 +360,16 @@ class Updater {
 				$warnings = TRUE;
 			}
 		}
-		
+
 		// Check snippets
 		ee()->load->model('snippet_model');
 		$snippets = ee()->snippet_model->fetch();
 
 		foreach($snippets as $snippet)
 		{
-			if (strpos($template->template_data, $tag) !== FALSE)
+			if (strpos($snippet->snippet_contents, $tag) !== FALSE)
 			{
-        		$snip_warnings[] = $template->get_group()->group_name.'/'.$template->template_name;
+			$snip_warnings[] = $snippet->snippet_name;
 				$warnings = TRUE;
 			}
 		}
@@ -381,18 +380,18 @@ class Updater {
 			$notice = 'The member profile variable {birthday} has been removed from the default member variables and replaced by
 			a date type member custom field variable.  If you are currently using this variable in templates or snippets, you will want to edit it to include
 			date formatting parameters.<br><br>';
-			
+
 			if (count($temp_warnings))
 			{
 				$notice .= 'The following templates contain a {birthday} variable:<br><br>'.implode('<br>', $temp_warnings).'<br><br>';
 			}
-			
+
 			if (count($snip_warnings))
 			{
 				$notice .= 'The following snippets contain a {birthday} variable:<br><br>'.implode('<br>', $snip_warnings).'<br><br>';
 			}
-			
-			ee()->update_notices->item($note);
+
+			ee()->update_notices->item($notice);
 		}
 
 		ee()->update_notices->item('Done.');
