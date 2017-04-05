@@ -19,8 +19,9 @@ class MemberManagerPage < ControlPanelPage
   element :checkbox_header, 'div.box form div.tbl-wrap table tr th:nth-child(6)'
 
   elements :ids, 'div.box form div.tbl-wrap table tr td:first-child'
-  elements :usernames, 'div.box form div.tbl-wrap table tr td:nth-child(2)'
-  elements :datess, 'div.box form div.tbl-wrap table tr td:nth-child(3)'
+  elements :usernames, 'div.box form div.tbl-wrap table tr td:nth-child(2) > a'
+  elements :emails, 'div.box form div.tbl-wrap table tr td:nth-child(2) span.meta-info a'
+  elements :dates, 'div.box form div.tbl-wrap table tr td:nth-child(3)'
   elements :member_groups, 'div.box form div.tbl-wrap table tr td:nth-child(4)'
   elements :manage_actions, 'div.box form div.tbl-wrap table tr td:nth-child(5)'
 

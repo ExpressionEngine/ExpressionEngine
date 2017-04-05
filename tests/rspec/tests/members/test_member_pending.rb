@@ -63,6 +63,6 @@ feature 'Pending Member List' do
 
     @page.should have_alert
     @page.alert.text.should include "Member Declined"
-    @page.alert.text.should include "The member ".member_name." has been declined."
+    @page.alert.text.should include "The member "+member_name+" has been declined."
   end
 end
