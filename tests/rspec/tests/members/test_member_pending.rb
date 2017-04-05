@@ -35,7 +35,22 @@ feature 'Pending Member List' do
     @page.should_not have_pagination
   end
 
-  it 'can decline a single pending member', :all_files => true do
+   it 'displays an itemzied modal when attempting to decline 1 member' do
+    member_name = @page.usernames[0].text
+
+    @page.members[1].find('input[type="checkbox"]').set true
+    @page.wait_until_bulk_action_visible
+    @page.bulk_action.select "Decline"
+    @page.action_submit_button.click
+
+    @page.wait_until_modal_visible
+    @page.modal_title.text.should eq "Confirm Decline"
+    @page.modal.text.should include "You are attempting to decline the following members. This will remove them, please confirm this action."
+    @page.modal.text.should include member_name
+    @page.modal.all('.checklist li').length.should eq 1
+  end
+
+  it 'can decline a single pending member' do
     member_name = @page.usernames[0].text
 
     @page.pending[1].find('input[type="checkbox"]').set true
@@ -46,6 +61,8 @@ feature 'Pending Member List' do
     @page.modal_submit_button.click # Submits a form
     no_php_js_errors
 
-    @page.text.should_not include member_name
+    @page.should have_alert
+    @page.alert.text.should include "Member Declined"
+    @page.alert.text.should include "The member ".member_name." has been declined."
   end
 end
