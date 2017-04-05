@@ -909,7 +909,7 @@ abstract class EE_Fieldtype {
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
-				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
+				foreach (explode("\n", $this->settings['field_list_items']) as $v)
 				{
 					$v = trim($v);
 					$field_options[$v] = $v;
