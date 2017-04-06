@@ -65,6 +65,7 @@ system/user/config/*
 system/user/config/config.php
 system/user/config/database.php
 !system/user/config/license.key
+!system/user/config/license.dp.key
 !system/user/config/index.html
 
 system/user/language/*
