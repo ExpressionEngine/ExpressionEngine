@@ -34,7 +34,7 @@ feature 'Statistics' do
     @page.content_table.find('th.highlight').text.should eq 'Record Count'
 
     @page.all('a.sort')[1].click
-    @page.counts.map {|count| count.text}.should == ["10", "1", "1"]
+    @page.counts.map {|count| count.text}.should == ["10", "7", "1"]
     @page.content_table.find('th.highlight').text.should eq 'Record Count'
   end
 
