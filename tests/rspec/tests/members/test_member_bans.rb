@@ -38,7 +38,7 @@ feature 'Banned Member List' do
    it 'displays an itemzied modal when attempting to remove 1 member' do
     member_name = @page.usernames[0].text
 
-    @page.members[1].find('input[type="checkbox"]').set true
+    @page.members[0].find('input[type="checkbox"]').set true
     @page.wait_until_bulk_action_visible
     @page.bulk_action.select "Remove"
     @page.action_submit_button.click
