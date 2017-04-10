@@ -536,6 +536,10 @@ class CI_DB_driver {
 		{
 			$str = 'NULL';
 		}
+		elseif ( ! is_int($str))
+		{
+			$str = 'NULL';
+		}
 
 		return $str;
 	}

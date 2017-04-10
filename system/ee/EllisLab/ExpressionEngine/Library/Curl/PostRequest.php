@@ -10,8 +10,8 @@ class PostRequest extends Request {
 
 		if ( ! empty($data))
 		{
-			$config[CURLOPT_POST] = 1;
-			$config[CURLOPT_POSTFIELDS] = $data;
+			$config['CURLOPT_POST'] = 1;
+			$config['CURLOPT_POSTFIELDS'] = http_build_query($data);
 		}
 
 		return parent::__construct($url, $config, $callback);

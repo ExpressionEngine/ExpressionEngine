@@ -31,40 +31,8 @@ class Relationship {
 	 */
 	public function entryList()
 	{
-		$settings = ee('Encrypt')->decode(
-			ee('Request')->post('settings'),
-			ee()->db->username.ee()->db->password
-		);
-		$settings = json_decode($settings, TRUE);
-
-		if (empty($settings))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		$settings['search'] = ee('Request')->post('search');
-		$settings['channel_id'] = ee('Request')->post('channel_id');
-
-		if ( ! AJAX_REQUEST OR ! ee()->session->userdata('member_id'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		ee()->load->library('EntryList');
-		$entries = ee()->entrylist->query($settings);
-
-		$response = array();
-		foreach ($entries as $entry)
-		{
-			$response[] = array(
-				'entry_id'     => $entry->getId(),
-				'title'        => htmlentities($entry->title, ENT_QUOTES, 'UTF-8'),
-				'channel_id'   => $entry->Channel->getId(),
-				'channel_name' => htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8')
-			);
-		}
-
-		ee()->output->send_ajax_response($response);
+		ee()->output->send_ajax_response(ee()->entrylist->ajaxFilter());
 	}
 }
 

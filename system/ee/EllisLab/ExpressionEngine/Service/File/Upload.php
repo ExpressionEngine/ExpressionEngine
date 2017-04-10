@@ -452,7 +452,11 @@ class Upload {
 				}
 
 				ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
-				ee('Filesystem')->copy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
+
+				if (file_exists($file->getAbsoluteThumbnailPath()))
+				{
+					ee('Filesystem')->copy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
+				}
 
 				foreach ($file->UploadDestination->FileDimensions as $fd)
 				{

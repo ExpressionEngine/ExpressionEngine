@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.5.3';	// The version being installed
+	public $version           = '3.5.5';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -165,8 +165,6 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['app_version'] = $this->version;
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
-
-		$this->ci_config['encryption_key'] = sha1(uniqid(mt_rand(), TRUE));
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -841,7 +839,7 @@ class Wizard extends CI_Controller {
 		$hashed_password = ee()->auth->hash_password($this->userdata['password']);
 		$this->userdata['password']  = $hashed_password['password'];
 		$this->userdata['salt']      = $hashed_password['salt'];
-		$this->userdata['unique_id'] = random_string('encrypt');
+		$this->userdata['unique_id'] = ee('Encrypt')->generateKey();
 
 		// --------------------------------------------------------------------
 
@@ -1994,6 +1992,9 @@ class Wizard extends CI_Controller {
 		{
 			$config[$key] = $val;
 		}
+
+		$config['encryption_key'] = ee('Encrypt')->generateKey();
+		$config['session_crypt_key'] = ee('Encrypt')->generateKey();
 
 		if (isset($config['site_index']))
 		{

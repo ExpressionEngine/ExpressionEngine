@@ -104,6 +104,11 @@ return array(
 
 		'CP/URL' => function($ee, $path = NULL)
 		{
+			if ( ! isset(ee()->session))
+			{
+				ee()->load->library('session');
+			}
+
 			$cp_url = ee()->config->item('cp_url');
 			$site_index = ee()->functions->fetch_site_index(0,0);
 			$uri_string = ee()->uri->uri_string();
@@ -275,6 +280,11 @@ return array(
 			$db->getLog()->saveQueries($save_queries);
 
 			return $db;
+		},
+
+		'Encrypt/Cookie' => function($ee)
+		{
+			return new Encrypt\Cookie();
 		},
 
 		'File' => function($ee)

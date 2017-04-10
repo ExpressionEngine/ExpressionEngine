@@ -42,6 +42,8 @@ $(document).ready(function () {
 			list_reorder = $('.list-reorder', cat_container),
 			toolbar = $('.toolbar', cat_container);
 
+		EE.category.manage_categories_toggle = (turning_on);
+
 		$(this).toggleClass('off', ! turning_on);
 		$(this).toggleClass('on', turning_on);
 		$('.form-ctrls button').toggleClass('disable', turning_on);
@@ -218,6 +220,10 @@ $(document).ready(function () {
 			maxDepth: 10,
 			constrainToRoot: true
 		}).on('change', function() {
+
+			if (EE.category.manage_categories_toggle == false) {
+				return;
+			}
 
 			EE.cp.addLastToChecklists();
 

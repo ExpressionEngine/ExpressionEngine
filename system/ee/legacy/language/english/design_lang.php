@@ -202,6 +202,8 @@ $lang = array(
 
 'last_edit' => 'Last Edit: %s by %s',
 
+'author_unknown' => 'unknown',
+
 'view_rendered' => 'view rendered',
 
 'notes' => 'Notes',

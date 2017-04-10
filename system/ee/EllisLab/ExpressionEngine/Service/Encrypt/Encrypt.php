@@ -279,6 +279,15 @@ class Encrypt {
 		return FALSE;
 	}
 
+	/**
+	 * Generates a random key to be used for anything, probably encryption
+	 *
+	 * @return string 32-character key
+	 */
+	public function generateKey()
+	{
+		return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), TRUE));
+	}
 }
 
 // EOF
