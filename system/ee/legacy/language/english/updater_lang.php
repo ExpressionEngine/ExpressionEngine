@@ -68,11 +68,7 @@ Status code returned: %s',
 'Could not verify update file, "Package-Hash" header was not found in the response.',
 
 'could_not_verify_download' =>
-'Could not verify the integrity of the downloaded update file. Expected hash:
-
-%s
-
-But got hash:
+'Could not verify the signature or integrity of the downloaded update file. Got hash:
 
 %s',
 

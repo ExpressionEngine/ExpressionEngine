@@ -234,9 +234,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('application/zip');
 
 		$request->shouldReceive('getHeader')
-			->with('Package-Hash')
-			->once()
-			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
+			->with('Package-Signature')
+			->andReturn('APMXXgjhZBuapY4NOdWxe7LDylqYueqm9ZPyjlqDTa6mCzwrL1DVSRsAQiqHBndwfXjPrFvQu1IkkKOTQU1GGHEfVcAUQMPttt5UwZsDoyaw/8YP8Xm5bxyvv0WACYDSihKFHsp8ndsqhHp21W2K5dJQVgo1jif+CFObT2ja5c0IK6SjN/dhEXaHZ8m85jqNfePYgqTT+taNbU7IWuFzx49AAe8KI5hDGkKS0a5DhVFdru1duMyLuQAEthw5RHoznDS4u/X48ILqDtaaApXNonD26bzZhxLwNwI9WuUg/1aOHqoiYdPQgWH2GvyxOKy8MmxwDuoZD4XuwaqfTRoYfw==');
 
 		$this->filesystem->shouldReceive('mkDir');
 
@@ -247,12 +246,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem->shouldReceive('hashFile')
 			->with('sha384', PATH_CACHE.'ee_update/ExpressionEngine.zip')
 			->once()
-			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
-
-		$request->shouldReceive('getHeader')
-			->with('Package-Hash')
-			->once()
-			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
+			->andReturn('fb7cc0d8a9c41a8ddf74bf7bc6f4e487a79c15c07f15116ad1ce3b0da7159577fff365db8ae7fe8cc463f15da7430d02');
 
 		$this->downloader->downloadPackage();
 	}
@@ -315,7 +309,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn('"application/zip"');
 
 		$request->shouldReceive('getHeader')
-			->with('Package-Hash')
+			->with('Package-Signature')
 			->once()
 			->andReturn(FALSE);
 
@@ -330,8 +324,8 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$request->shouldReceive('getHeader')
-			->with('Package-Hash')
-			->andReturn('f893f7fddb3804258d26c4c3c107dc3ba6618046');
+			->with('Package-Signature')
+			->andReturn('APMXXgjhZBuapY4NOdWxe7LDylqYueqm9ZPyjlqDTa6mCzwrL1DVSRsAQiqHBndwfXjPrFvQu1IkkKOTQU1GGHEfVcAUQMPttt5UwZsDoyaw/8YP8Xm5bxyvv0WACYDSihKFHsp8ndsqhHp21W2K5dJQVgo1jif+CFObT2ja5c0IK6SjN/dhEXaHZ8m85jqNfePYgqTT+taNbU7IWuFzx49AAe8KI5hDGkKS0a5DhVFdru1duMyLuQAEthw5RHoznDS4u/X48ILqDtaaApXNonD26bzZhxLwNwI9WuUg/1aOHqoiYdPQgWH2GvyxOKy8MmxwDuoZD4XuwaqfTRoYfw==');
 
 		$this->config->shouldReceive('set')->with('is_site_on', 'n');
 

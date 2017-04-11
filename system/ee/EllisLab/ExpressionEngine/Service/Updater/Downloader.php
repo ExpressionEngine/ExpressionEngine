@@ -262,7 +262,7 @@ class Downloader {
 			5);
 		}
 
-		if ( ! $curl->getHeader('Package-Hash'))
+		if ( ! $curl->getHeader('Package-Signature'))
 		{
 			throw new UpdaterException( lang('missing_hash_header')."\n\n".lang('try_again_later'), 6);
 		}
@@ -272,18 +272,38 @@ class Downloader {
 
 		// Grab the zip's SHA384 hash to verify integrity
 		$hash = $this->filesystem->hashFile('sha384', $this->getArchiveFilePath());
+		$signature = trim($curl->getHeader('Package-Signature'), '"');
 
-		// Make sure the file's SHA1 matches what we were given in the header
-		if (trim($curl->getHeader('Package-Hash'), '"') != $hash)
+		if ( ! $this->verifySignature($hash, $signature))
 		{
 			throw new UpdaterException(
 				sprintf(
 					lang('could_not_verify_download')."\n\n".lang('try_again_later'),
-					trim($curl->getHeader('Package-Hash'), '"'),
 					$hash
 				),
 			7);
 		}
+	}
+
+	/**
+	 * Verifies the signature of the downloaded build
+	 *
+	 * @param $hash string SHA384 hash of downloaded zip file
+	 * @param $signature string Base-64 encoded signature
+	 * @return boolean TRUE if verified
+	 */
+	private function verifySignature($hash, $signature)
+	{
+		$signature = base64_decode($signature);
+
+		$verified = openssl_verify(
+			$hash,
+			$signature,
+			openssl_get_publickey('file://'.SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLabUpdate.pub'),
+			OPENSSL_ALGO_SHA384
+		);
+
+		return ($verified === 1);
 	}
 
 	/**
