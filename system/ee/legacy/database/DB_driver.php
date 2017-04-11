@@ -536,7 +536,7 @@ class CI_DB_driver {
 		{
 			$str = 'NULL';
 		}
-		elseif ( ! is_int($str))
+		elseif ( ! is_int($str) && ! is_float($str))
 		{
 			$str = 'NULL';
 		}
