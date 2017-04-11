@@ -300,7 +300,8 @@ class EE_Output {
 		// --------------------------------------------------------------------
 
 		// Is compression requested?
-		if ($CFG->item('compress_output') === TRUE && $this->_zlib_oc == FALSE)
+		// if PHP errors have been output by our exception handler, we can't change encodings mid-stream, so also check for our error handling class having been loaded
+		if ($CFG->item('compress_output') === TRUE && $this->_zlib_oc == FALSE && ! class_exists('EE_Exceptions'))
 		{
 			if (extension_loaded('zlib'))
 			{
