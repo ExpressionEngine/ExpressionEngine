@@ -79,9 +79,8 @@ class Homepage extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$vars['number_of_banned_members'] = ee('Model')->get('MemberGroup', 2)
-			->first()
-			->getMembers()
+		$vars['number_of_banned_members'] = ee('Model')->get('Member')
+			->filter('group_id', 2)
 			->count();
 
 		$vars['number_of_closed_entries'] = ee('Model')->get('ChannelEntry')
