@@ -64,8 +64,8 @@ Status code returned: %s',
 
 %s',
 
-'missing_hash_header' =>
-'Could not verify update file, "Package-Hash" header was not found in the response.',
+'missing_signature_header' =>
+'Could not verify update file, "Package-Signature" header was not found in the response.',
 
 'could_not_verify_download' =>
 'Could not verify the signature or integrity of the downloaded update file. Got hash:

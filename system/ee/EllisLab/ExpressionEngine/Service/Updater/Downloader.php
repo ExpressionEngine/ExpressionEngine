@@ -264,7 +264,7 @@ class Downloader {
 
 		if ( ! $curl->getHeader('Package-Signature'))
 		{
-			throw new UpdaterException( lang('missing_hash_header')."\n\n".lang('try_again_later'), 6);
+			throw new UpdaterException(lang('missing_signature_header')."\n\n".lang('try_again_later'), 6);
 		}
 
 		// Write the file
