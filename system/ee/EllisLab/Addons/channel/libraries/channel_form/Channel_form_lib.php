@@ -179,7 +179,9 @@ class Channel_form_lib
 
 		// Get the entry data, if an entry was specified
 		// the entry object will already exist if this is a submission error
-		if ( ! is_object($this->entry))
+		if ( ! is_object($this->entry)
+			|| $this->entry->entry_id != ee()->TMPL->fetch_param('entry_id')
+			|| $this->entry->Channel->getId() != $this->channel->getId())
 		{
 			$this->fetch_entry(
 				ee()->TMPL->fetch_param('entry_id'),
@@ -2635,7 +2637,7 @@ GRID_FALLBACK;
 
 		$meta = serialize($meta);
 
-		return ee('Encrypt')->encode($meta, ee()->db->username.ee()->db->password);
+		return ee('Encrypt')->encode($meta, ee()->config->item('session_crypt_key'));
 	}
 
 
@@ -2656,7 +2658,7 @@ GRID_FALLBACK;
 			throw new Channel_form_exception(lang('form_decryption_failed'));
 		}
 
-		$meta = ee('Encrypt')->decode($meta, ee()->db->username.ee()->db->password);
+		$meta = ee('Encrypt')->decode($meta, ee()->config->item('session_crypt_key'));
 
 		$this->_meta = unserialize($meta);
 

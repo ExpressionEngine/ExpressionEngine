@@ -218,8 +218,8 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeInsert()
 	{
-		$this->setProperty('unique_id', sha1(uniqid(mt_rand(), TRUE)));
-		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
+		$this->setProperty('unique_id', ee('Encrypt')->generateKey());
+		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
 	}
 
 	/**

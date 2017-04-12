@@ -300,9 +300,18 @@ class EE_Output {
 		// --------------------------------------------------------------------
 
 		// Is compression requested?
+		// if PHP errors have been output by our exception handler, we can't change encodings mid-stream, so also check for our error handling class having been loaded
 		if ($CFG->item('compress_output') === TRUE && $this->_zlib_oc == FALSE)
 		{
-			if (extension_loaded('zlib'))
+			// can't change encodings mid-stream, if we've already displayed PHP errors, we cannot Gzip the rest of the output
+			$error_out = FALSE;
+			if (class_exists('EE_Exceptions'))
+			{
+				$exceptions = load_class('Exceptions', 'core');
+				$error_out = $exceptions->hasOutputPhpErrors();
+			}
+
+			if ( ! $error_out && extension_loaded('zlib'))
 			{
 				if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)
 				{

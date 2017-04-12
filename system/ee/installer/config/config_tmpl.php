@@ -6,6 +6,7 @@
 
 $config['app_version'] = '{app_version}';
 $config['encryption_key'] = '{encryption_key}';
+$config['session_crypt_key'] = '{session_crypt_key}';
 $config['database'] = array(
 	'expressionengine' => array(
 		'hostname' => '{db_hostname}',

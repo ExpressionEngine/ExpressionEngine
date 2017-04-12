@@ -227,12 +227,12 @@ if ( ! function_exists('random_string'))
 			case 'unique'	:
 			case 'md5'		:
 
-						return md5(uniqid(mt_rand()));
+						return md5(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX)));
 				break;
 			case 'encrypt'	:
 			case 'sha1'	:
 
-						return sha1(uniqid(mt_rand(), TRUE));
+						return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), TRUE));
 				break;
 		}
 	}

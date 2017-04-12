@@ -368,12 +368,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 						return 'value_label_duplicate_values';
 					}
 
-					// Empty values
-					if (empty($row['value']) OR empty($row['label']))
-					{
-						return 'value_label_empty_field';
-					}
-
 					$values[] = $row['value'];
 				}
 			}

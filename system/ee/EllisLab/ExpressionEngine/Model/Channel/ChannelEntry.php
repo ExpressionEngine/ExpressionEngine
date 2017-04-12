@@ -116,6 +116,8 @@ class ChannelEntry extends ContentModel {
 		'afterUpdate'
 	);
 
+	protected $_default_fields;
+
 	// Properties
 	protected $entry_id;
 	protected $site_id;
@@ -444,7 +446,7 @@ class ChannelEntry extends ContentModel {
 
 		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
 
-		if ($data == $last_version->version_data)
+		if ( ! empty($last_version) && $data == $last_version->version_data)
 		{
 			return;
 		}
@@ -691,9 +693,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	protected function getDefaultFields()
 	{
-		static $default_fields = array();
-
-		if (empty($default_fields))
+		if (empty($this->_default_fields))
 		{
 			$default_fields = array(
 				'title' => array(
@@ -872,9 +872,11 @@ class ChannelEntry extends ContentModel {
 					$default_fields[$tab_id . '__' . $key] = $field;
 				}
 			}
+
+			$this->_default_fields = $default_fields;
 		}
 
-		return $default_fields;
+		return $this->_default_fields;
 	}
 
 	/**

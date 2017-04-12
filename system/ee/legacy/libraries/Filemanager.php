@@ -2391,7 +2391,7 @@ class Filemanager {
 		ee()->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		ee()->output->set_header("Pragma: no-cache");
 
-		$file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode(ee()->input->get_post('file')), ee()->session->sess_crypt_key));
+		$file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode(ee()->input->get_post('file')), ee()->config->item('session_crypt_key')));
 
 		if ($file == '')
 		{

@@ -117,7 +117,8 @@ class EE_Session {
 
 		$this->cookie_ttl = $this->_setup_cookie_ttl();
 
-		$this->sess_crypt_key = ee()->config->item('encryption_key');
+		$this->sess_crypt_key = ee()->config->item('session_crypt_key')
+			?: ee()->config->item('encryption_key');
 
 		// Set Default Session Values
 		// Set USER-DATA as GUEST until proven otherwise
@@ -379,7 +380,7 @@ class EE_Session {
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
 		{
-			$crypt_key = ee()->functions->random('encrypt', 16);
+			$crypt_key = ee('Encrypt')->generateKey();
 			ee()->db->update(
 				'members',
 				array('crypt_key' => $crypt_key),
@@ -925,7 +926,12 @@ class EE_Session {
 				unset($tracker['token']);
 
 				// Check for funny business
-				if ( ! ee('Encrypt')->verifySignature(implode('', $tracker), $tracker_token))
+				if ( ! ee('Encrypt')->verifySignature(
+					implode('', $tracker),
+					$tracker_token,
+					ee()->config->item('session_crypt_key'),
+					'sha384'
+				))
 				{
 					$tracker = array();
 				}
@@ -991,7 +997,11 @@ class EE_Session {
 		{
 			unset($tracker['token']);
 
-			$tracker['token'] = ee('Encrypt')->sign(implode('', $tracker));
+			$tracker['token'] = ee('Encrypt')->sign(
+				implode('', $tracker),
+				ee()->config->item('session_crypt_key'),
+				'sha384'
+			);
 		}
 
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
@@ -1283,18 +1293,10 @@ class EE_Session {
 	{
 		if ($cookie = ee()->input->cookie('flash'))
 		{
-			if (strlen($cookie) > 32)
+			if ($this->flashdata = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie))
 			{
-				$signature = substr($cookie, -32);
-				$payload = substr($cookie, 0, -32);
-
-				if (hash_equals(md5($payload.$this->sess_crypt_key), $signature))
-				{
-					$this->flashdata = unserialize(stripslashes($payload));
-					$this->_age_flashdata();
-
-					return;
-				}
+				$this->_age_flashdata();
+				return;
 			}
 		}
 
@@ -1322,16 +1324,11 @@ class EE_Session {
 	 */
 	protected function _set_flash_cookie()
 	{
-		// Don't want to hash the crypt key by itself
-		$payload = '';
-
 		if (count($this->flashdata) > 0)
 		{
-			$payload = serialize($this->flashdata);
-			$payload = $payload.md5($payload.$this->sess_crypt_key);
+			$payload = ee('Encrypt/Cookie')->signCookieData($this->flashdata);
+			ee()->input->set_cookie('flash' , $payload, 86500);
 		}
-
-		ee()->input->set_cookie('flash' , $payload, 86500);
 	}
 
 	// --------------------------------------------------------------------

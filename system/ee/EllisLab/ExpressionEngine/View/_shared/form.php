@@ -7,7 +7,7 @@ if ( ! isset($required) || ! is_bool($required))
 	{
 		foreach ($settings as $setting)
 		{
-			if ( ! is_array($setting))
+			if ( ! is_array($setting) OR ! isset($setting['fields']))
 			{
 				continue;
 			}
