@@ -11,6 +11,7 @@ feature 'Pending Member List' do
   it 'shows the Pending Member List page' do
     @page.should have_member_search
     @page.should have_member_table
+    @page.should have(2).members
   end
 
   # Confirming phrase search

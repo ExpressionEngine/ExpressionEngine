@@ -1783,7 +1783,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_member_data` WRITE;
 INSERT INTO `exp_member_data` (`member_id`) VALUES
-	(1),(2),(28),(29),(30),(31),(32),(33),(34);
+	(1),(2),(3),(4),(5),(6),(7);
 UNLOCK TABLES;
 
 
