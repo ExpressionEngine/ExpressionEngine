@@ -229,6 +229,8 @@ class Members extends CP_Controller {
 
 		$this->generateSidebar('pending');
 
+		$base_url = ee('CP/URL')->make('members/pending');
+
 		$vars = array(
 			'cp_page_title' => lang('pending_members'),
 			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
@@ -236,14 +238,69 @@ class Members extends CP_Controller {
 			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
 		);
 
-		$base_url = ee('CP/URL')->make('members/pending');
+		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
 			->filter('group_id', 4)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
+		$listings = $this->listingsPage($members, $base_url, 'no_pending_members_found', $checkboxes);
+
+		$vars = array_merge($listings, $vars);
+
+		$this->set_view_header($base_url);
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove'),
+		));
+
+		ee()->cp->render('members/pending', $vars);
+	}
+
+
+	/**
+	 * Creates $vars array of filtered member Table/Pagination
+	 *
+	 * @param	Builder 	$members	Query builder object for Members
+	 * @param	object 		$base_url	CP/URL
+	 * @param	string 		$no_results_text
+	 * @param	mixed 		$checkboxes	Optional T/F indicating permission to use checkboxes.
+	 *          default of NULL falls back on using can_delete_members permission
+	 * @return  $array 		$vars array of filtered member table data
+	 */
+	protected function listingsPage($members, $base_url, $no_results_text, $checkboxes = NULL)
+	{
+		$vars = array();
+
+		// Allow them to tokenize searches
+		// possible tokens: id, member_id, username, screen_name, email
+		$search_terms = $this->_check_search_tokens(ee()->input->get_post('search'));
+
+		if ( ! empty($search_terms))
+		{
+			$keywords = ee()->input->get_post('search');
+			$vars['search_terms'] = htmlentities($keywords, ENT_QUOTES, 'UTF-8');
+
+			if ( ! is_array($search_terms))
+			{
+				$members->search(array('screen_name', 'username', 'email', 'member_id'), $search_terms);
+			}
+			else
+			{
+				foreach ($search_terms as $field => $term)
+				{
+					$members->search($field, $term);
+				}
+			}
+
+			// Set search results heading
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$members->count(),
+				$vars['search_terms']
+			);
+		}
 
 		$count = $members->count();
 
@@ -255,7 +312,7 @@ class Members extends CP_Controller {
 			->offset($offset);
 
 		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
-		$table->setNoResultsText('no_pending_members_found');
+		$table->setNoResultsText($no_results_text);
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
@@ -268,13 +325,9 @@ class Members extends CP_Controller {
 			->render($base_url);
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
-		));
-
-		ee()->cp->render('members/pending', $vars);
+		return $vars;
 	}
+
 
 	public function bans()
 	{
@@ -298,34 +351,19 @@ class Members extends CP_Controller {
 		);
 
 		$base_url = ee('CP/URL', 'members/bans');
+		$this->set_view_header($base_url);
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
 			->filter('group_id', 2)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$count = $members->count();
+		$listings = $this->listingsPage($members, $base_url, 'no_banned_members_found');
 
-		// Add this last to get the right $count
-		$page = ((int) ee()->input->get('page')) ?: 1;
-		$offset = ($page - 1) * $this->perpage; // Offset is 0 indexed
+		$vars = array_merge($listings, $vars);
 
-		$members->limit($this->perpage)
-			->offset($offset);
+		$this->set_view_header($base_url);
 
-		$table = $this->buildTableFromMemberQuery($members);
-		$table->setNoResultsText('no_banned_members_found');
-
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		if ( ! empty($vars['table']['data']))
-		{
-			$vars['pagination'] = ee('CP/Pagination', $count)
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
 
 		$values = array(
 			'banned_ips' => '',
