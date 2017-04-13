@@ -112,7 +112,7 @@ class El_pings {
 				[
 					'action' => 'check_new_version',
 					'license' => ee('License')->getEELicense()->getRawLicense(),
-					'version' => APP_VER,
+					'version' => ee()->config->item('app_version'),
 				]
 			)->exec();
 

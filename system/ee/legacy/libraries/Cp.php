@@ -503,7 +503,7 @@ class Cp {
 			'security' => FALSE, // TODO
 		);
 
-		if (version_compare($version_info['version'], APP_VER) < 1)
+		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
 		{
 			return FALSE;
 		}
