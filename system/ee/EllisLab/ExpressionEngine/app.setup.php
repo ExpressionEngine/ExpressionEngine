@@ -223,7 +223,7 @@ return array(
 
 			return new Updater\Downloader(
 				$ee->make('License')->getEELicense(),
-				'http://ellislab.local/index.php?ACT=266',
+				'https://expressionengine.com/index.php?ACT=269',
 				$ee->make('Curl'),
 				$filesystem,
 				new \ZipArchive(),
