@@ -499,8 +499,8 @@ class Cp {
 
 		$version_info = array(
 			'version' => $version_file['latest_version'],
-			'build' => '1234', // TODO
-			'security' => FALSE, // TODO
+			'build' => $version_file['build_date'],
+			'security' => $version_file['severity'] == 'high'
 		);
 
 		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
