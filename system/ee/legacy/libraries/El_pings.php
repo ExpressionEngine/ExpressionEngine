@@ -122,7 +122,7 @@ class El_pings {
 			ee()->cache->save(
 				'current_version',
 				$version_file,
-				60 * 60 * 24,
+				60 * 60,
 				Cache::GLOBAL_SCOPE
 			);
 		}
