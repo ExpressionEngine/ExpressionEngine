@@ -217,21 +217,41 @@ return array(
 			return new Permission\Permission($userdata);
 		},
 
+		'Updater/Runner' => function($ee)
+		{
+			return new Updater\Runner();
+		},
+
 		'Updater/Downloader' => function($ee)
+		{
+			return new Updater\Downloader\Downloader(
+				$ee->make('License')->getEELicense(),
+				$ee->make('Curl'),
+				$ee->make('Filesystem'),
+				$ee->make('Updater/Logger')
+			);
+		},
+
+		'Updater/Preflight' => function($ee)
+		{
+			return new Updater\Downloader\Preflight(
+				$ee->make('Filesystem'),
+				$ee->make('Updater/Logger'),
+				$ee->make('Config')->getFile(),
+				$ee->make('Model')->get('Site')->all()
+			);
+		},
+
+		'Updater/Unpacker' => function($ee)
 		{
 			$filesystem = $ee->make('Filesystem');
 
-			return new Updater\Downloader(
-				$ee->make('License')->getEELicense(),
-				'https://expressionengine.com/index.php?ACT=269',
-				$ee->make('Curl'),
+			return new Updater\Downloader\Unpacker(
 				$filesystem,
 				new \ZipArchive(),
-				$ee->make('Config')->getFile(),
 				new Updater\Verifier($filesystem),
 				$ee->make('Updater/Logger'),
-				new Updater\RequirementsCheckerLoader($filesystem),
-				$ee->make('Model')->get('Site')->all()
+				new Updater\RequirementsCheckerLoader($filesystem)
 			);
 		},
 
@@ -241,14 +261,6 @@ return array(
 				PATH_CACHE.'ee_update/update.log',
 				$ee->make('Filesystem'),
 				php_sapi_name() === 'cli'
-			);
-		},
-
-		'Updater/Runner' => function($ee)
-		{
-			return new Updater\Runner(
-				$ee->make('Updater/Downloader'),
-				$ee->make('Updater/Logger')
 			);
 		},
 

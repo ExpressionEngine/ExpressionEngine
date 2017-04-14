@@ -42,36 +42,48 @@ class Runner {
 		'unpack'
 	];
 
-	protected $downloader;
 	protected $logger;
 
-	/**
-	 * @param	Downloader	$downloader	Updater downloader object
-	 */
-	public function __construct(Downloader $downloader, Logger $logger)
+	public function __construct()
 	{
-		$this->downloader = $downloader;
-		$this->logger = $logger;
+		$this->logger = ee('Updater/Logger');
+
+		// Attempt to set time and memory limits
+		@set_time_limit(0);
+		@ini_set('memory_limit', '256M');
 	}
 
 	// She packed my bags last night...
 	public function preflight()
 	{
 		$this->logger->truncate();
-		$this->downloader->preflight();
+		$this->logger->log('Maximum execution time: '.@ini_get('max_execution_time'));
+		$this->logger->log('Memory limit: '.@ini_get('memory_limit'));
+
+		$preflight = ee('Updater/Preflight');
+		$preflight->checkPermissions();
+		$preflight->cleanUpOldUpgrades();
+		$preflight->checkDiskSpace();
+		$preflight->stashConfigs();
 	}
 
 	public function download()
 	{
-		$this->downloader->downloadPackage();
+		ee('Updater/Downloader')->downloadPackage(
+			'https://expressionengine.com/index.php?ACT=269'
+		);
 	}
 
 	public function unpack()
 	{
-		$this->downloader->unzipPackage();
-		$this->downloader->verifyExtractedPackage();
-		$this->downloader->checkRequirements();
-		$this->downloader->moveUpdater();
+		$unpacker = ee('Updater/Unpacker');
+		$unpacker->unzipPackage();
+		$unpacker->verifyExtractedPackage();
+		$unpacker->checkRequirements();
+		$unpacker->moveUpdater();
+
+		$this->logger->log('Taking the site offline');
+		ee('Config')->getFile()->set('is_system_on', 'n', TRUE);
 	}
 
 	/**
