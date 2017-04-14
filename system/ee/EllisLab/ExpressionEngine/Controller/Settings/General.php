@@ -278,7 +278,6 @@ class General extends Settings {
 	 */
 	public function versionCheck()
 	{
-		// TODO: does this work
 		ee()->load->library('el_pings');
 		$version_info = ee()->el_pings->get_version_info();
 		$latet_version = $version_info['latest_version'];
@@ -295,7 +294,7 @@ class General extends Settings {
 		else
 		{
 			// New version available
-			if (version_compare(APP_VER, $latet_version, '<'))
+			if (version_compare(ee()->config->item('app_version'), $latet_version, '<'))
 			{
 				$download_url = ee()->cp->masked_url('https://expressionengine.com/store/purchases');
 				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');

@@ -40,7 +40,7 @@ class Command {
 		$version_file = ee()->el_pings->get_version_info();
 		$to_version = $version_file['latest_version'];
 
-		if (version_compare(APP_VER, $to_version, '>='))
+		if (version_compare(ee()->config->item('app_version'), $to_version, '>='))
 		{
 			exit('ExpressionEngine '.APP_VER.' is already up-to-date!');
 		}
