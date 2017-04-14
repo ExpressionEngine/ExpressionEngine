@@ -166,21 +166,18 @@ class El_pings {
 			return FALSE;
 		}
 
-		/*foreach ($version_file as $version)
+		if ( ! is_array($version_file) OR count($version_file) != 3)
 		{
-			if ( ! is_array($version) OR count($version) != 3)
+			return FALSE;
+		}
+
+		foreach ($version_file as $val)
+		{
+			if ( ! is_string($val))
 			{
 				return FALSE;
 			}
-
-			foreach ($version as $val)
-			{
-				if ( ! is_string($val))
-				{
-					return FALSE;
-				}
-			}
-		}*/
+		}
 
 		return TRUE;
 	}
