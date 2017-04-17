@@ -390,12 +390,6 @@ abstract class FieldModel extends Model {
 				'constraint'     => 10,
 				'null'           => FALSE,
 				'unsigned'       => TRUE,
-			),
-			'language' => array(
-				'type'       => 'varchar',
-				'constraint' => '5',
-				'null'       => FALSE,
-				'default'    => 'en-US' // @TODO Have this match the default language of the site
 			)
 		);
 
