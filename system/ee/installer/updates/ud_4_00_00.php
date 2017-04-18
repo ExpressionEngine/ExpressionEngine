@@ -123,7 +123,7 @@ class Updater {
 					),
 			'location' => array(
 				'field_label' => 'Location',
-				'field_description' => ,
+				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'occupation' => array(
