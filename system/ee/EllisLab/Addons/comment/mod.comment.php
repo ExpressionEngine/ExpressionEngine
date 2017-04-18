@@ -719,6 +719,19 @@ class Comment {
 				{
 					$row['location'] = $row['c_location'];
 				}
+				else
+				{
+					// location and url set based on member custom field if it exists
+					if (isset($mfields['url']) && array_key_exists('m_field_id_'.$m_fields['url']['0'], $row))
+					{
+						$row['url'] = $row['m_field_id_'.$m_fields['url']['0']];
+					}
+
+					if (isset($mfields['location']) && array_key_exists('m_field_id_'.$m_fields['location']['0'], $row))
+					{
+						$row['location'] = $row['m_field_id_'.$m_fields['location']['0']];
+					}
+				}
 			}
 
 			$tagdata = ee()->TMPL->tagdata;
