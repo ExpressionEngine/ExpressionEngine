@@ -111,55 +111,54 @@ class Updater {
 
 	private function moveMemberFields()
 	{
-		ee()->lang->load('member');
 		ee()->load->model('member_model');
 
 		// Do we need a preflight
 
 		$fields = array(
 			'url' => array(
-				'field_label' => lang('url'),
-				'field_description' => lang('url_desc'),
+				'field_label' => 'URL',
+				'field_description' => '',
 				'field_type' => 'url'
 					),
 			'location' => array(
-				'field_label' => lang('location'),
-				'field_description' => lang('location_desc'),
+				'field_label' => 'Location',
+				'field_description' => ,
 				'field_type' => 'text'
 					),
 			'occupation' => array(
-				'field_label' => lang('occupation'),
+				'field_label' => 'Occupation',
 				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'interests' => array(
-				'field_label' => lang('interests'),
+				'field_label' => 'Interests',
 				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'aol_im' => array(
-				'field_label' => lang('mbr_aol_im'),
+				'field_label' => 'AOL IM',
 				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'yahoo_im' => array(
-				'field_label' => lang('yahoo_im'),
+				'field_label' => 'Yahoo IM',
 				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'msn_im' => array(
-				'field_label' => lang('msn_im'),
+				'field_label' => 'MSN IM',
 				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'icq' => array(
-				'field_label' => lang('icq'),
+				'field_label' => 'ICQ',
 				'field_description' => '',
 				'field_type' => 'text'
 					),
 			'bio' => array(
-				'field_label' => lang('biography'),
-				'field_description' => lang('biography_desc'),
+				'field_label' => 'Bio',
+				'field_description' => '',
 				'field_type' => 'textarea'
 				),
 			'bday_d' => array(),
@@ -231,7 +230,7 @@ class Updater {
 			if (array_key_exists($bday, $make))
 			{
 				$fields['birthday'] = array(
-					'field_label' => lang('birthday'),
+					'field_label' => 'Birthday',
 					'field_description' => '',
 					'field_type' => 'date'
 				);
@@ -392,6 +391,10 @@ class Updater {
 			}
 
 			ee()->update_notices->item($notice);
+		}
+		else
+		{
+			ee()->update_notices->item('No templates contain the {birthday} variable.');
 		}
 
 		ee()->update_notices->item('Done.');
