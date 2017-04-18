@@ -185,6 +185,21 @@ class EE_Menu {
 					// Create link
 					$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
 				}
+
+				// If there's a limit of 1, just send them to the edit screen for that entry
+				if ( ! empty($channel->max_entries) &&
+					$channel->total_records == 1 && $channel->max_entries == 1)
+				{
+					$entry = ee('Model')->get('ChannelEntry')
+						->filter('channel_id', $channel->channel_id)
+						->first();
+
+					// Just in case $channel->total_records is inaccurate
+					if ($entry)
+					{
+						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+					}
+				}
 			}
 		}
 
