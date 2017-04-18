@@ -73,9 +73,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
-
-//		print_r($obj->channel()->mfields);
-
 		$overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);
 		$data['channel_url'] = parse_config_variables($data['channel_url'], $overrides);
 		$data['comment_url'] = parse_config_variables($data['comment_url'], $overrides);
@@ -92,11 +89,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix, $obj->channel()->mfields);
 		}
 
-
 		// @todo remove
 		$key = $tag;
 		$val = $tag_options;
-
 
 		//  parse {title}
 		if ($key == $prefix.'title')
@@ -369,7 +364,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$data['url']."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$member_url."</a>", $tagdata);
 			}
 			else
 			{
