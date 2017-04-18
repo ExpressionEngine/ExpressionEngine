@@ -1282,9 +1282,19 @@ class Channel {
 			$sql .= " AND t.entry_date < ".$timestamp." ";
 		}
 
-		if (ee()->TMPL->fetch_param('show_expired') != 'yes')
+		if (ee()->TMPL->fetch_param('show_expired') == 'only')
+		{
+			$sql .= " AND (t.expiration_date != 0 AND t.expiration_date <= ".$timestamp.") ";
+		}
+		elseif (ee()->TMPL->fetch_param('show_expired') != 'yes')
 		{
 			$sql .= " AND (t.expiration_date = 0 OR t.expiration_date > ".$timestamp.") ";
+		}
+
+		// Only Sticky Entries
+		if (ee()->TMPL->fetch_param('sticky') == 'only')
+		{
+			$sql .= " AND t.sticky = 'y' ";
 		}
 
 		/**------
