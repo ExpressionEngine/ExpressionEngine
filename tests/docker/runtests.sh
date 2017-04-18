@@ -36,6 +36,7 @@ pushd /var/www/html/ > /dev/null
 	# TODO automatically replace app_version?
 	cp tests/docker/config.php system/user/config/
 	cp tests/docker/config.rb tests/rspec/
+	cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
 	cp tests/circleci/license.key system/user/config/
 	chmod 666 system/user/config/config.php
 	chmod -R 777 system/user/cache
