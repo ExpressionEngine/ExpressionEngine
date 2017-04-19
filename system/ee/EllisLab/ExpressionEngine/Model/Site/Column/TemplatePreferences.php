@@ -35,7 +35,6 @@ class TemplatePreferences extends CustomType {
 	protected $site_404;
 	protected $save_tmpl_revisions;
 	protected $max_tmpl_revisions;
-	protected $save_tmpl_files;
 	protected $tmpl_file_basepath;
 
 	/**

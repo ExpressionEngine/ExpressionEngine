@@ -237,7 +237,8 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			'rewrite_short_tags'   => TRUE,
 			'subclass_prefix'      => 'EE_',
 			'uri_protocol'         => 'AUTO',
-			'enable_devlog_alerts' => 'n'
+			'enable_devlog_alerts' => 'n',
+			'save_tmpl_files'      => 'y'
 		);
 	}
 

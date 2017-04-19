@@ -192,12 +192,6 @@ class Site extends Model {
 		{
 			$prefs->$value = ee()->config->item($value);
 		}
-
-		if ($type == 'template')
-		{
-			$prefs->save_tmpl_files    = 'n';
-			$prefs->tmpl_file_basepath = '';
-		}
 	}
 
 	/**
