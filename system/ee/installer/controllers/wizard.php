@@ -1621,7 +1621,7 @@ class Wizard extends CI_Controller {
 			'show_profiler'             => 'n',
 			'include_seconds'           => 'n',
 			'cookie_domain'             => '',
-			'cookie_path'               => '',
+			'cookie_path'               => '/',
 			'cookie_prefix'             => '',
 			'website_session_type'      => 'c',
 			'cp_session_type'           => 'c',
