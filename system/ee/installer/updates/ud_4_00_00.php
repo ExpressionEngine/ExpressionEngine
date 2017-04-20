@@ -72,17 +72,18 @@ class Updater {
 
 		foreach ($all_site_ids_query as $site)
 		{
-			$msm_config->site_prefs('', $site->site_id);
+			$config = ee()->config->site_prefs('', $site->site_id, FALSE);
 
 			// If ANY sites save as file, they all must
-			if ($msm_config->item('save_tmpl_files') == 'y')
+			if (isset($config['save_tmpl_files']) && $config['save_tmpl_files'] == 'y')
 			{
 				$save_as_file = TRUE;
 				break;
 			}
+
 		}
 
-		$msm_config->remove_config_item(array('save_tmpl_files'));
+		ee()->config->remove_config_item(array('save_tmpl_files'));
 
 		if ($save_as_file == FALSE)
 		{

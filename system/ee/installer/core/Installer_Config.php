@@ -118,6 +118,60 @@ class Installer_Config Extends EE_Config {
 		unset($params);
 		unset($exceptions);
 	}
+
+	/**
+	 * Remove config items from all MSM sites
+	 *
+	 * @param	mixed	$remove_key	String or array of strings of keys to remove
+	 */
+	public function remove_config_item($remove_key)
+	{
+		$columns = array(
+			'site_system_preferences',
+			'site_member_preferences',
+			'site_template_preferences',
+			'site_channel_preferences',
+		);
+
+		if ( ! is_array($remove_key))
+		{
+			$remove_key = array($remove_key);
+		}
+
+		ee()->db->select(implode(', ', $columns).', site_id');
+
+		$sites = ee()->db->get('sites')->result_array();
+
+		foreach ($sites as $site)
+		{
+			$changed = FALSE;
+			$site_id = $site['site_id'];
+
+			unset($site['site_id']);
+
+			foreach ($site as $column => $data)
+			{
+				$data = unserialize(base64_decode($data));
+
+				foreach ($remove_key as $key)
+				{
+					if (isset($data[$key]))
+					{
+						$changed = TRUE;
+						unset($data[$key]);
+						$site[$column] = base64_encode(serialize($data));
+					}
+				}
+			}
+
+			if ($changed)
+			{
+				ee()->db->where('site_id', $site_id);
+				ee()->db->update('sites', $site);
+			}
+		}
+	}
+
 }
 
 class MSM_Config extends EE_Config
