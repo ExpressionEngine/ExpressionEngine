@@ -480,7 +480,6 @@ class EE_Functions {
 			'secure'		=> TRUE,
 			'enctype' 		=> '',
 			'onsubmit'		=> '',
-			'secure_action'	=> ''
 		);
 
 
@@ -526,11 +525,6 @@ class EE_Functions {
 		if ($data['action'] == '')
 		{
 			$data['action'] = $this->fetch_site_index();
-		}
-
-		if ($data['secure_action'] == 'yes' AND strncmp($data['action'], 'http:', 5) == 0)
-		{
-			$data['action'] = preg_replace('/^http:/', 'https:', $data['action']);
 		}
 
 		if ($data['onsubmit'] != '')

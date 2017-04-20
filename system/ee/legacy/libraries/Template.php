@@ -3471,24 +3471,22 @@ class EE_Template {
 	 */
 	function _assign_form_params($tag_data)
 	{
-		$this->form_id 				= '';
-		$this->form_class 			= '';
-		$this->form_secure_action 	= '';
-		$this->form_secure_return 	= '';
+		$this->form_id 		= '';
+		$this->form_class 	= '';
 
 		if ( ! isset($tag_data['params']) OR ! is_array($tag_data['params']))
 		{
 			return $tag_data;
 		}
 
-		$param_names = array('form_id', 'form_class', 'form_secure_action', 'form_secure_return');
-
-		foreach ($param_names as $name)
+		if (array_key_exists('form_id', $tag_data['params']))
 		{
-			if (array_key_exists($name, $tag_data['params']))
-			{
-				$this->$name = $tag_data['params'][$name];
-			}
+			$this->form_id = $tag_data['params']['form_id'];
+		}
+
+		if (array_key_exists('form_class', $tag_data['params']))
+		{
+			$this->form_class = $tag_data['params']['form_class'];
 		}
 
 		return $tag_data;
