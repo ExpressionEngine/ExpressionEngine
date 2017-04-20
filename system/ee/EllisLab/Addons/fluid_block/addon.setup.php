@@ -10,7 +10,15 @@ return array(
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 
-	// 'models' => array(
-	// 	'Block' => 'Model\Block',
-	// )
+	'models' => array(
+		'FluidBlock' => 'Model\FluidBlock',
+	),
+
+	'models.dependencies' => array(
+		'FluidBlock' => array(
+			'ee:ChannelEntry',
+			'ee:ChannelField'
+		),
+	)
+
 );
