@@ -259,7 +259,15 @@ class Search {
 
 				ee()->db->query(ee()->db->insert_string('exp_search', $data));
 
-				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$this->hash.'/');
+				$path =  ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$this->hash.'/';
+
+				if (ee()->TMPL->form_secure_return AND strncmp($path, 'http:', 5) == 0)
+				{
+					$path = preg_replace('/^http:/', 'https:', $path);
+				}
+
+				return ee()->functions->redirect($path);
+
 			}
 			else
 			{
@@ -302,6 +310,11 @@ class Search {
 				trim_slashes($this->_meta['result_page'])
 			).'/'.$this->hash.'/'
 		);
+
+		if (ee()->TMPL->form_secure_return AND strncmp($path, 'http:', 5) == 0)
+		{
+			$path = preg_replace('/^http:/', 'https:', $path);
+		}
 
 		return ee()->functions->redirect($path);
 	}
@@ -1571,6 +1584,7 @@ class Search {
 		}
 
 		$data['class'] = ee()->TMPL->form_class;
+		$data['secure_action'] = ee()->TMPL->form_secure_action;
 
 		$res  = ee()->functions->form_declaration($data);
 
@@ -1714,6 +1728,7 @@ class Search {
 		$meta = $this->_build_meta_array();
 
 		$data['class'] = ee()->TMPL->form_class;
+		$data['secure_action'] = ee()->TMPL->form_secure_action;
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
 			'RES'	=> ee()->TMPL->fetch_param('results'),
