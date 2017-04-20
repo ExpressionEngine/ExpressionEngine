@@ -3,7 +3,7 @@
 		<?=$filters?>
 	</div>
 	<div class="fluid-field-templates hidden">
-		<?php foreach ($fields as $field): ?>
+		<?php foreach ($fieldTemplates as $field): ?>
 			<div class="fluid-item" data-field-name="<?=$field->field_name?>">
 				<div class="fluid-ctrls">
 					<span class="reorder"></span>

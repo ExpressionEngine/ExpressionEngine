@@ -28,12 +28,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	public $has_array_data = FALSE;
 
-	// used in display_field() below to set
-	// some defaults for third party usage
-	public $settings_vars = array(
-		'field_default_value'	=> '',
-	);
-
 	/**
 	 * Fetch the fieldtype's name and version from it's addon.setup.php file.
 	 */
@@ -46,6 +40,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 		);
 	}
 
+	function validate($data)
+	{
+		return TRUE;
+	}
+
 	/**
 	 * Displays the field for the CP or Frontend, and accounts for grid
 	 *
@@ -54,22 +53,21 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
-		$this->settings = array_merge($this->settings_vars, $this->settings);
-
-		$data = is_null($data) ? $this->settings['field_default_value'] : $data;
-
-		ee()->db->select('field_id');
-		ee()->db->where('block_id', $this->settings['field_id']);
-		$query = ee()->db->get('fluid_block_fields');
-
-		$field_ids = array();
-
-		foreach ($query->result_array() as $row)
+		if ($this->content_id)
 		{
-			$field_ids[] = $row['field_id'];
+			$block = ee('Model')->get('fluid_block:FluidBlock')
+				->with('ChannelFields')
+				->filter('entry_id', $this->content_id)
+				->filter('block_id', $this->settings['field_id'])
+				->all();
+
+		}
+		else
+		{
+			$block = ee('Model')->make('fluid_block:FluidBlock');
 		}
 
-		$fields = ee('Model')->get('ChannelField', $field_ids)
+		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
 			->order('field_label')
 			->all();
 
@@ -82,78 +80,47 @@ class Fluid_block_ft extends EE_Fieldtype {
 			));
 
 			return ee('View')->make('fluid_block:publish')->render(array(
-				'field_name' => $this->field_name,
-				'fields'     => $fields,
-				'filters'    => ee('View')->make('fluid_block:filters')->render(array('fields' => $fields)),
-				'selected'   => $data,
-				'disabled'   => $this->get_setting('field_disabled')
+				'field_name'     => $this->field_name,
+				'fieldTemplates' => $fieldTemplates,
+				'filters'        => ee('View')->make('fluid_block:filters')->render(array('fields' => $fieldTemplates)),
 			));
 		}
-
-		$field_options = array(
-			lang('on') => 1,
-			lang('off') => 0
-		);
-
-		$html = '';
-		$class = 'choice mr';
-
-		foreach($field_options as $key => $value)
-		{
-			$selected = ($value == $data);
-
-			$html .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
-		}
-
-		$html = form_fieldset('').$html.form_fieldset_close();
-
-		return $html;
 	}
 
 	public function display_settings($data)
 	{
-		$defaults = array(
-			'field_default_value' => 0
-		);
-
-		foreach ($defaults as $setting => $value)
-		{
-			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
-		}
-
-		$this->field_name = 'field_default_value';
+		$custom_field_options = ee('Model')->get('ChannelField')
+			->fields('field_id', 'field_label')
+			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
+			->filter('field_type', '!=', 'fluid_block')
+			->order('field_label')
+			->all()
+			->getDictionary('field_id', 'field_label');
 
 		$settings = array(
 			array(
-				'title'     => 'default_value',
-				'desc'      => 'toggle_default_value_desc',
-				'desc_cont' => 'toggle_default_value_desc_cont',
+				'title'     => 'custom_fields',
 				'fields'    => array(
-					'field_default_value' => array(
-						'type' => 'html',
-						'content' => $this->display_field($data['field_default_value'])
+					'field_channel_fields' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $custom_field_options,
+						'value' => isset($data['field_channel_fields']) ? $data['field_channel_fields'] : array()
 					)
 				)
 			),
 		);
 
-		if ($this->content_type() == 'grid')
-		{
-			return array('field_options' => $settings);
-		}
-
-		return array('field_options_toggle' => array(
+		return array('field_options_field_block' => array(
 			'label' => 'field_options',
-			'group' => 'toggle',
+			'group' => 'field_block',
 			'settings' => $settings
 		));
 	}
 
 	public function save_settings($data)
 	{
-		$all = array_merge($this->settings_vars, $data);
-
-		return array_intersect_key($all, $this->settings_vars);
+		return $data;
 	}
 
 	/**
