@@ -21,7 +21,7 @@
 			var fluidBlock  = $(this).closest('.fluid-wrap'),
 			    fieldToAdd  = $(this).data('field-name'),
 			    rowCount    = fluidBlock.data('row-count')
-			    fieldClone  = $('.fluid-item[data-field-name="' + fieldToAdd + '"]').clone();
+			    fieldClone  = $('.fluid-field-templates .fluid-item[data-field-name="' + fieldToAdd + '"]').clone();
 
 			rowCount++;
 
