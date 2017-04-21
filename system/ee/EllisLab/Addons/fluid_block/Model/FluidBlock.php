@@ -53,7 +53,7 @@ class FluidBlock extends Model {
 				'weak' => TRUE
 			)
 		),
-		'ChannelFields' => array(
+		'ChannelField' => array(
 			'type' => 'belongsTo',
 			'model' => 'ee:ChannelField',
 			'weak' => TRUE,
