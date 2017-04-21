@@ -219,3 +219,15 @@ def ee_config(site_id: nil, item: nil, value: nil)
     end
   end
 end
+
+# Swaps on piece of text for another given a file
+#
+# @param [File] file File object
+# @param [String] pattern Text to find
+# @param [String] replacement Replacement of above text
+# @return [void]
+def swap(file, pattern, replacement)
+  file = File.expand_path(file)
+  temp = File.read(file).gsub(pattern, replacement)
+  File.open(file, 'w') { |f| f.puts temp }
+end
