@@ -1,0 +1,53 @@
+require './bootstrap.rb'
+
+feature 'One-Click Updater' do
+
+  before(:each) do
+    cp_session
+    @page = ControlPanelPage.new
+
+    system = '../../system/'
+    @syspath = File.expand_path('ee/', system);
+    @themespath = File.expand_path('../../themes/ee/');
+    @config_path = File.expand_path('user/config/config.php', system)
+
+    # Set to 3.3.4, 3.4.0 is the earliest update file compatible with the new updater
+    swap(
+      @config_path,
+      /\$config\['app_version'\]\s+=\s+.*?;/,
+      "$config['app_version'] = '3.3.4';"
+    )
+  end
+
+  it 'should fail preflight check when permissions are incorrect' do
+    @page.find('span.version').click
+    @page.find('.update-btn .submit').click
+
+    @page.should have_text 'Update Stopped'
+    @page.should have_text 'The following paths are not writable:'
+  end
+
+  it 'should continue update when permissions are fixed' do
+    @page.find('span.version').click
+    @page.find('.update-btn .submit').click
+
+    @page.should have_text 'Update Stopped'
+
+    File.chmod(0777, @syspath)
+    FileUtils.chmod(0777, Dir.glob(@syspath+'/*'))
+    File.chmod(0777, @themespath)
+    FileUtils.chmod(0777, Dir.glob(@themespath+'/*'))
+
+    click_link 'Continue'
+
+    @page.should have_text 'ExpressionEngine has been successfully updated'
+  end
+
+  it 'should rollback if updater fails hard' do
+    @page.find('span.version').click
+    @page.find('.update-btn .submit').click
+
+    @page.should have_text 'ExpressionEngine has been successfully updated'
+  end
+
+end
