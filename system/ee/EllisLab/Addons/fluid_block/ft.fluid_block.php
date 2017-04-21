@@ -148,7 +148,13 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
-		return $data;
+		$defaults = array(
+			'field_channel_fields' => array(),
+		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
 	}
 
 	/**
