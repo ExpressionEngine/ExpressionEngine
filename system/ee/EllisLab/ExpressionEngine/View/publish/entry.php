@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box has-tabs publish">
+<div class="form-standard">
 	<h1>
 		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
 		<?php if ($entry->getAutosaves()->count()): ?>
@@ -85,11 +85,18 @@
 			<?php foreach ($tab->getFields() as $field): ?>
 			<?php if ( ! $field->isRequired() && ! $field->isVisible()) continue; ?>
 				<?php
+					$field_class = 'fieldset-group';
+
 					switch ($field->getType())
 					{
 						case 'grid':
 						case 'rte':
 						case 'textarea':
+							$width = "w-16";
+							break;
+
+						case 'fluid_block':
+							$field_class = 'fieldset-faux-fluid';
 							$width = "w-16";
 							break;
 
@@ -104,7 +111,6 @@
 						$width = "w-16";
 					}
 
-					$field_class = 'col-group';
 					if ($field->getStatus() == 'warning')
 					{
 						$field_class .= ' warned';
@@ -118,18 +124,16 @@
 						$field_class .= ' required';
 					}
 					$fields = $tab->getFields();
-					if (end($fields) == $field)
-					{
-						$field_class .= ' last';
-					}
 				?>
 				<?php if ($field->getType() == 'grid'): ?>
 				<div class="grid-publish <?=$field_class?>">
 				<?php else: ?>
 				<fieldset class="<?=$field_class?>">
 				<?php endif; ?>
-					<div class="setting-txt col <?=$width?><?php if ($errors->hasErrors($field->getName()) && $field->getType() == 'grid'):?> invalid<?php endif ?>">
-						<h3<?php if ($field->isCollapsed()) echo ' class="field-closed"';?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
+					<div class="field-instruct <?=$width?><?php if ($errors->hasErrors($field->getName()) && $field->getType() == 'grid'):?> invalid<?php endif ?>">
+						<label<?php if ($field->isCollapsed()) echo ' class="field-closed"';?>>
+							<span class="ico sub-arrow"></span><?=$field->getLabel()?>
+						</label>
 						<em<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>><?=$field->getInstructions()?></em>
 						<?php if ($field->get('field_id') == 'categories' &&
 								$entry->Channel->cat_group &&
@@ -137,7 +141,7 @@
 							<p><a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="<?=$field->get('group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php endif; ?>
 					</div>
-					<div class="setting-field col <?=$width?> last"<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>>
+					<div class="field-control <?=$width?>"<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>>
 					<?php if ($field->get('field_id') == 'revisions'): ?>
 						<?=$revisions?>
 					<?php elseif ($field->getSetting('string_override') !== NULL): ?>
