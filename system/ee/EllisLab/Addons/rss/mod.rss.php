@@ -229,14 +229,8 @@ class Rss {
 	protected function _setup_meta_query($query)
 	{
 		//  Create Meta Query
-		//
-		// Since UTC_TIMESTAMP() is what we need, but it is not available until
-		// MySQL 4.1.1, we have to use this ever so clever SQL to figure it out:
-		// DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND )
 		$sql = "SELECT exp_channel_titles.entry_id, exp_channel_titles.entry_date, exp_channel_titles.edit_date,
-				GREATEST((UNIX_TIMESTAMP(exp_channel_titles.edit_date) +
-						 (UNIX_TIMESTAMP(DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)) - UNIX_TIMESTAMP())),
-						exp_channel_titles.entry_date) AS last_update
+				GREATEST(exp_channel_titles.edit_date, exp_channel_titles.entry_date) AS last_update
 				FROM exp_channel_titles
 				LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 				LEFT JOIN exp_members ON exp_members.member_id = exp_channel_titles.author_id
