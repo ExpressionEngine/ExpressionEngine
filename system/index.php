@@ -139,9 +139,9 @@
  *
  */
 	// Load the updater package if it's here
-	if (file_exists(SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Boot/boot.php'))
+	if (file_exists(SYSPATH.'ee/updater/boot.php'))
 	{
-		require_once SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Boot/boot.php';
+		require_once SYSPATH.'ee/updater/boot.php';
 	}
 	// Is the system path correct?
 	elseif ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
