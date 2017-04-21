@@ -53,13 +53,19 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
-		$fields = array();
+		$fields = '';
+
+		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+			->order('field_label')
+			->all();
+
+		$filters = ee('View')->make('fluid_block:filters')->render(array('fields' => $fieldTemplates));
 
 		if ($this->content_id)
 		{
 			$blockData = ee('Model')->get('fluid_block:FluidBlock')
 				->with('ChannelField')
-				->filter('block_id', $this->settings['field_id'])
+				->filter('block_id', $this->field_id)
 				->filter('entry_id', $this->content_id)
 				->order('order')
 				->all();
@@ -77,13 +83,21 @@ class Fluid_block_ft extends EE_Fieldtype {
 					$field->setFormat($row[0]['field_id_' . $data->field_id]);
 				}
 
-				$fields[] = $data->ChannelField;
+				$field->setName($this->name() . '[rows][row_' . $data->order . '][field_id_' . $field->getId() . ']');
+
+				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
 			}
 		}
 
-		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
-			->order('field_label')
-			->all();
+		$templates = '';
+
+		foreach ($fieldTemplates as $field)
+		{
+			$f = $field->getField();
+			$f->setName($this->name() . '[rows][new_row_0][field_id_' . $field->getId() . ']');
+
+			$templates .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters));
+		}
 
 		if (REQ == 'CP')
 		{
@@ -94,10 +108,9 @@ class Fluid_block_ft extends EE_Fieldtype {
 			));
 
 			return ee('View')->make('fluid_block:publish')->render(array(
-				'field_name'     => $this->field_name,
 				'fields'         => $fields,
-				'fieldTemplates' => $fieldTemplates,
-				'filters'        => ee('View')->make('fluid_block:filters')->render(array('fields' => $fieldTemplates)),
+				'fieldTemplates' => $templates,
+				'filters'        => $filters,
 			));
 		}
 	}
