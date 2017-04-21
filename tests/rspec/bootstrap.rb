@@ -30,6 +30,7 @@ Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 Capybara.app_host = $test_config[:app_host]
 Capybara.run_server = false
+Capybara.default_max_wait_time = 50
 
 def sanitize_filename(filename)
    name = filename.strip
@@ -45,6 +46,7 @@ def sanitize_filename(filename)
 end
 
 Capybara::Webkit.configure do |config|
+  config.timeout = 50
   # Whitelist URLs
   config.block_unknown_urls
   config.allow_url $test_config[:app_host]
