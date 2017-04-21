@@ -3,7 +3,7 @@
 	<p><?=lang('success_delete')?></p>
 </div>
 
-<?php if (count($update_notices)): ?>
+<?php if ( ! empty($update_notices)): ?>
 <h2>Update Notices</h2>
 	<?php foreach ($update_notices as $notice): ?>
 		<?php if ($notice->is_header): ?>
