@@ -53,18 +53,32 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
+		$fields = array();
+
 		if ($this->content_id)
 		{
-			$block = ee('Model')->get('fluid_block:FluidBlock')
-				->with('ChannelFields')
-				->filter('entry_id', $this->content_id)
+			$blockData = ee('Model')->get('fluid_block:FluidBlock')
+				->with('ChannelField')
 				->filter('block_id', $this->settings['field_id'])
+				->filter('entry_id', $this->content_id)
+				->order('order')
 				->all();
 
-		}
-		else
-		{
-			$block = ee('Model')->make('fluid_block:FluidBlock');
+			foreach ($blockData as $data)
+			{
+				ee()->db->where('id', $data->field_data_id);
+				$row = ee()->db->get('channel_data_field_' . $data->field_id)->result_array();
+
+				$field = $data->ChannelField->getField();
+				$field->setData($row[0]['field_id_' . $data->field_id]);
+
+				if (array_key_exists('field_ft_' . $data->field_id, $row[0]))
+				{
+					$field->setFormat($row[0]['field_id_' . $data->field_id]);
+				}
+
+				$fields[] = $data->ChannelField;
+			}
 		}
 
 		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
@@ -81,6 +95,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 			return ee('View')->make('fluid_block:publish')->render(array(
 				'field_name'     => $this->field_name,
+				'fields'         => $fields,
 				'fieldTemplates' => $fieldTemplates,
 				'filters'        => ee('View')->make('fluid_block:filters')->render(array('fields' => $fieldTemplates)),
 			));
