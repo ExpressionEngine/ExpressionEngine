@@ -94,13 +94,6 @@ class Template extends Settings {
 						'max_tmpl_revisions' => array('type' => 'text')
 					)
 				),
-				array(
-					'title' => 'save_tmpl_files',
-					'desc' => 'save_tmpl_files_desc',
-					'fields' => array(
-						'save_tmpl_files' => array('type' => 'yes_no')
-					)
-				),
 			)
 		);
 
@@ -128,8 +121,6 @@ class Template extends Settings {
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
 
-			$this->updateTemplateFiles();
-
 			ee()->functions->redirect($base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -146,29 +137,6 @@ class Template extends Settings {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('design'), lang('template_manager'));
 
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * If templates need to be saved as files, then write them.
-	 */
-	protected function updateTemplateFiles()
-	{
-		$save_template_files = ee()->input->post('save_tmpl_files');
-
-		if ($save_template_files == 'y')
-		{
-			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')->all();
-			$tgs->Templates->save();
-			$tgs = NULL;
-
-			$snippets = ee('Model')->get('Snippet')->all();
-			$snippets->save();
-			$snippets = NULL;
-
-			$variables = ee('Model')->get('GlobalVariable')->all();
-			$variables->save();
-			$variables = NULL;
-		}
 	}
 }
 // END CLASS
