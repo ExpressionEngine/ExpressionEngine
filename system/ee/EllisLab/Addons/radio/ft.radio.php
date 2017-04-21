@@ -110,6 +110,13 @@ class Radio_ft extends OptionFieldtype {
 		$field_options = $this->_get_field_options($data);
 		$extra         = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
+		// Is this new entry?  Set a default
+		if ( ! $this->content_id AND empty($data))
+		{
+			reset($field_options);
+			$data = key($field_options);
+		}
+
 		if (REQ == 'CP')
 		{
 			if ($data === TRUE)
