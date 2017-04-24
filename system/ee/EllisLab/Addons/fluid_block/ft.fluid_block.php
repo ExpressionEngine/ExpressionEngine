@@ -40,9 +40,110 @@ class Fluid_block_ft extends EE_Fieldtype {
 		);
 	}
 
-	function validate($data)
+	public function validate($data)
 	{
 		return TRUE;
+	}
+
+	// Actual saving takes place in post_save so we have an entry_id
+	public function save($data)
+	{
+		if (is_null($data))
+		{
+			$data = array();
+		}
+
+		ee()->session->set_cache(__CLASS__, $this->name(), $data);
+
+		return ' ';
+	}
+
+	public function post_save($data)
+	{
+		// Prevent saving if save() was never called, happens in Channel Form
+		// if the field is missing from the form
+		if (($data = ee()->session->cache(__CLASS__, $this->name(), FALSE)) === FALSE)
+		{
+			return;
+		}
+
+		// var_dump($data); die();
+
+		$blockData = ee('Model')->get('fluid_block:FluidBlock')
+			->with('ChannelField')
+			->filter('block_id', $this->field_id)
+			->filter('entry_id', $this->content_id)
+			->all()
+			->indexBy('id');
+
+		$i = 1;
+		foreach ($data['rows'] as $key => $value)
+		{
+			// Existing field
+			if (strpos($key, 'row_') === 0)
+			{
+				$id = str_replace('row_', '', $key);
+				$this->updateField($blockData[$id], $i, $value);
+				unset($blockData[$id]);
+			}
+			// New field
+			elseif (strpos($key, 'new_row_') === 0)
+			{
+				$field_id = str_replace('field_id_', '', key($value));
+				$this->addField($i, $field_id, current($value));
+			}
+
+			$i++;
+		}
+
+		// Remove fields
+		foreach ($blockData as $block)
+		{
+			$this->removeField($block);
+		}
+	}
+
+	private function updateField($block, $order, $value)
+	{
+		$block->order = $order;
+		$block->save();
+
+		$query = ee('Model/Datastore')->rawQuery();
+		$query->set(array(
+			'field_id_' . $block->field_id => $value
+		));
+		$query->where('id', $block->field_data_id);
+		$query->update($block->ChannelField->getTableName());
+	}
+
+	private function addField($order, $field_id, $value)
+	{
+		$field = ee('Model')->get('ChannelField', $field_id)->first();
+
+		$query = ee('Model/Datastore')->rawQuery();
+		$query->set(array(
+			'entry_id' => $this->content_id,
+			'field_id_' . $field_id => $value
+		));
+		$query->insert($field->getTableName());
+		$id = $query->insert_id();
+
+		$block = ee('Model')->make('fluid_block:FluidBlock');
+		$block->block_id = $this->field_id;
+		$block->entry_id = $this->content_id;
+		$block->field_id = $field_id;
+		$block->field_data_id = $id;
+		$block->order = $order;
+		$block->save();
+	}
+
+	private function removeField($block)
+	{
+		$query = ee('Model/Datastore')->rawQuery();
+		$query->where('id', $block->field_data_id);
+		$query->delete($block->ChannelField->getTableName());
+
+		$block->delete();
 	}
 
 	/**
@@ -83,7 +184,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 					$field->setFormat($row[0]['field_id_' . $data->field_id]);
 				}
 
-				$field->setName($this->name() . '[rows][row_' . $data->order . '][field_id_' . $field->getId() . ']');
+				$field->setName($this->name() . '[rows][row_' . $data->getId() . ']');
 
 				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
 			}
@@ -102,8 +203,12 @@ class Fluid_block_ft extends EE_Fieldtype {
 		if (REQ == 'CP')
 		{
 			ee()->cp->add_js_script(array(
+				'ui' => array(
+					'sortable'
+				),
 				'file' => array(
-					'fields/fluid_block/cp'
+					'fields/fluid_block/cp',
+					'cp/sort_helper'
 				),
 			));
 

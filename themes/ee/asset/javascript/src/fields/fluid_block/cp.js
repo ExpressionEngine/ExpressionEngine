@@ -53,5 +53,18 @@
 	    };
 
 		$('a[data-field-name]').click(addField);
+
+		$('a.fluid-remove').click(function(e) {
+			$(this).closest('.fluid-item').remove();
+			e.preventDefault();
+		});
+
+		$('.fluid-wrap').sortable({
+			axis: 'y',						// Only allow horizontal dragging
+			containment: 'parent',			// Contain to parent
+			handle: 'span.reorder',			// Set drag handle to the top box
+			items: '.fluid-item',			// Only allow these to be sortable
+			sort: EE.sortable_sort_helper	// Custom sort handler
+		})
 	});
 })(jQuery);
