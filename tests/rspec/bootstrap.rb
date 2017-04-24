@@ -46,7 +46,6 @@ def sanitize_filename(filename)
 end
 
 Capybara::Webkit.configure do |config|
-  config.timeout = 50
   # Whitelist URLs
   config.block_unknown_urls
   config.allow_url $test_config[:app_host]

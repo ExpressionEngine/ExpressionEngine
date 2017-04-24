@@ -3,6 +3,8 @@ require './bootstrap.rb'
 feature 'One-Click Updater' do
 
   before(:each) do
+    Capybara.default_max_wait_time = 50
+
     cp_session
     @page = ControlPanelPage.new
 
@@ -43,7 +45,7 @@ feature 'One-Click Updater' do
     @page.should have_text 'ExpressionEngine has been successfully updated'
   end
 
-  it 'should rollback if updater fails hard' do
+  it 'should update if there are no impediments' do
     @page.find('span.version').click
     @page.find('.update-btn .submit').click
 
