@@ -67,8 +67,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 			return;
 		}
 
-		// var_dump($data); die();
-
 		$blockData = ee('Model')->get('fluid_block:FluidBlock')
 			->with('ChannelField')
 			->filter('block_id', $this->field_id)
@@ -109,9 +107,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$block->save();
 
 		$query = ee('Model/Datastore')->rawQuery();
-		$query->set(array(
-			'field_id_' . $block->field_id => $value
-		));
+		$query->set($value);
 		$query->where('id', $block->field_data_id);
 		$query->update($block->ChannelField->getTableName());
 	}
@@ -120,11 +116,13 @@ class Fluid_block_ft extends EE_Fieldtype {
 	{
 		$field = ee('Model')->get('ChannelField', $field_id)->first();
 
-		$query = ee('Model/Datastore')->rawQuery();
-		$query->set(array(
-			'entry_id' => $this->content_id,
-			'field_id_' . $field_id => $value
+		$value = array_merge($value, array(
+			'entry_id'              => $this->content_id,
+			'block_id'              => $this->field_id,
 		));
+
+		$query = ee('Model/Datastore')->rawQuery();
+		$query->set($value);
 		$query->insert($field->getTableName());
 		$id = $query->insert_id();
 
@@ -181,10 +179,15 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				if (array_key_exists('field_ft_' . $data->field_id, $row[0]))
 				{
-					$field->setFormat($row[0]['field_ft_' . $data->field_id]);
+					$format = $row[0]['field_ft_' . $data->field_id];
+
+					// Need to set this property because it will override the
+					// format on successive calls to `getField()`
+					$data->ChannelField->field_fmt = $format;
+					$field->setFormat($format);
 				}
 
-				$field->setName($this->name() . '[rows][row_' . $data->getId() . ']');
+				$field->setName($this->name() . '[rows][row_' . $data->getId() . '][field_id_' . $field->getId() . ']');
 
 				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
 			}
