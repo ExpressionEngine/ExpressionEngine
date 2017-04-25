@@ -857,7 +857,7 @@ class ChannelEntry extends ContentModel {
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = $metadata;
 				}
 
-				if ( ! $this->Channel->comment_system_enabled)
+				if ( ! $this->Channel->comment_system_enabled OR ! bool_config_item('enable_comments'))
 				{
 					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
 				}

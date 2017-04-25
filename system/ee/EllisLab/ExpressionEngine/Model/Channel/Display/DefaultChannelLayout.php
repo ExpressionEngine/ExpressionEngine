@@ -66,7 +66,7 @@ class DefaultChannelLayout extends DefaultLayout {
 			)
 		);
 
-		if ($channel->comment_system_enabled)
+		if (bool_config_item('enable_comments') && $channel->comment_system_enabled)
 		{
 			$date_fields[] = array(
 				'field' => 'comment_expiration_date',
@@ -130,7 +130,7 @@ class DefaultChannelLayout extends DefaultLayout {
 			)
 		);
 
-		if ($channel->comment_system_enabled)
+		if (bool_config_item('enable_comments') && $channel->comment_system_enabled)
 		{
 			$option_fields[] = array(
 				'field' => 'allow_comments',
