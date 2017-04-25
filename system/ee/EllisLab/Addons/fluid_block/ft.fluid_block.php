@@ -181,7 +181,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				if (array_key_exists('field_ft_' . $data->field_id, $row[0]))
 				{
-					$field->setFormat($row[0]['field_id_' . $data->field_id]);
+					$field->setFormat($row[0]['field_ft_' . $data->field_id]);
 				}
 
 				$field->setName($this->name() . '[rows][row_' . $data->getId() . ']');
