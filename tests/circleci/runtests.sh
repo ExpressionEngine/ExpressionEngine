@@ -32,6 +32,12 @@ installmysql() {
 	set +x
 }
 
+if [ $CIRCLE_NODE_INDEX -eq 0 ]
+then
+	APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
+	gulp app --archive --dirty --local-key --upload-circle-build --version=$APP_VERSION
+fi
+
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
