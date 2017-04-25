@@ -284,7 +284,7 @@ class FieldFacade {
          $info = $this->metadata;
          $info = array_merge($defaults, $info);
 
-         if (is_null($this->format) && isset($info['field_fmt']))
+         if (is_null($this->getFormat()) && isset($info['field_fmt']))
          {
              $this->setFormat($info['field_fmt']);
          }
@@ -308,7 +308,7 @@ class FieldFacade {
 	protected function setupField()
 	{
 		$field_dt = $this->timezone;
-		$field_fmt = $this->format;
+		$field_fmt = $this->getFormat();
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
