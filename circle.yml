@@ -25,6 +25,8 @@ dependencies:
 
 checkout:
   post:
+    - git config --global user.email "you@example.com"
+    - git config --global user.name "Your Name"
     - cp tests/circleci/config.php system/user/config/
     - cp tests/circleci/license.key system/user/config/
     - cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
