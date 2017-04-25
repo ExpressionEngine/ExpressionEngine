@@ -117,8 +117,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$field = ee('Model')->get('ChannelField', $field_id)->first();
 
 		$value = array_merge($value, array(
-			'entry_id'              => $this->content_id,
-			'block_id'              => $this->field_id,
+			'entry_id' => 0,
 		));
 
 		$query = ee('Model/Datastore')->rawQuery();
