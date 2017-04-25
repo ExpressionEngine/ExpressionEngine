@@ -32,12 +32,6 @@ installmysql() {
 	set +x
 }
 
-if [ $CIRCLE_NODE_INDEX -eq 2 ]
-then
-	APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
-	gulp app --archive --dirty --local-key --upload-circle-build --version=$APP_VERSION
-fi
-
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
@@ -71,6 +65,12 @@ do
 		printf "Testing under PHP ${PHPVERSION}\n\n"
 		phpenv global $PHPVERSION
 		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
+
+		if [ $CIRCLE_NODE_INDEX -eq 2 ]
+		then
+			APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
+			gulp app --archive --dirty --local-key --upload-circle-build --version=$APP_VERSION
+		fi
 
 		# Disable opcode cache
 		echo -e "\n[opcache]\nopcache.enable=0" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
