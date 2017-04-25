@@ -35,7 +35,7 @@ class DatabaseUpdater {
 
 	protected $from_version;
 	protected $filesystem;
-	protected $update_files_path = SYSPATH . 'ee/installer/updates/';
+	protected $update_files_path;
 
 	/**
 	 * Constructor, of course
@@ -48,6 +48,7 @@ class DatabaseUpdater {
 	{
 		$this->from_version = $from_version;
 		$this->filesystem = $filesystem;
+		$this->update_files_path = SYSPATH . 'ee/installer/updates/';
 
 		$this->steps = $this->getSteps();
 	}
