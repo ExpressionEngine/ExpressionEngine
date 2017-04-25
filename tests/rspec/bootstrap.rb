@@ -30,7 +30,6 @@ Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 Capybara.app_host = $test_config[:app_host]
 Capybara.run_server = false
-Capybara.default_max_wait_time = 50
 
 def sanitize_filename(filename)
    name = filename.strip
