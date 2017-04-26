@@ -88,7 +88,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			elseif (strpos($key, 'new_row_') === 0)
 			{
 				$field_id = str_replace('field_id_', '', key($value));
-				$this->addField($i, $field_id, current($value));
+				$this->addField($i, $field_id, $value);
 			}
 
 			$i++;
