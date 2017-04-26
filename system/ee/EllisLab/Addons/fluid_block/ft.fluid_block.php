@@ -87,10 +87,15 @@ class Fluid_block_ft extends EE_Fieldtype {
 			// New field
 			elseif (strpos($key, 'new_row_') === 0)
 			{
-				// @TODO - This is an assumption that the first array element
-				// is the field_id.
-				$field_id = str_replace('field_id_', '', key($value));
-				$this->addField($i, $field_id, $value);
+				foreach (array_keys($value) as $k)
+				{
+					if (strpos($k, 'field_id_') === 0)
+					{
+						$field_id = str_replace('field_id_', '', $k);
+						$this->addField($i, $field_id, $value);
+						break;
+					}
+				}
 			}
 
 			$i++;
