@@ -44,6 +44,7 @@ setpermissions() {
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
 	chmod +x tests/circleci/runtests.sh
+	sudo chown -R ubuntu *
 }
 
 # Explode php_versions environment variable since we can't assign
