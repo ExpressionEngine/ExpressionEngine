@@ -27,16 +27,6 @@ checkout:
   post:
     - git config --global user.email "you@example.com"
     - git config --global user.name "Your Name"
-    - cp tests/circleci/config.php system/user/config/
-    - cp tests/circleci/license.key system/user/config/
-    - cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
-    - chmod 666 system/user/config/config.php
-    - chmod -R 777 system/user
-    - chmod -R 777 system/ee/legacy/translations
-    - chmod 777 tests/rspec/support/tmp
-    - mkdir -p tests/rspec/support/file-sync/uploads
-    - chmod -R 777 tests/rspec/support/file-sync/uploads
-    - chmod -R 777 images
     - chmod +x tests/circleci/runtests.sh
 
 test:

@@ -32,6 +32,20 @@ installmysql() {
 	set +x
 }
 
+setpermissions() {
+	cp tests/circleci/config.php system/user/config/
+	cp tests/circleci/license.key system/user/config/
+	cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
+	chmod 666 system/user/config/config.php
+	chmod -R 777 system/user
+	chmod -R 777 system/ee/legacy/translations
+	chmod 777 tests/rspec/support/tmp
+	mkdir -p tests/rspec/support/file-sync/uploads
+	chmod -R 777 tests/rspec/support/file-sync/uploads
+	chmod -R 777 images
+	chmod +x tests/circleci/runtests.sh
+}
+
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
@@ -79,6 +93,8 @@ do
 
 		# We'll store our build artifacts under the name of the current PHP version
 		mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
+
+		setpermissions
 
 		pushd tests/rspec
 			# Run the tests, outputting the results in the artifacts directory.
