@@ -44,7 +44,6 @@ setpermissions() {
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
 	chmod +x tests/circleci/runtests.sh
-	sudo chown -R ubuntu *
 }
 
 # Explode php_versions environment variable since we can't assign
@@ -114,6 +113,7 @@ do
 		popd
 
 		# Repo was likely clobbered by upgrade, reset
+		sudo chown -R ubuntu *
 		git reset HEAD --hard
 
 		# PHPUnit tests
