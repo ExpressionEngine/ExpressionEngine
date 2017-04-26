@@ -80,6 +80,8 @@ do
 		phpenv global $PHPVERSION
 		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
 
+		setpermissions
+
 		if [ $CIRCLE_NODE_INDEX -eq 2 ]
 		then
 			APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
@@ -93,8 +95,6 @@ do
 
 		# We'll store our build artifacts under the name of the current PHP version
 		mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
-
-		setpermissions
 
 		pushd tests/rspec
 			# Run the tests, outputting the results in the artifacts directory.
