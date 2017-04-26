@@ -3,6 +3,7 @@
 namespace EllisLab\Addons\FluidBlock\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\FieldData;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -84,6 +85,37 @@ class FluidBlock extends Model {
 	protected $field_data_id;
 	protected $order;
 
+	public function getFieldData()
+	{
+		$field_data = ee('Model')->make('FieldData')->forField($this->ChannelField);
+
+		ee()->db->where('id', $this->field_data_id);
+		$row = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+
+		$field_data->set($row[0]);
+		return $field_data;
+	}
+
+	public function getField(FieldData $field_data = NULL)
+	{
+		$field = $this->ChannelField->getField();
+
+		$field_data = ($field_data) ?: $this->getFieldData();
+
+		$field->setData($field_data->getProperty('field_id_' . $this->field_id));
+
+		if ($field_data->hasProperty('field_ft_' . $this->field_id))
+		{
+			$format = $field_data->getProperty('field_ft_' . $this->field_id);
+
+			// Need to set this property because it will override the
+			// format on successive calls to `getField()`
+			$this->ChannelField->field_fmt = $format;
+			$field->setFormat($format);
+		}
+
+		return $field;
+	}
 }
 
 // EOF

@@ -177,21 +177,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 			foreach ($blockData as $data)
 			{
-				ee()->db->where('id', $data->field_data_id);
-				$row = ee()->db->get('channel_data_field_' . $data->field_id)->result_array();
-
-				$field = $data->ChannelField->getField();
-				$field->setData($row[0]['field_id_' . $data->field_id]);
-
-				if (array_key_exists('field_ft_' . $data->field_id, $row[0]))
-				{
-					$format = $row[0]['field_ft_' . $data->field_id];
-
-					// Need to set this property because it will override the
-					// format on successive calls to `getField()`
-					$data->ChannelField->field_fmt = $format;
-					$field->setFormat($format);
-				}
+				$field = $data->getField();
 
 				$field->setName($this->name() . '[rows][row_' . $data->getId() . '][field_id_' . $field->getId() . ']');
 
