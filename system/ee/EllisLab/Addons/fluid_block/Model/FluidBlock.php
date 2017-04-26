@@ -90,9 +90,9 @@ class FluidBlock extends Model {
 		$field_data = ee('Model')->make('FieldData')->forField($this->ChannelField);
 
 		ee()->db->where('id', $this->field_data_id);
-		$row = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+		$rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
 
-		$field_data->set($row[0]);
+		$field_data->set($rows[0]);
 		return $field_data;
 	}
 
