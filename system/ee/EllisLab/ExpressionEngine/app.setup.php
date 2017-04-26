@@ -393,6 +393,7 @@ return array(
 			'ChannelEntryVersion' => 'Model\Channel\ChannelEntryVersion',
 			'ChannelFormSettings' => 'Model\Channel\ChannelFormSettings',
 			'ChannelLayout' => 'Model\Channel\ChannelLayout',
+			'FieldData' => 'Model\Content\FieldData',
 
 			// ..\Comment
 			'Comment' => 'Model\Comment\Comment',
