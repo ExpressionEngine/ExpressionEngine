@@ -112,6 +112,9 @@ do
 			fi
 		popd
 
+		# Repo was likely clobbered by upgrade, reset
+		git reset HEAD --hard
+
 		# PHPUnit tests
 		pushd system/ee/EllisLab/Tests/
 			printf "Running PHPUnit tests\n\n"
