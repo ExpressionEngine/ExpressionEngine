@@ -93,7 +93,7 @@ do
 
 		# Get rid of ridiculous warning in PHP 5.6, we don't even use $HTTP_RAW_POST_DATA
 		# http://stackoverflow.com/questions/26261001/warning-about-http-raw-post-data-being-deprecated
-		echo -e "\n[PHP]\always_populate_raw_post_data=-1" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
+		echo -e "\n[PHP]\nalways_populate_raw_post_data=-1" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
 
 		sudo service apache2 restart
 
