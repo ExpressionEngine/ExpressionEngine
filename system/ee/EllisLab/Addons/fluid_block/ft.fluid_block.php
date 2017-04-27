@@ -26,7 +26,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	public $info = array();
 
-	public $has_array_data = FALSE;
+	public $has_array_data = TRUE;
 
 	/**
 	 * Fetch the fieldtype's name and version from it's addon.setup.php file.
@@ -278,6 +278,58 @@ class Fluid_block_ft extends EE_Fieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	private function lexTagdata($tagdata)
+	{
+		$possible_fields = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+			->fields('field_name')
+			->all()
+			->pluck('field_name');
+
+		$tags = array();
+
+		$block = ee('Model')->get('ChannelField', $this->id)
+			->fields('field_name')
+			->first();
+
+		foreach($possible_fields as $field)
+		{
+			$tag_variable = $block->field_name . ':' . $field;
+			$pattern = '/'.LD.$tag_variable.RD.'(.*)'.LD.'\/'.$tag_variable.RD.'/is';
+
+			if (preg_match($pattern, $tagdata, $matches))
+			{
+				$tags[$field] = $matches[1];
+			}
+		}
+
+		return $tags;
+	}
+
+	public function replace_tag($data, $params = '', $tagdata = '')
+	{
+		$output = '';
+
+		$tags = $this->lexTagdata($tagdata);
+
+		$blockData = ee('Model')->get('fluid_block:FluidBlock')
+			->with('ChannelField')
+			->filter('block_id', $this->field_id)
+			->filter('entry_id', $this->content_id)
+			->order('order')
+			->all();
+
+		foreach ($blockData as $block)
+		{
+			$tag = $tags[$block->ChannelField->field_name];
+			$field = $block->getField();
+			$output .= ee()->TMPL->swap_var_single('content', $field->getData(), $tag);
+		}
+
+		// var_dump($output);
+
+		return $output;
 	}
 }
 
