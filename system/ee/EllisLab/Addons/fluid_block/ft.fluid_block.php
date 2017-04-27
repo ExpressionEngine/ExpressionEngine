@@ -33,7 +33,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function __construct()
 	{
-		$addon = ee('Addon')->get('toggle');
+		$addon = ee('Addon')->get('fluid_block');
 		$this->info = array(
 			'name'    => $addon->getName(),
 			'version' => $addon->getVersion()
