@@ -22,6 +22,7 @@ dependencies:
   cache_directories:
     - "tests/rspec/vendor/bundle"
     - "system/ee/EllisLab/Tests/vendor"
+    - "system/ee/installer/updater/EllisLab/Tests/"
 
 checkout:
   post:

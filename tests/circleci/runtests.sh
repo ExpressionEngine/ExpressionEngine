@@ -99,6 +99,7 @@ do
 		pushd tests/rspec
 			# Run the tests, outputting the results in the artifacts directory.
 			printf "Running Rspec tests\n\n"
+			bundle install --without development --deployment
 			bundle exec rspec -c -fd -fh -o $CIRCLE_ARTIFACTS/$PHPVERSION/rspec.html tests/**/*.rb
 
 			# Append status code for this test
@@ -119,6 +120,7 @@ do
 		# PHPUnit tests
 		pushd system/ee/EllisLab/Tests/
 			printf "Running PHPUnit tests\n\n"
+			composer install --prefer-source --no-interaction
 			phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
 			# Save our exit status code
@@ -131,6 +133,7 @@ do
 		# Updater microapp unit tests
 		pushd system/ee/installer/updater/EllisLab/Tests/
 			printf "Running PHPUnit tests\n\n"
+			composer install --prefer-source --no-interaction
 			phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
 
 			# Save our exit status code
