@@ -85,6 +85,7 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->order('name', 'asc');
@@ -382,6 +383,7 @@ abstract class AbstractFiles extends CP_Controller {
 			->render($base_url);
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
+			->with('NoAccess')
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0);
