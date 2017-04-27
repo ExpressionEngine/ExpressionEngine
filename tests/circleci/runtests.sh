@@ -125,7 +125,7 @@ do
 		pushd system/ee/EllisLab/Tests/
 			printf "Running PHPUnit tests\n\n"
 			composer install --prefer-source --no-interaction
-			phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+			vendor/bin/phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
 			# Save our exit status code
 			((STATUS+=$?))
@@ -138,7 +138,7 @@ do
 		pushd system/ee/installer/updater/EllisLab/Tests/
 			printf "Running PHPUnit tests\n\n"
 			composer install --prefer-source --no-interaction
-			phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
+			vendor/bin/phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
 
 			# Save our exit status code
 			((STATUS+=$?))
