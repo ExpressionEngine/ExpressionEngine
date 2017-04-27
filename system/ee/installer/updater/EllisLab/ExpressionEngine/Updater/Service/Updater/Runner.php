@@ -152,7 +152,6 @@ class Runner {
 
 		ee('Filesystem')->deleteDir(SYSPATH.'ee/installer');
 
-		// Temporary for testing, change to 'selfDestruct' later
 		return 'selfDestruct';
 	}
 
