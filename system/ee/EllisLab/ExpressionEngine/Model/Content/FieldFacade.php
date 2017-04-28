@@ -261,6 +261,25 @@ class FieldFacade {
 		return $this->api->apply('get_field_status', array($field_value));
 	}
 
+	public function replaceTag($tagdata)
+	{
+		$this->initField();
+
+		$data = $this->getItem('row');
+
+		$this->api->apply('_init', array(array(
+			'row'          => $data,
+			'content_id'   => $this->content_id,
+			'content_type' => $this->content_type,
+		)));
+
+		$data = $this->api->apply('pre_process', array(
+			$data['field_id_'.$this->getId()]
+		));
+
+		return $this->api->apply('replace_tag', array($data, array(), $tagdata));
+	}
+
 
 	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
 	public function getNativeField()
