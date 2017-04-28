@@ -99,12 +99,13 @@ class FluidBlock extends Model {
 	public function getField(FieldData $field_data = NULL)
 	{
 		$field = $this->ChannelField->getField();
+		$field->setContentId($this->entry_id);
 
 		$field_data = ($field_data) ?: $this->getFieldData();
 
 		$field->setData($field_data->getProperty('field_id_' . $this->field_id));
 
-		if ($field_data->hasProperty('field_ft_' . $this->field_id))
+		if ($field_data->getProperty('field_ft_' . $this->field_id) !== NULL)
 		{
 			$format = $field_data->getProperty('field_ft_' . $this->field_id);
 
@@ -112,6 +113,12 @@ class FluidBlock extends Model {
 			// format on successive calls to `getField()`
 			$this->ChannelField->field_fmt = $format;
 			$field->setFormat($format);
+		}
+
+		if ($field_data->getProperty('field_dt_' . $this->field_id) !== NULL)
+		{
+			$format = $field_data->getProperty('field_dt_' . $this->field_id);
+			$field->setTimezone($format);
 		}
 
 		return $field;
