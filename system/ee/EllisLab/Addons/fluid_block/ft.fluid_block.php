@@ -328,12 +328,14 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		foreach($possible_fields as $field)
 		{
+			$tags[$field] = array();
+
 			$tag_variable = $block->field_name . ':' . $field;
 			$pattern = '/'.LD.$tag_variable.RD.'(.*)'.LD.'\/'.$tag_variable.RD.'/is';
 
 			if (preg_match($pattern, $tagdata, $matches))
 			{
-				$tags[$field] = $matches[1];
+				$tags[$field][] = $matches[1];
 			}
 		}
 
@@ -356,17 +358,25 @@ class Fluid_block_ft extends EE_Fieldtype {
 		foreach ($blockData as $block)
 		{
 			$field_name = $block->ChannelField->field_name;
-			$tag = $tags[$field_name];
 
-			$tag = str_replace("{content}", '{' . $field_name . '}', $tag);
-			$tag = str_replace("{content:", '{' . $field_name . ':', $tag);
+			// Have no tags for this field?
+			if ( ! array_key_exists($field_name, $tags))
+			{
+				continue;
+			}
 
-			$field = $block->getField();
+			foreach ($tags[$field_name] as $tag)
+			{
+				$tag = str_replace("{content}", '{' . $field_name . '}', $tag);
+				$tag = str_replace("{content:", '{' . $field_name . ':', $tag);
 
-			$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
+				$field = $block->getField();
 
-			$field_output = $field->replaceTag($tag);
-			$output .= ee()->TMPL->swap_var_single($field_name, $field_output, $tag);
+				$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
+
+				$field_output = $field->replaceTag($tag);
+				$output .= ee()->TMPL->swap_var_single($field_name, $field_output, $tag);
+			}
 		}
 
 		return $output;
