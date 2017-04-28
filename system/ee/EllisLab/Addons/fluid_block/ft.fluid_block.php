@@ -108,36 +108,69 @@ class Fluid_block_ft extends EE_Fieldtype {
 		}
 	}
 
-	private function updateField($block, $order, $value)
+	private function prepareData($block, array $values)
 	{
+		$field_data = $block->getFieldData();
+		$field_data->set($values);
+		$field = $block->getField($field_data);
+		$field->save();
+
+		$values['field_id_' . $field->getId()] = $field->getData();
+
+		$field->postSave();
+
+		$format = $field->getFormat();
+
+		if ( ! is_null($format))
+		{
+			$values['field_ft_' . $field->getId()] = $format;
+		}
+
+		$timezone = $field->getTimezone();
+
+		if ( ! is_null($timezone))
+		{
+			$values['field_dt_' . $field->getId()] = $timezone;
+		}
+
+		return $values;
+	}
+
+	private function updateField($block, $order, array $values)
+	{
+		$values = $this->prepareData($block, $values);
+
 		$block->order = $order;
 		$block->save();
 
 		$query = ee('Model/Datastore')->rawQuery();
-		$query->set($value);
+		$query->set($values);
 		$query->where('id', $block->field_data_id);
 		$query->update($block->ChannelField->getTableName());
 	}
 
-	private function addField($order, $field_id, $value)
+	private function addField($order, $field_id, array $values)
 	{
-		$field = ee('Model')->get('ChannelField', $field_id)->first();
-
-		$value = array_merge($value, array(
-			'entry_id' => 0,
-		));
-
-		$query = ee('Model/Datastore')->rawQuery();
-		$query->set($value);
-		$query->insert($field->getTableName());
-		$id = $query->insert_id();
-
 		$block = ee('Model')->make('fluid_block:FluidBlock');
 		$block->block_id = $this->field_id;
 		$block->entry_id = $this->content_id;
 		$block->field_id = $field_id;
-		$block->field_data_id = $id;
 		$block->order = $order;
+
+		$values = $this->prepareData($block, $values);
+
+		$values = array_merge($values, array(
+			'entry_id' => 0,
+		));
+
+		$field = ee('Model')->get('ChannelField', $field_id)->first();
+
+		$query = ee('Model/Datastore')->rawQuery();
+		$query->set($values);
+		$query->insert($field->getTableName());
+		$id = $query->insert_id();
+
+		$block->field_data_id = $id;
 		$block->save();
 	}
 
@@ -326,8 +359,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$field = $block->getField();
 			$output .= ee()->TMPL->swap_var_single('content', $field->getData(), $tag);
 		}
-
-		// var_dump($output);
 
 		return $output;
 	}
