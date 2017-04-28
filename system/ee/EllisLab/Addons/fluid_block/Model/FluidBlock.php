@@ -92,7 +92,11 @@ class FluidBlock extends Model {
 		ee()->db->where('id', $this->field_data_id);
 		$rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
 
-		$field_data->set($rows[0]);
+		if ( ! empty($rows))
+		{
+			$field_data->set($rows[0]);
+		}
+
 		return $field_data;
 	}
 
