@@ -355,9 +355,18 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		foreach ($blockData as $block)
 		{
-			$tag = $tags[$block->ChannelField->field_name];
+			$field_name = $block->ChannelField->field_name;
+			$tag = $tags[$field_name];
+
+			$tag = str_replace("{content}", '{' . $field_name . '}', $tag);
+			$tag = str_replace("{content:", '{' . $field_name . ':', $tag);
+
 			$field = $block->getField();
-			$output .= ee()->TMPL->swap_var_single('content', $field->getData(), $tag);
+
+			$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
+
+			$field_output = $field->replaceTag($tag);
+			$output .= ee()->TMPL->swap_var_single($field_name, $field_output, $tag);
 		}
 
 		return $output;
