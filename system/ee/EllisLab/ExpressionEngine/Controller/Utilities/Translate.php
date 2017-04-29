@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 

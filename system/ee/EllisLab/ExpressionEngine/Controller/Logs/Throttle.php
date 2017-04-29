@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Logs;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 

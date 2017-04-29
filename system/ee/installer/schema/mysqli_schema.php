@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 require_once(APPPATH.'schema/mysql_schema.php');
 

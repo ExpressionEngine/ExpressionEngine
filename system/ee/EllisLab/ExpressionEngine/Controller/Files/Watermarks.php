@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Files;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 

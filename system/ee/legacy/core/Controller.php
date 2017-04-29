@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;

@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use Mexitek\PHPColors\Color;

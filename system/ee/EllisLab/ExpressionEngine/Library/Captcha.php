@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Library;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
  * ExpressionEngine (https://expressionengine.com)
  *

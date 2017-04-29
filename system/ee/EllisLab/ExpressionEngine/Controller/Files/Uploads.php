@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Files;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use CP_Controller;
 
 use EllisLab\ExpressionEngine\Library\CP;

@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Addons;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use CP_Controller;
 use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
