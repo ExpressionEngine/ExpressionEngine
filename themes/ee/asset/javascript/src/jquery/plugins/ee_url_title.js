@@ -1,8 +1,3 @@
-/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
-
-/*global jQuery, EE, window, document, console, alert */
-
-
 /**
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -10,6 +5,10 @@
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
+
+/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
+
+/*global jQuery, EE, window, document, console, alert */
 
 (function ($) {
 

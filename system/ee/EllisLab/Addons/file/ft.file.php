@@ -1,7 +1,4 @@
 <?php
-
-use EllisLab\Addons\FilePicker\FilePicker;
-
 /**
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -9,6 +6,8 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
+
+use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
  * ExpressionEngine File Fieldtype Class

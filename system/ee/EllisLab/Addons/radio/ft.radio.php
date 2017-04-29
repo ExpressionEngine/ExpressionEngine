@@ -1,7 +1,4 @@
 <?php
-
-require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
-
 /**
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -9,6 +6,8 @@ require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
+
+require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * ExpressionEngine Radio Fieldtype Class

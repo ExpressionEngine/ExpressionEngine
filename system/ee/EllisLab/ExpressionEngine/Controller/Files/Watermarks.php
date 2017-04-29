@@ -13,14 +13,6 @@ use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine CP Watermarks Controller Class
  *
  * @package		ExpressionEngine

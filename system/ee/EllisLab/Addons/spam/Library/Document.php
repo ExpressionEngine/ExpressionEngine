@@ -12,14 +12,6 @@ namespace EllisLab\Addons\Spam\Library;
 use \Iterator;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Spam Module
  *
  * @package		ExpressionEngine

@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine File Synced Model
  *
  * A parent model that allows some of the model data to be stored and edited

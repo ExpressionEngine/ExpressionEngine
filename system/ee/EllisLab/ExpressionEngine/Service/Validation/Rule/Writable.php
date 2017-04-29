@@ -13,14 +13,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Writable Validation Rule
  *
  * @package		ExpressionEngine

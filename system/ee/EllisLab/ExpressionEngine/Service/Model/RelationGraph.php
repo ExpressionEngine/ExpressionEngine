@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Model Relation Graph
  *
  * Relations are the edges of the relationship graph. The node of the graph

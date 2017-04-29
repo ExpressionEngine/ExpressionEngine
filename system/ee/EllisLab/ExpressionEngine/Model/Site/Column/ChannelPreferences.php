@@ -13,14 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
 use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Channel Preferences Column
  *
  * @package		ExpressionEngine

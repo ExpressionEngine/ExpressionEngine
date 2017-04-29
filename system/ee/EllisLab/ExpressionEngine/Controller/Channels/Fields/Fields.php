@@ -14,14 +14,6 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
 use EllisLab\ExpressionEngine\Model\Channel\ChannelField;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine CP Channel\Fields\Fields Class
  *
  * @package		ExpressionEngine

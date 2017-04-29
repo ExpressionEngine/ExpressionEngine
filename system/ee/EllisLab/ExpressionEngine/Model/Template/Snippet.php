@@ -14,14 +14,6 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Snippet Model
  *
  * @package		ExpressionEngine

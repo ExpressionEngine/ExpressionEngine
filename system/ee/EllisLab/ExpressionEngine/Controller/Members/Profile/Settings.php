@@ -13,14 +13,6 @@ use CP_Controller;
 use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine CP Member Profile Personal Settings Class
  *
  * @package		ExpressionEngine

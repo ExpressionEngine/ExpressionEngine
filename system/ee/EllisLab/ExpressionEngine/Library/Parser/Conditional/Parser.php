@@ -15,14 +15,6 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Core Conditional Parser Class
  *
  * Implemented as a recursive descent parser.

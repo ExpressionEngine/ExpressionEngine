@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Service\Database;
 require_once BASEPATH."database/drivers/mysqli/mysqli_connection.php";
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Database Connection
  *
  * @package		ExpressionEngine

@@ -12,14 +12,6 @@ namespace EllisLab\Addons\Forum\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Forum Model for the Forum
  *
  * A model representing a forum in the Forum.

@@ -10,14 +10,6 @@
 namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Event Publisher Interface
  *
  * Interface to implement if your class publishes events.

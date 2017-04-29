@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Template Model
  *
  * A model representing a template.  Templates contain a mix of EECode and HTML

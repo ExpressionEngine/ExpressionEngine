@@ -14,14 +14,6 @@ use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
 use Closure;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Event Mixin
  *
  * Allows any Mixable class to receive and emit events.

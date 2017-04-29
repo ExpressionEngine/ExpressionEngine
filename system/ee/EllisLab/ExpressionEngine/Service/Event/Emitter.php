@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Service\Event;
 use Closure;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Event Emitter
  *
  * Very basic event system ala node's emitter, with the addition

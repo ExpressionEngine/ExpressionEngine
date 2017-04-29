@@ -20,14 +20,6 @@ if ( ! class_exists('CI_DB'))
 require_once BASEPATH."database/drivers/mysqli/mysqli_driver.php";
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Database Connection
  *
  * @package		ExpressionEngine

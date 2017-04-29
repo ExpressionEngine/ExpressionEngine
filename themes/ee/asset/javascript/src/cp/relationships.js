@@ -5,6 +5,7 @@
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
+
 (function($) {
 /*
 Some brainstorming with how yui does accent folding ... maybe in a future iteration.

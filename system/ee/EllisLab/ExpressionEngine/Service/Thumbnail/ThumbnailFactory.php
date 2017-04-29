@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Model\File\File;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine ThumbnailFactory Class
  *
  * @package		ExpressionEngine

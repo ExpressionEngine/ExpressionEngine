@@ -1,5 +1,15 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
+/**
+ * IP to Nation Model
+ */
 class Ip_to_nation_data extends CI_Model {
 
 	private $table = 'ip2nation';

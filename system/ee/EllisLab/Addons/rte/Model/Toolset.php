@@ -12,14 +12,6 @@ namespace EllisLab\Addons\Rte\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Toolset Model for the Rich Text Editor
  *
  * A model representing a user toolset in the Rich Text Editor.

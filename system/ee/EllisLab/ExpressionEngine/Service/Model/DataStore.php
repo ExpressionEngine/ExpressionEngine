@@ -16,14 +16,6 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 use EllisLab\ExpressionEngine\Service\Database\Database;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine DataStore
  *
  * This is the backend for all model interactions. It should never be exposed

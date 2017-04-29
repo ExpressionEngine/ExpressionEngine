@@ -13,14 +13,6 @@ use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * This is NOT the class you're looking for. It will be removed before
  * release. Pardon our dust.
  */

@@ -10,14 +10,6 @@
 namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Template Runtime Annotation Class
  *
  * Sometimes, at runtime, you want to mark a piece of template code and

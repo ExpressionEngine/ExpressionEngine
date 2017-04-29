@@ -12,14 +12,6 @@ namespace EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
  * ExpressionEngine Modal Collection Class
  *
  * @package		ExpressionEngine

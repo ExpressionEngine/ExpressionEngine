@@ -5,6 +5,7 @@
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
+
 $(document).ready(function () {
 	// remove debug - it has tabs and we don't want fields to end up in them
 	// we'll add it back in after all the events are bound
