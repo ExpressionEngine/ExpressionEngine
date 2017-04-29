@@ -6,15 +6,11 @@ use \EllisLab\ExpressionEngine\Service\Config\ConfigWithDefaults;
 use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package   ExpressionEngine
- * @author    EllisLab Dev Team
- * @copyright Copyright (c) 2003 - 2016, EllisLab, Inc.
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
- * @link      https://ellislab.com
- * @since     Version 3.0.0
- * @filesource
  */
 
 // ------------------------------------------------------------------------

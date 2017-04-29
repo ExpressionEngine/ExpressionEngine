@@ -8,15 +8,11 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.9.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 // ------------------------------------------------------------------------
