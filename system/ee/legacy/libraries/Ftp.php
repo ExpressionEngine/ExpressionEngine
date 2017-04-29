@@ -9,12 +9,6 @@
 
 /**
  * FTP Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/ftp.html
  */
 class EE_FTP {
 

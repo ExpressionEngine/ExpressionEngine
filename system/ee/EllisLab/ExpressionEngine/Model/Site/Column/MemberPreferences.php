@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
 use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
- * ExpressionEngine Member Preferences
- *
- * @package		ExpressionEngine
- * @subpackage	Site\Preferences
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Preferences Column
  */
 class MemberPreferences extends CustomType {
 

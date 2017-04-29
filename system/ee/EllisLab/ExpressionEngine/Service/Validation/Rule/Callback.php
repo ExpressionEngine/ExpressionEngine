@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * ExpressionEngine Callback Validation Rule
- *
- * @package		ExpressionEngine
- * @subpackage	Validation\Rule
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Callback Validation Rule
  */
 class Callback extends ValidationRule {
 

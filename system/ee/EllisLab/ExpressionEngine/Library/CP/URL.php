@@ -10,15 +10,8 @@
 namespace EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine URL Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP URL
  */
-
 class URL implements \Serializable {
 
 	/**

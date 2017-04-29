@@ -16,18 +16,12 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 use EllisLab\ExpressionEngine\Service\Database\Database;
 
 /**
- * ExpressionEngine DataStore
+ * Model Service DataStore
  *
  * This is the backend for all model interactions. It should never be exposed
  * directly to any code outside of this namespace. This includes no access from
  * userspace models. The only way to interact with it should be through the
  * model facade.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @subpackage	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class DataStore {
 

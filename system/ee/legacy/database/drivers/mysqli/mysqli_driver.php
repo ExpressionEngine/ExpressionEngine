@@ -8,17 +8,11 @@
  */
 
 /**
- * MySQLi Database Adapter Class - MySQLi only works with PHP 5
+ * MySQLi Database Driver
  *
  * Note: _DB is an extender class that the app controller
  * creates dynamically based on whether the active record
  * class is being used or not.
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_mysqli_driver extends CI_DB {
 

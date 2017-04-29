@@ -12,13 +12,7 @@ namespace EllisLab\Addons\Moblog\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Moblog Model
- *
- * @package		ExpressionEngine
- * @subpackage	Moblog Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Moblog Model
  */
 class Moblog extends Model {
 

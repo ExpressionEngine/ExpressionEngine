@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Utilities;
 use EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine CP Query Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Query Controller
  */
 class Query extends Utilities {
 

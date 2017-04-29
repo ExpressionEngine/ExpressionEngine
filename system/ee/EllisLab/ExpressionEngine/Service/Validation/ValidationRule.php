@@ -10,7 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
 /**
- * ExpressionEngine Validation Rule Base Class
+ * Validation Rule Base
  *
  * Represents a Validation Rule that can be applied to a value during any
  * Validation stage.  This can be either form validation or validation of data
@@ -23,12 +23,6 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  * this::
  *
  * 	class Required extends ValidationRule { ... }
- *
- * @package		ExpressionEngine
- * @subpackage	Validation
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class ValidationRule {
 

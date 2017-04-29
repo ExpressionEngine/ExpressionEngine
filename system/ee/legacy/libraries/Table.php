@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Table Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Table
  */
 class EE_Table {
 

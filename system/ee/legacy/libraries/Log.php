@@ -9,12 +9,6 @@
 
 /**
  * Logging Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Logging
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/general/errors.html
  */
 class EE_Log {
 

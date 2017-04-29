@@ -12,16 +12,10 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine File Synced Model
+ * File Synced Model
  *
  * A parent model that allows some of the model data to be stored and edited
  * on disk, for example to store templates as files.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @subpackage	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class FileSyncedModel extends Model {
 

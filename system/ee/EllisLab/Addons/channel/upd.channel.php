@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Channel Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Module update
  */
-
 class Channel_upd {
 
 	var $version		= '2.0.1';

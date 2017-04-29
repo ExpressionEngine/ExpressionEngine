@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Exceptions Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Output
  */
-
 class Installer_Output Extends EE_Output {
 	// Yes, it's empty!
 }

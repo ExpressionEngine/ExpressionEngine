@@ -8,11 +8,7 @@
  */
 
 /**
- * MySQLi Forge Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * MySQLi Forge
  */
 class CI_DB_mysqli_forge extends CI_DB_forge {
 

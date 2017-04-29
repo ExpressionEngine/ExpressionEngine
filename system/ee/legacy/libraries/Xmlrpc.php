@@ -12,15 +12,8 @@ if ( ! function_exists('xml_parser_create'))
 	show_error('Your PHP installation does not support XML');
 }
 
-
 /**
  * XML-RPC request handler class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class EE_Xmlrpc {
 
@@ -331,16 +324,11 @@ class EE_Xmlrpc {
 	}
 	// END
 
-} // END XML_RPC Class
-
-
+}
+// END XML_RPC Class
 
 /**
  * XML-RPC Client class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Client extends EE_Xmlrpc
 {
@@ -410,15 +398,11 @@ class XML_RPC_Client extends EE_Xmlrpc
 		return $resp;
 	}
 
-} // end class XML_RPC_Client
-
+}
+// end class XML_RPC_Client
 
 /**
  * XML-RPC Response class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Response
 {
@@ -588,16 +572,11 @@ class XML_RPC_Response
 		return $t;
 	}
 
-} // End Response Class
-
-
+}
+// End Response Class
 
 /**
  * XML-RPC Message class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Message extends EE_Xmlrpc
 {
@@ -1192,16 +1171,11 @@ class XML_RPC_Message extends EE_Xmlrpc
 		}
 	}
 
-} // End XML_RPC_Messages class
-
-
+}
+// End XML_RPC_Messages class
 
 /**
  * XML-RPC Values class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Values extends EE_Xmlrpc
 {

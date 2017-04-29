@@ -9,12 +9,6 @@
 
 /**
  * ExpressionEngine Installation and Update Wizard
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Wizard extends CI_Controller {
 

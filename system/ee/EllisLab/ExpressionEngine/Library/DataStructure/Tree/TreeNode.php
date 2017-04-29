@@ -9,15 +9,8 @@
 
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
-
 /**
- * ExpressionEngine Tree Node Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Node
  *
  * If you're completely new to this ideas:
  * @see http://xlinux.nist.gov/dads/HTML/tree.html

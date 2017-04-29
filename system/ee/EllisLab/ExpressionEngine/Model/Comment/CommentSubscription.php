@@ -12,16 +12,10 @@ namespace EllisLab\ExpressionEngine\Model\Comment;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Comment Subscription Model
+ * Comment Subscription Model
  *
  * A model representing user subscriptions to the comment thread on a particular
  * entry.
- *
- * @package		ExpressionEngine
- * @subpackage	Comment Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class CommentSubscription extends Model {
 

@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Module update class
  */
-
 class Spam_upd {
 
 	public $version = '1.0.0';

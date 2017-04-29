@@ -7,24 +7,10 @@
  * @license   https://expressionengine.com/license
  */
 
-use EllisLab\ExpressionEngine\Library\Mime\MimeType;
+use  EllisLab\ExpressionEngine\Library\Mime\MimeType;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
- * ExpressionEngine Core Mime type Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Mime type
  */
 class Mime_type {
 

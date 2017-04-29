@@ -11,12 +11,6 @@
  * Utf8 Class
  *
  * Provides support for UTF-8 environments
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	UTF-8
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/utf8.html
  */
 class EE_Utf8 {
 

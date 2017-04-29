@@ -10,13 +10,7 @@
 namespace EllisLab\Addons\Spam\Library;
 
 /**
- * ExpressionEngine Document Vectorizer Interface
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Document Vectorizer Interface
  */
 interface Vectorizer {
 

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
- * ExpressionEngine Query Result
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Query Result
  */
 class Result {
 

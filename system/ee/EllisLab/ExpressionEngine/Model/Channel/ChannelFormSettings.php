@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Channel Form Settings Model
- *
- * @package		ExpressionEngine
- * @subpackage	File
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Settings Model
  */
 class ChannelFormSettings extends Model {
 

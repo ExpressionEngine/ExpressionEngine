@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
 use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
 
 /**
- * ExpressionEngine Formatter\Text Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Formatter\Text
  */
 class Text extends Formatter {
 

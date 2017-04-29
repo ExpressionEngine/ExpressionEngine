@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Cookie Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/cookie_helper.html
+ * Cookie Helpers
  */
 
 /**

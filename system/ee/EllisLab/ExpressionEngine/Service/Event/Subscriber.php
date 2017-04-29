@@ -10,17 +10,11 @@
 namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
- * ExpressionEngine Event Subscriber Interface
+ * Event Subscriber Interface
  *
  * Interface to implement if you want to subscribe your class to an event
  * emitter, where an event fired is automatically forwarded to on<EventName>
  * on your object.
- *
- * @package		ExpressionEngine
- * @subpackage	Event
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface Subscriber {
 

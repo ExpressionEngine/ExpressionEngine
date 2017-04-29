@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\File;
 
+/**
+ * File Service Filter Iterator
+ */
 class FilterIterator extends \FilterIterator {
 
 	public function accept()

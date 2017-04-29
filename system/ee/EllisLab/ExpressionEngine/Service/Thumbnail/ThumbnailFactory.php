@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Model\File\File;
 
 /**
- * ExpressionEngine ThumbnailFactory Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Thumbnail Service Factory
  */
 class ThumbnailFactory {
 

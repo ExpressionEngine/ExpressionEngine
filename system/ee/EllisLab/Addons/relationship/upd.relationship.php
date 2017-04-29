@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Relationship Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Module update class
  */
-
 class Relationship_upd {
 
 	private $name = 'Relationship';

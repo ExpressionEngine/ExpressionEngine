@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
+/**
+ * Layout Interface
+ */
 interface LayoutInterface {
 
 	public function transform(array $fields);

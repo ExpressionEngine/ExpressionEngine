@@ -11,4 +11,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception;
 
 use Exception;
 
+/**
+ * Boolean Expression Exception
+ */
 class BooleanExpressionException extends Exception {}

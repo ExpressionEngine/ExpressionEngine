@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Field Model
  */
 class Field_model extends CI_Model {
 

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Log;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine CP Log Model
- *
- * @package		ExpressionEngine
- * @subpackage	Log
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Log Model
  */
 class CpLog extends Model {
 

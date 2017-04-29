@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Parser Component (Switch)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Switch)
  */
 class EE_Channel_switch_parser implements EE_Channel_parser_component {
 

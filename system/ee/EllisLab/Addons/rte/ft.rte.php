@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Rich Text Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Rich Text Fieldtype
  */
 class Rte_ft extends EE_Fieldtype {
 

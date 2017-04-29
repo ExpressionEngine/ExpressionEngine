@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Member Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Model
  */
 class Member_model extends CI_Model {
 

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Security;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Password Lockout Model
- *
- * @package		ExpressionEngine
- * @subpackage	Security
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Password Lockout Model
  */
 class PasswordLockout extends Model {
 

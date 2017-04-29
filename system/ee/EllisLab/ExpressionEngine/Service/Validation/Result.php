@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View\View;
 use EllisLab\ExpressionEngine\Service\View\StringView;
 
+/**
+ * Validation Result
+ */
 class Result {
 
 	/**

@@ -8,17 +8,9 @@
  */
 
 /**
- * ExpressionEngine Query Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Query Module control panel (nada)
  */
 class Query_mcp {
-
-	var $version = '1.0';
 
 }
 // END CLASS

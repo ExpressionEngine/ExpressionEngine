@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine File Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Module update class
  */
-
 class File_upd {
 
 	var $version		= '1.0.0';

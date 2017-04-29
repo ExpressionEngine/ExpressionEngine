@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Form Javascript Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Javascript Class
  */
 class Channel_form_javascript
 {

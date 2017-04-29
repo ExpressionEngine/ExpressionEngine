@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
 /**
- * ExpressionEngine Category Group Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Group Model
  */
 class CategoryGroup extends StructureModel {
 

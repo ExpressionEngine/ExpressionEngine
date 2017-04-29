@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Dependency;
 use Closure;
 
 /**
- * ExpressionEngine Dependency Injection Binding Decorator
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Dependency Injection Binding Decorator
  */
 class InjectionBindingDecorator implements ServiceProvider {
 

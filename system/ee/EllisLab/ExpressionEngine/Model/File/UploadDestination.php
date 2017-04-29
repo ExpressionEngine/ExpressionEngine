@@ -13,19 +13,13 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Model\Member\MemberGroup;
 
 /**
- * ExpressionEngine File Upload Location Model
+ * File Upload Location Model
  *
  * A model representing one of many possible upload destintations to which
  * files may be uploaded through the file manager or from the publish page.
  * Contains settings for this upload destination which describe what type of
  * files may be uploaded to it, as well as essential information, such as the
  * server paths where those files actually end up.
- *
- * @package		ExpressionEngine
- * @subpackage	File
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class UploadDestination extends Model {
 

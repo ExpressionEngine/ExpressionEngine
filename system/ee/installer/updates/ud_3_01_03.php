@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Update
  */
 class Updater {
 

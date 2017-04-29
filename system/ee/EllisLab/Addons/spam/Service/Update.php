@@ -10,15 +10,8 @@
 namespace EllisLab\Addons\Spam\Service;
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Extensions
- * @category	Extensions
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Update
  */
-
 class Update {
 
 	public function download()

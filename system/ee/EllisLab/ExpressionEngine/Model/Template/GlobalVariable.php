@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine Global Variable Model
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Global Variable Model
  */
 class GlobalVariable extends FileSyncedModel {
 

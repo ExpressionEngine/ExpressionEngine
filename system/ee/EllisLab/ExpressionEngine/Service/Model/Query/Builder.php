@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\DataStore;
 use EllisLab\ExpressionEngine\Service\Model\Query\Result;
 
 /**
- * ExpressionEngine Query Builder
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Query Builder
  */
 class Builder {
 

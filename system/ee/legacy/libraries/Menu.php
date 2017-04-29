@@ -7,24 +7,10 @@
  * @license   https://expressionengine.com/license
  */
 
-use EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
+use  EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
- * ExpressionEngine Menu Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Menu
  */
 class EE_Menu {
 

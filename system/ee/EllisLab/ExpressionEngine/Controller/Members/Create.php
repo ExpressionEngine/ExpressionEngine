@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Members;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Member Create Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Create Controller
  */
 class Create extends Members {
 

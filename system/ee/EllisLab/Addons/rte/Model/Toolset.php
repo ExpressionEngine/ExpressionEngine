@@ -12,15 +12,9 @@ namespace EllisLab\Addons\Rte\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Toolset Model for the Rich Text Editor
+ * Toolset Model for the Rich Text Editor
  *
  * A model representing a user toolset in the Rich Text Editor.
- *
- * @package		ExpressionEngine
- * @subpackage	Rich Text Editor Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Toolset extends Model {
 

@@ -11,12 +11,6 @@
  * User Agent Class
  *
  * Identifies the platform, browser, robot, or mobile devise of the browsing agent
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	User Agent
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/user_agent.html
  */
 class EE_User_agent {
 

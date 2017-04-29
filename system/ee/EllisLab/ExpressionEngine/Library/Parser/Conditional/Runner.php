@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 /**
- * ExpressionEngine Core Conditional Runner Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Conditional Runner
  */
 class Runner {
 

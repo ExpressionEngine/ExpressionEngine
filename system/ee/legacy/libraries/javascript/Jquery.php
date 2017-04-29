@@ -9,14 +9,7 @@
 
 /**
  * Jquery Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @author		EllisLab Dev Team
- * @category	Loader
- * @link		http://www.codeigniter.com/user_guide/libraries/javascript.html
  */
-
 class EE_Jquery extends EE_Javascript {
 
 	var $_javascript_folder = 'js';

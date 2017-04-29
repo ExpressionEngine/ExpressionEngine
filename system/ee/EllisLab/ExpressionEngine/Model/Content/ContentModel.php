@@ -21,7 +21,6 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
  * set data: $entry->title = "Foo"; $entry->getForm();
  * mass set: $entry->set(array); $entry->getForm();
  */
-
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(

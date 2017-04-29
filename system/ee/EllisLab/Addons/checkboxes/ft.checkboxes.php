@@ -10,13 +10,7 @@
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine Option Group Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Option Group Fieldtype
  */
 class Checkboxes_ft extends OptionFieldtype {
 

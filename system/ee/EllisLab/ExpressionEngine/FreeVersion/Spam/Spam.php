@@ -11,6 +11,11 @@ namespace EllisLab\ExpressionEngine\FreeVersion\Spam;
 
 use EllisLab\ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
 
+/**
+ * Free Version Spam Class
+ *
+ * Prevents errors in the free version, which doesn't come with the Spam module
+ */
 class Spam implements SpamProtocol {
 
 	/**

@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Core\Application;
 use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
- * ExpressionEngine Addon Factory Class
- *
- * @package		ExpressionEngine
- * @subpackage	Filesystem
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Addon Service Factory
  */
 class Factory {
 

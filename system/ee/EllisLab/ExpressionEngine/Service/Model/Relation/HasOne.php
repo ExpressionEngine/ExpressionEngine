@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\Association\ToOne;
 
 /**
- * ExpressionEngine HasOne Relation
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * HasOne Relation
  */
 class HasOne extends HasOneOrMany {
 

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Form Category Tree Factory
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Category Tree Factory
  */
 class Channel_form_category_tree {
 
@@ -25,13 +19,7 @@ class Channel_form_category_tree {
 }
 
 /**
- * ExpressionEngine Channel Form Category Tree Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Category Tree Class
  */
 class Channel_form_category_tree_obj {
 

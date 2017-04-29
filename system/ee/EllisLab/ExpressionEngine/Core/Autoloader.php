@@ -13,15 +13,6 @@ namespace EllisLab\ExpressionEngine\Core;
  * ExpressionEngine Autoloader
  *
  * Really basic autoloader using the PSR-4 autoloading rules.
- *
- * I think that makes more sense in a namespaced application than PSR-0. Those
- * underscore rules seem to just be dead weight from the pre-5.3 days.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Autoloader {
 

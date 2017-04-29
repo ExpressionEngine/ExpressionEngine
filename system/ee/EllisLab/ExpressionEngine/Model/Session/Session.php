@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Session;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Session Model
- *
- * @package		ExpressionEngine
- * @subpackage	Session
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Session Model
  */
 class Session extends Model {
 

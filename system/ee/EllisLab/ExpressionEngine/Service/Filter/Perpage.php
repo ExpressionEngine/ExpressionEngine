@@ -13,16 +13,11 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * ExpressionEngine Perpage Filter Class
+ * Perpage Filter
  *
  * This will provide the HTML for a filter that will list a set of "<<number>>
  * results" options, a custom <input> element to specify a custom perpage number,
  * and a "All <<total>> results" option.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Perpage extends Filter {
 

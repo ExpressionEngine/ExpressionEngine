@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Email;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Email Cache Model
+ */
 class EmailCache extends Model
 {
 	protected static $_primary_key = 'cache_id';

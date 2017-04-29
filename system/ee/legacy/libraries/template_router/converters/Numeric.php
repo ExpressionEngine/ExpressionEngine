@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Template Router Numeric Converter
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Numeric Converter
  */
 class EE_Template_router_numeric_converter implements EE_Template_router_converter {
 

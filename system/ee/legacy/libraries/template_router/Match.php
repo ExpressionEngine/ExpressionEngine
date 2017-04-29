@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Route Match Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Route Match
  */
 class EE_Route_match {
 

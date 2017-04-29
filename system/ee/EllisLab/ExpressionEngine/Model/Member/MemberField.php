@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Member;
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 
 /**
- * ExpressionEngine Member Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Member
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Field Model
  */
 class MemberField extends FieldModel {
 

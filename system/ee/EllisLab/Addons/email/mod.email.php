@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Email Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Module
  */
-
 class Email {
 
 	var $email_time_interval = '20'; // In seconds

@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Encrypt;
 use \InvalidArgumentException;
 
 /**
- * ExpressionEngine Encrypt Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Encrypt Service
  */
 class Encrypt {
 

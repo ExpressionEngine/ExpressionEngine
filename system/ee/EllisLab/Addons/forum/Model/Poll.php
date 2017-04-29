@@ -12,15 +12,9 @@ namespace EllisLab\Addons\Forum\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Poll Model for the Forum
+ * Poll Model for the Forum
  *
  * A model representing a poll in the Forum.
- *
- * @package		ExpressionEngine
- * @subpackage	Forum Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Poll extends Model {
 

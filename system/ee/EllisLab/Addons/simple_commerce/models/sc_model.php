@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Simple Commerce Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Simple Commerce Model
  */
 class Sc_model extends CI_Model {
 

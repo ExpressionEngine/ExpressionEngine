@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
+/**
+ * Content Variable Column Gateway
+ */
 class VariableColumnGateway extends Gateway {
 
 	/**

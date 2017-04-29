@@ -10,15 +10,8 @@
 namespace EllisLab\Addons\Spam\Service;
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Extensions
- * @category	Extensions
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Training
  */
-
 class Training {
 
 	public $stop_words_path = 'spam/training/stopwords.txt';

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Addon;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Plugin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Addon
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Plugin Model
  */
 class Plugin extends Model {
 	protected static $_primary_key = 'plugin_id';

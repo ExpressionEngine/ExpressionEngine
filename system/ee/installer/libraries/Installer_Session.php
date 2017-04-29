@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Mock Session Class
- *
- * @package		ExpressionEngine
- * @subpackage	Installer
- * @category	Session
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Session
  */
-
 class Installer_Session {
 
 	public function cache($class, $key, $default = FALSE)

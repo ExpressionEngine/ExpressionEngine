@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Addon;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Action Model
- *
- * @package		ExpressionEngine
- * @subpackage	Addon
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Action Model
  */
 class Action extends Model {
 

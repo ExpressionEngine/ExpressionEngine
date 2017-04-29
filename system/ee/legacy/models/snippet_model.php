@@ -6,14 +6,9 @@
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
+
 /**
- * ExpressionEngine Snippet Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Snippet Model
  */
 class Snippet_model extends CI_Model {
 

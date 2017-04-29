@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Search Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Search Module
  */
-
 class Search {
 
 	var	$min_length		= 3;			// Minimum length of search keywords

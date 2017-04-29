@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Library\Filesystem;
 use FilesystemIterator;
 
 /**
- * ExpressionEngine Filesystem Library
- *
- * @package		ExpressionEngine
- * @subpackage	Filesystem
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Filesystem
  */
 class Filesystem {
 

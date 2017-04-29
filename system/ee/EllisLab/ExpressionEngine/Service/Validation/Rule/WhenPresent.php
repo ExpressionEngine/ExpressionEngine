@@ -12,16 +12,10 @@ namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * ExpressionEngine Presence Dependency Validation Rule
+ * Presence Dependency Validation Rule
  *
  * 'nickname' => 'whenPresent|min_length[5]'
  * 'email' => 'whenPresent[newsletter]|email'
- *
- * @package		ExpressionEngine
- * @subpackage	Validation\Rule
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class WhenPresent extends ValidationRule {
 

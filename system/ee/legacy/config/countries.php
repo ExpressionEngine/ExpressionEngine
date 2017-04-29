@@ -9,12 +9,6 @@
 
 /**
  * ExpressionEngine Country Codes
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 ee()->load->library('logger');
 ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("countries") to load this config file', TRUE, 604800);

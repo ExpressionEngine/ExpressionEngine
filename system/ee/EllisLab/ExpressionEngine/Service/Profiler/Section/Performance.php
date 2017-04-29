@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Profiler\Section;
 use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
 
 /**
- * ExpressionEngine Performance Profiler Section
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler\Section
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Performance Profiler Section
  */
 class Performance extends ProfilerSection {
 

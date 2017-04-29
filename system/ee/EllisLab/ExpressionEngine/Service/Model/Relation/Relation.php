@@ -13,16 +13,10 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\MetaDataReader;
 
 /**
- * ExpressionEngine Relation
+ * Relation
  *
  * Relations describe how two model classes are related. For distinct
  * instance connections, @see Associations.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class Relation {
 

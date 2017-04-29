@@ -8,16 +8,10 @@
  */
 
 /**
- * ExpressionEngine API Class
+ * API
  *
  * Parent class to unify code for accessing and modifying data in EE
  * The parent class handles tasks common to many child classes including returning output
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Api {
 

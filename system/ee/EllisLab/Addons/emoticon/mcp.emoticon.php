@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Emotion Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Emoticon Module control panel (nada)
  */
 class Emoticon_mcp {
 

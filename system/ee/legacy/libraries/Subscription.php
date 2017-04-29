@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Subscription Class
- *
- * @package		ExpressionEngine
-* @subpackage	Libraries
-* @category	Subscription
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Subscription
  */
 class EE_Subscription {
 

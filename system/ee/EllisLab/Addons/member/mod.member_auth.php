@@ -8,15 +8,8 @@
  */
 
 /**
- * Member Management Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Management Auth
  */
-
 class Member_auth extends Member {
 
 	/**

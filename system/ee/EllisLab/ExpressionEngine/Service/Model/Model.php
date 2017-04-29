@@ -21,13 +21,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
 /**
- * ExpressionEngine Model
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service
  */
 class Model extends SerializableEntity implements Subscriber, ValidationAware {
 

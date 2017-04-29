@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Model\Content\Display;
 use EllisLab\ExpressionEngine\Service\Validation\Result;
 use EllisLab\ExpressionEngine\Service\Alert\Alert;
 
+/**
+ * Display Layout Tab
+ */
 class LayoutTab {
 
 	public $id;

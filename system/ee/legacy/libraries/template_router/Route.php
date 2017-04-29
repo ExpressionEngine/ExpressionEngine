@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Route Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Route
  */
 class EE_Route {
 

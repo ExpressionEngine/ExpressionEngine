@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine Database Profiler Section
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler\Section
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Database Profiler Section
  */
 class Database extends ProfilerSection {
 

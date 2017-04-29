@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Library\Mixin;
 use BadMethodCallException;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;
 
+/**
+ * Mixin Manager
+ */
 class Manager {
 
 	protected $scope;

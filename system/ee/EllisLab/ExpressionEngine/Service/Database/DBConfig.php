@@ -13,13 +13,7 @@ use \EllisLab\ExpressionEngine\Service\Config\ConfigWithDefaults;
 use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
- * ExpressionEngine Database Config Class
- *
- * @package    ExpressionEngine
- * @subpackage Core
- * @category   Core
- * @author     EllisLab Dev Team
- * @link       https://ellislab.com
+ * Database Config
  */
 class DBConfig extends ConfigWithDefaults {
 

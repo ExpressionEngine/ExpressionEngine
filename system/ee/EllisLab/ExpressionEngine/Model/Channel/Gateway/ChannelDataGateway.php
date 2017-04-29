@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Channel\Gateway;
 
 use EllisLab\ExpressionEngine\Model\Content\VariableColumnGateway;
 
+/**
+ * Channel Data Gateway
+ */
 class ChannelDataGateway extends VariableColumnGateway {
 
 	protected static $_table_name = 'channel_data';

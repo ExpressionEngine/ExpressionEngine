@@ -13,16 +13,10 @@ use Closure;
 use Exception;
 
 /**
- * ExpressionEngine Dependency Injection Container
+ * Dependency Injection Container
  *
  * A service to track dependencies in other services and act as a service
  * factory and instance container.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class InjectionContainer implements ServiceProvider {
 

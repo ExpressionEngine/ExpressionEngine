@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Core;
 
+/**
+ * Core\ExpressionEngine
+ */
 class ExpressionEngine extends Core {
 
 	/**

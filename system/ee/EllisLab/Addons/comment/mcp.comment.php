@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Comment Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Module control panel
  */
 class Comment_mcp {
 

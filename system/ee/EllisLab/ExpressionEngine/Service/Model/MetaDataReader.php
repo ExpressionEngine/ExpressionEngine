@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 /**
- * ExpressionEngine Meta Data Reader
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Meta Data Reader
  */
 class MetaDataReader {
 

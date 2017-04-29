@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Filemanager Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Filemanager
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Filemanager
  */
-
 class Filemanager {
 
 	var $config;

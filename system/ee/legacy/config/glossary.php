@@ -10,12 +10,6 @@
 
 /**
  * ExpressionEngine HTML Glossary for Control Panel Publish Page
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 
 // The left side of the array is the text that appears in the link

@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Relative_Date Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relative_Date
  */
-
 class Relative_date {
 
 	public function create($timestamp, $reference = NULL)
@@ -251,7 +244,6 @@ class Relative_date_object {
 	}
 
 }
-
 // END Relative_Date class
 
 // EOF

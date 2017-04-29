@@ -13,15 +13,9 @@ use \EE_Route;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Template Route Model
+ * Template Route Model
  *
  * A model representing a template route.
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class TemplateRoute extends Model {
 

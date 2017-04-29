@@ -9,4 +9,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
+/**
+ * Channel Set Service Import Exception
+ */
 class ImportException extends \Exception {}

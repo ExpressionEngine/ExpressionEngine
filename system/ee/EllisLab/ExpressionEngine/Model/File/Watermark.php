@@ -12,16 +12,10 @@ namespace EllisLab\ExpressionEngine\Model\File;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Watermark Model
+ * Watermark Model
  *
  * A model representing one of the watermarks associated with an image
  * manipulation belonging to an upload destination
- *
- * @package		ExpressionEngine
- * @subpackage	File
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Watermark extends Model {
 

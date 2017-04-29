@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 /**
- * ExpressionEngine Update Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update Query
  */
 class Update extends Query {
 

@@ -8,18 +8,11 @@
  */
 
 /**
- * ExpressionEngine jQuery Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * jQuery Module control panel (nada)
  */
 class Jquery_mcp {
 
-
 }
-// End Jquery CP Class
+// END CLASS
 
 // EOF

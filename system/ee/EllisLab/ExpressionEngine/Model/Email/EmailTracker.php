@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Email;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Email Tracker Model
+ */
 class EmailTracker extends Model
 {
 	protected static $_primary_key = 'email_id';

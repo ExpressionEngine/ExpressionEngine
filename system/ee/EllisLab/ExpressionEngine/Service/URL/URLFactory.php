@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
- * ExpressionEngine URLFactory Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * URL Service Factory
  */
 class URLFactory {
 

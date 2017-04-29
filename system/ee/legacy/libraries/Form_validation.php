@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Form Validation Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Validation
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Form Validation
  */
 class EE_Form_validation {
 

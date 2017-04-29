@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Stats Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Stats Module
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stats Module
  */
-
 class Stats {
 
 	public $return_data = '';

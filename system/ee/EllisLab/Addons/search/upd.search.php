@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Search Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Search Module update class
  */
-
 class Search_upd {
 
 	var $version = '2.2.2';

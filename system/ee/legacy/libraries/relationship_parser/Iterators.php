@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Parse Node Iteratior
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Parse Node Iteratior
  *
  * Does not go the into query node's children.
  */
@@ -69,16 +63,10 @@ class ParseNodeIterator extends EE_TreeIterator {
 		return $this->ref->newInstance($children);
 	}
 }
-
+// END CLASS
 
 /**
  * ExpressionEngine Query Node Iteratior
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  *
  * Iterates all of the tree's query nodes even if there are parse
  * nodes in between.
@@ -127,5 +115,6 @@ class QueryNodeIterator extends EE_TreeIterator {
 		return $this->ref->newInstance($children);
 	}
 }
+// END CLASS
 
 // EOF

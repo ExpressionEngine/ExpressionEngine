@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Parser Component (Categories)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Categories)
  */
 class EE_Channel_category_parser implements EE_Channel_parser_component {
 

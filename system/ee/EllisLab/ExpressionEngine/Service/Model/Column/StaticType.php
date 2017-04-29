@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
 /**
- * ExpressionEngine Model Primitive Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Primitive Typed Column
  */
 abstract class StaticType implements Type {
 

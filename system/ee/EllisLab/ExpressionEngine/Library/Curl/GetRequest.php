@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Curl;
 
+/**
+ * Curl GET Request
+ */
 class GetRequest extends Request {
 
 	public function __construct($url, $data = array(), $callback = NULL)

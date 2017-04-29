@@ -10,14 +10,8 @@
 namespace EllisLab\ExpressionEngine\Library;
 
 /**
- * ExpressionEngine CAPTCHA Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CAPTCHA
  */
-
 class Captcha {
 
 	/**

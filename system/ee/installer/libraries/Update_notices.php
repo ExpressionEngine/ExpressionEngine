@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Survey Library
- *
- * @package		ExpressionEngine
- * @subpackage	Installer
- * @category	Update Notices
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update Notices Library
  */
 class Update_notices {
 

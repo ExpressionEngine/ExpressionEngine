@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column\Scalar;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 
 /**
- * ExpressionEngine Model String Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service String Typed Column
  */
 class StringLiteral extends StaticType {
 

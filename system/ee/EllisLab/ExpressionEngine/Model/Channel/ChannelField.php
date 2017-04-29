@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 
 /**
- * ExpressionEngine Channel Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Field Model
  */
 class ChannelField extends FieldModel {
 

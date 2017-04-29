@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine RSS Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RSS Module
  */
-
 class Rss {
 
 	protected $_debug = FALSE;

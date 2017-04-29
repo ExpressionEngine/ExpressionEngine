@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Publish Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Publish Page
  */
 class Publish
 {

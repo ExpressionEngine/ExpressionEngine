@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Dependency;
 use Closure;
 
 /**
- * ExpressionEngine Service Provider Interface
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Service Provider Interface
  */
 interface ServiceProvider {
 

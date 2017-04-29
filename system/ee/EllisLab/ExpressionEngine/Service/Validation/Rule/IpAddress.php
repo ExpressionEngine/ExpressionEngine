@@ -12,14 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * ExpressionEngine IP Address Validation Rule
- *
- *
- * @package		ExpressionEngine
- * @subpackage	Validation\Rule
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * IP Address Validation Rule
  */
 class IpAddress extends ValidationRule {
 

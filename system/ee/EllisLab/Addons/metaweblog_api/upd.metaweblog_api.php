@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Metaweblog API Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Metaweblog API Module update class
  */
 class Metaweblog_api_upd {
 

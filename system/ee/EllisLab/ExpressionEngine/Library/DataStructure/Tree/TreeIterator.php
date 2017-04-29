@@ -9,16 +9,8 @@
 
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
-
-
 /**
- * ExpressionEngine Tree Iterator Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Iterator
  */
 class TreeIterator extends \RecursiveArrayIterator {
 

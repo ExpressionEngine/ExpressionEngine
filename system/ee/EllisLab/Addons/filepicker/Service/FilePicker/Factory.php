@@ -14,6 +14,9 @@ use EllisLab\ExpressionEngine\Service\URL\URLFactory;
 use EllisLab\ExpressionEngine\Service\Modal\ModalCollection;
 use EllisLab\ExpressionEngine\Service\View\View;
 
+/**
+ * FilePicker Factory
+ */
 class Factory {
 
 	protected $url;

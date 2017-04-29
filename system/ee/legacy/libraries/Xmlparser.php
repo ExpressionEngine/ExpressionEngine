@@ -8,15 +8,7 @@
  */
 
 /**
- * ExpressionEngine XML Parser Cache Class
- *
- * XML_Cache class - holds parsed XML object
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * XML Parser Cache
  */
 class XML_Cache {
 	var $tag;
@@ -26,15 +18,9 @@ class XML_Cache {
 
 }
 /**
- * ExpressionEngine XML Parser Class
+ * XML Parser
  *
  * Contains all of the methods for handling XML data
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_XMLparser {
 

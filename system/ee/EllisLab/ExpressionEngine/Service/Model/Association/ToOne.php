@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
 use EllisLab\ExpressionEngine\Service\Model\Collection;
 
+/**
+ * Model Service: To One Association
+ */
 class ToOne extends Association {
 
 	private $fk_value = NULL;

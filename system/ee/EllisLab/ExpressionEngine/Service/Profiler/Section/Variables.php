@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Profiler\Section;
 use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
 
 /**
- * ExpressionEngine Variables Profiler Section
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler\Section
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Variables Profiler Section
  */
 class Variables extends ProfilerSection {
 

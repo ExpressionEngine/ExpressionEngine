@@ -13,6 +13,9 @@ use EllisLab\ExpressionEngine\Model\File\File as FileModel;
 use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
+/**
+ * File Service Upload
+ */
 class Upload {
 
 	/**

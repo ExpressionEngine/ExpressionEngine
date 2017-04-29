@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Entries Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Entries Model
  */
 class Channel_entries_model extends CI_Model {
 

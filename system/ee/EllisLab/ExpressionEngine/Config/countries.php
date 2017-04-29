@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Country Codes
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Country Codes
  */
 
 // $countries =

@@ -13,13 +13,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Logs Controller
  */
 class Logs extends CP_Controller {
 

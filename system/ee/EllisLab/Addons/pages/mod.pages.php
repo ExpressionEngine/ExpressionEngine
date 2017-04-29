@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Pages Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pages Module
  */
 class Pages {
 

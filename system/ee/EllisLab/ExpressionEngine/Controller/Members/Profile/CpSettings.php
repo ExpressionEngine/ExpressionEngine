@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Member Profile CP Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Profile CP Settings Controller
  */
 class CpSettings extends Profile {
 

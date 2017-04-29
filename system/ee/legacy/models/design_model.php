@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Design Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design Model
  */
 class Design_model extends CI_Model {
 

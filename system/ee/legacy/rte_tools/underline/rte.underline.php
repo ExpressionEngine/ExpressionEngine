@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Underline RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Underline RTE Tool
  */
 class Underline_rte {
 

@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Stats Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stats Module update class
  */
-
 class Stats_upd {
 
 	var $version	= '2.0.0';

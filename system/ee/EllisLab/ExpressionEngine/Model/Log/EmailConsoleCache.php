@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Log;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Email Console Log Model
- *
- * @package		ExpressionEngine
- * @subpackage	Log
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Console Log Model
  */
 class EmailConsoleCache extends Model {
 

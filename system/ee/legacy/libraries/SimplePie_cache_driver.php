@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Caching Driver for SimplePie
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Caching Driver for SimplePie
  */
 class EE_SimplePie_Cache_Driver implements SimplePie_Cache_Base
 {

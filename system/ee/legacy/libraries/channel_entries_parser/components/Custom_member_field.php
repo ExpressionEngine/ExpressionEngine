@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Parser Component (Custom Member Fields)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Custom Member Fields)
  */
 class EE_Channel_custom_member_field_parser implements EE_Channel_parser_component {
 

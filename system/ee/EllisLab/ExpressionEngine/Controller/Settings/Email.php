@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Outgoing Email Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Outgoing Email Settings Controller
  */
 class Email extends Settings {
 

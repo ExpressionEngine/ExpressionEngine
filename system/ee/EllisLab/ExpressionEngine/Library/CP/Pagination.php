@@ -12,15 +12,8 @@ namespace EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine Pagination Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Pagination
  */
-
 class Pagination {
 
 	/**

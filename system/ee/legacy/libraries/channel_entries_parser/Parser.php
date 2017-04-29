@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Parser
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser
  */
 class EE_Channel_data_parser {
 

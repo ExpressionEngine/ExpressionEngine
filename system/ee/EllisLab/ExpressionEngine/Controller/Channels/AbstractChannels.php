@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
 /**
- * ExpressionEngine CP Abstract Channel Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Channels
  */
 abstract class AbstractChannels extends CP_Controller {
 

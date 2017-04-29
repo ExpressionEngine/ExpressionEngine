@@ -10,14 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
 /**
- * ExpressionEngine Custom Filter Class
- *
- * This provides a custom "one-off" filter.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Custom Filter
  */
 class Custom extends Filter {
 

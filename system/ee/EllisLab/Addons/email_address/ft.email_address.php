@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Email Fieldtype Class
- *
- * @package     ExpressionEngine
- * @subpackage  Fieldtypes
- * @category    Fieldtypes
- * @author      EllisLab Dev Team
- * @link        https://ellislab.com
+ * Email Fieldtype
  */
 class Email_address_Ft extends EE_Fieldtype {
 

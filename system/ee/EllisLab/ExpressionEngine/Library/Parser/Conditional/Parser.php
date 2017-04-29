@@ -15,7 +15,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 
 /**
- * ExpressionEngine Core Conditional Parser Class
+ * Core Conditional Parser
  *
  * Implemented as a recursive descent parser.
  *
@@ -30,12 +30,6 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
  *
  * The grammar as it stands should be LL(1) and LALR compatible. If anyone
  * goes really code happy, be my guest.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Parser extends AbstractParser {
 

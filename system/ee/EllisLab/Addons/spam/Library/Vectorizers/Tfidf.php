@@ -13,15 +13,8 @@ use \EllisLab\Addons\Spam\Library\Document;
 use \EllisLab\Addons\spam\Library\Vectorizer;
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Module Tfidf Vectorizer
  */
-
 class Tfidf implements Vectorizer {
 
 	public $documents = array();

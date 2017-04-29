@@ -10,13 +10,7 @@
 require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.php';
 
 /**
- * ExpressionEngine Channel From Module Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Library
  */
 class Channel_form_lib
 {

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Communicate Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Communicate Model
  */
 class Communicate_model extends CI_Model {
 

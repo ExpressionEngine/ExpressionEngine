@@ -13,6 +13,9 @@ use EllisLab\ExpressionEngine\Legacy\App as LegacyApp;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
 use EllisLab\ExpressionEngine\Error\FileNotFound;
 
+/**
+ * Core Abstract
+ */
 abstract class Core {
 
 	/**

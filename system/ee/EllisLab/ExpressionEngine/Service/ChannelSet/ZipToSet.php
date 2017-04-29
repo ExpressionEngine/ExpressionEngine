@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+/**
+ * Channel Set Service: Zip to Set
+ */
 class ZipToSet {
 
 	private $path;

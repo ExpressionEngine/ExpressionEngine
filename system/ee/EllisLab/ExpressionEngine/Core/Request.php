@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Core;
 
+/**
+ * Core Request
+ */
 class Request {
 
 	protected $get;

@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 use StdClass;
 use ZipArchive;
 
+/**
+ * Channel Set Service: Export
+ */
 class Export {
 
 	private $zip;

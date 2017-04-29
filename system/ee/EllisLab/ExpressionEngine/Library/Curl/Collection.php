@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Library\Curl;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
+/**
+ * Curl Request Collection
+ */
 class RequestCollection extends Collection {
 
 	public $window = INF;

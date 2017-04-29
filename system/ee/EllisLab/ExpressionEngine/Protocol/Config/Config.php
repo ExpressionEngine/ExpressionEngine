@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Protocol\Config;
 
 /**
- * ExpressionEngine Config Protocol
- *
- * @package    ExpressionEngine
- * @subpackage Core
- * @category   Core
- * @author     EllisLab Dev Team
- * @link       https://ellislab.com
+ * ExpressionEngine Config Protocol interface
  */
 interface Config {
 

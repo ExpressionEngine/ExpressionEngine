@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Member\Gateway;
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
- * ExpressionEngine Member Table
- *
- * @package		ExpressionEngine
- * @subpackage	Category\Gateway
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Table
  */
 class MemberGateway extends Gateway {
 

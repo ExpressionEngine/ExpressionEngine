@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Security;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Throttle Model
- *
- * @package		ExpressionEngine
- * @subpackage	Security
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Throttle Model
  */
 class Throttle extends Model {
 

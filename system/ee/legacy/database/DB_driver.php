@@ -13,12 +13,6 @@
  * This is the platform-independent base DB implementation class.
  * This class will not be called directly. Rather, the adapter
  * class for the specific database will extend and instantiate it.
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_driver {
 

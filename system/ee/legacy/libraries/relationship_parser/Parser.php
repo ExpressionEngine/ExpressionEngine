@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Relationship Data Parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Data Parser
  */
 class EE_Relationship_data_parser {
 
@@ -686,5 +680,6 @@ class EE_Relationship_data_parser {
 		return $entry_ids;
 	}
 }
+// END CLASS
 
 // EOF

@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Protocol\Spam;
 
 /**
- * ExpressionEngine Spam Protocol
- *
- * @package    ExpressionEngine
- * @subpackage Core
- * @category   Core
- * @author     EllisLab Dev Team
- * @link       https://ellislab.com
+ * ExpressionEngine Spam Protocol interface
  */
 interface Spam {
 

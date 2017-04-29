@@ -8,58 +8,49 @@
  */
 
 /**
- * ExpressionEngine Core Session Class
+ * Core Session
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * ExpressionEngine User Classes (* = current):
+ *
+ *   1. Session*
+ *   2. Authentication
+ *   3. Permissions
+ *
+ * There are three validation types, set in the config file:
+ *
+ *   1. User cookies AND session ID (cs)
+ *
+ * 	This is the most secure way to run a site. A session cookie is set
+ * 	with a random ID, and a browser fingerprint is added to the URL.
+ *
+ * 	The cookie expires when you have been inactive longer than two
+ * 	hours (one hour in the control panel). The fingerprint in the url will be
+ * 	lost when you close the browser.
+ *
+ * 	Using this setting does NOT allow 'stay logged-in' capability, as each
+ * 	session has a finite lifespan.
+ *
+ *   2. Cookies only - (c)
+ *
+ * 	With this validation type, a session ID string is not added to the url.
+ * 	Therefore users can remain permanently logged in if they choose the
+ * 	remember me option. This will set a second cookie that expires in a year.
+ *
+ * 	This setting is obviously less secure because it does not provide a safety
+ * 	net if you share your computer or access your site from a public computer.
+ * 	It relies solely on the session_id/remember_me cookies. You must log out.
+ *
+ *   3. Session ID only (s).
+ *
+ * 	Most compatible as it does not rely on cookies at all. Instead, only the
+ * 	URL query string ID is used.
+ *
+ * 	No stay-logged in capability. The session will expire after one hour of
+ * 	inactivity, so in terms of security, it is preferable to number 2.
+ *
+ * 	NOTE: The control panel and public pages can each have their own
+ * 	      session preference.
  */
-
-/*
-ExpressionEngine User Classes (* = current):
-
-  1. Session*
-  2. Authentication
-  3. Permissions
-
-There are three validation types, set in the config file:
-
-  1. User cookies AND session ID (cs)
-
-	This is the most secure way to run a site. A session cookie is set
-	with a random ID, and a browser fingerprint is added to the URL.
-
-	The cookie expires when you have been inactive longer than two
-	hours (one hour in the control panel). The fingerprint in the url will be
-	lost when you close the browser.
-
-	Using this setting does NOT allow 'stay logged-in' capability, as each
-	session has a finite lifespan.
-
-  2. Cookies only - (c)
-
-	With this validation type, a session ID string is not added to the url.
-	Therefore users can remain permanently logged in if they choose the
-	remember me option. This will set a second cookie that expires in a year.
-
-	This setting is obviously less secure because it does not provide a safety
-	net if you share your computer or access your site from a public computer.
-	It relies solely on the session_id/remember_me cookies. You must log out.
-
-  3. Session ID only (s).
-
-	Most compatible as it does not rely on cookies at all. Instead, only the
-	URL query string ID is used.
-
-	No stay-logged in capability. The session will expire after one hour of
-	inactivity, so in terms of security, it is preferable to number 2.
-
-	NOTE: The control panel and public pages can each have their own
-	      session preference.
-*/
-
 class EE_Session {
 
 	public $user_session_len	= 7200;  // User sessions expire in two hours

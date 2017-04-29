@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine RSS Parser Factory Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RSS Parser Factory
  */
 class EE_RSS_Parser {
 

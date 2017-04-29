@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Status;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Status Group Model
- *
- * @package		ExpressionEngine
- * @subpackage	Status
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Status Group Model
  */
 class StatusGroup extends Model {
 

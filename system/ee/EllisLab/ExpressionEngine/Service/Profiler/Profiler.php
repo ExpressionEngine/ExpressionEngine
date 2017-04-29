@@ -16,12 +16,6 @@ use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
  * ExpressionEngine Profiler
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Profiler {
 

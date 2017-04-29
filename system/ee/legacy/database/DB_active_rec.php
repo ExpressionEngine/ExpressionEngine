@@ -11,12 +11,6 @@
  * Active Record Class
  *
  * This is the platform-independent base Active Record implementation class.
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_active_record extends CI_DB_driver {
 

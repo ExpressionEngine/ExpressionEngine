@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine OptionFieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Option Field type
  */
 abstract class OptionFieldtype extends EE_Fieldtype {
 

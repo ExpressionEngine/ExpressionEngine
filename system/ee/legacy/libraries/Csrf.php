@@ -12,12 +12,6 @@
  *
  * This class handles the CSRF protection for ExpressionEngine. You should
  * not need to use this library yourself.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Csrf {
 

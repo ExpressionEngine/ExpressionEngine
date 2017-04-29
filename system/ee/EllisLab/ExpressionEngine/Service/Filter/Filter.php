@@ -13,12 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * ExpressionEngine abstract Filter Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * abstract Filter
  */
 abstract class Filter {
 

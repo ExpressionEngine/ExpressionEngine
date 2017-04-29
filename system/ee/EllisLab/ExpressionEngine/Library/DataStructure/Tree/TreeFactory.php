@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
 /**
- * ExpressionEngine Tree Factory Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Factory
  */
 class TreeFactory {
 

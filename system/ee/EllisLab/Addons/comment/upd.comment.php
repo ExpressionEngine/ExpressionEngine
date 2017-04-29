@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Comment Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Module update class
  */
-
 class Comment_upd {
 
 	var $version = '2.3.2';

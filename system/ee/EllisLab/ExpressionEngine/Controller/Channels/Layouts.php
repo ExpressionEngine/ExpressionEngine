@@ -17,13 +17,7 @@ use EllisLab\ExpressionEngine\Model\Channel\Channel;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
- * ExpressionEngine CP Channel\Layout Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channels\Layouts Controller
  */
 class Layouts extends AbstractChannelsController {
 

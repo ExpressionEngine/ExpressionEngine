@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
 use LogicException;
 
 /**
- * ExpressionEngine Select Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Select Query
  */
 class Select extends Query {
 

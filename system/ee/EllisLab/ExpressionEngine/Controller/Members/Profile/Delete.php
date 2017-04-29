@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Member Delete Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Delete Controller
  */
 class Delete extends Profile {
 

@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Core;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
 use FilesystemIterator;
 
+/**
+ * Core Provider Registry
+ */
 class ProviderRegistry {
 
 	protected $dependencies;

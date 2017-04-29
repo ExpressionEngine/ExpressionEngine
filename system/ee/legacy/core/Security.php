@@ -13,23 +13,11 @@
  * Implementing this will enforce strict XID checks on all requests to
  * the class (if secure forms are enabled). Without it, the security model
  * is a little more lax until third parties have time to adapt.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface Strict_XID {}
 
 /**
- * ExpressionEngine Core Security Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Security
  */
 class EE_Security {
 

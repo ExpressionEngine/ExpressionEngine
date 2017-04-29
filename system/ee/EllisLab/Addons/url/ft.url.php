@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine URL Fieldtype Class
- *
- * @package     ExpressionEngine
- * @subpackage  Fieldtypes
- * @category    Fieldtypes
- * @author      EllisLab Dev Team
- * @link        https://ellislab.com
+ * URL Fieldtype
  */
 class Url_Ft extends EE_Fieldtype {
 

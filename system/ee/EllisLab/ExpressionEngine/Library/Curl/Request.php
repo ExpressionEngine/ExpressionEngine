@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Curl;
 
+/**
+ * Curl Request
+ */
 abstract class Request {
 
 	public function __construct($url, $data, $callback = NULL)

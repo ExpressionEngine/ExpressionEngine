@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Relationship Fieldtype Settings Helper Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Fieldtype Settings Helper Class
  */
 class Relationships_ft_cp {
 

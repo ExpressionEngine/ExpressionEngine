@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * ExpressionEngine Date Filter Class
+ * Date Filter
  *
  * This will provide the HTML for a filter that will list a set of "in the last
  * <<period>>" options as well as a custom <input> element for a specific date.
@@ -22,11 +22,6 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  *
  * This will also interpret incoming date strings and will convert them to a
  * UNIX timestamp for use in the value() method.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Date extends Filter {
 

@@ -13,10 +13,6 @@
  * This is the platform-independent result class.
  * This class will not be called directly. Rather, the adapter
  * class for the specific database will extend and instantiate it.
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_result {
 

@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Model\Content\Display;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
 
+/**
+ * Content Default Layout
+ */
 class DefaultLayout implements LayoutInterface {
 
 	protected $layout;

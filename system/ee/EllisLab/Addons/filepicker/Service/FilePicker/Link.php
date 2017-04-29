@@ -9,6 +9,9 @@
 
 namespace EllisLab\Addons\FilePicker\Service\FilePicker;
 
+/**
+ * FilePicker Link
+ */
 class Link {
 
 	protected $html;

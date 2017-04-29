@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine CP Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP
  */
 class Cp {
 

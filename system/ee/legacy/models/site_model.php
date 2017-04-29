@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Site Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Site Model
  */
 class Site_model extends CI_Model {
 

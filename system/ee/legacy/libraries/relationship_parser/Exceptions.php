@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Relationship Runtime Exception
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Runtime Exception
  */
 class EE_Relationship_exception extends RuntimeException {}
 

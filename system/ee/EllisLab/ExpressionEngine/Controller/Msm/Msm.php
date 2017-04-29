@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine CP Multiple Site Manager Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Multiple Site Manager Controller
  */
 class Msm extends CP_Controller {
 

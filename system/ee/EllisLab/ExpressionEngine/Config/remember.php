@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Remember Me library config
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * Remember Me library config
  */
 
  // default expiration of two weeks, in seconds

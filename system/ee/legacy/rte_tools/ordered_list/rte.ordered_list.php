@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Ordered List RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Ordered List RTE Tool
  */
 class Ordered_list_rte {
 

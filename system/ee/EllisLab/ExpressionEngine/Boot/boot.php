@@ -1,5 +1,4 @@
 <?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
-
 /**
  * ExpressionEngine (https://expressionengine.com)
  *

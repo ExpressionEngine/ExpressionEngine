@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Error;
 
+/**
+ * FileNotFound Error
+ */
 class FileNotFound extends \Exception {}
 
 // EOF

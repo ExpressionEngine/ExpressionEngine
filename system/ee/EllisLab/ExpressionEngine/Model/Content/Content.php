@@ -9,4 +9,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
+/**
+ * Content interface
+ */
 interface Content {}

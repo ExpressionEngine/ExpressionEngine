@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Ip to Nation Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Ip to Nation Module
  */
-
 class Ip_to_nation {
 
 	var $return_data = '';

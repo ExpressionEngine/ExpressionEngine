@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Pagination Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Pagination
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pagination
  */
-
 class EE_Pagination {
 
 	var $base_url			= ''; // The page we are linking to

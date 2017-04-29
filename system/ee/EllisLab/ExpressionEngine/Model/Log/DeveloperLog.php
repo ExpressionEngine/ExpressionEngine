@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Log;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Developer Log Model
- *
- * @package		ExpressionEngine
- * @subpackage	Log
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Developer Log Model
  */
 class DeveloperLog extends Model {
 

@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\Association\ToMany;
 
 /**
- * ExpressionEngine HasMany Relation
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * HasMany Relation
  */
 class HasMany extends HasOneOrMany {
 

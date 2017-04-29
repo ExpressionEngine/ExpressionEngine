@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Radio Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Toggle Fieldtype
  */
 class Toggle_ft extends EE_Fieldtype {
 

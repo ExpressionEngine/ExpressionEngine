@@ -13,12 +13,7 @@ use EllisLab\ExpressionEngine\Model\File\File;
 use InvalidArgumentException;
 
 /**
- * ExpressionEngine Thumbnail Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Thumbnail Service
  */
 class Thumbnail {
 

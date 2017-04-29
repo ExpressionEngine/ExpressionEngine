@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 /**
- * ExpressionEngine VariableColumn Model
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Variable Column Model
  */
 abstract class VariableColumnModel extends Model {
 

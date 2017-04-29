@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Protocol\Config\Config;
 
 /**
- * ExpressionEngine Config File Class
- *
- * @package    ExpressionEngine
- * @subpackage Config
- * @category   Service
- * @author     EllisLab Dev Team
- * @link       https://ellislab.com
+ * Config With Defaults
  */
 abstract class ConfigWithDefaults implements Config {
 

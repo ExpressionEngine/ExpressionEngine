@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Relationship Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship EntryList
  */
-
 class EntryList {
 
 	// Cache variables

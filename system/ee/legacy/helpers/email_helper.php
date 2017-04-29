@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Email Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/email_helper.html
+ * Email Helpers
  */
 
 /**

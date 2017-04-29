@@ -14,14 +14,7 @@ namespace EllisLab\Addons\Spam\Library;
  * instead of plain text in the Spam Module for future proofing. This allows us
  * to attach extra information to each piece of text which can be used for
  * Naive Bayes.
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
-
 class Source {
 
 	private $text;

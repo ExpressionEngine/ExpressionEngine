@@ -9,49 +9,40 @@
 
 /**
  * ExpressionEngine Authentication Library
+ * ExpressionEngine User Classes (* = current):
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ *   1. Session
+ *   2. Authentication*
+ *   3. Permissions
+ *
+ * Doing authentication securely relies heavily on handling user
+ * passwords responsibly. Thanks to steadily increasing computing
+ * power, cryptographic hashing algorithms evolve continuously.
+ *
+ * To deal with this we continually try to upgrade the user. The
+ * general authentication flow therefore becomes:
+ *
+ *   1. Grab user info using a unique identifier.
+ *
+ *   2. Determine the function used for their stored password.
+ * 	 We do this by looking at the length of the hash. This
+ * 	 also means that we can never support two algorithms of
+ * 	 the same length. Not a big problem.
+ *
+ *   3. Determine if their old password hash was salted.
+ * 	 This is easy; we store the salt with their userdata.
+ *
+ *   4. Hash the input password with the old salt and hash function.
+ * 	 If this fails we're done, the password was incorrect.
+ *
+ *   5. Check if we can improve security of their password.
+ * 	 If it wasn't salted, we salt it. If we support a newer
+ * 	 hash function, we create a new salt and rehash the password.
+ *
+ * EE Dev Note: In EE's db the password and salt column
+ * should always be as long as the best available hash.
+ *
  */
-
-/*
-ExpressionEngine User Classes (* = current):
-
-  1. Session
-  2. Authentication*
-  3. Permissions
-
-Doing authentication securely relies heavily on handling user
-passwords responsibly. Thanks to steadily increasing computing
-power, cryptographic hashing algorithms evolve continuously.
-
-To deal with this we continually try to upgrade the user. The
-general authentication flow therefore becomes:
-
-  1. Grab user info using a unique identifier.
-
-  2. Determine the function used for their stored password.
-	 We do this by looking at the length of the hash. This
-	 also means that we can never support two algorithms of
-	 the same length. Not a big problem.
-
-  3. Determine if their old password hash was salted.
-	 This is easy; we store the salt with their userdata.
-
-  4. Hash the input password with the old salt and hash function.
-	 If this fails we're done, the password was incorrect.
-
-  5. Check if we can improve security of their password.
-	 If it wasn't salted, we salt it. If we support a newer
-	 hash function, we create a new salt and rehash the password.
-
-EE Dev Note: In EE's db the password and salt column
-should always be as long as the best available hash.
-
-*/
 class Auth {
 
 	public $errors = array();
@@ -857,6 +848,6 @@ class Auth_result {
 		return $obj;
 	}
 }
-// END Auth_member class
+// END CLASS
 
 // EOF

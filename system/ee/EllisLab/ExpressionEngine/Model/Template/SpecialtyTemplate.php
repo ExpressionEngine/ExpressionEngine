@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Specialty Templates Model
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Specialty Templates Model
  */
 class SpecialtyTemplate extends Model {
 

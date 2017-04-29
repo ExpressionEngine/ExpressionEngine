@@ -13,12 +13,7 @@ use EllisLab\ExpressionEngine\Service\View\View;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
- * ExpressionEngine ListItem Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Siebar List Item
  */
 abstract class ListItem {
 

@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Channel Field Group Model
+ */
 class ChannelFieldGroup extends Model {
 
 	protected static $_primary_key 	= 'group_id';

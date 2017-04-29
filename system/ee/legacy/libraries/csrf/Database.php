@@ -14,12 +14,6 @@
  * and uses their session id to retrieve the stored csrf token.
  *
  * This class should not be used directly. Use the CSRF library.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Csrf_database implements Csrf_storage_backend {
 

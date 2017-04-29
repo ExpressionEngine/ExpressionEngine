@@ -7,24 +7,10 @@
  * @license   https://expressionengine.com/license
  */
 
-use EllisLab\Addons\FilePicker\FilePicker;
+use  EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
- * ExpressionEngine Image RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Image RTE Tool
  */
 class Image_rte {
 

@@ -20,12 +20,6 @@ use IteratorAggregate;
  *
  * A collection is essentially an array of objects. Any calls to the
  * collection will be passed to each of the parent objects.
- *
- * @package		ExpressionEngine
- * @subpackage	Data
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Collection implements ArrayAccess, Countable, IteratorAggregate {
 

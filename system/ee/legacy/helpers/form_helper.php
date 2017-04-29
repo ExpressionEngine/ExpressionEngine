@@ -9,13 +9,7 @@
  */
 
 /**
- * ExpressionEngine Form Helper
- *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Form Helper
  */
 
 

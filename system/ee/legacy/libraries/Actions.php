@@ -8,7 +8,7 @@
  */
 
 /**
- * ExpressionEngine Action Handler Class
+ * Action Handler
  *
  * Actions are events that require processing. Normally when you use ExpressionEngine,
  * either a web page (template), or the control panel is displayed. There are times,
@@ -34,12 +34,6 @@
  *
  * When a new module is installed, ExpressionEngine will update the action table.  When a module
  * is de-installed, the actions are deleted.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Actions {
 

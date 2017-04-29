@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
 
+/**
+ * Channel Entry Version Model
+ */
 class ChannelEntryVersion extends Model {
 
 	protected static $_primary_key = 'version_id';

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Language Codes
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Language Codes
  */
 // $languages =
 return array(

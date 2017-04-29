@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Categories API Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Categories API
  */
 class Api_channel_categories extends Api {
 

@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
+/**
+ * Model Service Configuration
+ */
 class Configuration {
 
 	/**

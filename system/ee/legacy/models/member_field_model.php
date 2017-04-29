@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Member Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Field Model
  */
 class Member_field_model extends CI_Model {
 

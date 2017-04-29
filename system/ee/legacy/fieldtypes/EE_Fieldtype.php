@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine EE_Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * EE_Fieldtype
  */
 abstract class EE_Fieldtype {
 

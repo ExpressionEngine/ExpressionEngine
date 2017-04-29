@@ -8,27 +8,10 @@
  */
 
 use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use  EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
- * CodeIgniter Application Controller Class
- *
- * This class object is the super class that every library in
- * CodeIgniter will be assigned to.
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/general/controllers.html
+ * Legacy Application Controller Class
  */
 class Controller {
 

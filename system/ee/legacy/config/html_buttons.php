@@ -10,12 +10,6 @@
 
 /**
  * ExpressionEngine Pre Defined HTML Buttons
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 
 ee()->load->library('logger');

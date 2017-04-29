@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Access Throttling Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Access Throttling Settings Controller
  */
 class Throttling extends Settings {
 

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Javascript Loader Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Assets
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Javascript Loader
  */
 class Javascript_loader {
 

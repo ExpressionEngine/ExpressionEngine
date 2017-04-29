@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Simple Commerce Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Simple Commerce Module
  */
-
 class Simple_commerce {
 
 	var $return_data		= '';

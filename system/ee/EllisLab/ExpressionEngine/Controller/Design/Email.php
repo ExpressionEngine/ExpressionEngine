@@ -15,13 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
 /**
- * ExpressionEngine CP Design\Email Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Email Controller
  */
 class Email extends AbstractDesignController {
 

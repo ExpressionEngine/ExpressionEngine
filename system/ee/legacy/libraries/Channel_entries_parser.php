@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Entry Parser Factory
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Entry Parser Factory
  */
 class EE_Channel_entries_parser {
 
@@ -230,3 +224,6 @@ class EE_Channel_parser {
 		return new EE_Channel_data_parser($pre, $this);
 	}
 }
+// END CLASS
+
+// EOF

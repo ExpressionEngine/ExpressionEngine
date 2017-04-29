@@ -30,13 +30,7 @@ require_once $path.'libraries/template_router/converters/Pagination.php';
 require_once $path.'libraries/template_router/converters/Regex.php';
 
 /**
- * ExpressionEngine Channel Parser Converters
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Converters
  */
 class EE_Template_router_converters {
 
@@ -103,13 +97,7 @@ class EE_Template_router_converters {
 }
 
 /**
- * ExpressionEngine Rule Converter Implementation
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Converter Implementation
  */
 interface EE_Template_router_converter
 {

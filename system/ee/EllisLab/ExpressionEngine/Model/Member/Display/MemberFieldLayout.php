@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Member\Display;
 
 use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 
+/**
+ * Member Field Layout
+ */
 class MemberFieldLayout extends DefaultLayout {
 
 	public function transform(array $fields)

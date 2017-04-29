@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Revision;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Revision Tracker Model
- *
- * @package		ExpressionEngine
- * @subpackage	Revision
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Revision Tracker Model
  */
 class RevisionTracker extends Model {
 

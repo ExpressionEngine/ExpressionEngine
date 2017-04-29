@@ -14,6 +14,9 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
 
+/**
+ * Core Provider
+ */
 class Provider extends InjectionBindingDecorator {
 
 	/**

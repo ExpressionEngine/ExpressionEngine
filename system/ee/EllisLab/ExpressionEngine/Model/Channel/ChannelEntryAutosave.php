@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
 
+/**
+ * Channel Entry Autosave Model
+ */
 class ChannelEntryAutosave extends Model {
 
 	protected static $_primary_key = 'entry_id';

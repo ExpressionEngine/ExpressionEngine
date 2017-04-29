@@ -11,12 +11,6 @@
  * Router Class
  *
  * Parses URIs and determines routing
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @author		EllisLab Dev Team
- * @category	Libraries
- * @link		http://codeigniter.com/user_guide/general/routing.html
  */
 class EE_Router {
 

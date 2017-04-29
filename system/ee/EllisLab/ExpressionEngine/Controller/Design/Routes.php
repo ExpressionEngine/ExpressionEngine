@@ -16,13 +16,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
- * ExpressionEngine CP Design\Routes Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Routes Controller
  */
 class Routes extends AbstractDesignController {
 

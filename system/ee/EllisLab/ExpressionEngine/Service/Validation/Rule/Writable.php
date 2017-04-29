@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * ExpressionEngine Writable Validation Rule
- *
- * @package		ExpressionEngine
- * @subpackage	Validation\Rule
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Writable Validation Rule
  */
 class Writable extends ValidationRule {
 

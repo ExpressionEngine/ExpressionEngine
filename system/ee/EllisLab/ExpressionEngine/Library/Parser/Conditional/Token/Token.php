@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
 /**
- * ExpressionEngine Conditional Token Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Conditional Token
  */
 class Token {
 

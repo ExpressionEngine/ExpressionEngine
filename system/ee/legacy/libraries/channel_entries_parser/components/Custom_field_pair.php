@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Parser Component (Custom Field Pairs)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Custom Field Pairs)
  */
 class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component {
 

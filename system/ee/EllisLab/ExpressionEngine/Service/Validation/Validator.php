@@ -25,12 +25,6 @@ use InvalidArgumentException;
  *  // Or shorter using chaing. Given here with the DI notation:
  *
  *  $result = ee('Validation')->make($rules)->validate($_POST);
- *
- * @package		ExpressionEngine
- * @subpackage	Validation
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Validator {
 

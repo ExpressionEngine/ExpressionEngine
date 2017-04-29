@@ -11,13 +11,7 @@ if ( ! defined('LD')) define('LD', '{');
 if ( ! defined('RD')) define('RD', '}');
 
 /**
- * ExpressionEngine Installer Template Handling Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Template Handling
  */
 class Installer_Template {
 

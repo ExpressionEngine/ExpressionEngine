@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Stats Module Control Panel Class
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Stats Module
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stats Module control panel
  */
 
 class Stats_mcp {

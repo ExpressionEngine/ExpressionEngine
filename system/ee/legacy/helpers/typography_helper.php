@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Typography Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/typography_helper.html
+ * Typography Helpers
  */
 
 /**

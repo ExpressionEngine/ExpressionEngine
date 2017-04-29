@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
+/**
+ * Tag Token
+ */
 class Tag extends Token {
 
 	public function __construct($lexeme)

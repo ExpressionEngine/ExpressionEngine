@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
 /**
- * ExpressionEngine CP Translate Manager Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Translate Manager Controller
  */
 class Translate extends Utilities {
 

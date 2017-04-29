@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Query Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Query Module update class
  */
-
 class Query_upd {
 
 	var $version = '2.0.0';

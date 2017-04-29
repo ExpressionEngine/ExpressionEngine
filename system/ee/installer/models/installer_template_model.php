@@ -7,19 +7,11 @@
  * @license   https://expressionengine.com/license
  */
 
-
 require_once(EE_APPPATH.'models/template_model.php');
 
 /**
- * ExpressionEngine Template Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Model
  */
-
 class Installer_template_model extends Template_model {
 
 	/**

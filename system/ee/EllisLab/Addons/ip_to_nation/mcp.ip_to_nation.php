@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine IP to Nation Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * IP to Nation Module control panel
  */
 class Ip_to_nation_mcp {
 

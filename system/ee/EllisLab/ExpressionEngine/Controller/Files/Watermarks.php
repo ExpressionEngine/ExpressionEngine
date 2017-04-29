@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 
 /**
- * ExpressionEngine CP Watermarks Controller Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Watermarks Controller
  */
 class Watermarks extends AbstractFilesController {
 

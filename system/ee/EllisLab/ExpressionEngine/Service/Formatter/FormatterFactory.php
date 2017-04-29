@@ -13,12 +13,7 @@ use EE_Lang;
 use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
- * ExpressionEngine FormatterFactory Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Formatter Factory
  */
 class FormatterFactory {
 

@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine Template Group Model
- *
- * @package		ExpressionEngine
- * @subpackage	TemplateGroup
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Group Model
  */
 class TemplateGroup extends Model {
 

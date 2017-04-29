@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
+/**
+ * Content Field Facade
+ */
 class FieldFacade {
 
 	private $id;

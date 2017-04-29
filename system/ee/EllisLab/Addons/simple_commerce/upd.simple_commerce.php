@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Simple Commerce Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Simple Commerce Module update class
  */
-
 class Simple_commerce_upd {
 
 	var $version			= '2.2.0';

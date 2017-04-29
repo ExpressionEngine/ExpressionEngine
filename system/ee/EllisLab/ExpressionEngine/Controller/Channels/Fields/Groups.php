@@ -14,14 +14,8 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
 use EllisLab\ExpressionEngine\Model\Channel\ChannelFieldGroup;
 
 /**
- * ExpressionEngine CP Channel\Fields\Groups Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
+ * Channel\Fields\Groups Controller
+*/
 class Groups extends AbstractChannelsController {
 
 	public function __construct()

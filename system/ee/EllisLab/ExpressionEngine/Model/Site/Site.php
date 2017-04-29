@@ -17,12 +17,6 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * The Site model stores preference sets for each site in this installation
  * of ExpressionEngine.  Each site can have a completely different set of
  * settings and prefereces.
- *
- * @package		ExpressionEngine
- * @subpackage	Site
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Site extends Model {
 

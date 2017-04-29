@@ -9,10 +9,6 @@
 
 /**
  * Database Utility Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_forge {
 

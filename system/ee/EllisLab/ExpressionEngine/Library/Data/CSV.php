@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Data;
 
+/**
+ * Data CSV
+ */
 class CSV {
 
 	private $header = array();

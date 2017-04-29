@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Pre Defined HTML Buttons
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pre Defined HTML Buttons
  */
-
 
 // $installation_defaults
 // $predefined_buttons

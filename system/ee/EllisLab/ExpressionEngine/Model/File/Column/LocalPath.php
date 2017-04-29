@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
- * ExpressionEngine Local Path Column
- *
- * @package		ExpressionEngine
- * @subpackage	Site\Preferences
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Local Path Column
  */
 class LocalPath extends SerializedType {
 

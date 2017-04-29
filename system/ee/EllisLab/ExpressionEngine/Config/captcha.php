@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine CAPTCHA Word Dictionary
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CAPTCHA Word Dictionary
  */
 
 // $words =

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Category\Gateway;
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
- * ExpressionEngine Category Group Table
- *
- * @package		ExpressionEngine
- * @subpackage	Category\Gateway
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Group Table
  */
 class CategoryGroupGateway extends Gateway {
 

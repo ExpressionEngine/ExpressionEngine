@@ -9,15 +9,8 @@
  */
 
 /**
- * ExpressionEngine Segment Helper
- *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * XSS Helper
  */
-
 
 /**
   * Checks to see if the current user needs to have XSS filtering or not

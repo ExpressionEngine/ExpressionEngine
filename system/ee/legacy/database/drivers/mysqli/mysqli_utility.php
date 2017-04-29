@@ -8,11 +8,7 @@
  */
 
 /**
- * MySQLi Utility Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * MySQLi Utility
  */
 class CI_DB_mysqli_utility extends CI_DB_utility {
 

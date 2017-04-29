@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Logs\Email Controller
  */
 class Email extends Logs {
 

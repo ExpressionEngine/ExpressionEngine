@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Parser Component (Simple Conditionals)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Simple Conditionals)
  */
 class EE_Channel_simple_conditional_parser implements EE_Channel_parser_component {
 

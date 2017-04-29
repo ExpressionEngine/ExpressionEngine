@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Driver Library Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Driver Library
  */
 class EE_Driver_Library {
 

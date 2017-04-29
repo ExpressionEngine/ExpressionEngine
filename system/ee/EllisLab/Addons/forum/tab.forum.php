@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Discussion Forum Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Discussion Forum Module Tab
  */
 class Forum_tab {
 

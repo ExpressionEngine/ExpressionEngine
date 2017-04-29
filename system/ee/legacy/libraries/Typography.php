@@ -8,24 +8,10 @@
  */
 
 use Michelf\MarkdownExtra;
-use EllisLab\ExpressionEngine\Core\Autoloader;
+use  EllisLab\ExpressionEngine\Core\Autoloader;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
- * ExpressionEngine Core Typography Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Typography
  */
 class EE_Typography {
 

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Template Router Alphanumeric + Dash Converter
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Alphanumeric + Dash Converter
  */
 class EE_Template_router_alpha_dash_converter implements EE_Template_router_converter {
 

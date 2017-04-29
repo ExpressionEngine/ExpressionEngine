@@ -13,6 +13,9 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
+/**
+ * Model Service: Assocation
+ */
 class Association {
 
 	private $booted = FALSE;

@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Search;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Search Log Model
+ */
 class SearchLog extends Model {
 
 	protected static $_primary_key = 'id';

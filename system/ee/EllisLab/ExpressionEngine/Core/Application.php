@@ -12,6 +12,9 @@ namespace EllisLab\ExpressionEngine\Core;
 use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
 use FilesystemIterator;
 
+/**
+ * Core Application
+ */
 class Application {
 
 	/**

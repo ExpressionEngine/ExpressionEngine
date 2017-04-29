@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
 /**
- * ExpressionEngine Validator Factory
- *
- * @package		ExpressionEngine
- * @subpackage	Validation
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Validator Factory
  */
 class Factory {
 

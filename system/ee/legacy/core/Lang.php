@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Language Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Language
  */
 class EE_Lang {
 

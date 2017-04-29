@@ -10,15 +10,9 @@
 namespace EllisLab\ExpressionEngine\Library\Parser;
 
 /**
- * ExpressionEngine Core Abstract Lexer Class
+ * Core Abstract Lexer
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- *
- * THIRD PARTY DEVS: Extend at your own risk before it's documented
+ * THIRD PARTY DEVS: Extend at your own risk, this is private API
  */
 abstract class AbstractLexer {
 

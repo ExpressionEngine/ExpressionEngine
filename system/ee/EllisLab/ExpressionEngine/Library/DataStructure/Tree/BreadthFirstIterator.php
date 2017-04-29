@@ -9,16 +9,8 @@
 
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
-
-
 /**
- * ExpressionEngine Breadth First Iterator Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Breadth First Iterator
  */
 class BreadthFirstIterator implements \OuterIterator {
 

@@ -13,12 +13,6 @@
  *
  * This file contains an array of words that the search functions in EE will
  * ignore in order to a) reduce load, and b) generate better results.
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 
 ee()->load->library('logger');

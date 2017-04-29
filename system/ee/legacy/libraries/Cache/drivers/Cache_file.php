@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine File Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Caching
  */
 class EE_Cache_file extends CI_Driver {
 

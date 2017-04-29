@@ -10,12 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Theme;
 
 /**
- * ExpressionEngine Theme Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Theme Service
  */
 class Theme {
 

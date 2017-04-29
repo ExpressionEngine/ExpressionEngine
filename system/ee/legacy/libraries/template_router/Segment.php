@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Route Segment Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Route Segment
  */
 class EE_Route_segment {
 

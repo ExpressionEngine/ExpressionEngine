@@ -13,12 +13,7 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
- * ExpressionEngine Header Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Sidebar Header
  */
 class Header {
 

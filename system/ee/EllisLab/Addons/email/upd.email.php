@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Email Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Module update class
  */
-
 class Email_upd {
 
 	var $version = '2.1.0';

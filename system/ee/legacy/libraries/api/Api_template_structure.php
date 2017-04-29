@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Template Structure API Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Structure API
  */
 class Api_template_structure extends Api {
 

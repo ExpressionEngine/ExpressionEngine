@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Module front-end (nada)
  */
-
 class Spam {
 
 }

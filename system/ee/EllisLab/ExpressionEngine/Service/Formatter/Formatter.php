@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Formatter;
 use EE_Lang;
 
 /**
- * ExpressionEngine Formatter Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Formatter
  */
 class Formatter {
 

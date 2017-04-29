@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Content Types Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Content Types
  */
 class EE_content_types {
 

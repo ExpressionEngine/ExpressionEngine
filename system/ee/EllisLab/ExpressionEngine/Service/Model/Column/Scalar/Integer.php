@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column\Scalar;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 
 /**
- * ExpressionEngine Model Integer Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Integer Typed Column
  */
 class Integer extends StaticType {
 

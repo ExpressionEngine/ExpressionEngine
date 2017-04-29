@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Parse Node Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Parse Node
  */
 class ParseNode extends EE_TreeNode {
 
@@ -179,15 +173,10 @@ class ParseNode extends EE_TreeNode {
 		return $tagdata;
 	}
 }
+// END CLASS
 
 /**
- * ExpressionEngine Parse Node Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Parse Node
  *
  * We store a shortcut path to the kids that need their own queries:
  * http://en.wikipedia.org/wiki/Transitive_closure
@@ -224,5 +213,6 @@ class QueryNode extends ParseNode {
 		$this->closureChildren[] = $closureChild;
 	}
 }
+// END CLASS
 
 // EOF

@@ -11,6 +11,9 @@ namespace EllisLab\Addons\Spam\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * SpamVocabulary Model
+ */
 class SpamVocabulary extends Model {
 
 	protected static $_table_name = 'spam_vocabulary';

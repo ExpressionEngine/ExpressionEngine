@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 use EllisLab\ExpressionEngine\Service\File\Directory;
 
+/**
+ * Channel Set Service Factory
+ */
 class Factory {
 
 	/**

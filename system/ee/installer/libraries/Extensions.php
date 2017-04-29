@@ -7,18 +7,11 @@
  * @license   https://expressionengine.com/license
  */
 
-/**
- * ExpressionEngine Layout Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 require_once(EE_APPPATH.'/libraries/Extensions.php');
 
+/**
+ * Installer Extensions
+ */
 class Installer_Extensions extends EE_Extensions {
 
 	/**

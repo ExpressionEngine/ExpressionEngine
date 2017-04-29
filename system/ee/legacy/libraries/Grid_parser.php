@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Grid parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Grid parser
  */
-
 class Grid_parser {
 
 	public $modifiers = array();

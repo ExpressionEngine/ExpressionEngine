@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column\Serialized;
 use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 
 /**
- * ExpressionEngine Model Json Encoded Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Json Encoded Typed Column
  */
 class Json extends SerializedType {
 

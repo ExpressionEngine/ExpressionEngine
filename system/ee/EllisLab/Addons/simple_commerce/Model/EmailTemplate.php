@@ -12,13 +12,7 @@ namespace EllisLab\Addons\SimpleCommerce\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Simple Commerce Email Template Model
- *
- * @package		ExpressionEngine
- * @subpackage	Moblog Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Simple Commerce Email Template Model
  */
 class EmailTemplate extends Model {
 

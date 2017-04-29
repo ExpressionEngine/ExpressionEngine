@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Members library
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members library
  */
 class Members {
 

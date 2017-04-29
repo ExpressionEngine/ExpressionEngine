@@ -10,17 +10,11 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 /**
- * ExpressionEngine Model Registry
+ * Model Service Registry
  *
  * This contains general model information. This includes alias => class name
  * mapping, prefix information, installed/enabled information, and access to
  * model metadata.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @subpackage	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Registry {
 

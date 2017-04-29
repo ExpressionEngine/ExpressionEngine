@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
+/**
+ * Channel Set Service: Import Result
+ */
 class ImportResult {
 
 	/**

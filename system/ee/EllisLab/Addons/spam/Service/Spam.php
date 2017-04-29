@@ -12,15 +12,8 @@ namespace EllisLab\Addons\Spam\Service;
 use EllisLab\ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Extensions
- * @category	Extensions
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Protocol
  */
-
 class Spam implements SpamProtocol {
 
 	/**

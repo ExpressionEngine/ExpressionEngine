@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine File Picker Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Picker Module update class
  */
-
 class Filepicker_upd {
 
 	public $version	= '1.0';

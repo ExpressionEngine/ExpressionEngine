@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Core;
 
+/**
+ * Core Response
+ */
 class Response {
 
 	protected $body = '';

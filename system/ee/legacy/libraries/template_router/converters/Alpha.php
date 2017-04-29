@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Template Router alphabetic Converter
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router alphabetic Converter
  */
 class EE_Template_router_alpha_converter implements EE_Template_router_converter {
 

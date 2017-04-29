@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Service\File;
 
 use FilesystemIterator;
 
+/**
+ * File Service Iterator
+ */
 class Iterator extends FilesystemIterator {
 
 	protected $root_url;

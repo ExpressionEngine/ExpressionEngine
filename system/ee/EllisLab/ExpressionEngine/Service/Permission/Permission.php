@@ -10,14 +10,8 @@
 namespace EllisLab\ExpressionEngine\Service\Permission;
 
 /**
- * ExpressionEngine Permission Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Permission Service
  */
-
 class Permission {
 
 	/**

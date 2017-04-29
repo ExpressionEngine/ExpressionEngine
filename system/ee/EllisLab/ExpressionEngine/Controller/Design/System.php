@@ -12,15 +12,8 @@ namespace EllisLab\ExpressionEngine\Controller\Design;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine CP Design\System Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\System Controller
  */
 class System extends AbstractDesignController {
 

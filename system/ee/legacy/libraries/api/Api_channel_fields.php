@@ -7,6 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
+/**
+ * Channel Fields API library
+ */
 class Api_channel_fields extends Api {
 
 	var $custom_fields		= array();

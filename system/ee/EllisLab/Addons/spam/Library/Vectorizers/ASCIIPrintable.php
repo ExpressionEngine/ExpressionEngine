@@ -12,15 +12,8 @@ namespace EllisLab\Addons\Spam\Library\Vectorizers;
 use \EllisLab\Addons\spam\Library\Vectorizer;
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Module ASCIIPrintable Vectorizer
  */
-
 class ASCIIPrintable implements Vectorizer {
 
 	/**

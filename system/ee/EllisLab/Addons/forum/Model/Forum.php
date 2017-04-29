@@ -12,15 +12,9 @@ namespace EllisLab\Addons\Forum\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Forum Model for the Forum
+ * Forum Model for the Forum
  *
  * A model representing a forum in the Forum.
- *
- * @package		ExpressionEngine
- * @subpackage	Forum Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Forum extends Model {
 

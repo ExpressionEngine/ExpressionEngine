@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Error;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP 404 Controller Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Error\FileNotFound Controller
  */
 class FileNotFound extends CP_Controller {
 

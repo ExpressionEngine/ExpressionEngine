@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Category;
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 
 /**
- * ExpressionEngine Category Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Field Model
  */
 class CategoryField extends FieldModel {
 

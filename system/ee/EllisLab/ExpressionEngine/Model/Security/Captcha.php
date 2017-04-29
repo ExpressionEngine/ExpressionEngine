@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Security;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Captcha Model
- *
- * @package		ExpressionEngine
- * @subpackage	Security
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Captcha Model
  */
 class Captcha extends Model {
 

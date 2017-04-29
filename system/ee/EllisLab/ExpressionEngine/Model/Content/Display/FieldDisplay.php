@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
+/**
+ * Content Field Display
+ */
 class FieldDisplay {
 
 	protected $field;

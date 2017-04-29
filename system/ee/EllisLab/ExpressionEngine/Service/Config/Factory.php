@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Service\Config;
 
 use EllisLab\ExpressionEngine\Core\Provider;
 
+/**
+ * Config Factory
+ */
 class Factory {
 
 	/**

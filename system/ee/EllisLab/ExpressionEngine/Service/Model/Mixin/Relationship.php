@@ -13,18 +13,11 @@ use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 
 /**
- * This is NOT the class you're looking for. It will be removed before
- * release. Pardon our dust.
+ * This is NOT the class you're looking for. Just some leftover dust.
  */
 
 /**
- * ExpressionEngine Model Relationship Mixin
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Relationship Mixin
  */
 class Relationship implements Mixin {
 

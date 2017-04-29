@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Sites Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Sites
  */
 class EE_Sites {
 

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Redis Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Redis Caching
  */
 class EE_Cache_redis extends CI_Driver
 {

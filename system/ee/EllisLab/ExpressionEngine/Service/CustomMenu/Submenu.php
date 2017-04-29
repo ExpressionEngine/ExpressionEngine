@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\CustomMenu;
 
 /**
- * ExpressionEngine Custom Submenu
- *
- * @package		ExpressionEngine
- * @subpackage	CP\CustomMenu
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Custom Submenu
  */
 class Submenu extends Menu {
 

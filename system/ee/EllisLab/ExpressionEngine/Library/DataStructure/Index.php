@@ -7,6 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
+/**
+ * DataStructure Index
+ */
 class Index {
 
 	protected $index;

@@ -10,14 +10,10 @@
 namespace EllisLab\ExpressionEngine\Service\Theme;
 
 /**
- * ExpressionEngine ThemeInstaller Class
+ * ThemeInstaller
  *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
- * @internal    This Class is not ready for third-party usage and will mostly
- * 				likely change quickly
+ * @internal This Class is not ready for third-party usage and will mostly likely change quickly
+ *
  */
 class ThemeInstaller {
 

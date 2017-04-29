@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Form Exception Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Exception Class
  */
 class Channel_form_exception extends Exception {
 

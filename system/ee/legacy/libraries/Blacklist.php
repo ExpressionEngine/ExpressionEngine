@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Blacklist Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Blacklist
  */
 class EE_Blacklist {
 

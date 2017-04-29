@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Link RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Link RTE Tool
  */
 class Link_rte {
 

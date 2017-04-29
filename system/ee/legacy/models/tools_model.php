@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Tools Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tools Model
  */
 class Tools_model extends CI_Model {
 

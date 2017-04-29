@@ -17,6 +17,9 @@ use EllisLab\ExpressionEngine\Service\Event\Emitter;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
+/**
+ * Data Entity Abstract
+ */
 abstract class Entity extends MixableImpl implements Publisher {
 
 	/**

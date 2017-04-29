@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Update SmartForge Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * Update SmartForge
  */
 class Smartforge {
 

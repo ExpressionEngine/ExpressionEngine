@@ -9,12 +9,6 @@
 
 /**
  * ExpressionEngine Hex/ASCII Color Dictionary
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 ee()->load->library('logger');
 ee()->logger->developer('The colors config file has been deprecated and will be removed.', TRUE, 604800);

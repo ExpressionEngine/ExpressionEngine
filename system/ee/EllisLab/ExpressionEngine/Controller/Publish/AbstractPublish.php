@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 /**
- * ExpressionEngine CP Abstract Publish Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Publish Controller
  */
 abstract class AbstractPublish extends CP_Controller {
 

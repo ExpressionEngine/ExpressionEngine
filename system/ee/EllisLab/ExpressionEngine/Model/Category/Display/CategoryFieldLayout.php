@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Category\Display;
 
 use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 
+/**
+ * Category Field Layout
+ */
 class CategoryFieldLayout extends DefaultLayout {
 
 	public function transform(array $fields)

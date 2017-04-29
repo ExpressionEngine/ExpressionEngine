@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Category\Gateway;
 use EllisLab\ExpressionEngine\Model\Content\VariableColumnGateway;
 
 /**
- * ExpressionEngine Category Field Data Table
- *
- * @package		ExpressionEngine
- * @subpackage	Category\Gateway
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Field Data Table
  */
 class CategoryFieldDataGateway extends VariableColumnGateway {
 

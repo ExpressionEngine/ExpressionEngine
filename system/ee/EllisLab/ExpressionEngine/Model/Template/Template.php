@@ -12,17 +12,11 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 
 /**
- * ExpressionEngine Template Model
+ * Template Model
  *
  * A model representing a template.  Templates contain a mix of EECode and HTML
  * and are parsed to become the front end pages of sites built with
  * ExpressionEngine.
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Template extends FileSyncedModel {
 

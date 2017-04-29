@@ -8,17 +8,11 @@
  */
 
 /**
- * ExpressionEngine Super Model
+ * Super Model
  *
  * This model contains some abstracted can-do database functions that
  * are used by a plethora of libraries and controllers to keep database calls
  * out of such code as much as possible
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Super_model extends CI_Model {
 

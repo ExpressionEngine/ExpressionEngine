@@ -16,13 +16,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
 
 /**
- * ExpressionEngine CP Abstract Design Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Design Controller
  */
 abstract class AbstractDesign extends CP_Controller {
 

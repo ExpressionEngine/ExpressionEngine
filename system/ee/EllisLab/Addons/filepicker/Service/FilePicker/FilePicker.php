@@ -12,6 +12,9 @@ namespace EllisLab\Addons\FilePicker\Service\FilePicker;
 use EllisLab\ExpressionEngine\Service\URL\URLFactory;
 use EllisLab\ExpressionEngine\Model\File\File;
 
+/**
+ * FilePicker Service
+ */
 class FilePicker {
 
 	const CONTROLLER = 'addons/settings/filepicker/modal';

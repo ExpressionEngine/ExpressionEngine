@@ -10,15 +10,8 @@
 namespace EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine Grid Input Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Grid Input Table
  */
-
 class GridInput extends Table {
 
 	protected $cp;

@@ -16,13 +16,7 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine CP Publish/Edit Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Publish/Edit Controller
  */
 class Edit extends AbstractPublishController {
 

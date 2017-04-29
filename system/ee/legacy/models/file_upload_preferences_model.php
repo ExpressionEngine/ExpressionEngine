@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Admin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File upload preferences Model
  */
 class File_upload_preferences_model extends CI_Model
 {

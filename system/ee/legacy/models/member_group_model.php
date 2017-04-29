@@ -14,14 +14,7 @@
  * 	exp_channel_member_groups
  * 	exp_module_member_groups
  * 	exp_template_member_groups
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
-
 class Member_group_model extends CI_Model
 {
 

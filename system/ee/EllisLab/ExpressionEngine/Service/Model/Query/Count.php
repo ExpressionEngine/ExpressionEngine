@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 /**
- * ExpressionEngine Count Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Count Query
  */
 class Count extends Select {
 

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Config Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Config
  */
 class Installer_Config Extends EE_Config {
 

@@ -7,6 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
+/**
+ * Schema Class
+ */
 class EE_Schema {
 
 	// All of these variables are set dyncamically

@@ -18,13 +18,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
 /**
- * ExpressionEngine CP Files Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Files Controller
  */
 class Files extends AbstractFilesController {
 

@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Database;
 
 /**
- * ExpressionEngine Database Log
- *
- * @package		ExpressionEngine
- * @subpackage	Database\Connection
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Database Log
  */
 class Log {
 

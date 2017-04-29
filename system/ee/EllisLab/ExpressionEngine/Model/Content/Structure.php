@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
+/**
+ * Content Structure interface
+ */
 interface Structure {
 
 }

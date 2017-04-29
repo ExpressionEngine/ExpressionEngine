@@ -9,6 +9,9 @@
 
 require_once APPPATH.'libraries/api/Api_channel_entries.php';
 
+/**
+ * Channel Form Channel Entries API
+ */
 class Api_channel_form_channel_entries extends Api_channel_entries
 {
 	/**

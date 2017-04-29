@@ -7,6 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
+/**
+ * CSRF backend storage interface
+ */
 interface Csrf_storage_backend {
 
 	/**

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Pre-Parser
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Pre-Parser
  */
 class EE_Channel_preparser {
 

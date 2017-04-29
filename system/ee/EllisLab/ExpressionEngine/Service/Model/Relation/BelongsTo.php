@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\Association\ToOne;
 
 /**
- * ExpressionEngine BelongsTo Relation
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * BelongsTo Relation
  */
 class BelongsTo extends Relation {
 

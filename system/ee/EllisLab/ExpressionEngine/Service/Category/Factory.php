@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\Category;
 
+/**
+ * Category Factory Service
+ */
 class Factory {
 
 	/**

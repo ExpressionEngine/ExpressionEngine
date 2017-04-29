@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Grid Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Grid Field Model
  */
 class Grid_model extends CI_Model {
 

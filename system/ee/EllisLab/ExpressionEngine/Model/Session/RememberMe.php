@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Session;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Remember Me Model
- *
- * @package		ExpressionEngine
- * @subpackage	Session
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Remember Me Model
  */
 class RememberMe extends Model {
 

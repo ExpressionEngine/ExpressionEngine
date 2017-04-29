@@ -12,16 +12,10 @@ namespace EllisLab\ExpressionEngine\Service\Event;
 use Closure;
 
 /**
- * ExpressionEngine Event Emitter
+ * Event Emitter
  *
  * Very basic event system ala node's emitter, with the addition
  * of a simple PubSub system.
- *
- * @package		ExpressionEngine
- * @subpackage	Event
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Emitter implements Publisher {
 

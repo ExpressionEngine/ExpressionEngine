@@ -14,13 +14,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine CP Member Profile Subscriptions Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Profile Subscriptions Settings Controller
  */
 class Subscriptions extends Settings {
 

@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Content Structure Model abstract
+ */
 abstract class StructureModel extends Model implements Structure {
 
 

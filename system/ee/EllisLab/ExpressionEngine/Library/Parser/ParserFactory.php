@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser;
 
 /**
- * ExpressionEngine Core Parser Factory Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Parser Factory
  */
 class ParserFactory {
 

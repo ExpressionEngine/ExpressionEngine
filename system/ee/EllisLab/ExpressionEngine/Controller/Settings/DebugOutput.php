@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Debugging & Output Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Debugging & Output Settings Controller
  */
 class DebugOutput extends Settings {
 

@@ -15,6 +15,9 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
 
+/**
+ * Model Service Collection
+ */
 class Collection extends CoreCollection {
 
 	private $association;

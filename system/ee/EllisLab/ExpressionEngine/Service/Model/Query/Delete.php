@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
 use EllisLab\ExpressionEngine\Service\Model\Relation\BelongsTo;
 
 /**
- * ExpressionEngine Delete Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Delete Query
  */
 class Delete extends Query {
 

@@ -12,15 +12,8 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionException;
 
 /**
- * ExpressionEngine Core Boolean Expression Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Boolean Expression
  */
-
 class BooleanExpression {
 
 	const NON_ASSOC = 0;

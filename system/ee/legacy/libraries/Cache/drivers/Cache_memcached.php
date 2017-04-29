@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Memcached Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Memcached Caching
  */
 class EE_Cache_memcached extends CI_Driver {
 

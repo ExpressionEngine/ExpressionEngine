@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Installation and Update Javascript Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installation and Update Javascript
  */
 class Javascript {
 
@@ -33,7 +27,6 @@ class Javascript {
 	}
 
 }
-
-// END Javascript class
+// END CLASS
 
 // EOF

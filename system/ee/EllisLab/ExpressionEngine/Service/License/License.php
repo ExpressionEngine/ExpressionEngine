@@ -13,12 +13,7 @@ use Exception;
 use InvalidArgumentException;
 
 /**
- * ExpressionEngine License Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * License Service
  */
 class License {
 

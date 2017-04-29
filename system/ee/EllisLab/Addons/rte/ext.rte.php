@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Rich Text Editor Module
- *
- * @package		ExpressionEngine
- * @subpackage	Extensions
- * @category	Extensions
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Rich Text Editor Extension
  */
-
 class Rte_ext {
 
 	var $name			= 'Rich Text Editor';

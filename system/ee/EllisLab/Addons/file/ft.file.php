@@ -10,13 +10,7 @@
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine File Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Fieldtype
  */
 class File_ft extends EE_Fieldtype {
 

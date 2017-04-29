@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
 /**
- * ExpressionEngine CP Design\Forums Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Forums Controller
  */
 class Forums extends AbstractDesignController {
 

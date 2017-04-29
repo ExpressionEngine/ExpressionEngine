@@ -13,6 +13,9 @@ use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
 
+/**
+ * Default Channel Layout
+ */
 class DefaultChannelLayout extends DefaultLayout {
 
 	protected $channel_id;

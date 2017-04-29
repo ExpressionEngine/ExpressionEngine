@@ -10,15 +10,9 @@
 namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
- * ExpressionEngine Event Publisher Interface
+ * Event Publisher Interface
  *
  * Interface to implement if your class publishes events.
- *
- * @package		ExpressionEngine
- * @subpackage	Event
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface Publisher {
 

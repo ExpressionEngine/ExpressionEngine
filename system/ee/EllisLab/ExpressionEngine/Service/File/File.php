@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Service\File;
 
 use SplFileObject;
 
+/**
+ * File Service File
+ */
 class File extends SplFileObject {
 
 	protected $url;

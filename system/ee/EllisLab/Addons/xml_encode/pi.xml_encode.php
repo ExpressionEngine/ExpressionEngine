@@ -8,13 +8,7 @@
  */
 
 /**
- * Xml_encode Class
- *
- * @package			ExpressionEngine
- * @category		Plugin
- * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2016, EllisLab, Inc.
- * @link			https://ellislab.com
+ * Xml_encode Plugin
  */
 class Xml_encode {
 

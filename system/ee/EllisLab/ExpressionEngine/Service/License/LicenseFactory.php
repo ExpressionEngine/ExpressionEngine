@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\License;
 use InvalidArgumentException;
 
 /**
- * ExpressionEngine LicenseFactory Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * License Factory
  */
 class LicenseFactory {
 

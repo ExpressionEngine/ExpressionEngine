@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Italic RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Italic RTE Tool
  */
 class Italic_rte {
 

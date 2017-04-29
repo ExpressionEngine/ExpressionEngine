@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\File;
 
+/**
+ * File Service Factory
+ */
 class Factory {
 
 	public function getPath($path)

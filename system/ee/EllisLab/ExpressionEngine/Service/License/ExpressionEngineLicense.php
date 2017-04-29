@@ -10,12 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\License;
 
 /**
- * ExpressionEngine ExpressionEngineLicense Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * ExpressionEngine License Service
  */
 class ExpressionEngineLicense extends License {
 

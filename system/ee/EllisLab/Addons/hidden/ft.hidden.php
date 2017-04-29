@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Text Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Hidden Fieldtype Class
  */
 class Hidden_ft extends EE_Fieldtype {
 

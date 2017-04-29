@@ -13,13 +13,7 @@ use CP_Controller;
 use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**
- * ExpressionEngine CP Member Profile Personal Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Profile Personal Settings Controller
  */
 class Settings extends Profile {
 

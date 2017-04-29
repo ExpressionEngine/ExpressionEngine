@@ -10,12 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\View;
 
 /**
- * ExpressionEngine String View Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * String View
  */
 class StringView extends View {
 

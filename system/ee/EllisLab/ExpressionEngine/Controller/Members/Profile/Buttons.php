@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine CP Member Profile HTML Buttons Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Profile HTML Buttons Controller
  */
 class Buttons extends Settings {
 

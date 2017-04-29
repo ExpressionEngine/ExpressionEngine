@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
+/**
+ * Operator Token
+ */
 class Operator extends Token {
 
 	protected $isUnary = FALSE;

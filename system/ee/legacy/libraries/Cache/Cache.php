@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Caching
  */
 class Cache extends EE_Driver_Library {
 

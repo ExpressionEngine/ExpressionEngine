@@ -10,7 +10,7 @@
 namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
 
 /**
- * ExpressionEngine Template Runtime Annotation Class
+ * Template Runtime Annotation
  *
  * Sometimes, at runtime, you want to mark a piece of template code and
  * maybe store some metadata about that marked bit. For example, on a
@@ -28,12 +28,6 @@ namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
  *
  * So when you see a comment in a template, you can then check if it's an
  * annotation and retrieve the related data again.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Runtime {
 

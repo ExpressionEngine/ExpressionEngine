@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Grid Fieldtype
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Grid Fieldtype
  */
 class Grid_ft extends EE_Fieldtype {
 

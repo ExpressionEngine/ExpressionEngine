@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Form Session Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Session Class
  */
 class Channel_form_session extends EE_Session
 {

@@ -20,13 +20,7 @@ require_once APPPATH.'libraries/channel_entries_parser/components/Simple_variabl
 require_once APPPATH.'libraries/channel_entries_parser/components/Switch.php';
 
 /**
- * ExpressionEngine Channel Parser Components
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Components
  */
 class EE_Channel_parser_components {
 
@@ -149,7 +143,7 @@ class EE_Channel_parser_components {
 
 
 /**
- * ExpressionEngine Channel Parser Component Interface
+ * Channel Parser Component ()Interface
  *
  * @package		ExpressionEngine
  * @subpackage	Core

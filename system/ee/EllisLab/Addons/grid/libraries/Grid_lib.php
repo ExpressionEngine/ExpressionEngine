@@ -10,23 +10,8 @@
 use EllisLab\ExpressionEngine\Service\Validation\Result;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * Grid Field Library
  */
-
-/**
- * ExpressionEngine Grid Field Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Grid_lib {
 
 	public $field_id;

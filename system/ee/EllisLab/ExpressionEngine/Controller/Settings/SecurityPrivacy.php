@@ -12,7 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Security & Privacy Settings Class
+ * Security & Privacy Settings Controller
  *
  * @package		ExpressionEngine
  * @subpackage	Control Panel

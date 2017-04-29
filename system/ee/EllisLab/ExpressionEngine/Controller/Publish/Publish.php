@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
- * ExpressionEngine CP Publish Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Publish Controller
  */
 class Publish extends AbstractPublishController {
 

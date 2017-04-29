@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Core;
 
+/**
+ * Core Installer
+ */
 class Installer extends Core {
 	/**
 	 *

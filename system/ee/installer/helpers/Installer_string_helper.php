@@ -9,14 +9,7 @@
 
 /**
  * ExpressionEngine String Helper
- *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
-
 include_once(EE_APPPATH.'helpers/string_helper.php');
 
 // EOF

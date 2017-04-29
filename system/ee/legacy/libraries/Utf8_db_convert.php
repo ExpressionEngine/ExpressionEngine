@@ -8,14 +8,7 @@
  */
 
 /**
- * ExpressionEngine Unicode Database Conversion
- *
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Unicode Database Conversion
  */
 class Utf8_db_convert {
 

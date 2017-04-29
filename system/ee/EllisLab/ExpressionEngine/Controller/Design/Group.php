@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Design;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 
 /**
- * ExpressionEngine CP Design\Group Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Group Controller
  */
 class Group extends AbstractDesignController {
 

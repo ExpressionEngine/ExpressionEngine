@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine CP CSS Loading Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CSS Loading Controller
  */
 class Css extends CI_Controller {
 

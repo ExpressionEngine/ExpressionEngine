@@ -8,13 +8,7 @@
  */
 
 /**
- * MySQLi Database Adapter Class
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * MySQLi Database Connection
  */
 class CI_DB_mysqli_connection {
 

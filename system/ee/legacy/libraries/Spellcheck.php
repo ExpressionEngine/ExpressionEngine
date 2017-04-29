@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Spell Checking Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Spell Checking
  */
 class EE_Spellcheck {
 

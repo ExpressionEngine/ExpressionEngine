@@ -8,15 +8,9 @@
  */
 
 /**
- * CodeIgniter Calendar Class
+ * Calendar Class
  *
  * This class enables the creation of calendars
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/calendar.html
  */
 class EE_Calendar {
 

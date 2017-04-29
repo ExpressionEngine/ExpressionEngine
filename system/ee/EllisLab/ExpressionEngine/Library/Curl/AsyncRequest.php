@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Library\Curl;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
+/**
+ * Curl AsyncRequest
+ */
 class AsyncRequest extends Request {
 
 	private $request;

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Addon;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Fieldtype Model
- *
- * @package		ExpressionEngine
- * @subpackage	Addon
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Fieldtype Model
  */
 class Fieldtype extends Model {
 

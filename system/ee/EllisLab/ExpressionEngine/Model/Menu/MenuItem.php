@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Menu;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Menu Item Model
- *
- * @package		ExpressionEngine
- * @subpackage	Session
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Menu Item Model
  */
 class MenuItem extends Model {
 

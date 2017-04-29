@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine CP Javascript Loading Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Javascript Loading Controller
  */
 class Javascript extends CI_Controller {
 

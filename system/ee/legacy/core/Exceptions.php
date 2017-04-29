@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Exceptions Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Exceptions
  */
 class EE_Exceptions {
 

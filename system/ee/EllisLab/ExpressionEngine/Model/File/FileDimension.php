@@ -12,16 +12,10 @@ namespace EllisLab\ExpressionEngine\Model\File;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine File Dimension Model
+ * File Dimension Model
  *
  * A model representing one of image manipulations that can be applied on
  * images uploaded to its corresponting upload destination.
- *
- * @package		ExpressionEngine
- * @subpackage	File
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class FileDimension extends Model {
 

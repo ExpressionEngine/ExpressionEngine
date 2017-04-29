@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine RTE Module Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RTE Module Library
  */
-
 class Rte_lib {
 
 	// We consider the editor empty in these cases

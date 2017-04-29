@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine File_browser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	File_field
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Field
  */
 
 class File_field {

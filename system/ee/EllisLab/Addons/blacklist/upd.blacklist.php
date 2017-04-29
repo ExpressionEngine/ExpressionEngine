@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Blacklist Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Blacklist update class
  */
-
 class Blacklist_upd {
 
 	var $version	= '3.0.1';

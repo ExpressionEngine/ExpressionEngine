@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
+/**
+ * Variable Token
+ */
 class Variable extends Token {
 
 	protected $has_value = FALSE;

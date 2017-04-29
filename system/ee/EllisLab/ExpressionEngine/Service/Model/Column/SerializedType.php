@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 
 /**
- * ExpressionEngine Model Serialized Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Serialized Typed Column
  */
 abstract class SerializedType implements Type {
 

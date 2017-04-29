@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
 
+/**
+ * Boolean Token
+ */
 class Boolean extends Token {
 
 	public function __construct($lexeme)

@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column\Scalar;
 use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 
 /**
- * ExpressionEngine Model Y/N Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Y/N Typed Column
  */
 class YesNo extends StaticType {
 

@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
 /**
- * ExpressionEngine Model Typed Column Interface
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Typed Column Interface
  */
 interface Type {
 

@@ -12,12 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\View;
 use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
- * ExpressionEngine ViewFactory Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * ViewFactory
  */
 class ViewFactory {
 

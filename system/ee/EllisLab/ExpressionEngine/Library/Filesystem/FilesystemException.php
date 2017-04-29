@@ -10,12 +10,6 @@
 namespace EllisLab\ExpressionEngine\Library\Filesystem;
 
 /**
- * ExpressionEngine File System Exception
- *
- * @package		ExpressionEngine
- * @subpackage	Filesystem
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File System Exception
  */
 class FilesystemException extends \Exception { }

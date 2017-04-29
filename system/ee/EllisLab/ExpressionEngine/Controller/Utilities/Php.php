@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 /**
- * ExpressionEngine CP Cache Manager Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * PHP Info Controller
  */
 class Php extends Utilities {
 

@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Mixin;
 
+/**
+ * Mixin Mixable abstract
+ */
 abstract class MixableImpl implements Mixable {
 
 	protected $_mixin_manager;

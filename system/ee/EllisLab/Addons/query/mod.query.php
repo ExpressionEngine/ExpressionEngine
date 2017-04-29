@@ -8,23 +8,8 @@
  */
 
 /**
- * ExpressionEngine Query Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- *
- * EXAMPLE:
- *
- * {exp:query sql="select * from exp_members where username = 'joe'"}
- * 		<h1>{username}</h1>
- * 		<p>{email}</p>
- * 		<p>{url}</p>
- * {/exp:query}
+ * Query Module
  */
-
 class Query {
 
 	var $return_data = '';

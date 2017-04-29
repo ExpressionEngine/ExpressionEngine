@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Email Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	CP File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Module control panel (nada)
  */
 class Email_mcp {
 

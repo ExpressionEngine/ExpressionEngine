@@ -18,13 +18,7 @@
 */
 
 /**
- * ExpressionEngine Tree Factory Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Factory
  */
 class EE_Tree {
 
@@ -136,15 +130,10 @@ class EE_Tree {
 		return $tree;
 	}
 }
+// END CLASS
 
 /**
- * ExpressionEngine Tree Node Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Node
  *
  * If you're completely new to this ideas:
  * @see http://xlinux.nist.gov/dads/HTML/tree.html
@@ -543,15 +532,10 @@ class EE_TreeNode {
 		$this->parent = $parent;
 	}
 }
+// END CLASS
 
 /**
- * ExpressionEngine Tree Iterator Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Iterator
  */
 class EE_TreeIterator extends RecursiveArrayIterator {
 
@@ -586,16 +570,10 @@ class EE_TreeIterator extends RecursiveArrayIterator {
 		return $this->ref->newInstance($children);
 	}
 }
-
+// END CLASS
 
 /**
- * ExpressionEngine Breadth First Iterator Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Breadth First Iterator
  */
 class EE_BreadthFirstIterator implements OuterIterator {
 
@@ -721,5 +699,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 		return $this->_level;
 	}
 }
+// END CLASS
 
 // EOF

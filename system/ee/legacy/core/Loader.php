@@ -7,26 +7,12 @@
  * @license   https://expressionengine.com/license
  */
 
-use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
-
-/**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
+use  EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
 
 /**
  * Loader Class
  *
  * Loads views and files
- *
- * @package		CodeIgniter
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Loader {
 

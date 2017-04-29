@@ -7,7 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-
 /**
  * URL Redirect
  *
@@ -15,12 +14,6 @@
  * revealing the control panel URL to the referee.  It should be primarily
  * used when we're redirecting away from the parent site out of the cp, say
  * to an addon's documentation or such.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 if ( ! isset($_GET['URL']))
 {

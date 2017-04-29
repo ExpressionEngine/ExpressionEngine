@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Private Messaging Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Private Messaging
  */
 class EE_Messages {
 

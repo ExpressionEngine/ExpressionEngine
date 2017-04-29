@@ -15,12 +15,7 @@ use EllisLab\ExpressionEngine\Service\Alert\Alert;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine Alert Collection Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Alert Service Collection
  */
 class AlertCollection {
 

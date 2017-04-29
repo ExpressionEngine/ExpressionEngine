@@ -1,7 +1,4 @@
 <?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
-
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-
 /**
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -10,16 +7,10 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @license   https://expressionengine.com/license
  */
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
 /**
  * Common Functions
- *
- * Loads the base classes and executes the request.
- *
- * @package		CodeIgniter
- * @subpackage	codeigniter
- * @category	Common Functions
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/
  */
 
 /**

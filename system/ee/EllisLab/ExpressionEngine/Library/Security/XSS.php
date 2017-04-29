@@ -10,15 +10,8 @@
 namespace EllisLab\ExpressionEngine\Library\Security;
 
 /**
- * ExpressionEngine Security XSS Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Security XSS
  */
-
 class XSS {
 
 	protected $_xss_hash = '';

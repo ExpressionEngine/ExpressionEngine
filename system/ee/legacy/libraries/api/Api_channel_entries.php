@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Entries API Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Entries API
  */
 class Api_channel_entries extends Api {
 

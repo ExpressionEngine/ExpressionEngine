@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Directory Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/directory_helper.html
+ * Directory Helpers
  */
 
 /**

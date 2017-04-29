@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
 use InvalidArgumentException;
 
+/**
+ * Content Layout Display
+ */
 class LayoutDisplay {
 
 	/**

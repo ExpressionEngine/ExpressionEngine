@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Member;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
+/**
+ * Member Group Model
+ */
 class MemberGroup extends StructureModel {
 
 	protected static $_primary_key = 'group_id';

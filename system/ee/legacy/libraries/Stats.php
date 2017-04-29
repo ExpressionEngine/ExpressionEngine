@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Stats Library
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stats Library
  */
-
 class EE_Stats {
 
 	protected $_statdata	= array();

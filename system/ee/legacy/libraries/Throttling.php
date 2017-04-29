@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Throttling Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Throttling
  */
 class EE_Throttling {
 

@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
+/**
+ * Other Token
+ */
 class Other extends Token {
 
 	public function __construct($lexeme)

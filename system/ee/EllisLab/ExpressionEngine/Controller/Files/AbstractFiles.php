@@ -19,13 +19,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 /**
- * ExpressionEngine CP Abstract Files Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Files Controller
  */
 abstract class AbstractFiles extends CP_Controller {
 

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Stylesheet Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stylesheet
  */
 class EE_Stylesheet {
 

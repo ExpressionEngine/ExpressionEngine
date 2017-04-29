@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine File Category Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Category Model
  */
 class File_category_model extends CI_Model
 {

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Relationship Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Model
  */
 class Relationship_model extends CI_Model {
 

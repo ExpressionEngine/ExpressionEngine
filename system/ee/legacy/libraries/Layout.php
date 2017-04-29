@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Publish Layout Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Publish Layout
  */
 class Layout {
 

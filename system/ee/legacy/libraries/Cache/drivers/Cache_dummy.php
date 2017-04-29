@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Dummy Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Dummy Caching
  */
 class EE_Cache_dummy extends CI_Driver {
 

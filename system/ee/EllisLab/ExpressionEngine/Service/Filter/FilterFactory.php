@@ -16,12 +16,7 @@ use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
- * ExpressionEngine FilterFactory Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * FilterFactory
  */
 class FilterFactory {
 

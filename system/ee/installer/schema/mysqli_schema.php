@@ -7,6 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
+/**
+ * Fake the schema class
+ */
 require_once(APPPATH.'schema/mysql_schema.php');
 
 // EOF

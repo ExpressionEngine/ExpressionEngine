@@ -13,15 +13,8 @@ use ZipArchive;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine CP Design\Snippets Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Snippets Controller
  */
 class Snippets extends AbstractDesignController {
 

@@ -7,18 +7,11 @@
  * @license   https://expressionengine.com/license
  */
 
-/**
- * ExpressionEngine Logging Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 require_once(EE_APPPATH.'/libraries/Logger.php');
 
+/**
+ * Installer Logger
+ */
 class Installer_Logger extends EE_Logger {
 
 	/**

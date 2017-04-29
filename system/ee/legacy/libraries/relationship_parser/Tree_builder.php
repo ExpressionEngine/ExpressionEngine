@@ -12,13 +12,7 @@
  require_once APPPATH.'libraries/relationship_parser/Iterators.php';
 
 /**
- * ExpressionEngine Tree Builder Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Builder
  */
 class EE_relationship_tree_builder {
 

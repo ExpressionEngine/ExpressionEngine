@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Smiley Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/smiley_helper.html
+ * Smiley Helpers
  */
 
 /**

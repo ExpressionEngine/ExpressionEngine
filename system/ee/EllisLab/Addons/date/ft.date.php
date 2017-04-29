@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Date Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Date Fieldtype
  */
 class Date_ft extends EE_Fieldtype {
 

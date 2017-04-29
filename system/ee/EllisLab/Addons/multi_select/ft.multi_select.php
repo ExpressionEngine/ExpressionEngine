@@ -10,13 +10,7 @@
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine Multi-Select Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Multi-Select Fieldtype
  */
 class Multi_select_ft extends OptionFieldtype {
 

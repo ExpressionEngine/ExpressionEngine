@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Template Parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Parser
  */
 class EE_Template {
 

@@ -15,12 +15,6 @@
  *
  * The original library is a little rough around the edges so I
  * refactored it and added several additional methods -- Rick Ellis
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Encryption
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/zip.html
  */
 class EE_Zip  {
 

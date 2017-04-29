@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 /**
+ * Channel Set Service
  * Helper class for all the crazy mixing and matching we have to do.
  */
 class Structure {

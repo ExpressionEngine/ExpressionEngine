@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Update Progress Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update Progress
  */
 class Progress {
 

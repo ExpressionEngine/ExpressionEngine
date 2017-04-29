@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Output Display Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Output Display
  */
 class EE_Output {
 

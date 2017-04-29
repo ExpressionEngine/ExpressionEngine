@@ -8,29 +8,8 @@
  */
 
 /**
- * Member Management Class
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Management Front-end Class
  */
-
- /*
-	Multi Site Login
-
-	The login routine can set cookies for multiple domains if needed.
-	This allows users who run separate domains for each channel to have
-	a way to enable users to log-in once and remain logged-in across
-	domains.  In order to use this feature this array index must be
-	added to the config file:
-
-	$config['multi_login_sites'] = "http://www.siteone.com/|http://www.sitetwo.com";
-
-	Separate each domain with a pipe.
- */
-
 class Member {
 
 	var $trigger			= 'member';

@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Mixin;
 
+/**
+ * Mixing Mixable interface
+ */
 interface Mixable {
 
 	/**

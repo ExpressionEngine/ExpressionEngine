@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Bold RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Bold RTE Tool
  */
 class Bold_rte {
 

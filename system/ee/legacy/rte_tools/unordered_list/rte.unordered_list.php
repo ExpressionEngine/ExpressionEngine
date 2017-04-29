@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Unordered List RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Unordered List RTE Tool
  */
 class Unordered_list_rte {
 

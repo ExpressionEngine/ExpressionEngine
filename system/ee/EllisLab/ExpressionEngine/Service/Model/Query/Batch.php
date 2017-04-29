@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
 use Closure;
 
 /**
- * ExpressionEngine Batch Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Batch Query
  */
 class Batch {
 

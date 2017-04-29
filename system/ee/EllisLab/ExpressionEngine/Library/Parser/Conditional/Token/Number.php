@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
+/**
+ * Number Token
+ */
 class Number extends Token {
 
 	public function __construct($lexeme)

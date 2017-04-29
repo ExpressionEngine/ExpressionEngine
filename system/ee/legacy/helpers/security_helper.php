@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Security Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/security_helper.html
+ * Security Helpers
  */
 
 /**

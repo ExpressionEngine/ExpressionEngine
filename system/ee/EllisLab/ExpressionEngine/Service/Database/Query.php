@@ -21,12 +21,6 @@ require_once BASEPATH."database/drivers/mysqli/mysqli_driver.php";
 
 /**
  * ExpressionEngine Database Connection
- *
- * @package		ExpressionEngine
- * @subpackage	Database\Connection
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Query extends \CI_DB_mysqli_driver {
 

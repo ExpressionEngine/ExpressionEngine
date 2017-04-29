@@ -16,12 +16,6 @@
  * we set a cookie and compare this header value to the submitted form data.
  *
  * This class should not be used directly. Use the CSRF library.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Csrf_cookie implements Csrf_storage_backend {
 

@@ -9,4 +9,7 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception;
 
+/**
+ * Parser Exception
+ */
 class ParserException extends ConditionalException {}

@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Template Router Integer Converter
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Integer Converter
  */
 class EE_Template_router_integer_converter implements EE_Template_router_converter {
 

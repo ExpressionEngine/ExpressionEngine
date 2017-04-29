@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 
 /**
- * ExpressionEngine Model Custom Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Custom Typed Column
  */
 abstract class CustomType extends Entity implements Type {
 

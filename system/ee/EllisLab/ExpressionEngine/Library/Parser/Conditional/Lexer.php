@@ -24,15 +24,8 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
 use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
 
-
 /**
- * ExpressionEngine Conditional Lexer Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Conditional Lexer
  */
 class Lexer extends AbstractLexer {
 

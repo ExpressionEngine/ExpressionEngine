@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
- * ExpressionEngine Addon Class
- *
- * @package		ExpressionEngine
- * @subpackage	Filesystem
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Addon Service
  */
 class Addon {
 

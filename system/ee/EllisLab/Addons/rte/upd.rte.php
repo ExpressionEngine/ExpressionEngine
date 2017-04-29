@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Rich Text Editor Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Rich Text Editor Module update class
  */
-
 class Rte_upd {
 
 	private $name	= 'Rte';

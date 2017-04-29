@@ -10,15 +10,8 @@
 namespace EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine Table Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Table
  */
-
 class Table {
 
 	const COL_TEXT = 1;

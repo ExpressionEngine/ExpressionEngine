@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Config;
 
 /**
- * ExpressionEngine Config File Class
- *
- * @package    ExpressionEngine
- * @subpackage Core
- * @category   Core
- * @author     EllisLab Dev Team
- * @link       https://ellislab.com
+ * Config File
  */
 class File extends ConfigWithDefaults {
 

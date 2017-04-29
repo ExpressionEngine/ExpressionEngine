@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Localization Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core LDAP. Dust. Unused 12 year old experiment.
  */
 class EE_LDAP {
 

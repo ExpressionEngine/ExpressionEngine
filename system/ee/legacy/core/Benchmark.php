@@ -8,16 +8,10 @@
  */
 
 /**
- * CodeIgniter Benchmark Class
+ * Benchmark Class
  *
  * This class enables you to mark points and calculate the time difference
  * between them.  Memory consumption can also be displayed.
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/benchmark.html
  */
 class EE_Benchmark {
 

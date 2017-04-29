@@ -7,19 +7,12 @@
  * @license   https://expressionengine.com/license
  */
 
-/**
- * ExpressionEngine File Picker Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
+/**
+ * File Picker Module control panel
+ */
 class Filepicker_mcp {
 
 	private $images = FALSE;

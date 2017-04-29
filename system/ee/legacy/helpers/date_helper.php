@@ -9,13 +9,7 @@
  */
 
 /**
- * CodeIgniter Date Helpers
- *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/date_helper.html
+ * Date Helpers
  */
 
 /**

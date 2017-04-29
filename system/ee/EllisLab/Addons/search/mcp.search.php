@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Search Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Search Module control panel (nada)
  */
-
 class Search_mcp {
 
 }

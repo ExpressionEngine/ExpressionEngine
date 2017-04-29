@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Library\Curl;
 
+/**
+ * Curl Request Factory
+ */
 class RequestFactory {
 
 	public function get($url, $data = array(), $callback = NULL)

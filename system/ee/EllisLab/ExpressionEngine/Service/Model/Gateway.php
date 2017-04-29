@@ -10,13 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 /**
- * ExpressionEngine Gateway
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Gateway
  */
 class Gateway {
 

@@ -12,15 +12,9 @@ namespace EllisLab\ExpressionEngine\Model\Comment;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Comment Model
+ * Comment Model
  *
  * A model representing a comment on a Channel entry.
- *
- * @package		ExpressionEngine
- * @subpackage	Comment Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Comment extends Model {
 

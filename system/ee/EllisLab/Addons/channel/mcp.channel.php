@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Channel Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Module control panel
  */
 
 class Channel_mcp {

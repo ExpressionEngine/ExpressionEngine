@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine New Relic Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * New Relic
  */
-
 class Newrelic {
 
 	/**

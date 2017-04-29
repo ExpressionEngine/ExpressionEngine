@@ -7,24 +7,10 @@
  * @license   https://expressionengine.com/license
  */
 
-use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
+use  EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
 
 /**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-
-/**
- * ExpressionEngine Template Router Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router
  */
 class EE_Template_Router extends CI_Router {
 

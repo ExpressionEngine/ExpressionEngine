@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Profiler\Section;
 use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
 
 /**
- * ExpressionEngine Template Profiler Section
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler\Section
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Profiler Section
  */
 class Template extends ProfilerSection {
 

@@ -14,13 +14,7 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 
 /**
- * ExpressionEngine Category Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Model
  */
 class Category extends ContentModel {
 

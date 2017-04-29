@@ -16,13 +16,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 
 /**
- * ExpressionEngine CP Design Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design Controller
  */
 class Design extends AbstractDesignController {
 

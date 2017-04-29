@@ -12,13 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\Site;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine Stats Table
- *
- * @package		ExpressionEngine
- * @subpackage	Site
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stats Model
  */
 class Stats extends Model {
 

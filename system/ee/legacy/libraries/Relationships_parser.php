@@ -11,7 +11,7 @@ require_once APPPATH.'libraries/relationship_parser/Exceptions.php';
 require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
 
 /**
- * ExpressionEngine Relationship Class
+ * Relationship
  *
  *
  * Takes an array of field_ids that correspond to the ids of the
@@ -85,13 +85,6 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * of which may not be on the current tree, we cannot rely on the tree to
  * provide us with parent information. Instead we add a query with an inverted
  * tree at those edge-case locations.
- *
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Relationships_parser {
 

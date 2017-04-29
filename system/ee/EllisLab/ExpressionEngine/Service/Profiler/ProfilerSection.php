@@ -13,17 +13,11 @@ use EllisLab\ExpressionEngine\Service\View\View;
 use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
- * ExpressionEngine Profiler Section Interface
+ * Profiler Section Interface
  *
  * Represents a Profiler Section that can be added to the profiler output.
  * Will be loaded from a profiler section string of the section's name
  * (first character lower case).
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class ProfilerSection {
 

@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesCon
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine CP Files\File Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Files\File Controller
  */
 class File extends AbstractFilesController {
 

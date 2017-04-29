@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Moblog Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Moblog Module update class
  */
-
 class Moblog_upd {
 
 	var $version 			= '3.2.0';

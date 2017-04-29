@@ -19,12 +19,6 @@ if ( ! class_exists('EE_Xmlrpc'))
 
 /**
  * XML-RPC server class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class EE_Xmlrpcs extends EE_Xmlrpc
 {

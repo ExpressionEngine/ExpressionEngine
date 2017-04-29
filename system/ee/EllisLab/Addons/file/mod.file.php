@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine File Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Module
  */
-
 class File {
 
 	var $reserved_cat_segment	= '';

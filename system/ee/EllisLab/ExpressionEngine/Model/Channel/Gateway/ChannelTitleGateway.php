@@ -11,6 +11,9 @@ namespace EllisLab\ExpressionEngine\Model\Channel\Gateway;
 
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
+/**
+ * Channel Title Gateway
+ */
 class ChannelTitleGateway extends Gateway {
 
 	protected static $_table_name = 'channel_titles';

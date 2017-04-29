@@ -12,7 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 
 /**
- * ExpressionEngine Model Facade
+ * Model Service Facade
  *
  * This is the only way the datastore should be communicated with. Either via
  * the query builder using get() or by creating new instances via make().
@@ -20,12 +20,6 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * Manually working with instances of the datastore is *not* supported.
  * All other public methods on it should be considered internal and
  * subject to change.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Facade {
 

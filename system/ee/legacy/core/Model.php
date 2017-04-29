@@ -8,13 +8,7 @@
  */
 
 /**
- * CodeIgniter Model Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/config.html
+ * Legacy Model Class
  */
 class EE_Model {
 

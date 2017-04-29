@@ -9,6 +9,9 @@
 
 namespace EllisLab\ExpressionEngine\Legacy;
 
+/**
+ * Legacy App
+ */
 class App {
 
 	protected $router_ready = FALSE;

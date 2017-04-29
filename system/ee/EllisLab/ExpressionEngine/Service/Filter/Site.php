@@ -14,15 +14,10 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * ExpressionEngine Site Filter Class
+ * Site Filter
  *
  * This will provide the HTML for a filter that will list a set of sites as well
  * as a custom <input> element for searching for a site.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Site extends Filter {
 

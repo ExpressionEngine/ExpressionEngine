@@ -15,12 +15,7 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine CP Entry Listing Service
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Entry Listing Service
  */
 class EntryListing {
 

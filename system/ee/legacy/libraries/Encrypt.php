@@ -8,15 +8,9 @@
  */
 
 /**
- * CodeIgniter Encryption Class
+ * Legacy Encryption Class
  *
  * Provides two-way keyed encoding using XOR Hashing and Mcrypt
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/encryption.html
  */
 class EE_Encrypt {
 

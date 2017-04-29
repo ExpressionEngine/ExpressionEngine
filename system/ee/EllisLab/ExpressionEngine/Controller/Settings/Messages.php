@@ -12,7 +12,7 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * ExpressionEngine CP Messaging Settings Class
+ * Messaging Settings Controller
  *
  * @package		ExpressionEngine
  * @subpackage	Control Panel

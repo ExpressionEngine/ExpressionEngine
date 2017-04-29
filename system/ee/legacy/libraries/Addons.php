@@ -8,13 +8,7 @@
  */
 
 /**
- * ExpressionEngine Core Addons Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Addons
  */
 class EE_Addons {
 

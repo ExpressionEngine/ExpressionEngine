@@ -8,13 +8,9 @@
  */
 
 /**
- * MySQLi Result Class
+ * MySQLi Result
  *
  * This class extends the parent result class: CI_DB_result
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_mysqli_result extends CI_DB_result {
 

@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine Survey Library
- *
- * @package		ExpressionEngine
- * @subpackage	Installer
- * @category	Survey
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Survey Library
  */
-
 class Survey {
 
 	private $_survey_url = 'survey-collector.ellislab.com';

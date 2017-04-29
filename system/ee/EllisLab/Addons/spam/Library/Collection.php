@@ -10,15 +10,8 @@
 namespace EllisLab\Addons\Spam\Library;
 
 /**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Spam Collection
  */
-
 class Collection {
 
 	public $documents = array();

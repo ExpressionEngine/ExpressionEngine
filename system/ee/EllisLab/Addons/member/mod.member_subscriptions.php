@@ -8,15 +8,8 @@
  */
 
 /**
- * Member Management Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Management Subscriptions
  */
-
 class Member_subscriptions extends Member {
 
 

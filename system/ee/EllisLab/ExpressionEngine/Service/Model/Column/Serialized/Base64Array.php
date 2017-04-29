@@ -12,14 +12,8 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column\Serialized;
 use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 
 /**
- * ExpressionEngine Model Base64 Encoded Typed Column that defaults to an
+ * Model Service Base64 Encoded Typed Column that defaults to an
  * empty array.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Base64Array extends Base64 {
 

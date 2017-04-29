@@ -13,13 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 
 /**
- * ExpressionEngine CP Channel Manager Search Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channels\Search Controller
  */
 class Search extends AbstractChannelsController {
 
