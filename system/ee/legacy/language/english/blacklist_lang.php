@@ -2,15 +2,9 @@
 
 $lang = array(
 
-//----------------------------------------
-// Required for MODULES page
-//----------------------------------------
-
 'blacklist_module_name' => 'Black/White List',
 
 'blacklist_module_description' => 'Blacklist and whitelist module',
-
-//----------------------------------------
 
 'add_htaccess_file' => 'Add to .htaccess file?',
 
@@ -66,8 +60,6 @@ $lang = array(
 
 'whitelist_downloaded' => 'The whitelist has been updated by being downloaded from ExpressionEngine.',
 
-
-
 'ee_whitelist' => 'Download ExpressionEngine Whitelist',
 
 'ref_whitelist_irretrievable' => 'Error: New whitelist was irretrievable.',
@@ -104,10 +96,6 @@ $lang = array(
 
 'ref_no_blacklist_table' => 'Blacklist database table does not exist',
 
-
-
-
-''=>''
 );
 
 // EOF

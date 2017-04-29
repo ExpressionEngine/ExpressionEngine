@@ -2,71 +2,70 @@
 
 $lang = array(
 
-'type_phrase' => 'type phrase...',
-
-'search_content' => 'search content',
-
-'settings' => 'settings',
-
-'overview' => 'Overview',
-
-'comments' => 'Comments',
-
-'review_all_new' => 'Review All New',
-
-'there_were' => 'There were',
-
-'new_comments' => '<em>new</em> comments',
-
-'since_last_login' => 'since your last login',
+'and' => 'and',
 
 'are' => 'are',
 
 'awaiting_moderation' => 'awaiting moderation',
 
-'and' => 'and',
-
-'have_been' => 'have been',
-
-'flagged_as_spam' => 'flagged as potential spam',
+'banned_members' => 'Banned Members',
 
 'channels' => 'Channels',
 
-'create_new' => 'Create New',
-
 'channels_desc' => 'Channels are used to store content for your website. For example, if you want a Blog. You would first need to create a Channel to store the entries. Think of them as folders, or directories.',
 
-'has' => 'has',
+'closed_entries_with_comments' => '<b>%d</b> Closed entries with %d comments.',
 
-'field_groups' => 'Field Groups',
-
-'members' => 'Members',
-
-'register_new' => 'Register New',
-
-'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator.',
-
-'new_members_permission_desc' => 'You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
-
-'banned_members' => 'Banned Members',
+'comments' => 'Comments',
 
 'content' => 'Content',
 
 'content_desc' => 'Channel entries, why folks visit.',
 
-'entries_with_comments' => '<b>%d</b> Entries with %d comments',
-
-'closed_entries_with_comments' => '<b>%d</b> Closed entries with %d comments.',
-
-'rss' => 'RSS',
+'create_new' => 'Create New',
 
 'eecms_news' => 'ExpressionEngine News',
 
-'news_fetch_failure' => 'Oops, we couldn\'t fetch the news.',
+'entries_with_comments' => '<b>%d</b> Entries with %d comments',
+
+'field_groups' => 'Field Groups',
+
+'flagged_as_spam' => 'flagged as potential spam',
+
+'has' => 'has',
+
+'have_been' => 'have been',
 
 'latest_news_and_articles' => 'Latest News and Articles',
 
-''=>''
+'members' => 'Members',
+
+'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator.',
+
+'new_comments' => '<em>new</em> comments',
+
+'new_members_permission_desc' => 'You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
+
+'news_fetch_failure' => 'Oops, we couldn\'t fetch the news.',
+
+'overview' => 'Overview',
+
+'register_new' => 'Register New',
+
+'review_all_new' => 'Review All New',
+
+'rss' => 'RSS',
+
+'search_content' => 'search content',
+
+'settings' => 'settings',
+
+'since_last_login' => 'since your last login',
+
+'there_were' => 'There were',
+
+'type_phrase' => 'type phrase...',
+
 );
 
 // EOF
