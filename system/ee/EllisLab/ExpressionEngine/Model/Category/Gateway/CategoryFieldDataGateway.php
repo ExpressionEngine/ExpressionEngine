@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Model\Content\VariableColumnGateway;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Category Field Data Table
  *

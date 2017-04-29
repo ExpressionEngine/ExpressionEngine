@@ -9,8 +9,6 @@ namespace EllisLab\ExpressionEngine\Service\License;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine ExpressionEngineLicense Class
  *

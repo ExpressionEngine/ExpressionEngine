@@ -19,8 +19,6 @@ use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Abstract Files Class
  *

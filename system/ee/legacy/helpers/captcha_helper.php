@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter CAPTCHA Helper
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/xml_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Create CAPTCHA
@@ -233,7 +229,5 @@ if ( ! function_exists('create_captcha'))
 		return array('word' => $word, 'time' => $now, 'image' => $img);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 // EOF

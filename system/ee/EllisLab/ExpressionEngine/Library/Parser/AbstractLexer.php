@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Abstract Lexer Class
  *

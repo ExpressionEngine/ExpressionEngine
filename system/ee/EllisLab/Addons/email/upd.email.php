@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Email Module
  *
@@ -53,8 +51,6 @@ class Email_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -78,8 +74,6 @@ class Email_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

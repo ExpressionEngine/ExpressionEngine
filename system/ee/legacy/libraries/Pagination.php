@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Pagination Class
  *
@@ -76,8 +74,6 @@ class EE_Pagination {
 		log_message('debug', "Pagination Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * This is the method you want.
 	 */
@@ -85,8 +81,6 @@ class EE_Pagination {
 	{
 		return new Pagination_object();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize Preferences
@@ -108,8 +102,6 @@ class EE_Pagination {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the pagination links
@@ -187,8 +179,6 @@ class EE_Pagination {
 
 		return $output;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create's an array of pagination links including the first, previous,
@@ -362,8 +352,6 @@ class EE_Pagination {
 		return $link_array;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove doubles lashes from URLs
 	 *
@@ -387,8 +375,6 @@ class EE_Pagination {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Determine's the current page number using either the query string
@@ -463,8 +449,6 @@ class Pagination_object {
 		ee()->load->library('template', NULL, 'TMPL');
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Retrieve non-public properties
 	 * @param  string $name  Name of the property
@@ -477,8 +461,6 @@ class Pagination_object {
 			return $this->{'_'.$name};
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Sets non-public properties
@@ -495,8 +477,6 @@ class Pagination_object {
 			$this->{'_'.$name} = $value;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Prepare the pagination template
@@ -594,8 +574,6 @@ class Pagination_object {
 
 		return $template;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Build the pagination out, storing it in the Pagination_object
@@ -797,8 +775,6 @@ class Pagination_object {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Renders all of the pagination data in the current template.
 	 *
@@ -922,8 +898,6 @@ class Pagination_object {
 				break;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parse {if previous_page} and {if next_page}

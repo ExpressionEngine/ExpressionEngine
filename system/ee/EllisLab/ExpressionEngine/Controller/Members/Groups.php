@@ -17,8 +17,6 @@ use EllisLab\ExpressionEngine\Controller\Members;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Members Class
  *

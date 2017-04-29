@@ -12,8 +12,6 @@ use CP_Controller;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP 404 Controller Class
  *

@@ -16,8 +16,6 @@ use Mexitek\PHPColors\Color;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Channel Status Controller Class
  *

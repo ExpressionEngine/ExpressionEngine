@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Category Model
  *

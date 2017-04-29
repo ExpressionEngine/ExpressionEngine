@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Installation and Update Javascript Class
  *
@@ -33,8 +31,6 @@ class Javascript {
 		header("Content-type: text/javascript");
 		exit($contents);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 

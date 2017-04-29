@@ -12,8 +12,6 @@ use InvalidArgumentException;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Validator
  *

@@ -12,8 +12,6 @@ use Closure;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Dependency Injection Binding Decorator
  *

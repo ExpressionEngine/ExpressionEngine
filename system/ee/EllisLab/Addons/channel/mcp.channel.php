@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Module
  *

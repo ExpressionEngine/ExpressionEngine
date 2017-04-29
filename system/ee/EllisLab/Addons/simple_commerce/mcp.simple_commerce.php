@@ -10,8 +10,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Simple Commerce Module
  *
@@ -63,8 +61,6 @@ class Simple_commerce_mcp {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Control Panel Index

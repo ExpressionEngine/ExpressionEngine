@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Theme;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Theme Class
  *

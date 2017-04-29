@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Survey Library
  *
@@ -27,8 +25,6 @@ class Survey {
 	{
 		// nothing to see here
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Anonymous Server Data
@@ -70,8 +66,6 @@ class Survey {
 			'msm'				=> (ee()->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send Survey
@@ -142,8 +136,6 @@ class Survey {
 			@fclose($fp);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

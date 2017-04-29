@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Home Page Class
  *

@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Driver Library Class
  *
@@ -160,8 +158,6 @@ class EE_Driver_Library {
 
 }
 
-// --------------------------------------------------------------------------
-
 /**
  * CodeIgniter Driver Class
  *
@@ -250,8 +246,6 @@ class EE_Driver {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * __call magic method
 	 *
@@ -273,8 +267,6 @@ class EE_Driver {
 		exit(EXIT_UNKNOWN_METHOD);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * __get magic method
 	 *
@@ -290,8 +282,6 @@ class EE_Driver {
 			return $this->_parent->$var;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * __set magic method

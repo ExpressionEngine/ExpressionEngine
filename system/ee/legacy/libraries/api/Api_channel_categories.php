@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Categories API Class
  *
@@ -41,8 +39,6 @@ class Api_channel_categories extends Api {
 		ee()->load->model('channel_model');
 		$this->assign_cat_parent = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Category tree
@@ -139,8 +135,6 @@ class Api_channel_categories extends Api {
 		return $this->categories;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Category sub-tree
 	 *
@@ -180,8 +174,6 @@ class Api_channel_categories extends Api {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Category Form Tree
@@ -258,8 +250,6 @@ class Api_channel_categories extends Api {
 		return $this->cat_array;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Category Edit Sub-tree
 	 *
@@ -299,8 +289,6 @@ class Api_channel_categories extends Api {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Parent Category ID
@@ -346,8 +334,6 @@ class Api_channel_categories extends Api {
 		$this->fetch_category_parents($temp);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Allowed Category Groups
 	 *
@@ -380,8 +366,6 @@ class Api_channel_categories extends Api {
 			return FALSE;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Categories

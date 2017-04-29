@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Authentication Library
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 /*
 ExpressionEngine User Classes (* = current):
@@ -83,8 +79,6 @@ class Auth {
 		$this->hash_algos = array_intersect($this->hash_algos, hash_algos());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate with an id
 	 *
@@ -95,8 +89,6 @@ class Auth {
 		$member = ee()->db->get_where('members', array('member_id' => $id));
 		return $this->_authenticate($member, $password);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate with email
@@ -109,8 +101,6 @@ class Auth {
 		return $this->_authenticate($member, $password);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate with username
 	 *
@@ -121,8 +111,6 @@ class Auth {
 		$member = ee()->db->get_where('members', array('username' => $username));
 		return $this->_authenticate($member, $password);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate from basic http auth
@@ -157,8 +145,6 @@ class Auth {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate from digest http auth
 	 *
@@ -168,8 +154,6 @@ class Auth {
 	{
 		die('@todo');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run through the majority of the authentication checks
@@ -301,8 +285,6 @@ class Auth {
 		return array($username, $password, $incoming);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check Required IP
 	 *
@@ -322,8 +304,6 @@ class Auth {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hash Password
@@ -386,8 +366,6 @@ class Auth {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Username
 	 *
@@ -401,8 +379,6 @@ class Auth {
 
 		return (bool) ee()->db->affected_rows();
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Password
 	 *
@@ -436,8 +412,6 @@ class Auth {
 
 		return (bool) ee()->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate
@@ -493,8 +467,6 @@ class Auth {
 
 		return $authed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve Basic HTTP Credentials
@@ -623,8 +595,6 @@ class Auth_result {
 		$this->member = $member;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Group data getter
 	 *
@@ -646,8 +616,6 @@ class Auth_result {
 
 		return isset($this->group->$key) ? $this->group->$key : $default;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Multi-login check
@@ -686,8 +654,6 @@ class Auth_result {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Simplified permission checks
 	 *
@@ -697,8 +663,6 @@ class Auth_result {
 	{
 		return ($this->group($perm) === 'y');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Ban check
@@ -715,8 +679,6 @@ class Auth_result {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member data getter
 	 *
@@ -727,8 +689,6 @@ class Auth_result {
 		return isset($this->member->$key) ? $this->member->$key : $default;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Anon setter
 	 *
@@ -738,8 +698,6 @@ class Auth_result {
 	{
 		$this->anon = $anon;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Start session
@@ -844,8 +802,6 @@ class Auth_result {
 		ee()->session->delete_password_lockout();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Session id getter session
 	 *
@@ -857,8 +813,6 @@ class Auth_result {
 	{
 		return $this->session_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Session id setter
@@ -873,8 +827,6 @@ class Auth_result {
 		$this->session_id = $session_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remember me
 	 *
@@ -886,8 +838,6 @@ class Auth_result {
 	{
 		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hook data utility method

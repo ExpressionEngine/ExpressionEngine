@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Admin Model
  *
@@ -19,8 +17,6 @@
  * @link		https://ellislab.com
  */
 class Search_model extends CI_Model {
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Filtered Entries
@@ -97,8 +93,6 @@ class Search_model extends CI_Model {
 		return $return_data;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Build Main Query
@@ -482,8 +476,6 @@ class Search_model extends CI_Model {
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build Full CP Query
 	 *
@@ -553,8 +545,6 @@ class Search_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Searchable Fields

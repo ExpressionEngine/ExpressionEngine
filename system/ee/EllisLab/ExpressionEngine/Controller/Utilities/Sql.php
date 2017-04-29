@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP SQL Manager Class
  *

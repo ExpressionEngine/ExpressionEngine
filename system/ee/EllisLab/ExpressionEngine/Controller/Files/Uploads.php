@@ -18,8 +18,6 @@ use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesCon
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Uploads Directories Settings Class
  *

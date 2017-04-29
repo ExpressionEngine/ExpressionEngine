@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\DataStore;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Query
  *

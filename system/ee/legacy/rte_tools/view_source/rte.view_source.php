@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine View Source RTE Tool
  *
@@ -45,8 +43,6 @@ class View_source_rte {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Styles
 	 *
@@ -64,8 +60,6 @@ class View_source_rte {
 		ob_end_clean();
 		return $buffer;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Definition

@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Service\View\View;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Alert Collection Class
  *

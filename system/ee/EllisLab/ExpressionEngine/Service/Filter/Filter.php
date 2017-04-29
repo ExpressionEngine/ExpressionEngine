@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine abstract Filter Class
  *

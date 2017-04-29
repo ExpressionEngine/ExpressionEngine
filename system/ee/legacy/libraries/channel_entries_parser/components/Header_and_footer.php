@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Header and Footer)
  *
@@ -31,8 +29,6 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 	{
 		return ! ($pre->has_tag_pair('date_heading') OR $pre->has_tag_pair('date_footer'));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Reset flags for this tag chunk. Using an object so that we can
@@ -57,8 +53,6 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 		$c->heading_flag_yearly  = 0;
 		return $c;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the header/footer chunks.

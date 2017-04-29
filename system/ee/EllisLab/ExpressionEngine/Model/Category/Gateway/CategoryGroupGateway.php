@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Category Group Table
  *

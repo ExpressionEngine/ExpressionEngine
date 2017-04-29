@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Module
  *
@@ -73,8 +71,6 @@ class Channel_upd {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -95,8 +91,6 @@ class Channel_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

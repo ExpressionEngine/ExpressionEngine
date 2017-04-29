@@ -9,8 +9,6 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Custom Filter Class
  *

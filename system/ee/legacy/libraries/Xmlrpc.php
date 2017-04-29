@@ -13,8 +13,6 @@ if ( ! function_exists('xml_parser_create'))
 }
 
 
-// ------------------------------------------------------------------------
-
 /**
  * XML-RPC request handler class
  *

@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Discussion Forum Module
  *
@@ -391,8 +389,6 @@ class Forum_mcp extends CP_Controller {
 
 		show_404();
 	}
-
-	// --------------------------------------------------------------------
 
 	private function createBoard()
 	{
@@ -1224,8 +1220,6 @@ class Forum_mcp extends CP_Controller {
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	private function createAlias()
 	{
 		$errors = NULL;
@@ -1492,8 +1486,6 @@ class Forum_mcp extends CP_Controller {
 
 		ee()->functions->redirect($return);
 	}
-
-	// --------------------------------------------------------------------
 
 	private function createCategory($board_id)
 	{
@@ -1830,8 +1822,6 @@ class Forum_mcp extends CP_Controller {
 			'heading'    => $vars['cp_page_title'],
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	private function createForum($cat_id)
 	{
@@ -2449,8 +2439,6 @@ class Forum_mcp extends CP_Controller {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	public function ranks()
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -2752,8 +2740,6 @@ class Forum_mcp extends CP_Controller {
 
 		ee()->functions->redirect(ee('CP/URL')->make($this->base . 'ranks', ee()->cp->get_url_state()));
 	}
-
-	// --------------------------------------------------------------------
 
 	public function admins($board_id)
 	{
@@ -3061,8 +3047,6 @@ class Forum_mcp extends CP_Controller {
 
 		ee()->functions->redirect($return);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function moderators($id)
 	{
@@ -3494,8 +3478,6 @@ class Forum_mcp extends CP_Controller {
 
 		ee()->functions->redirect(ee('CP/URL')->make($this->base . 'moderators/' . $board_id));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Conditionally adds forum specific specialty templates for a given site

@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Model\File\File;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine ThumbnailFactory Class
  *

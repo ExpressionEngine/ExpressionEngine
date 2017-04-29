@@ -16,8 +16,6 @@ use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Abstract Design Class
  *

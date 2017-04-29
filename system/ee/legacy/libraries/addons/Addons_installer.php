@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Addon Installer Class
  *
@@ -30,8 +28,6 @@ class Addons_installer {
 		ee()->lang->loadfile('modules');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Addon Installer
 	 *
@@ -44,8 +40,6 @@ class Addons_installer {
 		$this->_update_addon($addon, $type, 'install', $show_package);
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Addon Uninstaller
@@ -61,8 +55,6 @@ class Addons_installer {
 		$this->_update_addon($addon, $type, 'uninstall', $show_package);
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -84,8 +76,6 @@ class Addons_installer {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -105,8 +95,6 @@ class Addons_installer {
 			show_error(lang('module_can_not_be_found'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extension Installer
@@ -135,8 +123,6 @@ class Addons_installer {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extension Uninstaller
 	 *
@@ -156,8 +142,6 @@ class Addons_installer {
 			$disable = $EXT->disable_extension();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fieldtype Installer
@@ -195,8 +179,6 @@ class Addons_installer {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fieldtype Uninstaller
@@ -259,8 +241,6 @@ class Addons_installer {
 			ee()->db->delete('fieldtypes', array('name' => $fieldtype));
 		}
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * RTE Tool Installer
 	 *
@@ -275,8 +255,6 @@ class Addons_installer {
 		ee()->rte_tool_model->add($tool);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * RTE Tool Uninstaller
 	 *
@@ -290,8 +268,6 @@ class Addons_installer {
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->delete($tool);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Install Setup
@@ -340,8 +316,6 @@ class Addons_installer {
 		return $class;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extension Install Setup
 	 *
@@ -376,8 +350,6 @@ class Addons_installer {
 		}
 		return new $class();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Universal Addon (Un)Installer

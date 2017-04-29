@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Channel Manager Search Class
  *

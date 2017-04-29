@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -44,8 +42,6 @@ class Updater {
 		}
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Change email columns to varchar(75)

@@ -21,8 +21,6 @@ use EllisLab\ExpressionEngine\Service\Event\Subscriber;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model
  *

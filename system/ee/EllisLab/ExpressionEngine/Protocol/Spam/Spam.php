@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Protocol\Spam;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Protocol
  *

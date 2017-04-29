@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Grid)
  *
@@ -31,8 +29,6 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 	{
 		return empty($pre->channel()->gfields) OR in_array('grid', $disabled);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gather the data needed to process all Grid field
@@ -84,8 +80,6 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the Grid fields in one fell swoop.

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Publish Layout Class
  *
@@ -62,8 +60,6 @@ class Layout {
 
 		ee()->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Updates saved publish layouts
@@ -173,8 +169,6 @@ class Layout {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Updates saved publish layouts
 	 *
@@ -220,8 +214,6 @@ class Layout {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add new tabs and associated fields to saved publish layouts
@@ -288,8 +280,6 @@ class Layout {
 		}
 	}
 
-
-	// --------------------------------------------------------------------
 
 
 	/**
@@ -364,8 +354,6 @@ class Layout {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Deletes fields from the saved publish layouts

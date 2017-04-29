@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Grid Fieldtype
  *
@@ -37,21 +35,15 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->model('grid_model');
 	}
 
-	// --------------------------------------------------------------------
-
 	public function install()
 	{
 		ee()->grid_model->install();
 	}
 
-	// --------------------------------------------------------------------
-
 	public function uninstall()
 	{
 		ee()->grid_model->uninstall();
 	}
-
-	// --------------------------------------------------------------------
 
 	public function validate($data)
 	{
@@ -59,8 +51,6 @@ class Grid_ft extends EE_Fieldtype {
 
 		return ee()->grid_lib->validate($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	// Actual saving takes place in post_save so we have an entry_id
 	public function save($data)
@@ -87,8 +77,6 @@ class Grid_ft extends EE_Fieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	// This fieldtype has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
@@ -101,8 +89,6 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->grid_model->delete_content_of_type($name);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Called when entries are deleted
@@ -136,8 +122,6 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->delete_rows($row_ids);
 	}
 
-	// --------------------------------------------------------------------
-
 	public function display_field($data)
 	{
 		$grid = ee('CP/GridInput', array(
@@ -163,8 +147,6 @@ class Grid_ft extends EE_Fieldtype {
 		return $field;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace Grid template tags
 	 */
@@ -183,8 +165,6 @@ class Grid_ft extends EE_Fieldtype {
 		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * :total_rows modifier
 	 */
@@ -202,8 +182,6 @@ class Grid_ft extends EE_Fieldtype {
 
 		return 0;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * :table modifier
@@ -300,8 +278,6 @@ class Grid_ft extends EE_Fieldtype {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * :sum modifier
 	 */
@@ -309,8 +285,6 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		return $this->_get_column_stats($params, 'sum');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * :average modifier
@@ -320,8 +294,6 @@ class Grid_ft extends EE_Fieldtype {
 		return $this->_get_column_stats($params, 'average');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * :lowest modifier
 	 */
@@ -330,8 +302,6 @@ class Grid_ft extends EE_Fieldtype {
 		return $this->_get_column_stats($params, 'lowest');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * :highest modifier
 	 */
@@ -339,8 +309,6 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		return $this->_get_column_stats($params, 'highest');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Used in the math modifiers to return stats about numeric columns
@@ -406,8 +374,6 @@ class Grid_ft extends EE_Fieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * :next_row modifier
 	 */
@@ -416,8 +382,6 @@ class Grid_ft extends EE_Fieldtype {
 		return $this->_parse_prev_next_row($params, $tagdata, TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * :prev_row modifier
 	 */
@@ -425,8 +389,6 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		return $this->_parse_prev_next_row($params, $tagdata);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Handles parsing of :next_row and :prev_row modifiers
@@ -450,8 +412,6 @@ class Grid_ft extends EE_Fieldtype {
 
 		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
-
-	// --------------------------------------------------------------------
 
 	public function display_settings($data)
 	{
@@ -568,8 +528,6 @@ class Grid_ft extends EE_Fieldtype {
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function validate_settings($data)
 	{
 		$validator = ee('Validation')->make(array(
@@ -582,8 +540,6 @@ class Grid_ft extends EE_Fieldtype {
 
 		return $validator->validate($data);
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Callback for validation service
@@ -667,8 +623,6 @@ class Grid_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function save_settings($data)
 	{
 		// Make sure grid_min_rows is at least zero
@@ -677,8 +631,6 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows']
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function post_save_settings($data)
 	{
@@ -695,8 +647,6 @@ class Grid_ft extends EE_Fieldtype {
 		$this->_load_grid_lib();
 		ee()->grid_lib->apply_settings($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function settings_modify_column($data)
 	{
@@ -728,8 +678,6 @@ class Grid_ft extends EE_Fieldtype {
 		return array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Loads Grid library and assigns relevant field information to it
 	 */
@@ -746,8 +694,6 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->field_name = $this->name();
 		ee()->grid_lib->content_type = $this->content_type();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

@@ -15,8 +15,6 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 		$this->_post_prepare_data($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Pre Prepare Data
 	 */
@@ -38,8 +36,6 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Post Prepare Data

@@ -6,8 +6,6 @@
  * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 /**
  * ExpressionEngine Snippet Model
  *
@@ -46,8 +44,6 @@ class Snippet_model extends CI_Model {
 		return $this->entities_from_db_result($this->db->get());
 	}
 
-	// -----------------------------------------------------------------
-
 	/**
 	 *
 	 */
@@ -60,8 +56,6 @@ class Snippet_model extends CI_Model {
 		}
 		return $entities;
 	}
-
-	// -----------------------------------------------------------------
 
 	/**
 	 *
@@ -99,8 +93,6 @@ class Snippet_model extends CI_Model {
 		);
 		return $data;
 	}
-
-	// -----------------------------------------------------------------
 }
 
 

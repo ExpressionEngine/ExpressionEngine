@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Boolean Expression Class
  *

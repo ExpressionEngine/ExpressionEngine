@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine RTE Module Library
  *
@@ -36,8 +34,6 @@ class Rte_lib {
 	{
 		ee()->lang->loadfile('rte');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Provides Edit Toolset Screen HTML
@@ -160,8 +156,6 @@ class Rte_lib {
 		return ee('View')->make('rte:box_wrapper')->render($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Saves a toolset
 	 *
@@ -265,8 +259,6 @@ class Rte_lib {
 
 		ee()->functions->redirect($success_url);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Build RTE JS
@@ -455,8 +447,6 @@ class Rte_lib {
 		return $js;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Save RTE field
 	 *
@@ -494,8 +484,6 @@ class Rte_lib {
 
 		return $data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Display an RTE field
@@ -569,8 +557,6 @@ class Rte_lib {
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Check whether the specified data is empty html
 	 *
@@ -582,8 +568,6 @@ class Rte_lib {
 	{
 		return in_array($data, $this->_empty);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Loads JS library files
@@ -664,8 +648,6 @@ class Rte_lib {
 		return $contents;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Prep global variables for JS
 	 *
@@ -697,8 +679,6 @@ class Rte_lib {
 		return $temp;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Manage the assignment of global JS
 	 *
@@ -720,8 +700,6 @@ class Rte_lib {
 		return $js;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Tool Set Valid Name handler
 	 *
@@ -740,8 +718,6 @@ class Rte_lib {
 
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Tool Set Unique Name handler

@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\CustomMenu;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Custom Submenu
  *

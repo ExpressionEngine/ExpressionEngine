@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -186,9 +184,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
-
 	function comments_opened_notification()
 	{
 return <<<EOF
@@ -209,8 +204,6 @@ To stop receiving notifications for this entry, click here:
 {notification_removal_url}
 EOF;
 	}
-
-	// ------------------------------------------------------------------------
 
 	function random($type = 'encrypt', $len = 8)
 	{

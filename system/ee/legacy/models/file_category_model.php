@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine File Category Model
  *
@@ -76,8 +74,6 @@ class File_category_model extends CI_Model
 		return TRUE;
 	}
 
-	// -----------------------------------------------------------------------
-
 	/**
 	 * Get the categories from the database
 	 *
@@ -100,8 +96,6 @@ class File_category_model extends CI_Model
 
 		return $this->db->get_where('file_categories', $data);
 	}
-
-	// -----------------------------------------------------------------------
 
 	/**
 	 * Deletes category records for a specific file_id and optionally a cat_id as well
@@ -128,8 +122,6 @@ class File_category_model extends CI_Model
 		return TRUE;
 	}
 
-	// -----------------------------------------------------------------------
-
 	/**
 	 * Make sure the parameter passed is a valid non-zero integer
 	 *
@@ -140,8 +132,6 @@ class File_category_model extends CI_Model
 	{
 		return (is_numeric($id) AND intval($id) >= 0) ? TRUE : FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Checks to see if the file exists in the database
@@ -154,8 +144,6 @@ class File_category_model extends CI_Model
 		$this->db->where('file_id', $file_id);
 		return ($this->db->count_all_results('files') > 0) ? TRUE : FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Checks to see if the category exists in the database

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Progress Class
  *
@@ -45,8 +43,6 @@ class Progress {
 		session_write_close();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get State
 	 *
@@ -59,8 +55,6 @@ class Progress {
 		session_start();
 		return isset($_SESSION['_progress_state']) ? $this->prefix.$_SESSION['_progress_state'] : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clear State
@@ -75,8 +69,6 @@ class Progress {
 		unset ($_SESSION['_progress_state']);
 		session_write_close();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets the proper js and meta tag

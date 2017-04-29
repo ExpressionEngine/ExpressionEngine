@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Event;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Event Publisher Interface
  *

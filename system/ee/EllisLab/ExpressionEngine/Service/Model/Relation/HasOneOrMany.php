@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine HasOneOrMany Relation
  *

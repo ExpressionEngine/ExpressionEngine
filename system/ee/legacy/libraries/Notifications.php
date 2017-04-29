@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Notifications Class
  *
@@ -29,8 +27,6 @@ class Notifications {
 		ee()->load->library('api');
 		ee()->load->library('email');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send admin notification
@@ -98,8 +94,6 @@ class Notifications {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send checksum notification

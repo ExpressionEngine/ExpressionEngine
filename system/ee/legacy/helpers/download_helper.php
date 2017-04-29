@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Download Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/download_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Force Download

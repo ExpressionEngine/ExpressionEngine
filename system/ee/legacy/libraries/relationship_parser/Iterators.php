@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Parse Node Iteratior
  *
@@ -43,8 +41,6 @@ class ParseNodeIterator extends EE_TreeIterator {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Override RecursiveArrayIterator's get child method to make sure
 	 * we skip any QueryNodes and their descendants.
@@ -74,8 +70,6 @@ class ParseNodeIterator extends EE_TreeIterator {
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Query Node Iteratior
@@ -111,8 +105,6 @@ class QueryNodeIterator extends EE_TreeIterator {
 
 		return ! empty($children);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Override RecursiveArrayIterator's get child method to skip

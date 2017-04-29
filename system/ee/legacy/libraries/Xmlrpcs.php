@@ -17,8 +17,6 @@ if ( ! class_exists('EE_Xmlrpc'))
 	show_error('You must load the Xmlrpc class before loading the Xmlrpcs class in order to create a server.');
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * XML-RPC server class
  *

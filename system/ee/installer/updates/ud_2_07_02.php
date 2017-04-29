@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -74,8 +72,6 @@ class Updater {
 			ee()->db->update_batch('members', $members, 'member_id');
 		}
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Remove the index.php and Session ID from quick tabs

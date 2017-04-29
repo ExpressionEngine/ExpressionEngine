@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Protocol\Config;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config Protocol
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Array Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/array_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Element
@@ -46,8 +42,6 @@ if ( ! function_exists('element'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Random Element - Takes an array as input and returns a random element
  *
@@ -67,8 +61,6 @@ if ( ! function_exists('random_element'))
 		return $array[array_rand($array)];
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Elements

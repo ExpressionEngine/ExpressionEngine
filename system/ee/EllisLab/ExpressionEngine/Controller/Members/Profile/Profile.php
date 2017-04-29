@@ -17,8 +17,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Members Class
  *
@@ -224,8 +222,6 @@ class Profile extends CP_Controller {
 	{
 		ee()->functions->redirect($this->base_url);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generic method for saving member settings given an expected array

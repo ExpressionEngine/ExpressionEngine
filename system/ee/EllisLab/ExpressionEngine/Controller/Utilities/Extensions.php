@@ -16,8 +16,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Extensions CP Controller Class
  *

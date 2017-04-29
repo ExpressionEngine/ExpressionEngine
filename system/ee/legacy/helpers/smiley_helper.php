@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Smiley Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/smiley_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Smiley Javascript
@@ -113,8 +109,6 @@ EOF;
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Get Clickable Smileys
  *
@@ -168,8 +162,6 @@ if ( ! function_exists('get_clickable_smileys'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Parse Smileys
  *
@@ -209,8 +201,6 @@ if ( ! function_exists('parse_smileys'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Get Smiley Array
  *
@@ -226,8 +216,6 @@ if ( ! function_exists('_get_smiley_array'))
  		return ee()->config->loadFile('smileys');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * JS Insert Smiley

@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Application Controller Class
  *
@@ -63,8 +61,6 @@ class Controller {
 
 class_alias('Controller', 'CI_Controller');
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Controller
  *
@@ -96,8 +92,6 @@ class EE_Controller extends CI_Controller {
 		// -------------------------------------------
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Control Panel Controller

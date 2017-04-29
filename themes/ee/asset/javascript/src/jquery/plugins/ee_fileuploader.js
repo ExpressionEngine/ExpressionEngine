@@ -62,8 +62,6 @@
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Builds the jQuery UI dialog, adds two listeners to the dialog, and adds
 	 * a listener to the upload button on the file chooser
@@ -139,8 +137,6 @@
 		});
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Listen for clicks on the button_bar's upload file button
 	 */
@@ -172,8 +168,6 @@
 		});
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Disable the upload by changing the button bar
 	 *
@@ -196,8 +190,6 @@
 		}
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fired by the index of the upload after the file field has been
 	 * filled out
@@ -213,8 +205,6 @@
 			});
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Cleans up the file upload and the file chooser after a file has
 	 * been selected
@@ -228,8 +218,6 @@
 		// Close filebrowser
 		$.ee_filebrowser.clean_up(current_file);
 	};
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sets the directory ID of the iframe
@@ -270,8 +258,6 @@
 		return false;
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * This method is called if the file already exists, comes before upload
 	 *
@@ -282,8 +268,6 @@
 
 		change_class('file_exists');
 	};
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * This method is called after the upload
@@ -348,8 +332,6 @@
 		}
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helper method to change the current file since we can't rely on
 	 * window.iframe.variable to always get the latest variable...
@@ -359,8 +341,6 @@
 	$.ee_fileuploader.update_file = function(file) {
 		current_file = file;
 	};
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Helper method to change the class of the modal

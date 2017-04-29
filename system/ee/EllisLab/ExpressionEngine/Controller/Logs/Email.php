@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Home Page Class
  *
@@ -135,8 +133,6 @@ class Email extends Logs {
 
 		ee()->cp->render('logs/email/list', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * View Single Email

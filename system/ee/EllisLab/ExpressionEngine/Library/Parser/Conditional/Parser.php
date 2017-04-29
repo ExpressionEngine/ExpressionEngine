@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Conditional Parser Class
  *

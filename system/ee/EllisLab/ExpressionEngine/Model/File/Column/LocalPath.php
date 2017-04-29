@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Local Path Column
  *

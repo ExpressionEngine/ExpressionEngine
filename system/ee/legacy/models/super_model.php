@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Super Model
  *
@@ -23,8 +21,6 @@
  * @link		https://ellislab.com
  */
 class Super_model extends CI_Model {
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Count All
@@ -60,8 +56,6 @@ class Super_model extends CI_Model {
 			return $this->db->count_all_results($table);
 		}
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

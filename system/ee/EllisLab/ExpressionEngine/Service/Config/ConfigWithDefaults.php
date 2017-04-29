@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Protocol\Config\Config;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config File Class
  *

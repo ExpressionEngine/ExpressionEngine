@@ -10,8 +10,6 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine File Fieldtype Class
  *
@@ -42,8 +40,6 @@ class File_ft extends EE_Fieldtype {
 		parent::__construct();
 		ee()->load->library('file_field');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate the upload
@@ -130,8 +126,6 @@ class File_ft extends EE_Fieldtype {
 		return array('value' => '', 'error' => lang('invalid_selection'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save the correct value {fieldir_\d}filename.ext
 	 *
@@ -142,8 +136,6 @@ class File_ft extends EE_Fieldtype {
 		// validate does all of the work.
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show the publish field
@@ -288,8 +280,6 @@ class File_ft extends EE_Fieldtype {
 		return $file;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Basic javascript interaction on the frontend
 	 *
@@ -361,8 +351,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep the publish data
 	 *
@@ -372,8 +360,6 @@ JSC;
 	{
 		return ee()->file_field->parse_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Runs before the channel entries loop on the front end
@@ -385,8 +371,6 @@ JSC;
 	{
 		ee()->file_field->cache_data($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace frontend tag
@@ -439,8 +423,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
@@ -482,8 +464,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Wrap it helper function
 	 *
@@ -510,8 +490,6 @@ JSC;
 
 		return $full_path;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display settings screen
@@ -602,8 +580,6 @@ JSC;
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function grid_display_settings($data)
 	{
 		$settings = $this->display_settings($data);
@@ -637,8 +613,6 @@ JSC;
 		return $directories;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns dropdown-ready array of allowed file types for upload
 	 */
@@ -646,8 +620,6 @@ JSC;
 	{
 		return array('all' => lang('all'), 'image' => lang('type_image'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Table row helper
@@ -678,8 +650,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function validate_settings($settings)
 	{
 		$validator = ee('Validation')->make(array(
@@ -690,8 +660,6 @@ JSC;
 
 		return $validator->validate($settings);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -708,8 +676,6 @@ JSC;
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Form Validation callback
 	 *
@@ -719,8 +685,6 @@ JSC;
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Accept all content types.
@@ -732,8 +696,6 @@ JSC;
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

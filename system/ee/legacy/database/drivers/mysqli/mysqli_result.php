@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * MySQLi Result Class
  *
@@ -31,8 +29,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		return $this->pdo_statement->rowCount();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Number of fields in the result set
 	 *
@@ -43,8 +39,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 	{
 		return $this->pdo_statement->columnCount();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Field Names
@@ -68,8 +62,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 
 		return $field_names;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Field data
@@ -127,8 +119,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		return array_values($column_data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Free the result
 	 *
@@ -139,8 +129,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		$this->pdo_statement->closeCursor();
 		$this->pdo_statement = NULL;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Data Seek
@@ -158,8 +146,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		return mysqli_data_seek($this->result_id, $n);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Result - associative array
 	 *
@@ -172,8 +158,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 	{
 		return $this->pdo_statement->fetch(PDO::FETCH_ASSOC);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Result - object

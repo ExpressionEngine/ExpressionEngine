@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Database;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Database Log
  *

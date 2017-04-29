@@ -10,8 +10,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Common Functions
  *
@@ -23,8 +21,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/
  */
-
-// ------------------------------------------------------------------------
 
 /**
 * Determines if the current version of PHP is greater then the supplied value
@@ -40,8 +36,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 	{
 		return (version_compare(PHP_VERSION, $version) < 0) ? FALSE : TRUE;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
  * Tests for file writability
@@ -60,8 +54,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 		return $fs->isWritable($file);
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Class registry
@@ -132,8 +124,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		return $_classes[$class];
 	}
 
-// --------------------------------------------------------------------
-
 /**
 * Keeps track of which libraries have been loaded.  This function is
 * called by the load_class() function above
@@ -152,8 +142,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 		return $_is_loaded;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Loads the main config.php file
@@ -207,8 +195,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		return $config;
 	}
 
-// ------------------------------------------------------------------------
-
 /**
  * Returns the default config items
  *
@@ -236,8 +222,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		);
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * Returns the specified config item
 *
@@ -264,8 +248,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 		return $raw_value ? $config[$item] : parse_config_variables($config[$item]);
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Parses select variables in a config value's string
@@ -298,8 +280,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		return $value;
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * Returns the specified config item as a boolean.
 *
@@ -323,8 +303,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		$setting = get_bool_from_string($value);
 		return (is_bool($setting)) ? $setting : (bool) $value;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
  * Get's a boolean value from a string such as 'y', 'yes', 'n', or 'no', if it
@@ -360,8 +338,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		}
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * Error Handler
 *
@@ -380,8 +356,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		echo $_error->show_error($heading, $message, 'error_general', $status_code);
 		exit;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Exception Handler
@@ -402,8 +376,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		exit;
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * 404 Page Handler
 *
@@ -420,8 +392,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		$_error->show_404($page, $log_error);
 		exit;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Error Logging Interface
@@ -447,8 +417,6 @@ if ( ! function_exists('log_message'))
 		$_log->write_log($level, $message, $php_error);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Set HTTP Status Header
@@ -533,8 +501,6 @@ if ( ! function_exists('log_message'))
 		}
 	}
 
-// --------------------------------------------------------------------
-
 /**
 * Exception Handler
 *
@@ -577,8 +543,6 @@ if ( ! function_exists('log_message'))
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove Invisible Characters
 	 *
@@ -612,8 +576,6 @@ if ( ! function_exists('log_message'))
 
 		return $str;
 	}
-
-// ------------------------------------------------------------------------
 
 if ( ! function_exists('function_usable'))
 {

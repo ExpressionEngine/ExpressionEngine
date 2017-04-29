@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Remember Me Class
  *
@@ -47,8 +45,6 @@ class Remember {
 		$this->ip_address = ee()->input->ip_address();
 		$this->user_agent = substr(ee()->input->user_agent(), 0, 120);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a new remember me
@@ -97,8 +93,6 @@ class Remember {
 		$this->_set_cookie($this->data['remember_me_id'], $this->expiry);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if a remember me cookie + valid data exists
 	 *
@@ -115,8 +109,6 @@ class Remember {
 		return count($this->data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remember me data accessor
 	 *
@@ -126,8 +118,6 @@ class Remember {
 	{
 		return (isset($this->data[$key])) ? $this->data[$key] : NULL;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clear the current remember me
@@ -146,8 +136,6 @@ class Remember {
 		$this->_delete_cookie();
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clear all remember me's except for the current one
@@ -172,8 +160,6 @@ class Remember {
 
 		ee()->db->delete($this->table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the remember me data in the db and validate it
@@ -210,8 +196,6 @@ class Remember {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Expiry getter
 	 *
@@ -221,8 +205,6 @@ class Remember {
 	{
 		return $this->expiry;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the remember me data in the db and validate it
@@ -269,8 +251,6 @@ class Remember {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generates a unique id
 	 *
@@ -280,8 +260,6 @@ class Remember {
 	{
 		return ee()->functions->random();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete the remember me cookie
@@ -294,8 +272,6 @@ class Remember {
 		ee()->input->delete_cookie($this->cookie);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the remember me cookie
 	 *
@@ -306,8 +282,6 @@ class Remember {
 		$this->cookie_value = $value;
 		ee()->input->set_cookie($this->cookie, $value, $expiration);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Garbage collect

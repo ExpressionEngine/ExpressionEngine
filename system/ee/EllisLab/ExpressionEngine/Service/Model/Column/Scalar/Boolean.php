@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Boolean Typed Column
  *

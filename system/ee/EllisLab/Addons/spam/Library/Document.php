@@ -12,8 +12,6 @@ use \Iterator;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *

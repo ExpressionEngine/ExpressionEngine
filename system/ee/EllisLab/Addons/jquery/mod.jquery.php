@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine jQuery Module
  *
@@ -36,8 +34,6 @@ class Jquery {
 
 		ee()->lang->loadfile('jquery');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Output Javascript
@@ -123,8 +119,6 @@ class Jquery {
 		exit($contents);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Script Source
 	 *
@@ -146,8 +140,6 @@ class Jquery {
 		// nothing?  Just drop a link to the main jQuery file
 		return $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Script Tag
@@ -174,8 +166,6 @@ class Jquery {
 
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // End Jquery Class

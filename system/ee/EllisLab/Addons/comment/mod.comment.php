@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Comment Module
  *
@@ -63,8 +61,6 @@ class Comment {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve the disable parameter from the template and parse it
@@ -1227,8 +1223,6 @@ class Comment {
 	}
 
 
-	// --------------------------------------------------------------------
-
 
 	/**
 	 * Fetch comment ids associated entry ids
@@ -1256,8 +1250,6 @@ class Comment {
 		return $entry_ids;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment Submission Form
@@ -1732,8 +1724,6 @@ class Comment {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preview
 	 *
@@ -1974,8 +1964,6 @@ class Comment {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preview Handler
 	 *
@@ -2029,8 +2017,6 @@ class Comment {
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($group, $templ);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert New Comment
@@ -2883,8 +2869,6 @@ class Comment {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
      * remove_comment is used by the spam module to delete comments that are
 	 * flagged as spam from the spam trap
@@ -2897,8 +2881,6 @@ class Comment {
 	{
 		ee()->db->delete('comments', array('comment_id' => $id));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
      * moderate_comment simply sets a particular status given a comment id.
@@ -2915,8 +2897,6 @@ class Comment {
 		ee()->db->where('comment_id', $comment_id);
 		ee()->db->update('comments', array('status' => $status));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment subscription tag
@@ -2958,8 +2938,6 @@ class Comment {
 		$tagdata = ee()->TMPL->tagdata;
 		return ee()->TMPL->parse_variables($tagdata, $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * List of subscribers to an entry
@@ -3034,8 +3012,6 @@ class Comment {
 
 		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment subscription w/out commenting
@@ -3115,8 +3091,6 @@ class Comment {
 
 		ee()->output->show_message($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Frontend comment editing
@@ -3227,8 +3201,6 @@ class Comment {
 		ee()->output->send_ajax_response(array('error' => $unauthorized));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Edit Comment Script
 	 *
@@ -3242,8 +3214,6 @@ class Comment {
 		$src = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=comment_editor';
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment Editor
@@ -3345,8 +3315,6 @@ CMT_EDIT_SCR;
 		exit($script);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * AJAX Edit URL
 	 *
@@ -3359,8 +3327,6 @@ CMT_EDIT_SCR;
 
 		return $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Discover the entry ID for the current entry
@@ -3419,8 +3385,6 @@ CMT_EDIT_SCR;
 
 		return ee()->session->cache['comment']['entry_id'][$qstring_hash] = $entry_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Entry and Channel Stats

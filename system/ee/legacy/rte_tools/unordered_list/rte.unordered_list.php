@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Unordered List RTE Tool
  *
@@ -45,8 +43,6 @@ class Unordered_list_rte {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Definition

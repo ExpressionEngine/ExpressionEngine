@@ -43,8 +43,6 @@ class Xml_encode {
 		$this->return_data = trim(str_replace('&nbsp;', '&#160;', $str));
 	}
 
-	// --------------------------------------------------------------------
-
 }
 // END CLASS
 

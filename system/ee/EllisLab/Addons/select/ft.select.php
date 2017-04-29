@@ -10,8 +10,6 @@ require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Select Fieldtype Class
  *
@@ -64,8 +62,6 @@ class Select_ft extends OptionFieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		$extra = 'dir="'.$this->get_setting('field_text_direction', 'ltr').'"';
@@ -85,14 +81,10 @@ class Select_ft extends OptionFieldtype {
 		return $field;
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->display_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -144,8 +136,6 @@ class Select_ft extends OptionFieldtype {
 		return $this->replace_tag($data, $params, $tagdata);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -156,8 +146,6 @@ class Select_ft extends OptionFieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

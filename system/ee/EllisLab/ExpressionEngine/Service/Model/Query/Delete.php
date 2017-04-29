@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\BelongsTo;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Delete Query
  *

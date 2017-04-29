@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine RSS Parser Factory Class
  *
@@ -27,8 +25,6 @@ class EE_RSS_Parser {
 		require_once(APPPATH.'libraries/simplepie/idn/idna_convert.class.php');
 		require_once(APPPATH.'libraries/SimplePie_cache_driver.php');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Create a SimplePie object

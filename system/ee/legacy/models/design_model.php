@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Design Model
  *
@@ -92,10 +90,6 @@ class Design_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// ------------------------------------------------------------------------
-
-
-
 	/**
 	 * 	Fetch Templates in a specified group
 	 */
@@ -122,8 +116,6 @@ class Design_model extends CI_Model {
 		return $query->result_array();
 	}
 
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 *	Template Access Restrictions

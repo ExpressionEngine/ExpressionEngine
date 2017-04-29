@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Conditional Token Class
  *

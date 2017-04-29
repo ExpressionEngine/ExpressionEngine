@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Metaweblog API Module
  *
@@ -27,8 +25,6 @@ class Metaweblog_api_upd {
 		ee()->load->dbforge();
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -138,8 +134,6 @@ class Metaweblog_api_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -164,8 +158,6 @@ class Metaweblog_api_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

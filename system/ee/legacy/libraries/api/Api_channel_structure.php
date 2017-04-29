@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Structure API Class
  *
@@ -35,8 +33,6 @@ class Api_channel_structure extends Api {
 		parent::__construct();
 		ee()->load->model('channel_model');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Channel Info
@@ -73,8 +69,6 @@ class Api_channel_structure extends Api {
 		return $query;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channels
 	 *
@@ -107,8 +101,6 @@ class Api_channel_structure extends Api {
 		$this->channels[$site_id] = $query;
 		return $query;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Channel
@@ -165,8 +157,6 @@ class Api_channel_structure extends Api {
 
 		return $channel_title;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Channel
@@ -451,8 +441,6 @@ class Api_channel_structure extends Api {
 		return $channel_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Modify Channel
 	 *
@@ -584,8 +572,6 @@ class Api_channel_structure extends Api {
 
 		return $channel_id;
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

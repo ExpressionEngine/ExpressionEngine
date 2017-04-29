@@ -16,8 +16,6 @@ use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesign
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Design Class
  *

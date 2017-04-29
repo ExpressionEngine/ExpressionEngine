@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine URL Helper
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Create a CP Path
@@ -41,8 +37,6 @@ function cp_url($path, $qs = '')
 	);
 	return $url->compile();
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Create URL Title
@@ -98,8 +92,6 @@ if ( ! function_exists('url_title'))
 	}
 }
 
-// --------------------------------------------------------------------
-
 /**
  * Anchor Link
  *
@@ -136,8 +128,6 @@ function anchor($uri = '', $title = '', $attributes = '')
 }
 
 
-// ------------------------------------------------------------------------
-
 /**
  * Site URL
  *
@@ -156,8 +146,6 @@ if ( ! function_exists('site_url'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Base URL
  *
@@ -173,8 +161,6 @@ if ( ! function_exists('base_url'))
 		return ee()->config->slash_item('base_url');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Current URL
@@ -192,8 +178,6 @@ if ( ! function_exists('current_url'))
 		return ee()->config->site_url(ee()->uri->uri_string());
 	}
 }
-
-// ------------------------------------------------------------------------
 /**
  * URL String
  *
@@ -210,8 +194,6 @@ if ( ! function_exists('uri_string'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Index page
  *
@@ -227,8 +209,6 @@ if ( ! function_exists('index_page'))
 		return ee()->config->item('index_page');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Anchor Link - Pop-up version
@@ -280,8 +260,6 @@ if ( ! function_exists('anchor_popup'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Mailto Link
  *
@@ -307,8 +285,6 @@ if ( ! function_exists('mailto'))
 		return '<a href="mailto:'.$email.'"'.$attributes.'>'.$title.'</a>';
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Encoded Mailto Link
@@ -420,8 +396,6 @@ if ( ! function_exists('safe_mailto'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Auto-linker
  *
@@ -490,8 +464,6 @@ if ( ! function_exists('auto_link'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Prep URL
  *
@@ -520,8 +492,6 @@ if ( ! function_exists('prep_url'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Header Redirect
@@ -572,8 +542,6 @@ if ( ! function_exists('redirect'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Parse out the attributes
  *
@@ -614,7 +582,5 @@ if ( ! function_exists('_parse_attributes'))
 		return $att;
 	}
 }
-
-// --------------------------------------------------------------------
 
 // EOF

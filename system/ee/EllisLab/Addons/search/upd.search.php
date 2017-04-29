@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Search Module
  *
@@ -72,8 +70,6 @@ class Search_upd {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -102,8 +98,6 @@ class Search_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

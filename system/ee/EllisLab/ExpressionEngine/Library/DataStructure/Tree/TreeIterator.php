@@ -26,8 +26,6 @@ class TreeIterator extends \RecursiveArrayIterator {
 		return ! $this->current()->isLeaf();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Override RecursiveArrayIterator's get child method to skip
 	 * ahead into the children array and not try to iterate over the

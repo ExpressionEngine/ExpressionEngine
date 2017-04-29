@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Logging Class
  *
@@ -50,8 +48,6 @@ class EE_Log {
 			$this->_date_fmt = $config['log_date_format'];
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write Log File

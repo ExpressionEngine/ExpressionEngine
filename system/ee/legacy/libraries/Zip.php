@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Zip Compression Class
  *
@@ -43,8 +41,6 @@ class EE_Zip  {
 		$this->now = time();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Directory
 	 *
@@ -69,8 +65,6 @@ class EE_Zip  {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *	Get file/directory modification time
 	 *
@@ -89,8 +83,6 @@ class EE_Zip  {
 
 		return $time;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Directory
@@ -138,8 +130,6 @@ class EE_Zip  {
 		$this->entries++;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Data to Zip
 	 *
@@ -170,8 +160,6 @@ class EE_Zip  {
 			$this->_add_data($filepath, $data, $file_data['file_mtime'], $file_data['file_mdate']);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Data to Zip
@@ -225,8 +213,6 @@ class EE_Zip  {
 		$this->file_num++;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Read the contents of a file and add it to the zip
 	 *
@@ -254,8 +240,6 @@ class EE_Zip  {
 		}
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Read a directory and add it to the zip.
@@ -311,8 +295,6 @@ class EE_Zip  {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the Zip file
 	 *
@@ -338,8 +320,6 @@ class EE_Zip  {
 		return $zip_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write File to the specified directory
 	 *
@@ -364,8 +344,6 @@ class EE_Zip  {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Download
 	 *
@@ -389,8 +367,6 @@ class EE_Zip  {
 
 		force_download($filename, $zip_content);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize Data

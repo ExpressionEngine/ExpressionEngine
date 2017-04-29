@@ -13,8 +13,6 @@ use InvalidArgumentException;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Mime Class
  *

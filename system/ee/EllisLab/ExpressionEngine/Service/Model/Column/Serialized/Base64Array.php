@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Base64 Encoded Typed Column that defaults to an
  * empty array.

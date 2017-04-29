@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -46,8 +44,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Changes column type for `total_entries` and `total_comments` in the
 	 * members table from smallint to mediumint to match the columns in the
@@ -69,8 +65,6 @@ class Updater {
 			)
 		);
 	}
-
-	// ---------------------------------------------------------------------
 
 	/**
 	 * Clean up the menu and quicklink items so there's no XSS funny business
@@ -121,8 +115,6 @@ class Updater {
 		return implode("\n", $lines);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * update Session table
 	 *
@@ -151,8 +143,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update the security_hashes table to convert ip_address to session_id
 	 */
@@ -173,8 +163,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 }
 /* END CLASS */
 

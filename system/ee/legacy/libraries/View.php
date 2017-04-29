@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config Class
  *
@@ -71,8 +69,6 @@ class View {
 		ee()->output->set_output($rendered_view);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extend a template or view
 	 *
@@ -90,8 +86,6 @@ class View {
 
 		$this->_disable_up = $disable;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Disable a view feature
@@ -114,8 +108,6 @@ class View {
 		$this->_disable_up = array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if a view featuer is disabled
 	 *
@@ -127,8 +119,6 @@ class View {
 		return in_array($which, $this->_disabled);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Head Title
 	 *
@@ -138,8 +128,6 @@ class View {
 	{
 		return '<title>' . strip_tags($title) . ' | ExpressionEngine</title>'.PHP_EOL;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Script tag
@@ -166,8 +154,6 @@ class View {
 
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Head Link
@@ -197,8 +183,6 @@ class View {
 		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets success or error message to display on page load
 	 *
@@ -224,8 +208,6 @@ class View {
 
 		$this->set_alert('inline', $message_array, $flashdata);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Populates the alerts view array based on the alert type
@@ -265,8 +247,6 @@ class View {
 		$alert->now();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets variables for defining a meta-refresh tag
 	 *
@@ -288,8 +268,6 @@ class View {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get themes URL from supplied system path
 	 *
@@ -308,8 +286,6 @@ class View {
 		return ee()->config->item('theme_folder_url') . 'cp/' . $theme_name . '/';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clear the class
 	 *
@@ -323,11 +299,7 @@ class View {
 		$this->_disabled = array();
 		$this->_disable_up = array();
 	}
-
-	// --------------------------------------------------------------------
 	// Template Data Getters and Setters
-	// --------------------------------------------------------------------
-
 	public function __set($key, $value)
 	{
 		$this->_data[$key] = $value;

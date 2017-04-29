@@ -10,8 +10,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Blacklist Module
  *
@@ -59,8 +57,6 @@ class Blacklist_mcp {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Blacklist Homepage
@@ -134,8 +130,6 @@ class Blacklist_mcp {
 		return ee('View')->make('blacklist:index')->render($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write .htaccess File
 	 *
@@ -204,8 +198,6 @@ class Blacklist_mcp {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write .htaccess File
@@ -317,8 +309,6 @@ class Blacklist_mcp {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Blacklist
 	 *
@@ -336,8 +326,6 @@ class Blacklist_mcp {
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Whitelist
 	 *
@@ -354,8 +342,6 @@ class Blacklist_mcp {
 			->defer();
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
-
-	// --------------------------------------------------------------------
 
 	public function save_lists()
 	{
@@ -479,8 +465,6 @@ class Blacklist_mcp {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Whitelisted Items
 	 *
@@ -561,8 +545,6 @@ class Blacklist_mcp {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Download and update ExpressionEngine.com Black- or Whitelist

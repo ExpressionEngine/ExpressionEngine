@@ -16,8 +16,6 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Design\Routes Class
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Search Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/xml_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Sanitize Search Terms

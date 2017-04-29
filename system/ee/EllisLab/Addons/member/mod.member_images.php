@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * Member Management Module
  *
@@ -94,8 +92,6 @@ class Member_images extends Member {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Signature
 	 */
@@ -148,8 +144,6 @@ class Member_images extends Member {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Avatar Edit Form
@@ -298,8 +292,6 @@ class Member_images extends Member {
 			);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Browse Avatars
 	 */
@@ -406,8 +398,6 @@ class Member_images extends Member {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Select Avatar From  Library
 	 */
@@ -467,8 +457,6 @@ class Member_images extends Member {
 								);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * List all Images in a Folder
 	 */
@@ -502,8 +490,6 @@ class Member_images extends Member {
 	    return $avatars;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Upload Avatar or Profile Photo
 	 */
@@ -511,8 +497,6 @@ class Member_images extends Member {
 	{
 		return $this->_upload_image('avatar');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Upload Photo
@@ -522,8 +506,6 @@ class Member_images extends Member {
 		return $this->_upload_image('photo');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Upload Signature
 	 */
@@ -531,8 +513,6 @@ class Member_images extends Member {
 	{
 		return $this->_upload_image('sig_img');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Upload Image
@@ -571,8 +551,6 @@ class Member_images extends Member {
 									 )
 								);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Photo Edit Form

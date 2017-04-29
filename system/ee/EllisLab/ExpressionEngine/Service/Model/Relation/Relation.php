@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\MetaDataReader;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Relation
  *

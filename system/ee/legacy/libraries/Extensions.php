@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Extensions Class
  *
@@ -68,8 +66,6 @@ class EE_Extensions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Universal caller, was used for php 4 compatibility
 	 *
@@ -82,8 +78,6 @@ class EE_Extensions {
 
 		return call_user_func_array(array($this, 'call'), func_get_args());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extension Hook Method
@@ -244,8 +238,6 @@ class EE_Extensions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Active Hook Info
 	 *
@@ -263,8 +255,6 @@ class EE_Extensions {
 
 		return $this->extensions[$hook];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Active Hook

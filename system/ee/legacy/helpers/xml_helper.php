@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter XML Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/xml_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Convert Reserved XML characters to Entities
@@ -58,7 +54,5 @@ if ( ! function_exists('xml_convert'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 // EOF

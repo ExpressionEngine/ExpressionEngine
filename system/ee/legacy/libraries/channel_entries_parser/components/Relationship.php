@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Relationships)
  *
@@ -31,8 +29,6 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	{
 		return empty($pre->channel()->rfields) OR in_array('relationships', $disabled);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set up the relationship parser's tree and data pre-caching.
@@ -66,8 +62,6 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the relationship fields in one fell swoop.

@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine File Module
  *
@@ -41,8 +39,6 @@ class File {
 		}
 
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Files tag
@@ -85,8 +81,6 @@ class File {
 
 		return $this->return_data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Build SQL Query
@@ -245,8 +239,6 @@ class File {
 		return ee()->db->get('files');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Fetch categories
 	  */
@@ -347,8 +339,6 @@ class File {
 		unset($this->cat_array);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Process Subcategories
 	  */
@@ -363,8 +353,6 @@ class File {
 			}
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch Valid Thumbs
@@ -396,8 +384,6 @@ class File {
 		}
 
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Parse file entries
@@ -530,8 +516,6 @@ class File {
 		$this->return_data = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $parse_data);
 	}
 
-	// -------------------------------------------------------------------------
-
 	function is_viewable_image($file)
 	{
 		$viewable_image = array('bmp','gif','jpeg','jpg','jpe','png');
@@ -542,8 +526,6 @@ class File {
 		$viewable = (in_array($ext, $viewable_image)) ? TRUE : FALSE;
 		return $viewable;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets File Metadata- may move to db
@@ -573,8 +555,6 @@ class File {
 		return $filedata;
 	}
 
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  * Fetch Disable Parameter

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Site Model
  *
@@ -62,8 +60,6 @@ class Site_model extends CI_Model {
 		return $this->db->get('sites');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the site system preferences
 	 *
@@ -82,8 +78,6 @@ class Site_model extends CI_Model {
 
 		return $this->db->get('sites');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Updates the site system preferences

@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Form Session Class
  *
@@ -77,8 +75,6 @@ class Channel_form_session extends EE_Session
 			$this->userdata['assigned_channels'][$row->channel_id] = $row->channel_title;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * userdata

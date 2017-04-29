@@ -14,8 +14,6 @@ use CP_Controller;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Member Profile Auth Settings Class
  *

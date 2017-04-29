@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Database Driver Class
  *
@@ -84,8 +82,6 @@ class CI_DB_driver {
 		log_message('debug', 'Database Driver Class Initialized');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize Database Settings
 	 *
@@ -98,8 +94,6 @@ class CI_DB_driver {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set client character set
@@ -117,8 +111,6 @@ class CI_DB_driver {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * The name of the platform in use (mysql, mssql, etc...)
 	 *
@@ -129,8 +121,6 @@ class CI_DB_driver {
 	{
 		return $this->dbdriver;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Database Version Number.  Returns a string containing the
@@ -152,8 +142,6 @@ class CI_DB_driver {
 
 		return $this->query($sql)->row('ver');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Execute the query
@@ -243,8 +231,6 @@ class CI_DB_driver {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load the result drivers
 	 *
@@ -266,8 +252,6 @@ class CI_DB_driver {
 
 		return $driver;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Simple Query
@@ -291,8 +275,6 @@ class CI_DB_driver {
 		return $this->_execute($sql);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Disable Transactions
 	 * This permits transactions to be disabled at run-time.
@@ -304,8 +286,6 @@ class CI_DB_driver {
 	{
 		$this->trans_enabled = FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Enable/disable Transaction Strict Mode
@@ -321,8 +301,6 @@ class CI_DB_driver {
 	{
 		$this->trans_strict = is_bool($mode) ? $mode : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Start Transaction
@@ -346,8 +324,6 @@ class CI_DB_driver {
 
 		$this->trans_begin($test_mode);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Complete Transaction
@@ -390,8 +366,6 @@ class CI_DB_driver {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Lets you retrieve the transaction flag to determine if it has failed
 	 *
@@ -402,8 +376,6 @@ class CI_DB_driver {
 	{
 		return $this->_trans_status;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Compile Bindings
@@ -446,8 +418,6 @@ class CI_DB_driver {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determines if a query is a "write" type.
 	 *
@@ -464,8 +434,6 @@ class CI_DB_driver {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Calculate the aggregate query elapsed time
 	 *
@@ -478,8 +446,6 @@ class CI_DB_driver {
 		return number_format($this->benchmark, $decimals);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the total number of queries
 	 *
@@ -491,8 +457,6 @@ class CI_DB_driver {
 		return $this->query_count;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the last query that was executed
 	 *
@@ -503,8 +467,6 @@ class CI_DB_driver {
 	{
 		return $this->last_query;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * "Smart" Escape String
@@ -534,8 +496,6 @@ class CI_DB_driver {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Escape LIKE String
 	 *
@@ -550,8 +510,6 @@ class CI_DB_driver {
 	{
 		return $this->escape_str($str, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Primary
@@ -574,8 +532,6 @@ class CI_DB_driver {
 
 		return current($fields);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns an array of table names
@@ -622,8 +578,6 @@ class CI_DB_driver {
 		return $this->data_cache['table_names'];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determine if a particular table exists
 	 * @access	public
@@ -633,8 +587,6 @@ class CI_DB_driver {
 	{
 		return ( ! in_array($this->_protect_identifiers($table_name, TRUE, FALSE, FALSE), $this->list_tables())) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch MySQL Field Names
@@ -688,8 +640,6 @@ class CI_DB_driver {
 		return $this->data_cache['field_names'][$table];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determine if a particular field exists
 	 * @access	public
@@ -701,8 +651,6 @@ class CI_DB_driver {
 	{
 		return ( ! in_array($field_name, $this->list_fields($table_name))) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns an object with field data
@@ -727,8 +675,6 @@ class CI_DB_driver {
 		return $query->field_data();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate an insert string
 	 *
@@ -751,8 +697,6 @@ class CI_DB_driver {
 		return $this->_insert($this->_protect_identifiers($table, TRUE, NULL, FALSE), $fields, $values);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert statement
 	 *
@@ -767,8 +711,6 @@ class CI_DB_driver {
 	{
 		return 'INSERT INTO '.$table.' ('.implode(', ', $keys).') VALUES ('.implode(', ', $values).')';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate an update string
@@ -820,8 +762,6 @@ class CI_DB_driver {
 		return $this->_update($this->_protect_identifiers($table, TRUE, NULL, FALSE), $fields, $dest);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update statement
 	 *
@@ -844,8 +784,6 @@ class CI_DB_driver {
 			.($this->ar_limit ? ' LIMIT '.$this->ar_limit : '');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Tests whether the string has an SQL operator
 	 *
@@ -863,8 +801,6 @@ class CI_DB_driver {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Enables a native PHP function to be run, using a platform agnostic wrapper.
@@ -899,8 +835,6 @@ class CI_DB_driver {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Enable Query Caching
 	 *
@@ -914,8 +848,6 @@ class CI_DB_driver {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Disable Query Caching
@@ -932,8 +864,6 @@ class CI_DB_driver {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Close DB Connection
 	 *
@@ -944,8 +874,6 @@ class CI_DB_driver {
 	{
 		$this->connection->close();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display an error message
@@ -1015,8 +943,6 @@ class CI_DB_driver {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Protect Identifiers
 	 *
@@ -1030,8 +956,6 @@ class CI_DB_driver {
 	{
 		return $this->_protect_identifiers($item, $prefix_single);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Protect Identifiers
@@ -1204,8 +1128,6 @@ class CI_DB_driver {
 
 		return $item.$alias;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Escape the SQL Identifiers

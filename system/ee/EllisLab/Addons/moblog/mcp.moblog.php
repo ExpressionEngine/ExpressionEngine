@@ -10,8 +10,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Moblog Module
  *
@@ -54,8 +52,6 @@ class Moblog_mcp {
 EOT;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Moblog Homepage
@@ -624,8 +620,6 @@ EOT;
 			'body'       => ee('View')->make('moblog:create')->render($vars)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * JavaScript filtering code

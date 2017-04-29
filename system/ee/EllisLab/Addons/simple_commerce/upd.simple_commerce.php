@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Simple Commerce Module
  *
@@ -121,8 +119,6 @@ class Simple_commerce_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -161,8 +157,6 @@ class Simple_commerce_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

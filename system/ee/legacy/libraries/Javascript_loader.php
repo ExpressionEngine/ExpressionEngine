@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Javascript Loader Class
  *
@@ -27,8 +25,6 @@ class Javascript_loader {
 	{
 		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Combo Loader
@@ -109,8 +105,6 @@ class Javascript_loader {
 		ee()->output->set_header('Content-Length: '.strlen($contents));
 		ee()->output->set_output($contents);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Headers

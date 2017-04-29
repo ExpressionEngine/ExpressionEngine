@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -49,8 +47,6 @@ class Updater {
 	{
 		ee()->smartforge->drop_table('member_homepage');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Remove save_tmpl_files from exp_sites

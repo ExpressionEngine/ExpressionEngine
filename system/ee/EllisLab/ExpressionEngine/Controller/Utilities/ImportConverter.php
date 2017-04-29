@@ -12,8 +12,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Import Converter Class
  *
@@ -122,8 +120,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Not Alpha or Numeric
 	 *
@@ -154,8 +150,6 @@ class ImportConverter extends Utilities {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep Enclosure
 	 *
@@ -176,8 +170,6 @@ class ImportConverter extends Utilities {
 
 		return $enclosure;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * For mapping to existing member fields
@@ -258,8 +250,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->render('utilities/import/fieldmap', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Datafile to Array
 	 *
@@ -296,8 +286,6 @@ class ImportConverter extends Utilities {
 
 		return $fields;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pair Fields Form
@@ -380,8 +368,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/fieldmap-confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create XML File
@@ -466,8 +452,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->render('utilities/import/code-output', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Downloads generated XML from import converter
 	 *
@@ -482,8 +466,6 @@ class ImportConverter extends Utilities {
 		);
 		exit;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Unique Required

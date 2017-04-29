@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * This class doesn't do much work.  Most of the heavy lifting is done via
  * libraries/Core.php, which runs automatically behind the scenes.

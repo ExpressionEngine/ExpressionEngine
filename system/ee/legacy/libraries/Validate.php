@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Validation Class
  *
@@ -63,8 +61,6 @@ class EE_Validate {
 		if ($this->require_cpw == TRUE)		$this->password_safety_check();
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Password safety check
 	 *
@@ -96,8 +92,6 @@ class EE_Validate {
 			$this->errors[] = ee()->lang->line('invalid_password');
 		}
 	}
-
-	// ----------------------------------------------------------------
 
 	/**
 	 * Validate Username
@@ -169,8 +163,6 @@ class EE_Validate {
 		}
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Validate screen name
 	 */
@@ -205,8 +197,6 @@ class EE_Validate {
 			return $this->errors[] = ee()->lang->line('screen_name_taken');
 		}
 	}
-
-	// ----------------------------------------------------------------
 
 	/**
 	 * Validate Password
@@ -317,8 +307,6 @@ class EE_Validate {
 		}
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Validate Email
 	 *
@@ -386,8 +374,6 @@ class EE_Validate {
 		}
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Show Errors
 	 *
@@ -407,8 +393,6 @@ class EE_Validate {
 			return $msg;
 		 }
 	}
-
-	// ----------------------------------------------------------------
 
   	/**
 	 * Lookup word in dictionary file

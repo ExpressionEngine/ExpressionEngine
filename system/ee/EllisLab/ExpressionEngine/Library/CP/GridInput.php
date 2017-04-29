@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Library\CP;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Grid Input Class
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *
@@ -28,8 +26,6 @@ class Spam_upd {
 	{
 		ee()->load->dbforge();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -117,8 +113,6 @@ class Spam_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller

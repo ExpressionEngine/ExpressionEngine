@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine XID Marker Interface
  *
@@ -23,8 +21,6 @@
  * @link		https://ellislab.com
  */
 interface Strict_XID {}
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Core Security Class
@@ -104,8 +100,6 @@ class EE_Security {
 		$str = preg_replace('/\.+[\/\\\]/', '', $str);
 		return stripslashes(str_replace($bad, '', $str));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Check and Validate Form CSRF tokens

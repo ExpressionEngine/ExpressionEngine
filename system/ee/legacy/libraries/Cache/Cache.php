@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Caching Class
  *
@@ -120,8 +118,6 @@ class Cache extends EE_Driver_Library {
 		ee()->load->library('localize');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
@@ -135,8 +131,6 @@ class Cache extends EE_Driver_Library {
 	{
 		return $this->{$this->_adapter}->get($key, $scope);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Save value to cache
@@ -152,8 +146,6 @@ class Cache extends EE_Driver_Library {
 	{
 		return $this->{$this->_adapter}->save($key, $data, $ttl, $scope);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Delete from cache
@@ -173,8 +165,6 @@ class Cache extends EE_Driver_Library {
 		return $this->{$this->_adapter}->delete($key, $scope);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean the cache
 	 *
@@ -187,8 +177,6 @@ class Cache extends EE_Driver_Library {
 		return $this->{$this->_adapter}->clean($scope);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Info
 	 *
@@ -198,8 +186,6 @@ class Cache extends EE_Driver_Library {
 	{
 		return $this->{$this->_adapter}->cache_info();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get Cache Metadata
@@ -213,8 +199,6 @@ class Cache extends EE_Driver_Library {
 	{
 		return $this->{$this->_adapter}->get_metadata($key, $scope);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Is the requested driver supported in this environment?
@@ -234,8 +218,6 @@ class Cache extends EE_Driver_Library {
 		return $support[$driver];
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns the name of the adapter currently in use
 	 *
@@ -245,8 +227,6 @@ class Cache extends EE_Driver_Library {
 	{
 		return $this->_adapter;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns a unique key fit for using on a memory-based cache driver
@@ -282,8 +262,6 @@ class Cache extends EE_Driver_Library {
 
 		return $prefix.':'.$key;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns HTML form for the Caching Driver setting on the General

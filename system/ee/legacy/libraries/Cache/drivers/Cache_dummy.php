@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Dummy Caching Class
  *
@@ -34,8 +32,6 @@ class EE_Cache_dummy extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Save
 	 *
@@ -49,8 +45,6 @@ class EE_Cache_dummy extends CI_Driver {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Delete from Cache
 	 *
@@ -62,8 +56,6 @@ class EE_Cache_dummy extends CI_Driver {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean the cache
 	 *
@@ -73,8 +65,6 @@ class EE_Cache_dummy extends CI_Driver {
 	{
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Cache Info
@@ -86,8 +76,6 @@ class EE_Cache_dummy extends CI_Driver {
 		 return FALSE;
 	 }
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Get Cache Metadata
 	 *
@@ -98,8 +86,6 @@ class EE_Cache_dummy extends CI_Driver {
 	{
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Is this caching driver supported on the system?

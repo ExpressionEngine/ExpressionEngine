@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\Association\ToMany;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine HasMany Relation
  *

@@ -14,8 +14,6 @@ use CP_Controller;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Outgoing Email Settings Class
  *
@@ -230,8 +228,6 @@ class Email extends Settings {
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * A validation callback for required email configuration strings only

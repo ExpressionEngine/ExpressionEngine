@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *

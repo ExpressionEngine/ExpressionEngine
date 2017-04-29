@@ -28,8 +28,6 @@ class Api_channel_fields extends Api {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set settings
 	 *
@@ -50,8 +48,6 @@ class Api_channel_fields extends Api {
 		$this->settings[$field_id] = $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get settings
 	 *
@@ -61,8 +57,6 @@ class Api_channel_fields extends Api {
 	{
 		return isset($this->settings[$field_id]) ? $this->settings[$field_id] : array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get global settings
@@ -85,8 +79,6 @@ class Api_channel_fields extends Api {
 		return array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch all fieldtypes
 	 *
@@ -97,8 +89,6 @@ class Api_channel_fields extends Api {
 		return $this->_fetch_fts('get_files');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch defined custom fields
 	 *
@@ -108,8 +98,6 @@ class Api_channel_fields extends Api {
 	{
 		return $this->_fetch_fts('get_installed');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch fieldtypes
@@ -141,8 +129,6 @@ class Api_channel_fields extends Api {
 
 		return $fts;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch defined custom fields
@@ -218,8 +204,6 @@ class Api_channel_fields extends Api {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Include a custom field handler
 	 *
@@ -281,8 +265,6 @@ class Api_channel_fields extends Api {
 
 		return $this->field_types[$field_type];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup or re-initialize field type handler
@@ -356,8 +338,6 @@ class Api_channel_fields extends Api {
 		return ($return_obj) ? $this->field_types[$field_type] : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Instantiate a fieldtype handler
 	 *
@@ -380,8 +360,6 @@ class Api_channel_fields extends Api {
 
 		return $obj;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Route the call to the proper handler
@@ -413,8 +391,6 @@ class Api_channel_fields extends Api {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Checks for the method
 	 *
@@ -435,8 +411,6 @@ class Api_channel_fields extends Api {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Adds new custom field table fields
 	 *
@@ -451,8 +425,6 @@ class Api_channel_fields extends Api {
 	{
 		$this->set_datatype($field_id, $data, array(), TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete custom field table fields
@@ -507,8 +479,6 @@ class Api_channel_fields extends Api {
 			ee()->dbforge->drop_column($data_table, $col);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Edit custom field table fields
@@ -604,8 +574,6 @@ class Api_channel_fields extends Api {
 
 		$this->set_datatype($field_id, $data, $old_fields, FALSE, $type_change, $overrides);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set data type
@@ -721,8 +689,6 @@ class Api_channel_fields extends Api {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get custom field info from modules
 	 *
@@ -768,8 +734,6 @@ class Api_channel_fields extends Api {
 		return $required;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get custom field info from modules
@@ -828,8 +792,6 @@ class Api_channel_fields extends Api {
 		return $set;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get custom field info from modules
@@ -909,8 +871,6 @@ class Api_channel_fields extends Api {
 		return $set;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Include Tab File
 	 *
@@ -952,8 +912,6 @@ class Api_channel_fields extends Api {
 
 		return $paths[$name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clean Module Names
@@ -997,8 +955,6 @@ class Api_channel_fields extends Api {
 		return $array_to_clean;
 	}
 
-	// --------------------------------------------------------------------
-
 	function get_modules()
 	{
 		if (isset($this->custom_field_modules))
@@ -1023,8 +979,6 @@ class Api_channel_fields extends Api {
 		$this->custom_field_modules = $custom_field_modules;
 		return $custom_field_modules;
 	}
-
-	// --------------------------------------------------------------------
 
 	function setup_entry_settings($channel_id, $entry_data, $bookmarklet = FALSE)
 	{
@@ -1185,8 +1139,6 @@ class Api_channel_fields extends Api {
 
 		return array_merge($deft_fields, $field_settings);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * update/add field
@@ -1523,8 +1475,6 @@ class Api_channel_fields extends Api {
 		return $native_settings['field_id'];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates an array of field settings to pass to a fieldtype's validate_settings
 	 * and save_settings methods
@@ -1550,8 +1500,6 @@ class Api_channel_fields extends Api {
 		return $posted;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * A utility to get fieldtype-specific settings from the $field_data array
 	 * supplied by Api_channel_fields::update_field()
@@ -1573,8 +1521,6 @@ class Api_channel_fields extends Api {
 
 		return (isset($field_data[$key])) ? $field_data[$key] : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * gets variables to be passed to the admin/field_edit view
@@ -1805,8 +1751,6 @@ class Api_channel_fields extends Api {
 		return $vars;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets field pair template tags for a specified field name in specified
 	 * tag data with an optional prefix
@@ -1872,8 +1816,6 @@ class Api_channel_fields extends Api {
 		return $pfield_chunk;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets information for a single variable field in a template
 	 *
@@ -1904,8 +1846,6 @@ class Api_channel_fields extends Api {
 
 		return $field_info;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Notify any extensions of incoming field type data

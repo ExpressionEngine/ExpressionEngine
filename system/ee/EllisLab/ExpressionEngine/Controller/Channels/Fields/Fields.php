@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelField;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Channel\Fields\Fields Class
  *

@@ -16,8 +16,6 @@ use EllisLab\ExpressionEngine\Model\Email\EmailCache;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Communicate Class
  *
@@ -42,8 +40,6 @@ class Communicate extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Index
@@ -392,8 +388,6 @@ class Communicate extends Utilities {
 		ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Batch Email Send
 	 *
@@ -454,8 +448,6 @@ class Communicate extends Utilities {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetches an email from the cache and presents it to the user for re-sending
 	 *
@@ -481,8 +473,6 @@ class Communicate extends Utilities {
 
 		$this->index($email);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sends a single email handling errors
@@ -531,8 +521,6 @@ class Communicate extends Utilities {
 		return $debug_msg;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sends multiple emails handling errors
 	 *
@@ -579,8 +567,6 @@ class Communicate extends Utilities {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delivers an email
 	 *
@@ -618,8 +604,6 @@ class Communicate extends Utilities {
 
 		return ee()->email->send(FALSE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Formats the message of an email based on the text format type
@@ -676,8 +660,6 @@ class Communicate extends Utilities {
 
 		return $subject;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * View sent emails
@@ -828,8 +810,6 @@ class Communicate extends Utilities {
 		ee()->cp->render('utilities/communicate/sent', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check for recipients
 	 *
@@ -848,8 +828,6 @@ class Communicate extends Utilities {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Attachment Handler
@@ -885,8 +863,6 @@ class Communicate extends Utilities {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Attachments

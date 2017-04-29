@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Admin Model
  *
@@ -36,8 +34,6 @@ class Admin_model extends CI_Model {
 		return $encodings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Installed Language Packs
 	 *
@@ -52,8 +48,6 @@ class Admin_model extends CI_Model {
 		ee()->load->model('language_model');
 		return ee()->lang->language_pack_names();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Theme List
@@ -97,8 +91,6 @@ class Admin_model extends CI_Model {
 		return $themes;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Template List
 	 *
@@ -132,8 +124,6 @@ class Admin_model extends CI_Model {
 		return $templates;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get HTML Buttons
 	 *
@@ -163,8 +153,6 @@ class Admin_model extends CI_Model {
 		return $buttons;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete HTML Button
 	 *
@@ -178,8 +166,6 @@ class Admin_model extends CI_Model {
 		$this->db->where('id', $id);
 		$this->db->delete();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update HTML Buttons
@@ -205,8 +191,6 @@ class Admin_model extends CI_Model {
 		}
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Unique Upload Name

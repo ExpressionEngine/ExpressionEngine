@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Utilities Class
  *

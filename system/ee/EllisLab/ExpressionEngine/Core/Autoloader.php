@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Core;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Autoloader
  *

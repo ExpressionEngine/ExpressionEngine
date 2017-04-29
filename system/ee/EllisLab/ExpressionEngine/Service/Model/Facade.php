@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Facade
  *

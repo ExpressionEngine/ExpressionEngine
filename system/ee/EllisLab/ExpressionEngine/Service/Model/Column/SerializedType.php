@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Serialized Typed Column
  *

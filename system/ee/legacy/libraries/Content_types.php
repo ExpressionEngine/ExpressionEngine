@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Content Types Class
  *
@@ -21,8 +19,6 @@
 class EE_content_types {
 
 	private $_table = 'content_types';
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a content types
@@ -49,8 +45,6 @@ class EE_content_types {
 
 		$this->_notify_fieldtypes('register_content_type', $param);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Remove a content type
@@ -81,8 +75,6 @@ class EE_content_types {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve a list of all content types
 	 */
@@ -93,8 +85,6 @@ class EE_content_types {
 			ee()->db->select('name')->get($this->_table)->result_array()
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Notify all fieldtypes of the content type change.

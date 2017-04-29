@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Model\Menu\MenuSet;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Menu Manager Class
  *

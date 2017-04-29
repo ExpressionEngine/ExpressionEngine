@@ -26,8 +26,6 @@ use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnno
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Conditional Lexer Class
  *

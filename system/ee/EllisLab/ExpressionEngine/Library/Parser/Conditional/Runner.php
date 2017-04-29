@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Conditional Runner Class
  *

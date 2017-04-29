@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Benchmark Class
  *
@@ -25,8 +23,6 @@ class EE_Benchmark {
 
 	var $marker = array();
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set a benchmark marker
 	 *
@@ -41,8 +37,6 @@ class EE_Benchmark {
 	{
 		$this->marker[$name] = microtime();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Calculates the time difference between two marked points.
@@ -80,8 +74,6 @@ class EE_Benchmark {
 
 		return number_format(($em + $es) - ($sm + $ss), $decimals);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Memory Usage

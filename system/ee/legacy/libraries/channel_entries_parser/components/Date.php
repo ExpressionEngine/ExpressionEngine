@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Dates)
  *
@@ -32,8 +30,6 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Fulfilling the requirements of the abstract class we inherit from.
 	 *
@@ -45,8 +41,6 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 	{
 		return array();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the default date fields.

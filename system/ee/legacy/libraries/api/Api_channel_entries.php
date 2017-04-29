@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Entries API Class
  *
@@ -42,8 +40,6 @@ class Api_channel_entries extends Api {
 		ee()->load->model('channel_entries_model');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize
 	 *
@@ -61,8 +57,6 @@ class Api_channel_entries extends Api {
 
 		parent::initialize($params);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Saves a new or existing channel entry
@@ -222,8 +216,6 @@ class Api_channel_entries extends Api {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Submit New Entry
 	 *
@@ -239,8 +231,6 @@ class Api_channel_entries extends Api {
 		return $this->save_entry($data, $channel_id, NULL, $autosave);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update entry
 	 *
@@ -255,8 +245,6 @@ class Api_channel_entries extends Api {
 	{
 		return $this->save_entry($data, NULL, $entry_id, $autosave);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Autosave Entry
@@ -289,8 +277,6 @@ class Api_channel_entries extends Api {
 
 		return $this->save_entry($data, NULL, $data['entry_id'], TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete entry
@@ -536,8 +522,6 @@ class Api_channel_entries extends Api {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Entry exists
 	 *
@@ -566,8 +550,6 @@ class Api_channel_entries extends Api {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get errors
 	 *
@@ -586,8 +568,6 @@ class Api_channel_entries extends Api {
 
 		return (count($this->errors) > 0) ? $this->errors : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Trigger Hook
@@ -610,8 +590,6 @@ class Api_channel_entries extends Api {
 			return $orig_var;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set errors
@@ -649,8 +627,6 @@ class Api_channel_entries extends Api {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Base Prep
@@ -722,8 +698,6 @@ class Api_channel_entries extends Api {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Channel Preferences
 	 *
@@ -753,8 +727,6 @@ class Api_channel_entries extends Api {
 		$this->c_prefs['channel_title']		= ascii_to_entities($query->row('channel_title'));
 		$this->c_prefs['notify_address']	= ($query->row('channel_notify')  == 'y' AND $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Channel Switch
@@ -792,8 +764,6 @@ class Api_channel_entries extends Api {
 		}
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get module data
@@ -850,8 +820,6 @@ class Api_channel_entries extends Api {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check for data errors
@@ -1057,8 +1025,6 @@ class Api_channel_entries extends Api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate url title
 	 *
@@ -1138,8 +1104,6 @@ class Api_channel_entries extends Api {
 		return $url_title;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep date field
 	 *
@@ -1193,8 +1157,6 @@ class Api_channel_entries extends Api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep multi field
 	 *
@@ -1218,8 +1180,6 @@ class Api_channel_entries extends Api {
 
 		//unset($data['field_id_'.$row['field_id']]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep data
@@ -1336,8 +1296,6 @@ class Api_channel_entries extends Api {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Entry
@@ -1484,8 +1442,6 @@ class Api_channel_entries extends Api {
 			ee()->notifications->send_admin_notification($this->c_prefs['notify_address'], $this->channel_id, $this->entry_id);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Entry
@@ -1638,8 +1594,6 @@ class Api_channel_entries extends Api {
 		ee()->db->delete('category_posts', array('entry_id' => $this->entry_id));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Recursive ASCII to entities.
 	 *
@@ -1666,8 +1620,6 @@ class Api_channel_entries extends Api {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sync Related
@@ -1749,8 +1701,6 @@ class Api_channel_entries extends Api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Pass third party fields off for processing
 	 *
@@ -1766,8 +1716,6 @@ class Api_channel_entries extends Api {
 		$module_data = ee()->api_channel_fields->get_module_methods($methods, $params);
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Custom Field Query

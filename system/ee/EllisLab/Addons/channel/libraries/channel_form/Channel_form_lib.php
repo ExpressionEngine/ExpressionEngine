@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.php';
 
 /**
@@ -96,8 +94,6 @@ class Channel_form_lib
 		ee()->set('channel_form', $this);
 		ee()->lang->loadfile('channel_form');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates the entry form
@@ -814,8 +810,6 @@ class Channel_form_lib
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build the javascript output
 	 *
@@ -1141,8 +1135,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create the custom field variables rows
 	 *
@@ -1233,8 +1225,6 @@ GRID_FALLBACK;
 		return $custom_field_variables;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add global and field errors
 	 *
@@ -1297,8 +1287,6 @@ GRID_FALLBACK;
 
 		return $conditional_errors;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates or edits an entry
@@ -1946,8 +1934,6 @@ GRID_FALLBACK;
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Converts text-based template parameter to boolean
 	 *
@@ -1969,8 +1955,6 @@ GRID_FALLBACK;
 
 		return $default;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Filters and sorts the categories
@@ -2025,8 +2009,6 @@ GRID_FALLBACK;
 		return array_merge($categories);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieves current channel data
 	 *
@@ -2038,8 +2020,6 @@ GRID_FALLBACK;
 		return $this->channel->getProperty($key);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clears the library's entry
 	 *
@@ -2049,8 +2029,6 @@ GRID_FALLBACK;
 	{
 		$this->entry = FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display a custom field
@@ -2096,8 +2074,6 @@ GRID_FALLBACK;
 		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry('field_id_'.$field_id)));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieves current entry data
 	 *
@@ -2112,8 +2088,6 @@ GRID_FALLBACK;
 		}
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load categories
@@ -2167,8 +2141,6 @@ GRID_FALLBACK;
 
 		$this->categories = $categories;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load channel
@@ -2226,8 +2198,6 @@ GRID_FALLBACK;
 		$this->fetch_custom_fields();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load custom fields
 	 *
@@ -2248,8 +2218,6 @@ GRID_FALLBACK;
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load entry
@@ -2321,8 +2289,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load logged out member data
 	 *
@@ -2360,8 +2326,6 @@ GRID_FALLBACK;
 			$this->logged_out_group_id = $query->row('group_id');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load settings
@@ -2412,8 +2376,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load site
 	 *
@@ -2432,8 +2394,6 @@ GRID_FALLBACK;
 			$this->site_id = ($site_id) ?: ee()->config->item('site_id');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load statuses
@@ -2484,8 +2444,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a form attribute to entry form
 	 *
@@ -2512,8 +2470,6 @@ GRID_FALLBACK;
 
 		$this->_form_attributes[$name] = $value;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a hidden field to entry form
@@ -2627,8 +2583,6 @@ GRID_FALLBACK;
 	}
 
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * get Meta vars
 	 *
@@ -2699,8 +2653,6 @@ GRID_FALLBACK;
 		return $this->custom_fields[$field_name];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve field data
 	 * Returns array of all field data if no key specified
@@ -2733,8 +2685,6 @@ GRID_FALLBACK;
 		return array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the field id of a field
 	 *
@@ -2746,8 +2696,6 @@ GRID_FALLBACK;
 		return $this->get_field_data($field_name, 'field_id');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the field name of a field
 	 *
@@ -2758,8 +2706,6 @@ GRID_FALLBACK;
 	{
 		return (isset($this->custom_field_names[$field_id])) ? $this->custom_field_names[$field_id] : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets a field's options
@@ -3020,8 +2966,6 @@ GRID_FALLBACK;
 		return $options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets a field's settings
 	 *
@@ -3039,8 +2983,6 @@ GRID_FALLBACK;
 		return $field_settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the type of a field
 	 *
@@ -3051,8 +2993,6 @@ GRID_FALLBACK;
 	{
 		return $this->get_field_data($field_name, 'field_type');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize the library properties
@@ -3237,8 +3177,6 @@ GRID_FALLBACK;
 	*/
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replaces a tag
 	 *
@@ -3282,8 +3220,6 @@ GRID_FALLBACK;
 		return ee()->api_channel_fields->apply('replace_tag', array('data' => $data, 'params' => $params, 'tagdata' => $tagdata));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clean an ID
 	 *
@@ -3301,8 +3237,6 @@ GRID_FALLBACK;
 
 		return ($data) ? $data : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	public function send_ajax_response($msg, $error = FALSE)
 	{
@@ -3328,8 +3262,6 @@ GRID_FALLBACK;
 		ee()->output->send_ajax_response($msg, $error);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * swap_conditionals
 	 *
@@ -3347,8 +3279,6 @@ GRID_FALLBACK;
 
 		return $tagdata;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * swap_var_pair
@@ -3395,8 +3325,6 @@ GRID_FALLBACK;
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * unserialize
 	 *
@@ -3415,8 +3343,6 @@ GRID_FALLBACK;
 
 		return (is_array($data)) ? $data : array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * SAEF URL Title Javascript
@@ -3527,8 +3453,6 @@ SCRIPT;
 		return $ret;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assigns proper group id to logged out users

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Encryption Class
  *
@@ -42,8 +40,6 @@ class EE_Encrypt {
 		log_message('debug', "Encrypt Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch the encryption key
 	 *
@@ -74,8 +70,6 @@ class EE_Encrypt {
 		return md5($key);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the encryption key
 	 *
@@ -87,8 +81,6 @@ class EE_Encrypt {
 	{
 		$this->encryption_key = $key;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Encode
@@ -110,8 +102,6 @@ class EE_Encrypt {
 	{
 		return ee('Encrypt')->encode($string, $key);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Decode
@@ -137,8 +127,6 @@ class EE_Encrypt {
 
 		return $decoded;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Encode from Legacy
@@ -193,8 +181,6 @@ class EE_Encrypt {
 		return base64_encode($this->mcrypt_encode($dec, $key));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * XOR Encode
 	 *
@@ -225,8 +211,6 @@ class EE_Encrypt {
 		return $this->_xor_merge($enc, $key);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * XOR Decode
 	 *
@@ -251,8 +235,6 @@ class EE_Encrypt {
 		return $dec;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * XOR key + string Combiner
 	 *
@@ -275,8 +257,6 @@ class EE_Encrypt {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Encrypt using Mcrypt
 	 *
@@ -291,8 +271,6 @@ class EE_Encrypt {
 		$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 		return $this->_add_cipher_noise($init_vect.mcrypt_encrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), $key);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Decrypt using Mcrypt
@@ -317,8 +295,6 @@ class EE_Encrypt {
 		$data = ($this->mb_available) ? mb_substr($data, $init_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $init_size);
 		return rtrim(mcrypt_decrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), "\0");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Adds permuted noise to the IV + encrypted data to protect
@@ -351,8 +327,6 @@ class EE_Encrypt {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Removes permuted noise from the IV + encrypted data, reversing
@@ -391,8 +365,6 @@ class EE_Encrypt {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the Mcrypt Cipher
 	 *
@@ -405,8 +377,6 @@ class EE_Encrypt {
 		$this->_mcrypt_cipher = $cipher;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the Mcrypt Mode
 	 *
@@ -418,8 +388,6 @@ class EE_Encrypt {
 	{
 		$this->_mcrypt_mode = $mode;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Mcrypt cipher Value
@@ -437,8 +405,6 @@ class EE_Encrypt {
 		return $this->_mcrypt_cipher;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Mcrypt Mode Value
 	 *
@@ -455,8 +421,6 @@ class EE_Encrypt {
 		return $this->_mcrypt_mode;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the Hash type
 	 *
@@ -469,8 +433,6 @@ class EE_Encrypt {
 		$this->_hash_type = ($type != 'sha1' AND $type != 'md5') ? 'sha1' : $type;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Hash encode a string
 	 *
@@ -482,8 +444,6 @@ class EE_Encrypt {
 	{
 		return ($this->_hash_type == 'sha1') ? $this->sha1($str) : md5($str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate an SHA1 Hash
@@ -504,8 +464,6 @@ class EE_Encrypt {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a signed hash value using hash_hmac()
 	 *
@@ -522,8 +480,6 @@ class EE_Encrypt {
 	{
 		return ee('Encrypt')->sign($data, $key, $algo);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Verify the signed data hash

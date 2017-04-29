@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * Member Management Module
  *
@@ -1413,8 +1411,6 @@ class Member_settings extends Member {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Username/Password Update

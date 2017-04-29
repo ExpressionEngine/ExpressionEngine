@@ -12,8 +12,6 @@ use \EllisLab\Addons\spam\Library\Vectorizer;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *

@@ -85,8 +85,6 @@ Class Rss_parser {
 		);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Map Feed Items to array
 	 * @param SimplePie $feed SimplePie feed object

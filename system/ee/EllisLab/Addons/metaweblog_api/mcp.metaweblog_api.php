@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Metaweblog API Module
  *
@@ -37,8 +35,6 @@ class Metaweblog_api_mcp {
 	{
 		ee()->load->helper('form');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Control Panel Index
@@ -132,8 +128,6 @@ class Metaweblog_api_mcp {
 		return ee('View')->make('metaweblog_api:index')->render($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Configuration(s)
 	 *
@@ -168,8 +162,6 @@ class Metaweblog_api_mcp {
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create
 	 *
@@ -179,8 +171,6 @@ class Metaweblog_api_mcp {
 	{
 		return $this->modify('new');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Modify Configuration
@@ -561,9 +551,6 @@ class Metaweblog_api_mcp {
 			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 		}
 	}
-
-	// ------------------------------------------------------------------------
-
 
 	/** -----------------------------------------------------------
 	/**  JavaScript filtering code

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Member Field Model
  *
@@ -104,8 +102,6 @@ class Member_field_model extends CI_Model {
 		return $data;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Creates a field settings array to pass to db forge add/modify_column
 	 * @param  Integer	$id		ID of the field
@@ -136,8 +132,6 @@ class Member_field_model extends CI_Model {
 		return $column_data;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Delete a Member Field
 	 * @param  Integer $m_field_id Member Field ID
@@ -156,8 +150,6 @@ class Member_field_model extends CI_Model {
 		ee()->load->dbforge();
 		ee()->dbforge->drop_column($this->table_data, 'm_field_id_'.$m_field_id);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Get field information for one or all fields

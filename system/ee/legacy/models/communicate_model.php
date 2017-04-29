@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Communicate Model
  *
@@ -62,8 +60,6 @@ class Communicate_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Cached Member Groups
 	 *
@@ -79,8 +75,6 @@ class Communicate_model extends CI_Model {
 		$this->db->where('cache_id', $id);
 		return $this->db->get('email_cache_mg');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Save Cache Data
@@ -118,8 +112,6 @@ class Communicate_model extends CI_Model {
 		return $cache_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Email Cache
 	 *
@@ -143,8 +135,6 @@ class Communicate_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Emails
 	 *
@@ -164,8 +154,6 @@ class Communicate_model extends CI_Model {
 		$this->db->where_in('cache_id', $cache_ids);
 		$this->db->delete(array('email_cache', 'email_cache_mg', 'email_cache_ml'));
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // End class Communicate_model

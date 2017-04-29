@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Formatter\Text Class
  *

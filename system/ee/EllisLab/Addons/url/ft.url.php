@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine URL Fieldtype Class
  *
@@ -89,8 +87,6 @@ class Url_Ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Field
 	 *
@@ -101,8 +97,6 @@ class Url_Ft extends EE_Fieldtype {
 	{
 		return $this->prepForStorage($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display Field
@@ -128,8 +122,6 @@ class Url_Ft extends EE_Fieldtype {
 		return form_input($field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace Tag
 	 *
@@ -142,8 +134,6 @@ class Url_Ft extends EE_Fieldtype {
 	{
 		return ee()->functions->encode_ee_tags($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display Settings
@@ -193,8 +183,6 @@ class Url_Ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Settings
 	 *
@@ -213,8 +201,6 @@ class Url_Ft extends EE_Fieldtype {
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -225,8 +211,6 @@ class Url_Ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Schemes
@@ -256,8 +240,6 @@ class Url_Ft extends EE_Fieldtype {
 		return $protocols;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep For Storage
 	 *
@@ -269,8 +251,6 @@ class Url_Ft extends EE_Fieldtype {
 		// disable $double_encode so entities don't bubble out of control on edits
 		return htmlspecialchars($url, ENT_QUOTES, 'UTF-8', FALSE);
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

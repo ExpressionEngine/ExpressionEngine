@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Pages Module
  *
@@ -62,8 +60,6 @@ class Pages_mcp {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Pages Main page

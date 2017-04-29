@@ -10,8 +10,6 @@ namespace EllisLab\Addons\Spam\Service;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *
@@ -38,8 +36,6 @@ class Training {
 		$this->kernel = $this->getKernel($kernel);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Close the shared memory segment if we're using it.
 	 *
@@ -53,8 +49,6 @@ class Training {
 			shmop_close($this->shm_id);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load the classifier object from memory if available, otherwise construct
@@ -100,8 +94,6 @@ class Training {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deletes the shared memory segment containing our classifier
 	 *
@@ -134,8 +126,6 @@ class Training {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a new classifier based on our training data.
 	 *
@@ -155,8 +145,6 @@ class Training {
 
 		return ee('spam:Classifier', $training, $collection, $stop_words);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns an array of all the parameters for a class
@@ -207,8 +195,6 @@ class Training {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the total document count for the current kernel

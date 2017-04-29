@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter HTML Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/html_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Heading
@@ -41,8 +37,6 @@ if ( ! function_exists('heading'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Unordered List
  *
@@ -61,8 +55,6 @@ if ( ! function_exists('ul'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Ordered List
  *
@@ -80,8 +72,6 @@ if ( ! function_exists('ol'))
 		return _list('ol', $list, $attributes);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Generates the list
@@ -157,8 +147,6 @@ if ( ! function_exists('_list'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Generates HTML BR tags based on number supplied
  *
@@ -173,8 +161,6 @@ if ( ! function_exists('br'))
 		return str_repeat("<br />", $num);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Image
@@ -228,8 +214,6 @@ if ( ! function_exists('img'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Doctype
  *
@@ -257,8 +241,6 @@ if ( ! function_exists('doctype'))
 		return FALSE;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Link
@@ -338,8 +320,6 @@ if ( ! function_exists('link_tag'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Generates meta tags from an array of key/values
  *
@@ -380,8 +360,6 @@ if ( ! function_exists('meta'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Generates non-breaking space entities based on number supplied

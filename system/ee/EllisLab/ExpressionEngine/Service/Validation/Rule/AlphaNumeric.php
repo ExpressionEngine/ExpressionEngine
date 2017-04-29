@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Alphabetical and Numeric Validation Rule
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine XML Parser Cache Class
  *
@@ -27,8 +25,6 @@ class XML_Cache {
 	var $children;
 
 }
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine XML Parser Class
  *

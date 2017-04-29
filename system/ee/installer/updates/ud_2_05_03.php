@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -45,8 +43,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Changes column type for the `site_system_preferences` column in
 	 * `sites` from TEXT to MEDIUMTEXT
@@ -63,8 +59,6 @@ class Updater {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Truncates `security_hashes` and `throttle` tables in response to bug

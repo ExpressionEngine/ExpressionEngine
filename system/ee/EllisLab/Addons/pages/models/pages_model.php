@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Pages Model
  *
@@ -38,8 +36,6 @@ class Pages_model extends CI_Model {
 		return $this->db->get();
     }
 
-// ------------------------------------------------------------------------
-
     /**
      * Fetch Pages Configuration
      *
@@ -56,8 +52,6 @@ class Pages_model extends CI_Model {
         return $this->db->get('pages_configuration');
 	}
 
-// ------------------------------------------------------------------------
-
 	/**
 	 * Fetch Site Pages
 	 *
@@ -71,8 +65,6 @@ class Pages_model extends CI_Model {
 		$site = ee('Model')->get('Site', $this->config->item('site_id'))->first();
 		return $site->site_pages;
 	}
-
-// ------------------------------------------------------------------------
 
 	/**
 	 * Update Pages Configuration
@@ -97,8 +89,6 @@ class Pages_model extends CI_Model {
 			$this->db->insert('pages_configuration', $config);
 		}
 	}
-
-// ------------------------------------------------------------------------
 
     /**
      * Update Pages Array

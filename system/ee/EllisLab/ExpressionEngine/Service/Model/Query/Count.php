@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Count Query
  *

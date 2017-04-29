@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Search Module
  *
@@ -302,8 +300,6 @@ class Search {
 		return ee()->functions->redirect($path);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Build Meta Array
 	 *
@@ -331,8 +327,6 @@ class Search {
 
 		return ee('Encrypt')->encode($meta, md5(ee()->db->username.ee()->db->password));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * get Meta vars
@@ -367,8 +361,6 @@ class Search {
 				$this->_meta['where'] = 'all';
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/** ---------------------------------------
 	/**  Create the search query
@@ -1105,8 +1097,6 @@ class Search {
 		return $sql;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/** ----------------------------------------
 	/**  Total search results
 	/** ----------------------------------------*/
@@ -1372,8 +1362,6 @@ class Search {
 		return ee()->TMPL->tagdata;
 	}
 
-	// --------------------------------------------------------------------------
-
 	/**
 	 * Callback called by Channel Entries parser so we can parse search results
 	 * tags
@@ -1473,8 +1461,6 @@ class Search {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------------
-
 	/**
 	 * Retrieve the Member Path tags for a set of tagdata
 	 *
@@ -1506,8 +1492,6 @@ class Search {
 		return $this->m_paths;
 	}
 
-	// --------------------------------------------------------------------------
-
 	/**
 	 * Get the number of tags in a given tagdata
 	 * @param  String $tag_name The name of the tag to look for
@@ -1520,8 +1504,6 @@ class Search {
 		return substr_count($tagdata, LD.$tag_name.RD);
 	}
 
-	// --------------------------------------------------------------------------
-
 	/**
 	 * For when preg_quote is too much, we just need to escape replacement patterns
 	 * @param  string	String to escape
@@ -1531,8 +1513,6 @@ class Search {
 	{
 		return strtr($string, array('\\' => '\\\\', '$' => '\$'));
 	}
-
-	// --------------------------------------------------------------------------
 
 	/**
 	 * Simple Search Form

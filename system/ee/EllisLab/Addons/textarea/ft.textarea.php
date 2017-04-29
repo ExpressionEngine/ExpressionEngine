@@ -10,8 +10,6 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Textarea Fieldtype Class
  *
@@ -30,14 +28,10 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
@@ -181,8 +175,6 @@ class Textarea_ft extends EE_Fieldtype {
 		return form_textarea($params);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -205,8 +197,6 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -217,8 +207,6 @@ class Textarea_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -341,14 +329,10 @@ class Textarea_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return array_merge($this->save_settings($data), $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -362,8 +346,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		return array_intersect_key($all, $defaults);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

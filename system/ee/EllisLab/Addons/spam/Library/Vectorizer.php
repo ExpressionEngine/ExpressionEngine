@@ -10,8 +10,6 @@ namespace EllisLab\Addons\Spam\Library;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Document Vectorizer Interface
  *

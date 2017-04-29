@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Security Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/security_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * XSS Filtering
@@ -37,8 +33,6 @@ if ( ! function_exists('xss_clean'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Sanitize Filename
  *
@@ -53,8 +47,6 @@ if ( ! function_exists('sanitize_filename'))
 		return ee()->security->sanitize_filename($filename);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Strip Image Tags
@@ -73,8 +65,6 @@ if ( ! function_exists('strip_image_tags'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Convert PHP tags to entities

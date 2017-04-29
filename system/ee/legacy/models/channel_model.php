@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Model
  *
@@ -85,8 +83,6 @@ class Channel_model extends CI_Model {
 		return $this->db->get('channels');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channel Menu
 	 *
@@ -106,8 +102,6 @@ class Channel_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Channel Info
@@ -129,8 +123,6 @@ class Channel_model extends CI_Model {
 		return $this->db->get('channels');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channel Statuses
 	 *
@@ -146,8 +138,6 @@ class Channel_model extends CI_Model {
 		$this->db->order_by('status_order');
 		return $this->db->get('statuses');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Channel Fields
@@ -172,8 +162,6 @@ class Channel_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Required Fields
 	 *
@@ -191,8 +179,6 @@ class Channel_model extends CI_Model {
 		$this->db->order_by('field_order');
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get most recent entry/comment id
@@ -247,8 +233,6 @@ class Channel_model extends CI_Model {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Channel
 	 *
@@ -263,8 +247,6 @@ class Channel_model extends CI_Model {
 		$this->db->insert('channels', $data);
 		return $this->db->insert_id();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Channel
@@ -281,8 +263,6 @@ class Channel_model extends CI_Model {
 		$this->db->update('channels', $data);
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Channel
@@ -395,8 +375,6 @@ class Channel_model extends CI_Model {
 		$this->stats->update_comment_stats('', '', TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Comment Expiration
 	 *
@@ -423,8 +401,6 @@ class Channel_model extends CI_Model {
 		$this->db->update('channel_titles');
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Allowed Comments
@@ -454,8 +430,6 @@ class Channel_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clear Versioning Data
 	 *
@@ -469,8 +443,6 @@ class Channel_model extends CI_Model {
 		$this->db->delete('entry_versioning');
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generates SQL for a field search
@@ -500,8 +472,6 @@ class Channel_model extends CI_Model {
 		return $this->$search_method($terms, $col_name, $site_id);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate the SQL for a numeric comparison search
 	 * <, >, <=, >= operators
@@ -529,8 +499,6 @@ class Channel_model extends CI_Model {
 		$site_id = ($site_id !== FALSE) ? "( wd.site_id = {$site_id} AND " : '(';
 		return $site_id.implode(' AND ', $terms).')';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the SQL for an exact query in field search.
@@ -591,8 +559,6 @@ class Channel_model extends CI_Model {
 
 		return $add_search.' '.$conj.' (' . $site_id . $col_name . ' = "")';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate the SQL for a LIKE query in field search.

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Number Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/number_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Formats a numbers as bytes, based on size, and adds the appropriate suffix
@@ -63,8 +59,6 @@ if ( ! function_exists('byte_format'))
 		return number_format($num, $precision).' '.$unit;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Parse INI style size into bytes

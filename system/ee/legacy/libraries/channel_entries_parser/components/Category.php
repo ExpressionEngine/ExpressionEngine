@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Categories)
  *
@@ -32,8 +30,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		return in_array('categories', $disabled) OR ! $pre->has_tag_pair('categories');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Before the parser runs, this will gather all category tag pairs that
 	 * need processing.
@@ -48,8 +44,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		return $this->_get_cat_chunks($tagdata, $pre->prefix());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find any {category} {/category} tag pair chunks in the template and
@@ -77,8 +71,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 		return $cat_chunk;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the category pairs with the correct data.

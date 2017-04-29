@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Relation Graph
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP CSS Loading Class
  *
@@ -70,8 +68,6 @@ class Css extends CI_Controller {
 		return $this->_load_css_file($path, $file);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load CSS File
 	 *
@@ -105,8 +101,6 @@ class Css extends CI_Controller {
 	}
 
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Control Panel Global Extension
 	 *
@@ -132,8 +126,6 @@ class Css extends CI_Controller {
 		$this->output->set_header('Content-Length: '.strlen($str));
 		$this->output->set_output($str);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

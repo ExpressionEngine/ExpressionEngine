@@ -10,8 +10,6 @@ use EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Menu Class
  *
@@ -32,8 +30,6 @@ class EE_Menu {
 	{
 		ee()->load->library('api');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate Menu
@@ -107,8 +103,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Site List
 	 *
@@ -140,8 +134,6 @@ class EE_Menu {
 
 		return $menu;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get channels the user currently has access to for putting into the
@@ -202,8 +194,6 @@ class EE_Menu {
 
 		return $menu;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the develop menu
@@ -308,8 +298,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Future home of quick links
 	 *
@@ -356,8 +344,6 @@ class EE_Menu {
 		return $tabs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
@@ -387,8 +373,6 @@ class EE_Menu {
 			);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Quick Tabs

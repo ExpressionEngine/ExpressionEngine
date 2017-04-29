@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine RSS Module
  *
@@ -213,8 +211,6 @@ class Rss {
 		return ee()->TMPL->tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup the meta query
 	 *
@@ -329,8 +325,6 @@ class Rss {
 		return array($query, $last_update, $edit_date, $entry_date);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Feed Variables Query
 	 *
@@ -349,8 +343,6 @@ class Rss {
 							->where_in('c.site_id', ee()->TMPL->site_ids)
 							->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Empty feed handler
@@ -383,8 +375,6 @@ class Rss {
 
 		return $empty_feed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Default empty feed

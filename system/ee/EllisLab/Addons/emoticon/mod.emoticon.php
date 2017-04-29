@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Emotion Module
  *
@@ -40,8 +38,6 @@ class Emoticon {
 
 		$this->table_layout();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Table-based emoticon layout

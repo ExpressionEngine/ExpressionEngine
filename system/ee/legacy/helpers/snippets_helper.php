@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Segment Helper
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Required field indicator
@@ -35,8 +31,6 @@ function required($blurb = '')
 
 	return "<em class='required'>* </em>".$blurb."\n";
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Get Layout Preview Links

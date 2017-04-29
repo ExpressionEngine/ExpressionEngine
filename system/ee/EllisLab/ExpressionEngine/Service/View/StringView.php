@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\View;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine String View Class
  *

@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Core\Provider;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine FormatterFactory Class
  *

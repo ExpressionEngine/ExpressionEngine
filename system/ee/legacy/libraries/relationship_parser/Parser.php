@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Relationship Data Parser Class
  *
@@ -33,8 +31,6 @@ class EE_Relationship_data_parser {
 		$this->_categories = $categories;
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Entry data accessor.
 	 *
@@ -48,8 +44,6 @@ class EE_Relationship_data_parser {
 		return $this->_entries[$id];
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Category data accessor.
 	 *
@@ -62,8 +56,6 @@ class EE_Relationship_data_parser {
 	{
 		return isset($this->_categories[$id]) ? $this->_categories[$id] : NULL;
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Take the tagdata from a single entry, and the entry's id
@@ -99,8 +91,6 @@ class EE_Relationship_data_parser {
 
 		return $tagdata;
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Parse an individual tree node. Will loop through each chunk that
@@ -233,8 +223,6 @@ class EE_Relationship_data_parser {
 		return $tagdata;
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Call the channel entries parser for this node and its tagchunk.
 	 *
@@ -274,8 +262,6 @@ class EE_Relationship_data_parser {
 
 		return $this->cleanup_no_results_tag($node, $result);
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Find a node's no_results Tag
@@ -322,9 +308,6 @@ class EE_Relationship_data_parser {
 		return '';
 	}
 
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deletes the node tags from the given template and replace it with
 	 * the no_results tag if it exists.
@@ -361,8 +344,6 @@ class EE_Relationship_data_parser {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Removes leftover no_results tags from the node's template
 	 * after we've successfully parsed the node.
@@ -384,8 +365,6 @@ class EE_Relationship_data_parser {
 
 		return $tagdata;
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Process the parameters of this tag pair to figure out what data
@@ -590,8 +569,6 @@ class EE_Relationship_data_parser {
 		);
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Utility method to format the category array for processing by the
 	 * Channel Entries Parser's Category parser.  Renames required elements and
@@ -639,8 +616,6 @@ class EE_Relationship_data_parser {
 
 		return $categories;
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Utility method to do the row sorting in PHP.

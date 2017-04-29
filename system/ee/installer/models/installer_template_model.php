@@ -7,13 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 
 require_once(EE_APPPATH.'models/template_model.php');
 
-
-// ------------------------------------------------------------------------
 /**
  * ExpressionEngine Template Model
  *

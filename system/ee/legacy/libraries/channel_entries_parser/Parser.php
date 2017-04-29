@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser
  *
@@ -42,8 +40,6 @@ class EE_Channel_data_parser {
 		$this->_channel = $pre->channel();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preparser accessor
 	 *
@@ -53,8 +49,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_preparser;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parser channel accessor
@@ -66,8 +60,6 @@ class EE_Channel_data_parser {
 		return $this->_channel;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Iterator row accessor
 	 *
@@ -77,8 +69,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_row;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Data object accessor
@@ -97,8 +87,6 @@ class EE_Channel_data_parser {
 		return isset($data[$key]) ? $data[$key] : $default;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Iterator count accessor
 	 *
@@ -108,8 +96,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_count;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * TMPL->var_(pair|single) key accessor
@@ -121,8 +107,6 @@ class EE_Channel_data_parser {
 		return $this->_tag;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * TMPL->var_(pair|single) value accessor
 	 *
@@ -133,8 +117,6 @@ class EE_Channel_data_parser {
 		return $this->_tag_options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prefix accessor
 	 *
@@ -144,8 +126,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_prefix;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run the main parsing loop.
@@ -383,8 +363,6 @@ class EE_Channel_data_parser {
 		return $result;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Sends custom field data to fieldtypes before the entries loop runs.
 	 * This is particularly helpful to fieldtypes that need to query the database
@@ -442,8 +420,6 @@ class EE_Channel_data_parser {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prepare the row for conditionals
@@ -579,8 +555,6 @@ class EE_Channel_data_parser {
 
 		return $prefixed_cond;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is commenting on this row allowed?

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Spell Checking Class
  *
@@ -46,8 +44,6 @@ class EE_Spellcheck {
 
 		ee()->load->vars(array('spell_enabled' => $this->enabled));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Spellcheck Javascript
@@ -1118,8 +1114,6 @@ EOT;
 		return $r;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * iFrame

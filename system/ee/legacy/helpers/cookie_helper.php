@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Cookie Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/cookie_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Set cookie
@@ -45,8 +41,6 @@ if ( ! function_exists('set_cookie'))
 	}
 }
 
-// --------------------------------------------------------------------
-
 /**
  * Fetch an item from the COOKIE array
  *
@@ -69,8 +63,6 @@ if ( ! function_exists('get_cookie'))
 		return ee()->input->cookie($prefix.$index, $xss_clean);
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Delete a COOKIE

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update SmartForge Class
  *
@@ -25,8 +23,6 @@ class Smartforge {
 		ee()->load->dbforge();
 		ee()->load->helper('array');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create table
@@ -50,8 +46,6 @@ class Smartforge {
 
 		return ee()->dbforge->create_table($table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Rename table
@@ -82,8 +76,6 @@ class Smartforge {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Column Add
@@ -131,8 +123,6 @@ class Smartforge {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Column Drop
 	 *
@@ -163,8 +153,6 @@ class Smartforge {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Table Drop
 	 *
@@ -183,8 +171,6 @@ class Smartforge {
 
 		return ee()->dbforge->drop_table($table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Column Modify
@@ -260,8 +246,6 @@ class Smartforge {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert Set
 	 *
@@ -317,8 +301,6 @@ class Smartforge {
 		return FALSE;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Key
@@ -377,8 +359,6 @@ class Smartforge {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Drop Key

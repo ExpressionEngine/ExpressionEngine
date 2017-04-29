@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Header Class
  *

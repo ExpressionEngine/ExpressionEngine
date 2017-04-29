@@ -8,12 +8,8 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 require_once APPPATH.'libraries/relationship_parser/Exceptions.php';
 require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Relationship Class
@@ -104,8 +100,6 @@ class EE_Relationships_parser {
 	{
 		ee()->load->model('relationship_model');
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Get a relationship parser and query object, populated with the

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Entries Model
  *
@@ -20,8 +18,6 @@
  */
 class Channel_entries_model extends CI_Model {
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *
@@ -46,8 +42,6 @@ class Channel_entries_model extends CI_Model {
 		$query_result->free_result();
 		return $entries;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Entries
@@ -102,8 +96,6 @@ class Channel_entries_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch the channel data for one entry
 	 *
@@ -151,8 +143,6 @@ class Channel_entries_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get most recent entries
 	 *
@@ -197,8 +187,6 @@ class Channel_entries_model extends CI_Model {
 		$this->db->order_by('entry_date', 'DESC');
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get recent commented entries
@@ -245,8 +233,6 @@ class Channel_entries_model extends CI_Model {
 		return FALSE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prune Revisions

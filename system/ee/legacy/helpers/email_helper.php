@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Email Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/email_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Validate email address
@@ -34,8 +30,6 @@ if ( ! function_exists('valid_email'))
 		return (bool) filter_var($address, FILTER_VALIDATE_EMAIL);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Send an email

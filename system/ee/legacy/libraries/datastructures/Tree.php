@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /*
 
  THIS FILE CONTAINS:
@@ -18,8 +16,6 @@
  EE_TreeIterator - iteration helper (returned from EE_TreeNode::flat_iterator)
 
 */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Tree Factory Class
@@ -64,8 +60,6 @@ class EE_Tree {
 		return $this->_build_tree($data, $conf);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Flatten the tree to a list of data objects.
 	 *
@@ -83,8 +77,6 @@ class EE_Tree {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tree Builder
@@ -145,8 +137,6 @@ class EE_Tree {
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Tree Node Class
  *
@@ -179,8 +169,6 @@ class EE_TreeNode {
 		$this->children_names = array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve the payload data.
 	 *
@@ -203,8 +191,6 @@ class EE_TreeNode {
 
 		throw new InvalidArgumentException('Payload cannot be retrieved.');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Change the payload data.
@@ -236,8 +222,6 @@ class EE_TreeNode {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Post-process node cloning
 	 *
@@ -252,8 +236,6 @@ class EE_TreeNode {
 	}
 
 	// Public Setters
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a child node to the current node.
@@ -284,8 +266,6 @@ class EE_TreeNode {
 
 	// Getters
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the node's name
 	 *
@@ -296,8 +276,6 @@ class EE_TreeNode {
 		return $this->name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the node's payload
 	 *
@@ -307,8 +285,6 @@ class EE_TreeNode {
 	{
 		return $this->data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the node's depth relative to its root, where the root's
@@ -327,8 +303,6 @@ class EE_TreeNode {
 	}
 
 	// Traversal
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the tree's root node
@@ -350,8 +324,6 @@ class EE_TreeNode {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get all of the node's children
 	 *
@@ -361,8 +333,6 @@ class EE_TreeNode {
 	{
 		return $this->children;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the node's first child
@@ -374,8 +344,6 @@ class EE_TreeNode {
 		return $this->children[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the node's parent
 	 *
@@ -385,8 +353,6 @@ class EE_TreeNode {
 	{
 		return $this->parent;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get all of a node's siblings
@@ -413,8 +379,6 @@ class EE_TreeNode {
 
 	// Utility
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the node has parents
 	 *
@@ -425,8 +389,6 @@ class EE_TreeNode {
 		return ! isset($this->parent);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the node has children
 	 *
@@ -436,8 +398,6 @@ class EE_TreeNode {
 	{
 		return count($this->children) == 0;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Freeze the node
@@ -452,8 +412,6 @@ class EE_TreeNode {
 		$this->_frozen = TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get a child by name
 	 *
@@ -467,8 +425,6 @@ class EE_TreeNode {
 	{
 		return $this->children_names[$name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a subtree on this node.
@@ -488,8 +444,6 @@ class EE_TreeNode {
 		$root->parent = NULL;
 		return $root;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a full subtree copy from this node down.
@@ -513,8 +467,6 @@ class EE_TreeNode {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preorder Tree Iterator
 	 *
@@ -529,8 +481,6 @@ class EE_TreeNode {
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Postorder Tree Iterator
@@ -547,8 +497,6 @@ class EE_TreeNode {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Leaf Iterator
 	 *
@@ -564,8 +512,6 @@ class EE_TreeNode {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Breadth First Iterator
 	 *
@@ -579,8 +525,6 @@ class EE_TreeNode {
 			new EE_TreeIterator(array($this))
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set parent
@@ -599,8 +543,6 @@ class EE_TreeNode {
 		$this->parent = $parent;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Tree Iterator Class
@@ -624,8 +566,6 @@ class EE_TreeIterator extends RecursiveArrayIterator {
 		return ! $this->current()->is_leaf();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Override RecursiveArrayIterator's get child method to skip
 	 * ahead into the children array and not try to iterate over the
@@ -647,8 +587,6 @@ class EE_TreeIterator extends RecursiveArrayIterator {
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Breadth First Iterator Class
@@ -674,8 +612,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 		$this->_first_iterator = $it;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Current Iterator Entry
 	 *
@@ -686,8 +622,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 		return $this->_iterator->current();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Current Iterator Key
 	 *
@@ -697,8 +631,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 	{
 		return $this->_iterator->key();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Next Iterator Step
@@ -718,8 +650,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 		$this->_iterator->next();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Rewind the Iterator
 	 *
@@ -736,8 +666,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 		$this->_iterator->rewind();
 		$this->_iterator = $this->_first_iterator;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find a valid iterator entry if it exists
@@ -766,8 +694,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get internal iterator
 	 *
@@ -781,8 +707,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 	{
 		return $this->_iterator();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get iteration depth

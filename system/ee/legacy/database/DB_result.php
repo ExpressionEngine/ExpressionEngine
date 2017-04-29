@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Database Result Class
  *
@@ -47,8 +45,6 @@ class CI_DB_result {
 		return ($type == 'object') ? $this->result_object() : $this->result_array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Query result.  "object" version.
 	 *
@@ -79,8 +75,6 @@ class CI_DB_result {
 		return $this->result_object;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Query result.  "array" version.
 	 *
@@ -98,8 +92,6 @@ class CI_DB_result {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Query result.  Acts as a wrapper function for the following functions.
@@ -131,8 +123,6 @@ class CI_DB_result {
 		return ($type == 'object') ? $this->row_object($n) : $this->row_array($n);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assigns an item into a particular column slot
 	 *
@@ -163,8 +153,6 @@ class CI_DB_result {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a single result row - object version
 	 *
@@ -188,8 +176,6 @@ class CI_DB_result {
 		return $result[$this->current_row];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a single result row - array version
 	 *
@@ -201,8 +187,6 @@ class CI_DB_result {
 		return (array) $this->row_object($n);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the "first" row
@@ -222,8 +206,6 @@ class CI_DB_result {
 		return $result[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the "last" row
 	 *
@@ -241,8 +223,6 @@ class CI_DB_result {
 
 		return $result[count($result) - 1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the "next" row
@@ -267,8 +247,6 @@ class CI_DB_result {
 		return $result[$this->current_row];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the "previous" row
 	 *
@@ -291,8 +269,6 @@ class CI_DB_result {
 
 		return $result[$this->current_row];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * The following functions are normally overloaded by the identically named

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Router Class
  *
@@ -41,8 +39,6 @@ class EE_Router {
 		$this->uri = load_class('URI', 'core');
 		log_message('debug', "Router Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the route mapping
@@ -125,8 +121,6 @@ class EE_Router {
 		$this->uri->_reindex_segments();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the default controller
 	 *
@@ -161,8 +155,6 @@ class EE_Router {
 
 		log_message('debug', "No URI present. Default controller set.");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the Route
@@ -203,8 +195,6 @@ class EE_Router {
 		// identical to $this->uri->segments
 		$this->uri->rsegments = $segments;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validates the supplied segments.  Attempts to determine the path to
@@ -352,8 +342,6 @@ class EE_Router {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Parse Routes
 	 *
@@ -399,8 +387,6 @@ class EE_Router {
 		$this->_set_request($this->uri->segments);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the class name
 	 *
@@ -412,8 +398,6 @@ class EE_Router {
 	{
 		$this->class = str_replace(array('/', '.'), '', $class);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the current class
@@ -437,8 +421,6 @@ class EE_Router {
 		return $class;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Set the method name
 	 *
@@ -450,8 +432,6 @@ class EE_Router {
 	{
 		$this->method = $method;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Fetch the current method
@@ -480,8 +460,6 @@ class EE_Router {
 		return $method;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Set the directory name
 	 *
@@ -501,8 +479,6 @@ class EE_Router {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Fetch the sub-directory (if any) that contains the requested controller class
 	 *
@@ -513,8 +489,6 @@ class EE_Router {
 	{
 		return $this->directory;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Set the controller overrides

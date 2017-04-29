@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Redis Caching Class
  *
@@ -28,8 +26,6 @@ class EE_Cache_redis extends CI_Driver
 	 */
 	protected $_redis;
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
@@ -45,8 +41,6 @@ class EE_Cache_redis extends CI_Driver
 
 		return is_array($data) ? $data[0] : FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Save value to cache
@@ -68,8 +62,6 @@ class EE_Cache_redis extends CI_Driver
 			? $this->_redis->setex($key, $ttl, $data)
 			: $this->_redis->set($key, $data);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Delete from cache
@@ -93,8 +85,6 @@ class EE_Cache_redis extends CI_Driver
 		return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean cache for the current scope
 	 *
@@ -109,8 +99,6 @@ class EE_Cache_redis extends CI_Driver
 		) === 1);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Info
 	 *
@@ -121,8 +109,6 @@ class EE_Cache_redis extends CI_Driver
 	{
 		return $this->_redis->info();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get Cache Metadata
@@ -156,8 +142,6 @@ class EE_Cache_redis extends CI_Driver
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Check if Redis driver is supported
 	 *
@@ -180,8 +164,6 @@ class EE_Cache_redis extends CI_Driver
 			return FALSE;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Setup Redis config and connection
@@ -239,8 +221,6 @@ class EE_Cache_redis extends CI_Driver
 
 		return $result;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Class destructor

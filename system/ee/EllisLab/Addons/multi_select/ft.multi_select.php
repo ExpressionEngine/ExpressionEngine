@@ -10,8 +10,6 @@ require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Multi-Select Fieldtype Class
  *
@@ -40,8 +38,6 @@ class Multi_select_ft extends OptionFieldtype {
 		parent::__construct();
 		ee()->load->helper('custom_field');
 	}
-
-	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
@@ -99,14 +95,10 @@ class Multi_select_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->display_field(form_prep($data));
 	}
-
-	// --------------------------------------------------------------------
 
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
@@ -149,8 +141,6 @@ class Multi_select_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -172,8 +162,6 @@ class Multi_select_ft extends OptionFieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

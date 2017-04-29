@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -47,8 +45,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fixes an issue where the caching driver setting could not be set via
@@ -114,8 +110,6 @@ class Updater {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Load all routes and resave to get rid of md5 hashes
 	 *
@@ -146,8 +140,6 @@ class Updater {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Change all date formatting columns to show full years

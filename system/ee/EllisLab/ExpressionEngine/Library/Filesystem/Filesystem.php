@@ -12,8 +12,6 @@ use FilesystemIterator;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Filesystem Library
  *

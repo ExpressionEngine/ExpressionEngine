@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Parse Node Class
  *
@@ -47,8 +45,6 @@ class ParseNode extends EE_TreeNode {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve the field name
 	 *
@@ -62,8 +58,6 @@ class ParseNode extends EE_TreeNode {
 		$field_name = ':'.$this->name;
 		return substr($field_name, strrpos($field_name, ':') + 1);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set a parameter
@@ -80,8 +74,6 @@ class ParseNode extends EE_TreeNode {
 		$this->data['params'][$key] = $value;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get a parameter
 	 *
@@ -95,8 +87,6 @@ class ParseNode extends EE_TreeNode {
 	{
 		return isset($this->data['params'][$key]) ? $this->data['params'][$key] : $default;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Make the node aware of a relationship
@@ -134,8 +124,6 @@ class ParseNode extends EE_TreeNode {
 		$this->_dirty = TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Entry id accessor
 	 *
@@ -171,8 +159,6 @@ class ParseNode extends EE_TreeNode {
 		return $ids;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * At the end of the channel entries parsing loop we need to recurse
 	 * into the child tags of our tree. The relationship_parser would need
@@ -193,8 +179,6 @@ class ParseNode extends EE_TreeNode {
 		return $tagdata;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Parse Node Class

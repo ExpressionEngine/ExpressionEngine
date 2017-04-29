@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Input Class
  *
@@ -58,8 +56,6 @@ class EE_Input {
 		$this->_sanitize_globals();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
  	 * Delete a Cookie
 	 *
@@ -82,8 +78,6 @@ class EE_Input {
 
 		return $this->_set_cookie($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set a Cookie
@@ -245,8 +239,6 @@ class EE_Input {
 			$data['path'], $data['domain'], $data['secure_cookie'], $data['httponly']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch from array
 	 *
@@ -273,8 +265,6 @@ class EE_Input {
 		return $array[$index];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Fetch an item from the GET array
 	*
@@ -287,8 +277,6 @@ class EE_Input {
 	{
 		return $this->_fetch_from_array($_GET, $index, $xss_clean);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Fetch an item from the POST array
@@ -303,8 +291,6 @@ class EE_Input {
 		return $this->_fetch_from_array($_POST, $index, $xss_clean);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Fetch an item from either the GET array or the POST
@@ -327,8 +313,6 @@ class EE_Input {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Fetch an item from the SERVER array
 	*
@@ -341,8 +325,6 @@ class EE_Input {
 	{
 		return $this->_fetch_from_array($_SERVER, $index, $xss_clean);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Fetch the IP Address
@@ -401,8 +383,6 @@ class EE_Input {
 		return $this->ip_address;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Validate IP Address
 	*
@@ -454,8 +434,6 @@ class EE_Input {
 		return $this->$func($ip);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Validate IPv4 Address
 	*
@@ -493,8 +471,6 @@ class EE_Input {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Validate IPv6 Address
@@ -568,8 +544,6 @@ class EE_Input {
 		return $collapsed OR $groups == 1;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Compare an IP versus the current IP
 	 *
@@ -608,8 +582,6 @@ class EE_Input {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* User Agent
 	*
@@ -628,8 +600,6 @@ class EE_Input {
 		return $this->user_agent;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch an item from the COOKIE array
 	 *
@@ -646,8 +616,6 @@ class EE_Input {
 
 		return ( ! isset($_COOKIE[$prefix.$index]) ) ? FALSE : stripslashes($_COOKIE[$prefix.$index]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Request Headers
@@ -689,8 +657,6 @@ class EE_Input {
 		return $this->headers;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Request Header
 	 *
@@ -720,8 +686,6 @@ class EE_Input {
 		return $this->headers[$index];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is ajax Request?
 	 *
@@ -733,8 +697,6 @@ class EE_Input {
 	{
 		return ($this->server('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Filter GET Data
@@ -811,8 +773,6 @@ class EE_Input {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove session ID from string
 	 *
@@ -826,8 +786,6 @@ class EE_Input {
 	{
 		return preg_replace("#S=.+?/#", "", $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sanitize Globals
@@ -940,8 +898,6 @@ class EE_Input {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clean GET data
 	 *
@@ -977,8 +933,6 @@ class EE_Input {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Clean Keys
 	*
@@ -1006,8 +960,6 @@ class EE_Input {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Clean Input Data

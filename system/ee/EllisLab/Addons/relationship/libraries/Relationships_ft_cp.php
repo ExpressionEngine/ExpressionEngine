@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Relationship Fieldtype Settings Helper Class
  *
@@ -37,8 +35,6 @@ class Relationships_ft_cp {
 	{
 		return new Relationship_settings_form($data, $prefix);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Grab all channels, across sites if appropriate.
@@ -87,8 +83,6 @@ class Relationships_ft_cp {
 
 		return $this->all_channels;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Grab all categories, across sites if appropriate.
@@ -151,8 +145,6 @@ class Relationships_ft_cp {
 
 		return $choices;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Grab all possible authors (individuals and member groups)
@@ -230,8 +222,6 @@ class Relationships_ft_cp {
 		return $this->all_authors;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Grab all statuses
 	 *
@@ -273,8 +263,6 @@ class Relationships_ft_cp {
 		return $this->all_statuses;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns our possible ordering columns
 	 *
@@ -287,8 +275,6 @@ class Relationships_ft_cp {
 			'entry_date' => lang('rel_ft_order_date')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns our possible ordering directions
@@ -303,8 +289,6 @@ class Relationships_ft_cp {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Default multiselect data (-- Any --)
 	 *
@@ -316,8 +300,6 @@ class Relationships_ft_cp {
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * Settings Form Class
@@ -338,8 +320,6 @@ class Relationship_settings_form {
 		$this->_prefix = $prefix ? $prefix.'_' : '';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the current form values for all fields
 	 *
@@ -349,8 +329,6 @@ class Relationship_settings_form {
 	{
 		return $this->_selected;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Populate the form with values
@@ -393,8 +371,6 @@ class Relationship_settings_form {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set possible options for dropdowns and multiselects
 	 *
@@ -407,8 +383,6 @@ class Relationship_settings_form {
 		$this->_options = array_intersect_key($data, $this->_fields);
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pass calls to form names on to the form helper for html generation

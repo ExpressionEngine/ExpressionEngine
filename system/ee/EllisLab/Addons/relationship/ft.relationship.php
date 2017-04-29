@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Relationship Fieldtype Class
  *
@@ -70,8 +68,6 @@ class Relationship_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Field
 	 *
@@ -104,8 +100,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Post field save is where we do the actual works since we store
@@ -192,8 +186,6 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Called when entries are deleted
 	 *
@@ -209,8 +201,6 @@ class Relationship_ft extends EE_Fieldtype {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Called when grid entries are deleted
 	 *
@@ -224,8 +214,6 @@ class Relationship_ft extends EE_Fieldtype {
 			->where_in('grid_row_id', $ids)
 			->delete($this->_table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display the field on the publish page
@@ -483,8 +471,6 @@ class Relationship_ft extends EE_Fieldtype {
 		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels', 'settings'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show the tag on the frontend
 	 *
@@ -502,8 +488,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display the settings page
@@ -660,8 +644,6 @@ class Relationship_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Settings
 	 *
@@ -693,8 +675,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $save;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup the form helper
@@ -742,8 +722,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $form;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create our table on install
@@ -827,8 +805,6 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->create_table($this->_table);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop the table
 	 *
@@ -839,8 +815,6 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->load->dbforge();
 		ee()->dbforge->drop_table($this->_table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Make sure that we only accept data for grid and channels.
@@ -856,8 +830,6 @@ class Relationship_ft extends EE_Fieldtype {
 		return ($name == 'channel' || $name == 'grid');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Modify column settings for a Relationship field in a grid.
 	 *
@@ -872,8 +844,6 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		return $this->_settings_modify_column($data, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Settings Modify Column
@@ -951,8 +921,6 @@ class Relationship_ft extends EE_Fieldtype {
 				->delete($this->_table);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

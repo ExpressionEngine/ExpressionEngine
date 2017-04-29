@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Template Group Model
  *

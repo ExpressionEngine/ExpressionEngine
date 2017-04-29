@@ -16,8 +16,6 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Publish/Edit Class
  *

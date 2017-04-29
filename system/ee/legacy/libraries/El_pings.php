@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine EllisLab Pings Class
  *
@@ -86,8 +84,6 @@ class El_pings {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * EE Version Check function
 	 *
@@ -153,8 +149,6 @@ class El_pings {
 		return $version_file;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate version file
 	 * Prototype:
@@ -192,8 +186,6 @@ class El_pings {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do the Ping
@@ -254,8 +246,6 @@ class El_pings {
 
 		return $response;
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

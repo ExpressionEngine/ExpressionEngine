@@ -16,8 +16,6 @@ use IteratorAggregate;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Collection
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Database Utility Class
  *
@@ -34,8 +32,6 @@ class CI_DB_utility extends CI_DB_forge {
 
 		log_message('debug', "Database Utility Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * List databases
@@ -65,8 +61,6 @@ class CI_DB_utility extends CI_DB_forge {
 		return $this->data_cache['db_names'];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determine if a particular database exists
 	 *
@@ -89,8 +83,6 @@ class CI_DB_utility extends CI_DB_forge {
 		}
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Optimize Table
@@ -115,8 +107,6 @@ class CI_DB_utility extends CI_DB_forge {
 		// of PHP we can not pass function call directly into it
 		return current($res);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Optimize Database
@@ -153,8 +143,6 @@ class CI_DB_utility extends CI_DB_forge {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Repair Table
 	 *
@@ -178,8 +166,6 @@ class CI_DB_utility extends CI_DB_forge {
 		$res = $query->result_array();
 		return current($res);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate CSV from a query result object
@@ -222,8 +208,6 @@ class CI_DB_utility extends CI_DB_forge {
 
 		return $out;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate XML data from a query result object
@@ -271,8 +255,6 @@ class CI_DB_utility extends CI_DB_forge {
 
 		return $xml;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Database Backup

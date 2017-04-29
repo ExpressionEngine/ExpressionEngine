@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Email Fieldtype Class
  *
@@ -60,8 +58,6 @@ class Email_address_Ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display Field
 	 *
@@ -84,8 +80,6 @@ class Email_address_Ft extends EE_Fieldtype {
 		return form_input($field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace Tag
 	 *
@@ -98,8 +92,6 @@ class Email_address_Ft extends EE_Fieldtype {
 	{
 		return ee()->functions->encode_ee_tags($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace Tag :mailto
@@ -131,8 +123,6 @@ class Email_address_Ft extends EE_Fieldtype {
 		return $mailto;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -143,8 +133,6 @@ class Email_address_Ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

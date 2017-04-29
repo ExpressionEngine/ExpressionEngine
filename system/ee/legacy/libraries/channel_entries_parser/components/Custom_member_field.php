@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Custom Member Fields)
  *
@@ -33,8 +31,6 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 	{
 		return in_array('member_data', $disabled) OR empty($pre->channel()->mfields);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Reset the processed member tags cache.
@@ -64,8 +60,6 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the custom member data fields.

@@ -13,8 +13,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Home Page Class
  *

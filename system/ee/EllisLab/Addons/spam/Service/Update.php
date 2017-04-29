@@ -10,8 +10,6 @@ namespace EllisLab\Addons\Spam\Service;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *

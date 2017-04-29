@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core File Integrity Class
  *
@@ -139,8 +137,6 @@ class File_integrity {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a bootstrap file we didn't know about, or explicitly update
 	 * a checksum (when accepting a change).
@@ -176,8 +172,6 @@ class File_integrity {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a bootstrap file we didn't know about, or explicitly update
 	 * a checksum (when accepting a change).
@@ -204,8 +198,6 @@ class File_integrity {
 			$this->_update_config($checksums, $site_id);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the bootstrap column in the db

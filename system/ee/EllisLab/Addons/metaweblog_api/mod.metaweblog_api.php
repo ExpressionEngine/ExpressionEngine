@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Metaweblog API Module
  *
@@ -91,8 +89,6 @@ class Metaweblog_api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Incoming MetaWeblog API Requests
 	 *
@@ -145,8 +141,6 @@ class Metaweblog_api {
 		ee()->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this, 'xss_clean' => FALSE));
 		ee()->xmlrpcs->serve();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Submit New Post
@@ -414,8 +408,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response($response);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Edit Post
 	 *
@@ -657,8 +649,6 @@ class Metaweblog_api {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * MT API: Publish Post
 	 *
@@ -689,8 +679,6 @@ class Metaweblog_api {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get a single post
 	 *
@@ -704,8 +692,6 @@ class Metaweblog_api {
 
 		return $this->getRecentPosts($plist, $parameters['0']);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get recent posts
@@ -939,8 +925,6 @@ class Metaweblog_api {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * MT API: get recent post title
 	 *
@@ -1022,8 +1006,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response(array($response, 'array'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * MT API: get post categories
 	 *
@@ -1078,8 +1060,6 @@ class Metaweblog_api {
 
 		return ee()->xmlrpc->send_response(array($cats, 'array'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * MT API: set post categories
@@ -1211,8 +1191,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response(array(1,'boolean'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch member data
 	 *
@@ -1280,8 +1258,6 @@ class Metaweblog_api {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * METAWEBLOG API: get categories
 	 *
@@ -1335,8 +1311,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response(array($cats, 'array'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * MT API: get category list
 	 *
@@ -1384,8 +1358,6 @@ class Metaweblog_api {
 
 		return ee()->xmlrpc->send_response(array($cats, 'array'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parses out received channel parameters
@@ -1445,8 +1417,6 @@ class Metaweblog_api {
 			$this->fields[$row['field_id']] = array($row['field_name'], $row['field_fmt']);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check validity of categories
@@ -1508,8 +1478,6 @@ class Metaweblog_api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Post
 	 *
@@ -1559,8 +1527,6 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_response(array(1,'boolean'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * METAWEBLOG API: new media object
@@ -1682,8 +1648,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response($response);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * BLOGGER API: send user information
 	 *
@@ -1718,8 +1682,6 @@ class Metaweblog_api {
 
 		return ee()->xmlrpc->send_response($response);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * METAWEBLOG API: get user's blogs
@@ -1765,8 +1727,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response(array($response, 'array'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * ISO-8601 time to server or UTC time
 	 *
@@ -1806,8 +1766,6 @@ class Metaweblog_api {
 		return $t;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * MT API:  supportedTextFilters
 	 *
@@ -1845,8 +1803,6 @@ class Metaweblog_api {
 		return ee()->xmlrpc->send_response(array($plugins, 'array'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch installed plugins
 	 *
@@ -1874,8 +1830,6 @@ class Metaweblog_api {
 		return $plugins;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Settings for the channel

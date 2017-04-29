@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Quicktab Helper
  *
@@ -19,8 +17,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 /**
   *  Create the "quick add" link

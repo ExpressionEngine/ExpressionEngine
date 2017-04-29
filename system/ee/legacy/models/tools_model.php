@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Tools Model
  *
@@ -114,8 +112,6 @@ class Tools_model extends CI_Model {
 		return $options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Control Panel Log
 	 *
@@ -144,8 +140,6 @@ class Tools_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Search Log
 	 *
@@ -173,8 +167,6 @@ class Tools_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Throttle Log
@@ -206,8 +198,6 @@ class Tools_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get items in the Developer Log
 	 *
@@ -238,8 +228,6 @@ class Tools_model extends CI_Model {
 		return $this->db->get('developer_log');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns number of unviewed items in the developer log to display in
 	 * a notice on the CP home screen
@@ -252,8 +240,6 @@ class Tools_model extends CI_Model {
 
 		return $this->db->count_all_results('developer_log');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Marks developer logs as viewed
@@ -285,8 +271,6 @@ class Tools_model extends CI_Model {
 			$this->db->update('developer_log', array('viewed' => 'y'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete logs
@@ -320,8 +304,6 @@ class Tools_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Blacklist IP addresses
 	 *
@@ -353,8 +335,6 @@ class Tools_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Email Logs
 	 *
@@ -381,8 +361,6 @@ class Tools_model extends CI_Model {
 		$this->db->limit($limit, $offset);
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Language Filelist
@@ -422,8 +400,6 @@ class Tools_model extends CI_Model {
 
 		return $languages;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Language List
@@ -481,8 +457,6 @@ class Tools_model extends CI_Model {
 		return $lang_list;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Image Properties
 	 *
@@ -510,8 +484,6 @@ class Tools_model extends CI_Model {
 			return FALSE;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get SQL Info
@@ -584,8 +556,6 @@ class Tools_model extends CI_Model {
 		return $info;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Table Status
 	 *
@@ -630,8 +600,6 @@ class Tools_model extends CI_Model {
 
 		return array('status' => $status, 'records' => $records, 'total_size' => byte_format($totsize), 'tables' => $tables);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 

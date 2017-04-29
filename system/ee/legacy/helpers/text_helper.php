@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Text Helper
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 
  /**
@@ -66,8 +62,6 @@ if ( ! function_exists('convert_accented_characters'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Word Limiter
  *
@@ -98,8 +92,6 @@ if ( ! function_exists('word_limiter'))
 		return rtrim($matches[0]).$end_char;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Character Limiter
@@ -142,8 +134,6 @@ if ( ! function_exists('character_limiter'))
 		}
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * High ASCII to Entities
@@ -204,8 +194,6 @@ if ( ! function_exists('ascii_to_entities'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Entities to ASCII
  *
@@ -260,8 +248,6 @@ if ( ! function_exists('entities_to_ascii'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Word Censoring Function
  *
@@ -315,8 +301,6 @@ if ( ! function_exists('word_censor'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Code Highlighter
  *
@@ -369,8 +353,6 @@ if ( ! function_exists('highlight_code'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Phrase Highlighter
  *
@@ -401,8 +383,6 @@ if ( ! function_exists('highlight_phrase'))
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * Word Wrap
@@ -505,8 +485,6 @@ if ( ! function_exists('word_wrap'))
 		return $output;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Ellipsize String

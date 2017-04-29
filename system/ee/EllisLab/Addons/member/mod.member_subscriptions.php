@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * Member Management Module
  *
@@ -108,8 +106,6 @@ class Member_subscriptions extends Member {
 			$this->_load_element('subscriptions_form'), $swap
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Subscriptions

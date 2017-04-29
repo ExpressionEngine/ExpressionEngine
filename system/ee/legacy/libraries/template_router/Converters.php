@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 if (defined('EE_APPPATH'))
 {
 	$path = EE_APPPATH;
@@ -31,8 +29,6 @@ require_once $path.'libraries/template_router/converters/Natural.php';
 require_once $path.'libraries/template_router/converters/Numeric.php';
 require_once $path.'libraries/template_router/converters/Pagination.php';
 require_once $path.'libraries/template_router/converters/Regex.php';
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Channel Parser Converters
@@ -65,8 +61,6 @@ class EE_Template_router_converters {
 		$this->register('regex', 'EE_template_router_regex_converter');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Load a validation rule with the provided constuctor $args
 	 *
@@ -97,8 +91,6 @@ class EE_Template_router_converters {
 		return $obj;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Register a converter
 	 *
@@ -110,8 +102,6 @@ class EE_Template_router_converters {
 	}
 
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Rule Converter Implementation

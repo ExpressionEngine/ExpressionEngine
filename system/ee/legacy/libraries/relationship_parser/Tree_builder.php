@@ -8,13 +8,9 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
  require_once APPPATH.'libraries/datastructures/Tree.php';
  require_once APPPATH.'libraries/relationship_parser/Nodes.php';
  require_once APPPATH.'libraries/relationship_parser/Iterators.php';
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Tree Builder Class
@@ -59,8 +55,6 @@ class EE_relationship_tree_builder {
 		$this->grid_relationship_names = array_flip($grid_relationships);
 		$this->grid_field_id = $grid_field_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find All Relationships of the Given Entries in the Template
@@ -148,8 +142,6 @@ class EE_relationship_tree_builder {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a parser from our collected tree.
 	 *
@@ -207,8 +199,6 @@ class EE_relationship_tree_builder {
 
 		return new EE_Relationship_data_parser($root, $entry_lookup, $category_lookup);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Turn the tagdata hierarchy into a tree
@@ -373,8 +363,6 @@ class EE_relationship_tree_builder {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Push the id graph onto the tag graph.
 	 *
@@ -510,8 +498,6 @@ class EE_relationship_tree_builder {
 
 		return call_user_func_array('array_merge', $all_entry_ids);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Paths to Leaves

@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Profiler Section Interface
  *

@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Variables Profiler Section
  *

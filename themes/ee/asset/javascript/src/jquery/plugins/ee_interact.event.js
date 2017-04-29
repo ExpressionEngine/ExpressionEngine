@@ -6,8 +6,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /*!
  * ExpressionEngine Custom Interact jQuery Event
  *

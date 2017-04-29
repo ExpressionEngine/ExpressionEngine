@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core URI Helper Class
  *
@@ -153,8 +151,6 @@ class EE_URI {
 		$this->_set_uri_string($path);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Explode the URI Segments. The individual segments will
 	 * be stored in the $this->segments array.
@@ -269,8 +265,6 @@ class EE_URI {
 		$this->query_string = trim($this->query_string, '/');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the URI String
 	 *
@@ -285,8 +279,6 @@ class EE_URI {
 		// If the URI contains only a slash we'll kill it
 		$this->uri_string = ($str == '/') ? '' : $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Filter segments for malicious characters
@@ -322,8 +314,6 @@ class EE_URI {
 
 		return str_replace($bad, $good, $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reformat our old ugly urls to something a little more elegant.
@@ -386,8 +376,6 @@ class EE_URI {
 		return $new;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Detects the URI
@@ -488,8 +476,6 @@ class EE_URI {
 		return str_replace(array('//', '../'), '/', trim($uri, '/'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove the suffix from the URL if needed
 	 *
@@ -504,8 +490,6 @@ class EE_URI {
 		}
 	}
 
-
-	// --------------------------------------------------------------------
 	/**
 	 * Re-index Segments
 	 *
@@ -525,8 +509,6 @@ class EE_URI {
 		unset($this->rsegments[0]);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch a URI Segment
 	 *
@@ -541,8 +523,6 @@ class EE_URI {
 	{
 		return ( ! isset($this->segments[$n])) ? $no_result : $this->segments[$n];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch a URI "routed" Segment
@@ -560,8 +540,6 @@ class EE_URI {
 	{
 		return ( ! isset($this->rsegments[$n])) ? $no_result : $this->rsegments[$n];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate a key value pair from the URI string
@@ -596,8 +574,6 @@ class EE_URI {
 	{
 		return $this->_uri_to_assoc($n, $default, 'rsegment');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate a key value pair from the URI string or Re-routed URI string
@@ -683,8 +659,6 @@ class EE_URI {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate a URI string from an associative array
 	 *
@@ -705,8 +679,6 @@ class EE_URI {
 		return implode('/', $temp);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch a URI Segment and add a trailing slash
 	 *
@@ -720,8 +692,6 @@ class EE_URI {
 		return $this->_slash_segment($n, $where, 'segment');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch a URI Segment and add a trailing slash
 	 *
@@ -734,8 +704,6 @@ class EE_URI {
 	{
 		return $this->_slash_segment($n, $where, 'rsegment');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch a URI Segment and add a trailing slash - helper function
@@ -763,8 +731,6 @@ class EE_URI {
 		return $leading.$this->$which($n).$trailing;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Segment Array
 	 *
@@ -775,8 +741,6 @@ class EE_URI {
 	{
 		return $this->segments;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Routed Segment Array
@@ -789,8 +753,6 @@ class EE_URI {
 		return $this->rsegments;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Total number of segments
 	 *
@@ -801,8 +763,6 @@ class EE_URI {
 	{
 		return count($this->segments);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Total number of routed segments
@@ -815,8 +775,6 @@ class EE_URI {
 		return count($this->rsegments);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch the entire URI string
 	 *
@@ -827,8 +785,6 @@ class EE_URI {
 	{
 		return $this->uri_string;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the entire Re-routed URI string

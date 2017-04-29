@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Database Cache Class
  *
@@ -21,8 +19,6 @@ class CI_DB_Cache {
 	// Namespace cache items will be stored in
 	private $_cache_namespace = 'db_cache';
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve a cached query
 	 *
@@ -33,8 +29,6 @@ class CI_DB_Cache {
 	{
 		return ee()->cache->get('/'.$this->_cache_namespace.'/'.$this->_prefixed_key($sql));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write a query to a cache file
@@ -52,8 +46,6 @@ class CI_DB_Cache {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete all existing cache files
 	 *
@@ -63,8 +55,6 @@ class CI_DB_Cache {
 	{
 		return ee()->cache->clear_namespace($this->_cache_namespace);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Takes a cache key and gets it ready for storage or retrieval, which

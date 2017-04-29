@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Library\Filesystem;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine File System Exception
  *

@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Grid parser Class
  *
@@ -39,8 +37,6 @@ class Grid_parser {
 			array('switch', 'count', 'index', 'field_total_rows')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Called before each channel entries loop to gather the information
@@ -117,8 +113,6 @@ class Grid_parser {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Handles ft.grid.php's replace_tag(), called with each loop of the
@@ -405,8 +399,6 @@ class Grid_parser {
 		return $grid_tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parses individual row in Grid field
 	 *
@@ -534,8 +526,6 @@ class Grid_parser {
 		return $grid_row;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Handle EE_Fieldtype::pre_loop() so fieldtypes can query more efficiently
 	 *
@@ -604,8 +594,6 @@ class Grid_parser {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Instantiates fieldtype handler and assigns information to the object
 	 *
@@ -663,8 +651,6 @@ class Grid_parser {
 		return $fieldtype;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Calls a method on a fieldtype and returns the result. If the method
 	 * exists with a prefix of grid_, that will be called in place of it.
@@ -699,8 +685,6 @@ class Grid_parser {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Calls fieldtype's grid_replace_tag/replace_tag given tag properties

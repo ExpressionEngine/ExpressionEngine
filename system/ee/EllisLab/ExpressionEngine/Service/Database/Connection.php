@@ -12,8 +12,6 @@ require_once BASEPATH."database/drivers/mysqli/mysqli_connection.php";
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Database Connection
  *

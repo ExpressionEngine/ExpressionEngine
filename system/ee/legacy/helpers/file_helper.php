@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter File Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/file_helpers.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Read File
@@ -42,8 +38,6 @@ if ( ! function_exists('read_file'))
 		return file_get_contents($file);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Write File
@@ -73,8 +67,6 @@ if ( ! function_exists('write_file'))
 		return TRUE;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Delete Files
@@ -135,8 +127,6 @@ if ( ! function_exists('delete_files'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Writes an index.html file to a specified path to ensure directories
  * cannot be indexed
@@ -154,8 +144,6 @@ if ( ! function_exists('write_index_html'))
 		return write_file($path.'index.html', 'Directory access is forbidden.');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Get Filenames
@@ -203,8 +191,6 @@ if ( ! function_exists('get_filenames'))
 		}
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Get Directory File Information
@@ -258,8 +244,6 @@ if ( ! function_exists('get_dir_file_info'))
 		}
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
 * Get File Info
@@ -324,8 +308,6 @@ if ( ! function_exists('get_file_info'))
 		return $fileinfo;
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Symbolic Permissions
@@ -392,8 +374,6 @@ if ( ! function_exists('symbolic_permissions'))
 		return $symbolic;
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Octal Permissions

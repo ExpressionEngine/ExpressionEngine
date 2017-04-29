@@ -13,8 +13,6 @@ use Exception;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Dependency Injection Container
  *

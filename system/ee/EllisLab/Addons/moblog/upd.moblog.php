@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Moblog Module
  *
@@ -85,8 +83,6 @@ class Moblog_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -111,8 +107,6 @@ class Moblog_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater
@@ -223,8 +217,6 @@ class Moblog_upd {
 	// END
 
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Adds new columns to moblogs table
 	 *
@@ -250,8 +242,6 @@ class Moblog_upd {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Drops columns from the moblogs table
 	 *
@@ -268,8 +258,6 @@ class Moblog_upd {
 		}
 	}
 
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Converts moblog image sizes to upload preference sizes
@@ -316,8 +304,6 @@ class Moblog_upd {
 			);
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a new image size given a size name and the moblog's settings as

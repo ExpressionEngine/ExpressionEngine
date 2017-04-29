@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Rich Text Editor Module
  *
@@ -38,8 +36,6 @@ class Rte_ext {
 		ee()->load->library('rte_lib');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Loads My RTE Prefs into the My Account page
 	 *
@@ -65,8 +61,6 @@ class Rte_ext {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * My Account Preferences
@@ -147,8 +141,6 @@ class Rte_ext {
 		return ee()->load->view('myaccount_settings', $vars, TRUE);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * MyAccount RTE settings form action
 	 *
@@ -194,8 +186,6 @@ class Rte_ext {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Passthrough to the library's edit_toolset() method
 	 * @param	int $toolset_id The Toolset ID to be edited (optional)
@@ -207,8 +197,6 @@ class Rte_ext {
 		return ee()->rte_lib->edit_toolset();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Passthrough to the library's save_toolset method
 	 */
@@ -216,8 +204,6 @@ class Rte_ext {
 	{
 		ee()->rte_lib->save_toolset();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add RTE prefs to the CP Menu
@@ -258,8 +244,6 @@ class Rte_ext {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Activate Extension
 	 * This extension is automatically installed with the Rich Text Editor module
@@ -268,8 +252,6 @@ class Rte_ext {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Extension
@@ -280,8 +262,6 @@ class Rte_ext {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Disable Extension
 	 * This extension is automatically disabled with the Rich Text Editor module
@@ -290,8 +270,6 @@ class Rte_ext {
 	{
 		return TRUE;
 	}
-
-		// --------------------------------------------------------------------
 
 	/**
 	 * Uninstall Extension

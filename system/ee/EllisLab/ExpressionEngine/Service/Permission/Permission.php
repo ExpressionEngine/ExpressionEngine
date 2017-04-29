@@ -9,8 +9,6 @@ namespace EllisLab\ExpressionEngine\Service\Permission;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Permission Class
  *
@@ -37,8 +35,6 @@ class Permission {
 		$this->userdata = $userdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Has a single permission
 	 *
@@ -58,8 +54,6 @@ class Permission {
 
 		return $this->hasAll($which[0]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Has All
@@ -98,8 +92,6 @@ class Permission {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Has Any
 	 *
@@ -137,8 +129,6 @@ class Permission {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get user datum

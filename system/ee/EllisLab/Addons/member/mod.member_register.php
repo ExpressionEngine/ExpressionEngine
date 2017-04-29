@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * Member Management Module
  *
@@ -207,8 +205,6 @@ class Member_register extends Member {
 		// Return the final rendered form
 		return ee()->functions->form_declaration($data).$reg_form."\n"."</form>";
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Register Member
@@ -624,8 +620,6 @@ class Member_register extends Member {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	private function _do_form_query()
 	{
 		if (ee()->input->get_post('board_id') !== FALSE &&
@@ -640,8 +634,6 @@ class Member_register extends Member {
 							->where('board_id', 1)
 							->get('forum_boards');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Self-Activation

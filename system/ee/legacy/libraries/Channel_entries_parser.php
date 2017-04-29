@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Entry Parser Factory
  *
@@ -32,8 +30,6 @@ class EE_Channel_entries_parser {
 		$this->_components = new EE_Channel_parser_components();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * The main parser factory
 	 *
@@ -49,8 +45,6 @@ class EE_Channel_entries_parser {
 	{
 		return new EE_Channel_parser($tagdata, $prefix, $this->_components);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Register a channel parser component
@@ -84,8 +78,6 @@ class EE_Channel_entries_parser {
 }
 
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Entry Parser
  *
@@ -112,8 +104,6 @@ class EE_Channel_parser {
 		$this->_components = $components;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Tagdata getter
 	 *
@@ -125,8 +115,6 @@ class EE_Channel_parser {
 	{
 		return $this->_tagdata;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prefix getter
@@ -140,8 +128,6 @@ class EE_Channel_parser {
 		return $this->_prefix;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Components getter
 	 *
@@ -154,8 +140,6 @@ class EE_Channel_parser {
 	{
 		return $this->_components;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parser untilty function parser
@@ -200,8 +184,6 @@ class EE_Channel_parser {
 		return $parser->parse($data, $config);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * The pre-parser factory
 	 *
@@ -232,8 +214,6 @@ class EE_Channel_parser {
 	{
 		return new EE_Channel_preparser($channel, $this, $site_ids, $entry_ids, $config);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Data parser

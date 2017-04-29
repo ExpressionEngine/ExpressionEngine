@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Markdown Plugin
  *
@@ -39,9 +37,7 @@ class Markdown {
 
 		return $this->return_data;
 	}
-
-	// -------------------------------------------------------------------------
-
 }
+// END CLASS
 
 // EOF

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine New Relic Class
  *
@@ -51,8 +49,6 @@ class Newrelic {
 		newrelic_set_appname($appname.APP_NAME.$version);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Give New Relic a name for this transaction
 	 *
@@ -74,8 +70,6 @@ class Newrelic {
 		newrelic_name_transaction($transaction_name);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prevent the New Relic PHP extension from inserting its JavaScript
 	 * for this transaction
@@ -87,8 +81,6 @@ class Newrelic {
 	{
 		newrelic_disable_autorum();
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

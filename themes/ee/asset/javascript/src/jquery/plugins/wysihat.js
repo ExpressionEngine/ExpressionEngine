@@ -10,8 +10,6 @@
 
 (function(document, $, undefined) {
 
-// ---------------------------------------------------------------------
-
 /**
  * This file is rather lengthy, so I've organized it into rough
  * sections. I suggest reading the documentation for each section
@@ -35,8 +33,6 @@
  * Defaults and jQuery Binding
  * Browser Compat Classes
  */
-
-// ---------------------------------------------------------------------
 
 /**
  * WysiHat Namespace
@@ -116,8 +112,6 @@ var WysiHat = window.WysiHat = {
 };
 
 
-// ---------------------------------------------------------------------
-
 /**
  * WysiHat.Editor
  *
@@ -125,8 +119,6 @@ var WysiHat = window.WysiHat = {
  * snafu going. Holds the textarea and editor objects as well as
  * all of the utility classes.
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Editor = function($field, options) {
 
@@ -310,16 +302,12 @@ WysiHat.Editor.prototype = {
 WysiHat.Editor.constructor = WysiHat.Editor;
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Element Manager
  *
  * Holds information about available elements and can be used to
  * check if an element is of a valid type.
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Element = (function(){
 
@@ -455,8 +443,6 @@ WysiHat.Element = (function(){
 })();
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Change Events
  *
@@ -466,8 +452,6 @@ WysiHat.Element = (function(){
  *
  * Will probably be removed in favor of a real event system.
  */
-
-// ---------------------------------------------------------------------
 
 $(document).ready(function(){
 
@@ -530,8 +514,6 @@ $(document).ready(function(){
 });
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Paste Handler
  *
@@ -541,8 +523,6 @@ $(document).ready(function(){
  * viewport. Focus it. And the text will go in there. That makes
  * it much easier for us to clean up.
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Paster = (function() {
 
@@ -642,15 +622,11 @@ WysiHat.Paster = (function() {
 	};
 })();
 
-// ---------------------------------------------------------------------
-
 /**
  * Key Helper
  *
  * Small utility that holds key values and common shortcuts.
  */
-
-// ---------------------------------------------------------------------
 
 var
 KEYS,
@@ -732,8 +708,6 @@ keyShortcuts = (function() {
 })();
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Event Class
  *
@@ -750,8 +724,6 @@ keyShortcuts = (function() {
  * play with triggering actions in different ways without completely
  * copying our buttons.
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Event = function(obj)
 {
@@ -1169,8 +1141,6 @@ WysiHat.Event.prototype = {
 WysiHat.Event.constructor = WysiHat.Event;
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Undo Class
  *
@@ -1185,8 +1155,6 @@ WysiHat.Event.constructor = WysiHat.Event;
  * points to give a more natural undo experience (try it in your
  * text editor - it reselects).
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Undo = function()
 {
@@ -1406,8 +1374,6 @@ WysiHat.Undo.prototype = {
 WysiHat.Undo.constructor = WysiHat.Undo;
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Selection Utility
  *
@@ -1420,8 +1386,6 @@ WysiHat.Undo.constructor = WysiHat.Undo;
  *
  * Provides get(), set(), and toString().
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Selection = function($el)
 {
@@ -1607,8 +1571,6 @@ WysiHat.Selection.prototype = {
 WysiHat.Selection.constructor = WysiHat.Selection;
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Editor Commands
  *
@@ -1619,8 +1581,6 @@ WysiHat.Selection.constructor = WysiHat.Selection;
  * These currently extend the editor element, so you can call any
  * of them: $editor.boldSelection().
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Commands = (function() {
 
@@ -2322,8 +2282,6 @@ $.extend(WysiHat.Commands.make, {
 });
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Commands Mixin
  *
@@ -2346,8 +2304,6 @@ $.extend(WysiHat.Commands.make, {
  *
  * this.Commands.advancedStuff();
  */
-
-// ---------------------------------------------------------------------
 
 var CommandsMixin = {
 
@@ -2379,8 +2335,6 @@ var CommandsMixin = {
 
 $.extend(WysiHat.Editor.prototype, CommandsMixin);
 
-// ---------------------------------------------------------------------
-
 /**
  * Formatting Class
  *
@@ -2388,8 +2342,6 @@ $.extend(WysiHat.Editor.prototype, CommandsMixin);
  * deals with keeping changes between the raw text and editor in
  * sync periodically.
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Formatting = {
 
@@ -2704,8 +2656,6 @@ WysiHat.Formatting = {
 	}
 };
 
-// ---------------------------------------------------------------------
-
 /**
  * Blank Button
  *
@@ -2713,8 +2663,6 @@ WysiHat.Formatting = {
  * provides a nice way to extend the buttons without having to re-
  * do all of the work the toolbar does.
  */
-
-// ---------------------------------------------------------------------
 
 var BlankButton = {
 	init: function(name, $editor)
@@ -2797,8 +2745,6 @@ var BlankButton = {
 	}
 };
 
-// ---------------------------------------------------------------------
-
 /**
  * Toolbar Class
  *
@@ -2806,8 +2752,6 @@ var BlankButton = {
  * buttons states. You can add your own by using:
  * WysiHat.addButton(name, { options });
  */
-
-// ---------------------------------------------------------------------
 
 WysiHat.Toolbar = function($el, buttons)
 {
@@ -2977,8 +2921,6 @@ WysiHat.Toolbar.constructor = WysiHat.Toolbar;
 
 })(document, jQuery);
 
-// ---------------------------------------------------------------------
-
 /**
  * Defaults and jQuery Binding
  *
@@ -2986,8 +2928,6 @@ WysiHat.Toolbar.constructor = WysiHat.Toolbar;
  * a convenience setup function to jQuery.fn that you can use
  * as $('textarea').wysihat(options).
  */
-
-// ---------------------------------------------------------------------
 
 jQuery.fn.wysihat = function(options) {
 
@@ -3011,8 +2951,6 @@ jQuery.fn.wysihat = function(options) {
 
 
 
-// ---------------------------------------------------------------------
-
 /**
  * Browser Compat Classes
  *
@@ -3020,8 +2958,6 @@ jQuery.fn.wysihat = function(options) {
  * properly across all browsers. If you like IE, you'll feel
  * right at home down here.
  */
-
-// ---------------------------------------------------------------------
 
 
 (function(document, $) {

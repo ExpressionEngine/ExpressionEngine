@@ -20,8 +20,6 @@ require_once BASEPATH."database/drivers/mysqli/mysqli_driver.php";
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Database Connection
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Session Class
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 /*
 ExpressionEngine User Classes (* = current):
@@ -233,8 +229,6 @@ class EE_Session {
 		unset($member_exists);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch all session data
 	 *
@@ -244,8 +238,6 @@ class EE_Session {
 	{
 		return $this->userdata;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check for banned data
@@ -305,8 +297,6 @@ class EE_Session {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Session Cache
 	 *
@@ -322,8 +312,6 @@ class EE_Session {
 		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check password lockout
@@ -346,8 +334,6 @@ class EE_Session {
 
 		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create New Session
@@ -406,8 +392,6 @@ class EE_Session {
 		return $this->sdata['session_id'];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete old sessions if probability is met
 	 *
@@ -427,8 +411,6 @@ class EE_Session {
 						 ->delete('sessions');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete old password lockout data
@@ -453,8 +435,6 @@ class EE_Session {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Lock the control panel
 	 *
@@ -473,8 +453,6 @@ class EE_Session {
 			->where('session_id', $this->userdata['session_id'])
 			->update('sessions');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Destroy session. Essentially logging a user off.
@@ -501,8 +479,6 @@ class EE_Session {
 		ee()->input->delete_cookie($this->c_anon);
 		ee()->input->delete_cookie('tracker');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch guest data
@@ -567,8 +543,6 @@ class EE_Session {
 		// Update the last activity with each page load
 		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch member data
@@ -694,8 +668,6 @@ class EE_Session {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch session data
 	 *
@@ -754,8 +726,6 @@ class EE_Session {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get flashdata by key
 	 *
@@ -766,8 +736,6 @@ class EE_Session {
 	{
 		return isset($this->flashdata[$key]) ? $this->flashdata[$key] : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is the nation banned?
@@ -817,8 +785,6 @@ class EE_Session {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save password lockout
 	 */
@@ -838,8 +804,6 @@ class EE_Session {
 
 		ee()->db->insert('password_lockout', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Session Cache
@@ -863,8 +827,6 @@ class EE_Session {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set flashdata
 	 *
@@ -885,8 +847,6 @@ class EE_Session {
 
 		$this->_set_flash_cookie();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tracker
@@ -967,8 +927,6 @@ class EE_Session {
 		return $tracker;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * This will set the tracker cookie with proper encoding
 	 *
@@ -995,8 +953,6 @@ class EE_Session {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * This will un-set the most recent URL from the tracker
 	 */
@@ -1010,8 +966,6 @@ class EE_Session {
 		}
 		$this->set_tracker_cookie();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Member session
@@ -1053,8 +1007,6 @@ class EE_Session {
 		unset($this->sdata['last_activity']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch a session item
 	 *
@@ -1066,8 +1018,6 @@ class EE_Session {
 	{
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the current session id or fingerprint
@@ -1093,8 +1043,6 @@ class EE_Session {
 		return ($s);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the currently used language pack. Will return the user's language
 	 * pack if a session exists, otherwise will fall back to the default
@@ -1118,8 +1066,6 @@ class EE_Session {
 
 		return 'english';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Age flashdata
@@ -1149,8 +1095,6 @@ class EE_Session {
 
 		$this->_set_flash_cookie();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do ban Check
@@ -1186,8 +1130,6 @@ class EE_Session {
 		return $ban_status;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Perform the big query to grab member data
 	 *
@@ -1217,8 +1159,6 @@ class EE_Session {
 		return ee()->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Reset session data as GUEST
 	 *
@@ -1237,8 +1177,6 @@ class EE_Session {
 			'sess_start'		=>	0
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reset userdata as GUEST
@@ -1265,8 +1203,6 @@ class EE_Session {
 			'ignore_list'		=>  array()
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep flashdata
@@ -1297,8 +1233,6 @@ class EE_Session {
 		$this->flashdata = array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a browser fingerprint
 	 *
@@ -1308,8 +1242,6 @@ class EE_Session {
 	{
 		return md5(ee()->input->user_agent().$salt);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set signed flashdata cookie
@@ -1329,8 +1261,6 @@ class EE_Session {
 
 		ee()->input->set_cookie('flash' , $payload, 86500);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup Assigned Sites
@@ -1371,8 +1301,6 @@ class EE_Session {
 
 		$this->userdata['assigned_sites'] = $assigned_sites;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup CP Channel Privileges
@@ -1418,8 +1346,6 @@ class EE_Session {
 		$this->userdata['assigned_channels'] = $assigned_channels;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup Module Privileges
 	 *
@@ -1446,8 +1372,6 @@ class EE_Session {
 		$qry->free_result();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup Session Lengths
 	 *
@@ -1457,8 +1381,6 @@ class EE_Session {
 	{
 		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup Session Cookie Timeout
@@ -1474,8 +1396,6 @@ class EE_Session {
 
 		return $this->session_length;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup Template Privileges

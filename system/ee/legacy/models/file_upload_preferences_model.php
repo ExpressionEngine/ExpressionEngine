@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Admin Model
  *
@@ -126,8 +124,6 @@ class File_upload_preferences_model extends CI_Model
 		return $return_array;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Upload paths may have a {base_url} or {base_path} in them, so we need
 	 * to parse those but also take into account when an upload destination
@@ -151,8 +147,6 @@ class File_upload_preferences_model extends CI_Model
 
 		return $upload_destination;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Builds an array suitable for dropdown lists
@@ -178,8 +172,6 @@ class File_upload_preferences_model extends CI_Model
 
 		return $prefs_array;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Upload Preferences
@@ -217,8 +209,6 @@ class File_upload_preferences_model extends CI_Model
 		return $deleting->row('name');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the category groups for one or more upload directories
 	 *
@@ -245,8 +235,6 @@ class File_upload_preferences_model extends CI_Model
 
 		return array_unique($cat_groups);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Get all file upload paths in a mapped associative array with the keys

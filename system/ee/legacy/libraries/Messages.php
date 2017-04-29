@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Private Messaging Class
  *
@@ -1305,8 +1303,6 @@ class EE_Messages {
 			($folder_id == '0') ? 'n' : 'y'
 		);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/** ----------------------------------------
 	/**  Wrapper for a Folder and its Contents

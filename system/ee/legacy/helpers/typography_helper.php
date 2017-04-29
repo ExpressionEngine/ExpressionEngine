@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Typography Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/typography_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Convert newlines to HTML line breaks except within PRE tags
@@ -37,8 +33,6 @@ if ( ! function_exists('nl2br_except_pre'))
 		return ee()->typography->nl2br_except_pre($str);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Auto Typography Wrapper Function
@@ -59,8 +53,6 @@ if ( ! function_exists('auto_typography'))
 	}
 }
 
-
-// --------------------------------------------------------------------
 
 /**
  * HTML Entities Decode

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Installation and Update Wizard
  *
@@ -134,8 +132,6 @@ class Wizard extends CI_Controller {
 		'rewrite_short_tags' => TRUE
 	);
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Constructor
 	 * @return	void
@@ -226,8 +222,6 @@ class Wizard extends CI_Controller {
 		$this->day   = gmdate('d', $this->now);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remap - Intercepts the request and dynamically determines what we should
 	 * do
@@ -274,8 +268,6 @@ class Wizard extends CI_Controller {
 		// Call the action
 		$this->$action();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pre-flight Tests - Does all of our error checks
@@ -496,8 +488,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * New installation form
 	 * @return void
@@ -528,8 +518,6 @@ class Wizard extends CI_Controller {
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Checks if the database host is valid
 	 *
@@ -545,8 +533,6 @@ class Wizard extends CI_Controller {
 		});
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the database given is valid
 	 *
@@ -561,8 +547,6 @@ class Wizard extends CI_Controller {
 			);
 		});
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Given a MySQL error number, will check to see if that error was thrown
@@ -602,8 +586,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Abstraction to retrieve the default or user over-ridden database prefix
 	 */
@@ -611,8 +593,6 @@ class Wizard extends CI_Controller {
 	{
 		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Form validation callback for checking DB prefixes
@@ -645,8 +625,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function license_agreement($value)
 	{
 		if ($value !== 'y')
@@ -660,8 +638,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the installation
@@ -907,8 +883,6 @@ class Wizard extends CI_Controller {
 		$this->show_success('install', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	public function template_path_writeable($radio)
 	{
 		if ( ! is_really_writable(PATH_TMPL))
@@ -922,8 +896,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Split off the port, if given one (e.g. 192.168.10.2:4055)
@@ -944,8 +916,6 @@ class Wizard extends CI_Controller {
 			$this->userdata['db_port'] = NULL;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the DB Config, whether it's from database.php or config.php
@@ -977,8 +947,6 @@ class Wizard extends CI_Controller {
 			throw new \Exception(lang('database_no_data'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show installation or upgrade succes page
@@ -1028,8 +996,6 @@ class Wizard extends CI_Controller {
 
 		$this->set_output('success', $template_variables);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assigns the values submitted in the settings form
@@ -1093,8 +1059,6 @@ class Wizard extends CI_Controller {
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show the update form
 	 * @return void
@@ -1105,8 +1069,6 @@ class Wizard extends CI_Controller {
 		$vars['action'] = $this->set_qstr('do_update');
 		$this->set_output('update_form', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the update
@@ -1280,8 +1242,6 @@ class Wizard extends CI_Controller {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determine which update should be performed - Reads though the "updates"
 	 * directory and makes a list of all available updates
@@ -1333,8 +1293,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Connect to the database
 	 *
@@ -1381,8 +1339,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get an actual path to certain items, namely global images, themes, and
 	 * javascript.
@@ -1400,8 +1356,6 @@ class Wizard extends CI_Controller {
 
 		return $path;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set output
@@ -1491,8 +1445,6 @@ class Wizard extends CI_Controller {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the base URL and index values so our links work properly
 	 * @return void
@@ -1512,8 +1464,6 @@ class Wizard extends CI_Controller {
 		$this->config->set_item('site_index', SELF); // Same with the CI site_index
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create the query string needed for form actions
 	 * @param string  $method The method name for the action
@@ -1523,8 +1473,6 @@ class Wizard extends CI_Controller {
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
 		return site_url($query_string);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Install the default site theme
@@ -1554,8 +1502,6 @@ class Wizard extends CI_Controller {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Install the Modules
 	 * @return boolean  TRUE if successful, FALSE if not
@@ -1567,8 +1513,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write the config file
@@ -1969,8 +1913,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write config file from the template file
 	 * @param array $config Config data to write to the config file
@@ -2083,8 +2025,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update modules (first party only)
 	 * @return void
@@ -2138,8 +2078,6 @@ class Wizard extends CI_Controller {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the default channel entry data
 	 * @return string
@@ -2148,8 +2086,6 @@ class Wizard extends CI_Controller {
 	{
 		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Checks to see if we're allowed to automatically rename the installer dir

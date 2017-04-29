@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Switch)
  *
@@ -32,8 +30,6 @@ class EE_Channel_switch_parser implements EE_Channel_parser_component {
 		return ! $pre->has_tag('switch');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * No preprocessing required.
 	 *
@@ -45,8 +41,6 @@ class EE_Channel_switch_parser implements EE_Channel_parser_component {
 	{
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace the switch tag based on what step of the loop we're in.

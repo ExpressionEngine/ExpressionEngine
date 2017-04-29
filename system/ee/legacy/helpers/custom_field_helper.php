@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Segment Helper
  *
@@ -19,8 +17,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Encode multi select field data
@@ -47,8 +43,6 @@ function encode_multi_field($data = array())
 	// Implode on seperator
 	return implode('|', $data);
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Decode multi select field data

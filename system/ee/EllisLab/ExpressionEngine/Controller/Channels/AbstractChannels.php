@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Abstract Channel Class
  *

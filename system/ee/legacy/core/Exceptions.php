@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Exceptions Class
  *
@@ -48,8 +46,6 @@ class EE_Exceptions {
 		log_message('error', 'Severity: '.$error_constant.'  --> '.$message. ' '.$filepath.' '.$line, TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * 404 Page Not Found Handler
 	 *
@@ -75,8 +71,6 @@ class EE_Exceptions {
 		echo $this->show_error($heading, $message, 'error_general', 404);
 		exit;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Native PHP error handler
@@ -110,8 +104,6 @@ class EE_Exceptions {
 		ob_end_clean();
 		echo $buffer;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show Error

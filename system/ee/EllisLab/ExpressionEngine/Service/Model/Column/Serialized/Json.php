@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Json Encoded Typed Column
  *

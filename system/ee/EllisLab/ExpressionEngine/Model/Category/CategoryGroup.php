@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Model\Content\StructureModel;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Category Group Model
  *

@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config File Class
  *

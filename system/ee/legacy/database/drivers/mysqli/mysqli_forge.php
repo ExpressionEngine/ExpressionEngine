@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * MySQLi Forge Class
  *
@@ -30,8 +28,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 		return "CREATE DATABASE ".$name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop database
 	 *
@@ -43,8 +39,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 	{
 		return "DROP DATABASE ".$name;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process Fields
@@ -119,8 +113,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 		return $sql;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Table
 	 *
@@ -176,8 +168,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 		return $sql;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop Table
 	 *
@@ -188,8 +178,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 	{
 		return "DROP TABLE IF EXISTS ".$this->db->escape_identifiers($table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Alter table query
@@ -223,8 +211,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Rename a table

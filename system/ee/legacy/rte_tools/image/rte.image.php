@@ -10,8 +10,6 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Image RTE Tool
  *
@@ -80,8 +78,6 @@ class Image_rte {
 */
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Styles we need
 	 *
@@ -95,8 +91,6 @@ class Image_rte {
 		$theme	= URL_THEMES.'cp/'.($theme ? $theme : 'default').'/';
 		return str_replace('{theme_folder_url}', $theme, $styles);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * JS Defintion

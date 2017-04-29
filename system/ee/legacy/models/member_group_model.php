@@ -13,8 +13,6 @@ if (!defined('BASEPATH')) {
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Model to manage Member Groups.  Manages the following
  * tables:

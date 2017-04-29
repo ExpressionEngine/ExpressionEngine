@@ -20,8 +20,6 @@
  * That plugin is ultimately bound here.
  */
 
-// ------------------------------------------------------------------------
-
 
 // Apply ee_table and ee_toggle_all to any tables that want it
 $('table').each(function() {

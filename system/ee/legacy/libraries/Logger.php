@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Logging Class
  *
@@ -43,8 +41,6 @@ class EE_Logger {
 		return $this->db;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log an action
 	 *
@@ -77,8 +73,6 @@ class EE_Logger {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Log an item in the Developer Log
@@ -177,8 +171,6 @@ class EE_Logger {
 		return $log_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log a function as deprecated
 	 *
@@ -275,8 +267,6 @@ class EE_Logger {
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log an extension hook as deprecated
 	 *
@@ -328,8 +318,6 @@ class EE_Logger {
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($description, TRUE, 604800);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Deprecate a template tag and replace it in templates and snippets
@@ -412,8 +400,6 @@ class EE_Logger {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deprecate tags within specialty templates (forum, profile, wiki)
 	 *
@@ -450,8 +436,6 @@ class EE_Logger {
 			$this->developer($message, TRUE, 604800);
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Update specialty templates given an array of specialty templates from
@@ -504,8 +488,6 @@ class EE_Logger {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log a message in the Updater log.
 	 *
@@ -534,8 +516,6 @@ class EE_Logger {
 
 		$this->logger_db()->insert('update_log', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create the update_log table if it doesn't already exist. Must be done

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Javascript Class
  *
@@ -44,11 +42,7 @@ class EE_Javascript {
 
 		log_message('debug', "Javascript Class Initialized and loaded.  Driver used: $js_library_driver");
 	}
-
-	// --------------------------------------------------------------------
 	// Event Code
-	// --------------------------------------------------------------------
-
 	/**
 	 * Blur
 	 *
@@ -63,8 +57,6 @@ class EE_Javascript {
 		return $this->js->_blur($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Change
 	 *
@@ -78,8 +70,6 @@ class EE_Javascript {
 	{
 		return $this->js->_change($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Click
@@ -96,8 +86,6 @@ class EE_Javascript {
 		return $this->js->_click($element, $js, $ret_false);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Double Click
 	 *
@@ -111,8 +99,6 @@ class EE_Javascript {
 	{
 		return $this->js->_dblclick($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Error
@@ -128,8 +114,6 @@ class EE_Javascript {
 		return $this->js->_error($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Focus
 	 *
@@ -143,8 +127,6 @@ class EE_Javascript {
 	{
 		return $this->js->__add_event($focus, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hover
@@ -161,8 +143,6 @@ class EE_Javascript {
 		return $this->js->__hover($element, $over, $out);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Keydown
 	 *
@@ -176,8 +156,6 @@ class EE_Javascript {
 	{
 		return $this->js->_keydown($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Keyup
@@ -193,8 +171,6 @@ class EE_Javascript {
 		return $this->js->_keyup($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load
 	 *
@@ -208,8 +184,6 @@ class EE_Javascript {
 	{
 		return $this->js->_load($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Mousedown
@@ -225,8 +199,6 @@ class EE_Javascript {
 		return $this->js->_mousedown($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mouse Out
 	 *
@@ -240,8 +212,6 @@ class EE_Javascript {
 	{
 		return $this->js->_mouseout($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Mouse Over
@@ -257,8 +227,6 @@ class EE_Javascript {
 		return $this->js->_mouseover($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mouseup
 	 *
@@ -273,8 +241,6 @@ class EE_Javascript {
 		return $this->js->_mouseup($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Output
 	 *
@@ -287,8 +253,6 @@ class EE_Javascript {
 	{
 		return $this->js->_output($js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Ready
@@ -304,8 +268,6 @@ class EE_Javascript {
 		return $this->js->_document_ready($js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Resize
 	 *
@@ -319,8 +281,6 @@ class EE_Javascript {
 	{
 		return $this->js->_resize($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Scroll
@@ -336,8 +296,6 @@ class EE_Javascript {
 		return $this->js->_scroll($element, $js);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Unload
 	 *
@@ -351,11 +309,7 @@ class EE_Javascript {
 	{
 		return $this->js->_unload($element, $js);
 	}
-
-	// --------------------------------------------------------------------
 	// Effects
-	// --------------------------------------------------------------------
-
 
 	/**
 	 * Add Class
@@ -370,8 +324,6 @@ class EE_Javascript {
 	{
 		return $this->js->_addClass($element, $class);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Animate
@@ -388,8 +340,6 @@ class EE_Javascript {
 		return $this->js->_animate($element, $params, $speed, $extra);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fade In
 	 *
@@ -405,8 +355,6 @@ class EE_Javascript {
 		return $this->js->_fadeIn($element, $speed, $callback);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fade Out
 	 *
@@ -421,8 +369,6 @@ class EE_Javascript {
 	{
 		return $this->js->_fadeOut($element, $speed, $callback);
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Slide Up
 	 *
@@ -439,8 +385,6 @@ class EE_Javascript {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove Class
 	 *
@@ -454,8 +398,6 @@ class EE_Javascript {
 	{
 		return $this->js->_removeClass($element, $class);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Slide Down
@@ -471,8 +413,6 @@ class EE_Javascript {
 	{
 		return $this->js->_slideDown($element, $speed, $callback);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Slide Toggle
@@ -490,8 +430,6 @@ class EE_Javascript {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Hide
 	 *
@@ -507,8 +445,6 @@ class EE_Javascript {
 		return $this->js->_hide($element, $speed, $callback);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Toggle
 	 *
@@ -523,8 +459,6 @@ class EE_Javascript {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Toggle Class
 	 *
@@ -537,8 +471,6 @@ class EE_Javascript {
 	{
 		return $this->js->_toggleClass($element, $class);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show
@@ -566,8 +498,6 @@ class EE_Javascript {
 	{
 		$this->js->_clear_compile();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * External
@@ -608,8 +538,6 @@ class EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Inline
 	 *
@@ -628,8 +556,6 @@ class EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Open Script
 	 *
@@ -645,8 +571,6 @@ class EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Close Script
 	 *
@@ -659,13 +583,6 @@ class EE_Javascript {
 	{
 		return "</script>$extra";
 	}
-
-
-	// --------------------------------------------------------------------
-	// --------------------------------------------------------------------
-	// AJAX-Y STUFF - still a testbed
-	// --------------------------------------------------------------------
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update
@@ -681,8 +598,6 @@ class EE_Javascript {
 	{
 		return $this->js->_updater($element, $speed, $callback);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is associative array
@@ -704,8 +619,6 @@ class EE_Javascript {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Args
@@ -735,8 +648,6 @@ class EE_Javascript {
 			return $result;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Global
@@ -783,8 +694,6 @@ class EE_Javascript {
 			$current[$var_name] = $val;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Compile

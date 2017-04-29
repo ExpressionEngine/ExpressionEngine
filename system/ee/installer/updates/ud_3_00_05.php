@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -45,8 +43,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Ensure required modules are installed

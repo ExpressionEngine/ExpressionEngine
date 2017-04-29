@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Typed Column Interface
  *

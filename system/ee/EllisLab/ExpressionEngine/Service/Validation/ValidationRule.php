@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Validation Rule Base Class
  *

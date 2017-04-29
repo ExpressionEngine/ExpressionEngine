@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Image Manipulation class
  *
@@ -87,8 +85,6 @@ class EE_Image_lib {
 		log_message('debug', "Image Lib Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize image properties
 	 *
@@ -109,8 +105,6 @@ class EE_Image_lib {
 		// special consideration for master_dim
 		$this->master_dim = 'auto';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * initialize image preferences
@@ -340,8 +334,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Resize
 	 *
@@ -363,8 +355,6 @@ class EE_Image_lib {
 		return $this->$protocol('resize');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Crop
 	 *
@@ -385,8 +375,6 @@ class EE_Image_lib {
 
 		return $this->$protocol('crop');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Image Rotate
@@ -438,8 +426,6 @@ class EE_Image_lib {
 			return $this->image_rotate_gd();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Image Process Using GD/GD2
@@ -549,8 +535,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Process Using ImageMagick
 	 *
@@ -618,8 +602,6 @@ class EE_Image_lib {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Image Process Using NetPBM
@@ -705,8 +687,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Rotate Using GD
 	 *
@@ -757,8 +737,6 @@ class EE_Image_lib {
 
 		return true;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Mirror Image using GD
@@ -824,8 +802,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preserves transparencies when working with GIFs and PNGs
 	 *
@@ -875,8 +851,6 @@ class EE_Image_lib {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Watermark
 	 *
@@ -898,8 +872,6 @@ class EE_Image_lib {
 			return $this->text_watermark();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Watermark - Graphic Version
@@ -1029,8 +1001,6 @@ class EE_Image_lib {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Watermark - Text Version
@@ -1195,8 +1165,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Image - GD
 	 *
@@ -1253,8 +1221,6 @@ class EE_Image_lib {
 		$this->set_error(array('imglib_unsupported_imagecreate'));
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write image file to disk - GD
@@ -1318,8 +1284,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Dynamically outputs an image
 	 *
@@ -1350,8 +1314,6 @@ class EE_Image_lib {
 				break;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Re-proportion Image Width/Height
@@ -1400,8 +1362,6 @@ class EE_Image_lib {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get image properties
@@ -1453,8 +1413,6 @@ class EE_Image_lib {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Size calculator
@@ -1508,8 +1466,6 @@ class EE_Image_lib {
 		return $vals;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Explode source_image
 	 *
@@ -1532,8 +1488,6 @@ class EE_Image_lib {
 		return array('ext' => $ext, 'name' => $name);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is GD Installed?
 	 *
@@ -1553,8 +1507,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get GD version
 	 *
@@ -1573,8 +1525,6 @@ class EE_Image_lib {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set error message
@@ -1603,8 +1553,6 @@ class EE_Image_lib {
 			log_message('error', $msg);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show error messages

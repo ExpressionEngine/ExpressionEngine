@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine File Caching Class
  *
@@ -39,8 +37,6 @@ class EE_Cache_file extends CI_Driver {
 		$this->_cache_path = PATH_CACHE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
@@ -69,8 +65,6 @@ class EE_Cache_file extends CI_Driver {
 
 		return $data['data'];
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Save value to cache
@@ -131,8 +125,6 @@ class EE_Cache_file extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Delete from cache
 	 *
@@ -171,8 +163,6 @@ class EE_Cache_file extends CI_Driver {
 		return file_exists($path) ? unlink($path) : FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean the cache
 	 *
@@ -199,8 +189,6 @@ class EE_Cache_file extends CI_Driver {
 		return $result;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Info
 	 *
@@ -210,8 +198,6 @@ class EE_Cache_file extends CI_Driver {
 	{
 		return get_dir_file_info($this->_cache_path, FALSE);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get Cache Metadata
@@ -251,8 +237,6 @@ class EE_Cache_file extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Is supported
 	 *
@@ -264,8 +248,6 @@ class EE_Cache_file extends CI_Driver {
 	{
 		return is_really_writable($this->_cache_path);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * If a namespace was specified, prefixes the key with it

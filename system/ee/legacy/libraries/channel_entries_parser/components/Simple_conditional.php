@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Simple Conditionals)
  *
@@ -32,8 +30,6 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_componen
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * No preprocessing required.
 	 *
@@ -45,8 +41,6 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_componen
 	{
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the simple conditionals

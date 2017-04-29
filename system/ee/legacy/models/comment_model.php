@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Comment Model
  *
@@ -42,8 +40,6 @@ class Comment_model extends CI_Model {
 			$this->db->query("UPDATE exp_channel_titles SET comment_total = '".($query->row('count') )."', recent_comment_date = '$comment_date' WHERE entry_id = '".$this->db->escape_str($entry_id)."'");
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Email Recipient Array

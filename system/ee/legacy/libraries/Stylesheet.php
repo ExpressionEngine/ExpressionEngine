@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Stylesheet Class
  *
@@ -100,8 +98,6 @@ class EE_Stylesheet {
 		$this->_send_css($this->style_cache[$stylesheet], $row['edit_date']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * EE Channel:form CSS
 	 *
@@ -127,8 +123,6 @@ class EE_Stylesheet {
 
 		$this->_send_css($out, time());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send CSS
@@ -177,8 +171,6 @@ class EE_Stylesheet {
 		header("Content-type: text/css");
 		exit($stylesheet);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

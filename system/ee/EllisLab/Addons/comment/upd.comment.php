@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Comment Module
  *
@@ -42,8 +40,6 @@ class Comment_upd {
 		return $tabs;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -138,8 +134,6 @@ class Comment_upd {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -178,8 +172,6 @@ class Comment_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

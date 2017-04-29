@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Field Model
  *
@@ -33,8 +31,6 @@ class Field_model extends CI_Model {
 		$this->db->where('field_id', $field_id);
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Field Group
@@ -69,8 +65,6 @@ class Field_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Field Group
 	 *
@@ -83,8 +77,6 @@ class Field_model extends CI_Model {
 		$this->db->where('group_id', $group_id);
 		return $this->db->get('field_groups');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Field Groups
@@ -105,8 +97,6 @@ class Field_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Field Group Data
 	 *
@@ -126,8 +116,6 @@ class Field_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert Field Group
 	 *
@@ -143,8 +131,6 @@ class Field_model extends CI_Model {
 
 		$this->db->insert('field_groups', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Fields
@@ -163,8 +149,6 @@ class Field_model extends CI_Model {
 
 		return $field_ids;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Field Groups
@@ -192,8 +176,6 @@ class Field_model extends CI_Model {
 		return $field_ids;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Field Groups
@@ -238,8 +220,6 @@ class Field_model extends CI_Model {
 		return $deleted_fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Duplicate Field Group Name Check
 	 *
@@ -271,8 +251,6 @@ class Field_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get all field content types
 	 *
@@ -291,8 +269,6 @@ class Field_model extends CI_Model {
 
 		return $field_types;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get all channels the field group is assigned to

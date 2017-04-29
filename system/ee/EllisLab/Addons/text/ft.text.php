@@ -10,8 +10,6 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Text Fieldtype Class
  *
@@ -31,8 +29,6 @@ class Text_ft extends EE_Fieldtype {
 	// Parser Flag (preparse pairs?)
 	var $has_array_data = FALSE;
 
-
-	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
@@ -93,8 +89,6 @@ class Text_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save the field's value
 	 *
@@ -126,8 +120,6 @@ class Text_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
@@ -190,8 +182,6 @@ class Text_ft extends EE_Fieldtype {
 		return form_input($field);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -219,8 +209,6 @@ class Text_ft extends EE_Fieldtype {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -347,8 +335,6 @@ class Text_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns allowed content types for the text fieldtype
 	 *
@@ -364,14 +350,10 @@ class Text_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -387,8 +369,6 @@ class Text_ft extends EE_Fieldtype {
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	function settings_modify_column($data)
 	{
 		if (empty($data['field_settings']))
@@ -401,8 +381,6 @@ class Text_ft extends EE_Fieldtype {
 
 		return $this->_get_column_settings($field_content_type, $data['field_id']);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function grid_settings_modify_column($data)
 	{
@@ -419,8 +397,6 @@ class Text_ft extends EE_Fieldtype {
 			TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -431,8 +407,6 @@ class Text_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns database column setting for a particular text field configuration
@@ -477,8 +451,6 @@ class Text_ft extends EE_Fieldtype {
 		return $fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	function _format_number($data, $type = 'all', $decimals = FALSE)
 	{
 		// Numeric fields that have no data are stored as NULL
@@ -508,8 +480,6 @@ class Text_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

@@ -12,8 +12,6 @@ use LogicException;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Select Query
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Calendar Class
  *
@@ -54,8 +52,6 @@ class EE_Calendar {
 		log_message('debug', "Calendar Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize the user preferences
 	 *
@@ -75,8 +71,6 @@ class EE_Calendar {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the calendar
@@ -240,8 +234,6 @@ class EE_Calendar {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Month Name
 	 *
@@ -272,8 +264,6 @@ class EE_Calendar {
 
 		return ee()->lang->line($month);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Day Names
@@ -311,8 +301,6 @@ class EE_Calendar {
 
 		return $days;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Adjust Date
@@ -353,8 +341,6 @@ class EE_Calendar {
 		return $date;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Total days in a given month
 	 *
@@ -383,8 +369,6 @@ class EE_Calendar {
 
 		return $days_in_month[$month - 1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Default Template Data
@@ -420,8 +404,6 @@ class EE_Calendar {
 						'table_close'				=> '</table>'
 					);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Template

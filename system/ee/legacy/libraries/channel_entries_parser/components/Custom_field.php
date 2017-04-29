@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Custom Fields)
  *
@@ -32,8 +30,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 		return in_array('custom_fields', $disabled);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * @todo Find all of the tags like the custom date fields?
 	 *
@@ -45,8 +41,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 	{
 		return ee()->api_channel_fields;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the custom channel fields.

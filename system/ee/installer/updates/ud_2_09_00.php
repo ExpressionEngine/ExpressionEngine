@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -50,8 +48,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Set the hidden_template_indicator config item to a period if the site has
 	 * no specific hidden template indicator.
@@ -65,8 +61,6 @@ class Updater {
 			));
 		}
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Add a column to the Template Routes table for storing the parse order
@@ -112,8 +106,6 @@ class Updater {
 			ee()->db->insert('actions', $row_data);
 		}
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Remove the protect_javascript config item and make it a per-template
@@ -269,8 +261,6 @@ class Updater {
 		ee()->remove('config');
 		ee()->set('config', $installer_config);
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * We are strictly enforcing the reserved variable `layout:contents`,

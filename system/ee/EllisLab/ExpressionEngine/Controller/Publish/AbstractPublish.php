@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Abstract Publish Class
  *

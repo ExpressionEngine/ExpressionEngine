@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Link RTE Tool
  *
@@ -51,8 +49,6 @@ class Link_rte {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Libraries we need
 	 *
@@ -64,8 +60,6 @@ class Link_rte {
 			'ui'	=> array('dialog', 'position')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Styles we need
@@ -125,8 +119,6 @@ class Link_rte {
 		ob_end_clean();
 		return $buffer;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * JS Defintion

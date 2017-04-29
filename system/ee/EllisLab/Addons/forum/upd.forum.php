@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Discussion Forum Module
  *
@@ -132,8 +130,6 @@ class Forum_upd {
 		return $perms;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -480,8 +476,6 @@ class Forum_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -533,8 +527,6 @@ class Forum_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater
@@ -972,8 +964,6 @@ class Forum_upd {
 		return TRUE;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * The publish page rewrite messed a few things up since we moved the

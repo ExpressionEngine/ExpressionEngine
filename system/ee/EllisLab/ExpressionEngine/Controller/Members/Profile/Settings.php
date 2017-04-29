@@ -15,8 +15,6 @@ use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Member Profile Personal Settings Class
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Stats Module
  *
@@ -28,8 +26,6 @@ class Stats_upd {
 		ee()->load->dbforge();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *
@@ -48,8 +44,6 @@ class Stats_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
@@ -71,8 +65,6 @@ class Stats_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

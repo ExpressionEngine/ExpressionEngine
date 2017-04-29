@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Pipe-Delimited Typed Column
  *

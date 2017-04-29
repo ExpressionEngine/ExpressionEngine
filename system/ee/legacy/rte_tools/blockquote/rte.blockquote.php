@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Bold RTE Tool
  *
@@ -44,8 +42,6 @@ class Blockquote_rte {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * JS Defintion

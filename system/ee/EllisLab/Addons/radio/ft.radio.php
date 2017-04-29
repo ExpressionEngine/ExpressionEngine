@@ -10,8 +10,6 @@ require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Radio Fieldtype Class
  *
@@ -73,21 +71,15 @@ class Radio_ft extends OptionFieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->_display_field($data, 'grid');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Displays the field for the CP or Frontend, and accounts for grid
@@ -158,8 +150,6 @@ class Radio_ft extends OptionFieldtype {
 		return $r;
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
@@ -210,8 +200,6 @@ class Radio_ft extends OptionFieldtype {
 		return $this->replace_tag($data, $params, $tagdata);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -222,8 +210,6 @@ class Radio_ft extends OptionFieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

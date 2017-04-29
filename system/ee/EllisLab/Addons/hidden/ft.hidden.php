@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Text Fieldtype Class
  *
@@ -34,8 +32,6 @@ class Hidden_ft extends EE_Fieldtype {
 		ee()->javascript->set_global('publish.hidden_fields', array($this->field_id => $this->field_name));
 		return form_hidden($this->field_name, $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

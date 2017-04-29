@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine FilterFactory Class
  *

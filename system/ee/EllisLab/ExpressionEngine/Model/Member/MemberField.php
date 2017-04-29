@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Member Field Model
  *

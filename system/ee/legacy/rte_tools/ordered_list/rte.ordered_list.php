@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Ordered List RTE Tool
  *
@@ -44,8 +42,6 @@ class Ordered_list_rte {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * JS Definition

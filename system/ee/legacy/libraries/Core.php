@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config Class
  *
@@ -243,8 +241,6 @@ class EE_Core {
 		ee()->load->library('api');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize EE
 	 *
@@ -390,8 +386,6 @@ class EE_Core {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Generate Control Panel Request
 	 *
@@ -496,8 +490,6 @@ class EE_Core {
 		});
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Define the BASE constant
 	 * @return void
@@ -506,8 +498,6 @@ class EE_Core {
 	{
 		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Enable Debugging
@@ -521,8 +511,6 @@ class EE_Core {
 		error_reporting(E_ALL);
 		@ini_set('display_errors', 1);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate Page Request
@@ -540,8 +528,6 @@ class EE_Core {
 			$that->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
 		});
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate Page Request
@@ -677,8 +663,6 @@ class EE_Core {
 		ee()->TMPL->run_template_engine($template_group, $template);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Garbage Collection
 	 *
@@ -728,8 +712,6 @@ class EE_Core {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the New Relic transasction name
 	 * @param String/callable $transaction_name Either a string containing the
@@ -760,8 +742,6 @@ class EE_Core {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set iFrame Headers
 	 *
@@ -787,8 +767,6 @@ class EE_Core {
 			ee()->output->set_header('X-Frame-Options: '.$frame_options);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process Secure Forms

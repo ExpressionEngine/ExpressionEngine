@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Unicode Database Conversion
  *
@@ -33,8 +31,6 @@ class Utf8_db_convert {
 		// at least on servers that don't default to that
         ee()->db->query('SET SESSION sql_mode=""');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Do conversion to Unicode

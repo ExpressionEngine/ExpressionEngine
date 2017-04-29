@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Underline RTE Tool
  *
@@ -43,8 +41,6 @@ class Underline_rte {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Definition

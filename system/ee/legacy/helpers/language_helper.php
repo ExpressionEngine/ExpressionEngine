@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Language Helpers
  *
@@ -18,8 +16,6 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/helpers/language_helper.html
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Lang
@@ -38,7 +34,5 @@ if ( ! function_exists('lang'))
 		return ee()->lang->line($line, $id);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 // EOF

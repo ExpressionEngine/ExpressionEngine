@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Model\Member\MemberGroup;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine File Upload Location Model
  *

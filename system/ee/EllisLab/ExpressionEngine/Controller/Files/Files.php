@@ -18,8 +18,6 @@ use EllisLab\ExpressionEngine\Model\File\UploadDestination;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Files Class
  *

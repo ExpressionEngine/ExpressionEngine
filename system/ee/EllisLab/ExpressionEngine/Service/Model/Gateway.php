@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Service\Model;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Gateway
  *

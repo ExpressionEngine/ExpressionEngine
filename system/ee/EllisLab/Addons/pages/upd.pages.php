@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Discussion Pages Module
  *
@@ -44,8 +42,6 @@ class Pages_upd {
 		return $tabs;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -82,8 +78,6 @@ class Pages_upd {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -113,8 +107,6 @@ class Pages_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Updater
 	 *
@@ -140,8 +132,6 @@ class Pages_upd {
 			$this->_do_22_update();
 		}
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * This is basically identical to the forum update script.

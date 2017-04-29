@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Rich Text Editor Module
  *
@@ -29,8 +27,6 @@ class Rte_upd {
 	{
 		ee()->load->dbforge();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -160,8 +156,6 @@ class Rte_upd {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -212,8 +206,6 @@ class Rte_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

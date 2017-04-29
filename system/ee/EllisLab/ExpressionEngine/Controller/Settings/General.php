@@ -14,8 +14,6 @@ use CP_Controller;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP General Settings Class
  *
@@ -212,8 +210,6 @@ class General extends Settings {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Ensure the short name is valid
 	 * @param  string $short_name Short name for the site
@@ -237,8 +233,6 @@ class General extends Settings {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Save the settings from General, but make sure to save site name and label
@@ -266,8 +260,6 @@ class General extends Settings {
 
 		return parent::saveSettings($sections);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * General Settings

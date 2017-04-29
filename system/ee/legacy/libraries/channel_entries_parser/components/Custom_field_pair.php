@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Custom Field Pairs)
  *
@@ -31,8 +29,6 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 	{
 		return in_array('custom_fields', $disabled) OR empty($pre->channel()->pfields);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find any {field} {/field} tag pair chunks in the template and
@@ -74,8 +70,6 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 		return $pfield_chunk;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the custom channel pair fields.

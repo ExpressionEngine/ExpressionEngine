@@ -10,8 +10,6 @@ namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Template Runtime Annotation Class
  *

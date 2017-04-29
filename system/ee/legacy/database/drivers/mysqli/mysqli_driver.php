@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * MySQLi Database Adapter Class - MySQLi only works with PHP 5
  *
@@ -51,8 +49,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	// whether SET NAMES must be used to set the character set
 	var $use_set_names;
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Non-persistent database connection
 	 *
@@ -63,8 +59,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		throw new \Exception('Manual driver connections were removed. Please let us know if you were using them.');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Persistent database connection
 	 *
@@ -74,8 +68,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		throw new \Exception('Manual driver connections were removed. Please let us know if you were using them.');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reconnect
@@ -91,8 +83,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		throw new \Exception('Reconnecting was removed. Please let us know if you were using it.');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Select the database
 	 *
@@ -102,8 +92,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		throw new \Exception('DB selecting was removed. Please let us know if you were using it.');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Version number query string
@@ -115,8 +103,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return "SELECT version() AS ver";
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Execute the query
@@ -133,8 +119,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		$this->last_query = $query;
 		return $query;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep the query
@@ -156,8 +140,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Begin Transaction
@@ -188,8 +170,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Commit Transaction
 	 *
@@ -214,8 +194,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Rollback Transaction
 	 *
@@ -239,8 +217,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		$this->simple_query('SET AUTOCOMMIT=1');
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Escape String
@@ -273,8 +249,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Affected Rows
 	 *
@@ -291,8 +265,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return $this->last_query->rowCount();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert ID
 	 *
@@ -303,8 +275,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return $this->connection->getInsertId();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * "Count All" query
@@ -334,8 +304,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return (int) $row->numrows;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * List table query
 	 *
@@ -357,8 +325,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return $sql;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show column query
 	 *
@@ -372,8 +338,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return "SHOW COLUMNS FROM ".$this->_protect_identifiers($table, TRUE, NULL, FALSE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Field data query
@@ -389,8 +353,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return "SELECT * FROM ".$table." LIMIT 1";
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * The error message string
 	 *
@@ -402,8 +364,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return $this->connection->getErrorMessage();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * The error message number
 	 *
@@ -414,8 +374,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return $this->connection->getErrorNumber();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Escape the SQL Identifiers
@@ -457,8 +415,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return preg_replace('/['.$this->_escape_char.']+/', $this->_escape_char, $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * From Tables
 	 *
@@ -479,8 +435,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return '('.implode(', ', $tables).')';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert statement
 	 *
@@ -496,8 +450,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return "INSERT INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
 	}
-
-	// --------------------------------------------------------------------
 
 
 	/**
@@ -516,8 +468,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return "REPLACE INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert_batch statement
 	 *
@@ -533,8 +483,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return "INSERT INTO ".$table." (".implode(', ', $keys).") VALUES ".implode(', ', $values);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update statement
@@ -568,8 +516,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update_Batch statement
@@ -621,8 +567,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return $sql;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Truncate statement
 	 *
@@ -638,8 +582,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		return "TRUNCATE ".$table;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete statement
@@ -673,8 +615,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 		return "DELETE FROM ".$table.$conditions.$limit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Limit string
 	 *
@@ -697,8 +637,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Close DB Connection

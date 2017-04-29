@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Relative_Date Class
  *
@@ -70,8 +68,6 @@ class Relative_date_object {
 		);
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function __get($name)
 	{
 		if (array_key_exists($name, $this->_units))
@@ -92,8 +88,6 @@ class Relative_date_object {
             E_USER_NOTICE);
         return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * This calculcates the amount of time that has elapsed between two dates
@@ -144,8 +138,6 @@ class Relative_date_object {
 			}
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generates a human readable relative date string

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine IP To Nation Module
  *
@@ -30,8 +28,6 @@ class Ip_to_nation_upd {
 	{
 		ee()->load->dbforge();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -106,8 +102,6 @@ class Ip_to_nation_upd {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -148,8 +142,6 @@ class Ip_to_nation_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

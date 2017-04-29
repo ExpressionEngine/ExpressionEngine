@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -50,8 +48,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Watermarks Table
 	 *
@@ -77,8 +73,6 @@ class Updater {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update File Dimensions Table
 	 *
@@ -101,8 +95,6 @@ class Updater {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Files Table
@@ -149,8 +141,6 @@ class Updater {
 		ee()->smartforge->drop_column('files', 'metadata');
 		ee()->smartforge->drop_column('files', 'status');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Developer Log table
@@ -214,8 +204,6 @@ class Updater {
 		ee()->smartforge->create_table('developer_log');
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Adds the new remember_me table and drops the remember_me column

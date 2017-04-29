@@ -10,8 +10,6 @@ namespace EllisLab\Addons\Spam\Library;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module Source class. We use the Source class
  * instead of plain text in the Spam Module for future proofing. This allows us

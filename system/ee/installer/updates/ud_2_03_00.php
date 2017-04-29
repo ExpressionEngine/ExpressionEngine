@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -45,8 +43,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Session Table
 	 *
@@ -59,8 +55,6 @@ class Updater {
 		// Drop site_id
 		ee()->smartforge->drop_column('sessions', 'site_id');
     }
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replaces emoticon_path in your config file with emoticon_url

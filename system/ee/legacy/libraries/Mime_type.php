@@ -10,8 +10,6 @@ use EllisLab\ExpressionEngine\Library\Mime\MimeType;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Mime type Class
  *

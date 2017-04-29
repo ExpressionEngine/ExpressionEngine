@@ -28,8 +28,6 @@ class BreadthFirstIterator implements \OuterIterator {
 		$this->_first_iterator = $it;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Current Iterator Entry
 	 *
@@ -40,8 +38,6 @@ class BreadthFirstIterator implements \OuterIterator {
 		return $this->_iterator->current();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Current Iterator Key
 	 *
@@ -51,8 +47,6 @@ class BreadthFirstIterator implements \OuterIterator {
 	{
 		return $this->_iterator->key();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Next Iterator Step
@@ -72,8 +66,6 @@ class BreadthFirstIterator implements \OuterIterator {
 		$this->_iterator->next();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Rewind the Iterator
 	 *
@@ -90,8 +82,6 @@ class BreadthFirstIterator implements \OuterIterator {
 		$this->_iterator->rewind();
 		$this->_iterator = $this->_first_iterator;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find a valid iterator entry if it exists
@@ -120,8 +110,6 @@ class BreadthFirstIterator implements \OuterIterator {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get internal iterator
 	 *
@@ -135,8 +123,6 @@ class BreadthFirstIterator implements \OuterIterator {
 	{
 		return $this->_iterator();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get iteration depth

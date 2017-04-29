@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Memcached Caching Class
  *
@@ -54,8 +52,6 @@ class EE_Cache_memcached extends CI_Driver {
 		return is_array($data) ? $data[0] : FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Save value to cache
 	 *
@@ -93,8 +89,6 @@ class EE_Cache_memcached extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Delete from cache
 	 *
@@ -117,8 +111,6 @@ class EE_Cache_memcached extends CI_Driver {
 		return $this->_memcached->delete($this->_namespaced_key($key, $scope));
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean the cache
 	 *
@@ -132,8 +124,6 @@ class EE_Cache_memcached extends CI_Driver {
 
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Cache Info
@@ -152,8 +142,6 @@ class EE_Cache_memcached extends CI_Driver {
 			return $this->_memcached->getExtendedStats();
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get Cache Metadata
@@ -180,8 +168,6 @@ class EE_Cache_memcached extends CI_Driver {
 			'data'		=> $data
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Setup memcached.
@@ -260,8 +246,6 @@ class EE_Cache_memcached extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Is supported
 	 *
@@ -287,8 +271,6 @@ class EE_Cache_memcached extends CI_Driver {
 
 		return $this->_setup_memcached();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a properly namespaced key ready for storage or retreval of any
@@ -341,8 +323,6 @@ class EE_Cache_memcached extends CI_Driver {
 
 		return $this->unique_key($namespace.':'.$key, $scope);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Takes a namespace string and converts it to a string we need to use to
@@ -405,8 +385,6 @@ class EE_Cache_memcached extends CI_Driver {
 
 		return $namespace_string;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Create a new namespace, which essentially invalidates an old/expired
@@ -498,8 +476,6 @@ class EE_Cache_memcached extends CI_Driver {
 			FALSE // Don't namespace this key
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generates a unique identifier for the namespace. We'll use the current

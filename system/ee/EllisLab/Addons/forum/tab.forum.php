@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Discussion Forum Module
  *
@@ -157,8 +155,6 @@ class Forum_tab {
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate Publish
 	 *
@@ -230,8 +226,6 @@ class Forum_tab {
 
 		return $validator->validate($values);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Tab Data
@@ -358,8 +352,6 @@ class Forum_tab {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	function _allowed_forums()
 	{
 		$allowed = array();
@@ -411,8 +403,6 @@ class Forum_tab {
 
 		return $allowed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert forum special characters

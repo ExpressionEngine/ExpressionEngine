@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Functions Class
  *
@@ -73,8 +71,6 @@ class EE_Functions {
 		return $url;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a URL for a Template Route
 	 *
@@ -131,8 +127,6 @@ class EE_Functions {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a custom URL
 	 *
@@ -188,8 +182,6 @@ class EE_Functions {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a url for Pages links
 	 *
@@ -221,8 +213,6 @@ class EE_Functions {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch site index with URI query string
 	 *
@@ -233,8 +223,6 @@ class EE_Functions {
 	{
 		return rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Query String
@@ -267,8 +255,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert EE Tags to Entities
@@ -303,8 +289,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extract path info
@@ -349,8 +333,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace variables
 	 *
@@ -373,8 +355,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Redirect
@@ -437,8 +417,6 @@ class EE_Functions {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Random number/password generator
 	 *
@@ -451,8 +429,6 @@ class EE_Functions {
 	{
 		return random_string($type, $len);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Form declaration
@@ -566,8 +542,6 @@ class EE_Functions {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Form backtrack
 	 *
@@ -660,8 +634,6 @@ class EE_Functions {
 		return reduce_double_slashes($ret);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * eval()
 	 *
@@ -675,8 +647,6 @@ class EE_Functions {
 	{
 		return eval('?'.'>'.$str.'<?php ');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Encode email from template callback
@@ -712,8 +682,6 @@ class EE_Functions {
 
 		return $encoded;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Character limiter
@@ -754,8 +722,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Word limiter
 	 *
@@ -786,8 +752,6 @@ class EE_Functions {
 
 		return trim($str).'&#8230;';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Email Template
@@ -860,8 +824,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create pull-down optios from dirctory map
 	 *
@@ -901,8 +863,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch names of installed language packs
 	 *
@@ -918,8 +878,6 @@ class EE_Functions {
 		$dirs = ee()->lang->language_pack_names();
 		return form_dropdown('language', $dirs, $default);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete cache files
@@ -944,8 +902,6 @@ class EE_Functions {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Direcories
@@ -1021,8 +977,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch allowed channels
 	 *
@@ -1090,8 +1044,6 @@ class EE_Functions {
 		return array_values($allowed_channels);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log Search terms
 	 *
@@ -1139,8 +1091,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Action ID
 	 *
@@ -1160,8 +1110,6 @@ class EE_Functions {
 
 		return LD.'AID:'.ucfirst($class).':'.$method.RD;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Action IDs
@@ -1199,8 +1147,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Categories for Channel Entry/Entries
@@ -1284,8 +1230,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Process Subcategories
 	 *
@@ -1305,8 +1249,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add security hashes to forms
 	 *
@@ -1323,8 +1265,6 @@ class EE_Functions {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate CAPTCHA
 	 *
@@ -1338,8 +1278,6 @@ class EE_Functions {
 		ee()->logger->deprecated('3.0', "ee('Captcha')->create()");
 		return ee('Captcha')->create($old_word, $force_word);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * SQL "AND" or "OR" string for conditional tag parameters
@@ -1425,8 +1363,6 @@ class EE_Functions {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * AR "AND" or "OR" string for conditional tag parameters
@@ -1535,8 +1471,6 @@ class EE_Functions {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assign Conditional Variables
@@ -1710,8 +1644,6 @@ class EE_Functions {
 		return $final_conds;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assign Tag Variables
 	 *
@@ -1884,8 +1816,6 @@ class EE_Functions {
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Find the Full Opening Tag
 	 *
@@ -1918,8 +1848,6 @@ class EE_Functions {
 		return $matches[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch simple conditionals
 	 *
@@ -1938,8 +1866,6 @@ class EE_Functions {
 
 		return explode('|', $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch date variables
@@ -1964,8 +1890,6 @@ class EE_Functions {
 
 		return $match[1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Return parameters as an array
@@ -2030,8 +1954,6 @@ class EE_Functions {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep conditional
 	 *
@@ -2065,8 +1987,6 @@ class EE_Functions {
 		return trim($cond);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Reverse Key Sort
 	 *
@@ -2076,8 +1996,6 @@ class EE_Functions {
 	 * @return	string
 	 */
 	public function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep conditionals
@@ -2166,8 +2084,6 @@ class EE_Functions {
 		return $prepped_string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch file upload paths
 	 *
@@ -2183,8 +2099,6 @@ class EE_Functions {
 		$this->file_paths = ee()->file_upload_preferences_model->get_paths();
 		return $this->file_paths;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * bookmarklet qstr decode
@@ -2211,8 +2125,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

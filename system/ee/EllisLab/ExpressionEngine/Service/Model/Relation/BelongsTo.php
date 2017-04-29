@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\Association\ToOne;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine BelongsTo Relation
  *

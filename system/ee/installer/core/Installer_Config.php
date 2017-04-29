@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config Class
  *
@@ -32,8 +30,6 @@ class Installer_Config Extends EE_Config {
 		$this->config_path = SYSPATH.'user/config/config.php';
 		$this->_initialize();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load the EE config file and set the initial values
@@ -70,8 +66,6 @@ class Installer_Config Extends EE_Config {
 		// Reinforce the subclass_prefix
 		$this->set_item('subclass_prefix', 'Installer_');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set configuration overrides

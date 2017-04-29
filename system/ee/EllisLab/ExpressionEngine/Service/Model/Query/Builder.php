@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Result;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Query Builder
  *

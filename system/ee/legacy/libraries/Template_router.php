@@ -10,8 +10,6 @@ use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Template Router Class
  *

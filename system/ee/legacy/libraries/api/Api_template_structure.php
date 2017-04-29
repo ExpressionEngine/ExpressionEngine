@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Template Structure API Class
  *
@@ -51,8 +49,6 @@ class Api_template_structure extends Api {
 		$this->_load_reserved_groups();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Template Group metadata
 	 *
@@ -85,8 +81,6 @@ class Api_template_structure extends Api {
 		$this->group_info[$group_id] = $query;
 		return $query;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Group
@@ -212,8 +206,6 @@ class Api_template_structure extends Api {
 		return $group_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load Reserved Groups
 	 *
@@ -245,8 +237,6 @@ class Api_template_structure extends Api {
 			$this->reserved_names[] = ee()->config->item("profile_trigger");
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * File Extensions
@@ -285,8 +275,6 @@ class Api_template_structure extends Api {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

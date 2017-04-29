@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -51,8 +49,6 @@ class Updater {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Modify custom fields in exp_category_data.  Again.
 	 *
@@ -83,8 +79,6 @@ class Updater {
 			);
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Change all date formatting columns to show full years again
@@ -136,8 +130,6 @@ class Updater {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Adds a login_state column to the sessions table
 	 * defaulted to yes
@@ -151,8 +143,6 @@ class Updater {
 			)
 		));
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Populates the new prv_msg_enabled and prv_msg_allow_attachments settings,
@@ -169,8 +159,6 @@ class Updater {
 			'all'
 		);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Rebuilds/sychronizes the can_edit_categories, can_delete_categories

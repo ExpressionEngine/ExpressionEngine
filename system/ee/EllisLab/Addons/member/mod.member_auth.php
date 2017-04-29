@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * Member Management Module
  *
@@ -86,8 +84,6 @@ class Member_auth extends Member {
 		return $this->_var_swap($login_form, array(
 					$match['1'] => ee()->functions->form_declaration($data)));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Login
@@ -202,8 +198,6 @@ class Member_auth extends Member {
 		$this->$success($sites_array);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check against minimum username/password length
 	 *
@@ -239,8 +233,6 @@ class Member_auth extends Member {
 			return ee()->functions->redirect($this->_member_path($path));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do member auth
@@ -305,8 +297,6 @@ class Member_auth extends Member {
 		return $sess;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do Multi-site authentication
 	 *
@@ -366,8 +356,6 @@ class Member_auth extends Member {
 
 		return $incoming;
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Redirect next site
 	 *
@@ -422,8 +410,6 @@ class Member_auth extends Member {
 		}
 
 	}
-
-	// --------------------------------------------------------------------
 
 	private function _build_multi_success_message($sites)
 	{
@@ -511,8 +497,6 @@ class Member_auth extends Member {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update online user stats
 	 */
@@ -551,8 +535,6 @@ class Member_auth extends Member {
 			->where('member_id', $data['member_id'])
 			->update('online_users', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Logout
@@ -630,8 +612,6 @@ class Member_auth extends Member {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Forgot Password Form
 	 *
@@ -675,8 +655,6 @@ class Member_auth extends Member {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * E-mail Forgotten Password Reset Token to User
@@ -824,8 +802,6 @@ class Member_auth extends Member {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Reset Password Form Method
 	 *
@@ -891,8 +867,6 @@ class Member_auth extends Member {
 			array('form_declaration' => ee()->functions->form_declaration($data))
 		);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Reset Password Processing Action

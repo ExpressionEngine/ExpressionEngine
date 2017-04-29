@@ -18,8 +18,6 @@ use EllisLab\ExpressionEngine\Controller\Members;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Member Fields Class
  *

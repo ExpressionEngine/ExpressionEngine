@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -78,8 +76,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Migrate the database information from database.php to config.php
 	 *
@@ -107,8 +103,6 @@ class Updater {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Ensure filepicker and comment modules are installed
 	 */
@@ -135,8 +129,6 @@ class Updater {
 		ee()->addons->install_modules($required_modules);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Removes 3 columns and adds 1 column to the email_cache table
 	 *
@@ -158,8 +150,6 @@ class Updater {
 		);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Removes the upload_loc column from the upload_no_access table.
 	 *
@@ -169,8 +159,6 @@ class Updater {
 	{
 		ee()->smartforge->drop_column('upload_no_access', 'upload_loc');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Previously, Comment module settings were stored in config.php. Since the
@@ -198,8 +186,6 @@ class Updater {
 		ee()->config->update_site_prefs($settings, 'all');
 		ee()->config->_update_config(array(), $settings);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * cookie_httponly and cookie_secure were only stored in config.php, let's
@@ -379,8 +365,6 @@ class Updater {
 			ee()->db->update_batch('specialty_templates', $templates, 'template_id');
 		}
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * We are removing the per-template "save to file" option. Instead it is
@@ -1294,8 +1278,6 @@ class Updater {
 		ee()->smartforge->drop_table('referrers');
 	}
 
-	// -------------------------------------------------------------------------
-
 	private function _export_mailing_lists()
 	{
 		// Missing the mailing list tables? Get out of here.
@@ -1346,8 +1328,6 @@ class Updater {
 		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Cleans up database for mailing list module remnants
 	 */
@@ -1376,8 +1356,6 @@ class Updater {
 		ee()->db->where('module_name', 'Mailinglist')->delete('modules');
 		ee()->db->where('class', 'Mailinglist')->delete('actions');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Adds the column "title_field_label" to the channels tabel and sets it's
@@ -1497,8 +1475,6 @@ class Updater {
 		);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Remove user configurable paths since user-servicable directory covers
 	 * them now
@@ -1514,8 +1490,6 @@ class Updater {
 			'log_path'           => ''
 		));
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Install all plugins found

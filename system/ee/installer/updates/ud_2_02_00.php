@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -50,8 +48,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Session Table
 	 *
@@ -78,8 +74,6 @@ class Updater {
 		ee()->smartforge->modify_column('sessions', $field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Password lockout Table
 	 *
@@ -101,8 +95,6 @@ class Updater {
 
 		ee()->smartforge->modify_column('password_lockout', $field);
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update members table
 	 *
@@ -152,8 +144,6 @@ class Updater {
 		ee()->smartforge->add_column('members', $field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add caption field to files
 	 */
@@ -168,8 +158,6 @@ class Updater {
 		ee()->smartforge->add_column('files', $field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Adds an index on exp_comments(comment_date)
 	 */
@@ -177,8 +165,6 @@ class Updater {
 	{
 		ee()->smartforge->add_key('comments', 'comment_date', 'comment_date_idx');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Adds an index on template_groups(group_name) & template_groups(group_order)
@@ -189,8 +175,6 @@ class Updater {
 		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Alter Sidebar state default
 	 */
@@ -198,8 +182,6 @@ class Updater {
 	{
 		ee()->db->query("ALTER TABLE exp_members ALTER COLUMN show_sidebar SET DEFAULT 'n'");
 	}
-
-	// --------------------------------------------------------------------
 
 }
 /* END CLASS */

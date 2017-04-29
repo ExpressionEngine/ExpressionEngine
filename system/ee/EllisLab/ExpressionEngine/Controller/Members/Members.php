@@ -19,8 +19,6 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Members Class
  *
@@ -1043,8 +1041,6 @@ class Members extends CP_Controller {
 		$this->base_url->addQueryStringVariables($this->params);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Looks through the member search string for search tokens (e.g. id:3
 	 * or username:john)
@@ -1088,8 +1084,6 @@ class Members extends CP_Controller {
 		return $search_string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate post re-assignment view if applicable
 	 *
@@ -1126,8 +1120,6 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = lang('delete_member');
 		ee()->cp->render('members/delete_confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Delete
@@ -1215,8 +1207,6 @@ class Members extends CP_Controller {
 		ee()->functions->redirect($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check to see if the members being deleted are super admins. If they are
 	 * we need to make sure that the deleting user is a super admin and that
@@ -1257,8 +1247,6 @@ class Members extends CP_Controller {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send email notifications to email addresses for the respective member
@@ -1328,8 +1316,6 @@ class Members extends CP_Controller {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Set the header for the members section

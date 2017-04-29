@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Rich Text Fieldtype Class
  *
@@ -27,8 +25,6 @@ class Rte_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -39,8 +35,6 @@ class Rte_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
@@ -54,16 +48,12 @@ class Rte_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		ee()->load->library('rte_lib');
 
 		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings);
 	}
-
-	// --------------------------------------------------------------------
 
 	function grid_display_field($data)
 	{
@@ -72,16 +62,12 @@ class Rte_ft extends EE_Fieldtype {
 		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings, 'grid');
 	}
 
-	// --------------------------------------------------------------------
-
 	function save($data)
 	{
 		ee()->load->library('rte_lib');
 
 		return ee()->rte_lib->save_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
@@ -108,8 +94,6 @@ class Rte_ft extends EE_Fieldtype {
 		// in when a list is indented.
 		return str_replace('&nbsp;', ' ', $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -151,8 +135,6 @@ class Rte_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function save_settings($data)
 	{
 		return array(
@@ -161,14 +143,10 @@ class Rte_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

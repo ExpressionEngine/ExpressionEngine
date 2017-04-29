@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Admin Model
  *
@@ -59,8 +57,6 @@ class Addons_model extends CI_Model {
 		asort($return);
 		return $return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Plugins
@@ -201,8 +197,6 @@ class Addons_model extends CI_Model {
 		return $info;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Installed Modules
 	 *
@@ -226,8 +220,6 @@ class Addons_model extends CI_Model {
 		return $this->db->get('modules');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Installed Extensions
 	 *
@@ -249,8 +241,6 @@ class Addons_model extends CI_Model {
 
 		return $this->db->get('extensions');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module installed
@@ -275,8 +265,6 @@ class Addons_model extends CI_Model {
 		return $_installed[$module_name];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extension installed
 	 *
@@ -300,8 +288,6 @@ class Addons_model extends CI_Model {
 		return $_installed[$ext_name];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fieldtype installed
 	 *
@@ -324,8 +310,6 @@ class Addons_model extends CI_Model {
 
 		return $_installed[$ft_name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * RTE Tool installed
@@ -355,8 +339,6 @@ class Addons_model extends CI_Model {
 
 		return $_installed[$tool_name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update an Extension

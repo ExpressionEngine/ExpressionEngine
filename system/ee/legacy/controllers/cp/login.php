@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Login Class
  *
@@ -32,8 +30,6 @@ class Login extends CP_Controller {
 		$this->load->library('auth');
 		$this->lang->loadfile('login');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Main login form
@@ -140,8 +136,6 @@ class Login extends CP_Controller {
 		$this->view->render('account/login');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate user
 	 *
@@ -244,8 +238,6 @@ class Login extends CP_Controller {
 		$this->functions->redirect($return_path);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Username/password update form
 	 *
@@ -304,8 +296,6 @@ class Login extends CP_Controller {
 
 		return ee('View')->make('account/update_un_pw')->render($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the username/password
@@ -408,8 +398,6 @@ class Login extends CP_Controller {
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Lock CP
 	 *
@@ -430,8 +418,6 @@ class Login extends CP_Controller {
 			'message' => 'locked'
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Log-out
@@ -475,8 +461,6 @@ class Login extends CP_Controller {
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Forgotten password form
 	 *
@@ -506,8 +490,6 @@ class Login extends CP_Controller {
 
 		$this->view->render('account/forgot_password');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Request a forgotten password
@@ -606,8 +588,6 @@ class Login extends CP_Controller {
 
 		$this->forgotten_password_form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reset Password
@@ -741,8 +721,6 @@ class Login extends CP_Controller {
 		$this->view->render('account/reset_password');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Replace variables
 	 */
@@ -760,8 +738,6 @@ class Login extends CP_Controller {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *	Refresh XID
@@ -788,8 +764,6 @@ class Login extends CP_Controller {
 			'message' => 'refresh'
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *	Return to login

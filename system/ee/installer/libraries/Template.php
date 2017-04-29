@@ -10,8 +10,6 @@
 if ( ! defined('LD')) define('LD', '{');
 if ( ! defined('RD')) define('RD', '}');
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Installer Template Handling Class
  *

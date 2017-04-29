@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Ip to Nation Module
  *
@@ -64,8 +62,6 @@ class Ip_to_nation {
 
 		return $this->return_data;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Countries

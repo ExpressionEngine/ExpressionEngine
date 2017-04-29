@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Form Javascript Class
  *
@@ -36,8 +34,6 @@ class Channel_form_javascript
 
 		ee()->lang->loadfile('jquery');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Combo Load

@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Form Exception Class
  *
@@ -36,8 +34,6 @@ class Channel_form_exception extends Exception {
 		parent::__construct($message);
 		$this->_type = $type;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Custom accessor to show the user error at the catch site

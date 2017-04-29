@@ -12,8 +12,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Member Import Class
  *
@@ -170,8 +168,6 @@ class MemberImport extends Utilities {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Confirm Import Member Data from XML
 	 *
@@ -256,8 +252,6 @@ class MemberImport extends Utilities {
 
 		ee()->cp->render('utilities/member-import/confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process XML
@@ -351,8 +345,6 @@ class MemberImport extends Utilities {
 
 		$this->functions->redirect(ee('CP/URL')->make('utilities/member_import'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate XML for Member Import
@@ -597,8 +589,6 @@ class MemberImport extends Utilities {
 		return $errors;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do Import
 	 *
@@ -745,8 +735,6 @@ class MemberImport extends Utilities {
 		return $counter;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Custom Field Check
 	 *
@@ -834,8 +822,6 @@ class MemberImport extends Utilities {
 		return $new_custom_fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * New Custom Fields Form
 	 *
@@ -856,8 +842,6 @@ class MemberImport extends Utilities {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/member_import'), lang('member_import'));
 		ee()->cp->render('utilities/member-import/custom', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Custom Fields
@@ -932,8 +916,6 @@ class MemberImport extends Utilities {
 
 		return $this->memberImportConfirm();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Custom Field Validation

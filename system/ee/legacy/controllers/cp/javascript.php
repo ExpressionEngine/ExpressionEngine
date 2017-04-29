@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Javascript Loading Class
  *
@@ -34,8 +32,6 @@ class Javascript extends CI_Controller {
 		$this->load->library('javascript_loader');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Index function
 	 *
@@ -47,8 +43,6 @@ class Javascript extends CI_Controller {
 		// use view->script_tag() instead
 		// $this->load('jquery');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Spellcheck iFrame
@@ -70,8 +64,6 @@ class Javascript extends CI_Controller {
 		return EE_Spellcheck::iframe();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Spellcheck
 	 *
@@ -91,8 +83,6 @@ class Javascript extends CI_Controller {
 
 		return EE_Spellcheck::check();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load
@@ -167,8 +157,6 @@ class Javascript extends CI_Controller {
 		$this->output->set_output($contents);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Javascript from extensions
 	 *
@@ -197,8 +185,6 @@ class Javascript extends CI_Controller {
 		$this->output->set_output($str);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Combo Loader

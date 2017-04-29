@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * CodeIgniter Inflector Helpers
  *
@@ -19,8 +17,6 @@
  * @link		http://codeigniter.com/user_guide/helpers/directory_helper.html
  */
 
-
-// --------------------------------------------------------------------
 
 /**
  * Singular
@@ -59,8 +55,6 @@ if ( ! function_exists('singular'))
 		return $str;
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Plural
@@ -112,8 +106,6 @@ if ( ! function_exists('plural'))
 	}
 }
 
-// --------------------------------------------------------------------
-
 /**
  * Camelize
  *
@@ -133,8 +125,6 @@ if ( ! function_exists('camelize'))
 	}
 }
 
-// --------------------------------------------------------------------
-
 /**
  * Underscore
  *
@@ -151,8 +141,6 @@ if ( ! function_exists('underscore'))
 		return preg_replace('/[\s]+/', '_', strtolower(trim($str)));
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Humanize

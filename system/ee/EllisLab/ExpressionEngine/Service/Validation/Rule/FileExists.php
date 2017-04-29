@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine File Exists Validation Rule
  *

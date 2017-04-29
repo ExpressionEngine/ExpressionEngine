@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Language Class
  *
@@ -50,8 +48,6 @@ class EE_Lang {
 		$this->load($which, $idiom, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the idiom for the current user/situation
 	 * @return string The idiom to load
@@ -65,8 +61,6 @@ class EE_Lang {
 
 		return ee()->config->item('deft_lang') ?: 'english';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load a language file
@@ -171,8 +165,6 @@ class EE_Lang {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *   Fetch a specific line of text
 	 *
@@ -195,8 +187,6 @@ class EE_Lang {
 			return stripslashes($line);
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Get a list of available language packs

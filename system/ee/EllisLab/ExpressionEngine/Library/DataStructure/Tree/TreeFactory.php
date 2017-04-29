@@ -45,8 +45,6 @@ class TreeFactory {
 		return $this->buildTree($data, $conf);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Flatten the tree to a list of data objects.
 	 *
@@ -64,8 +62,6 @@ class TreeFactory {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tree Builder
@@ -124,7 +120,5 @@ class TreeFactory {
 		return $tree;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 // EOF

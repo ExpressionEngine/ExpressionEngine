@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Segment Helper
  *
@@ -19,8 +17,6 @@
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-
-// ------------------------------------------------------------------------
 
 	/**
 	  *  Parse Day
@@ -42,8 +38,6 @@
 		return array('year' => $year, 'month' => $month, 'day' => $day, 'qstring' => $qstring);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Parse Year and Month
 	  */
@@ -62,8 +56,6 @@
 
 		return array('year' => $year, 'month' => $month, 'qstring' => $qstring);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parse category ID from query string

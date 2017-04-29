@@ -18,8 +18,6 @@ use EllisLab\ExpressionEngine\Service\Model\Association\Association;
  * release. Pardon our dust.
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Model Relationship Mixin
  *

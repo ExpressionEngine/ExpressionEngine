@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Form Category Tree Factory
  *
@@ -27,8 +25,6 @@ class Channel_form_category_tree {
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Form Category Tree Class
  *
@@ -41,8 +37,6 @@ class Channel_form_category_tree {
 class Channel_form_category_tree_obj {
 
 	protected $categories = array();
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Category Tree
@@ -146,14 +140,10 @@ class Channel_form_category_tree_obj {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	public function categories()
 	{
 		return $this->categories;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Category sub-tree

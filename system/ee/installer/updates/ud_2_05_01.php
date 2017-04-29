@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Update Class
  *
@@ -43,8 +41,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	private function _update_ip_address_length()
 	{

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Core Localization Class
  *
@@ -54,8 +52,6 @@ class Localize {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * String to Timestamp
 	 *
@@ -88,8 +84,6 @@ class Localize {
 		return ($dt) ? $dt->format('U') : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Given an EE date format and a Unix timestamp, returns the human-readable
 	 * date in the specified timezone or member's current timezone.
@@ -121,8 +115,6 @@ class Localize {
 
 		return $format;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Given an date variable and a DateTime object, returns the associated
@@ -205,8 +197,6 @@ class Localize {
 		return $var;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Provides common date format for things like date fields, and takes
 	 * into consideration the member's time_format preference
@@ -231,8 +221,6 @@ class Localize {
 
 		return $this->format_date($format_string, $timestamp, $localize);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Provides the date format to use for calculating time (both input and output)
@@ -266,8 +254,6 @@ class Localize {
 
 		return $format_string;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns a DateTime object for the current time and member timezone
@@ -381,8 +367,6 @@ class Localize {
 
 		return $dt;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generates an HTML menu of timezones
@@ -535,8 +519,6 @@ EOF;
 		return $output;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Loads countries config file and creates localized array of country
 	 * codes corresponding to country names
@@ -572,8 +554,6 @@ EOF;
 		return $this->_countries;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates and returns a cached array of timezones by country.
 	 *
@@ -606,8 +586,6 @@ EOF;
 		return $this->_timezones_by_country;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the country code for a given PHP timezone
 	 *
@@ -627,8 +605,6 @@ EOF;
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets the PHP timezone for the legacy timezone format EE used to
@@ -693,8 +669,6 @@ EOF;
 		return $zones[$zone];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Localize month name
 	 *
@@ -726,8 +700,6 @@ EOF;
 			return $months[$month];
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reads the configured date format from either userdata or the site's

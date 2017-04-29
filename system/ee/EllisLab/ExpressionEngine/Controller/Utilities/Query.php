@@ -14,8 +14,6 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Query Class
  *
@@ -64,8 +62,6 @@ class Query extends Utilities {
 		ee()->view->cp_page_title = lang('sql_query_form');
 		ee()->cp->render('utilities/query/index');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Query handler

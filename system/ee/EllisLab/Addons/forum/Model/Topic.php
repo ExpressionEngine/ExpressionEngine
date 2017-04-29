@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Topic Model for the Forum
  *

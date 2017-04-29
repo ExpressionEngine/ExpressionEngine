@@ -9,8 +9,6 @@ namespace EllisLab\ExpressionEngine\Controller\Settings;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP License Class
  *

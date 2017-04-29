@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Rich Text Editor Module
  *
@@ -56,8 +54,6 @@ class Rte {
 		ee()->output->set_header("Content-Type: text/javascript");
 		ee()->output->set_output($js);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns the action URL for the RTE JavaScript

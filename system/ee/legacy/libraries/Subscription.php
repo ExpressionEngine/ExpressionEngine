@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Subscription Class
  *
@@ -28,8 +26,6 @@ class EE_Subscription {
 
 	var $table;
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * init the library
 	 *
@@ -44,8 +40,6 @@ class EE_Subscription {
 
 		$this->table	 = $module.'_subscriptions';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check if they're subscribed
@@ -95,8 +89,6 @@ class EE_Subscription {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark post as read
 	 *
@@ -108,8 +100,6 @@ class EE_Subscription {
 		$this->_mark($identifiers, 'n', $skip_prep);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark post as unread
 	 *
@@ -120,8 +110,6 @@ class EE_Subscription {
 	{
 		$this->_mark($identifiers, 'y', $skip_prep);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add subscriptions for current post
@@ -210,8 +198,6 @@ class EE_Subscription {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove subscriptions for current post
 	 *
@@ -259,8 +245,6 @@ class EE_Subscription {
 		ee()->db->delete($this->table);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove all subscriptions for a publisher
 	 *
@@ -274,8 +258,6 @@ class EE_Subscription {
 		ee()->db->where($this->publisher);
 		ee()->db->delete($this->table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get subscription totals
@@ -307,8 +289,6 @@ class EE_Subscription {
 
 		return $return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get subscribers
@@ -375,8 +355,6 @@ class EE_Subscription {
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep user data
 	 *
@@ -437,8 +415,6 @@ class EE_Subscription {
 		return array($member_ids, $emails);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark a subscription as read / unread
 	 *
@@ -485,8 +461,6 @@ class EE_Subscription {
 		ee()->db->where($this->publisher);
 		ee()->db->update($this->table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Identify the current user

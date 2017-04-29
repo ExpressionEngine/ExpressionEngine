@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Plugin Model
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Email Module
  *
@@ -35,8 +33,6 @@ class Email {
 	{
 		$this->use_captchas = ee('Captcha')->shouldRequireCaptcha() ? 'y' : 'n';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Contact Form
@@ -174,8 +170,6 @@ class Email {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show an email preview for different emails
 	 * @return string Parsed tagdata with relevant fields available for parsing
@@ -208,8 +202,6 @@ class Email {
 		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Load up the preview template and render it
 	 * @return void
@@ -238,8 +230,6 @@ class Email {
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($segments[0], $segments[1]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tell a friend form
@@ -451,8 +441,6 @@ class Email {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Strips fields of HTML based on $allow_html
 	 *
@@ -488,8 +476,6 @@ class Email {
 
 		return $template;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Send Email
@@ -744,8 +730,6 @@ class Email {
 		$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * mail_recipients
 	 *
@@ -933,8 +917,6 @@ class Email {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate List of Emails
 	 */
@@ -985,8 +967,6 @@ class Email {
 
 		return array('approved' => $approved_emails, 'error' => $error);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup forms
@@ -1061,8 +1041,6 @@ class Email {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Encrypt a given string of data
 	 * @param string $data Raw data to encrypt
@@ -1072,8 +1050,6 @@ class Email {
 	{
 		return ee('Encrypt')->encode($data, md5(ee()->db->username.ee()->db->password));
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Decrypt a given string of data, assumed to be base64_encoded

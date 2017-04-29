@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Members library
  *
@@ -409,8 +407,6 @@ class Members {
 		return array('success', $edit_image, $updated);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 *	Resize Member Images
 	 *
@@ -454,8 +450,6 @@ class Members {
 
 		return ( ! ee()->image_lib->resize()) ? FALSE : TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 *	Get formatted list of member subscriptions

@@ -15,8 +15,6 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Home Page Class
  *
@@ -106,8 +104,6 @@ class Logs extends CP_Controller {
 			ee()->functions->redirect(ee('CP/URL')->make('logs/cp'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Deletes log entries, either all at once, or one at a time

@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Module
  *
@@ -100,8 +98,6 @@ class Channel {
 			'month_limit', 'offset', 'author_id', 'url_title');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Initialize values
 	  */
@@ -110,8 +106,6 @@ class Channel {
 		$this->sql 			= '';
 		$this->return_data	= '';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch Cache
@@ -124,8 +118,6 @@ class Channel {
 
 		return ee()->cache->get('/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Save Cache
@@ -140,8 +132,6 @@ class Channel {
 			0	// No TTL, cache lives on till cleared
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel entries
@@ -302,8 +292,6 @@ class Channel {
 		return $this->return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Track Views
 	  */
@@ -337,8 +325,6 @@ class Channel {
 			ee()->db->query($sql);
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch custom channel field IDs
@@ -377,8 +363,6 @@ class Channel {
 		ee()->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Fetch custom member field IDs
 	  */
@@ -408,8 +392,6 @@ class Channel {
 			$this->mfields = array();
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch categories
@@ -517,8 +499,6 @@ class Channel {
 		unset($this->cat_array);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch dynamic parameters
 	 *
@@ -601,10 +581,6 @@ class Channel {
 		return $tag;
 	}
 
-
-	// ------------------------------------------------------------------------
-
-
 	/****************************************************************
 	* Field Searching
 	*
@@ -615,8 +591,6 @@ class Channel {
 	*  all of those fields will be searched.
 	*
 	*****************************************************************/
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate the SQL where condition to handle the {exp:channel:entries}
@@ -2341,8 +2315,6 @@ class Channel {
 		$this->sql .= $end;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Gets timezone offset for use in SQL queries for the display_by parameter
 	 *
@@ -2374,8 +2346,6 @@ class Channel {
 
 		return $offset;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Parse channel entries
@@ -2491,8 +2461,6 @@ class Channel {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function callback_entry_row_data($tagdata, $row)
 	{
 		// -------------------------------------------
@@ -2511,8 +2479,6 @@ class Channel {
 		return $row;
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function callback_tagdata_loop_start($tagdata, $row)
 	{
 		// -------------------------------------------
@@ -2530,8 +2496,6 @@ class Channel {
 		return $tagdata;
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function callback_tagdata_loop_end($tagdata, $row)
 	{
 		// -------------------------------------------
@@ -2548,8 +2512,6 @@ class Channel {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel Info Tag
@@ -2628,8 +2590,6 @@ class Channel {
 		return ee()->TMPL->tagdata;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Channel Name
 	  */
@@ -2664,8 +2624,6 @@ class Channel {
 			return '';
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel Categories
@@ -3113,8 +3071,6 @@ class Channel {
 		return $str;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Process Subcategories
 	  */
@@ -3129,8 +3085,6 @@ class Channel {
 			}
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Category archives
@@ -3577,8 +3531,6 @@ class Channel {
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/** --------------------------------
 	/**  Locate category parent
 	/** --------------------------------*/
@@ -3599,8 +3551,6 @@ class Channel {
 			}
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Category Tree
@@ -3861,8 +3811,6 @@ class Channel {
 			$active_cat
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Category Sub-tree
@@ -4158,8 +4106,6 @@ class Channel {
 		ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Close </ul> tags
 	  *
@@ -4185,8 +4131,6 @@ class Channel {
 		if ($count == 0)
 			$this->category_list[] = $tab."</ul>\n";
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel "category_heading" tag
@@ -4419,8 +4363,6 @@ class Channel {
 
 		return ee()->TMPL->tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/** ---------------------------------------
 	/**  Next / Prev entry tags
@@ -4730,8 +4672,6 @@ class Channel {
 
 		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel "month links"
@@ -5152,8 +5092,6 @@ class Channel {
 		return $this->return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Fetch Disable Parameter
 	  */
@@ -5187,8 +5125,6 @@ class Channel {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Channel Calendar
 	  */
@@ -5215,8 +5151,6 @@ class Channel {
 		return $WC->calendar();
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Ajax Image Upload
 	  *
@@ -5240,8 +5174,6 @@ class Channel {
 
 		ee()->filemanager->process_request($config);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Smiley pop up
@@ -5361,8 +5293,6 @@ class Channel {
 		exit;
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function form()
 	{
 		ee()->load->library('channel_form/channel_form_lib');
@@ -5381,8 +5311,6 @@ class Channel {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * submit_entry
@@ -5408,8 +5336,6 @@ class Channel {
 			return $e->show_user_error();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * combo_loader

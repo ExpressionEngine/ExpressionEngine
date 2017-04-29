@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine View Helper
  *
@@ -19,8 +17,6 @@
  * @link		https://ellislab.com
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * Extend a view in the _template directory
  */
@@ -28,8 +24,6 @@ function extend_template($which, $disable = array())
 {
 	ee()->view->extend('_templates/'.$which, $disable);
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Extend a view. Contents of the current view
@@ -40,8 +34,6 @@ function extend_view($which, $disable = array())
 	ee()->view->extend($which, $disable);
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Check if a view block is disabled
  */
@@ -49,8 +41,6 @@ function disabled($which)
 {
 	return ee()->view->disabled($which);
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Check if a view block is enabled

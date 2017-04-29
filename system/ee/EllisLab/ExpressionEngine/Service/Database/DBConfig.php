@@ -13,8 +13,6 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Database Config Class
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Relationship Model
  *
@@ -26,8 +24,6 @@ class Relationship_model extends CI_Model {
 	const GRID = 4;
 
 	protected $_table = 'relationships';
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 *
@@ -47,8 +43,6 @@ class Relationship_model extends CI_Model {
 		$entry_ids = array_unique($entry_ids);
 		return $this->_run_node_query($node, $entry_ids, $grid_field_id);
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 *
@@ -186,8 +180,6 @@ class Relationship_model extends CI_Model {
 		return $result;
 	}
 
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Branch length utility method.

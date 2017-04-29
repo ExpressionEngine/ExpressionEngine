@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Template Model
  *

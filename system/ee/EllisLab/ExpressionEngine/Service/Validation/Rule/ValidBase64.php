@@ -12,8 +12,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Valid Base 64 Value Validation Rule
  *

@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * MySQLi Utility Class
  *
@@ -29,8 +27,6 @@ class CI_DB_mysqli_utility extends CI_DB_utility {
 		return "SHOW DATABASES";
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Optimize table query
 	 *
@@ -45,8 +41,6 @@ class CI_DB_mysqli_utility extends CI_DB_utility {
 		return "OPTIMIZE TABLE ".$this->db->escape_identifiers($table);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Repair table query
 	 *
@@ -60,8 +54,6 @@ class CI_DB_mysqli_utility extends CI_DB_utility {
 	{
 		return "REPAIR TABLE ".$this->db->escape_identifiers($table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * MySQLi Export

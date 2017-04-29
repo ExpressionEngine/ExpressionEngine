@@ -12,8 +12,6 @@ use EE_Lang;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Formatter Class
  *

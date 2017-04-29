@@ -11,8 +11,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Rich Text Editor Module
  *
@@ -48,8 +46,6 @@ class Rte_mcp {
 		// Delete missing tools
 		ee()->rte_tool_model->delete_missing_tools();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Homepage
@@ -200,8 +196,6 @@ class Rte_mcp {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update prefs form action
 	 *
@@ -250,8 +244,6 @@ class Rte_mcp {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Provides New Toolset Screen HTML
 	 *
@@ -275,8 +267,6 @@ class Rte_mcp {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Provides Edit Toolset Screen HTML
 	 *
@@ -299,8 +289,6 @@ class Rte_mcp {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Performs bulk actions (enable, disable, or remove) on tool sets
@@ -430,8 +418,6 @@ class Rte_mcp {
 		ee()->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Enables or disables a tool
 	 *
@@ -457,8 +443,6 @@ class Rte_mcp {
 		ee()->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Actual preference-updating code
 	 *
@@ -473,8 +457,6 @@ class Rte_mcp {
 			'rte_default_toolset_id'	=> ee()->input->get_post('rte_default_toolset_id')
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Makes sure users can access a given method

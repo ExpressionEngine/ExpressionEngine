@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Channel Parser Component (Basic Varaibles)
  *
@@ -32,8 +30,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Parse out $search_link for the {member_search_path} variable
 	 *
@@ -49,8 +45,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all variables.
@@ -154,8 +148,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle variables that end in _path or contain "permalink".
@@ -284,8 +276,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle variables that end in _url.
@@ -422,8 +412,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle regular fields as basic replacements.

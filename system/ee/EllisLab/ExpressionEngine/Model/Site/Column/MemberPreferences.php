@@ -13,8 +13,6 @@ use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Member Preferences
  *

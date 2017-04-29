@@ -8,8 +8,6 @@
  * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
  * Member Management Class
  *
@@ -164,8 +162,6 @@ class Member {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep the Request String
 	 */
@@ -272,8 +268,6 @@ class Member {
 
  		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run the Member Class
@@ -417,8 +411,6 @@ class Member {
 		return $this->_final_prep($out);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Private Messages
 	 */
@@ -448,8 +440,6 @@ class Member {
 		return $MESS->return_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Profile - Menu
 	 */
@@ -469,8 +459,6 @@ class Member {
 
 		return $MS->profile_menu();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Private Messages - Menu
@@ -497,8 +485,6 @@ class Member {
 		return $MESS->menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Profile Main Page
 	 */
@@ -518,8 +504,6 @@ class Member {
 
 		return $MS->profile_main();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Public Profile
@@ -541,8 +525,6 @@ class Member {
 		return $MS->public_profile();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Login Page
 	 */
@@ -562,8 +544,6 @@ class Member {
 
 		return $MA->profile_login_form($return);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Profile Edit Page
@@ -585,8 +565,6 @@ class Member {
 		return $MS->edit_profile();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Profile Update
 	 */
@@ -606,8 +584,6 @@ class Member {
 
 		return $MS->update_profile();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Forum Preferences
@@ -629,8 +605,6 @@ class Member {
 		return $MS->edit_preferences();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Preferences
 	 */
@@ -650,8 +624,6 @@ class Member {
 
 		return $MS->update_preferences();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Email Settings
@@ -673,8 +645,6 @@ class Member {
 		return $MS->edit_email();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Email Update
 	 */
@@ -694,8 +664,6 @@ class Member {
 
 		return $MS->update_email();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Username/Password Preferences
@@ -717,8 +685,6 @@ class Member {
 		return $MS->edit_userpass();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Username/Password Update
 	 */
@@ -738,8 +704,6 @@ class Member {
 
 		return $MS->update_userpass();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Localization Edit Form
@@ -761,8 +725,6 @@ class Member {
 		return $MS->edit_localization();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Localization Prefs
 	 */
@@ -782,8 +744,6 @@ class Member {
 
 		return $MS->update_localization();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Signature Edit Form
@@ -805,8 +765,6 @@ class Member {
 		return $MI->edit_signature();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Signature
 	 */
@@ -826,8 +784,6 @@ class Member {
 
 		return $MI->update_signature();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Avatar Edit Form
@@ -849,8 +805,6 @@ class Member {
 		return $MI->edit_avatar();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Browse Avatars
 	 */
@@ -870,8 +824,6 @@ class Member {
 
 		return $MI->browse_avatars();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Select Avatar From Library
@@ -893,8 +845,6 @@ class Member {
 		return $MI->select_avatar();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Photo Edit Form
 	 */
@@ -914,8 +864,6 @@ class Member {
 
 		return $MI->edit_photo();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Notepad Edit Form
@@ -937,8 +885,6 @@ class Member {
 		return $MS->edit_notepad();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Notepad
 	 */
@@ -958,8 +904,6 @@ class Member {
 
 		return $MS->update_notepad();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Login
@@ -981,8 +925,6 @@ class Member {
 		$MA->member_login();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Logout
 	 */
@@ -1002,8 +944,6 @@ class Member {
 
 		$MA->member_logout();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Forgot Password Form
@@ -1027,8 +967,6 @@ class Member {
 		return $MA->forgot_password($ret);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retreive Forgotten Password
 	 */
@@ -1048,8 +986,6 @@ class Member {
 
 		$MA->send_reset_token();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reset the user's password
@@ -1071,8 +1007,6 @@ class Member {
 		return $MA->reset_password();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *
 	 */
@@ -1092,8 +1026,6 @@ class Member {
 
 		return $MA->process_reset_password();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Subscriptions Edit Form
@@ -1115,8 +1047,6 @@ class Member {
 		return $MS->edit_subscriptions();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Subscriptions
 	 */
@@ -1136,8 +1066,6 @@ class Member {
 
 		return $MS->update_subscriptions();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Edit Ignore List Form
@@ -1159,8 +1087,6 @@ class Member {
 		return $MS->edit_ignore_list();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Ignore List
 	 */
@@ -1180,8 +1106,6 @@ class Member {
 
 		return $MS->update_ignore_list();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Mini Search
@@ -1204,8 +1128,6 @@ class Member {
 		return $MS->member_mini_search();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do Member Mini Search
 	 */
@@ -1226,8 +1148,6 @@ class Member {
 		$this->_set_page_title(ee()->lang->line('member_search'));
 		return $MS->do_member_mini_search();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Registration Form
@@ -1251,8 +1171,6 @@ class Member {
 		return $MR->registration_form();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Register Member
 	 */
@@ -1272,8 +1190,6 @@ class Member {
 
 		$MR->register_member();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Self-Activation
@@ -1295,8 +1211,6 @@ class Member {
 		$MR->activate_member();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Page
 	 */
@@ -1304,8 +1218,6 @@ class Member {
 	{
 		return $this->confirm_delete_form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Self-delete confirmation form
@@ -1329,8 +1241,6 @@ class Member {
 			return $this->_var_swap($delete_form, array('form_declaration' => ee()->functions->form_declaration($data)));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member self-delete
@@ -1469,8 +1379,6 @@ class Member {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Login Page
 	 */
@@ -1478,8 +1386,6 @@ class Member {
 	{
 		return $this->profile_login_form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Manual Login Form
@@ -1538,8 +1444,6 @@ class Member {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Username/password update
 	 */
@@ -1559,8 +1463,6 @@ class Member {
 
 		return $MS->unpw_update();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the username/password
@@ -1582,8 +1484,6 @@ class Member {
 		$MS->update_un_pw();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Email Form
 	 */
@@ -1603,8 +1503,6 @@ class Member {
 
 		return $MM->email_console();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send Member Email
@@ -1626,8 +1524,6 @@ class Member {
 		return $MM->send_email();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * AIM Console
 	 */
@@ -1647,8 +1543,6 @@ class Member {
 
 		return $MM->aim_console();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * ICQ Console
@@ -1670,8 +1564,6 @@ class Member {
 		return $MM->icq_console();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member List
 	 */
@@ -1691,8 +1583,6 @@ class Member {
 
 		return $MM->memberlist();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Search Results
@@ -1714,8 +1604,6 @@ class Member {
 		return $MM->memberlist();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do A Member Search
 	 */
@@ -1735,8 +1623,6 @@ class Member {
 
 		return $MM->do_member_search();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Emoticons
@@ -1842,8 +1728,6 @@ class Member {
 		return str_replace('{include:smileys}', $r, $this->_load_element('emoticon_page'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Convet special characters
 	 */
@@ -1851,8 +1735,6 @@ class Member {
 	{
 		return str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&apos;', '&quot;', '&#63;'), $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse the index template
@@ -1876,8 +1758,6 @@ class Member {
 			 );
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Home Page
@@ -1920,8 +1800,6 @@ class Member {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load theme element
 	 */
@@ -1949,8 +1827,6 @@ class Member {
 		return $this->_prep_element(trim(file_get_contents($this->theme_path.$which.'.html')));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Trigger Error Template
 	 */
@@ -1964,8 +1840,6 @@ class Member {
 								);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets the title of the page
 	 */
@@ -1976,8 +1850,6 @@ class Member {
 			$this->page_title = $title;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Breadcrumb
@@ -2054,8 +1926,6 @@ class Member {
 			}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Breadcrumb trail links
 	 */
@@ -2074,8 +1944,6 @@ class Member {
 		return $crumbs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Finalize the Crumbs
 	 */
@@ -2092,8 +1960,6 @@ class Member {
 		return str_replace('{breadcrumb_links}', $crumbs, $breadcrumb);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch member profile crumb item
 	 */
@@ -2104,8 +1970,6 @@ class Member {
 
 		return ( ! isset($this->crumb_map[$item])) ? FALSE : $this->crumb_map[$item];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create the "year" pull-down menu
@@ -2129,8 +1993,6 @@ class Member {
 
 		return $r;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create the "month" pull-down menu
@@ -2160,8 +2022,6 @@ class Member {
 		return $r;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create the "day" pull-down menu
 	 */
@@ -2184,8 +2044,6 @@ class Member {
 
 		return $r;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Element Data
@@ -2233,8 +2091,6 @@ class Member {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Finalize a few things
@@ -2401,8 +2257,6 @@ class Member {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set base values of class vars
 	 */
@@ -2417,8 +2271,6 @@ class Member {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets the member basepath
 	 */
@@ -2426,8 +2278,6 @@ class Member {
 	{
 		$this->basepath = ee()->functions->create_url($this->trigger);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Compiles a path string
@@ -2442,8 +2292,6 @@ class Member {
 		return reduce_double_slashes($this->basepath.'/'.$uri);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helpers for "if" conditions
 	 */
@@ -2456,8 +2304,6 @@ class Member {
 	{
 		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace variables
@@ -2477,8 +2323,6 @@ class Member {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Swap single variables with final value
 	 */
@@ -2491,8 +2335,6 @@ class Member {
 
 		return str_replace(LD.$search.RD, $replace, $source);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show 404 Template
@@ -2508,8 +2350,6 @@ class Member {
 		ee()->load->library('template', NULL, 'TMPL');
 		ee()->TMPL->show_404();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Custom Member Profile Data
@@ -2924,8 +2764,6 @@ class Member {
 		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Ignore List
 	 */
@@ -2983,8 +2821,6 @@ class Member {
 
 		return ee()->TMPL->tagdata = $out;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Create a language dropdown list

@@ -12,8 +12,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Search and Replace Class
  *
@@ -88,8 +86,6 @@ class Sandr extends Utilities {
 		ee()->view->cp_page_title = lang('sandr');
 		ee()->cp->render('utilities/sandr');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do Search and Replace

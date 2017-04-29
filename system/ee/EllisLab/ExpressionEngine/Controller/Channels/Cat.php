@@ -17,8 +17,6 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
  * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine CP Channel Categories Controller Class
  *
