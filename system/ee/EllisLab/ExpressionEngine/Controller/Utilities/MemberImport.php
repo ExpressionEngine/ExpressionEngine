@@ -661,7 +661,7 @@ class MemberImport extends Utilities {
 			}
 
 			//  Add a unique_id for each member
-			$data['unique_id'] = random_string('encrypt');
+			$data['unique_id'] = ee('Encrypt')->generateKey();
 
 			/* -------------------------------------
 			/*  See if we've already imported a member with this member_id -

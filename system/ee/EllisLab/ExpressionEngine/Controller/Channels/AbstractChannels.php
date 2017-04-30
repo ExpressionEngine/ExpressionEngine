@@ -688,17 +688,22 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($status_groups as $group)
 		{
+			$view_url = ee('CP/URL')->make('channels/status/status-list/'.$group->getId());
 			$columns = array(
 				$group->getId(),
-				$group->group_name,
+				array(
+					'content' => $group->group_name,
+					'href' => $view_url
+				),
 				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee('CP/URL')->make('channels/status/status-list/'.$group->getId()),
-						'title' => lang('view')
-					),
 					'edit' => array(
 						'href' => ee('CP/URL')->make('channels/status/edit/'.$group->getId()),
 						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => $view_url,
+						'title' => lang('statuses'),
+						'content' => strtolower(lang('statuses'))
 					)
 				))
 			);

@@ -57,8 +57,8 @@ class Thumbnail {
 			}
 			elseif ($file->isImage())
 			{
-				$this->url = rtrim($file->getUploadDestination()->url, '/') . '/_thumbs/' . rawurlencode($file->file_name);
-				$this->path = rtrim($file->getUploadDestination()->server_path, '/') . '/_thumbs/' . rawurlencode($file->file_name);
+				$this->url = $file->getAbsoluteThumbnailURL();
+				$this->path = $file->getAbsoluteThumbnailPath();
 			}
 		}
 	}

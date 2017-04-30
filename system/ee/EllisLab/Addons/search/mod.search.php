@@ -333,7 +333,7 @@ class Search {
 
 		$meta = serialize($meta);
 
-		return ee('Encrypt')->encode($meta, md5(ee()->db->username.ee()->db->password));
+		return ee('Encrypt')->encode($meta, ee()->config->item('session_crypt_key'));
 	}
 
 	// ------------------------------------------------------------------------
@@ -348,7 +348,7 @@ class Search {
 	{
 		// Get data from the meta input
 
-		$meta_array = ee('Encrypt')->decode($_POST['meta'], md5(ee()->db->username.ee()->db->password));
+		$meta_array = ee('Encrypt')->decode($_POST['meta'], ee()->config->item('session_crypt_key'));
 
 		$this->_meta = unserialize($meta_array);
 
@@ -1117,23 +1117,12 @@ class Search {
 
 	function total_results()
 	{
-		/** ----------------------------------------
-		/**  Check search ID number
-		/** ----------------------------------------*/
+		$search_id = $this->_get_search_id();
 
-		// If the QSTR variable is less than 32 characters long we
-		// don't have a valid search ID number
-
-		if (strlen(ee()->uri->query_string) < 32)
+		if ( ! $search_id)
 		{
 			return '';
 		}
-
-		/** ----------------------------------------
-		/**  Fetch ID number and page number
-		/** ----------------------------------------*/
-
-		$search_id = substr(ee()->uri->query_string, 0, 32);
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
@@ -1157,23 +1146,12 @@ class Search {
 
 	function keywords()
 	{
-		/** ----------------------------------------
-		/**  Check search ID number
-		/** ----------------------------------------*/
+		$search_id = $this->_get_search_id();
 
-		// If the QSTR variable is less than 32 characters long we
-		// don't have a valid search ID number
-
-		if (strlen(ee()->uri->query_string) < 32)
+		if ( ! $search_id)
 		{
 			return '';
 		}
-
-		/** ----------------------------------------
-		/**  Fetch ID number and page number
-		/** ----------------------------------------*/
-
-		$search_id = substr(ee()->uri->query_string, 0, 32);
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
@@ -1194,7 +1172,31 @@ class Search {
 		}
 	}
 
+	/**
+	 * Returns a validated search id, checking first for a parameter and second in the query string
+	 *
+	 * @access	private
+	 * @return	mixed 	The validated search id or FALSE
+	 */
+	private function _get_search_id()
+	{
+		$search_id =  ee()->TMPL->fetch_param('search_id');
 
+		// Retrieve the search_id
+		if ( ! $search_id)
+		{
+			$qstring = explode('/', ee()->uri->query_string);
+			$search_id = trim($qstring[0]);
+		}
+
+		// Check search ID number
+		if (strlen($search_id) < 32)
+		{
+			return FALSE;
+		}
+
+		return $search_id;
+	}
 
 	/** ----------------------------------------
 	/**  Show search results
@@ -1210,11 +1212,9 @@ class Search {
 		$pagination = ee()->pagination->create();
 		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 
-		// Check search ID number
-		// If the QSTR variable is less than 32 characters long we
-		// don't have a valid search ID number
+		$search_id = $this->_get_search_id();
 
-		if (strlen(ee()->uri->query_string) < 32)
+		if ( ! $search_id)
 		{
 			return ee()->output->show_user_error(
 				'off',
@@ -1230,10 +1230,6 @@ class Search {
 				'search_date <' => ee()->localize->now - ($this->cache_expire * 3600)
 			)
 		);
-
-		// Retrieve the search_id
-		$qstring = explode('/', ee()->uri->query_string);
-		$search_id = trim($qstring[0]);
 
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));

@@ -728,7 +728,7 @@ class EE_Loader {
 			// view paths only exist once, so we only remove it if all are gone
 			// or it was at the top.
 			if (array_search($removed, $this->_ci_library_paths) === FALSE OR
-				current($this->_ci_view_paths) == $removed . 'views/')
+				current(array_keys($this->_ci_view_paths)) == $removed . 'views/')
 			{
 				$void = array_shift($this->_ci_view_paths);
 			}
@@ -841,7 +841,14 @@ class EE_Loader {
 			$this->_ci_cached_vars = array_merge($this->_ci_cached_vars, $_ci_vars);
 		}
 
-		$use_eval = ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE);
+		if (is_php('5.4.0'))
+		{
+			$use_eval = FALSE;
+		}
+		else
+		{
+			$use_eval = ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE);
+		}
 
 		/*
 		 * Buffer the output

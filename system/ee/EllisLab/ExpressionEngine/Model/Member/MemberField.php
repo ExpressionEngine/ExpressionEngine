@@ -41,8 +41,8 @@ class MemberField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'm_field_type'  => 'required|enum[text,textarea,select]',
-		'm_field_label' => 'required|xss|noHtml',
-		'm_field_name'  => 'required|alphaDash|unique'
+		'm_field_label' => 'required|xss|noHtml|maxLength[50]',
+		'm_field_name'  => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]'
 	);
 
 	protected static $_typed_columns = array(
@@ -199,6 +199,20 @@ class MemberField extends FieldModel {
 
 		return $key;
 	}
+
+	/**
+	 * Validate the field name to avoid variable name collisions
+	 */
+	public function validateNameIsNotReserved($key, $value, $params, $rule)
+	{
+		if (in_array($value, ee()->cp->invalid_custom_field_names()))
+		{
+			return lang('reserved_word');
+		}
+
+		return TRUE;
+	}
+
 }
 
 // EOF

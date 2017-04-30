@@ -61,7 +61,7 @@ case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?>>
 <?php break;
 case 'password': ?>
-	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="off"<?=$attrs?>>
+	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="new-password"<?=$attrs?>>
 <?php break;
 case 'hidden': ?>
 	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">

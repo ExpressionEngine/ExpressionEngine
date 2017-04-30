@@ -163,12 +163,19 @@ class File_ft extends EE_Fieldtype {
 		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
 		$filebrowser			= (REQ == 'CP');
+		$dir					= NULL;
 
 		if (REQ == 'CP')
 		{
 			ee()->lang->loadfile('fieldtypes');
 
-			if ($allowed_file_dirs == '')
+			if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
+			{
+				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
+					->first();
+			}
+
+			if ($allowed_file_dirs == '' OR ! $dir)
 			{
 				$allowed_file_dirs = 'all';
 			}
@@ -181,11 +188,8 @@ class File_ft extends EE_Fieldtype {
 				->withImage($this->field_name);
 
 			// If we are showing a single directory respect its default modal view
-			if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
+			if ($dir)
 			{
-				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
-					->first();
-
 				switch ($dir->default_modal_view)
 				{
 					case 'thumb':

@@ -176,38 +176,40 @@ class EE_Typography {
 		// Note: The decoding array is associative, allowing more precise mapping
 
 		$this->safe_encode = array(
-			'b',
-			'i',
-			'em',
-			'del',
-			'ins',
-			'strong',
-			'pre',
-			'code' => array('properties' => array('class', 'data-language')),
-			'blockquote',
 			'abbr' => array('properties' => array('title')),
+			'b',
+			'blockquote',
+			'cite',
+			'code' => array('properties' => array('class', 'data-language')),
+			'del',
+			'em',
+			'i',
+			'ins',
+			'mark' => array('properties' => array('class')),
+			'pre',
 			'span' => array('properties' => array('class')),
-			'sup',
+			'strong',
 			'sub',
-			'mark' => array('properties' => array('class'))
+			'sup'
 		);
 
 		$this->safe_decode = array(
-			'b'          => 'b',
-			'i'          => 'i',
-			'em'         => 'em',
-			'del'        => 'del',
-			'ins'        => 'ins',
-			'strong'     => 'strong',
-			'pre'        => 'pre',
-			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
 			'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
+			'b'          => 'b',
 			'blockquote' => 'blockquote',
+			'cite'       => 'cite',
+			'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
+			'del'        => 'del',
+			'em'         => 'em',
+			'i'          => 'i',
+			'ins'        => 'ins',
+			'mark'       => array('tag' => 'mark', 'properties' => array('class')),
+			'pre'        => 'pre',
 			'quote'      => 'blockquote',
 			'span'       => array('tag' => 'span', 'properties' => array('class')),
-			'sup'        => 'sup',
+			'strong'     => 'strong',
 			'sub'        => 'sub',
-			'mark'       => array('tag' => 'mark', 'properties' => array('class')),
+			'sup'        => 'sup'
 		);
 
 		// enable quote protection within braces for EE {variable="attributes"}

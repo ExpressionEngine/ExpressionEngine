@@ -2252,6 +2252,8 @@ class Filemanager {
 			$directory_id
 		);
 
+		$new_file_name = str_replace($upload_directory['server_path'], '', $file_path);
+
 		// If renaming the file sparked an error return it
 		if (is_array($file_path))
 		{
@@ -2361,7 +2363,7 @@ class Filemanager {
 		$config = array(
 			'upload_path'	=> $upload_directory['server_path'],
 			'allowed_types'	=> (ee()->session->userdata('group_id') == 1) ? 'all' : $upload_directory['allowed_types'],
-			'max_size'		=> round($upload_directory['max_size']*1024, 3),
+			'max_size'		=> round((int) $upload_directory['max_size']*1024, 3),
 			'max_width'		=> $upload_directory['max_width'],
 			'max_height'	=> $upload_directory['max_height']
 		);
@@ -2389,7 +2391,7 @@ class Filemanager {
 		ee()->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		ee()->output->set_header("Pragma: no-cache");
 
-		$file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode(ee()->input->get_post('file')), ee()->session->sess_crypt_key));
+		$file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode(ee()->input->get_post('file')), ee()->config->item('session_crypt_key')));
 
 		if ($file == '')
 		{

@@ -374,6 +374,24 @@ class Cp {
 			$notices[] = sprintf(lang('theme_folder_wrong'), ee('CP/URL', '/cp/settings/urls'));
 		}
 
+		if ( ! ee()->config->item('session_crypt_key'))
+		{
+			$notices[] = sprintf(
+				lang('missing_encryption_key'),
+				'session_crypt_key',
+				'https://expressionengine.com/support'
+			);
+		}
+
+		if ( ! ee()->config->item('encryption_key'))
+		{
+			$notices[] = sprintf(
+				lang('missing_encryption_key'),
+				'encryption_key',
+				'https://expressionengine.com/support'
+			);
+		}
+
 		if ( ! empty($notices))
 		{
 			if ( ! $alert)

@@ -1074,7 +1074,7 @@ class Email {
 	 */
 	private function _encrypt($data)
 	{
-		return ee('Encrypt')->encode($data, md5(ee()->db->username.ee()->db->password));
+		return ee('Encrypt')->encode($data, ee()->config->item('session_crypt_key'));
 	}
 
 	// -------------------------------------------------------------------------
@@ -1086,7 +1086,7 @@ class Email {
 	 */
 	private function _decrypt($data)
 	{
-		return ee('Encrypt')->decode($data, md5(ee()->db->username.ee()->db->password));
+		return ee('Encrypt')->decode($data, ee()->config->item('session_crypt_key'));
 	}
 }
 // END CLASS

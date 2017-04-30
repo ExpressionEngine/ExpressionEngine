@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -47,6 +49,37 @@ class Factory {
 		return $this->make(array('check' => $rule))
 			->validate(array('check' => $value))
 			->isValid();
+	}
+
+	/**
+	 * Takes a model validation result object and checks for errors on the
+	 * posted 'ee_fv_field' and returns an error message, or success message
+	 * but only if the request was an AJAX request.
+	 *
+	 * @param EllisLab\ExpressionEngine\Service\Validation\Result $result A model validation result
+	 * @return array|NULL NULL if the request was not via AJAX, otherwise an
+	 *   an array with an error message or a success notification.
+	 */
+	public function ajax(ValidationResult $result)
+	{
+		if (ee()->input->is_ajax_request())
+		{
+			$field = ee()->input->post('ee_fv_field');
+
+			// Get the parent field name
+			$field = preg_replace('/\[.+?\]/', '', $field);
+
+			if ($result->hasErrors($field))
+			{
+				return array('error' => $result->renderError($field));
+			}
+			else
+			{
+				return array('success');
+			}
+		}
+
+		return NULL;
 	}
 
 }

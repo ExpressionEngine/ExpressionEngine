@@ -2,7 +2,7 @@
 
 $lang = array(
 
-'profile_header' => '%s Profile',
+'profile_header' => '%s Profile<br><i><b>Email</b>: <a href="mailto:%s">%s</a> / <b><abbr title="Internet Protocol">IP</abbr>:</b> <span class="ban-options"><b>%s</b></span></i>',
 
 'delete_member' => 'Delete Member',
 
@@ -480,6 +480,8 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'change_avatar' => 'Change avatar',
 
 'change_avatar_desc' => 'Add an avatar to your profile.',
+
+'view_activity' => 'View Activity',
 
 'blocked_members' => 'Blocked Members',
 

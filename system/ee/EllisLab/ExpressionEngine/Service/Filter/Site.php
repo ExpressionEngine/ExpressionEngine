@@ -44,7 +44,7 @@ class Site extends Filter {
 	public function __construct(array $options = array())
 	{
 		$this->name = 'filter_by_site';
-		$this->label = 'site';
+		$this->label = 'site_filter';
 		$this->placeholder = lang('filter_by_site');
 		$this->options = $options;
 	}

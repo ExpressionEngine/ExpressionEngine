@@ -97,7 +97,7 @@ class Toggle_ft extends EE_Fieldtype {
 	{
 		$this->settings = array_merge($this->settings_vars, $this->settings);
 
-		$data = is_null($data) ? $this->settings['field_default_value'] : $data;
+		$data = (is_null($data) OR $data === '') ? $this->settings['field_default_value'] : $data;
 
 		if (REQ == 'CP')
 		{
