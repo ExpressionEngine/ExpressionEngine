@@ -156,14 +156,7 @@ module Installer
     #
     # @return [void]
     def backup_templates
-      FileUtils.rm_rf @old_templates if File.exist? @old_templates
-
-      if File.exist? @current_templates
-        FileUtils.mv(
-          @current_templates,
-          @old_templates
-        )
-      end
+      system('mv -f ' + @current_templates + ' ' + @old_templates)
     end
 
     # Restore templates if they've previously been backed up
