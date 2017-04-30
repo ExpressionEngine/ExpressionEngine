@@ -270,9 +270,18 @@ class EE_Output {
 		// --------------------------------------------------------------------
 
 		// Is compression requested?
+		// if PHP errors have been output by our exception handler, we can't change encodings mid-stream, so also check for our error handling class having been loaded
 		if ($CFG->item('compress_output') === TRUE && $this->_zlib_oc == FALSE)
 		{
-			if (extension_loaded('zlib'))
+			// can't change encodings mid-stream, if we've already displayed PHP errors, we cannot Gzip the rest of the output
+			$error_out = FALSE;
+			if (class_exists('EE_Exceptions'))
+			{
+				$exceptions = load_class('Exceptions', 'core');
+				$error_out = $exceptions->hasOutputPhpErrors();
+			}
+
+			if ( ! $error_out && extension_loaded('zlib'))
 			{
 				if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)
 				{
@@ -501,6 +510,7 @@ class EE_Output {
 		if ($data['redirect'] != '')
 		{
 			$secure_redirect = ee('Security/XSS')->clean($data['redirect']);
+			$secure_redirect = htmlentities($secure_redirect, ENT_QUOTES, 'UTF-8');
 			$js_rate = $data['rate']*1000;
 
 			$data['meta_refresh'] = "<script type='text/javascript'>setTimeout(function(){document.location='".$secure_redirect."'},".$js_rate.')</script>';
@@ -516,6 +526,7 @@ class EE_Output {
 			$ltitle = ($refresh_msg == '') ? $data['link']['1'] : $refresh_msg;
 
 			$url = (strtolower($data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : ee('Security/XSS')->clean($data['link']['0']);
+			$url = htmlentities($url, ENT_QUOTES, 'UTF-8');
 
 			$data['link'] = "<a href='".$url."'>".$ltitle."</a>";
 		}

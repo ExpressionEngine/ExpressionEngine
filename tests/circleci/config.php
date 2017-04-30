@@ -38,5 +38,6 @@ $config['database'] = array(
 	),
 );
 $config['encryption_key'] = '631cbbc6e1de577805226ce0d1cc6c144cfd6c86';
+$config['session_crypt_key'] = '549782140d653f8865b6cbabb36600766d5e25a0';
 
 // EOF

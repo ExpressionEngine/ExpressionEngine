@@ -72,6 +72,7 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->order('name', 'asc');
@@ -284,39 +285,10 @@ abstract class AbstractFiles extends CP_Controller {
 
 	protected function validateFile(File $file)
 	{
-		if (empty($_POST))
-		{
-			return FALSE;
-		}
-
-		$action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
-
-		$file->set($_POST);
-		$file->title = (ee()->input->post('title')) ?: $file->file_name;
-
-		$cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
-		$file->setCategoriesFromPost($cats);
-
-		$result = $file->validate();
-
-		if ($response = $this->ajaxValidation($result))
-		{
-			ee()->output->send_ajax_response($response);
-		}
-
-		if ($result->failed())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang($action . '_error'))
-				->addToBody(lang($action . '_error_desc'))
-				->now();
-		}
-
-		return $result;
+		return ee('File')->makeUpload()->validateFile($file);
 	}
 
-	protected function saveFileAndRedirect(File $file, $is_new = FALSE)
+	protected function saveFileAndRedirect(File $file, $is_new = FALSE, $sub_alert = NULL)
 	{
 		$action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
 
@@ -331,11 +303,17 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$file->save();
 
-		ee('CP/Alert')->makeInline('shared-form')
+		$alert = ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_success'))
-			->addToBody(sprintf(lang($action . '_success_desc'), $file->title))
-			->defer();
+			->addToBody(sprintf(lang($action . '_success_desc'), $file->title));
+
+		if ($sub_alert)
+		{
+			$alert->setSubAlert($sub_alert);
+		}
+
+		$alert->defer();
 
 		if ($action == 'upload_filedata')
 		{
@@ -392,6 +370,7 @@ abstract class AbstractFiles extends CP_Controller {
 			->render($base_url);
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
+			->with('NoAccess')
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0);

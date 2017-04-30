@@ -11,7 +11,7 @@ feature 'CP Log' do
 
   before(:each, :pregen => true) do
     @page.generate_data(count: 150, timestamp_min: 26)
-    @page.generate_data(count: 15, member_id: 2, username: 'johndoe', timestamp_min: 25)
+    @page.generate_data(count: 15, member_id: 8, username: 'johndoe', timestamp_min: 25)
     @page.load
     no_php_js_errors
 

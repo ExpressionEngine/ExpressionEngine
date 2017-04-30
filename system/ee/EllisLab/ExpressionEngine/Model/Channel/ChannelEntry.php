@@ -105,7 +105,7 @@ class ChannelEntry extends ContentModel {
 		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
-		'title'              => 'required|maxLength[200]|limitHtml[b,strong,i,em,span,sup,sub,code,ins,del,mark]',
+		'title'              => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
 		'url_title'          => 'required|maxLength[200]|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
@@ -119,9 +119,11 @@ class ChannelEntry extends ContentModel {
 		'beforeSave',
 		'afterDelete',
 		'afterInsert',
-		'afterUpdate',
 		'afterSave',
+		'afterUpdate'
 	);
+
+	protected $_default_fields;
 
 	// Properties
 	protected $entry_id;
@@ -320,41 +322,8 @@ class ChannelEntry extends ContentModel {
 		$this->Autosaves->delete();
 
 		$this->updateEntryStats();
-
-		// Some Tabs might call ee()->api_channel_fields
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-
-		foreach ($this->getModulesWithTabs() as $name => $info)
-		{
-			ee()->load->add_package_path($info->getPath(), FALSE);
-
-			include_once($info->getPath() . '/tab.' . $name . '.php');
-			$class_name = ucfirst($name) . '_tab';
-			$OBJ = new $class_name();
-
-			if (method_exists($OBJ, 'save') === TRUE)
-			{
-				$fields = $OBJ->display($this->channel_id, $this->entry_id);
-
-				$values = array();
-				foreach(array_keys($fields) as $field)
-				{
-					$property = $name . '__' . $field;
-					$values[$field] = $this->$property;
-				}
-
-				$OBJ->save($this, $values);
-			}
-
-			// restore our package and view paths
-			ee()->load->remove_package_path($info->getPath());
-		}
-
-		if ($this->getProperty('versioning_enabled'))
-		{
-			$this->saveVersion();
-		}
+		$this->saveTabData();
+		$this->saveVersion();
 
 		// clear caches
 		if (ee()->config->item('new_posts_clear_caches') == 'y')
@@ -384,7 +353,10 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterUpdate($changed)
 	{
-		$this->saveVersion();
+		if (array_key_exists('author_id', $changed))
+		{
+			$this->Author->updateAuthorStats();
+		}
 	}
 
 	public function onBeforeDelete()
@@ -425,6 +397,51 @@ class ChannelEntry extends ContentModel {
 		$this->updateEntryStats();
 	}
 
+	public function saveTabData()
+	{
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			ee()->load->add_package_path($info->getPath(), FALSE);
+
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'save') === TRUE)
+			{
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				$values = array();
+				foreach(array_keys($fields) as $field)
+				{
+					$property = $name . '__' . $field;
+
+					if ($this->$property)
+					{
+						$values[$field] = $this->$property;
+					}
+					elseif ($this->hasCustomField($property))
+					{
+						$values[$field] = $this->getCustomField($property)->getData();
+					}
+					else
+					{
+						$values[$field] = NULL;
+					}
+				}
+
+				$OBJ->save($this, $values);
+			}
+
+			// restore our package and view paths
+			ee()->load->remove_package_path($info->getPath());
+		}
+	}
+
 	public function saveVersion()
 	{
 		if ( ! $this->getProperty('versioning_enabled'))
@@ -432,21 +449,35 @@ class ChannelEntry extends ContentModel {
 			return;
 		}
 
-		if ($this->Versions->count() == $this->Channel->max_revisions)
+		$data = $this->getValues();
+
+		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
+
+		if ( ! empty($last_version) && $data == $last_version->version_data)
 		{
-			$version = $this->Versions->sortBy('version_date')->first();
-			if ($version)
-			{
-				$version->delete();
-			}
+			return;
 		}
+
+        if ($this->Versions->count() >= $this->Channel->max_revisions)
+        {
+            $diff = $this->Versions->count() - $this->Channel->max_revisions;
+            $diff++; // We are going to add one, so remove one more
+
+            $versions = $this->Versions->sortBy('version_date')->asArray();
+            $versions = array_slice($versions, 0, $diff);
+
+            foreach ($versions as $version)
+            {
+                $version->delete();
+            }
+        }
 
 		$data = array(
 			'entry_id'     => $this->entry_id,
 			'channel_id'   => $this->channel_id,
 			'author_id'    => ee()->session->userdata('member_id') ?: 1,
 			'version_date' => ee()->localize->now,
-			'version_data' => $_POST ?: $this->getValues()
+			'version_data' => $data
 		);
 
 		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
@@ -669,9 +700,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	protected function getDefaultFields()
 	{
-		static $default_fields = array();
-
-		if (empty($default_fields))
+		if (empty($this->_default_fields))
 		{
 			$default_fields = array(
 				'title' => array(
@@ -688,7 +717,6 @@ class ChannelEntry extends ContentModel {
 					'field_id'				=> 'url_title',
 					'field_label'			=> lang('url_title'),
 					'field_required'		=> 'y',
-					'field_fmt'				=> 'xhtml',
 					'field_instructions'	=> lang('alphadash_desc'),
 					'field_show_fmt'		=> 'n',
 					'field_text_direction'	=> 'ltr',
@@ -701,7 +729,6 @@ class ChannelEntry extends ContentModel {
 					'field_required'		=> 'y',
 					'field_type'			=> 'date',
 					'field_text_direction'	=> 'ltr',
-					'field_fmt'				=> 'text',
 					'field_instructions'	=> lang('entry_date_desc'),
 					'field_show_fmt'		=> 'n',
 					'always_show_date'		=> 'y',
@@ -714,7 +741,6 @@ class ChannelEntry extends ContentModel {
 					'field_required'		=> 'n',
 					'field_type'			=> 'date',
 					'field_text_direction'	=> 'ltr',
-					'field_fmt'				=> 'text',
 					'field_instructions'	=> lang('expiration_date_desc'),
 					'field_show_fmt'		=> 'n',
 					'default_offset'		=> 0,
@@ -726,7 +752,6 @@ class ChannelEntry extends ContentModel {
 					'field_required'		=> 'n',
 					'field_type'			=> 'date',
 					'field_text_direction'	=> 'ltr',
-					'field_fmt'				=> 'text',
 					'field_instructions'	=> lang('comment_expiration_date_desc'),
 					'field_show_fmt'		=> 'n',
 					'default_offset'		=> 0,
@@ -839,7 +864,7 @@ class ChannelEntry extends ContentModel {
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = $metadata;
 				}
 
-				if ( ! $this->Channel->comment_system_enabled)
+				if ( ! $this->Channel->comment_system_enabled OR ! bool_config_item('enable_comments'))
 				{
 					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
 				}
@@ -854,9 +879,11 @@ class ChannelEntry extends ContentModel {
 					$default_fields[$tab_id . '__' . $key] = $field;
 				}
 			}
+
+			$this->_default_fields = $default_fields;
 		}
 
-		return $default_fields;
+		return $this->_default_fields;
 	}
 
 	/**

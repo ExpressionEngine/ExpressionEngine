@@ -9,6 +9,8 @@
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
+
 /**
  * Common Functions
  */

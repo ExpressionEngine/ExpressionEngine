@@ -49,6 +49,11 @@ class Fields extends AbstractChannelsController {
 			->filter('group_id', $group_id)
 			->first();
 
+		if ( ! $group)
+		{
+			show_404();
+		}
+
 		$base_url = ee('CP/URL', 'channels/fields/'.$group_id);
 
 		$vars = array(
@@ -79,7 +84,7 @@ class Fields extends AbstractChannelsController {
 		));
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/fields/groups'), lang('field_groups'));
-		ee()->view->cp_page_title = sprintf(lang('custom_fields_for'), $group->group_name);
+		ee()->view->cp_page_title = $group->group_name . ' &mdash; ' . lang('fields');
 
 		ee()->cp->render('channels/fields/index', $vars);
 	}
@@ -91,9 +96,18 @@ class Fields extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$group = ee('Model')->get('ChannelFieldGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ( ! $group)
+		{
+			show_404();
+		}
+
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => $group->group_name . ' &mdash; ' . lang('fields'),
 		);
 
 		$errors = NULL;
@@ -150,7 +164,7 @@ class Fields extends AbstractChannelsController {
 			),
 		);
 
-		ee()->view->cp_page_title = lang('create_field');
+		ee()->view->cp_page_title = sprintf(lang('create_field'), $group->group_name);
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
@@ -181,7 +195,7 @@ class Fields extends AbstractChannelsController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => $field->ChannelFieldGroup->group_name . ' &mdash; ' . lang('fields'),
 		);
 
 		$errors = NULL;

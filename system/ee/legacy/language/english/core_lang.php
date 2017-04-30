@@ -125,6 +125,8 @@ and email %s to report the link that generated this message.',
 
 'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
 
+'missing_encryption_key' => 'You do not have value set for <code>%s</code> in your config.php. This may leave your install open to security vulnerabilities. Restore the keys or <a href="%s">contact support</a> for help.',
+
 'checksum_changed_warning' => 'One or more core files have been altered:',
 
 'checksum_changed_accept' => 'Accept Changes',

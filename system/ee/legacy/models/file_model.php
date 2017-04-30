@@ -547,7 +547,7 @@ class File_model extends CI_Model {
 					 	reduce_double_slashes($file['relative_path']) :
 						reduce_double_slashes($directory);
 
-					$file['encrypted_path'] = rawurlencode(ee('Encrypt')->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
+					$file['encrypted_path'] = rawurlencode(ee('Encrypt')->encode($file['relative_path'].$file['name'], ee()->config->item('session_crypt_key')));
 
 					$file['mime'] = ee()->mime_type->ofFile($file['relative_path'].$file['name']);
 

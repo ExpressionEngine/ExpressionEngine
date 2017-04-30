@@ -437,7 +437,7 @@ class Forum_Core extends Forum {
 
 		$cookie = ee()->input->cookie('forum_topics');
 		$length = strlen($cookie);
-		$topics = @unserialize(stripslashes($cookie));
+		$topics = @json_decode(stripslashes($cookie), TRUE);
 
 		if ( ! is_array($topics))
 		{
@@ -2451,7 +2451,7 @@ class Forum_Core extends Forum {
 		if (ee()->session->userdata('member_id') == 0)
 		{
 			$expire = 60*60*24*365;
-			ee()->input->set_cookie('forum_topics', serialize($read_topics), $expire);
+			ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
 		}
 		else
 		{
@@ -6007,7 +6007,7 @@ class Forum_Core extends Forum {
 			if (ee()->session->userdata('member_id') == 0)
 			{
 				$expire = 60*60*24*365;
-				ee()->input->set_cookie('forum_topics', serialize($read_topics), $expire);
+				ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
 			}
 		}
 

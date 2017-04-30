@@ -196,6 +196,29 @@ class FileDimension extends Model {
 
 		return $dimensions;
 	}
+
+	/**
+	 * Uses the upload destination's server path to compute the absolute
+	 * path of the dirctory
+	 *
+	 * @return string The absolute path to the directory
+	 */
+	public function getAbsolutePath()
+	{
+		return rtrim($this->UploadDestination->server_path, '/') . '/_' . $this->short_name . '/';
+	}
+
+	/**
+	 * Uses the upload destination's url to compute the absolute URL of
+	 * the directory
+	 *
+	 * @return string The absolute URL to the directory
+	 */
+	public function getAbsoluteURL()
+	{
+		return rtrim($this->UploadDestination->url, '/') . '/_' . rawurlencode($this->short_name) . '/';
+	}
+
 }
 
 // EOF

@@ -169,6 +169,7 @@ WysiHat.Editor.prototype = {
 	 * Create the main editor html
 	 */
 	create: function() {
+		var that = this;
 		return $('<div/>', {
 			'class': WysiHat.name + '-editor',
 
@@ -186,7 +187,13 @@ WysiHat.Editor.prototype = {
 			// Text direction
 			'dir': this.$field.attr('dir'),
 
-			'html': WysiHat.Formatting.getBrowserMarkupFrom(this.$field)
+			'html': WysiHat.Formatting.getBrowserMarkupFrom(this.$field),
+
+			'blur': function() {
+				that.updateField();
+				that.$field.trigger('blur');
+			}
+
 		});
 	},
 

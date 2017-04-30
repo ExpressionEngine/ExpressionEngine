@@ -11,7 +11,8 @@
 (function ($) {
 	$(document).ready(function () {
 		$('body').on('click', 'a.toggle-btn', function (e) {
-			if ($(this).hasClass('disabled')) {
+			if ($(this).hasClass('disabled') ||
+				$(this).parents('.toggle-tools').size() > 0) {
 				return;
 			}
 

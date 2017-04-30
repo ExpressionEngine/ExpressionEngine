@@ -387,6 +387,11 @@ class Updater {
 			// since the last edit
 			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
 
+			if ( ! isset($layout->Channel))
+			{
+				continue;
+			}
+
 			foreach ($layout->field_layout as $section)
 			{
 				foreach ($section['fields'] as $field_info)

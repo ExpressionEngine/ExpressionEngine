@@ -14,6 +14,8 @@ class EE_Exceptions {
 
 	private $ob_level;
 
+	protected $php_errors_output = FALSE;
+
 	/**
 	 * Constructor
 	 */
@@ -77,6 +79,8 @@ class EE_Exceptions {
 	 */
 	public function show_php_error($severity, $message, $filepath, $line)
 	{
+		$this->php_errors_output = TRUE;
+
 		list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
 		$filepath = str_replace("\\", "/", $filepath);
@@ -97,6 +101,15 @@ class EE_Exceptions {
 		$buffer = ob_get_contents();
 		ob_end_clean();
 		echo $buffer;
+	}
+
+	/**
+	 * Has output PHP errors?
+	 * @return boolean whether or not we have displayed any PHP errors
+	 */
+	public function hasOutputPhpErrors()
+	{
+		return $this->php_errors_output;
 	}
 
 	/**

@@ -64,7 +64,7 @@ Grid.Publish = function(field, settings) {
 	this.cellSelector = 'td';
 	this.reorderHandleContainerSelector = 'th.reorder-col, td.reorder-col';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
-	this.deleteButtonsSelector = 'td:last-child .toolbar .remove';
+	this.deleteButtonsSelector = 'td:last-child .toolbar .remove:has(a[rel=remove_row])';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];

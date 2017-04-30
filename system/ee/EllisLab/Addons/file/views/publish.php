@@ -6,7 +6,7 @@
 <div class="fields-upload-chosen <?php if ( ! $file) echo " hidden";?>">
 	<div class="fields-upload-chosen-file">
 		<figure<?php if ( ! $is_image): ?> class="no-img"<?php endif ?>>
-			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" <?php if ( ! $is_image): ?> class="hidden"<?php endif ?>>
+			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" <?php if ( ! $is_image): ?> class="hidden"<?php endif ?> style="max-height: 125px; max-width: 125px">
 		</figure>
 		<div class="fields-upload-tools">
 			<ul class="toolbar">
