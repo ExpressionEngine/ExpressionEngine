@@ -150,18 +150,13 @@ class EE_Driver_Library {
 	}
 
 }
+// END CLASS
 
 /**
- * CodeIgniter Driver Class
+ * Driver Class
  *
  * This class enables you to create drivers for a Library based on the Driver Library.
  * It handles the drivers' access to the parent library
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link
  */
 class EE_Driver {
 
@@ -294,6 +289,7 @@ class EE_Driver {
 	}
 
 }
+// END CLASS
 
 class_alias('EE_Driver_Library', 'CI_Driver_Library');
 class_alias('EE_Driver', 'CI_Driver');

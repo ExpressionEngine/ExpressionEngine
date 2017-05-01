@@ -113,8 +113,8 @@ class Wizard extends CI_Controller {
 		'install_default_theme' => 'n'
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the
-	// EE and CI config files are one in the same now we use this data when we
+	// These are the default values for the config array.  Since the
+	// EE and legacy CI config files are one in the same now we use this data when we
 	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
 		'subclass_prefix'    => 'EE_',

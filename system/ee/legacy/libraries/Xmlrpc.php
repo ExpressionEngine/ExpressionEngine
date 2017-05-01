@@ -34,7 +34,7 @@ class EE_Xmlrpc {
 	var $xmlrpcstr		= array();  // Response strings
 
 	var $xmlrpc_defencoding = 'UTF-8';
-	var $xmlrpcName			= 'XML-RPC for CodeIgniter';
+	var $xmlrpcName			= 'XML-RPC for ExpressionEngine';
 	var $xmlrpcVersion		= '1.1';
 	var $xmlrpcerruser		= 800; // Start of user errors
 	var $xmlrpcerrxml		= 100; // Start of XML Parse errors
