@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.9.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -54,8 +41,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Set the hidden_template_indicator config item to a period if the site has
 	 * no specific hidden template indicator.
@@ -69,8 +54,6 @@ class Updater {
 			));
 		}
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Add a column to the Template Routes table for storing the parse order
@@ -116,8 +99,6 @@ class Updater {
 			ee()->db->insert('actions', $row_data);
 		}
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Remove the protect_javascript config item and make it a per-template
@@ -273,8 +254,6 @@ class Updater {
 		ee()->remove('config');
 		ee()->set('config', $installer_config);
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * We are strictly enforcing the reserved variable `layout:contents`,

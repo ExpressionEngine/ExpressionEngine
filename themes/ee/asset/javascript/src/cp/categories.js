@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 $(document).ready(function () {
@@ -41,6 +37,8 @@ $(document).ready(function () {
 			turning_on = $(this).hasClass('off'),
 			list_reorder = $('.list-reorder', cat_container),
 			toolbar = $('.toolbar', cat_container);
+
+		EE.category.manage_categories_toggle = (turning_on);
 
 		$(this).toggleClass('off', ! turning_on);
 		$(this).toggleClass('on', turning_on);
@@ -218,6 +216,10 @@ $(document).ready(function () {
 			maxDepth: 10,
 			constrainToRoot: true
 		}).on('change', function() {
+
+			if (EE.category.manage_categories_toggle == false) {
+				return;
+			}
 
 			EE.cp.addLastToChecklists();
 

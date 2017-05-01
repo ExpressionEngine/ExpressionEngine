@@ -392,10 +392,6 @@ $lang = array(
 
 'max_revisions_exp' => 'The maximum number of revisions that should be kept for EACH template.  For example, if you set this to 5, only the most recent 5 revisions will be saved for any given template.',
 
-'save_tmpl_files' => 'Save Templates as Files',
-
-'save_tmpl_files_exp' => 'Saves templates as files on your server. Click Help for more information.',
-
 'email_notification_template' => 'Email Notification Templates',
 
 'email_notification' => 'Email Notification',

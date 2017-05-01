@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
@@ -14,7 +21,6 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
  * set data: $entry->title = "Foo"; $entry->getForm();
  * mass set: $entry->set(array); $entry->getForm();
  */
-
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(

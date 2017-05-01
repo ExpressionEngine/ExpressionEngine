@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Member Group Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Group Settings Controller
  */
 class Group extends Profile {
 
@@ -50,7 +35,7 @@ class Group extends Profile {
 	public function index()
 	{
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
 		if (ee()->session->userdata('group_id') != 1)
@@ -158,7 +143,7 @@ class Group extends Profile {
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group);
+		$groups = ee('Model')->get('MemberGroup')->filter('group_id', $group);
 
 		if (ee()->session->userdata('group_id') != 1)
 		{

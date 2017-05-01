@@ -1,5 +1,5 @@
 class EntryManager < ControlPanelPage
-  set_url '/system/index.php?/cp/publish/edit{&perpage}'
+  set_url '/system/index.php?/cp/publish/edit{&perpage}{&filter_by_channel}'
 
   elements :entry_rows, '.w-16 .tbl-ctrls form table tbody tr'
   elements :entry_checkboxes, '.w-16 .tbl-ctrls form table tbody tr input[type="checkbox"]'
@@ -22,5 +22,26 @@ class EntryManager < ControlPanelPage
     command += " #{channel}"
 
     system(command)
+  end
+
+  def create_channel(opts)
+    command = "cd fixtures && ruby channels.rb\
+      --db-name #{$test_config[:db_name]}\
+      --db-username #{$test_config[:db_username]}"
+
+    # include opts, change _ in hash symbols to - to standardize CLI behavior
+    opts.each do |key, val|
+      key = key.to_s.gsub('_', '-')
+      command += " --#{key} #{val}"
+    end
+
+    if ! $test_config[:db_password].empty?
+      command += " --db-password #{$test_config[:db_password]}"
+    end
+
+    channel_json = nil
+    Open3.popen3(command) do |stdin, stdout, stderr, thread|
+      channel_json = stdout.read
+    end
   end
 end

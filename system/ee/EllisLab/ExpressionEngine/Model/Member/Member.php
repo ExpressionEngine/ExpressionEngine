@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
@@ -218,8 +225,8 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeInsert()
 	{
-		$this->setProperty('unique_id', sha1(uniqid(mt_rand(), TRUE)));
-		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
+		$this->setProperty('unique_id', ee('Encrypt')->generateKey());
+		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
 	}
 
 	/**

@@ -1,29 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Moblog Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Moblog Module control panel
  */
 class Moblog_mcp {
 
@@ -58,8 +45,6 @@ class Moblog_mcp {
 EOT;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Moblog Homepage
@@ -628,8 +613,6 @@ EOT;
 			'body'       => ee('View')->make('moblog:create')->render($vars)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * JavaScript filtering code

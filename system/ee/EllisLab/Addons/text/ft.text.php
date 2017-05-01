@@ -1,29 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Text Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Text Fieldtype
  */
 class Text_ft extends EE_Fieldtype {
 
@@ -35,8 +22,6 @@ class Text_ft extends EE_Fieldtype {
 	// Parser Flag (preparse pairs?)
 	var $has_array_data = FALSE;
 
-
-	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
@@ -97,8 +82,6 @@ class Text_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save the field's value
 	 *
@@ -130,8 +113,6 @@ class Text_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
@@ -194,8 +175,6 @@ class Text_ft extends EE_Fieldtype {
 		return form_input($field);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -221,8 +200,6 @@ class Text_ft extends EE_Fieldtype {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -328,11 +305,7 @@ class Text_ft extends EE_Fieldtype {
 					)
 				);
 
-				$emoticons_installed = ee('Model')->get('Module')
-					->filter('module_name', 'Emoticon')
-					->count();
-
-				if ( ! $emoticons_installed)
+				if ( ! ee('Addon')->get('emoticon')->isInstalled())
 				{
 					unset($field_tools['fields']['field_show_smileys']);
 				}
@@ -353,8 +326,6 @@ class Text_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns allowed content types for the text fieldtype
 	 *
@@ -370,14 +341,10 @@ class Text_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -393,8 +360,6 @@ class Text_ft extends EE_Fieldtype {
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	function settings_modify_column($data)
 	{
 		if (empty($data['field_settings']))
@@ -407,8 +372,6 @@ class Text_ft extends EE_Fieldtype {
 
 		return $this->_get_column_settings($field_content_type, $data['field_id']);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function grid_settings_modify_column($data)
 	{
@@ -425,8 +388,6 @@ class Text_ft extends EE_Fieldtype {
 			TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -437,8 +398,6 @@ class Text_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns database column setting for a particular text field configuration
@@ -483,12 +442,10 @@ class Text_ft extends EE_Fieldtype {
 		return $fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	function _format_number($data, $type = 'all', $decimals = FALSE)
 	{
 		// Numeric fields that have no data are stored as NULL
-		if ($data == NULL)
+		if ($data === NULL)
 		{
 			return '';
 		}
@@ -514,8 +471,6 @@ class Text_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

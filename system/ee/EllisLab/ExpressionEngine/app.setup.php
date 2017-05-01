@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Filesystem;
@@ -345,6 +352,11 @@ return array(
 			$db->getLog()->saveQueries($save_queries);
 
 			return $db;
+		},
+
+		'Encrypt/Cookie' => function($ee)
+		{
+			return new Encrypt\Cookie();
 		},
 
 		'File' => function($ee)

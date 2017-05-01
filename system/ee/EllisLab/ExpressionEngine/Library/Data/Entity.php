@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Data;
 
@@ -10,6 +17,9 @@ use EllisLab\ExpressionEngine\Service\Event\Emitter;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
+/**
+ * Data Entity Abstract
+ */
 abstract class Entity extends MixableImpl implements Publisher {
 
 	/**

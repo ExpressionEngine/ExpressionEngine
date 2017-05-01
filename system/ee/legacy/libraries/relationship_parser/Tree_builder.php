@@ -1,33 +1,18 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
  require_once APPPATH.'libraries/datastructures/Tree.php';
  require_once APPPATH.'libraries/relationship_parser/Nodes.php';
  require_once APPPATH.'libraries/relationship_parser/Iterators.php';
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Tree Builder Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Builder
  */
 class EE_relationship_tree_builder {
 
@@ -63,8 +48,6 @@ class EE_relationship_tree_builder {
 		$this->grid_relationship_names = array_flip($grid_relationships);
 		$this->grid_field_id = $grid_field_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find All Relationships of the Given Entries in the Template
@@ -152,8 +135,6 @@ class EE_relationship_tree_builder {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a parser from our collected tree.
 	 *
@@ -211,8 +192,6 @@ class EE_relationship_tree_builder {
 
 		return new EE_Relationship_data_parser($root, $entry_lookup, $category_lookup);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Turn the tagdata hierarchy into a tree
@@ -377,8 +356,6 @@ class EE_relationship_tree_builder {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Push the id graph onto the tag graph.
 	 *
@@ -514,8 +491,6 @@ class EE_relationship_tree_builder {
 
 		return call_user_func_array('array_merge', $all_entry_ids);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Paths to Leaves

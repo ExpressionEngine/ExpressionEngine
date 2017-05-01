@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine EllisLab Pings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * EllisLab Pings
  */
 
 class El_pings {
@@ -90,8 +78,6 @@ class El_pings {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * EE Version Check function
 	 *
@@ -145,8 +131,6 @@ class El_pings {
 		return $version_file;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate version file
 	 * Prototype:
@@ -181,8 +165,6 @@ class El_pings {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do the Ping
@@ -243,8 +225,6 @@ class El_pings {
 
 		return $response;
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

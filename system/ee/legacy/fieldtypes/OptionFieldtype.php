@@ -1,27 +1,14 @@
 <?php
-
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.5.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine OptionFieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Option Field type
  */
 abstract class OptionFieldtype extends EE_Fieldtype {
 
@@ -366,12 +353,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					if (in_array($row['value'], $values))
 					{
 						return 'value_label_duplicate_values';
-					}
-
-					// Empty values
-					if (empty($row['value']) OR empty($row['label']))
-					{
-						return 'value_label_empty_field';
 					}
 
 					$values[] = $row['value'];

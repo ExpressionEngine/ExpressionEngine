@@ -55,8 +55,10 @@ PHP_MAJOR_VERSION=${PHP_VERSION_ASPLODE[0]}
 source ~/.phpbrew/bashrc
 echo "Loading PHP ${PHP_VERSION} ..."
 phpbrew use php-$PHP_VERSION
-# Empty out the 7 file that was placed during 7's installation
+# Prevent other PHPs from loading
+echo "" > /etc/apache2/mods-available/php5.load
 echo "" > /etc/apache2/mods-available/php7.load
+echo "" > /etc/apache2/mods-available/php7.0.load
 echo "LoadModule php${PHP_MAJOR_VERSION}_module /usr/lib/apache2/modules/libphp${PHP_VERSION}.so" > /etc/apache2/mods-available/php5.load
 
 if [ "${COMMAND}" == "lint" ]; then

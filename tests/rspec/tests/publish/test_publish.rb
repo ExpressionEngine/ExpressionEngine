@@ -12,6 +12,33 @@ feature 'Publish Page - Create' do
     @page.is_404?.should == true
   end
 
+  it 'shows comment fields when comments are enabled by system and channel allows comments' do
+    ee_config(item: 'enable_comments', value: 'y')
+    @page.load(channel_id:1)
+    @page.tab_links[1].click
+    @page.should have_css('input[name="comment_expiration_date"]')
+    @page.tab_links[3].click
+    @page.should have_css('input[name="allow_comments"]')
+  end
+
+  it 'does not show comment fields when comments are disabled by system' do
+    ee_config(item: 'enable_comments', value: 'n')
+    @page.load(channel_id:1)
+    @page.tab_links[1].click
+    @page.should_not have_css('input[name="comment_expiration_date"]')
+    @page.tab_links[3].click
+    @page.should_not have_css('input[name="allow_comments"]')
+  end
+
+  it 'does not shows comment fields when comments are disabled by system and channel allows comments' do
+    ee_config(item: 'enable_comments', value: 'n')
+    @page.load(channel_id:2)
+    @page.tab_links[1].click
+    @page.should_not have_css('input[name="comment_expiration_date"]')
+    @page.tab_links[3].click
+    @page.should_not have_css('input[name="allow_comments"]')
+  end
+
   it 'selects default categories for new entries' do
     @page.load(channel_id: 1)
     @page.tab_links[2].click

@@ -1,18 +1,11 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// --------------------------------------------------------------------
 
 /**
  * ExpressionEngine Discussion Forum Module
@@ -136,8 +129,6 @@ class Forum_upd {
 		return $perms;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -484,8 +475,6 @@ class Forum_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -537,8 +526,6 @@ class Forum_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater
@@ -976,8 +963,6 @@ class Forum_upd {
 		return TRUE;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * The publish page rewrite messed a few things up since we moved the

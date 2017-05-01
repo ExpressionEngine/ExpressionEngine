@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -12,27 +17,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members Controller
  */
 class Members extends CP_Controller {
 
@@ -229,6 +214,8 @@ class Members extends CP_Controller {
 
 		$this->generateSidebar('pending');
 
+		$base_url = ee('CP/URL')->make('members/pending');
+
 		$vars = array(
 			'cp_page_title' => lang('pending_members'),
 			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
@@ -236,14 +223,69 @@ class Members extends CP_Controller {
 			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
 		);
 
-		$base_url = ee('CP/URL')->make('members/pending');
+		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
 			->filter('group_id', 4)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
+		$listings = $this->listingsPage($members, $base_url, 'no_pending_members_found', $checkboxes);
+
+		$vars = array_merge($listings, $vars);
+
+		$this->set_view_header($base_url);
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove'),
+		));
+
+		ee()->cp->render('members/pending', $vars);
+	}
+
+
+	/**
+	 * Creates $vars array of filtered member Table/Pagination
+	 *
+	 * @param	Builder 	$members	Query builder object for Members
+	 * @param	object 		$base_url	CP/URL
+	 * @param	string 		$no_results_text
+	 * @param	mixed 		$checkboxes	Optional T/F indicating permission to use checkboxes.
+	 *          default of NULL falls back on using can_delete_members permission
+	 * @return  $array 		$vars array of filtered member table data
+	 */
+	protected function listingsPage($members, $base_url, $no_results_text, $checkboxes = NULL)
+	{
+		$vars = array();
+
+		// Allow them to tokenize searches
+		// possible tokens: id, member_id, username, screen_name, email
+		$search_terms = $this->_check_search_tokens(ee()->input->get_post('search'));
+
+		if ( ! empty($search_terms))
+		{
+			$keywords = ee()->input->get_post('search');
+			$vars['search_terms'] = htmlentities($keywords, ENT_QUOTES, 'UTF-8');
+
+			if ( ! is_array($search_terms))
+			{
+				$members->search(array('screen_name', 'username', 'email', 'member_id'), $search_terms);
+			}
+			else
+			{
+				foreach ($search_terms as $field => $term)
+				{
+					$members->search($field, $term);
+				}
+			}
+
+			// Set search results heading
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$members->count(),
+				$vars['search_terms']
+			);
+		}
 
 		$count = $members->count();
 
@@ -255,7 +297,7 @@ class Members extends CP_Controller {
 			->offset($offset);
 
 		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
-		$table->setNoResultsText('no_pending_members_found');
+		$table->setNoResultsText($no_results_text);
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
@@ -268,13 +310,9 @@ class Members extends CP_Controller {
 			->render($base_url);
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
-		));
-
-		ee()->cp->render('members/pending', $vars);
+		return $vars;
 	}
+
 
 	public function bans()
 	{
@@ -298,34 +336,19 @@ class Members extends CP_Controller {
 		);
 
 		$base_url = ee('CP/URL', 'members/bans');
+		$this->set_view_header($base_url);
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
 			->filter('group_id', 2)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$count = $members->count();
+		$listings = $this->listingsPage($members, $base_url, 'no_banned_members_found');
 
-		// Add this last to get the right $count
-		$page = ((int) ee()->input->get('page')) ?: 1;
-		$offset = ($page - 1) * $this->perpage; // Offset is 0 indexed
+		$vars = array_merge($listings, $vars);
 
-		$members->limit($this->perpage)
-			->offset($offset);
+		$this->set_view_header($base_url);
 
-		$table = $this->buildTableFromMemberQuery($members);
-		$table->setNoResultsText('no_banned_members_found');
-
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		if ( ! empty($vars['table']['data']))
-		{
-			$vars['pagination'] = ee('CP/Pagination', $count)
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
 
 		$values = array(
 			'banned_ips' => '',
@@ -1065,8 +1088,6 @@ class Members extends CP_Controller {
 		$this->base_url->addQueryStringVariables($this->params);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Looks through the member search string for search tokens (e.g. id:3
 	 * or username:john)
@@ -1110,8 +1131,6 @@ class Members extends CP_Controller {
 		return $search_string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate post re-assignment view if applicable
 	 *
@@ -1148,8 +1167,6 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = lang('delete_member');
 		ee()->cp->render('members/delete_confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Delete
@@ -1245,8 +1262,6 @@ class Members extends CP_Controller {
 		ee()->functions->redirect($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check to see if the members being deleted are super admins. If they are
 	 * we need to make sure that the deleting user is a super admin and that
@@ -1287,8 +1302,6 @@ class Members extends CP_Controller {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send email notifications to email addresses for the respective member
@@ -1358,8 +1371,6 @@ class Members extends CP_Controller {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Set the header for the members section

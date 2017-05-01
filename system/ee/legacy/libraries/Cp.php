@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine CP Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP
  */
 class Cp {
 
@@ -66,8 +54,6 @@ class Cp {
 		// Make sure all requests to iframe the CP are denied
 		ee()->output->set_header('X-Frame-Options: SAMEORIGIN');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Certain Default Control Panel View Variables
@@ -194,8 +180,6 @@ class Cp {
 		ee()->load->vars($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Render output (html)
 	 *
@@ -300,8 +284,6 @@ class Cp {
 		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load up the menu for our view
 	 *
@@ -317,8 +299,6 @@ class Cp {
 
 		ee()->view->cp_main_menu = ee()->menu->generate_menu();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Shows a banner indicating the result of a one-click upgrade
@@ -390,6 +370,24 @@ class Cp {
 		if ( ! is_dir(PATH_THEMES))
 		{
 			$notices[] = sprintf(lang('theme_folder_wrong'), ee('CP/URL', '/cp/settings/urls'));
+		}
+
+		if ( ! ee()->config->item('session_crypt_key'))
+		{
+			$notices[] = sprintf(
+				lang('missing_encryption_key'),
+				'session_crypt_key',
+				'https://expressionengine.com/support'
+			);
+		}
+
+		if ( ! ee()->config->item('encryption_key'))
+		{
+			$notices[] = sprintf(
+				lang('missing_encryption_key'),
+				'encryption_key',
+				'https://expressionengine.com/support'
+			);
 		}
 
 		if ( ! empty($notices))
@@ -511,8 +509,6 @@ class Cp {
 		return $version_info;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mask URL.
 	 *
@@ -526,8 +522,6 @@ class Cp {
 	{
 		return ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add JS Script
@@ -574,8 +568,6 @@ class Cp {
 		return $this->js_files;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Render Footer Javascript
 	 *
@@ -598,8 +590,6 @@ class Cp {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Seal the current combo loader and reopen a new one.
@@ -645,8 +635,6 @@ class Cp {
 
 		return $this->requests;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get last modification time of a js file.
@@ -699,8 +687,6 @@ class Cp {
 		return file_exists($file) ? filemtime($file) : 0;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the right navigation
 	 *
@@ -712,8 +698,6 @@ class Cp {
 	{
 		ee()->view->cp_right_nav = array_reverse($nav);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * URL to the current page unless POST data exists - in which case it
@@ -780,8 +764,6 @@ class Cp {
 		return $url;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns GET variables from the current CP URL. Useful for replicating
 	 * the state of a view if you need to go away from it, POST requests for
@@ -797,8 +779,6 @@ class Cp {
 
 		return array_intersect_key($_GET, array_flip($filtered_get));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * 	Get Quicklinks
@@ -849,8 +829,6 @@ class Cp {
 		return $link;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Abstracted Way to Add a Breadcrumb Links
 	 *
@@ -869,8 +847,6 @@ class Cp {
 		ee()->view->cp_breadcrumbs = $_crumbs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load Package JS
 	 *
@@ -886,8 +862,6 @@ class Cp {
 
 		$this->add_js_script(array('package' => $package.':'.$file));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load Package CSS
@@ -914,8 +888,6 @@ class Cp {
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Header Data
 	 *
@@ -937,8 +909,6 @@ class Cp {
 		$this->its_all_in_your_head[] = $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the array of items to be added in the header
 	 *
@@ -948,8 +918,6 @@ class Cp {
 	{
 		return $this->its_all_in_your_head;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Footer Data
@@ -964,8 +932,6 @@ class Cp {
 		$this->footer_item[] = $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the array of items to be added in the footer
 	 *
@@ -975,8 +941,6 @@ class Cp {
 	{
 		return $this->footer_item;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Allowed Group
@@ -1016,8 +980,6 @@ class Cp {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Allowed Group
 	 *
@@ -1054,8 +1016,6 @@ class Cp {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is Module Installed?
 	 *
@@ -1084,8 +1044,6 @@ class Cp {
 
 		return $this->installed_modules;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Invalid Custom Field Names
@@ -1160,8 +1118,6 @@ class Cp {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * 	Fetch Action IDs
 	 *
@@ -1183,8 +1139,6 @@ class Cp {
 
 		return $query->row('action_id');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Site Switching Logic

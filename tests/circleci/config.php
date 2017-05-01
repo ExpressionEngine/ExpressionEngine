@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +19,7 @@ if (function_exists('opcache_reset'))
 }
 
 $config['site_url'] = 'http://ee2.test:8080/';
-$config['app_version'] = '3.5.5';
+$config['app_version'] = '4.0.0';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
@@ -38,5 +38,6 @@ $config['database'] = array(
 	),
 );
 $config['encryption_key'] = '631cbbc6e1de577805226ce0d1cc6c144cfd6c86';
+$config['session_crypt_key'] = '549782140d653f8865b6cbabb36600766d5e25a0';
 
 // EOF

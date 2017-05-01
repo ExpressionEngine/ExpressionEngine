@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Custom Member Fields)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Custom Member Fields)
  */
 class EE_Channel_custom_member_field_parser implements EE_Channel_parser_component {
 
@@ -37,8 +24,6 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 	{
 		return in_array('member_data', $disabled) OR empty($pre->channel()->mfields);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Reset the processed member tags cache.
@@ -68,8 +53,6 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the custom member data fields.

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
@@ -98,7 +105,7 @@ class ChannelEntry extends ContentModel {
 		'author_id'          => 'required|isNatural|validateAuthorId',
 		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
-		'title'              => 'required|maxLength[200]|limitHtml[b,strong,i,em,span,sup,sub,code,ins,del,mark]',
+		'title'              => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
 		'url_title'          => 'required|maxLength[200]|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
@@ -115,6 +122,8 @@ class ChannelEntry extends ContentModel {
 		'afterSave',
 		'afterUpdate'
 	);
+
+	protected $_default_fields;
 
 	// Properties
 	protected $entry_id;
@@ -444,7 +453,7 @@ class ChannelEntry extends ContentModel {
 
 		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
 
-		if ($data == $last_version->version_data)
+		if ( ! empty($last_version) && $data == $last_version->version_data)
 		{
 			return;
 		}
@@ -691,9 +700,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	protected function getDefaultFields()
 	{
-		static $default_fields = array();
-
-		if (empty($default_fields))
+		if (empty($this->_default_fields))
 		{
 			$default_fields = array(
 				'title' => array(
@@ -857,7 +864,7 @@ class ChannelEntry extends ContentModel {
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = $metadata;
 				}
 
-				if ( ! $this->Channel->comment_system_enabled)
+				if ( ! $this->Channel->comment_system_enabled OR ! bool_config_item('enable_comments'))
 				{
 					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
 				}
@@ -872,9 +879,11 @@ class ChannelEntry extends ContentModel {
 					$default_fields[$tab_id . '__' . $key] = $field;
 				}
 			}
+
+			$this->_default_fields = $default_fields;
 		}
 
-		return $default_fields;
+		return $this->_default_fields;
 	}
 
 	/**

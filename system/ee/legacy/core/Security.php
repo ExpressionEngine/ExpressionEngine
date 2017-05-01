@@ -1,17 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine XID Marker Interface
@@ -19,25 +13,11 @@
  * Implementing this will enforce strict XID checks on all requests to
  * the class (if secure forms are enabled). Without it, the security model
  * is a little more lax until third parties have time to adapt.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface Strict_XID {}
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Security Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Security
  */
 class EE_Security {
 
@@ -108,8 +88,6 @@ class EE_Security {
 		$str = preg_replace('/\.+[\/\\\]/', '', $str);
 		return stripslashes(str_replace($bad, '', $str));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Check and Validate Form CSRF tokens
