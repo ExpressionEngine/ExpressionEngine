@@ -1963,12 +1963,14 @@ class EE_Template {
 	 */
 	protected function _get_cache_prefix()
 	{
+		$language = ee()->session->get_language();
+
 		if (ee()->uri->uri_string != '')
 		{
-			return md5(ee()->functions->fetch_site_index().ee()->uri->uri_string);
+			return md5(ee()->functions->fetch_site_index().$language.ee()->uri->uri_string);
 		}
 
-		return md5(ee()->config->item('site_url').'index'.ee()->uri->query_string);
+		return md5(ee()->config->item('site_url').'index'.$language.ee()->uri->query_string);
 	}
 
 	// --------------------------------------------------------------------
