@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Admin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Model
  */
 class File_model extends CI_Model {
 
@@ -168,8 +156,6 @@ class File_model extends CI_Model {
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Save a file
 	 *
@@ -269,8 +255,6 @@ class File_model extends CI_Model {
 		return $successful;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Count Files
 	 *
@@ -288,8 +272,6 @@ class File_model extends CI_Model {
 		return $this->db->count_all_results('files');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Count Images
 	 *
@@ -300,8 +282,6 @@ class File_model extends CI_Model {
 		$this->db->like('mime_type', 'image/', 'after');
 		return $this->count_files($dir_id);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get files by directory
@@ -320,8 +300,6 @@ class File_model extends CI_Model {
 		return $this->db->$dir_func('upload_location_id', $dir_id)
 						->get('files');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get files by name and directory
@@ -353,8 +331,6 @@ class File_model extends CI_Model {
 		return $this->db->get('files');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Get files by id
 	 *
@@ -374,8 +350,6 @@ class File_model extends CI_Model {
 		return $this->db->$file_func('file_id', $file_id)
 						->get('files');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get dimensions by dir_id
@@ -400,8 +374,6 @@ class File_model extends CI_Model {
 	}
 
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Get watermark preference
 	 *
@@ -419,8 +391,6 @@ class File_model extends CI_Model {
 		return $this->db->get('file_watermarks');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Get the correct db where function depending
 	 * on what the datatype is.
@@ -437,8 +407,6 @@ class File_model extends CI_Model {
 
 		return 'where';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Delete Watermark Preference
@@ -469,8 +437,6 @@ class File_model extends CI_Model {
 		return $deleting->row('wm_name');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Select Max
 	 *
@@ -486,8 +452,6 @@ class File_model extends CI_Model {
 		return $this->db->get($table);
 	}
 
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Update Dimensions
@@ -509,8 +473,6 @@ class File_model extends CI_Model {
 		$this->db->update('file_dimensions', $data);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Raw Files
@@ -627,8 +589,6 @@ class File_model extends CI_Model {
 		return $files;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deletes a file that's been stored on the database. Completely removes
 	 * database records and the file itself.
@@ -685,8 +645,6 @@ class File_model extends CI_Model {
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete files by filename.
 	 *
@@ -710,8 +668,6 @@ class File_model extends CI_Model {
 		return $this->delete_files($file_ids);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Deletes all files associated with a file (source, thumb, and dimensions)

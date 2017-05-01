@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Parser;
 
 /**
- * ExpressionEngine - by EllisLab
+ * Core Abstract Parser
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.9.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Core Abstract Parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- *
- * THIRD PARTY DEVS: Extend at your own risk before it's documented
+ * THIRD PARTY DEVS: Extend at your own risk, this is private API
  */
 abstract class AbstractParser {
 

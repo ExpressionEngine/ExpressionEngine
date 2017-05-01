@@ -1,29 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Blacklist Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Blacklist control panel
  */
 class Blacklist_mcp {
 
@@ -63,8 +48,6 @@ class Blacklist_mcp {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Blacklist Homepage
@@ -138,8 +121,6 @@ class Blacklist_mcp {
 		return ee('View')->make('blacklist:index')->render($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write .htaccess File
 	 *
@@ -208,8 +189,6 @@ class Blacklist_mcp {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write .htaccess File
@@ -321,8 +300,6 @@ class Blacklist_mcp {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Blacklist
 	 *
@@ -340,8 +317,6 @@ class Blacklist_mcp {
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Whitelist
 	 *
@@ -358,8 +333,6 @@ class Blacklist_mcp {
 			->defer();
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
-
-	// --------------------------------------------------------------------
 
 	public function save_lists()
 	{
@@ -483,8 +456,6 @@ class Blacklist_mcp {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Whitelisted Items
 	 *
@@ -565,8 +536,6 @@ class Blacklist_mcp {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Download and update ExpressionEngine.com Black- or Whitelist

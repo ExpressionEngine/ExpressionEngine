@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * CodeIgniter File Helpers
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/file_helpers.html
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * File Helpers
+ */
 
 /**
  * Read File
@@ -48,8 +33,6 @@ if ( ! function_exists('read_file'))
 		return file_get_contents($file);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Write File
@@ -79,8 +62,6 @@ if ( ! function_exists('write_file'))
 		return TRUE;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Delete Files
@@ -141,8 +122,6 @@ if ( ! function_exists('delete_files'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Writes an index.html file to a specified path to ensure directories
  * cannot be indexed
@@ -160,8 +139,6 @@ if ( ! function_exists('write_index_html'))
 		return write_file($path.'index.html', 'Directory access is forbidden.');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Get Filenames
@@ -209,8 +186,6 @@ if ( ! function_exists('get_filenames'))
 		}
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Get Directory File Information
@@ -264,8 +239,6 @@ if ( ! function_exists('get_dir_file_info'))
 		}
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
 * Get File Info
@@ -330,8 +303,6 @@ if ( ! function_exists('get_file_info'))
 		return $fileinfo;
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Symbolic Permissions
@@ -398,8 +369,6 @@ if ( ! function_exists('symbolic_permissions'))
 		return $symbolic;
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Octal Permissions

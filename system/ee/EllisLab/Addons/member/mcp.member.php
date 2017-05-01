@@ -1,37 +1,18 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 /**
- * ExpressionEngine - by EllisLab
+ * Member Management Module control panel
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * Because member management is so tightly, most of the member functions
+ * are contained in the core code, rather than this module file.
  */
-
-// --------------------------------------------------------------------
-
-/**
- * Member Management Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
- /*
-  Purpose: Member management system - CP
-  Note: Because member management is so tightly
-  integrated into the core system, most of the
-  member functions are contained in the core and cp
-  files.
- */
-
 class Member_mcp {
 
 

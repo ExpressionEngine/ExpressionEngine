@@ -1,16 +1,10 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 if ( ! function_exists('xml_parser_create'))
@@ -23,16 +17,8 @@ if ( ! class_exists('EE_Xmlrpc'))
 	show_error('You must load the Xmlrpc class before loading the Xmlrpcs class in order to create a server.');
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * XML-RPC server class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class EE_Xmlrpcs extends EE_Xmlrpc
 {

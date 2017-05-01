@@ -1,28 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Email Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Module
  */
-
 class Email {
 
 	var $email_time_interval = '20'; // In seconds
@@ -39,8 +26,6 @@ class Email {
 	{
 		$this->use_captchas = ee('Captcha')->shouldRequireCaptcha() ? 'y' : 'n';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Contact Form
@@ -178,8 +163,6 @@ class Email {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show an email preview for different emails
 	 * @return string Parsed tagdata with relevant fields available for parsing
@@ -212,8 +195,6 @@ class Email {
 		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Load up the preview template and render it
 	 * @return void
@@ -242,8 +223,6 @@ class Email {
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($segments[0], $segments[1]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tell a friend form
@@ -455,8 +434,6 @@ class Email {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Strips fields of HTML based on $allow_html
 	 *
@@ -492,8 +469,6 @@ class Email {
 
 		return $template;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Send Email
@@ -748,8 +723,6 @@ class Email {
 		$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * mail_recipients
 	 *
@@ -937,8 +910,6 @@ class Email {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate List of Emails
 	 */
@@ -989,8 +960,6 @@ class Email {
 
 		return array('approved' => $approved_emails, 'error' => $error);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup forms
@@ -1065,8 +1034,6 @@ class Email {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Encrypt a given string of data
 	 * @param string $data Raw data to encrypt
@@ -1076,8 +1043,6 @@ class Email {
 	{
 		return ee('Encrypt')->encode($data, ee()->config->item('session_crypt_key'));
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Decrypt a given string of data, assumed to be base64_encoded

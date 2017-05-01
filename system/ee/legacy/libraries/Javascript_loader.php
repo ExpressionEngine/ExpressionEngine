@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.5
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Javascript Loader Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Assets
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Javascript Loader
  */
 class Javascript_loader {
 
@@ -31,8 +19,6 @@ class Javascript_loader {
 	{
 		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Combo Loader
@@ -113,8 +99,6 @@ class Javascript_loader {
 		ee()->output->set_header('Content-Length: '.strlen($contents));
 		ee()->output->set_output($contents);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Headers

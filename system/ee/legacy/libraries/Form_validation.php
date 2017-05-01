@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Form Validation Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Validation
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Form Validation
  */
 class EE_Form_validation {
 
@@ -66,8 +54,6 @@ class EE_Form_validation {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets the callback object
 	 *
@@ -82,8 +68,6 @@ class EE_Form_validation {
 		$obj->security =& ee()->security;
 		$this->CI =& $obj;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Handles validations that are performed over AJAX
@@ -139,8 +123,6 @@ class EE_Form_validation {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns TRUE/FALSE based on existance of validation errors
 	 *
@@ -150,8 +132,6 @@ class EE_Form_validation {
 	{
 		return ! empty($this->_error_array);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Given a "sections" array formatted for the shared form view, sets
@@ -216,8 +196,6 @@ class EE_Form_validation {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Rules
@@ -308,8 +286,6 @@ class EE_Form_validation {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate Username
 	 *
@@ -354,8 +330,6 @@ class EE_Form_validation {
 
 		return $value;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Username
@@ -434,8 +408,6 @@ class EE_Form_validation {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate Screen Name
 	 *
@@ -474,8 +446,6 @@ class EE_Form_validation {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Password
@@ -583,8 +553,6 @@ class EE_Form_validation {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authorize Password
 	 *
@@ -603,8 +571,6 @@ class EE_Form_validation {
 
 		return ($validate !== FALSE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Email
@@ -663,8 +629,6 @@ class EE_Form_validation {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check to see if a date is valid by passing it to
 	 * Localize::string_to_timestamp
@@ -677,8 +641,6 @@ class EE_Form_validation {
 		ee()->load->library('localize');
 		return (ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->get_date_format()) != FALSE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check to see if a string is unchanged after running it through
@@ -703,8 +665,6 @@ class EE_Form_validation {
 		return $valid;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * File exists
 	 *
@@ -718,8 +678,6 @@ class EE_Form_validation {
 		return file_exists(parse_config_variables($file, $_POST));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Path/file writeable
 	 *
@@ -732,8 +690,6 @@ class EE_Form_validation {
 	{
 		return is_really_writable(parse_config_variables($path, $_POST));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set old value
@@ -757,8 +713,6 @@ class EE_Form_validation {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get old value
 	 *
@@ -771,8 +725,6 @@ class EE_Form_validation {
 		return (isset($this->old_values[$key])) ? $this->old_values[$key] : '';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets additional object to check callbacks against such as fieldtypes
 	 * to allow third-party fieldtypes to validate their settings forms
@@ -784,8 +736,6 @@ class EE_Form_validation {
 	{
 		$this->_fieldtype = $fieldtype;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the value from a form
@@ -812,8 +762,6 @@ class EE_Form_validation {
 
 		return $this->_field_data[$field]['postdata'];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep a list
@@ -844,8 +792,6 @@ class EE_Form_validation {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Enum
 	 *
@@ -869,8 +815,6 @@ class EE_Form_validation {
 
 		return in_array($str, $opts);
 	}
-
-	// --------------------------------------------------------------------
 
 
 	/**
@@ -1117,8 +1061,6 @@ class EE_Form_validation {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 
 	/**
 	 * Lookup Dictionary Word
@@ -1157,8 +1099,6 @@ class EE_Form_validation {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Error Message
 	 *
@@ -1182,8 +1122,6 @@ class EE_Form_validation {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set The Error Delimiter
 	 *
@@ -1201,8 +1139,6 @@ class EE_Form_validation {
 
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Error Message
@@ -1232,8 +1168,6 @@ class EE_Form_validation {
 
 		return $prefix.$this->_field_data[$field]['error'].$suffix;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Error String
@@ -1275,8 +1209,6 @@ class EE_Form_validation {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run the Validator
@@ -1370,8 +1302,6 @@ class EE_Form_validation {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Traverse a multidimensional $_POST array index until the data is found
 	 *
@@ -1404,8 +1334,6 @@ class EE_Form_validation {
 
 		return $array;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Re-populate the _POST array with our finalized and processed data
@@ -1463,8 +1391,6 @@ class EE_Form_validation {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Translate a field name
 	 *
@@ -1490,8 +1416,6 @@ class EE_Form_validation {
 
 		return $fieldname;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Select
@@ -1535,8 +1459,6 @@ class EE_Form_validation {
 		return ' selected="selected"';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Radio
 	 *
@@ -1578,8 +1500,6 @@ class EE_Form_validation {
 
 		return ' checked="checked"';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Checkbox
@@ -1623,8 +1543,6 @@ class EE_Form_validation {
 		return ' checked="checked"';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Required
 	 *
@@ -1643,8 +1561,6 @@ class EE_Form_validation {
 			return ( ! empty($str));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Match one field to another
@@ -1665,8 +1581,6 @@ class EE_Form_validation {
 
 		return ($str !== $field) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Minimum Length
@@ -1691,8 +1605,6 @@ class EE_Form_validation {
 		return (strlen($str) < $val) ? FALSE : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Max Length
 	 *
@@ -1715,8 +1627,6 @@ class EE_Form_validation {
 
 		return (strlen($str) > $val) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Exact Length
@@ -1741,8 +1651,6 @@ class EE_Form_validation {
 		return (strlen($str) != $val) ? FALSE : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Valid Email
 	 *
@@ -1754,8 +1662,6 @@ class EE_Form_validation {
 	{
 		return (bool) filter_var($str, FILTER_VALIDATE_EMAIL);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Valid Emails
@@ -1782,8 +1688,6 @@ class EE_Form_validation {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate IP Address
 	 *
@@ -1795,8 +1699,6 @@ class EE_Form_validation {
 	{
 		return ee()->input->valid_ip($ip);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Alpha
@@ -1810,8 +1712,6 @@ class EE_Form_validation {
 		return ( ! preg_match("/^([a-z])+$/i", $str)) ? FALSE : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Alpha-numeric
 	 *
@@ -1823,8 +1723,6 @@ class EE_Form_validation {
 	{
 		return ( ! preg_match("/^([a-z0-9])+$/i", $str)) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Alpha-numeric with underscores and dashes
@@ -1838,8 +1736,6 @@ class EE_Form_validation {
 		return ( ! preg_match("/^([-a-z0-9_-])+$/i", $str)) ? FALSE : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Alpha-numeric with underscores, dashes, and spaces
 	 *
@@ -1851,8 +1747,6 @@ class EE_Form_validation {
 	{
 		return ( ! preg_match("/^([a-z0-9\_\-\s])+$/i", $str)) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Numeric
@@ -1867,8 +1761,6 @@ class EE_Form_validation {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is Numeric
 	 *
@@ -1880,8 +1772,6 @@ class EE_Form_validation {
 	{
 		return ( ! is_numeric($str)) ? FALSE : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Integer
@@ -1895,8 +1785,6 @@ class EE_Form_validation {
 		return (bool)preg_match( '/^[\-+]?[0-9]+$/', $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Greater than
 	*
@@ -1908,8 +1796,6 @@ class EE_Form_validation {
 	{
 		return is_numeric($str) ? ($str > $min) : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Equal to or Greater than
@@ -1923,8 +1809,6 @@ class EE_Form_validation {
 		return is_numeric($str) ? ($str >= $min) : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Less than
 	*
@@ -1936,8 +1820,6 @@ class EE_Form_validation {
 	{
 		return is_numeric($str) ? ($str < $max) : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	* Equal to or Less than
@@ -1951,8 +1833,6 @@ class EE_Form_validation {
 		return is_numeric($str) ? ($str <= $max) : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is a Natural number  (0,1,2,3, etc.)
 	 *
@@ -1964,8 +1844,6 @@ class EE_Form_validation {
 	{
 		return (bool)preg_match( '/^[0-9]+$/', $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is a Natural number, but not a zero  (1,2,3, etc.)
@@ -1989,8 +1867,6 @@ class EE_Form_validation {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Valid Base64
 	 *
@@ -2005,8 +1881,6 @@ class EE_Form_validation {
 	{
 		return (bool) ! preg_match('/[^a-zA-Z0-9\/\+=]/', $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep data for form
@@ -2038,8 +1912,6 @@ class EE_Form_validation {
 		return str_replace(array("'", '"', '<', '>'), array("&#39;", "&quot;", '&lt;', '&gt;'), stripslashes($data));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep URL
 	 *
@@ -2062,8 +1934,6 @@ class EE_Form_validation {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Strip Image Tags
 	 *
@@ -2076,8 +1946,6 @@ class EE_Form_validation {
 		return ee()->input->strip_image_tags($str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * XSS Clean
 	 *
@@ -2089,8 +1957,6 @@ class EE_Form_validation {
 	{
 		return ee('Security/XSS')->clean($str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert PHP tags to entities

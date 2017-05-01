@@ -1,38 +1,19 @@
 <?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
 
 /**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
  * Common Functions
- *
- * Loads the base classes and executes the request.
- *
- * @package		CodeIgniter
- * @subpackage	codeigniter
- * @category	Common Functions
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/
  */
-
-// ------------------------------------------------------------------------
 
 /**
 * Determines if the current version of PHP is greater then the supplied value
@@ -48,8 +29,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 	{
 		return (version_compare(PHP_VERSION, $version) < 0) ? FALSE : TRUE;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
  * Tests for file writability
@@ -68,8 +47,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 
 		return $fs->isWritable($file);
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Class registry
@@ -140,8 +117,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		return $_classes[$class];
 	}
 
-// --------------------------------------------------------------------
-
 /**
 * Keeps track of which libraries have been loaded.  This function is
 * called by the load_class() function above
@@ -160,8 +135,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 
 		return $_is_loaded;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Loads the main config.php file
@@ -215,8 +188,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		return $config;
 	}
 
-// ------------------------------------------------------------------------
-
 /**
  * Returns the default config items
  *
@@ -244,8 +215,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		);
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * Returns the specified config item
 *
@@ -272,8 +241,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 
 		return $raw_value ? $config[$item] : parse_config_variables($config[$item]);
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Parses select variables in a config value's string
@@ -306,8 +273,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		return $value;
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * Returns the specified config item as a boolean.
 *
@@ -331,8 +296,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		$setting = get_bool_from_string($value);
 		return (is_bool($setting)) ? $setting : (bool) $value;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
  * Get's a boolean value from a string such as 'y', 'yes', 'n', or 'no', if it
@@ -368,8 +331,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		}
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * Error Handler
 *
@@ -388,8 +349,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		echo $_error->show_error($heading, $message, 'error_general', $status_code);
 		exit;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Exception Handler
@@ -410,8 +369,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		exit;
 	}
 
-// ------------------------------------------------------------------------
-
 /**
 * 404 Page Handler
 *
@@ -428,8 +385,6 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 		$_error->show_404($page, $log_error);
 		exit;
 	}
-
-// ------------------------------------------------------------------------
 
 /**
 * Error Logging Interface
@@ -455,8 +410,6 @@ if ( ! function_exists('log_message'))
 		$_log->write_log($level, $message, $php_error);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Set HTTP Status Header
@@ -541,8 +494,6 @@ if ( ! function_exists('log_message'))
 		}
 	}
 
-// --------------------------------------------------------------------
-
 /**
 * Exception Handler
 *
@@ -585,8 +536,6 @@ if ( ! function_exists('log_message'))
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove Invisible Characters
 	 *
@@ -620,8 +569,6 @@ if ( ! function_exists('log_message'))
 
 		return $str;
 	}
-
-// ------------------------------------------------------------------------
 
 if ( ! function_exists('function_usable'))
 {

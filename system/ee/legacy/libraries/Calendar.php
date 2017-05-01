@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * CodeIgniter Calendar Class
+ * Calendar Class
  *
  * This class enables the creation of calendars
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/calendar.html
  */
 class EE_Calendar {
 
@@ -60,8 +46,6 @@ class EE_Calendar {
 		log_message('debug', "Calendar Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize the user preferences
 	 *
@@ -81,8 +65,6 @@ class EE_Calendar {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the calendar
@@ -246,8 +228,6 @@ class EE_Calendar {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Month Name
 	 *
@@ -278,8 +258,6 @@ class EE_Calendar {
 
 		return ee()->lang->line($month);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Day Names
@@ -317,8 +295,6 @@ class EE_Calendar {
 
 		return $days;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Adjust Date
@@ -359,8 +335,6 @@ class EE_Calendar {
 		return $date;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Total days in a given month
 	 *
@@ -389,8 +363,6 @@ class EE_Calendar {
 
 		return $days_in_month[$month - 1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Default Template Data
@@ -426,8 +398,6 @@ class EE_Calendar {
 						'table_close'				=> '</table>'
 					);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Template

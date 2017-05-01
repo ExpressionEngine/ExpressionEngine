@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Metaweblog API Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Metaweblog API Module control panel
  */
 class Metaweblog_api_mcp {
 
@@ -41,8 +27,6 @@ class Metaweblog_api_mcp {
 	{
 		ee()->load->helper('form');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Control Panel Index
@@ -136,8 +120,6 @@ class Metaweblog_api_mcp {
 		return ee('View')->make('metaweblog_api:index')->render($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Configuration(s)
 	 *
@@ -172,8 +154,6 @@ class Metaweblog_api_mcp {
 		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create
 	 *
@@ -183,8 +163,6 @@ class Metaweblog_api_mcp {
 	{
 		return $this->modify('new');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Modify Configuration
@@ -565,9 +543,6 @@ class Metaweblog_api_mcp {
 			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 		}
 	}
-
-	// ------------------------------------------------------------------------
-
 
 	/** -----------------------------------------------------------
 	/**  JavaScript filtering code

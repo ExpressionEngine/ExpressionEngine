@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Output Display Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Output Display
  */
 class EE_Output {
 
@@ -38,16 +26,12 @@ class EE_Output {
 
 	var $_zlib_oc			= FALSE;
 
-	// --------------------------------------------------------------------
-
 	function __construct()
 	{
 		$this->_zlib_oc = @ini_get('zlib.output_compression');
 
 		log_message('debug', "Output Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Output
@@ -61,8 +45,6 @@ class EE_Output {
 	{
 		return $this->final_output;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Output
@@ -78,8 +60,6 @@ class EE_Output {
 		$this->final_output = $output;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Append Output
 	 *
@@ -93,8 +73,6 @@ class EE_Output {
 	{
 		$this->final_output .= $output;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Header
@@ -130,8 +108,6 @@ class EE_Output {
 		$this->headers[] = array($header, $replace);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set HTTP Status Header
 	 * moved to Common procedural functions in 1.7.2
@@ -146,8 +122,6 @@ class EE_Output {
 		set_status_header($code, $text);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Enable/disable Profiler
 	 *
@@ -160,8 +134,6 @@ class EE_Output {
 		$this->enable_profiler = (is_bool($val)) ? $val : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Cache
 	 *
@@ -173,8 +145,6 @@ class EE_Output {
 	{
 		$this->cache_expiration = ( ! is_numeric($time)) ? 0 : $time;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display the final output
@@ -410,8 +380,6 @@ class EE_Output {
 		log_message('debug', "Total execution time: ".$elapsed);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do extra processing for feeds
 	 *
@@ -467,8 +435,6 @@ class EE_Output {
 		$output = preg_replace("/{\?xml(.+?)\?}/", "<?xml\\1?".">", $output);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display fatal error message
 	 *
@@ -488,8 +454,6 @@ class EE_Output {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * System is off message
 	 *
@@ -506,8 +470,6 @@ class EE_Output {
 		echo $query->row('template_data') ;
 		exit;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show message
@@ -606,8 +568,6 @@ class EE_Output {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show user error
 	 *
@@ -661,8 +621,6 @@ class EE_Output {
 		$this->show_message($data, 0);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Send AJAX response
 	 *
@@ -697,8 +655,6 @@ class EE_Output {
 
 		exit(json_encode($msg));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send Cache Headers
@@ -754,8 +710,6 @@ class EE_Output {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setter for the remove_unparsed_variables class var
 	 *
@@ -767,8 +721,6 @@ class EE_Output {
 	{
 		$this->remove_unparsed_variables = $remove_unparsed_vars;
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

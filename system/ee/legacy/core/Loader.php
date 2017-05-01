@@ -1,31 +1,18 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+use  EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
 
 /**
  * Loader Class
  *
  * Loads views and files
- *
- * @package		CodeIgniter
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Loader {
 
@@ -127,8 +114,6 @@ class EE_Loader {
 		return $ret;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Class Loader
 	 *
@@ -186,8 +171,6 @@ class EE_Loader {
 		$this->_ci_load_class($library, $params, $object_name);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Add to the theme cascading
 	 *
@@ -198,8 +181,6 @@ class EE_Loader {
 	{
 		$this->_ci_view_paths = array($theme_path => TRUE) + $this->_ci_view_paths;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get top of package path
@@ -214,8 +195,6 @@ class EE_Loader {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set _base_classes variable
 	 *
@@ -228,8 +207,6 @@ class EE_Loader {
 
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is Loaded
@@ -252,8 +229,6 @@ class EE_Loader {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Model Loader
@@ -346,8 +321,6 @@ class EE_Loader {
 		show_error('Unable to locate the model you have specified: '.$model);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Database Loader
 	 *
@@ -381,8 +354,6 @@ class EE_Loader {
 		$this->facade->set('db', DB($params));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load the Utilities Class
 	 *
@@ -411,8 +382,6 @@ class EE_Loader {
 		$this->facade->set('dbutil', new $class());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load the Database Forge Class
 	 *
@@ -437,8 +406,6 @@ class EE_Loader {
 		$this->facade->set('dbforge', new $class());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load View
 	 *
@@ -460,8 +427,6 @@ class EE_Loader {
 		return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load File
 	 *
@@ -475,8 +440,6 @@ class EE_Loader {
 	{
 		return $this->_ci_load(array('_ci_path' => $path, '_ci_return' => $return));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Variables
@@ -504,8 +467,6 @@ class EE_Loader {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load Helper
@@ -565,8 +526,6 @@ class EE_Loader {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load Helpers
 	 *
@@ -580,8 +539,6 @@ class EE_Loader {
 	{
 		$this->helper($helpers);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Loads a language file
@@ -603,8 +560,6 @@ class EE_Loader {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Loads a config file
 	 *
@@ -615,8 +570,6 @@ class EE_Loader {
 	{
 		ee()->config->load($file, $use_sections, $fail_gracefully);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Driver Loader
@@ -662,8 +615,6 @@ class EE_Loader {
 		return $this->library($library, $params, $object_name);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Package Path
 	 *
@@ -688,8 +639,6 @@ class EE_Loader {
 		array_unshift($config->_config_paths, $path);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Package Paths
 	 *
@@ -702,8 +651,6 @@ class EE_Loader {
 	{
 		return $include_base === TRUE ? $this->_ci_library_paths : $this->_ci_model_paths;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Remove Package Path
@@ -762,8 +709,6 @@ class EE_Loader {
 		$this->_ci_view_paths = array_merge($this->_ci_view_paths, array(APPPATH.'views/' => TRUE));
 		$config->_config_paths = array_unique(array_merge($config->_config_paths, array(APPPATH)));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Loader
@@ -897,8 +842,6 @@ class EE_Loader {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load class
 	 *
@@ -1024,8 +967,6 @@ class EE_Loader {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Instantiates a class
 	 *
@@ -1098,8 +1039,6 @@ class EE_Loader {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Object to Array
 	 *
@@ -1113,8 +1052,6 @@ class EE_Loader {
 		return (is_object($object)) ? get_object_vars($object) : $object;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get a reference to a specific library or model
 	 *
@@ -1124,8 +1061,6 @@ class EE_Loader {
 	{
 		return ee()->$component;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep filename

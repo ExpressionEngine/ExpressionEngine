@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Pre-Parser
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Pre-Parser
  */
 class EE_Channel_preparser {
 
@@ -117,8 +104,6 @@ class EE_Channel_preparser {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Site IDs getter
 	 *
@@ -130,8 +115,6 @@ class EE_Channel_preparser {
 	{
 		return $this->_site_ids;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Entry IDs getter
@@ -145,8 +128,6 @@ class EE_Channel_preparser {
 		return $this->_entry_ids;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Pair tag data getter
 	 *
@@ -158,8 +139,6 @@ class EE_Channel_preparser {
 	{
 		return $this->_pair_data[spl_object_hash($obj)];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Single tag data getter
@@ -173,8 +152,6 @@ class EE_Channel_preparser {
 		return $this->_single_data[spl_object_hash($obj)];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Single tag data getter
 	 *
@@ -186,8 +163,6 @@ class EE_Channel_preparser {
 	{
 		return $this->_once_data[spl_object_hash($obj)];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Single tag data setter
@@ -202,8 +177,6 @@ class EE_Channel_preparser {
 		return $this->_once_data[spl_object_hash($obj)] = $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prefix getter
 	 *
@@ -213,8 +186,6 @@ class EE_Channel_preparser {
 	{
 		return $this->_prefix;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Channel getter
@@ -228,8 +199,6 @@ class EE_Channel_preparser {
 		return $this->_channel;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parser getter
 	 *
@@ -241,8 +210,6 @@ class EE_Channel_preparser {
 	{
 		return $this->_parser;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Disabled lookup
@@ -257,8 +224,6 @@ class EE_Channel_preparser {
 	{
 		return $this->_disabled[spl_object_hash($obj)];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tag lookup
@@ -275,8 +240,6 @@ class EE_Channel_preparser {
 	{
 		return strpos($this->_tagdata, LD.$this->_prefix.$tagname) !== FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tag Pair lookup
@@ -302,8 +265,6 @@ class EE_Channel_preparser {
 
 		return $end !== FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extract prefixed keys
@@ -334,8 +295,6 @@ class EE_Channel_preparser {
 		return $filtered;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Comment subscriber lookup
 	 *
@@ -359,8 +318,6 @@ class EE_Channel_preparser {
 
 		return $subscribers;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find modified conditionals

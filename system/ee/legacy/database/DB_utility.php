@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * Code Igniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Database Utility Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_utility extends CI_DB_forge {
 
@@ -40,8 +28,6 @@ class CI_DB_utility extends CI_DB_forge {
 
 		log_message('debug', "Database Utility Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * List databases
@@ -71,8 +57,6 @@ class CI_DB_utility extends CI_DB_forge {
 		return $this->data_cache['db_names'];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determine if a particular database exists
 	 *
@@ -95,8 +79,6 @@ class CI_DB_utility extends CI_DB_forge {
 		}
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Optimize Table
@@ -121,8 +103,6 @@ class CI_DB_utility extends CI_DB_forge {
 		// of PHP we can not pass function call directly into it
 		return current($res);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Optimize Database
@@ -159,8 +139,6 @@ class CI_DB_utility extends CI_DB_forge {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Repair Table
 	 *
@@ -184,8 +162,6 @@ class CI_DB_utility extends CI_DB_forge {
 		$res = $query->result_array();
 		return current($res);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate CSV from a query result object
@@ -228,8 +204,6 @@ class CI_DB_utility extends CI_DB_forge {
 
 		return $out;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate XML data from a query result object
@@ -277,8 +251,6 @@ class CI_DB_utility extends CI_DB_forge {
 
 		return $xml;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Database Backup

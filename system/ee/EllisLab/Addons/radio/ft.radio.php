@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Radio Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Radio Fieldtype
  */
 class Radio_ft extends OptionFieldtype {
 
@@ -77,21 +64,15 @@ class Radio_ft extends OptionFieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->_display_field($data, 'grid');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Displays the field for the CP or Frontend, and accounts for grid
@@ -162,8 +143,6 @@ class Radio_ft extends OptionFieldtype {
 		return $r;
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
@@ -214,8 +193,6 @@ class Radio_ft extends OptionFieldtype {
 		return $this->replace_tag($data, $params, $tagdata);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -226,8 +203,6 @@ class Radio_ft extends OptionFieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

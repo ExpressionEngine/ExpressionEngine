@@ -1,29 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-use EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+use  EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
 
 /**
- * ExpressionEngine Menu Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Menu
  */
 class EE_Menu {
 
@@ -36,8 +23,6 @@ class EE_Menu {
 	{
 		ee()->load->library('api');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate Menu
@@ -111,8 +96,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Site List
 	 *
@@ -144,8 +127,6 @@ class EE_Menu {
 
 		return $menu;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get channels the user currently has access to for putting into the
@@ -205,8 +186,6 @@ class EE_Menu {
 
 		return $menu;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the develop menu
@@ -311,8 +290,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Future home of quick links
 	 *
@@ -359,8 +336,6 @@ class EE_Menu {
 		return $tabs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
@@ -390,8 +365,6 @@ class EE_Menu {
 			);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Quick Tabs

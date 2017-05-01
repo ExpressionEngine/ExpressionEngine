@@ -1,32 +1,18 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * Spam Module control panel
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Spam_mcp {
 
 	public $stop_words_path = "spam/training/stopwords.txt";

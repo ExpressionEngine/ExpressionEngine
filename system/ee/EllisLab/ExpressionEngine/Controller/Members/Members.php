@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -12,27 +17,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members Controller
  */
 class Members extends CP_Controller {
 
@@ -1103,8 +1088,6 @@ class Members extends CP_Controller {
 		$this->base_url->addQueryStringVariables($this->params);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Looks through the member search string for search tokens (e.g. id:3
 	 * or username:john)
@@ -1148,8 +1131,6 @@ class Members extends CP_Controller {
 		return $search_string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate post re-assignment view if applicable
 	 *
@@ -1186,8 +1167,6 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = lang('delete_member');
 		ee()->cp->render('members/delete_confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Delete
@@ -1283,8 +1262,6 @@ class Members extends CP_Controller {
 		ee()->functions->redirect($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check to see if the members being deleted are super admins. If they are
 	 * we need to make sure that the deleting user is a super admin and that
@@ -1325,8 +1302,6 @@ class Members extends CP_Controller {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send email notifications to email addresses for the respective member
@@ -1396,8 +1371,6 @@ class Members extends CP_Controller {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Set the header for the members section

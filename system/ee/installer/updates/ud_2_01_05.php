@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package     ExpressionEngine
- * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license     https://expressionengine.com/license
- * @link        https://ellislab.com
- * @since       Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package     ExpressionEngine
- * @subpackage  Core
- * @category    Core
- * @author      EllisLab Dev Team
- * @link        https://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -73,8 +60,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Transfer Blogger configurations to the metaweblog api
@@ -136,8 +121,6 @@ class Updater {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Drop Blogger Data
 	 *
@@ -159,8 +142,6 @@ class Updater {
 
 		ee()->dbforge->drop_table('blogger');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Upload pref table update
@@ -195,8 +176,6 @@ class Updater {
 		ee()->smartforge->modify_column('upload_prefs', $fields);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Update exp_category_groups
 	 *
@@ -217,8 +196,6 @@ class Updater {
 
 		ee()->smartforge->add_column('category_groups', $fields);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Build the files tables:
@@ -527,8 +504,6 @@ class Updater {
 		ee()->smartforge->create_table('files');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Update exp_member_groups
 	 *
@@ -549,8 +524,6 @@ class Updater {
 
 		ee()->smartforge->add_column('member_groups', $fields, 'can_admin_channels');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Update exp_channel_fields
@@ -578,8 +551,6 @@ class Updater {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a MySQL index or two
 	 */
@@ -594,8 +565,6 @@ class Updater {
 		// and the same for field_type on exp_channel_fields
 		ee()->smartforge->add_key('channel_fields', 'field_type');
 	}
-
-	// --------------------------------------------------------------------
 }
 /* END CLASS */
 
