@@ -1685,7 +1685,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$current = strip_slashes($extension_model->settings);
+		$current = $extension_model->settings;
 
 		$class_name = $extension['class'];
 		$OBJ = new $class_name($current);
