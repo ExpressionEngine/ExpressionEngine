@@ -3471,10 +3471,27 @@ GRID_FALLBACK;
 
 		$url_title_js = <<<SCRIPT
 
-function liveUrlTitle()
+function liveUrlTitle(event)
 {
+	var title_field, url_title_field;
+
+	// If event is present, we'll try to make sure we're only affecting the
+	// URL title field inside this form
+	if (event) {
+		title_field = event.target;
+
+		for (var i = 0; i < document.forms.length; i++) {
+			if (document.forms[i].contains(title_field)) {
+				url_title_field = document.forms[i].querySelector('#url_title');
+			}
+		}
+	} else {
+		title_field = document.getElementById("title");
+		url_title_field = document.getElementById("url_title");
+	}
+
 	var defaultTitle =  EE.publish.default_entry_title;
-	var NewText = document.getElementById("title").value;
+	var NewText = title_field.value;
 
 	if (defaultTitle != '')
 	{
@@ -3519,13 +3536,13 @@ function liveUrlTitle()
 	NewText = NewText.replace(/^_/g,'');
 	NewText = NewText.replace(/^-/g,'');
 
-	if (document.getElementById("url_title"))
+	if (url_title_field)
 	{
-		document.getElementById("url_title").value = EE.publish.url_title_prefix + NewText;
+		url_title_field.value = EE.publish.url_title_prefix + NewText;
 	}
 	else
 	{
-		document.forms['entryform'].elements['url_title'].value = EE.publish.url_title_prefix + NewText;
+		document.forms['cform'].elements['url_title'].value = EE.publish.url_title_prefix + NewText;
 	}
 }
 
