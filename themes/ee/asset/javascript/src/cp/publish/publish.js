@@ -12,15 +12,15 @@
 
 $(document).ready(function () {
 
-	var publishForm = $("div.publish form");
+	var publishForm = $("form");
 
 	if (EE.publish.title_focus == true) {
-		$("div.publish form input[name=title]").focus();
+		$("form input[name=title]").focus();
 	}
 
 	if (EE.publish.which == 'new') {
-		$("div.publish form input[name=title]").bind("keyup blur", function() {
-			$('div.publish form input[name=title]').ee_url_title($('div.publish form input[name=url_title]'));
+		$("form input[name=title]").bind("keyup blur", function() {
+			$('form input[name=title]').ee_url_title($('form input[name=url_title]'));
 		});
 	}
 
