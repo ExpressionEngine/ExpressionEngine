@@ -17,7 +17,7 @@
 		// Single Relationship:
 		//   When the radio button is clicked, copy the chosen data into the
 		//   div.relate-wrap-chosen area
-		$('div.publish').on('click', '.relate-wrap input:radio', function (e) {
+		$('[data-publish]').on('click', '.relate-wrap input:radio', function (e) {
 			var relationship = $(this).closest('.relate-wrap'),
 				label = $(this).closest('label'),
 				input_name = relationship.find('.input-name').attr('name'),
@@ -46,7 +46,7 @@
 		// Multiple Relationships
 		//   When checkbox is clicked, copy the chosen data into the second
 		//   div.relate-wrap div.scroll-wrap area
-		$('div.publish').on('click', '.relate-wrap input:checkbox', function (e) {
+		$('[data-publish]').on('click', '.relate-wrap input:checkbox', function (e) {
 			var relationship = $(this).closest('.relate-wrap')
 				.siblings('.relate-wrap')
 				.first();
@@ -93,7 +93,7 @@
 		});
 
 		// Removing Relationships
-		$('div.publish').on('click', '.relate-wrap .relate-manage a', function (e) {
+		$('[data-publish]').on('click', '.relate-wrap .relate-manage a', function (e) {
 			var choices = $(this).closest('.relate-wrap');
 			var chosen = $(this).closest('.relate-wrap');
 
@@ -228,7 +228,7 @@
 		}
 
 		// Filter by Channel
-		$('div.publish').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
+		$('[data-publish]').on('click', '.relate-wrap .relate-actions .filters a[data-channel-id]', function (e) {
 			var search = $(this).closest('.relate-wrap').find('.relate-search').val(),
 				link = $(this).closest('.filters').find('a.has-sub'),
 				channel_id = $(this).data('channel-id'),
@@ -247,7 +247,7 @@
 		});
 
 		// Search Relationships
-		$('div.publish').on('interact', '.relate-wrap.col.w-8[data-field] .relate-search, .relate-wrap.col.w-16 .relate-search', function (e) {
+		$('[data-publish]').on('interact', '.relate-wrap.col.w-8[data-field] .relate-search, .relate-wrap.col.w-16 .relate-search', function (e) {
 			var channelId = $(this).closest('.relate-actions')
 				.find('.filters .has-sub .faded')
 				.data('channel-id');
@@ -256,7 +256,7 @@
 		});
 
 		// Filtering of chosen entries in a multiple relationships UI
-		$('div.publish').on('interact', '.relate-wrap.col.w-8.last .relate-search', function (e) {
+		$('[data-publish]').on('interact', '.relate-wrap.col.w-8.last .relate-search', function (e) {
 			var relate_wrap = $(this).closest('.relate-wrap'),
 				labels = relate_wrap.find('label.chosen'),
 				no_results = relate_wrap.find('.no-results');

@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="form-standard">
+<div class="form-standard" data-publish>
 	<h1>
 		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
 		<?php if ($entry->getAutosaves()->count()): ?>

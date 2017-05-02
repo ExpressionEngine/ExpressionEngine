@@ -256,7 +256,7 @@ $(document).ready(function () {
 	});
 
 	// Saving the hide/unhide state of fields
-	$('div.publish form').on('click', 'li.hide a, li.unhide a', function(e) {
+	$('[data-publish] form').on('click', 'li.hide a, li.unhide a', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
@@ -268,7 +268,7 @@ $(document).ready(function () {
 	});
 
 	// Saving the collapsed state
-	$('div.publish form').on('click', '.sub-arrow', function(e) {
+	$('[data-publish] form').on('click', '.sub-arrow', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
@@ -277,7 +277,7 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
-	$('div.publish form').on('submit', function(e) {
+	$('[data-publish] form').on('submit', function(e) {
 		$('input[name="field_layout"]').val(JSON.stringify(EE.publish_layout));
 	});
 
