@@ -73,8 +73,10 @@
 		setupFileField();
 
 		$('.fluid-wrap').on('fluidBlock:addField', function(e, el) {
-			sanitizeFileField(el);
-			setupFileField(el);
+			if ($(el).data('field-type') == 'file') {
+				sanitizeFileField(el);
+				setupFileField(el);
+			}
 		});
 
 		Grid.bind('file', 'display', function(cell) {
