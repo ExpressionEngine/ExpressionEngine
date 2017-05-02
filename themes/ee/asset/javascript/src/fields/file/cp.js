@@ -59,18 +59,26 @@
 			});
 		}
 
-		setupFileField();
-
-		Grid.bind('file', 'display', function(cell) {
-			var button = $('.file-field-filepicker', cell),
-				input = $('input[type="hidden"]', cell),
+		function sanitizeFileField(el) {
+			var button = $('.file-field-filepicker', el),
+				input = $('input[type="hidden"]', el),
 				safe_name = input.attr('name').replace(/[\[\]']+/g, '_');
 
 			button.attr('data-input-value', input.attr('name'));
 			button.attr('data-input-image', safe_name);
 
-			$('.fields-upload-chosen img', cell).attr('id', safe_name);
+			$('.fields-upload-chosen img', el).attr('id', safe_name);
+		}
 
+		setupFileField();
+
+		$('.fluid-wrap').on('fluidBlock:addField', function(e, el) {
+			sanitizeFileField(el);
+			setupFileField(el);
+		});
+
+		Grid.bind('file', 'display', function(cell) {
+			sanitizeFileField(cell);
 			setupFileField(cell);
 		});
 	});
