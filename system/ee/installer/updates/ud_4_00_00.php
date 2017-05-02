@@ -23,7 +23,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'removeMemberHomepageTable',
 				'globalizeSave_tmpl_files'
