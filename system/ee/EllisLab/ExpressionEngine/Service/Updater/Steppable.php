@@ -1,29 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 4.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Updater Steppable Trait
- *
- * @package		ExpressionEngine
- * @subpackage	Updater
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * This is a handy queue-like system which allows you to iterate over
+ * pre-defined steps to accomplish a goal. You can inject steps at any point
+ * and start the iterator from any point.
  */
 trait Steppable {
 

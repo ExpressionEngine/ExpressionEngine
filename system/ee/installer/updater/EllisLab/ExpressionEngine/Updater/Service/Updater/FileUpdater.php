@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
@@ -7,27 +14,8 @@ use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 4.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Updater class
- *
- * @package		ExpressionEngine
- * @subpackage	Updater
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Backs up and updates the ExpressionEngine install's files to the new,
+ * downloaded version, and also provides rollback functionality for those files
  */
 class FileUpdater {
 

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
@@ -6,27 +13,10 @@ use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine - by EllisLab
+ * Updater file verifier
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 4.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Updater file verification class
- *
- * @package		ExpressionEngine
- * @subpackage	Updater
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Given a path to files and a hashmap of hashes for those files, verifies the
+ * hashes of the files on disk matches the hashmap
  */
 class Verifier {
 

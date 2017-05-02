@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Updater\Downloader;
 
@@ -10,27 +17,10 @@ use EllisLab\ExpressionEngine\Service\Config\File;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
- * ExpressionEngine - by EllisLab
+ * Updater preflight checker
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2017, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 4.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Updater Downloader Preflight class
- *
- * @package		ExpressionEngine
- * @subpackage	Updater
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Runs all preflight operations to check for any potential errors that may
+ * occur during upgrade so that they are fixed up front
  */
 class Preflight {
 	use UpdaterPaths;

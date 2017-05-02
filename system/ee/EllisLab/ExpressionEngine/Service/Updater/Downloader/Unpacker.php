@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Updater\Downloader;
 
@@ -12,27 +19,11 @@ use EllisLab\ExpressionEngine\Service\Config\File;
 use ZipArchive;
 
 /**
- * ExpressionEngine - by EllisLab
+ * Updater unpacker
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2017, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 4.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Updater Unpacker class
- *
- * @package		ExpressionEngine
- * @subpackage	Updater
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Unpacks the downloaded ExpressionEngine zip archive, verifies the integrity
+ * of the files, checks the downloaded installation's server requirements, and
+ * finally moves the micro app into place to facilitate the rest of the upgrade
  */
 class Unpacker {
 	use UpdaterPaths;
