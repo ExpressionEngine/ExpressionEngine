@@ -50,6 +50,8 @@
 
 			e.preventDefault();
 			fluidBlock.find('.open').trigger('click');
+
+			$(fluidBlock).trigger('fluidBlock:addField', fieldClone);
 	    };
 
 		$('a[data-field-name]').click(addField);
