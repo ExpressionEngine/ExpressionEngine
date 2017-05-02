@@ -1,4 +1,4 @@
-<div class="fluid-item" data-field-name="<?=$field->field_name?>">
+<div class="fluid-item" data-field-name="<?=$field->field_name?>" data-field-type="<?=$field->field_type?>">
 	<div class="fluid-ctrls">
 		<span class="reorder"></span>
 		<h3>
