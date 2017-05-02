@@ -1,11 +1,11 @@
 <?php if ($has_localize_option): ?>
 	<?php $extra = ($disabled) ? 'disabled' : '' ?>
 <label class="choice mr<?php if ($localized == 'y') echo " chosen"; ?>">
-	<?= form_radio($localize_option_name, 'y', ($localized == 'y'), $extra) ?>
+	<?= form_radio($localize_option_name, '', ($localized == 'y'), $extra) ?>
 	<?=lang('localized_date')?>
 </label>
 <label class="choice<?php if ($localized == 'n') echo " chosen"; ?>">
-	<?= form_radio($localize_option_name, 'n', ($localized == 'n'), $extra) ?>
+	<?= form_radio($localize_option_name, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')), ($localized == 'n'), $extra) ?>
 	<?=lang('fixed_date')?>
 </label>
 <?php endif; ?>
