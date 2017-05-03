@@ -235,7 +235,8 @@ return array(
 				$ee->make('License')->getEELicense(),
 				$ee->make('Curl'),
 				$ee->make('Filesystem'),
-				$ee->make('Updater/Logger')
+				$ee->make('Updater/Logger'),
+				$ee->make('Config')->getFile()
 			);
 		},
 

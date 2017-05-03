@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Library\Curl\RequestFactory;
 use EllisLab\ExpressionEngine\Service\Updater\Logger;
+use EllisLab\ExpressionEngine\Service\Config\File;
 
 /**
  * Updater file downloader
@@ -28,6 +29,7 @@ class Downloader {
 	protected $curl;
 	protected $filesystem;
 	protected $logger;
+	protected $config;
 
 	/**
 	 * Constructor
@@ -36,13 +38,15 @@ class Downloader {
 	 * @param	Curl\RequestFactory $curl cURL service object
 	 * @param	Filesystem $filesystem Filesystem service object
 	 * @param	Logger $logger Updater logger object
+	 * @param	Logger $logger Updater logger object
 	 */
-	public function __construct(ExpressionEngineLicense $license, RequestFactory $curl, Filesystem $filesystem, Logger $logger)
+	public function __construct(ExpressionEngineLicense $license, RequestFactory $curl, Filesystem $filesystem, Logger $logger, File $config)
 	{
 		$this->license = $license;
 		$this->curl = $curl;
 		$this->filesystem = $filesystem;
 		$this->logger = $logger;
+		$this->config = $config;
 	}
 
 	/**
@@ -57,8 +61,8 @@ class Downloader {
 			[
 				'action'  => 'download_update',
 				'license' => $this->license->getRawLicense(),
-				'version' => ee()->config->item('app_version'),
-				'domain'  => ee()->config->item('site_url')
+				'version' => $this->config->get('app_version'),
+				'domain'  => $this->config->get('site_url')
 			]
 		);
 
