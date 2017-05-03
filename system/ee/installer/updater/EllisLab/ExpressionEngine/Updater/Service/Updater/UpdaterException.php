@@ -7,7 +7,7 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
 use Exception;
 
