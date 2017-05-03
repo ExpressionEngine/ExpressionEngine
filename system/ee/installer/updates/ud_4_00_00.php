@@ -51,7 +51,7 @@ class Updater {
 	{
 		// Do we need to override?
 		$save_as_file = FALSE;
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 
 		$all_site_ids_query = ee()->db->select('site_id')
 			->get('sites')
