@@ -49,6 +49,9 @@ class License extends Settings {
 				{
 					if (rename($license_file['tmp_name'], SYSPATH.'user/config/license.key'))
 					{
+						// Trigger new version check for new license
+						ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
+
 						$alert = ee('CP/Alert')->makeInline('shared-form')
 							->asSuccess()
 							->withTitle(lang('license_updated'))
