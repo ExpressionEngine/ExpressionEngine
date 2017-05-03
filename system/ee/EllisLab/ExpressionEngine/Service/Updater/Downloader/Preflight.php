@@ -98,7 +98,6 @@ class Preflight {
 		// Try to maintain at least 50MB free disk space
 		if ($free_space < 52428800)
 		{
-			$this->cleanUpOldUpgrades();
 			throw new UpdaterException('Not enough disk space available to complete the update ('.$free_space.' free bytes reported). Please free up some space and try the upgrade again.', 11);
 		}
 	}
