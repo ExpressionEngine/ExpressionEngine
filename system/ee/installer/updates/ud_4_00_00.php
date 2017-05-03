@@ -26,7 +26,8 @@ class Updater {
 		$steps = new \ProgressIterator(
 			array(
 				'removeMemberHomepageTable',
-				'globalizeSave_tmpl_files'
+				'globalizeSave_tmpl_files',
+				'clearCurrentVersionCache'
 			)
 		);
 
@@ -77,6 +78,15 @@ class Updater {
 			// Add config override
 			ee()->config->_update_config(array('save_tmpl_files' => 'n'));
 		}
+	}
+
+	/**
+	 * Clear old current_version cache, version info for 4.0 is in a different
+	 * format
+	 */
+	private function clearCurrentVersionCache()
+	{
+		ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
 	}
 
 }
