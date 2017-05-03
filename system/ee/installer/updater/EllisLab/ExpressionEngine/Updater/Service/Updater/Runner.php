@@ -127,8 +127,11 @@ class Runner {
 
 			$step = $step ?: $db_updater->getFirstStep();
 
-			$this->makeLoggerService()
-				->log('Running database update step: ' . $step);
+			$log_message = 'Running database update step: ' . $step;
+			$this->makeLoggerService()->log($log_message);
+
+			// Legacy logger lib to log versions to update_log table
+			ee()->logger->updater($log_message);
 
 			$db_updater->runStep($step);
 
@@ -192,6 +195,10 @@ class Runner {
 		$config = ee('Config')->getFile();
 		$config->set('is_system_on', 'y', TRUE);
 		$config->set('app_version', APP_VER, TRUE);
+
+		// Legacy logger lib to log to update_log table
+		ee()->load->library('logger');
+		ee()->logger->updater('Update complete. Now running version ' . APP_VER);
 
 		$working_dir = $this->makeUpdaterService()->path();
 		$this->logger->log('Deleting updater working directory: ' . $working_dir);
