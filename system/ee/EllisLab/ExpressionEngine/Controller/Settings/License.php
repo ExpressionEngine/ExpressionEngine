@@ -47,7 +47,7 @@ class License extends Settings {
 				$license = ee('License')->getEELicense($license_file['tmp_name']);
 				if ($license->isValid())
 				{
-					if (rename($license_file['tmp_name'], SYSPATH.'user/config/license.key'))
+					if (@rename($license_file['tmp_name'], SYSPATH.'user/config/license.key'))
 					{
 						// Trigger new version check for new license
 						ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
