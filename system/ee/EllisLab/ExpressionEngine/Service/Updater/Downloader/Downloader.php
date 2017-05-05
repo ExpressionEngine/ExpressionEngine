@@ -68,7 +68,7 @@ class Downloader {
 
 		$data = $curl->exec();
 
-		$this->validateResponse($curl);
+		$this->validateResponse($curl, $data);
 
 		// Write the file
 		$this->filesystem->write($this->getArchiveFilePath(), $data, TRUE);
@@ -88,11 +88,24 @@ class Downloader {
 		}
 	}
 
-	private function validateResponse($curl)
+	/**
+	 * Validates the response from requesting the update package
+	 *
+	 * @param $curl PostRequest Request object
+	 * @param $data string Raw response body data
+	 * @return boolean TRUE if verified
+	 */
+	private function validateResponse($curl, $data)
 	{
 		// Make sure everything looks normal
 		if ($curl->getHeader('http_code') != '200')
 		{
+			// Custom message from server delivered
+			if (($message = json_decode($data, TRUE)) && isset($message['error']))
+			{
+				throw new UpdaterException($message['error'], 20);
+			}
+
 			throw new UpdaterException(
 				sprintf(lang('could_not_download')."\n\n".lang('try_again_later'),
 				$curl->getHeader('http_code')),

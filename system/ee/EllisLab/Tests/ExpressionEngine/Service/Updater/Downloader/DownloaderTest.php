@@ -104,6 +104,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 			->andReturn($request);
 
 		$request->shouldReceive('exec')
+			->times(4)
 			->andReturn('some data');
 
 		$request->shouldReceive('getHeader')
@@ -123,6 +124,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$request->shouldReceive('getHeader')
 			->with('http_code')
+			->times(3)
 			->andReturn('200');
 
 		$request->shouldReceive('getHeader')
@@ -183,6 +185,24 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 		catch (UpdaterException $e)
 		{
 			$this->assertEquals(7, $e->getCode());
+		}
+
+		$request->shouldReceive('exec')
+			->andReturn('{"error": "Cannot upgrade"}');
+
+		$request->shouldReceive('getHeader')
+			->with('http_code')
+			->andReturn('500');
+
+		try
+		{
+			$this->downloader->downloadPackage('ee_package_url');
+			$this->fail();
+		}
+		catch (UpdaterException $e)
+		{
+			$this->assertEquals(20, $e->getCode());
+			$this->assertEquals('Cannot upgrade', $e->getMessage());
 		}
 	}
 }
