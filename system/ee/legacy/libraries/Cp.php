@@ -501,6 +501,12 @@ class Cp {
 			'security' => $version_file['severity'] == 'high'
 		);
 
+		// Upgrading form Core to Pro?
+		if (IS_CORE && $version_file['license_type'] == 'pro')
+		{
+			return $version_info;
+		}
+
 		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
 		{
 			return FALSE;

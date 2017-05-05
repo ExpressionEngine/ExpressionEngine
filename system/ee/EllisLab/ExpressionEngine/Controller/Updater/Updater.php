@@ -32,7 +32,10 @@ class Updater extends CP_Controller {
 		$version_file = ee()->el_pings->get_version_info();
 		$to_version = $version_file['latest_version'];
 
-		if (version_compare(ee()->config->item('app_version'), $to_version, '>=') OR
+		$newer_version_available = version_compare(ee()->config->item('app_version'), $to_version, '<');
+		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
+
+		if (( ! $newer_version_available && ! $core_to_pro) OR
 			ee()->session->userdata('group_id') != 1)
 		{
 			return ee()->functions->redirect(ee('CP/URL', 'homepage'));
