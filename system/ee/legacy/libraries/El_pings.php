@@ -150,11 +150,6 @@ class El_pings {
 			return FALSE;
 		}
 
-		if ( ! is_array($version_file) OR count($version_file) != 3)
-		{
-			return FALSE;
-		}
-
 		foreach ($version_file as $val)
 		{
 			if ( ! is_string($val))
