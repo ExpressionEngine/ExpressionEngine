@@ -27,6 +27,7 @@ define('DEBUG', 1);
 define('REQ', 'CLI');
 define('CLI_VERBOSE', isset($args['v']) OR isset($args['verbose']));
 
+// Load up ExpressionEngine
 if ( ! isset($args['no-bootstrap']) && !
 	(in_array('upgrade', $args) && isset($args['rollback'])))
 {
@@ -40,6 +41,7 @@ if ( ! isset($args['no-bootstrap']) && !
 
 $supported_commands = ['upgrade'];
 
+// Load up the file for this command
 if (isset($args[0]) && in_array($args[0], $supported_commands))
 {
 	$command = array_shift($args);

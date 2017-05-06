@@ -8,6 +8,11 @@ if (file_exists($updater_boot))
 
 class Command {
 
+	/**
+	 * Constructor
+	 *
+	 * @param array $params CLI arguments as parsed by parseArguments()
+	 */
 	public function __construct($params = [])
 	{
 		set_error_handler(array($this, 'showError'));
@@ -34,6 +39,9 @@ class Command {
 		}
 	}
 
+	/**
+	 * Kicks off a new upgrade
+	 */
 	public function start()
 	{
 		ee()->load->library('el_pings');
@@ -61,6 +69,11 @@ class Command {
 		runCommandExternally('upgrade --microapp --no-bootstrap');
 	}
 
+	/**
+	 * Runs a step through the updater microapp
+	 *
+	 * @param string $step The name of the step to run
+	 */
 	public function updaterMicroapp($step = NULL)
 	{
 		if ( ! class_exists('EllisLab\ExpressionEngine\Updater\Service\Updater\Runner'))
@@ -98,6 +111,9 @@ class Command {
 		}
 	}
 
+	/**
+	 * Custom PHP error handler
+	 */
 	public function showError($code, $error, $file = NULL, $line = NULL)
 	{
 		$message = "We could not complete the update because an error has occured:\n\033[0m";
