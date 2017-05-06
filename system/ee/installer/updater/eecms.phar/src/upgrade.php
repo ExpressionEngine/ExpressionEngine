@@ -63,6 +63,11 @@ class Command {
 
 	public function updaterMicroapp($step = NULL)
 	{
+		if ( ! class_exists('EllisLab\ExpressionEngine\Updater\Service\Updater\Runner'))
+		{
+			exit('Cannot rollback, updater microapp not found.');
+		}
+
 		$runner = new EllisLab\ExpressionEngine\Updater\Service\Updater\Runner();
 
 		if ( ! $step)

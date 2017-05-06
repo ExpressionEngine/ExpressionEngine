@@ -57,5 +57,8 @@ if (isset($args[0]) && in_array($args[0], $supported_commands))
 }
 else
 {
-	exit('show help');
+	exit('Available commands:
+
+upgrade               Upgrade this installation of ExpressionEngine
+upgrade --rollback    Rollback the install if an upgrade failed');
 }
