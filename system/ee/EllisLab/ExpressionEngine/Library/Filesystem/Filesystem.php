@@ -113,7 +113,10 @@ class Filesystem {
 	public function mkDir($path, $with_index = TRUE)
 	{
 		$path = $this->normalize($path);
+
+		$old_umask = umask(0);
 		$result = @mkdir($path, DIR_WRITE_MODE, TRUE);
+		umask($old_umask);
 
 		if ( ! $result)
 		{
