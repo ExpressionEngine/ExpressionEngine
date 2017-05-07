@@ -30,8 +30,6 @@ class Preflight {
 	protected $sites;
 	protected $config;
 
-	protected $extracted_folder = 'ExpressionEngine';
-
 	/**
 	 * Constructor
 	 *
