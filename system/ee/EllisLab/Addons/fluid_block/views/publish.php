@@ -1,4 +1,4 @@
-<div class="fluid-wrap" data-row-count="0">
+<div class="fluid-wrap" data-field-count="0">
 	<?=$fields?>
 	<div class="fluid-actions">
 		<?=$filters?>

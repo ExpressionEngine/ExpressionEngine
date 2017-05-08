@@ -75,17 +75,17 @@ class Fluid_block_ft extends EE_Fieldtype {
 			->indexBy('id');
 
 		$i = 1;
-		foreach ($data['rows'] as $key => $value)
+		foreach ($data['fields'] as $key => $value)
 		{
 			// Existing field
-			if (strpos($key, 'row_') === 0)
+			if (strpos($key, 'field_') === 0)
 			{
-				$id = str_replace('row_', '', $key);
+				$id = str_replace('field_', '', $key);
 				$this->updateField($blockData[$id], $i, $value);
 				unset($blockData[$id]);
 			}
 			// New field
-			elseif (strpos($key, 'new_row_') === 0)
+			elseif (strpos($key, 'new_field_') === 0)
 			{
 				foreach (array_keys($value) as $k)
 				{
@@ -212,7 +212,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			{
 				$field = $data->getField();
 
-				$field->setName($this->name() . '[rows][row_' . $data->getId() . '][field_id_' . $field->getId() . ']');
+				$field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
 
 				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
 			}
@@ -223,7 +223,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		foreach ($fieldTemplates as $field)
 		{
 			$f = $field->getField();
-			$f->setName($this->name() . '[rows][new_row_0][field_id_' . $field->getId() . ']');
+			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
 
 			$templates .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters));
 		}
@@ -372,7 +372,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				$field = $block->getField();
 
-				$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
+				$field->setItem('field', array_merge($this->field, $block->getFieldData()->getValues()));
 
 				$field_output = $field->replaceTag($tag);
 				$output .= ee()->TMPL->swap_var_single($field_name, $field_output, $tag);

@@ -20,20 +20,20 @@
 	    var addField = function(e) {
 			var fluidBlock   = $(this).closest('.fluid-wrap'),
 			    fieldToAdd   = $(this).data('field-name'),
-			    rowCount     = fluidBlock.data('row-count'),
+			    fieldCount   = fluidBlock.data('field-count'),
 			    fieldToClone = $('.fluid-field-templates .fluid-item[data-field-name="' + fieldToAdd + '"]').clone(),
 			    fieldClone   = fieldToClone.clone();
 
-			rowCount++;
+			fieldCount++;
 
 			fieldClone.html(
 				fieldClone.html().replace(
-					RegExp('new_row_[0-9]{1,}', 'g'),
-					'new_row_' + rowCount
+					RegExp('new_field_[0-9]{1,}', 'g'),
+					'new_field_' + fieldCount
 				)
 			);
 
-			fluidBlock.data('row-count', rowCount);
+			fluidBlock.data('field-count', fieldCount);
 
 			// Enable inputs
 			fieldClone.find(':input').removeAttr('disabled');
