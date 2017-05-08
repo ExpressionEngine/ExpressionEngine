@@ -48,7 +48,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.children('tbody');
+	this.rowContainer = this.root.find('tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
 
@@ -902,5 +902,15 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 		Grid.bind.apply(Grid, args);
 	});
 }
+
+$(document).ready(function () {
+  $('.fluid-wrap').on('fluidBlock:addField', function(e, el, cloned_from) {
+  	if ($(el).data('field-type') == 'grid') {
+  		var cloned_grid_id = $('table', cloned_from).attr('id');
+  		$(el).addClass('grid-publish');
+  		EE.grid($(el).find('.fluid-field').eq(0), EE.grid_field_settings[cloned_grid_id]);
+  	}
+  });
+});
 
 })(jQuery);
