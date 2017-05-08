@@ -57,7 +57,7 @@
 
 		$('a[data-field-name]').click(addField);
 
-		$('a.fluid-remove').click(function(e) {
+		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
 			$(this).closest('.fluid-item').remove();
 			e.preventDefault();
 		});
