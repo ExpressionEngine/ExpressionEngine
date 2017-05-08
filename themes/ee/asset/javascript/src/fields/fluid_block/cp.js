@@ -18,10 +18,11 @@
 		$('.fluid-field-templates :input').attr('disabled', 'disabled');
 
 	    var addField = function(e) {
-			var fluidBlock  = $(this).closest('.fluid-wrap'),
-			    fieldToAdd  = $(this).data('field-name'),
-			    rowCount    = fluidBlock.data('row-count')
-			    fieldClone  = $('.fluid-field-templates .fluid-item[data-field-name="' + fieldToAdd + '"]').clone();
+			var fluidBlock   = $(this).closest('.fluid-wrap'),
+			    fieldToAdd   = $(this).data('field-name'),
+			    rowCount     = fluidBlock.data('row-count'),
+			    fieldToClone = $('.fluid-field-templates .fluid-item[data-field-name="' + fieldToAdd + '"]').clone(),
+			    fieldClone   = fieldToClone.clone();
 
 			rowCount++;
 
@@ -51,7 +52,7 @@
 			e.preventDefault();
 			fluidBlock.find('.open').trigger('click');
 
-			$(fluidBlock).trigger('fluidBlock:addField', fieldClone);
+			$(fluidBlock).trigger('fluidBlock:addField', [fieldClone, fieldToClone]);
 	    };
 
 		$('a[data-field-name]').click(addField);
