@@ -52,7 +52,6 @@ class Updater {
 				'_update_relationships_for_grid',
 				'_create_content_types_table',
 				'_install_grid',
-				'_modify_channel_data_relationship_fields',
 				'_modify_channel_data_default_fields',
 				'_modify_category_data_fields',
 				'_clear_dev_log',
@@ -802,39 +801,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			// we always need to have this one
 			ee()->db->insert('content_types', array('name' => 'channel'));
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Modify relationship type fields in exp_channel_data
-	 *
-	 * Possible mix of varchar and integer types.  Modifying
-	 * to make sure they are all now consistently integer.
-	 */
-	protected function _modify_channel_data_relationship_fields()
-	{
-		// Get all relationship fields
-		ee()->db->where('field_type', 'relationship');
-		$channel_fields = ee()->db->get('channel_fields');
-
-		foreach ($channel_fields->result_array() as $field)
-		{
-			$field_name = 'field_id_'.$field['field_id'];
-
-			ee()->smartforge->modify_column(
-				'channel_data',
-				array(
-					$field_name => array(
-						'name' 			=> $field_name,
-						'type' 			=> 'INT',
-						'constraint' 	=> 10,
-						'null' 			=> FALSE,
-						'default'	 	=> 0
-					)
-				)
-			);
 		}
 	}
 
