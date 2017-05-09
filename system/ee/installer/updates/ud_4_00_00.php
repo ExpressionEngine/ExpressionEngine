@@ -24,7 +24,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'removeMemberHomepageTable',
-				'globalizeSave_tmpl_files'
+				'globalizeSave_tmpl_files',
+				'nullOutRelationshipChannelDataFields'
 			)
 		);
 
@@ -74,6 +75,31 @@ class Updater {
 		{
 			// Add config override
 			ee()->config->_update_config(array('save_tmpl_files' => 'n'));
+		}
+	}
+
+	/**
+	 * Relationships started saving as NULL in 3.5.7, normalize all previous
+	 * entries to be NULL as well
+	 */
+	private function nullOutRelationshipChannelDataFields()
+	{
+		$channel_fields = ee()->db->where('field_type', 'relationship')
+			->get('channel_fields');
+
+		$update = [];
+
+		// Will have to do one query per field since we have to specify a where
+		// key and we cannot have the where key and update key be the same in
+		// update_batch
+		foreach ($channel_fields->result_array() as $field)
+		{
+			$field_name = 'field_id_'.$field['field_id'];
+			ee()->db->update(
+				'channel_data',
+				[$field_name => NULL],
+				[$field_name => '']
+			);
 		}
 	}
 
