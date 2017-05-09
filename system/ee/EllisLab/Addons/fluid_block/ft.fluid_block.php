@@ -372,7 +372,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				$field = $block->getField();
 
-				$field->setItem('field', array_merge($this->field, $block->getFieldData()->getValues()));
+				$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
 
 				$field_output = $field->replaceTag($tag);
 				$output .= ee()->TMPL->swap_var_single($field_name, $field_output, $tag);
