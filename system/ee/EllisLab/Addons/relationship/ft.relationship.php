@@ -105,7 +105,7 @@ class Relationship_ft extends EE_Fieldtype {
 			'data' => $data
 		));
 
-		return '';
+		return NULL;
 	}
 
 	// --------------------------------------------------------------------
