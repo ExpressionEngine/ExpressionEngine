@@ -437,10 +437,20 @@ class Rte_lib {
 				// RTE editor setup for this page
 				$("' . $selector . '")
 					.not(".grid-input-form ' . $selector . '")
+					.not(".fluid-field-templates ' . $selector . '")
 					.addClass("WysiHat-field")
 					.wysihat({
 						buttons: '.json_encode($bits['buttons']).'
 					});
+
+				$(".fluid-wrap").on("fluidBlock:addField", function(e, el) {
+					if ($(el).data("field-type") == "rte") {
+						$("' . $selector . '", el).addClass("WysiHat-field")
+							.wysihat({
+								buttons: '.json_encode($bits['buttons']).'
+							});
+					}
+				});
 
 				if (typeof Grid === "object")
 				{
