@@ -358,15 +358,15 @@ abstract class ContentModel extends VariableColumnModel {
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
-        {
-            $settings = array_merge($field->getSettingsValues(), $field->toArray());
+		{
+			$settings = array_merge($field->getSettingsValues(), $field->toArray());
 
-            $this->addFacade(
-                $field->getId(),
-                $settings,
-                $native_prefix
-            );
-        }
+			$this->addFacade(
+				$field->getId(),
+				$settings,
+				$native_prefix
+			);
+		}
 
 		$this->setDataOnCustomFields($this->getValues());
 
@@ -416,23 +416,23 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	abstract protected function getFieldModels();
 
-    /**
-     * Find all the fields that are stored in their own tables. For those that
+	/**
+	 * Find all the fields that are stored in their own tables. For those that
 	 * are dirty (have changed) we update or insert the changes into their
 	 * tables. If the list of changed properties is not supplied we will get
 	 * the list of dirty properties.
 	 *
 	 * @param array $changed An associative array of class properties that have changed
-     */
+	 */
 	protected function saveFieldData($changed = NULL)
 	{
 		$dirty = ($changed) ?: $this->getDirty();
 
-        // Optimization: if there are no dirty fields, there's nothing to do
-        if (empty($dirty))
-        {
-            return;
-        }
+		// Optimization: if there are no dirty fields, there's nothing to do
+		if (empty($dirty))
+		{
+			return;
+		}
 
 		foreach ($this->getFieldModels() as $field)
 		{
@@ -493,14 +493,14 @@ abstract class ContentModel extends VariableColumnModel {
 
 			if ($update)
 			{
-    			$query->set($values);
+				$query->set($values);
 				$query->where($key_column, $this->getId());
 				$query->update($field->getTableName());
 			}
 			else
 			{
 				$values[$key_column] = $this->getId();
-    			$query->set($values);
+				$query->set($values);
 				$query->insert($field->getTableName());
 			}
 		}
