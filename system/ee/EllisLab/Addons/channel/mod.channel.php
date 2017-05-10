@@ -3570,7 +3570,7 @@ class Channel {
 			return FALSE;
 		}
 
-		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
+		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_id);
 
 		/** -----------------------------------
 		/**  Are we showing empty categories
