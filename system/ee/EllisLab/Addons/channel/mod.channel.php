@@ -5367,7 +5367,8 @@ class Channel {
 
 		if ( ! empty($group_ids))
 		{
-			$sql .= " AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')";
+			$group_ids = implode("','", array_unique(array_filter(explode('|', $group_ids))));
+			$sql .= " AND group_id IN ('".$group_ids."')";
 		}
 
 		$query = ee()->db->query($sql);
