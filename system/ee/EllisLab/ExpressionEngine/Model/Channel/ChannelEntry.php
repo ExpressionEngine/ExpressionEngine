@@ -318,26 +318,6 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	/**
-	 * Gets a collection of ChannelField objects
-	 *
-	 * @return Collection A collection of ChannelField objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->Channel->CustomFields;
-
-		if ($fields->count() == 0)
-		{
-			$fields = $this->getModelFacade()
-				->get('Channel', $this->channel_id)
-				->first()
-				->CustomFields;
-		}
-
-		return $fields;
-	}
-
 	public function onAfterSave()
 	{
 		parent::onAfterSave();

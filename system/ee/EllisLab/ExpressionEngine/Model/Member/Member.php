@@ -605,27 +605,6 @@ class Member extends ContentModel {
 
 		return TRUE;
 	}
-
-
-	/**
-	 * Gets a collection of MemberField objects
-	 *
-	 * @return Collection A collection of MemberField objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->MemberGroup->getCustomFields();
-
-		if (empty($fields))
-		{
-			$fields = $this->getModelFacade()
-				->get('MemberGroup', $this->group_id)
-				->first()
-				->getCustomFields();
-		}
-
-		return $fields;
-	}
 }
 
 // EOF

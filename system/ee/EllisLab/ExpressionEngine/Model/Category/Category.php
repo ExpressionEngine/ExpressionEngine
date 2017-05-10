@@ -158,26 +158,6 @@ class Category extends ContentModel {
 
 		return parent::addFacade($id, $info, $name_prefix);
 	}
-
-	/**
-	 * Gets a collection of CategoryGroup objects
-	 *
-	 * @return Collection A collection of CategoryGroup objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->CategoryGroup->CategoryFields;
-
-		if ($fields->count() == 0)
-		{
-			$fields = $this->getModelFacade()
-				->get('CategoryGroup', $this->group_id)
-				->first()
-				->CategoryFields;
-		}
-
-		return $fields;
-	}
 }
 
 // EOF

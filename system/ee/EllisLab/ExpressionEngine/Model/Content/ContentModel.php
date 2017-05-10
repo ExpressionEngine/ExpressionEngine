@@ -414,7 +414,13 @@ abstract class ContentModel extends VariableColumnModel {
 	 *
 	 * @return Collection A collection of FieldModel objects
 	 */
-	abstract protected function getFieldModels();
+	protected function getFieldModels()
+	{
+		$structure = $this->getStructure();
+		$fields = $structure->CategoryFields;
+
+		return $fields;
+	}
 
 	/**
 	 * Find all the fields that are stored in their own tables. For those that
