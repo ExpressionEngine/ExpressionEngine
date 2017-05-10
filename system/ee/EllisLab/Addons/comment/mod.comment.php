@@ -617,8 +617,14 @@ class Comment {
 				$values['comment_site_id'] = $comment->site_id;
 
 				$author = ($comment->Author) ?: ee('Model')->make('Member');
+				$author = $author->getValues();
 
-				$results[] = array_merge($values, $author->getValues());
+				if (isset($values['url']) && ! empty($values['url']))
+				{
+					unset($author['url']);
+				}
+
+				$results[] = array_merge($values, $author);
 			}
 
 			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
