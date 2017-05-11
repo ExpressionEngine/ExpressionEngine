@@ -32,6 +32,7 @@ use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 class Category extends ContentModel {
 
 	protected static $_primary_key = 'cat_id';
+	protected static $_table_name = 'categories';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
 
 	protected static $_hook_id = 'category';
@@ -73,9 +74,7 @@ class Category extends ContentModel {
 	protected static $_field_data = array(
 		'field_model'   => 'CategoryField',
 		'extra_data'    => array(
-			'group_column' => 'Category__group_id',
-			'parent_table' => 'categories',
-			'key_column'   => 'cat_id'
+			'group_column' => 'Category__group_id'
 		)
 	);
 

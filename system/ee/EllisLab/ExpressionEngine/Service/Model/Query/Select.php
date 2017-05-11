@@ -251,7 +251,9 @@ class Select extends Query {
 		$table_prefix      = $alias;
 		$join_table_prefix = $field_model->getTableName();
 		$column_prefix     = $field_model->getColumnPrefix();
-		$parent_key        = "{$meta_field_data['extra_data']['parent_table']}.{$meta_field_data['extra_data']['key_column']}";
+		$primary_key       = $meta->getPrimaryKey();
+		$table_name        = $class::getMetaData('table_name');
+		$parent_key        = "{$table_name}.{$primary_key}";
 
 		$fields = ee('Model')->get($meta_field_data['field_model'])
 			->filter($column_prefix.'legacy_field_data', 'n');
@@ -281,7 +283,7 @@ class Select extends Query {
 
 			$main_table = "{$table_prefix}_field_id_{$fields[0]->field_id}";
 
-			$query->from($meta_field_data['extra_data']['parent_table']);
+			$query->from($table_name);
 			$query->select("{$parent_key} as {$item_key_column}", FALSE);
 
 			foreach ($fields as $field)
@@ -295,7 +297,7 @@ class Select extends Query {
 					$query->select("{$table_alias}.{$column} as {$table_prefix}__{$column}", FALSE);
 				}
 
-				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$parent_key}", 'LEFT');
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$parent_key}", 'LEFT');
 			}
 
 			$query->where_in("{$parent_key}", $entry_ids);
@@ -329,7 +331,8 @@ class Select extends Query {
 		$table_prefix      = $meta->getName();
 		$join_table_prefix = $field_model->getTableName();
 		$column_prefix     = $field_model->getColumnPrefix();
-		$parent_key        = "{$table_prefix}__{$meta_field_data['extra_data']['key_column']}";
+		$primary_key       = $meta->getPrimaryKey();
+		$parent_key        = "{$table_prefix}__{$primary_key}";
 
 		$field_ids = array();
 
@@ -376,7 +379,7 @@ class Select extends Query {
 				$column_alias = "{$table_prefix}__{$column_prefix}field_id_{$field_id}";
 
 				$query->select("{$table_alias}.{$column_prefix}field_id_{$field_id} as {$column_alias}", FALSE);
-				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$meta_field_data['extra_data']['key_column']} = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
 				$this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
 			}
 		}

@@ -472,14 +472,13 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$query = ee('Model/Datastore')->rawQuery();
 
-			$meta = self::getMetaData('field_data');
-			$key_column = $meta['extra_data']['key_column'];
+			$key_column = $this->getPrimaryKey();
 
 			// When a new entity is saved, this will be triggered by an
 			// onAfterInsert event (else, we won't have id to link to).
 			// The primary key can only be marked dirty on an insert event,
 			// not an update.
-			if (array_key_exists($this->getPrimaryKey(), $dirty))
+			if (array_key_exists($key_column, $dirty))
 			{
 				$update = FALSE;
 			}

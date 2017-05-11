@@ -22,6 +22,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
+	protected static $_table_name = 'channel_titles';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
 	protected static $_hook_id = 'channel_entry';
@@ -99,9 +100,7 @@ class ChannelEntry extends ContentModel {
 	protected static $_field_data = array(
 		'field_model'   => 'ChannelField',
 		'extra_data'    => array(
-			'group_column' => 'Channel__field_group',
-			'parent_table' => 'channel_titles',
-			'key_column'   => 'entry_id'
+			'group_column' => 'Channel__field_group'
 		)
 	);
 
