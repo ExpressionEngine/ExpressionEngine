@@ -85,13 +85,15 @@ abstract class ContentModel extends VariableColumnModel {
 	/**
 	 * Cascade the delete to the fieldtypes
 	 */
-	 public function onBeforeDelete()
-	 {
-		 foreach ($this->getCustomFields() as $field)
-		 {
-			 $field->delete();
-		 }
-	 }
+	public function onBeforeDelete()
+	{
+		foreach ($this->getCustomFields() as $field)
+		{
+			$field->delete();
+		}
+
+		$this->deleteFieldData();
+	}
 
 	/**
 	 * Check if a custom field of $name exists

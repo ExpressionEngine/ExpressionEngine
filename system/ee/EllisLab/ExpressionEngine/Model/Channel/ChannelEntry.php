@@ -416,8 +416,6 @@ class ChannelEntry extends ContentModel {
 			// restore our package and view paths
 			ee()->load->remove_package_path($info->getPath());
 		}
-
-		$this->deleteFieldData();
 	}
 
 	public function onAfterDelete()

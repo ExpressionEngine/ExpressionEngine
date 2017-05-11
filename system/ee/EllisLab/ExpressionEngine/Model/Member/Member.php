@@ -268,13 +268,13 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		$this->UploadedFiles->uploaded_by_member_id = 0;
 		$this->UploadedFiles->save();
 
 		$this->ModifiedFiles->modified_by_member_id = 0;
 		$this->ModifiedFiles->save();
-
-		$this->deleteFieldData();
 	}
 
 	/**

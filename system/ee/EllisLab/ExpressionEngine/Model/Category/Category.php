@@ -138,11 +138,6 @@ class Category extends ContentModel {
 		}
 	}
 
-	public function onBeforeDelete()
-	{
-		$this->deleteFieldData();
-	}
-
 	/**
 	 * Converts the fields into facades
 	 *
