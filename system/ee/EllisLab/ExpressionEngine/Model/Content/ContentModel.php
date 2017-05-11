@@ -410,19 +410,6 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Gets a collection of FieldModel objects (channel, member, category fields)
-	 *
-	 * @return Collection A collection of FieldModel objects
-	 */
-	protected function getFieldModels()
-	{
-		$structure = $this->getStructure();
-		$fields = $structure->CategoryFields;
-
-		return $fields;
-	}
-
-	/**
 	 * Find all the fields that are stored in their own tables. For those that
 	 * are dirty (have changed) we update or insert the changes into their
 	 * tables. If the list of changed properties is not supplied we will get
@@ -440,7 +427,7 @@ abstract class ContentModel extends VariableColumnModel {
 			return;
 		}
 
-		foreach ($this->getFieldModels() as $field)
+		foreach ($this->getStructure()->getCustomFields() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
 			if ($field->legacy_field_data)
@@ -519,7 +506,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		$tables = array();
 
-		foreach ($this->getFieldModels() as $field)
+		foreach ($this->getStructure()->getCustomFields() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
 			if ($field->legacy_field_data)
