@@ -436,7 +436,7 @@ class Channel {
 			$categories[] = $row['entry_id'];
 		}
 
-		$sql .= implode(array_unique($categories), ',') . ')';
+		$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
 
 		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
