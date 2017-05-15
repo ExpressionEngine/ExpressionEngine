@@ -107,8 +107,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'MemberField',
-		'extra_data'    => []
+		'field_model'   => 'MemberField'
 	);
 
 	protected static $_validation_rules = array(

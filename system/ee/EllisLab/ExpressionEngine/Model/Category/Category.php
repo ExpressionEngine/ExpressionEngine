@@ -72,10 +72,8 @@ class Category extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'CategoryField',
-		'extra_data'    => array(
-			'group_column' => 'Category__group_id'
-		)
+		'field_model'  => 'CategoryField',
+		'group_column' => 'Category__group_id'
 	);
 
 	protected static $_validation_rules = array(

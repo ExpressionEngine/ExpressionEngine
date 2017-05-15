@@ -258,12 +258,12 @@ class Select extends Query {
 		$fields = ee('Model')->get($meta_field_data['field_model'])
 			->filter($column_prefix.'legacy_field_data', 'n');
 
-		if (array_key_exists('group_column', $meta_field_data['extra_data']))
+		if (array_key_exists('group_column', $meta_field_data))
 		{
 			$field_groups = array_map(function($column) use($meta_field_data){
-				if (array_key_exists($meta_field_data['extra_data']['group_column'], $column))
+				if (array_key_exists($meta_field_data['group_column'], $column))
 				{
-					return $column[$meta_field_data['extra_data']['group_column']];
+					return $column[$meta_field_data['group_column']];
 				}
 			}, $result_array);
 
