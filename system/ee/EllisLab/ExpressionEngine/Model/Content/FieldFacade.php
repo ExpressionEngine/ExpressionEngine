@@ -261,7 +261,7 @@ class FieldFacade {
 		return $this->api->apply('get_field_status', array($field_value));
 	}
 
-	public function replaceTag($tagdata)
+	public function replaceTag($tagdata, $params = array(), $modifier = '')
 	{
 		$this->initField();
 
@@ -277,7 +277,23 @@ class FieldFacade {
 			$data['field_id_'.$this->getId()]
 		));
 
-		return $this->api->apply('replace_tag', array($data, array(), $tagdata));
+		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
+
+		$ft = $this->getNativeField();
+
+		$output = '';
+
+		if (method_exists($ft, $parse_fnc))
+		{
+			$output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
+		}
+		// Go to catchall and include modifier
+		elseif (method_exists($ft, 'replace_tag_catchall') AND $modifier !== '')
+		{
+			$output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
+		}
+
+		return $output;
 	}
 
 
