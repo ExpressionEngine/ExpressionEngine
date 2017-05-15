@@ -17,18 +17,8 @@ use EllisLab\ExpressionEngine\Model\Content\FieldData;
  * @filesource
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Attachment Model for the Forum
- *
- * A model representing an attachment in the Forum.
- *
- * @package		ExpressionEngine
- * @subpackage	Forum Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * ExpressionEngine Fluid Block Model
  */
 class FluidBlock extends Model {
 
