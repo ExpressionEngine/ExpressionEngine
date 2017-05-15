@@ -322,6 +322,8 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		$tags = array();
 
+		$tag_pairs = array_keys(ee()->TMPL->var_pair);
+
 		$block = ee('Model')->get('ChannelField', $this->id)
 			->fields('field_name')
 			->first();
@@ -331,11 +333,15 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$tags[$field] = array();
 
 			$tag_variable = $block->field_name . ':' . $field;
-			$pattern = '/'.LD.$tag_variable.RD.'(.*)'.LD.'\/'.$tag_variable.RD.'/is';
 
-			if (preg_match($pattern, $tagdata, $matches))
+			if (in_array($tag_variable, $tag_pairs))
 			{
-				$tags[$field][] = $matches[1];
+				$pattern = '/'.LD.$tag_variable.RD.'(.*)'.LD.'\/'.$tag_variable.RD.'/is';
+
+				if (preg_match($pattern, $tagdata, $matches))
+				{
+					$tags[$field][] = ee('fluid_block:Tag', $matches[1]);
+				}
 			}
 		}
 
@@ -367,15 +373,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 			foreach ($tags[$field_name] as $tag)
 			{
-				$tag = str_replace("{content}", '{' . $field_name . '}', $tag);
-				$tag = str_replace("{content:", '{' . $field_name . ':', $tag);
-
 				$field = $block->getField();
 
 				$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
 
-				$field_output = $field->replaceTag($tag);
-				$output .= ee()->TMPL->swap_var_single($field_name, $field_output, $tag);
+				$output .=  $tag->parse($field);
 			}
 		}
 
