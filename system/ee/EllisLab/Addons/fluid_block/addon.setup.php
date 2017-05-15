@@ -1,5 +1,7 @@
 <?php
 
+use EllisLab\Addons\FluidBlock\Service\Tag;
+
 return array(
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
@@ -9,6 +11,13 @@ return array(
 	'namespace'      => 'EllisLab\Addons\FluidBlock',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
+
+	'services' => array(
+		'Tag' => function($ee, $tagdata)
+		{
+			return new Tag($tagdata, ee()->functions, ee()->api_channel_fields);
+		}
+	),
 
 	'models' => array(
 		'FluidBlock' => 'Model\FluidBlock',
