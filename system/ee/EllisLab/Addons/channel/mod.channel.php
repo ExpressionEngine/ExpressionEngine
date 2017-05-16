@@ -66,6 +66,8 @@ class Channel {
 	public $pagination;
 	public $pager_sql 				= '';
 
+	protected $chunks               = array();
+
 	// SQL cache key prefix
 	protected $_sql_cache_prefix	= 'sql_cache';
 
@@ -200,6 +202,8 @@ class Channel {
 				}
 			}
 
+			$this->chunks = $this->fetch_cache('chunks');
+
 			if (($cache = $this->fetch_cache('pagination_count')) !== FALSE)
 			{
 				// We need to establish the per_page limits if we're using
@@ -268,6 +272,10 @@ class Channel {
 		if ($save_cache == TRUE)
 		{
 			$this->save_cache($this->sql);
+			if ( ! empty($this->chunks))
+			{
+				$this->save_cache($this->chunks, 'chunks');
+			}
 		}
 
 		$this->query = ee()->db->query($this->sql);
@@ -2308,7 +2316,16 @@ class Channel {
 
 		if ($fields->count())
 		{
-			foreach ($fields as $field)
+			$chunks = array_chunk($fields->asArray(), 50);
+
+			$chunk = array_shift($chunks);
+
+			if ( ! empty($chunks))
+			{
+				$this->chunks = $chunks;
+			}
+
+			foreach ($chunk as $field)
 			{
 				$field_id = $field->getId();
 				$table = "exp_channel_data_field_{$field_id}";
@@ -2386,6 +2403,11 @@ class Channel {
 	{
 		// For our hook to work, we need to grab the result array
 		$query_result = $this->query->result_array();
+
+		if ( ! empty($this->chunks))
+		{
+			$query_result = $this->getExtraData($query_result);
+		}
 
 		// Ditch everything else
 		$this->query->free_result();
@@ -2487,6 +2509,44 @@ class Channel {
 				$this->return_data = substr($this->return_data, 0, - $back);
 			}
 		}
+	}
+
+	private function getExtraData($query_result)
+	{
+		$where = "WHERE t.entry_id IN (" . implode(ee()->session->cache['channel']['entry_ids'], ',') . ")";
+
+		foreach ($this->chunks as $chunk)
+		{
+			$sql  = "SELECT t.entry_id";
+			$from = " FROM exp_channel_titles AS t ";
+
+			foreach ($chunk as $field)
+			{
+				$field_id = $field->getId();
+				$table = "exp_channel_data_field_{$field_id}";
+
+				foreach ($field->getColumnNames() as $column)
+				{
+					$sql .= ", {$table}.{$column}";
+				}
+
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+			}
+
+			$query = ee()->db->query($sql.$from.$where);
+
+			foreach ($query->result_array() as $row)
+			{
+				array_walk($query_result, function (&$data, $key, $field_data) {
+					if ($data['entry_id'] == $field_data['entry_id'])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+		}
+
+		return $query_result;
 	}
 
 	// ------------------------------------------------------------------------

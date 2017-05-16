@@ -279,39 +279,44 @@ class Select extends Query {
 				return $column[$item_key_column];
 			}, $result_array);
 
-			$query = ee('Model/Datastore')->rawQuery();
+			$chunks = array_chunk($fields->asArray(), 59);
 
-			$main_table = "{$table_prefix}_field_id_{$fields[0]->field_id}";
-
-			$query->from($table_name);
-			$query->select("{$parent_key} as {$item_key_column}", FALSE);
-
-			foreach ($fields as $field)
+			foreach ($chunks as $fields)
 			{
-				$field_id = $field->getId();
+				$query = ee('Model/Datastore')->rawQuery();
 
-				$table_alias = "{$table_prefix}_field_id_{$field_id}";
+				$main_table = "{$table_prefix}_field_id_{$fields[0]->field_id}";
 
-				foreach ($field->getColumnNames() as $column)
+				$query->from($table_name);
+				$query->select("{$parent_key} as {$item_key_column}", FALSE);
+
+				foreach ($fields as $field)
 				{
-					$query->select("{$table_alias}.{$column} as {$table_prefix}__{$column}", FALSE);
+					$field_id = $field->getId();
+
+					$table_alias = "{$table_prefix}_field_id_{$field_id}";
+
+					foreach ($field->getColumnNames() as $column)
+					{
+						$query->select("{$table_alias}.{$column} as {$table_prefix}__{$column}", FALSE);
+					}
+
+					$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$parent_key}", 'LEFT');
 				}
 
-				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$parent_key}", 'LEFT');
-			}
+				$query->where_in("{$parent_key}", $entry_ids);
 
-			$query->where_in("{$parent_key}", $entry_ids);
+				$data = $query->get()->result_array();
 
-			$data = $query->get()->result_array();
-
-			foreach ($data as $row)
-			{
-				array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
-					if ($data[$item_key_column] == $field_data[$item_key_column])
-					{
-						$data = array_merge($data, $field_data);
-					}
-				}, $row);
+				foreach ($data as $row)
+				{
+					array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
+						if ($data[$item_key_column] == $field_data[$item_key_column])
+						{
+							$data = array_merge($data, $field_data);
+						}
+					}, $row);
+				}
 			}
 		}
 
