@@ -78,9 +78,10 @@ class Tag {
 	 * @return array An array of all the single tags but without the braces
 	 *  (i.e. ["content", "content:foo bar='baz'"])
 	 */
-	public function getSingleTags()
+	public function getSingleTags($tagdata = '')
 	{
-		$vars = $this->function_delegate->assign_variables($this->getTagdata(), '/');
+		$tagdata = ($tagdata) ?: $this->getTagdata();
+		$vars = $this->function_delegate->assign_variables($tagdata, '/');
 		return array_keys($vars['var_single']);
 	}
 
@@ -100,14 +101,7 @@ class Tag {
 			$tagdata = $this->parsePairs($field);
 		}
 
-		foreach ($this->getSingleTags() as $tag)
-		{
-			$tag = LD.$tag.RD;
-			$field_output = $this->parseSingle($field, $tag);
-			$tagdata = str_replace($tag, $field_output, $tagdata);
-		}
-
-		return $tagdata;
+		return $this->parseSingle($field, $tagdata);
 	}
 
 	/**
@@ -133,15 +127,33 @@ class Tag {
 	}
 
 	/**
-	 * Parses and replaces a tag
+	 * Parses out the single tags and replaces them.
 	 *
 	 * @param FieldFacade $field The fieldtype instance we are processing
 	 * @return string The tagdata with the tag replaced
 	 */
 	protected function parseSingle(FieldFacade $field, $tagdata)
 	{
-		$tag_info = $this->channel_fields_delegate->get_single_field($tagdata);
-		return $field->replaceTag($tagdata, $tag_info['params'], $tag_info['modifier']);
+		foreach ($this->getSingleTags($tagdata) as $tag)
+		{
+			$tag = LD.$tag.RD;
+			$field_output = $this->replaceSingle($field, $tag);
+			$tagdata = str_replace($tag, $field_output, $tagdata);
+		}
+
+		return $tagdata;
+	}
+
+	/**
+	 * Replaces a tag
+	 *
+	 * @param FieldFacade $field The fieldtype instance we are processing
+	 * @return string The tagdata with the tag replaced
+	 */
+	protected function replaceSingle(FieldFacade $field, $tag)
+	{
+		$tag_info = $this->channel_fields_delegate->get_single_field($tag);
+		return $field->replaceTag($tag, $tag_info['params'], $tag_info['modifier']);
 	}
 
 	/**
