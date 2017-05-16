@@ -67,12 +67,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			return;
 		}
 
-		$blockData = ee('Model')->get('fluid_block:FluidBlock')
-			->with('ChannelField')
-			->filter('block_id', $this->field_id)
-			->filter('entry_id', $this->content_id)
-			->all()
-			->indexBy('id');
+		$blockData = $this->getBlockData()->indexBy('id');
 
 		$i = 1;
 		foreach ($data['fields'] as $key => $value)
@@ -201,12 +196,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		if ($this->content_id)
 		{
-			$blockData = ee('Model')->get('fluid_block:FluidBlock')
-				->with('ChannelField')
-				->filter('block_id', $this->field_id)
-				->filter('entry_id', $this->content_id)
-				->order('order')
-				->all();
+			$blockData = $this->getBlockData();
 
 			foreach ($blockData as $data)
 			{
@@ -313,26 +303,98 @@ class Fluid_block_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
+	/**
+	 * Gets the field name for a block given an ID
+	 *
+	 * @param int $id The id for the block
+	 * @return string The field name for the block
+	 */
+	private function getBlockName($id = '')
+	{
+		$id = ($id) ?: $this->id;
+
+		$cache_key = "ChannelField/{$id}/field_name";
+
+		if (($name = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$block = ee('Model')->get('ChannelField', $this->id)
+				->fields('field_name')
+				->first();
+
+			$name = ($block) ? $block->field_name : '';
+			ee()->session->set_cache(__CLASS__, $cache_key, $name);
+		}
+
+		return $name;
+	}
+
+	/**
+	 * Gets the fluid block's data for a given block and entry
+	 *
+	 * @param int $block_id The id for the block
+	 * @param int $entry_id The id for the entry
+	 * @return obj A Collection of FluidBlock objects
+	 */
+	private function getBlockData($block_id = '', $entry_id = '')
+	{
+		$block_id = ($block_id) ?: $this->field_id;
+		$entry_id = ($entry_id) ?: $this->content_id;
+
+		$cache_key = "FluidBlock/{$block_id}/{$entry_id}";
+
+		if (($blockData = ee()->session->cache("FluidBlock", $cache_key, FALSE)) === FALSE)
+		{
+			$blockData = ee('Model')->get('fluid_block:FluidBlock')
+				->with('ChannelField')
+				->filter('block_id', $block_id)
+				->filter('entry_id', $entry_id)
+				->order('order')
+				->all();
+
+			ee()->session->set_cache("FluidBlock", $cache_key, $blockData);
+		}
+
+		return $blockData;
+	}
+
+	/**
+	 * Gets a list of possible field names for this block
+	 *
+	 * @return array A list of field_names assigned to this block
+	 */
+	private function getPossibleFields()
+	{
+		$cache_key = 'ChannelFields/' . implode($this->settings['field_channel_fields'], ',') . '/field_name';
+
+		if (($possible_fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$possible_fields = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+				->fields('field_name')
+				->all()
+				->pluck('field_name');
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $possible_fields);
+		}
+
+		return $possible_fields;
+	}
+
 	private function lexTagdata($tagdata)
 	{
-		$possible_fields = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
-			->fields('field_name')
-			->all()
-			->pluck('field_name');
+
+		$possible_fields = $this->getPossibleFields();
 
 		$tags = array();
 
 		$tag_pairs = array_keys(ee()->TMPL->var_pair);
 
-		$block = ee('Model')->get('ChannelField', $this->id)
-			->fields('field_name')
-			->first();
+		$block_name = $this->getBlockName($this->id);
 
 		foreach($possible_fields as $field)
 		{
 			$tags[$field] = array();
 
-			$tag_variable = $block->field_name . ':' . $field;
+			$tag_variable = $block_name . ':' . $field;
 
 			if (in_array($tag_variable, $tag_pairs))
 			{
@@ -354,12 +416,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		$tags = $this->lexTagdata($tagdata);
 
-		$blockData = ee('Model')->get('fluid_block:FluidBlock')
-			->with('ChannelField')
-			->filter('block_id', $this->field_id)
-			->filter('entry_id', $this->content_id)
-			->order('order')
-			->all();
+		$blockData = $this->getBlockData();
 
 		foreach ($blockData as $block)
 		{
