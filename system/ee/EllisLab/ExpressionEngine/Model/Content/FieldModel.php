@@ -347,9 +347,14 @@ abstract class FieldModel extends Model {
 		return $this->ensureDefaultColumns($columns);
 	}
 
+	private function getCacheKey()
+	{
+		return $cache_key = '/' . str_replace('\\', '_', get_class($this)) . '/' . $this->getId();
+	}
+
 	public function getColumnNames()
 	{
-		$cache_key = '/' . __CLASS__ . '/' . $this->getId();
+		$cache_key = $this->getCacheKey();
 		$names = ee()->cache->get($cache_key);
 
 		if ($names === FALSE)
@@ -423,8 +428,7 @@ abstract class FieldModel extends Model {
 		ee()->load->library('smartforge');
 		ee()->smartforge->drop_table($this->getTableName());
 
-		$cache_key = '/' . __CLASS__ . '/' . $this->getId();
-		ee()->cache->delete($cache_key);
+		ee()->cache->delete($this->getCacheKey());
 	}
 
 	/**
