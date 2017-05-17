@@ -393,7 +393,7 @@ class Member extends ContentModel {
 			case 'publish_form':
 				$url = ee('CP/URL', 'publish/create/'.$cp_homepage_channel);
 				break;
-			case 'custom':
+			case 'custom' AND ! empty($cp_homepage_custom):
 				$url = ee('CP/URL', $cp_homepage_custom);
 				break;
 			default:
