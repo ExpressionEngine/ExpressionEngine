@@ -349,7 +349,16 @@ abstract class FieldModel extends Model {
 
 	public function getColumnNames()
 	{
-		return array_keys($this->getColumns());
+		$cache_key = '/' . __CLASS__ . '/' . $this->getId();
+		$names = ee()->cache->get($cache_key);
+
+		if ($names === FALSE)
+		{
+			$names = array_keys($this->getColumns());
+			ee()->cache->save($cache_key, $names, 0);
+		}
+
+		return $names;
 	}
 
 	/**
@@ -401,6 +410,9 @@ abstract class FieldModel extends Model {
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key($this->getForeignKey());
 		ee()->smartforge->create_table($this->getTableName());
+
+		// Pre-populate the cache...
+		$this->getColumnNames();
 	}
 
 	/**
@@ -410,6 +422,9 @@ abstract class FieldModel extends Model {
 	{
 		ee()->load->library('smartforge');
 		ee()->smartforge->drop_table($this->getTableName());
+
+		$cache_key = '/' . __CLASS__ . '/' . $this->getId();
+		ee()->cache->delete($cache_key);
 	}
 
 	/**
