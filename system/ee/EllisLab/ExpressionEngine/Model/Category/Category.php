@@ -32,6 +32,7 @@ use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 class Category extends ContentModel {
 
 	protected static $_primary_key = 'cat_id';
+	protected static $_table_name = 'categories';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
 
 	protected static $_hook_id = 'category';
@@ -71,13 +72,8 @@ class Category extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'     => 'CategoryField',
-		'structure_model' => 'CategoryGroup',
-		'extra_data'      => array(
-			'group_column' => 'Category__group_id',
-			'parent_table' => 'categories',
-			'key_column'   => 'cat_id'
-		)
+		'field_model'  => 'CategoryField',
+		'group_column' => 'Category__group_id'
 	);
 
 	protected static $_validation_rules = array(
@@ -140,11 +136,6 @@ class Category extends ContentModel {
 		}
 	}
 
-	public function onBeforeDelete()
-	{
-		$this->deleteFieldData();
-	}
-
 	/**
 	 * Converts the fields into facades
 	 *
@@ -158,26 +149,6 @@ class Category extends ContentModel {
 		}
 
 		return parent::addFacade($id, $info, $name_prefix);
-	}
-
-	/**
-	 * Gets a collection of CategoryGroup objects
-	 *
-	 * @return Collection A collection of CategoryGroup objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->CategoryGroup->CategoryFields;
-
-		if ($fields->count() == 0)
-		{
-			$fields = $this->getModelFacade()
-				->get('CategoryGroup', $this->group_id)
-				->first()
-				->CategoryFields;
-		}
-
-		return $fields;
 	}
 }
 

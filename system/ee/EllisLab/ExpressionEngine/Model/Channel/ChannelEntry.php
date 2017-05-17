@@ -22,6 +22,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
+	protected static $_table_name = 'channel_titles';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
 	protected static $_hook_id = 'channel_entry';
@@ -97,13 +98,8 @@ class ChannelEntry extends ContentModel {
 	protected static $_auto_join = array('Channel');
 
 	protected static $_field_data = array(
-		'field_model'     => 'ChannelField',
-		'structure_model' => 'Channel',
-		'extra_data'      => array(
-			'group_column' => 'Channel__channel_id',
-			'parent_table' => 'channel_titles',
-			'key_column'   => 'entry_id'
-		)
+		'field_model'  => 'ChannelField',
+		'group_column' => 'Channel__channel_id'
 	);
 
 	protected static $_validation_rules = array(
@@ -319,16 +315,6 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	/**
-	 * Gets a collection of ChannelField objects
-	 *
-	 * @return Collection A collection of ChannelField objects
-	 */
-	protected function getFieldModels()
-	{
-		return $this->Channel->getCustomFields();
-	}
-
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
@@ -428,8 +414,6 @@ class ChannelEntry extends ContentModel {
 			// restore our package and view paths
 			ee()->load->remove_package_path($info->getPath());
 		}
-
-		$this->deleteFieldData();
 	}
 
 	public function onAfterDelete()

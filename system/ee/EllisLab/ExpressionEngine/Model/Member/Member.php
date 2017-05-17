@@ -107,12 +107,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'     => 'MemberField',
-		'structure_model' => 'MemberGroup',
-		'extra_data'      => array(
-			'parent_table' => 'members',
-			'key_column'   => 'member_id'
-		)
+		'field_model'   => 'MemberField'
 	);
 
 	protected static $_validation_rules = array(
@@ -272,13 +267,13 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		$this->UploadedFiles->uploaded_by_member_id = 0;
 		$this->UploadedFiles->save();
 
 		$this->ModifiedFiles->modified_by_member_id = 0;
 		$this->ModifiedFiles->save();
-
-		$this->deleteFieldData();
 	}
 
 	/**
@@ -605,27 +600,6 @@ class Member extends ContentModel {
 		}
 
 		return TRUE;
-	}
-
-
-	/**
-	 * Gets a collection of MemberField objects
-	 *
-	 * @return Collection A collection of MemberField objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->MemberGroup->getCustomFields();
-
-		if (empty($fields))
-		{
-			$fields = $this->getModelFacade()
-				->get('MemberGroup', $this->group_id)
-				->first()
-				->getCustomFields();
-		}
-
-		return $fields;
 	}
 }
 

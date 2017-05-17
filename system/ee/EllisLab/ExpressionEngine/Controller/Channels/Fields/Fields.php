@@ -213,9 +213,9 @@ class Fields extends AbstractChannelsController {
 
 				if (ee()->input->post('update_formatting') == 'y')
 				{
-					ee()->db->where('field_ft_'.$field->field_id. ' IS NOT NULL', NULL, FALSE);
+					ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', NULL, FALSE);
 					ee()->db->update(
-						'channel_data',
+						'channel_data_field_' . $field->field_id,
 						array('field_ft_'.$field->field_id => $field->field_fmt)
 					);
 				}
