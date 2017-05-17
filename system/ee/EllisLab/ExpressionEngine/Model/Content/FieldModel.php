@@ -349,7 +349,7 @@ abstract class FieldModel extends Model {
 
 	private function getCacheKey()
 	{
-		return $cache_key = '/' . str_replace('\\', '_', get_class($this)) . '/' . $this->getId();
+		return $cache_key = '/' . get_class($this) . '/' . $this->getId();
 	}
 
 	public function getColumnNames()
