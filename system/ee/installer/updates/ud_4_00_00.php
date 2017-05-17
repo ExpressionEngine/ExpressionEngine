@@ -36,8 +36,8 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'emancipate_the_fields',
-				'add_field_data_flag',
+				'emancipateTheFields',
+				'addFieldDataFlag',
 				'removeMemberHomepageTable',
 			)
 		);
@@ -50,7 +50,7 @@ class Updater {
 		return TRUE;
 	}
 
-	private function emancipate_the_fields()
+	private function emancipateTheFields()
 	{
 		// Fields can span Sites and do not need Groups
 		ee()->smartforge->modify_column('channel_fields', array(
@@ -178,7 +178,7 @@ class Updater {
 	 * exp_category_fields tables that indicates if the
 	 * data is in the legacy data tables or their own table.
 	 */
-	private function add_field_data_flag()
+	private function addFieldDataFlag()
 	{
 		if ( ! ee()->db->field_exists('legacy_field_data', 'category_fields'))
 		{
@@ -224,7 +224,7 @@ class Updater {
 			);
 			ee()->db->update('member_fields', array('m_legacy_field_data' => 'y'));
 		}
-    }
+	}
 
 	private function removeMemberHomepageTable()
 	{

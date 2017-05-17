@@ -617,8 +617,14 @@ class Comment {
 				$values['comment_site_id'] = $comment->site_id;
 
 				$author = ($comment->Author) ?: ee('Model')->make('Member');
+				$author = $author->getValues();
 
-				$results[] = array_merge($values, $author->getValues());
+				if (isset($values['url']) && ! empty($values['url']))
+				{
+					unset($author['url']);
+				}
+
+				$results[] = array_merge($values, $author);
 			}
 
 			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
@@ -891,16 +897,15 @@ class Comment {
 				/**  {url_or_email} - Uses Raw Email Address, Like Channel Module
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email" AND isset($row['url']))
+				if ($key == "url_or_email" AND array_key_exists('url', $row))
 				{
 					$tagdata = ee()->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
 				}
 
-
 				/** ----------------------------------------
 				/**  {url_as_author}
 				/** ----------------------------------------*/
-				if ($key == "url_as_author" AND isset($row['url']))
+				if ($key == "url_as_author" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -916,7 +921,7 @@ class Comment {
 				/**  {url_or_email_as_author}
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email_as_author" AND isset($row['url']))
+				if ($key == "url_or_email_as_author" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -939,7 +944,7 @@ class Comment {
 				/**  {url_or_email_as_link}
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email_as_link" AND isset($row['url']))
+				if ($key == "url_or_email_as_link" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{

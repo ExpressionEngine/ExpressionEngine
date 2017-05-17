@@ -347,9 +347,23 @@ abstract class FieldModel extends Model {
 		return $this->ensureDefaultColumns($columns);
 	}
 
+	private function getCacheKey()
+	{
+		return $cache_key = '/' . str_replace('\\', '_', get_class($this)) . '/' . $this->getId();
+	}
+
 	public function getColumnNames()
 	{
-		return array_keys($this->getColumns());
+		$cache_key = $this->getCacheKey();
+		$names = ee()->cache->get($cache_key);
+
+		if ($names === FALSE)
+		{
+			$names = array_keys($this->getColumns());
+			ee()->cache->save($cache_key, $names, 0);
+		}
+
+		return $names;
 	}
 
 	/**
@@ -390,12 +404,6 @@ abstract class FieldModel extends Model {
 				'constraint'     => 10,
 				'null'           => FALSE,
 				'unsigned'       => TRUE,
-			),
-			'language' => array(
-				'type'       => 'varchar',
-				'constraint' => '5',
-				'null'       => FALSE,
-				'default'    => 'en-US' // @TODO Have this match the default language of the site
 			)
 		);
 
@@ -407,6 +415,9 @@ abstract class FieldModel extends Model {
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key($this->getForeignKey());
 		ee()->smartforge->create_table($this->getTableName());
+
+		// Pre-populate the cache...
+		$this->getColumnNames();
 	}
 
 	/**
@@ -416,6 +427,8 @@ abstract class FieldModel extends Model {
 	{
 		ee()->load->library('smartforge');
 		ee()->smartforge->drop_table($this->getTableName());
+
+		ee()->cache->delete($this->getCacheKey());
 	}
 
 	/**
