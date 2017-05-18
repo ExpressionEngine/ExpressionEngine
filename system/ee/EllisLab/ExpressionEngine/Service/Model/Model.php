@@ -736,12 +736,13 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	public function createTypeFor($name)
 	{
 		$columns = $this->getMetadata('typed_columns') ?: array();
-		$types = $this->getMetadata('type_classes');
 
 		if ( ! array_key_exists($name, $columns))
 		{
 			return NULL;
 		}
+
+		$types = $this->getMetadata('type_classes');
 
 		$type = $columns[$name];
 		$class = $types[$type];
