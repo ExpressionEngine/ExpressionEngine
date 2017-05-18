@@ -147,7 +147,8 @@ abstract class Entity extends MixableImpl implements Publisher {
 
 			$child = $class;
 		}
-		while ($class = get_parent_class($class));
+		while (($class = get_parent_class($class))
+			&& $child != 'EllisLab\ExpressionEngine\Service\Model\Model');
 
 		return array_reverse($values);
 	}
