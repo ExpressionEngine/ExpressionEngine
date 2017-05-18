@@ -145,16 +145,29 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public function set__entry_date($entry_date)
-	{
-		$this->setRawProperty('entry_date', $entry_date);
+    public function set__entry_date($entry_date)
+    {
+        if ( ! is_numeric($entry_date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php
+            // First we try with the configured date format
+            $entry_date = ee()->localize->string_to_timestamp($entry_date, TRUE, ee()->localize->get_date_format());
 
-		// Day, Month, and Year Fields
-		// @TODO un-break these windows: inject this dependency
-		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
-		$this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
-		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
-	}
+            // If the date format didn't work, try something more fuzzy
+            if ($entry_date === FALSE)
+            {
+                $entry_date = ee()->localize->string_to_timestamp($entry_date);
+            }
+        }
+
+        $this->setRawProperty('entry_date', $entry_date);
+
+        // Day, Month, and Year Fields
+        // @TODO un-break these windows: inject this dependency
+        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
+        $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
+        $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
+    }
 
 	public function validate()
 	{
@@ -857,7 +870,7 @@ class ChannelEntry extends ContentModel {
 					$default_fields['categories[cat_group_id_'.$cat_group->getId().']'] = $metadata;
 				}
 
-				if ( ! $this->Channel->comment_system_enabled)
+				if ( ! $this->Channel->comment_system_enabled OR ! bool_config_item('enable_comments'))
 				{
 					unset($default_fields['comment_expiration_date'], $default_fields['allow_comments']);
 				}

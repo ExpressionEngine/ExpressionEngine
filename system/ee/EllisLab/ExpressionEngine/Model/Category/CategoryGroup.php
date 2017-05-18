@@ -172,11 +172,13 @@ class CategoryGroup extends StructureModel {
 
 		$object = $field->getItem('categorized_object');
 
-		$default = ($object->getName() == 'ee:ChannelEntry') ? $object->Channel->deft_category : '';
+		// isset() and empty() don't work here on $object->Channel because it hasn't been dynamically fetched yet,
+		// is_object() apparently works differently and lets it dynamically load it before evaluating
+		$has_default = ($object->getName() == 'ee:ChannelEntry' && is_object($object->Channel)) ? TRUE : FALSE;
 
 		// New Channel Entries might have a default category selected, but File
 		// entities should not have categories pre-selected for new entries
-		if ( ! $object->isNew() OR ($object->getName() == 'ee:ChannelEntry' && ! empty($default)))
+		if ( ! $object->isNew() OR ($object->getName() == 'ee:ChannelEntry' && $has_default))
 		{
 			$set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
 			$field->setData(implode('|', $set_categories));

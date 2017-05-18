@@ -48,6 +48,7 @@ class Filepicker_mcp {
 	protected function getUserUploadDirectories()
 	{
 		$dirs = ee()->api->get('UploadDestination')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->all();

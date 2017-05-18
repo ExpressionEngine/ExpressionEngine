@@ -84,14 +84,20 @@ class Grid_lib {
 				'required' => ($column['col_required'] == 'y')
 			);
 
+			$attrs = array(
+				'class' => $this->get_class_for_column($column),
+				'data-fieldtype' => $column['col_type'],
+				'data-column-id' => $column['col_id']
+			);
+
+			if ( ! empty($column['col_width']))
+			{
+				$attrs['style'] = 'min-width: '.$column['col_width'].'px';
+			}
+
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
-				'attrs' => array(
-					'class' => $this->get_class_for_column($column),
-					'data-fieldtype' => $column['col_type'],
-					'data-column-id' => $column['col_id'],
-					'width' => $column['col_width'].'%',
-				)
+				'attrs' => $attrs
 			);
 		}
 		$grid->setColumns($column_headings);
