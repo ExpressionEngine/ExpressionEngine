@@ -1,28 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * Update
  */
 class Updater {
 
@@ -34,8 +20,6 @@ class Updater {
 	public function __construct()
 	{
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do Update
@@ -69,8 +53,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * update Session table
@@ -112,8 +94,6 @@ class Updater {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop DST columns!
 	 */
@@ -125,8 +105,6 @@ class Updater {
 
 			ee()->smartforge->drop_column('channel_entries_autosave', 'dst_enabled');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * We need to store PHP timezone identifiers in the database instead of
@@ -173,8 +151,6 @@ class Updater {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Session table
 	 *
@@ -203,8 +179,6 @@ class Updater {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update the Actions Table
 	 *
@@ -227,8 +201,6 @@ class Updater {
 			->where('class', 'Member')
 			->update('actions', array('method'=>'process_reset_password'));
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Update Specialty Templates
@@ -255,8 +227,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			->update('specialty_templates', $data);
 
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Update the Fieldtype and Channel Fields Tables for Relationships
@@ -302,8 +272,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
  	 * Update the Relationships Table
@@ -404,8 +372,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 *
 	 */
@@ -437,8 +403,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Update all Relationship Tags in All Templates
@@ -498,8 +462,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->set('config', $installer_config);
 	}
 
-
-	// --------------------------------------------------------------------------
 
 	/**
 	 *

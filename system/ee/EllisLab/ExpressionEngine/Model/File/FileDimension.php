@@ -1,34 +1,21 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Dimension Model
+ * File Dimension Model
  *
  * A model representing one of image manipulations that can be applied on
  * images uploaded to its corresponting upload destination.
- *
- * @package		ExpressionEngine
- * @subpackage	File
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class FileDimension extends Model {
 
@@ -209,6 +196,29 @@ class FileDimension extends Model {
 
 		return $dimensions;
 	}
+
+	/**
+	 * Uses the upload destination's server path to compute the absolute
+	 * path of the dirctory
+	 *
+	 * @return string The absolute path to the directory
+	 */
+	public function getAbsolutePath()
+	{
+		return rtrim($this->UploadDestination->server_path, '/') . '/_' . $this->short_name . '/';
+	}
+
+	/**
+	 * Uses the upload destination's url to compute the absolute URL of
+	 * the directory
+	 *
+	 * @return string The absolute URL to the directory
+	 */
+	public function getAbsoluteURL()
+	{
+		return rtrim($this->UploadDestination->url, '/') . '/_' . rawurlencode($this->short_name) . '/';
+	}
+
 }
 
 // EOF

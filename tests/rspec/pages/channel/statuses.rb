@@ -8,6 +8,6 @@ class Statuses < ControlPanelPage
     click_link 'Channel Manager'
     click_link 'Status Groups'
 
-    find('tbody tr:nth-child('+number.to_s+') li.view a').click
+    find('tbody tr:nth-child('+number.to_s+') li.txt-only a').click
   end
 end

@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Multi-Select Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Multi-Select Fieldtype
  */
 class Multi_select_ft extends OptionFieldtype {
 
@@ -44,8 +31,6 @@ class Multi_select_ft extends OptionFieldtype {
 		parent::__construct();
 		ee()->load->helper('custom_field');
 	}
-
-	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
@@ -103,14 +88,10 @@ class Multi_select_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->display_field(form_prep($data));
 	}
-
-	// --------------------------------------------------------------------
 
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
@@ -153,8 +134,6 @@ class Multi_select_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -176,8 +155,6 @@ class Multi_select_ft extends OptionFieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

@@ -1,7 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Curl;
 
+/**
+ * Curl Request
+ */
 abstract class Request {
 
 	public function __construct($url, $data, $callback = NULL)
@@ -20,7 +30,7 @@ abstract class Request {
 		{
 			if (substr($key, 0, 7) == "CURLOPT")
 			{
-				$this->config[$key] = $val;
+				$this->config[constant($key)] = $val;
 			}
 		}
 

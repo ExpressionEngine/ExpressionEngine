@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Template Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Settings Controller
  */
 class Template extends Settings {
 
@@ -94,13 +79,6 @@ class Template extends Settings {
 						'max_tmpl_revisions' => array('type' => 'text')
 					)
 				),
-				array(
-					'title' => 'save_tmpl_files',
-					'desc' => 'save_tmpl_files_desc',
-					'fields' => array(
-						'save_tmpl_files' => array('type' => 'yes_no')
-					)
-				),
 			)
 		);
 
@@ -128,8 +106,6 @@ class Template extends Settings {
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
 
-			$this->updateTemplateFiles();
-
 			ee()->functions->redirect($base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -146,29 +122,6 @@ class Template extends Settings {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('design'), lang('template_manager'));
 
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * If templates need to be saved as files, then write them.
-	 */
-	protected function updateTemplateFiles()
-	{
-		$save_template_files = ee()->input->post('save_tmpl_files');
-
-		if ($save_template_files == 'y')
-		{
-			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')->all();
-			$tgs->Templates->save();
-			$tgs = NULL;
-
-			$snippets = ee('Model')->get('Snippet')->all();
-			$snippets->save();
-			$snippets = NULL;
-
-			$variables = ee('Model')->get('GlobalVariable')->all();
-			$variables->save();
-			$variables = NULL;
-		}
 	}
 }
 // END CLASS

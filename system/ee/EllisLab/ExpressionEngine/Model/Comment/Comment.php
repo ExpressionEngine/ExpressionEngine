@@ -1,33 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Comment;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Comment Model
+ * Comment Model
  *
  * A model representing a comment on a Channel entry.
- *
- * @package		ExpressionEngine
- * @subpackage	Comment Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Comment extends Model {
 
@@ -92,21 +79,19 @@ class Comment extends Model {
 		{
 			$this->Author->updateAuthorStats();
 		}
-
-		$this->updateCommentStats();
 	}
 
 	public function onAfterDelete()
 	{
 		if ($this->Author)
 		{
-		// store the author and dissociate. otherwise saving the author will
-		// attempt to save this entry to ensure relationship integrity.
-		// TODO make sure everything is already dissociated when we hit this
-		$last_author = $this->Author;
-		$this->Author = NULL;
+			// store the author and dissociate. otherwise saving the author will
+			// attempt to save this entry to ensure relationship integrity.
+			// TODO make sure everything is already dissociated when we hit this
+			$last_author = $this->Author;
+			$this->Author = NULL;
 
-		$last_author->updateAuthorStats();
+			$last_author->updateAuthorStats();
 		}
 
 		$this->updateCommentStats();
@@ -115,6 +100,7 @@ class Comment extends Model {
 
 	public function onAfterSave()
 	{
+		$this->updateCommentStats();
 		ee()->functions->clear_caching('all');
 	}
 
@@ -149,6 +135,15 @@ class Comment extends Model {
 		// entry won't exist if we deleted comments because we deleted the entry
 		if ($this->Entry)
 		{
+
+			// There are times, espcially when deleting a ChannelEntry, that
+			// the related entry object isn't fully loaded, so we'll need
+			// to reload it before working on it.
+			if (is_null($this->Entry->Channel))
+			{
+				$this->getAssociation('Entry')->markForReload();
+			}
+
 			$this->Entry->comment_total = $total_entry_comments;
 			$this->Entry->save();
 		}

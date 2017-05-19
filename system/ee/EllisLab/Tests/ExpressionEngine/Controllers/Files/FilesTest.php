@@ -1,4 +1,12 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Files;
 
 class FilesTest extends \PHPUnit_Framework_TestCase {
@@ -23,7 +31,7 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('directory', 'export', 'index', 'rmdir', 'upload'), $controller_methods);
+		$this->assertEquals(array('directory', 'export', 'finishupload', 'index', 'rmdir', 'upload'), $controller_methods);
 	}
 
 }

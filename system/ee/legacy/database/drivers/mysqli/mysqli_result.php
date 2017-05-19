@@ -1,28 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * MySQLi Result Class
+ * MySQLi Result
  *
  * This class extends the parent result class: CI_DB_result
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_mysqli_result extends CI_DB_result {
 
@@ -37,8 +25,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		return $this->pdo_statement->rowCount();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Number of fields in the result set
 	 *
@@ -49,8 +35,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 	{
 		return $this->pdo_statement->columnCount();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Field Names
@@ -74,8 +58,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 
 		return $field_names;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Field data
@@ -133,8 +115,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		return array_values($column_data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Free the result
 	 *
@@ -145,8 +125,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		$this->pdo_statement->closeCursor();
 		$this->pdo_statement = NULL;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Data Seek
@@ -164,8 +142,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		return mysqli_data_seek($this->result_id, $n);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Result - associative array
 	 *
@@ -178,8 +154,6 @@ class CI_DB_mysqli_result extends CI_DB_result {
 	{
 		return $this->pdo_statement->fetch(PDO::FETCH_ASSOC);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Result - object

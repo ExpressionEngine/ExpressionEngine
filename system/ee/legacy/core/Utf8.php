@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Utf8 Class
  *
  * Provides support for UTF-8 environments
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	UTF-8
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/utf8.html
  */
 class EE_Utf8 {
 
@@ -72,8 +58,6 @@ class EE_Utf8 {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clean UTF-8 strings
 	 *
@@ -92,8 +76,6 @@ class EE_Utf8 {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove ASCII control characters
 	 *
@@ -108,8 +90,6 @@ class EE_Utf8 {
 	{
 		return remove_invisible_characters($str, FALSE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert to UTF-8
@@ -138,8 +118,6 @@ class EE_Utf8 {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is ASCII?
 	 *
@@ -152,8 +130,6 @@ class EE_Utf8 {
 	{
 		return (preg_match('/[^\x00-\x7F]/S', $str) == 0);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // End Utf8 Class

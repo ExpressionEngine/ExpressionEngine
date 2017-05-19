@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Email Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Email
  */
 class EE_Email {
 
@@ -378,8 +366,6 @@ class EE_Email {
 		$this->EE_initialize();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Destructor - Releases Resources
 	 *
@@ -392,8 +378,6 @@ class EE_Email {
 			$this->_send_command('quit');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize preferences
@@ -426,8 +410,6 @@ class EE_Email {
 
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set config values
@@ -473,8 +455,6 @@ class EE_Email {
 		$this->initialize($config);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize the Email Data
 	 *
@@ -504,8 +484,6 @@ class EE_Email {
 
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set FROM
@@ -554,8 +532,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Reply-to
 	 *
@@ -591,8 +567,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Recipients
 	 *
@@ -619,8 +593,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set CC
 	 *
@@ -645,8 +617,6 @@ class EE_Email {
 
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set BCC
@@ -682,8 +652,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Email Subject
 	 *
@@ -701,8 +669,6 @@ class EE_Email {
 		return $this;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assign file attachments
@@ -724,8 +690,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a Header Item
 	 *
@@ -737,8 +701,6 @@ class EE_Email {
 	{
 		$this->_headers[$header] = $value;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert a String to an Array
@@ -758,8 +720,6 @@ class EE_Email {
 		return $email;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Multipart Value
 	 *
@@ -771,8 +731,6 @@ class EE_Email {
 		$this->alt_message = (string) $str;
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Mailtype
@@ -786,8 +744,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Wordwrap
 	 *
@@ -799,8 +755,6 @@ class EE_Email {
 		$this->wordwrap = (bool) $wordwrap;
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Protocol
@@ -814,8 +768,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Priority
 	 *
@@ -827,8 +779,6 @@ class EE_Email {
 		$this->priority = preg_match('/^[1-5]$/', $n) ? (int) $n : 3;
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Newline Character
@@ -842,8 +792,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set CRLF
 	 *
@@ -856,8 +804,6 @@ class EE_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Message Boundary
 	 *
@@ -869,8 +815,6 @@ class EE_Email {
 		$this->_atc_boundary = 'B_ATC_'.uniqid(''); // attachment boundary
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the Message ID
 	 *
@@ -881,8 +825,6 @@ class EE_Email {
 		$from = str_replace(array('>', '<'), '', $this->_headers['Return-Path']);
 		return '<'.uniqid('').strstr($from, '@').'>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Mail Protocol
@@ -900,8 +842,6 @@ class EE_Email {
 			return $this->protocol;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Mail Encoding
@@ -927,8 +867,6 @@ class EE_Email {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get content type (text/html/attachment)
 	 *
@@ -950,8 +888,6 @@ class EE_Email {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set RFC 822 Date
 	 *
@@ -967,8 +903,6 @@ class EE_Email {
 		return sprintf('%s %s%04d', date('D, j M Y H:i:s'), $operator, $timezone);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mime message
 	 *
@@ -978,8 +912,6 @@ class EE_Email {
 	{
 		return 'This is a multi-part message in MIME format.'.$this->newline.'Your email application may not support this format.';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Email Address
@@ -1007,8 +939,6 @@ class EE_Email {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Email Validation
 	 *
@@ -1019,8 +949,6 @@ class EE_Email {
 	{
 		return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clean Extended Email Address: Joe Smith <joe@smith.com>
@@ -1044,8 +972,6 @@ class EE_Email {
 
 		return $clean_email;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Build alternative plain text message
@@ -1081,8 +1007,6 @@ class EE_Email {
 			? $this->word_wrap($body, 76)
 			: $body;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Word Wrap
@@ -1174,8 +1098,6 @@ class EE_Email {
 		return $output;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build final headers
 	 *
@@ -1189,8 +1111,6 @@ class EE_Email {
 		$this->set_header('Message-ID', $this->_get_message_id());
 		$this->set_header('Mime-Version', '1.0');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write Headers as a string
@@ -1226,8 +1146,6 @@ class EE_Email {
 			$this->_header_str = rtrim($this->_header_str);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * this is very unusual to need, but could be necessary if using the
@@ -1413,8 +1331,6 @@ class EE_Email {
 		return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep Quoted Printable
 	 *
@@ -1495,8 +1411,6 @@ class EE_Email {
 		return substr($output, 0, strlen($this->crlf) * -1);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep Q Encoding
 	 *
@@ -1571,8 +1485,6 @@ class EE_Email {
 		return $output.'?=';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Send Email
 	 *
@@ -1618,8 +1530,6 @@ class EE_Email {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Batch Bcc Send. Sends groups of BCCs in batches
@@ -1672,8 +1582,6 @@ class EE_Email {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Unwrap special elements
 	 *
@@ -1683,8 +1591,6 @@ class EE_Email {
 	{
 		$this->_finalbody = preg_replace_callback('/\{unwrap\}(.*?)\{\/unwrap\}/si', array($this, '_remove_nl_callback'), $this->_finalbody);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Strip line-breaks via callback
@@ -1701,8 +1607,6 @@ class EE_Email {
 
 		return $matches[1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send using mail()
@@ -1736,8 +1640,6 @@ class EE_Email {
 			return mail($this->_recipients, $this->_subject, $this->_finalbody, $this->_header_str, $params);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send using Sendmail
@@ -1782,8 +1684,6 @@ class EE_Email {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prevent attacks similar to CVE-2016-10033, CVE-2016-10045, and CVE-2016-10074
 	 * by disallowing potentially unsafe shell characters.
@@ -1820,8 +1720,6 @@ class EE_Email {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send using SMTP
@@ -1905,8 +1803,6 @@ class EE_Email {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * SMTP Connect
 	 *
@@ -1952,8 +1848,6 @@ class EE_Email {
 
 		return $this->_send_command('hello');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send SMTP command
@@ -2037,8 +1931,6 @@ class EE_Email {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * SMTP Authenticate
 	 *
@@ -2094,8 +1986,6 @@ class EE_Email {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Send SMTP data
 	 *
@@ -2112,8 +2002,6 @@ class EE_Email {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get SMTP data
@@ -2137,8 +2025,6 @@ class EE_Email {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Hostname
 	 *
@@ -2148,8 +2034,6 @@ class EE_Email {
 	{
 		return isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost.localdomain';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Debug Message
@@ -2192,8 +2076,6 @@ class EE_Email {
 		return $msg.($raw_data === '' ? '' : '<pre>'.$raw_data.'</pre>');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Message
 	 *
@@ -2215,8 +2097,6 @@ class EE_Email {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the email message
 	 *
@@ -2234,8 +2114,6 @@ class EE_Email {
 		$this->_body = stripslashes(rtrim(str_replace("\r", "", $body)));
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Spool mail to the mail server
@@ -2282,8 +2160,6 @@ class EE_Email {
 		$this->_set_error_message('lang:email_sent', $this->_get_protocol());
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Dummy protocol: write the message out to disk (this is helpful for testing)

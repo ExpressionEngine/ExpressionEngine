@@ -1,29 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 4.3.2 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://www.codeigniter.com/user_guide/license.html
- * @link		http://www.codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 /**
  * Jquery Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @author		EllisLab Dev Team
- * @category	Loader
- * @link		http://www.codeigniter.com/user_guide/libraries/javascript.html
  */
-
 class EE_Jquery extends EE_Javascript {
 
 	var $_javascript_folder = 'js';
@@ -45,11 +31,7 @@ class EE_Jquery extends EE_Javascript {
 
 		log_message('debug', "Jquery Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 	// Event Code
-	// --------------------------------------------------------------------
-
 	/**
 	 * Blur
 	 *
@@ -65,8 +47,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'blur');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Change
 	 *
@@ -81,8 +61,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'change');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Click
@@ -110,8 +88,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'click');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Double Click
 	 *
@@ -126,8 +102,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'dblclick');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Error
@@ -144,8 +118,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'error');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Focus
 	 *
@@ -160,8 +132,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'focus');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hover
@@ -183,8 +153,6 @@ class EE_Jquery extends EE_Javascript {
 		return $event;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Keydown
 	 *
@@ -199,8 +167,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'keydown');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Keyup
@@ -217,8 +183,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'keyup');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load
 	 *
@@ -233,8 +197,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'load');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Mousedown
@@ -251,8 +213,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'mousedown');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mouse Out
 	 *
@@ -267,8 +227,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'mouseout');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Mouse Over
@@ -285,8 +243,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'mouseover');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mouseup
 	 *
@@ -301,8 +257,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'mouseup');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Output
@@ -327,8 +281,6 @@ class EE_Jquery extends EE_Javascript {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Resize
 	 *
@@ -343,8 +295,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'resize');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Scroll
@@ -361,8 +311,6 @@ class EE_Jquery extends EE_Javascript {
 		return $this->_add_event($element, $js, 'scroll');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Unload
 	 *
@@ -377,11 +325,7 @@ class EE_Jquery extends EE_Javascript {
 	{
 		return $this->_add_event($element, $js, 'unload');
 	}
-
-	// --------------------------------------------------------------------
 	// Effects
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Class
 	 *
@@ -397,8 +341,6 @@ class EE_Jquery extends EE_Javascript {
 		$str  = "$({$element}).addClass(\"$class\");";
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Animate
@@ -440,8 +382,6 @@ class EE_Jquery extends EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fade In
 	 *
@@ -467,8 +407,6 @@ class EE_Jquery extends EE_Javascript {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fade Out
@@ -496,8 +434,6 @@ class EE_Jquery extends EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Hide
 	 *
@@ -524,8 +460,6 @@ class EE_Jquery extends EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove Class
 	 *
@@ -541,8 +475,6 @@ class EE_Jquery extends EE_Javascript {
 		$str  = "$({$element}).removeClass(\"$class\");";
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Slide Up
@@ -570,8 +502,6 @@ class EE_Jquery extends EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Slide Down
 	 *
@@ -597,8 +527,6 @@ class EE_Jquery extends EE_Javascript {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Slide Toggle
@@ -626,8 +554,6 @@ class EE_Jquery extends EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Toggle
 	 *
@@ -644,8 +570,6 @@ class EE_Jquery extends EE_Javascript {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Toggle Class
 	 *
@@ -661,8 +585,6 @@ class EE_Jquery extends EE_Javascript {
 		$str  = "$({$element}).toggleClass(\"$class\");";
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show
@@ -689,8 +611,6 @@ class EE_Jquery extends EE_Javascript {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Updater
@@ -736,11 +656,7 @@ class EE_Jquery extends EE_Javascript {
 		return $updater;
 	}
 
-
-	// --------------------------------------------------------------------
 	// Pre-written handy stuff
-	// --------------------------------------------------------------------
-
 	/**
 	 * Zebra tables
 	 *
@@ -766,11 +682,7 @@ class EE_Jquery extends EE_Javascript {
 	}
 
 
-
-	// --------------------------------------------------------------------
 	// Plugins
-	// --------------------------------------------------------------------
-
 	/**
 	 * Corner Plugin
 	 *
@@ -793,8 +705,6 @@ class EE_Jquery extends EE_Javascript {
 		return "$(" . $this->_prep_element($element) . ").corner(".$corner_style.");";
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * modal window
 	 *
@@ -807,8 +717,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		$this->jquery_code_for_load[] = $this->external($src, $relative);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Effect
@@ -823,8 +731,6 @@ class EE_Jquery extends EE_Javascript {
 		$this->jquery_code_for_load[] = $this->external($src, $relative);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Plugin
 	 *
@@ -838,8 +744,6 @@ class EE_Jquery extends EE_Javascript {
 		$this->jquery_code_for_load[] = $this->external($src, $relative);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * UI
 	 *
@@ -852,8 +756,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		$this->jquery_code_for_load[] = $this->external($src, $relative);
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sortable
 	 *
@@ -882,8 +784,6 @@ class EE_Jquery extends EE_Javascript {
 		return "$(" . $this->_prep_element($element) . ").sortable({".$sort_options."\n\t});";
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Table Sorter Plugin
 	 *
@@ -896,11 +796,7 @@ class EE_Jquery extends EE_Javascript {
 	{
 		$this->jquery_code_for_compile[] = "\t$(" . $this->_prep_element($table) . ").tablesorter($options);\n";
 	}
-
-	// --------------------------------------------------------------------
 	// Class functions
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Event
 	 *
@@ -924,8 +820,6 @@ class EE_Jquery extends EE_Javascript {
 		$this->jquery_code_for_compile[] = $event;
 		return $event;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Compile
@@ -959,8 +853,6 @@ class EE_Jquery extends EE_Javascript {
 		return $output;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clear Compile
 	 *
@@ -973,8 +865,6 @@ class EE_Jquery extends EE_Javascript {
 	{
 		$this->jquery_code_for_compile = array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Document Ready
@@ -998,8 +888,6 @@ class EE_Jquery extends EE_Javascript {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Script Tag
 	 *
@@ -1015,8 +903,6 @@ class EE_Jquery extends EE_Javascript {
 		$this->jquery_code_for_load[] = $library_src;
 		return $library_src;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Element
@@ -1038,8 +924,6 @@ class EE_Jquery extends EE_Javascript {
 
 		return $element;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Speed

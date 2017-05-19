@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
@@ -38,7 +45,8 @@ class Member extends ContentModel {
 		'LastAuthoredTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'Template',
-			'to_key' => 'last_author_id'
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
 		),
 		'AuthoredChannelEntries' => array(
 			'type' => 'hasMany',
@@ -48,7 +56,8 @@ class Member extends ContentModel {
 		'LastAuthoredSpecialtyTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'SpecialtyTemplate',
-			'to_key' => 'last_author_id'
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
 		),
 		'UploadedFiles' => array(
 			'type' => 'hasMany',
@@ -92,7 +101,8 @@ class Member extends ContentModel {
 		'TemplateRevisions' => array(
 			'type' => 'hasMany',
 			'model' => 'RevisionTracker',
-			'to_key' => 'item_author_id'
+			'to_key' => 'item_author_id',
+			'weak' => TRUE
 		),
 		'SiteStatsIfLastMember' => array(
 			'type' => 'hasOne',
@@ -219,8 +229,8 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeInsert()
 	{
-		$this->setProperty('unique_id', sha1(uniqid(mt_rand(), TRUE)));
-		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
+		$this->setProperty('unique_id', ee('Encrypt')->generateKey());
+		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
 	}
 
 	/**
@@ -263,7 +273,7 @@ class Member extends ContentModel {
 	}
 
 	/**
-	 * Zero-out member ID data in assoicated files
+	 * Zero-out member ID data in associated models
 	 */
 	public function onBeforeDelete()
 	{
@@ -274,6 +284,15 @@ class Member extends ContentModel {
 
 		$this->ModifiedFiles->modified_by_member_id = 0;
 		$this->ModifiedFiles->save();
+
+		$this->LastAuthoredSpecialtyTemplates->last_author_id = 0;
+		$this->LastAuthoredSpecialtyTemplates->save();
+
+		$this->LastAuthoredTemplates->last_author_id = 0;
+		$this->LastAuthoredTemplates->save();
+
+		$this->TemplateRevisions->item_author_id = 0;
+		$this->TemplateRevisions->save();
 	}
 
 	/**

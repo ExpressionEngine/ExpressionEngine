@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Filesystem;
 
 use FilesystemIterator;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Filesystem Library
- *
- * @package		ExpressionEngine
- * @subpackage	Filesystem
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Filesystem
  */
 class Filesystem {
 
@@ -87,7 +74,10 @@ class Filesystem {
 	public function mkDir($path, $with_index = TRUE)
 	{
 		$path = $this->normalize($path);
+
+		$old_umask = umask(0);
 		mkdir($path, DIR_WRITE_MODE, TRUE);
+		umask($old_umask);
 
 		if ($with_index)
 		{

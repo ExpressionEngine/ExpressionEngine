@@ -45,6 +45,8 @@ $lang = array(
 
 'username' => 'Username',
 
+'username_filter' => 'username',
+
 'password' => 'Password',
 
 'logged_back_in'	=>
@@ -205,6 +207,7 @@ $lang = array(
 'page' 							=>	'Page',
 'channel' 						=>	'Channel',
 'site' 							=>	'Site',
+'site_filter' 					=>	'site',
 
 'most_recent_entry' 			=>	'Most Recent Entry',
 'most_recent_comment' 			=>	'Most Recent Comment',
@@ -303,6 +306,7 @@ $lang = array(
 'btn_save' => 'Save %s',
 'btn_save_and_close' => 'Save &amp; Close',
 'btn_saving' => 'Saving...',
+'btn_canceling' => 'Canceling...',
 'no_found' => 'No <b>%s</b> found.',
 'filters' => 'filters',
 'clear_filters' => 'Clear filters',

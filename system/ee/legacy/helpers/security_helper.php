@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * CodeIgniter Security Helpers
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/security_helper.html
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * Security Helpers
+ */
 
 /**
  * XSS Filtering
@@ -43,8 +28,6 @@ if ( ! function_exists('xss_clean'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Sanitize Filename
  *
@@ -59,8 +42,6 @@ if ( ! function_exists('sanitize_filename'))
 		return ee()->security->sanitize_filename($filename);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Strip Image Tags
@@ -79,8 +60,6 @@ if ( ! function_exists('strip_image_tags'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Convert PHP tags to entities

@@ -1,33 +1,18 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
  require_once APPPATH.'libraries/datastructures/Tree.php';
  require_once APPPATH.'libraries/relationship_parser/Nodes.php';
  require_once APPPATH.'libraries/relationship_parser/Iterators.php';
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Tree Builder Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Builder
  */
 class EE_relationship_tree_builder {
 
@@ -63,8 +48,6 @@ class EE_relationship_tree_builder {
 		$this->grid_relationship_names = array_flip($grid_relationships);
 		$this->grid_field_id = $grid_field_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find All Relationships of the Given Entries in the Template
@@ -152,8 +135,6 @@ class EE_relationship_tree_builder {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a parser from our collected tree.
 	 *
@@ -212,8 +193,6 @@ class EE_relationship_tree_builder {
 		return new EE_Relationship_data_parser($root, $entry_lookup, $category_lookup);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Turn the tagdata hierarchy into a tree
 	 *
@@ -231,8 +210,8 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		$all_fields = $this->relationship_field_names;
-		$all_fields = implode('|', $all_fields).'|parents|siblings';
+		$all_fields = array_merge($this->relationship_field_names, array('parents', 'siblings'));
+		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
 		// {rel:pre:fix:tag:modified param="value"}
@@ -353,7 +332,7 @@ class EE_relationship_tree_builder {
 				'tag_info'	  => array(),
 				'entry_ids'	  => array(),
 				'params'	  => $params,
-				'shortcut'	  => $is_only_relationship ? FALSE : $tag,
+				'shortcut'	  => $is_only_relationship ? FALSE : ltrim($tag, ':'),
 				'open_tag'	  => $match[0],
 				'in_grid'	  => $in_grid,
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
@@ -376,8 +355,6 @@ class EE_relationship_tree_builder {
 
 		return $root;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Push the id graph onto the tag graph.
@@ -515,8 +492,6 @@ class EE_relationship_tree_builder {
 		return call_user_func_array('array_merge', $all_entry_ids);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse Paths to Leaves
 	 *
@@ -548,12 +523,19 @@ class EE_relationship_tree_builder {
 
 				if ($i == 0 && $leaf['L0_grid_col_id'])
 				{
-					$field_name = $this->grid_relationship_names[$field_id];
+					$names = $this->grid_relationship_names;
 				}
 				else
 				{
-					$field_name = $this->relationship_field_names[$field_id];
+					$names = $this->relationship_field_names;
 				}
+
+				if ( ! isset($names[$field_id]))
+				{
+					break;
+				}
+
+				$field_name = $names[$field_id];
 
 				if ( ! isset($parsed_leaves[$i]))
 				{

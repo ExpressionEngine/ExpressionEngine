@@ -25,7 +25,7 @@
 				<td>
 					<a data-id="<?=$file->file_id ?: $file->file_name ?>" data-url="<?=ee('CP/URL')->make($data_url_base, array('file' => $file->file_id))?>" class="filepicker-item" href="#">
 						<?php if ($file->isImage()): ?>
-						<img src="<?=$file->getThumbnailUrl()?>" alt="<?=$file->file_name?>">
+						<img src="<?=$file->getThumbnailUrl()?>" alt="<?=$file->file_name?>" style="max-height: 125px; max-width: 125px">
 						<?php else: ?>
 						<span class="file-thumb"><b><?=$file->file_name?></b></span>
 						<?php endif; ?>

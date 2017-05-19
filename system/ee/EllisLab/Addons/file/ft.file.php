@@ -1,29 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Fieldtype
  */
 class File_ft extends EE_Fieldtype {
 
@@ -46,8 +33,6 @@ class File_ft extends EE_Fieldtype {
 		parent::__construct();
 		ee()->load->library('file_field');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate the upload
@@ -134,8 +119,6 @@ class File_ft extends EE_Fieldtype {
 		return array('value' => '', 'error' => lang('invalid_selection'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save the correct value {fieldir_\d}filename.ext
 	 *
@@ -146,8 +129,6 @@ class File_ft extends EE_Fieldtype {
 		// validate does all of the work.
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show the publish field
@@ -163,12 +144,19 @@ class File_ft extends EE_Fieldtype {
 		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
 		$filebrowser			= (REQ == 'CP');
+		$dir					= NULL;
 
 		if (REQ == 'CP')
 		{
 			ee()->lang->loadfile('fieldtypes');
 
-			if ($allowed_file_dirs == '')
+			if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
+			{
+				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
+					->first();
+			}
+
+			if ($allowed_file_dirs == '' OR ! $dir)
 			{
 				$allowed_file_dirs = 'all';
 			}
@@ -181,11 +169,8 @@ class File_ft extends EE_Fieldtype {
 				->withImage($this->field_name);
 
 			// If we are showing a single directory respect its default modal view
-			if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
+			if ($dir)
 			{
-				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
-					->first();
-
 				switch ($dir->default_modal_view)
 				{
 					case 'thumb':
@@ -292,8 +277,6 @@ class File_ft extends EE_Fieldtype {
 		return $file;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Basic javascript interaction on the frontend
 	 *
@@ -365,8 +348,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep the publish data
 	 *
@@ -376,8 +357,6 @@ JSC;
 	{
 		return ee()->file_field->parse_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Runs before the channel entries loop on the front end
@@ -389,8 +368,6 @@ JSC;
 	{
 		ee()->file_field->cache_data($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace frontend tag
@@ -443,8 +420,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
@@ -486,8 +461,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Wrap it helper function
 	 *
@@ -514,8 +487,6 @@ JSC;
 
 		return $full_path;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display settings screen
@@ -606,8 +577,6 @@ JSC;
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function grid_display_settings($data)
 	{
 		$settings = $this->display_settings($data);
@@ -641,8 +610,6 @@ JSC;
 		return $directories;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns dropdown-ready array of allowed file types for upload
 	 */
@@ -650,8 +617,6 @@ JSC;
 	{
 		return array('all' => lang('all'), 'image' => lang('type_image'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Table row helper
@@ -682,8 +647,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function validate_settings($settings)
 	{
 		$validator = ee('Validation')->make(array(
@@ -694,8 +657,6 @@ JSC;
 
 		return $validator->validate($settings);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -712,8 +673,6 @@ JSC;
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Form Validation callback
 	 *
@@ -723,8 +682,6 @@ JSC;
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Accept all content types.
@@ -736,8 +693,6 @@ JSC;
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

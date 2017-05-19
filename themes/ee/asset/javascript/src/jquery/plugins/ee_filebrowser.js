@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 (function($) {
@@ -68,8 +64,6 @@
 		});
 	};
 
-	// --------------------------------------------------------------------
-
 	/*
 	 * Generic function to make requests to the backend. Everything! is handled by the backend.
 	 *
@@ -105,8 +99,6 @@
 			}
 		});
 	};
-
-	// --------------------------------------------------------------------
 
 	/*
 	 * Allows you to bind elements that will open the file browser
@@ -159,8 +151,6 @@
 		});
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the settings of the currently selected field
 	 *
@@ -170,8 +160,6 @@
 	$.ee_filebrowser.get_current_settings = function() {
 		return settings[current_field];
 	};
-
-	// --------------------------------------------------------------------
 
 	/*
 	 * Place Image
@@ -191,8 +179,6 @@
 
 		return false;
 	};
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clear caches and close the file browser
@@ -214,8 +200,6 @@
 	};
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Refreshes the file browser with the newly upload files
 	 *
@@ -226,8 +210,6 @@
 		$.ee_filebrowser.reload();
 	};
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Refreshes the file browser with the newly upload files
 	 */
@@ -237,8 +219,6 @@
 			$table.table('refresh');
 		};
 	};
-
-	// --------------------------------------------------------------------
 
 	/*
 	 * Sets up all filebrowser events
@@ -328,8 +308,6 @@
 		// Add the display type as a class to file_browser_body
 		$('#file_browser_body', file_manager_obj).addClass(display_type);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hides the directory switcher based on settings passed to add_trigger
