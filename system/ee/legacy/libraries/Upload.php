@@ -894,8 +894,8 @@ class EE_Upload {
 
 	private function allowedType($extension)
 	{
-		// numbers by themselves are safe, e.g. file_3.2.5.txt
-		if (ctype_digit($extension))
+		// numbers by themselves are safe, e.g. file_3.2.5.txt, as are concurrent...dots
+		if (ctype_digit($extension) OR $extension == '')
 		{
 			return TRUE;
 		}
