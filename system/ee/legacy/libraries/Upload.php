@@ -879,21 +879,36 @@ class EE_Upload {
 
 		foreach ($parts as $part)
 		{
-			if ((is_array($this->allowed_types)
-				 && ! in_array(strtolower($part), $this->allowed_types)
-				) OR $this->mimes_types(strtolower($part)) === FALSE)
+			$filename .= '.'.$part;
+
+			if ( ! $this->allowedType($part))
 			{
-				$filename .= '.'.$part.'_';
-			}
-			else
-			{
-				$filename .= '.'.$part;
+				$filename .= '_';
 			}
 		}
 
 		$filename .= '.'.$ext;
 
 		return $filename;
+	}
+
+	private function allowedType($extension)
+	{
+		// numbers by themselves are safe, e.g. file_3.2.5.txt
+		if (ctype_digit($extension))
+		{
+			return TRUE;
+		}
+
+		$by_legacy = FALSE;
+		$extension = strtolower($extension);
+
+		if (is_array($this->allowed_types))
+		{
+			$by_legacy = in_array($extension, $this->allowed_types);
+		}
+
+		return ($by_legacy OR $this->mimes_types($extension));
 	}
 
 	// --------------------------------------------------------------------
