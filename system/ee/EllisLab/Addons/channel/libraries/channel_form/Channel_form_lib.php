@@ -3475,8 +3475,7 @@ function liveUrlTitle(event)
 {
 	var title_field, url_title_field;
 
-	// If event is present, we'll try to make sure we're only affecting the
-	// URL title field inside this form
+	/* If event is present, we'll try to make sure we're only affecting the URL title field inside this form */
 	if (event) {
 		title_field = event.target;
 
