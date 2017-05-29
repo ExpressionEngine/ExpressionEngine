@@ -872,7 +872,7 @@ if ( ! function_exists('set_value'))
 		{
 			if ( ! isset($_POST[$field]))
 			{
-				return $default;
+				return form_prep($default, $field);
 			}
 
 			return form_prep($_POST[$field], $field);
