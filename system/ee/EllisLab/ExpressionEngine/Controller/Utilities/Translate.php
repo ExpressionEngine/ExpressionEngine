@@ -191,7 +191,7 @@ class Translate extends Utilities {
 			ee()->view->cp_heading = sprintf(
 				lang('search_results_heading'),
 				$vars['table']['total_rows'],
-				$vars['table']['search']
+				htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
 			);
 		}
 
