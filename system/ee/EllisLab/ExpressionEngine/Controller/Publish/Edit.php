@@ -275,7 +275,8 @@ class Edit extends AbstractPublishController {
 					: $highlight->lighten(100);
 
 				$status = array(
-					'content'          => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
+					'display_name'     => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
+					'status'           => $status->status,
 					'color'            => $color,
 					'background-color' => $status->highlight
 				);

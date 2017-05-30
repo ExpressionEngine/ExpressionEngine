@@ -166,10 +166,10 @@ if ($wrap): ?>
 									>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-								<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
+								<?php $class = isset($column['class']) ? $column['class'] : $column['status']; ?>
 								<?php
 									$style = 'style="';
-									if ($class != 'open' && $class != 'closed')
+									if ( ! in_array($column['status'], array('open', 'closed')))
 									{
 										if (isset($column['background-color']) && $column['background-color'])
 										{
@@ -185,7 +185,7 @@ if ($wrap): ?>
 
 									$style .= '"';
 								?>
-								<td><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
+								<td><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['display_name']?></span></td>
 							<?php elseif (isset($column['html'])): ?>
 								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 									<?=$column['html']?>
