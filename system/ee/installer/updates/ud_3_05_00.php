@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.5.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -53,7 +40,8 @@ class Updater {
 		$email_newline = $this->setEmailNewlineSafely(ee()->config->item('email_newline'));
 		$email_smtp_crypto = (string) ee()->config->item('email_smtp_crypto');
 
-		ee()->config->update_site_prefs(array(
+		$msm_config = new MSM_Config();
+		$msm_config->update_site_prefs(array(
 			'email_newline' => $email_newline,
 			'email_smtp_crypto' => $email_smtp_crypto
 			),

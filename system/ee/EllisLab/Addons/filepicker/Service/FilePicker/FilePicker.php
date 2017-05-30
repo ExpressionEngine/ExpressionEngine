@@ -1,10 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\Addons\FilePicker\Service\FilePicker;
 
 use EllisLab\ExpressionEngine\Service\URL\URLFactory;
 use EllisLab\ExpressionEngine\Model\File\File;
 
+/**
+ * FilePicker Service
+ */
 class FilePicker {
 
 	const CONTROLLER = 'addons/settings/filepicker/modal';

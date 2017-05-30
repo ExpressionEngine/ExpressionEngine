@@ -428,10 +428,6 @@ $lang = array(
 
 'max_tmpl_revisions_desc' => 'Number of revisions stored in the database for each template. We recommend this be a low number, as this can cause you to have a larger than normal database.',
 
-'save_tmpl_files' => 'Save templates as files?',
-
-'save_tmpl_files_desc' => 'When set to yes, ExpressionEngine will store your templates as files on your server.',
-
 /**
  * Hit Tracking
  */

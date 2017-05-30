@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Communicate Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Communicate Model
  */
 class Communicate_model extends CI_Model {
 
@@ -66,8 +54,6 @@ class Communicate_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Cached Member Groups
 	 *
@@ -83,8 +69,6 @@ class Communicate_model extends CI_Model {
 		$this->db->where('cache_id', $id);
 		return $this->db->get('email_cache_mg');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Save Cache Data
@@ -122,8 +106,6 @@ class Communicate_model extends CI_Model {
 		return $cache_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Email Cache
 	 *
@@ -147,8 +129,6 @@ class Communicate_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Emails
 	 *
@@ -168,8 +148,6 @@ class Communicate_model extends CI_Model {
 		$this->db->where_in('cache_id', $cache_ids);
 		$this->db->delete(array('email_cache', 'email_cache_mg', 'email_cache_ml'));
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // End class Communicate_model

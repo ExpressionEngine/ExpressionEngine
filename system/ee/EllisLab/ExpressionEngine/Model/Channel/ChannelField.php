@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Channel Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Field Model
  */
 class ChannelField extends FieldModel {
 
@@ -68,8 +55,8 @@ class ChannelField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved',
-		'field_label'          => 'required',
+		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
+		'field_label'          => 'required|maxLength[50]',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
 		'field_pre_populate'   => 'enum[y,n,v]',

@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * CodeIgniter HTML Helpers
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/html_helper.html
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * HTML Helpers
+ */
 
 /**
  * Heading
@@ -47,8 +32,6 @@ if ( ! function_exists('heading'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Unordered List
  *
@@ -67,8 +50,6 @@ if ( ! function_exists('ul'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Ordered List
  *
@@ -86,8 +67,6 @@ if ( ! function_exists('ol'))
 		return _list('ol', $list, $attributes);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Generates the list
@@ -163,8 +142,6 @@ if ( ! function_exists('_list'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Generates HTML BR tags based on number supplied
  *
@@ -179,8 +156,6 @@ if ( ! function_exists('br'))
 		return str_repeat("<br />", $num);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Image
@@ -234,8 +209,6 @@ if ( ! function_exists('img'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Doctype
  *
@@ -263,8 +236,6 @@ if ( ! function_exists('doctype'))
 		return FALSE;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Link
@@ -344,8 +315,6 @@ if ( ! function_exists('link_tag'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Generates meta tags from an array of key/values
  *
@@ -386,8 +355,6 @@ if ( ! function_exists('meta'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Generates non-breaking space entities based on number supplied

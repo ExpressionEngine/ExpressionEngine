@@ -1,31 +1,17 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Entries Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Entries Model
  */
 class Channel_entries_model extends CI_Model {
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *
@@ -50,8 +36,6 @@ class Channel_entries_model extends CI_Model {
 		$query_result->free_result();
 		return $entries;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Entries
@@ -106,8 +90,6 @@ class Channel_entries_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch the channel data for one entry
 	 *
@@ -155,8 +137,6 @@ class Channel_entries_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get most recent entries
 	 *
@@ -201,8 +181,6 @@ class Channel_entries_model extends CI_Model {
 		$this->db->order_by('entry_date', 'DESC');
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get recent commented entries
@@ -249,8 +227,6 @@ class Channel_entries_model extends CI_Model {
 		return FALSE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prune Revisions

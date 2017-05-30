@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Email;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Email Cache Model
+ */
 class EmailCache extends Model
 {
 	protected static $_primary_key = 'cache_id';

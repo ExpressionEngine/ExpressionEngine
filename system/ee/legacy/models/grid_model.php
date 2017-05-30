@@ -1,26 +1,14 @@
 <?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Grid Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Grid Field Model
  */
 class Grid_model extends CI_Model {
 
@@ -102,8 +90,6 @@ class Grid_model extends CI_Model {
 		ee()->db->insert('content_types', array('name' => 'grid'));
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Performs fieldtype uninstall
 	 *
@@ -129,8 +115,6 @@ class Grid_model extends CI_Model {
 
 		ee()->db->delete('content_types', array('name' => 'grid'));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates data table for a new Grid field
@@ -178,8 +162,6 @@ class Grid_model extends CI_Model {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Performs cleanup on our end if a Grid field is deleted from a channel:
 	 * drops field's table, removes column settings from grid_columns table
@@ -199,8 +181,6 @@ class Grid_model extends CI_Model {
 
 		ee()->db->delete($this->_table, array('field_id' => $field_id));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Performs cleanup on our end if a grid field's parent content type is deleted.
@@ -222,8 +202,6 @@ class Grid_model extends CI_Model {
 
 		ee()->db->delete($this->_table, array('content_type' => $content_type));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Adds a new column to the columns table or updates an existing one; also
@@ -271,8 +249,6 @@ class Grid_model extends CI_Model {
 		return $col_id;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Deletes columns from grid settings and drops columns from their
 	 * respective field tables
@@ -302,8 +278,6 @@ class Grid_model extends CI_Model {
 			);
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Typically used when a fieldtype is uninstalled, removes all columns of
@@ -338,8 +312,6 @@ class Grid_model extends CI_Model {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns the row data for a single entry ID and field ID
 	 *
@@ -354,8 +326,6 @@ class Grid_model extends CI_Model {
 		ee()->db->where('entry_id', $entry_id);
 		return ee()->db->get($table)->result_array();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns entry row data for a given entry ID and field ID, caches data
@@ -464,8 +434,6 @@ class Grid_model extends CI_Model {
 		return isset($this->_grid_data[$content_type][$field_id][$marker]) ? $this->_grid_data[$content_type][$field_id][$marker] : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assigns some default parameters and makes sure parameters can be
 	 * safely used in an SQL query or otherwise used to help parsing
@@ -555,8 +523,6 @@ class Grid_model extends CI_Model {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a unique marker for this tag configuration based on its
 	 * parameters so we can match up the field data later in parse();
@@ -582,8 +548,6 @@ class Grid_model extends CI_Model {
 
 		return md5(json_encode($db_params));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Constructs query for search params and adds it to the current
@@ -631,8 +595,6 @@ class Grid_model extends CI_Model {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Public getter for $_grid_data property
 	 *
@@ -642,8 +604,6 @@ class Grid_model extends CI_Model {
 	{
 		return $this->_grid_data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Gets array of all columns and settings for a given field ID
@@ -710,8 +670,6 @@ class Grid_model extends CI_Model {
 		return ($multi_column) ? $this->_columns[$content_type] : $this->_columns[$content_type][$field_id];
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns settings we need to pass along to the channel fields API when
 	 * working with managing the data columns for our fieldtypes
@@ -730,8 +688,6 @@ class Grid_model extends CI_Model {
 			'data_table'			=> $this->_data_table($content_type, $field_id),
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Saves an data for a given Grid field using an array generated by the
@@ -827,8 +783,6 @@ class Grid_model extends CI_Model {
 		return $data['deleted_rows'];
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Deletes Grid data for given row IDs
 	 *
@@ -842,8 +796,6 @@ class Grid_model extends CI_Model {
 				->delete($this->_data_table($content_type, $field_id));
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Create the data table name given the content type and field id.

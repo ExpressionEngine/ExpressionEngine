@@ -1,10 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
+/**
+ * Content Field Model abstract
+ */
 abstract class FieldModel extends Model {
 
 	protected static $_events = array(
@@ -349,7 +359,7 @@ abstract class FieldModel extends Model {
 
 	private function getCacheKey()
 	{
-		return $cache_key = '/' . str_replace('\\', '_', get_class($this)) . '/' . $this->getId();
+		return $cache_key = '/' . get_class($this) . '/' . $this->getId();
 	}
 
 	public function getColumnNames()
@@ -451,6 +461,7 @@ abstract class FieldModel extends Model {
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
+			'field_id'		=> $this->getId(),
 			'content_id'	=> $content_id,
 			'content_type'	=> $content_type,
 			'field_fmt'		=> $field_fmt,

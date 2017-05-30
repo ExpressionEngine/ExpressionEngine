@@ -1,18 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 require_once APPPATH.'libraries/channel_entries_parser/components/Category.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field.php';
@@ -26,16 +19,8 @@ require_once APPPATH.'libraries/channel_entries_parser/components/Simple_conditi
 require_once APPPATH.'libraries/channel_entries_parser/components/Simple_variable.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Switch.php';
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Components
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Components
  */
 class EE_Channel_parser_components {
 
@@ -74,8 +59,6 @@ class EE_Channel_parser_components {
 		$this->register_single('EE_Channel_custom_member_field_parser');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Register a component that parses a pair tag.
 	 *
@@ -92,8 +75,6 @@ class EE_Channel_parser_components {
 
 		$this->pair[] = $obj;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Register a component that parses a single tag.
@@ -112,8 +93,6 @@ class EE_Channel_parser_components {
 		$this->single[] = $obj;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Register a component that only runs once regardless of tag names.
 	 *
@@ -131,8 +110,6 @@ class EE_Channel_parser_components {
 		$this->once[] = $obj;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Pair tag parsing components
 	 *
@@ -143,8 +120,6 @@ class EE_Channel_parser_components {
 		return $this->pair;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Single tag parsing components
 	 *
@@ -154,8 +129,6 @@ class EE_Channel_parser_components {
 	{
 		return $this->single;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Single tag parsing components
@@ -169,10 +142,8 @@ class EE_Channel_parser_components {
 }
 
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component Interface
+ * Channel Parser Component ()Interface
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -191,8 +162,6 @@ interface EE_Channel_parser_component {
 	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre);
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Do any pre-processing on the tagdata or other data available
 	 * through the pre-parser.
@@ -205,8 +174,6 @@ interface EE_Channel_parser_component {
 	 * @return mixed	[optional]
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre);
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all tags that this component can deal with.

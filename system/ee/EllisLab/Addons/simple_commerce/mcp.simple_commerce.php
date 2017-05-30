@@ -1,31 +1,17 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * Simple Commerce Module control panel
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Simple Commerce Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Simple_commerce_mcp {
 
 	var $export_type		= 'tab';
@@ -67,8 +53,6 @@ class Simple_commerce_mcp {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Control Panel Index
@@ -1312,6 +1296,8 @@ class Simple_commerce_mcp {
 
 		$base = reduce_double_slashes(str_replace('/public_html', '', SYSPATH).'/user/encryption/');
 
+		$new = (ee()->config->item('sc_paypal_account')) ? FALSE : TRUE;
+
 		$vars['sections'] = array(
 			array(
 				ee('CP/Alert')->makeInline('ipn-notice')
@@ -1334,14 +1320,20 @@ class Simple_commerce_mcp {
 					'title' => 'commerce_paypal_email',
 					'desc' => 'commerce_paypal_email_desc',
 					'fields' => array(
-						'sc_paypal_account' => array('type' => 'text')
+						'sc_paypal_account' => array(
+							'type' => 'text',
+							'value' => ( ! ee()->config->item('sc_paypal_account')) ? ee()->config->item('webmaster_email') : ee()->config->item('sc_paypal_account')
+						)
 					)
 				),
 				array(
 					'title' => 'commerce_encrypt_paypal',
 					'desc' => 'commerce_encrypt_paypal_desc',
 					'fields' => array(
-						'sc_encrypt_buttons' => array('type' => 'yes_no')
+						'sc_encrypt_buttons' => array(
+							'type' => 'yes_no',
+							'value' => ee()->config->item('sc_encrypt_buttons')
+						)
 					)
 				),
 				array(
@@ -1360,7 +1352,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'sc_public_certificate' => array(
 							'type' => 'text',
-							'value' => (ee()->config->item('sc_public_certificate') === FALSE OR ee()->config->item('sc_public_certificate') == '') ? $base.'public_certificate.pem' : ee()->config->item('sc_public_certificate', '', TRUE)
+							'value' => ($new AND (ee()->config->item('sc_public_certificate') === FALSE OR ee()->config->item('sc_public_certificate') == '')) ? $base.'public_certificate.pem' : ee()->config->item('sc_public_certificate', '', TRUE)
 						)
 					)
 				),
@@ -1370,7 +1362,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'sc_private_key' => array(
 							'type' => 'text',
-							'value' => (ee()->config->item('sc_private_key') === FALSE OR ee()->config->item('sc_private_key') == '') ? $base.'private_key.pem' : ee()->config->item('sc_private_key', '', TRUE)
+							'value' => ($new AND (ee()->config->item('sc_private_key') === FALSE OR ee()->config->item('sc_private_key') == '')) ? $base.'private_key.pem' : ee()->config->item('sc_private_key', '', TRUE)
 						)
 					)
 				),
@@ -1380,7 +1372,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'sc_paypal_certificate' => array(
 							'type' => 'text',
-							'value' => (ee()->config->item('sc_paypal_certificate') === FALSE OR ee()->config->item('sc_paypal_certificate') == '') ? $base.'paypal_certificate.pem' : ee()->config->item('sc_paypal_certificate', '', TRUE)
+							'value' => ($new AND (ee()->config->item('sc_paypal_certificate') === FALSE OR ee()->config->item('sc_paypal_certificate') == '')) ? $base.'paypal_certificate.pem' : ee()->config->item('sc_paypal_certificate', '', TRUE)
 						)
 					)
 				),
@@ -1388,7 +1380,10 @@ class Simple_commerce_mcp {
 					'title' => 'commerce_temp_path',
 					'desc' => 'commerce_temp_path_desc',
 					'fields' => array(
-						'sc_temp_path' => array('type' => 'text')
+						'sc_temp_path' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_temp_path') === FALSE) ? '' : ee()->config->item('sc_temp_path')
+						)
 					)
 				)
 			)
@@ -1428,7 +1423,7 @@ class Simple_commerce_mcp {
 			if ($result->isValid())
 			{
 				// Unset API URL
-				unset($vars['sections'][0][1]);
+				unset($vars['sections'][0][0]);
 
 				$fields = array();
 

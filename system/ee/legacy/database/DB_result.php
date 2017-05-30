@@ -1,19 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Database Result Class
@@ -21,10 +13,6 @@
  * This is the platform-independent result class.
  * This class will not be called directly. Rather, the adapter
  * class for the specific database will extend and instantiate it.
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_result {
 
@@ -52,8 +40,6 @@ class CI_DB_result {
 	{
 		return ($type == 'object') ? $this->result_object() : $this->result_array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Query result.  "object" version.
@@ -85,8 +71,6 @@ class CI_DB_result {
 		return $this->result_object;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Query result.  "array" version.
 	 *
@@ -104,8 +88,6 @@ class CI_DB_result {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Query result.  Acts as a wrapper function for the following functions.
@@ -137,8 +119,6 @@ class CI_DB_result {
 		return ($type == 'object') ? $this->row_object($n) : $this->row_array($n);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assigns an item into a particular column slot
 	 *
@@ -169,8 +149,6 @@ class CI_DB_result {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a single result row - object version
 	 *
@@ -194,8 +172,6 @@ class CI_DB_result {
 		return $result[$this->current_row];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a single result row - array version
 	 *
@@ -207,8 +183,6 @@ class CI_DB_result {
 		return (array) $this->row_object($n);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the "first" row
@@ -228,8 +202,6 @@ class CI_DB_result {
 		return $result[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the "last" row
 	 *
@@ -247,8 +219,6 @@ class CI_DB_result {
 
 		return $result[count($result) - 1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the "next" row
@@ -273,8 +243,6 @@ class CI_DB_result {
 		return $result[$this->current_row];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the "previous" row
 	 *
@@ -297,8 +265,6 @@ class CI_DB_result {
 
 		return $result[$this->current_row];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * The following functions are normally overloaded by the identically named

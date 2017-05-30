@@ -1,32 +1,18 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Picker Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
+/**
+ * File Picker Module control panel
+ */
 class Filepicker_mcp {
 
 	private $images = FALSE;
@@ -48,6 +34,7 @@ class Filepicker_mcp {
 	protected function getUserUploadDirectories()
 	{
 		$dirs = ee('Model')->get('UploadDestination')
+			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->all();
@@ -390,8 +377,6 @@ class Filepicker_mcp {
 
 	public function upload()
 	{
-		$errors = NULL;
-
 		$dir_id = ee()->input->get('directory');
 
 		if (empty($dir_id))
@@ -399,45 +384,31 @@ class Filepicker_mcp {
 			show_404();
 		}
 
-		$dir = ee('Model')->get('UploadDestination', $dir_id)
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
+		$errors = NULL;
 
-		if ( ! $dir)
+		$result = ee('File')->makeUpload()->uploadTo($dir_id);
+
+		$file = $result['file'];
+
+		if ($result['posted'])
 		{
-			show_error(lang('no_upload_destination'));
+			$errors = $result['validation_result'];
+
+			if ($result['uploaded'])
+			{
+				// The upload process will automatically rename files in the
+				// event of a filename collision. Should that happen we need
+				// to ask the user if they wish to rename the file or
+				// replace the file
+				if ($file->file_name != $result['upload_response']['file_data_orig_name'])
+				{
+					$file->save();
+					return $this->overwriteOrRename($file, $result['upload_response']['file_data_orig_name']);
+				}
+
+				return $this->saveAndReturn($file);
+			}
 		}
-
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! $dir->exists())
-		{
-			$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
-			ee('CP/Alert')->makeStandard()
-				->asIssue()
-				->withTitle(lang('file_not_found'))
-				->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
-				->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
-				->now();
-
-			show_404();
-		}
-
-		// Check permissions on the directory
-		if ( ! $dir->isWritable())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('dir_not_writable'))
-				->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
-				->now();
-		}
-
-		$file = ee('Model')->make('File');
-		$file->UploadDestination = $dir;
 
 		$vars = array(
 			'required' => TRUE,
@@ -446,89 +417,14 @@ class Filepicker_mcp {
 			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'upload', array('directory' => $dir_id)),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_uploading',
+			'sections' => array(),
 			'tabs' => array(
 				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
 				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
 			),
-			'sections' => array(),
+			'cp_page_title' => lang('file_upload')
 		);
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'title',
-				'label' => 'lang:title',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'description',
-				'label' => 'lang:description',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'credit',
-				'label' => 'lang:credit',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'location',
-				'label' => 'lang:location',
-				'rules' => 'strip_tags|trim|valid_xss_check'
-			),
-		));
-
-		if (AJAX_REQUEST && ! empty($_POST))
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			// PUNT! @TODO Break away from the old Filemanger Library
-			ee()->load->library('filemanager');
-			$upload_response = ee()->filemanager->upload_file($dir_id, 'file');
-			if (isset($upload_response['error']))
-			{
-				ee('CP/Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('upload_filedata_error'))
-					->addToBody($upload_response['error'])
-					->now();
-			}
-			else
-			{
-				$file = ee('Model')->get('File', $upload_response['file_id'])->first();
-				$file->upload_location_id = $dir_id;
-				$file->site_id = ee()->config->item('site_id');
-
-				$file->set($_POST);
-				$file->title = (ee()->input->post('title')) ?: $file->file_name;
-				if (array_key_exists('categories', $_POST))
-				{
-					$file->setCategoriesFromPost($_POST['categories']);
-				}
-
-				$file->uploaded_by_member_id = ee()->session->userdata('member_id');
-				$file->upload_date = ee()->localize->now;
-				$file->modified_by_member_id = ee()->session->userdata('member_id');
-				$file->modified_date = ee()->localize->now;
-
-				$file->save();
-				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
-
-				return $this->fileInfo($file->getId());
-			}
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('upload_filedata_error'))
-				->addToBody(lang('upload_filedata_error_desc'))
-				->now();
-		}
-
-		$vars['cp_page_title'] = lang('file_upload');
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
 		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
 		ee()->output->enable_profiler(FALSE);
@@ -536,23 +432,77 @@ class Filepicker_mcp {
 		exit();
 	}
 
-	protected function ajaxValidation(ValidationResult $result)
+	protected function overwriteOrRename($file, $original_name)
 	{
-		if (ee()->input->is_ajax_request())
-		{
-			$field = ee()->input->post('ee_fv_field');
+		$vars = array(
+			'required' => TRUE,
+			'base_url' => ee('CP/URL')->make($this->picker->base_url . 'finish-upload/' . $file->file_id),
+			'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name),
+			'buttons' => array(
+				array(
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'finish',
+					'text'    => 'btn_finish_upload',
+					'working' => 'btn_saving'
+				),
+				array(
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'cancel',
+					'class'   => 'draft',
+					'text'    => 'btn_cancel_upload',
+					'working' => 'btn_canceling'
+				),
+			),
+			'cp_page_title' => lang('file_upload_stopped')
+		);
 
-			if ($result->hasErrors($field))
-			{
-				return array('error' => $result->renderError($field));
-			}
-			else
-			{
-				return array('success');
-			}
+		$out = ee()->cp->render('_shared/form', $vars, TRUE);
+		$out = ee()->cp->render('filepicker:UploadView', array('content' => $out));
+		ee()->output->enable_profiler(FALSE);
+		ee()->output->_display($out);
+		exit();
+	}
+
+	public function finishUpload($file_id)
+	{
+		$result = ee('File')->makeUpload()->resolveNameConflict($file_id);
+
+		if (isset($result['cancel']) && $result['cancel'])
+		{
+			ee()->output->send_ajax_response($result);
 		}
 
-		return NULL;
+		if ($result['success'])
+		{
+			return $this->saveAndReturn($result['params']['file']);
+		}
+		else
+		{
+			return $this->overwriteOrRename($result['params']['file'], $result['params']['name']);
+		}
+	}
+
+	protected function saveAndReturn($file)
+	{
+		if ($file->isNew())
+		{
+			$file->uploaded_by_member_id = ee()->session->userdata('member_id');
+			$file->upload_date = ee()->localize->now;
+		}
+
+		$file->modified_by_member_id = ee()->session->userdata('member_id');
+		$file->modified_date = ee()->localize->now;
+
+		$file->save();
+
+		return $this->fileInfo($file->getId());
+	}
+
+	protected function ajaxValidation(ValidationResult $result)
+	{
+		return ee('Validation')->ajax($reuslt);
 	}
 }
 

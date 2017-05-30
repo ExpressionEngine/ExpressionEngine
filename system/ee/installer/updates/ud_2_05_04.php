@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.5.4
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -50,8 +37,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Changes column type for `total_entries` and `total_comments` in the
 	 * members table from smallint to mediumint to match the columns in the
@@ -73,8 +58,6 @@ class Updater {
 			)
 		);
 	}
-
-	// ---------------------------------------------------------------------
 
 	/**
 	 * Clean up the menu and quicklink items so there's no XSS funny business
@@ -125,8 +108,6 @@ class Updater {
 		return implode("\n", $lines);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * update Session table
 	 *
@@ -155,8 +136,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update the security_hashes table to convert ip_address to session_id
 	 */
@@ -177,8 +156,6 @@ class Updater {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 }
 /* END CLASS */
 

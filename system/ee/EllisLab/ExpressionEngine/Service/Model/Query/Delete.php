@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use EllisLab\ExpressionEngine\Service\Model\Relation\BelongsTo;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Delete Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Delete Query
  */
 class Delete extends Query {
 
@@ -53,7 +40,6 @@ class Delete extends Query {
 			list($get, $withs) = $delete_item;
 			list($model, $alias) = $this->splitAlias($get);
 
-			$offset		= 0;
 			$batch_size = self::DELETE_BATCH_SIZE;
 
 			// TODO yuck. The relations have this info more correctly
@@ -78,14 +64,10 @@ class Delete extends Query {
 			 {
 				 do {
 					 $fetch_query = clone $basic_query;
-					 $fetch_query
-					 	->offset($offset)
- 						->limit($batch_size);
+					 $fetch_query->limit($batch_size);
 
 					$delete_collection = $withs($fetch_query);
 					$delete_ids = $this->deleteCollection($delete_collection, $to_meta);
-
-					$offset += $batch_size;
 				 }
 				 while (count($delete_ids) == $batch_size);
 
@@ -98,7 +80,6 @@ class Delete extends Query {
 
 				$fetch_query
 					->with($withs)
-					->offset($offset)
 					->limit($batch_size);
 
 				if ($has_delete_event)
@@ -118,8 +99,6 @@ class Delete extends Query {
 				$delete_models = $fetch_query->all();
 
 				$delete_ids = $this->deleteCollection($delete_models, $to_meta);
-
-				$offset += $batch_size;
 			}
 			while (count($delete_ids) == $batch_size);
 		}
