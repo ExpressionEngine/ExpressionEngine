@@ -275,14 +275,14 @@ class Edit extends AbstractPublishController {
 					: $highlight->lighten(100);
 
 				$status = array(
-					'content'          => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
+					'content'          => $status->status,
 					'color'            => $color,
 					'background-color' => $status->highlight
 				);
 			}
 			else
 			{
-				$status = (in_array($entry->status, array('open', 'closed'))) ? lang($entry->status) : $entry->status;
+				$status = $entry->status;
 			}
 
 			$column = array(
