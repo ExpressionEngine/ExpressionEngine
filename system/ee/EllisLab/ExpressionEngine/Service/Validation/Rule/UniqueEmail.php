@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.4.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine EmailUnique Validation Rule
- *
- * @package		ExpressionEngine
- * @subpackage	Validation\Rule
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * EmailUnique Validation Rule
  */
 class UniqueEmail extends ValidationRule {
 
@@ -38,7 +25,7 @@ class UniqueEmail extends ValidationRule {
 	{
 		// Check for config, otherwise default
 		$prevent = ee()->config->item('gmail_duplication_prevention') ?: 'y';
-		
+
 		if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== FALSE)
 		{
 			$address = explode('@', $value);

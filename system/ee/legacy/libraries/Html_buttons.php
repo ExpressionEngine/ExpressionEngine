@@ -1,5 +1,15 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
+/**
+ * HTML Buttons
+ */
 class EE_Html_buttons {
 
 	var $allow_img	= FALSE;

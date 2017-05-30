@@ -1,3 +1,11 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 $(document).ready(function(){
 
 	// =============================================
@@ -309,14 +317,16 @@ $(document).ready(function(){
 		});
 
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap', function(e) {
-			// fade out the overlay
-			$('.overlay').fadeOut('slow');
-			// fade out the modal
-			$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
+			if ($(e.target).is(":visible")) {
+				// fade out the overlay
+				$('.overlay').fadeOut('slow');
+				// fade out the modal
+				$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-			if ( ! $(this).is('.modal-form-wrap'))
-			{
-				$(document).scrollTop($(this).data('scroll'));
+				if ( ! $(this).is('.modal-form-wrap'))
+				{
+					$(document).scrollTop($(this).data('scroll'));
+				}
 			}
 		});
 

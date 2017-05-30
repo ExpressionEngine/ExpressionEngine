@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine jQuery Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * jQuery Module
  */
 class Jquery {
 
@@ -40,8 +28,6 @@ class Jquery {
 
 		ee()->lang->loadfile('jquery');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Output Javascript
@@ -127,8 +113,6 @@ class Jquery {
 		exit($contents);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Script Source
 	 *
@@ -150,8 +134,6 @@ class Jquery {
 		// nothing?  Just drop a link to the main jQuery file
 		return $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Script Tag
@@ -178,8 +160,6 @@ class Jquery {
 
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // End Jquery Class

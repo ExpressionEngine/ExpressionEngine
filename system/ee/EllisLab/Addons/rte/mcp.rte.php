@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.5
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Rich Text Editor Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Rich Text Editor Module control panel
  */
 class Rte_mcp {
 
@@ -52,8 +38,6 @@ class Rte_mcp {
 		// Delete missing tools
 		ee()->rte_tool_model->delete_missing_tools();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Homepage
@@ -204,8 +188,6 @@ class Rte_mcp {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update prefs form action
 	 *
@@ -254,8 +236,6 @@ class Rte_mcp {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Provides New Toolset Screen HTML
 	 *
@@ -279,8 +259,6 @@ class Rte_mcp {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Provides Edit Toolset Screen HTML
 	 *
@@ -303,8 +281,6 @@ class Rte_mcp {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Performs bulk actions (enable, disable, or remove) on tool sets
@@ -434,8 +410,6 @@ class Rte_mcp {
 		ee()->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Enables or disables a tool
 	 *
@@ -461,8 +435,6 @@ class Rte_mcp {
 		ee()->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Actual preference-updating code
 	 *
@@ -477,8 +449,6 @@ class Rte_mcp {
 			'rte_default_toolset_id'	=> ee()->input->get_post('rte_default_toolset_id')
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Makes sure users can access a given method

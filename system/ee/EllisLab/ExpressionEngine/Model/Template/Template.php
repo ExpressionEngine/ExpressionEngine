@@ -1,35 +1,22 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Template Model
+ * Template Model
  *
  * A model representing a template.  Templates contain a mix of EECode and HTML
  * and are parsed to become the front end pages of sites built with
  * ExpressionEngine.
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Template extends FileSyncedModel {
 
@@ -57,7 +44,8 @@ class Template extends FileSyncedModel {
 		'LastAuthor' => array(
 			'type'     => 'BelongsTo',
 			'model'    => 'Member',
-			'from_key' => 'last_author_id'
+			'from_key' => 'last_author_id',
+			'weak'     => TRUE
 		),
 		'NoAccess' => array(
 			'type'  => 'HasAndBelongsToMany',

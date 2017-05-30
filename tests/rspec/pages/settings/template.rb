@@ -6,8 +6,6 @@ class TemplateSettings < ControlPanelPage
   element :save_tmpl_revisions_y, 'input[name=save_tmpl_revisions][value=y]'
   element :save_tmpl_revisions_n, 'input[name=save_tmpl_revisions][value=n]'
   element :max_tmpl_revisions, 'input[name=max_tmpl_revisions]'
-  element :save_tmpl_files_y, 'input[name=save_tmpl_files][value=y]'
-  element :save_tmpl_files_n, 'input[name=save_tmpl_files][value=n]'
 
   def load
     settings_btn.click

@@ -1,6 +1,15 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
-
+/**
+ * Schema Class
+ */
 class EE_Schema {
 
 	// All of these variables are set dyncamically
@@ -23,8 +32,6 @@ class EE_Schema {
 	{
 		return "SHOW tables LIKE '".ee()->db->escape_like_str($this->userdata['db_prefix'])."%'";
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Installs the DB tables and data
@@ -1419,12 +1426,7 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('private_message_notification', 'email', 'private_messages', " . time() . ", '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('pm_inbox_full', 'email', 'private_messages', " . time() . ", '".addslashes(trim(pm_inbox_full_title()))."', '".addslashes(pm_inbox_full())."')";
 
-
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Default Site Data - CANNOT BE CHANGED
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		// Register the default admin
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
@@ -1452,11 +1454,7 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_stats (total_members, total_entries, last_entry_date, recent_member, recent_member_id, last_cache_clear)
 			VALUES ('1', '0', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Customizable Site Data, Woot!
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		// Default Site
 		$site = array(
@@ -1658,11 +1656,7 @@ class EE_Schema {
 		// Add Grid as a content type
 		$Q[] = "INSERT INTO `exp_content_types` (`name`) VALUES ('grid')";
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Create DB tables and insert data
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		foreach(ee()->db->list_tables(TRUE) as $kill)
 		{

@@ -1,33 +1,17 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
+use  EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * CodeIgniter Application Controller Class
- *
- * This class object is the super class that every library in
- * CodeIgniter will be assigned to.
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/general/controllers.html
+ * Legacy Application Controller Class
  */
 class Controller {
 
@@ -67,8 +51,6 @@ class Controller {
 
 class_alias('Controller', 'CI_Controller');
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Controller
  *
@@ -101,8 +83,6 @@ class EE_Controller extends CI_Controller {
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Control Panel Controller
  *
@@ -131,24 +111,7 @@ class CP_Controller extends EE_Controller {
 	 */
 	protected function ajaxValidation(ValidationResult $result)
 	{
-		if (ee()->input->is_ajax_request())
-		{
-			$field = ee()->input->post('ee_fv_field');
-
-			// Get the parent field name
-			$field = preg_replace('/\[.+?\]/', '', $field);
-
-			if ($result->hasErrors($field))
-			{
-				return array('error' => $result->renderError($field));
-			}
-			else
-			{
-				return array('success');
-			}
-		}
-
-		return NULL;
+		return ee('Validation')->ajax($result);
 	}
 
 }

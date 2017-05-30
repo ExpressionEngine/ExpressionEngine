@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
@@ -6,31 +13,11 @@ use EllisLab\ExpressionEngine\Service\View\View;
 use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Profiler Section Interface
+ * Profiler Section Interface
  *
  * Represents a Profiler Section that can be added to the profiler output.
  * Will be loaded from a profiler section string of the section's name
  * (first character lower case).
- *
- * @package		ExpressionEngine
- * @subpackage	Profiler
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class ProfilerSection {
 

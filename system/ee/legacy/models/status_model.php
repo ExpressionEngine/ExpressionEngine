@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Status Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Status Model
  */
 class Status_model extends CI_Model {
 
@@ -61,8 +49,6 @@ class Status_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Status
 	 *
@@ -76,8 +62,6 @@ class Status_model extends CI_Model {
 						->where('site_id', $this->config->item('site_id'))
 						->get('statuses');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get next Status Order
@@ -96,8 +80,6 @@ class Status_model extends CI_Model {
 		return ($status_order->num_rows() == 0) ? 1 : $status_order->row('status_order') + 1;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Status Group
 	 *
@@ -111,8 +93,6 @@ class Status_model extends CI_Model {
 
 		return $this->db->get('status_groups');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Status Groups
@@ -137,8 +117,6 @@ class Status_model extends CI_Model {
 		return $this->db->get('status_groups');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Status Group
 	 *
@@ -154,8 +132,6 @@ class Status_model extends CI_Model {
 		$this->db->where('status_group', $group_id);
 		$this->db->update('channels', array('status_group' => NULL));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Statuses
@@ -199,8 +175,6 @@ class Status_model extends CI_Model {
 		$this->db->insert('statuses', $closed);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Statuses
 	 *
@@ -218,8 +192,6 @@ class Status_model extends CI_Model {
 			array('group_id' => $group_id)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Duplicate Status Group Name Check
@@ -242,8 +214,6 @@ class Status_model extends CI_Model {
 
 		return ($count > 0) ? TRUE : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Disallowed Statuses

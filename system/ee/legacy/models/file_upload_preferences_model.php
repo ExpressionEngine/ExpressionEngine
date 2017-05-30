@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Admin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File upload preferences Model
  */
 class File_upload_preferences_model extends CI_Model
 {
@@ -130,8 +118,6 @@ class File_upload_preferences_model extends CI_Model
 		return $return_array;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Upload paths may have a {base_url} or {base_path} in them, so we need
 	 * to parse those but also take into account when an upload destination
@@ -155,8 +141,6 @@ class File_upload_preferences_model extends CI_Model
 
 		return $upload_destination;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Builds an array suitable for dropdown lists
@@ -182,8 +166,6 @@ class File_upload_preferences_model extends CI_Model
 
 		return $prefs_array;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Upload Preferences
@@ -221,8 +203,6 @@ class File_upload_preferences_model extends CI_Model
 		return $deleting->row('name');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the category groups for one or more upload directories
 	 *
@@ -249,8 +229,6 @@ class File_upload_preferences_model extends CI_Model
 
 		return array_unique($cat_groups);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Get all file upload paths in a mapped associative array with the keys

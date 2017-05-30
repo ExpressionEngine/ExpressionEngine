@@ -36,7 +36,7 @@
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee()->cp->allowed_group('can_admin_sites'))): ?>
 					<div class="nav-sites">
 						<a class="nav-has-sub" href=""><?=ee()->config->item('site_name')?></a>
-						<a class="nav-view" href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>" rel="external"><i class="icon-view"></i><span class="nav-txt-collapse"><?=lang('view')?></span></a>
+						<a class="nav-view" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="icon-view"></i><span class="nav-txt-collapse"><?=lang('view')?></span></a>
 						<ul class="nav-sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<li><a href="<?=$link?>"><?=$site_name?></a></li>

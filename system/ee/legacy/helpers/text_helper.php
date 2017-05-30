@@ -1,29 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * ExpressionEngine Text Helper
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * Text Helper
+ */
 
 
  /**
@@ -70,8 +57,6 @@ if ( ! function_exists('convert_accented_characters'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Word Limiter
  *
@@ -102,8 +87,6 @@ if ( ! function_exists('word_limiter'))
 		return rtrim($matches[0]).$end_char;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Character Limiter
@@ -146,8 +129,6 @@ if ( ! function_exists('character_limiter'))
 		}
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * High ASCII to Entities
@@ -208,8 +189,6 @@ if ( ! function_exists('ascii_to_entities'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Entities to ASCII
  *
@@ -264,8 +243,6 @@ if ( ! function_exists('entities_to_ascii'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Word Censoring Function
  *
@@ -319,8 +296,6 @@ if ( ! function_exists('word_censor'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Code Highlighter
  *
@@ -373,8 +348,6 @@ if ( ! function_exists('highlight_code'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Phrase Highlighter
  *
@@ -405,8 +378,6 @@ if ( ! function_exists('highlight_phrase'))
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * Word Wrap
@@ -509,8 +480,6 @@ if ( ! function_exists('word_wrap'))
 		return $output;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Ellipsize String

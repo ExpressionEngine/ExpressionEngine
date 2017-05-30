@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Discussion Pages Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pages Module update class
  */
 class Pages_upd {
 
@@ -48,8 +35,6 @@ class Pages_upd {
 		return $tabs;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -86,8 +71,6 @@ class Pages_upd {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -117,8 +100,6 @@ class Pages_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Updater
 	 *
@@ -144,8 +125,6 @@ class Pages_upd {
 			$this->_do_22_update();
 		}
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * This is basically identical to the forum update script.

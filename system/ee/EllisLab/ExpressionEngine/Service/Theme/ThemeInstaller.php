@@ -1,30 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Theme;
 
 /**
- * ExpressionEngine - by EllisLab
+ * ThemeInstaller
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		https://ellislab.com
- * @since		Version 3.2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine ThemeInstaller Class
+ * @internal This Class is not ready for third-party usage and will mostly likely change quickly
  *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- * @internal    This Class is not ready for third-party usage and will mostly
- * 				likely change quickly
  */
 class ThemeInstaller {
 

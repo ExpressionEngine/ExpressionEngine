@@ -1,34 +1,20 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Super Model
+ * Super Model
  *
  * This model contains some abstracted can-do database functions that
  * are used by a plethora of libraries and controllers to keep database calls
  * out of such code as much as possible
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Super_model extends CI_Model {
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Count All
@@ -64,8 +50,6 @@ class Super_model extends CI_Model {
 			return $this->db->count_all_results($table);
 		}
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

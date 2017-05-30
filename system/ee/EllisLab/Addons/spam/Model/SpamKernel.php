@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\Addons\Spam\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * SpamKernel Model
+ */
 class SpamKernel extends Model {
 
 	protected static $_table_name = 'spam_kernels';

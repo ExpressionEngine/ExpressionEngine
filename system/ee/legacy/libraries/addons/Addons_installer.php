@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Addon Installer Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Addon Installer
  */
 class Addons_installer {
 
@@ -34,8 +22,6 @@ class Addons_installer {
 		ee()->lang->loadfile('modules');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Addon Installer
 	 *
@@ -48,8 +34,6 @@ class Addons_installer {
 		$this->_update_addon($addon, $type, 'install', $show_package);
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Addon Uninstaller
@@ -65,8 +49,6 @@ class Addons_installer {
 		$this->_update_addon($addon, $type, 'uninstall', $show_package);
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -88,8 +70,6 @@ class Addons_installer {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -109,8 +89,6 @@ class Addons_installer {
 			show_error(lang('module_can_not_be_found'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extension Installer
@@ -139,8 +117,6 @@ class Addons_installer {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extension Uninstaller
 	 *
@@ -160,8 +136,6 @@ class Addons_installer {
 			$disable = $EXT->disable_extension();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fieldtype Installer
@@ -199,8 +173,6 @@ class Addons_installer {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fieldtype Uninstaller
@@ -263,8 +235,6 @@ class Addons_installer {
 			ee()->db->delete('fieldtypes', array('name' => $fieldtype));
 		}
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * RTE Tool Installer
 	 *
@@ -279,8 +249,6 @@ class Addons_installer {
 		ee()->rte_tool_model->add($tool);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * RTE Tool Uninstaller
 	 *
@@ -294,8 +262,6 @@ class Addons_installer {
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->delete($tool);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Install Setup
@@ -344,8 +310,6 @@ class Addons_installer {
 		return $class;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extension Install Setup
 	 *
@@ -380,8 +344,6 @@ class Addons_installer {
 		}
 		return new $class();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Universal Addon (Un)Installer

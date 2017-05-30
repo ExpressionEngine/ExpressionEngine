@@ -141,6 +141,10 @@ options[:number].to_i.times do
   data.save!
 
   # Increment entry count and change last_entry_date
+  channel.total_records = channel.total_records + 1
+  channel.total_entries = channel.total_entries + 1
+  channel.save
   member.total_entries = member.total_entries + 1
   member.last_entry_date = time.to_i
+  member.save
 end

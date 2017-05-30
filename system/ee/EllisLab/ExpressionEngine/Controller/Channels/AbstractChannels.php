@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
 
@@ -7,27 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Abstract Channel Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Channels
  */
 abstract class AbstractChannels extends CP_Controller {
 
@@ -688,17 +675,22 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($status_groups as $group)
 		{
+			$view_url = ee('CP/URL')->make('channels/status/status-list/'.$group->getId());
 			$columns = array(
 				$group->getId(),
-				$group->group_name,
+				array(
+					'content' => $group->group_name,
+					'href' => $view_url
+				),
 				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee('CP/URL')->make('channels/status/status-list/'.$group->getId()),
-						'title' => lang('view')
-					),
 					'edit' => array(
 						'href' => ee('CP/URL')->make('channels/status/edit/'.$group->getId()),
 						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => $view_url,
+						'title' => lang('statuses'),
+						'content' => strtolower(lang('statuses'))
 					)
 				))
 			);

@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Dates)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Dates)
  */
 class EE_Channel_date_parser implements EE_Channel_parser_component {
 
@@ -36,8 +23,6 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Fulfilling the requirements of the abstract class we inherit from.
 	 *
@@ -49,8 +34,6 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 	{
 		return array();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the default date fields.

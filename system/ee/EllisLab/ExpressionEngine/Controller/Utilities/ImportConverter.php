@@ -1,31 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Import Converter Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Import Converter Controller
  */
 class ImportConverter extends Utilities {
 
@@ -126,8 +111,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Not Alpha or Numeric
 	 *
@@ -158,8 +141,6 @@ class ImportConverter extends Utilities {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep Enclosure
 	 *
@@ -180,8 +161,6 @@ class ImportConverter extends Utilities {
 
 		return $enclosure;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * For mapping to existing member fields
@@ -262,8 +241,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->render('utilities/import/fieldmap', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Datafile to Array
 	 *
@@ -300,8 +277,6 @@ class ImportConverter extends Utilities {
 
 		return $fields;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pair Fields Form
@@ -384,8 +359,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/fieldmap-confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create XML File
@@ -470,8 +443,6 @@ class ImportConverter extends Utilities {
 		ee()->cp->render('utilities/import/code-output', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Downloads generated XML from import converter
 	 *
@@ -486,8 +457,6 @@ class ImportConverter extends Utilities {
 		);
 		exit;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Unique Required

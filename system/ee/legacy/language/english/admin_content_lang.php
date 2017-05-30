@@ -48,7 +48,7 @@ $lang = array(
 
 'fields_removed_desc' => 'The following fields were removed',
 
-'create_field' => 'Create Field',
+'create_field' => 'Create Field in %s',
 
 'label_desc' => 'Name of field that appears in the publish form.',
 

@@ -1,26 +1,14 @@
 <?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Relationship Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Model
  */
 class Relationship_model extends CI_Model {
 
@@ -30,8 +18,6 @@ class Relationship_model extends CI_Model {
 	const GRID = 4;
 
 	protected $_table = 'relationships';
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 *
@@ -51,8 +37,6 @@ class Relationship_model extends CI_Model {
 		$entry_ids = array_unique($entry_ids);
 		return $this->_run_node_query($node, $entry_ids, $grid_field_id);
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 *
@@ -136,18 +120,10 @@ class Relationship_model extends CI_Model {
 			if ($level > 0)
 			{
 				$db->order_by('L' . $level . '.order', 'asc');
-				$db->select('L' . $level . '.grid_row_id as L' . $level. '_grid_row_id');
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
 				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
 				$db->select('L' . $level . '.child_id as L' . $level . '_id');
 				$db->select('L' . $level . '.order');
-
-				// do not look for relationships in nested grid fields, we'll
-				// instead restart the query from grid.
-				$db->start_group();
-				$db->where('L' . $level . '.grid_field_id', 0);
-				$db->or_where('L' . $level . '.grid_field_id', NULL);
-				$db->end_group();
 			}
 
 		}
@@ -190,8 +166,6 @@ class Relationship_model extends CI_Model {
 		return $result;
 	}
 
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Branch length utility method.

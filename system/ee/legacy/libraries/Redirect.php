@@ -1,18 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
-
 
 /**
  * URL Redirect
@@ -21,12 +14,6 @@
  * revealing the control panel URL to the referee.  It should be primarily
  * used when we're redirecting away from the parent site out of the cp, say
  * to an addon's documentation or such.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 if ( ! isset($_GET['URL']))
 {
@@ -49,6 +36,9 @@ ee()->load->library('typography');
 $url = ee()->typography->decodeIDN($_GET['URL']);
 
 $link = '<a rel="nofollow" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue to the new page</a>';
+
+// Make sure a filtered comparison later doesn't trip the URL as "changed" for URLs with query strings
+$link = str_replace('&amp;', '&', $link);
 
 // catch XSS as well as any HTML or malformed URLs. FILTER_VALIDATE_URL doesn't work with IDN,
 // so this will also fail if an IDN is used as a redirect on a server that is missing PHP's intl extension,

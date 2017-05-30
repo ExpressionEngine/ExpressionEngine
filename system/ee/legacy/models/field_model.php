@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Field Model
  */
 class Field_model extends CI_Model {
 
@@ -37,8 +25,6 @@ class Field_model extends CI_Model {
 		$this->db->where('field_id', $field_id);
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Field Group
@@ -73,8 +59,6 @@ class Field_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Field Group
 	 *
@@ -87,8 +71,6 @@ class Field_model extends CI_Model {
 		$this->db->where('group_id', $group_id);
 		return $this->db->get('field_groups');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Field Groups
@@ -109,8 +91,6 @@ class Field_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Field Group Data
 	 *
@@ -130,8 +110,6 @@ class Field_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Insert Field Group
 	 *
@@ -147,8 +125,6 @@ class Field_model extends CI_Model {
 
 		$this->db->insert('field_groups', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Fields
@@ -167,8 +143,6 @@ class Field_model extends CI_Model {
 
 		return $field_ids;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Field Groups
@@ -196,8 +170,6 @@ class Field_model extends CI_Model {
 		return $field_ids;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Field Groups
@@ -242,8 +214,6 @@ class Field_model extends CI_Model {
 		return $deleted_fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Duplicate Field Group Name Check
 	 *
@@ -275,8 +245,6 @@ class Field_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get all field content types
 	 *
@@ -295,8 +263,6 @@ class Field_model extends CI_Model {
 
 		return $field_types;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get all channels the field group is assigned to

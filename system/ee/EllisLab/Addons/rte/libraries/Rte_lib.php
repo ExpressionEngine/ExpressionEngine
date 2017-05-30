@@ -1,29 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine RTE Module Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RTE Module Library
  */
-
 class Rte_lib {
 
 	// We consider the editor empty in these cases
@@ -40,8 +26,6 @@ class Rte_lib {
 	{
 		ee()->lang->loadfile('rte');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Provides Edit Toolset Screen HTML
@@ -164,8 +148,6 @@ class Rte_lib {
 		return ee('View')->make('rte:box_wrapper')->render($vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Saves a toolset
 	 *
@@ -269,8 +251,6 @@ class Rte_lib {
 
 		ee()->functions->redirect($success_url);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Build RTE JS
@@ -469,8 +449,6 @@ class Rte_lib {
 		return $js;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Save RTE field
 	 *
@@ -508,8 +486,6 @@ class Rte_lib {
 
 		return $data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Display an RTE field
@@ -583,8 +559,6 @@ class Rte_lib {
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Check whether the specified data is empty html
 	 *
@@ -596,8 +570,6 @@ class Rte_lib {
 	{
 		return in_array($data, $this->_empty);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Loads JS library files
@@ -678,8 +650,6 @@ class Rte_lib {
 		return $contents;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Prep global variables for JS
 	 *
@@ -711,8 +681,6 @@ class Rte_lib {
 		return $temp;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Manage the assignment of global JS
 	 *
@@ -734,8 +702,6 @@ class Rte_lib {
 		return $js;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Tool Set Valid Name handler
 	 *
@@ -754,8 +720,6 @@ class Rte_lib {
 
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Tool Set Unique Name handler
