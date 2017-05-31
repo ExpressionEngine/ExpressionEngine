@@ -171,7 +171,7 @@ if ($wrap): ?>
 									$style = 'style="';
 
 									// override for open/closed
-									if (in_array($column['status'], array('open', 'closed')))
+									if (isset($column['status']) && in_array($column['status'], array('open', 'closed')))
 									{
 										$class = $column['status'];
 									}
