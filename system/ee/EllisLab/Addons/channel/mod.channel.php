@@ -2299,7 +2299,7 @@ class Channel {
 
 		$chunks = array_chunk($fields, 50);
 
-		$chunk = array_shift($chunks);
+		$chunk = (array_shift($chunks)) ?: array();
 
 		if ( ! empty($chunks))
 		{
