@@ -426,10 +426,19 @@ class Channel_form_lib
 			elseif ($tag_name == 'category_menu')
 			{
 				ee()->load->library('channel_form/channel_form_category_tree');
-
-				$tree = ee()->channel_form_category_tree->create(
-					$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
-				);
+				
+				if ($this->edit OR ! empty($this->channel->deft_category))
+				{
+					$tree = ee()->channel_form_category_tree->create(
+						$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
+					);
+				}
+				else
+				{
+					$tree = ee()->channel_form_category_tree->create(
+						$this->channel('cat_group'), '', '', ''
+					);
+				}
 
 				$this->parse_variables['category_menu'] = array(
 					array('select_options' => implode("\n", $tree->categories()))
@@ -1768,8 +1777,6 @@ GRID_FALLBACK;
 				$this->entry->set($entry_data);
 				$this->entry->edit_date = ee()->localize->now;
 
-				$result = $this->entry->validate();
-
 				if (isset($_POST['category']) && is_array($_POST['category']))
 				{
 					$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
@@ -1778,6 +1785,8 @@ GRID_FALLBACK;
 				{
 					$this->entry->Categories = NULL;
 				}
+
+				$result = $this->entry->validate();
 
 				if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
 				{
