@@ -406,7 +406,7 @@ class Relationship_ft extends EE_Fieldtype {
 		));
 
 		ee()->javascript->set_global(array(
-			'relationship.filter_url' => ee('CP/URL', 'addons/settings/relationship/ajax-filter')->compile()
+			'relationship.filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile()
 		));
 
 		if ($entry_id)
