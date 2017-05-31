@@ -695,17 +695,15 @@ class EE_Relationship_data_parser {
 			}
 		}
 
-		// default everyting to desc
-		$sort = $sort + array_fill_keys(array_keys($order_by), 'desc');
-
 		// fill array_multisort parameters
 		$sort_parameters = array();
 
 		foreach ($order_by as $i => $v)
 		{
-			$sort_parameters[] =& $columns[$v];
-			$sort_flag = constant('SORT_'.strtoupper($sort[$i]));
-			$sort_parameters[] =& $sort_flag;
+			$sort_parameters[] = $columns[$v];
+			$sort_flag = isset($sort[$i]) ? $sort[$i] : 'desc';
+			$sort_flag = constant('SORT_'.strtoupper($sort_flag));
+			$sort_parameters[] = $sort_flag;
 		}
 
 		$sort_parameters[] = &$entry_ids;
