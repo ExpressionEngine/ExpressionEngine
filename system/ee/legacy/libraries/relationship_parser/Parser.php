@@ -691,7 +691,7 @@ class EE_Relationship_data_parser {
 			{
 				$k = ($k == 'date') ? 'entry_date' : $k;
 
-				$columns[$k][] = $data[$k];
+				$columns[$k][] = strtolower($data[$k]);
 			}
 		}
 
