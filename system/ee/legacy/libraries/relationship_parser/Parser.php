@@ -409,7 +409,7 @@ class EE_Relationship_data_parser {
 		$entry_ids = $entry_ids[$parent_id];
 
 		// reorder the ids
-		if ($node->param('orderby'))
+		if ($node->param('orderby') OR $node->param('sticky', 'yes') == 'yes')
 		{
 			$entry_ids = $this->_apply_sort($node, $entry_ids);
 		}
@@ -656,14 +656,20 @@ class EE_Relationship_data_parser {
 	 */
 	public function _apply_sort($node, $entry_ids)
 	{
-		$order_by = explode('|', $node->param('orderby'));
+		$order_by = array_filter(explode('|', $node->param('orderby')));
 		$sort = explode('|', $node->param('sort', 'desc'));
 
 		// random
-		if ($order_by[0] == 'random')
+		if ( ! empty($order_by) && $order_by[0] == 'random')
 		{
 			shuffle($entry_ids);
 			return $entry_ids;
+		}
+
+		if ($node->param('sticky', 'yes') == 'yes')
+		{
+			$order_by = array_merge(array('sticky'), $order_by);
+			$sort = array_merge(array('desc'), $sort);
 		}
 
 		// custom field
