@@ -426,7 +426,7 @@ class Channel_form_lib
 			elseif ($tag_name == 'category_menu')
 			{
 				ee()->load->library('channel_form/channel_form_category_tree');
-				
+
 				if ($this->edit OR ! empty($this->channel->deft_category))
 				{
 					$tree = ee()->channel_form_category_tree->create(
