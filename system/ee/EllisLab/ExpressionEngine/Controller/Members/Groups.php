@@ -1450,8 +1450,15 @@ class Groups extends Members\Members {
 							'fields' => array(
 								'access_tools' => array(
 									'type' => 'checkbox',
+									'nested' => TRUE,
 									'choices' => array(
-										'can_access_comm' => lang('can_access_communicate'),
+										'can_access_comm' => array(
+											'name' => lang('can_access_communicate'),
+											'children' => array(
+												'can_email_member_groups' => lang('can_email_member_groups'),
+												'can_send_cached_email' => lang('can_send_cached_email'),
+											)
+										),
 										'can_access_translate' => lang('can_access_translate'),
 										'can_access_import' => lang('can_access_import'),
 										'can_access_sql_manager' => lang('can_access_sql'),
