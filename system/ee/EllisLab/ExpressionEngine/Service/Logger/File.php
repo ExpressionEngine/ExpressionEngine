@@ -55,7 +55,7 @@ class File {
 	{
 		$message .= "\n";
 
-		$this->filesystem->write($this->file_path, $message, FALSE, TRUE);
+		$this->filesystem->append($this->file_path, $message);
 	}
 
 	/**

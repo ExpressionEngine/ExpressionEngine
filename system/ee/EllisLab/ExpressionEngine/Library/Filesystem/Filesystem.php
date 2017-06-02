@@ -104,6 +104,17 @@ class Filesystem {
 	}
 
 	/**
+	 * Append to an existing file
+	 *
+	 * @param String $path File to write to
+	 * @param String $data Data to write
+	 */
+	public function append($path, $data)
+	{
+		$this->write($path, $data, FALSE, TRUE);
+	}
+
+	/**
 	 * Make a new directory
 	 *
 	 * @param String $path Directory to create
