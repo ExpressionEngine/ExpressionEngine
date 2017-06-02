@@ -32,6 +32,8 @@ class FileUpdater {
 		$this->verifier = $verifier;
 		$this->logger = $logger;
 		$this->configs = $this->parseConfigs();
+
+		$this->configs['theme_paths'] = array_unique($this->configs['theme_paths']);
 	}
 
 	public function updateFiles()
@@ -108,7 +110,7 @@ class FileUpdater {
 		$new_themes_dir = $this->configs['archive_path'] . '/themes/ee/';
 
 		// If multiple theme paths exist, _copy_ the themes to each folder
-		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		if (count($this->configs['theme_paths']) > 1)
 		{
 			$this->logger->log('Multiple theme paths detected, copying new themes folders into place');
 
@@ -138,22 +140,9 @@ class FileUpdater {
 
 		$this->verifyFiles(SYSPATH . 'ee/', 'system/ee');
 
-		// Multiple themes paths?
-		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		foreach ($this->configs['theme_paths'] as $theme_path)
 		{
-			foreach ($this->configs['theme_paths'] as $theme_path)
-			{
-				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-
-				$this->verifyFiles($theme_path, 'themes/ee');
-			}
-		}
-		// Otherwise, just move the themes to the one themes folder
-		else
-		{
-			$theme_path = array_values($this->configs['theme_paths'])[0];
 			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-
 			$this->verifyFiles($theme_path, 'themes/ee');
 		}
 
@@ -197,7 +186,7 @@ class FileUpdater {
 
 		// If multiple theme paths exist, delete the contents of them since we
 		// copied to them before
-		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		if (count($this->configs['theme_paths']) > 1)
 		{
 			foreach ($this->configs['theme_paths'] as $theme_path)
 			{
@@ -221,23 +210,13 @@ class FileUpdater {
 			SYSPATH.'ee/'
 		);
 
-		// Copy themes backup to each theme folder
-		if (count(array_unique(array_values($this->configs['theme_paths']))) > 1)
+		// Copy themes backup to each theme folder (copy because there may be
+		// multiple theme locations)
+		foreach ($this->configs['theme_paths'] as $theme_path)
 		{
-			foreach ($this->configs['theme_paths'] as $theme_path)
-			{
-				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
-
-				$this->move($this->getBackupsPath() . 'themes_ee/', $theme_path, [], TRUE);
-			}
-		}
-		// Or move back if there is only one theme path
-		else
-		{
-			$theme_path = array_values($this->configs['theme_paths'])[0];
 			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
-			$this->move($this->getBackupsPath() . 'themes_ee/', $theme_path);
+			$this->copy($this->getBackupsPath() . 'themes_ee/', $theme_path);
 		}
 	}
 
