@@ -18,15 +18,24 @@ use EllisLab\ExpressionEngine\Service;
 class Updater extends CP_Controller {
 
 	/**
+	 * Early permissions checks
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		if (ee()->session->userdata('group_id') != 1 OR
+			ee('Request')->method() != 'POST')
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+	}
+
+	/**
 	 * Request end-point for updater tasks
 	 */
 	public function index()
 	{
-		if (ee('Request')->method() != 'POST')
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		ee()->lang->loadfile('updater');
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();
@@ -35,8 +44,7 @@ class Updater extends CP_Controller {
 		$newer_version_available = version_compare(ee()->config->item('app_version'), $to_version, '<');
 		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
 
-		if (( ! $newer_version_available && ! $core_to_pro) OR
-			ee()->session->userdata('group_id') != 1)
+		if ( ! $newer_version_available && ! $core_to_pro)
 		{
 			return ee()->functions->redirect(ee('CP/URL', 'homepage'));
 		}
