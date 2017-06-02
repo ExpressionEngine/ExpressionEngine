@@ -16,7 +16,14 @@ namespace EllisLab\ExpressionEngine\Service\Updater;
  */
 trait Steppable {
 
+	/**
+	 * Stores the current step being run
+	 */
 	protected $currentStep;
+
+	/**
+	 * Stores the next step if one is returned by the current step
+	 */
 	protected $nextStep;
 
 	/**

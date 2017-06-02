@@ -104,7 +104,7 @@ class El_pings {
 
 			$version_file = json_decode($version_file, TRUE);
 
-			// Cache version information for a day
+			// Cache version information for an hour
 			ee()->cache->save(
 				'current_version',
 				$version_file,

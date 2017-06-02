@@ -66,7 +66,7 @@ class Verifier {
 				}
 			}
 
-			// Abosulute server path to the file in question
+			// Absolute server path to the file in question
 			if (empty($subpath))
 			{
 				$absolute_file_path = $path . DIRECTORY_SEPARATOR . $file_path;

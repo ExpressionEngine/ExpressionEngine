@@ -230,7 +230,7 @@ class Backup {
 	 * Writes partial INSERTs for a given table, with the idea being a backup
 	 * can be split up across multiple requests for large databases
 	 *
-	 * @param	string	$table_name	Table name
+	 * @param	string	$table_name	Name of table to start the backup from
 	 * @param	int		$offset		Offset to start the backup from
 	 * @return	mixed	FALSE if no more work to do, otherwise an array telling
 	 * the caller which table and offset they need to start at next time, e.g.:
@@ -239,15 +239,15 @@ class Backup {
 	 *		'offset'     => 5000
 	 *	]
 	 */
-	public function writeTableInsertsConservatively($table = NULL, $offset = 0)
+	public function writeTableInsertsConservatively($table_name = NULL, $offset = 0)
 	{
 		$tables = $this->getTables();
 
 		// Table specified? Chop off the beginning of the tables array until we
 		// we get to the specified table and start the loop from there
-		if ( ! empty($table))
+		if ( ! empty($table_name))
 		{
-			$tables = array_slice($tables, array_search($table, $tables));
+			$tables = array_slice($tables, array_search($table_name, $tables));
 		}
 
 		$this->rows_exported = 0;

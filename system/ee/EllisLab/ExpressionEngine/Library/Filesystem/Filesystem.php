@@ -44,7 +44,7 @@ class Filesystem {
 	 * Read a file from disk line-by-line, good for large text files
 	 *
 	 * @param String $path File to read
-	 * @return Callable Callback to call for each line of the file
+	 * @param Callable Callback to call for each line of the file, accepts one parameter
 	 */
 	public function readLineByLine($path, Callable $callback)
 	{
