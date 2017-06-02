@@ -290,6 +290,18 @@ class FileUpdater {
 	}
 
 	/**
+	 * Copies contents of a directory to another directory
+	 *
+	 * @param	string	$source			Source directory
+	 * @param	string	$destination	Destination directory
+	 * @param	array	$exclusions		Array of any paths to exlude when moving
+	 */
+	protected function copy($source, $destination, Array $exclusions = [])
+	{
+		$this->move($source, $destination, $exclusions, TRUE);
+	}
+
+	/**
 	 * Deletes contents of a directory
 	 *
 	 * @param	string	$directory	Direcotry to delete the contents from
