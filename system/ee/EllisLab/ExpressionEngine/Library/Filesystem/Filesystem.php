@@ -358,7 +358,7 @@ class Filesystem {
 		{
 			if (($file != '.') && ($file != '..'))
 			{
-				if ( is_dir($source . '/' . $file) )
+				if ($this->isDir($source . '/' . $file))
 				{
 					$this->recursiveCopy($source . '/' . $file, $dest . '/' . $file);
 				}
