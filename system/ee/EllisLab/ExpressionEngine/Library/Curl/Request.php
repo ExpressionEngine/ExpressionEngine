@@ -79,13 +79,10 @@ abstract class Request {
 	{
 		$this->headers = curl_getinfo($curl);
 
-		foreach (explode("\r\n", $headers) as $i => $line)
+		$headers = explode("\r\n", $headers);
+		array_shift($headers);
+		foreach ($headers as $i => $line)
 		{
-			if ($i === 0)
-			{
-				continue;
-			}
-
 			list($key, $value) = explode(': ', $line);
 
 			$this->headers[$key] = $value;
