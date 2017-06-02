@@ -53,6 +53,7 @@ class EE_Upload {
 	protected $use_temp_dir			= FALSE;
 	protected $raw_upload = FALSE;
 	protected $_file_name_override	= '';
+	protected $blacklisted_extensions = array();
 
 	/**
 	 * Constructor
@@ -72,6 +73,14 @@ class EE_Upload {
 
 		ee()->load->library('mime_type');
 		log_message('debug', "Upload Class Initialized");
+
+		$this->blacklisted_extensions = array(
+			'php',
+			'php3',
+			'php4',
+			'phps',
+			'phtml'
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -550,6 +559,11 @@ class EE_Upload {
 	public function is_allowed_filetype($ignore_mime = FALSE)
 	{
 		$ext = strtolower(ltrim($this->file_ext, '.'));
+
+		if (in_array($ext, $this->blacklisted_extensions))
+		{
+			return FALSE;
+		}
 
 		if ( ! empty($this->allowed_types) && is_array($this->allowed_types) && ! in_array($ext, $this->allowed_types))
 		{
