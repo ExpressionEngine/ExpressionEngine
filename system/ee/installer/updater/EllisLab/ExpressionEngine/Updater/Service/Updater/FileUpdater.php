@@ -118,7 +118,7 @@ class FileUpdater {
 			{
 				$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
-				$this->move($new_themes_dir, $theme_path, [], TRUE);
+				$this->copy($new_themes_dir, $theme_path);
 			}
 		}
 		// Otherwise, just move the themes to the one themes folder

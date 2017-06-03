@@ -90,19 +90,6 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->fileupdater->moveNewInstallFiles();
 
-		// Multiple themes folders, but are the same
-		$this->fileupdater->configs['theme_paths'] = [1 => '/themes/', 2 => '/themes/'];
-		$this->shouldCallMove(
-			$this->archive_path.'system/ee/',
-			SYSPATH.'ee/'
-		);
-		$this->shouldCallMove(
-			$this->archive_path.'themes/ee/',
-			'/themes/ee/'
-		);
-
-		$this->fileupdater->moveNewInstallFiles();
-
 		// Multiple unique themes folders
 		$this->fileupdater->configs['theme_paths'] = [1 => '/themes/', 2 => '/some/other/site/themes/'];
 		$this->shouldCallMove(
@@ -144,24 +131,6 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->fileupdater->verifyNewFiles();
 
-		// Multiple themes folders, but are the same
-		$this->fileupdater->configs['theme_paths'] = [1 => '/themes/', 2 => '/themes/'];
-		$this->verifier->shouldReceive('verifyPath')->with(
-			SYSPATH . 'ee/',
-			$hash_manifiest,
-			'system/ee',
-			$exclusions
-		)->andReturn(TRUE)->once();
-
-		$this->verifier->shouldReceive('verifyPath')->with(
-			'/themes/ee',
-			$hash_manifiest,
-			'themes/ee',
-			$exclusions
-		)->andReturn(TRUE)->once();
-
-		$this->fileupdater->verifyNewFiles();
-
 		// Multiple unique themes folders
 		$this->fileupdater->configs['theme_paths'] = [1 => '/themes/', 2 => '/some/other/site/themes/'];
 		$this->verifier->shouldReceive('verifyPath')->with(
@@ -186,11 +155,6 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testRollbackFiles()
 	{
-		$this->shouldCallRollbackFiles();
-		$this->fileupdater->rollbackFiles();
-
-		// Multiple themes folders, but are the same
-		$this->fileupdater->configs['theme_paths'] = [1 => '/themes/', 2 => '/themes/'];
 		$this->shouldCallRollbackFiles();
 		$this->fileupdater->rollbackFiles();
 
@@ -372,7 +336,9 @@ class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->shouldCallMove(
 			PATH_CACHE.'ee_update/backups/themes_ee/',
-			'/themes/ee/'
+			'/themes/ee/',
+			[],
+			TRUE
 		);
 	}
 
