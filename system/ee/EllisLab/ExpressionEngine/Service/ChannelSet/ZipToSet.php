@@ -33,6 +33,12 @@ class ZipToSet {
 
 		// create a temporary directory for the contents in our cache folder
 		$fs = new Filesystem();
+
+		if ( ! is_dir(PATH_CACHE.'cset/'))
+		{
+			$fs->mkdir(PATH_CACHE.'cset/');
+		}
+
 		$tmp_dir = 'cset/tmp_'.time();
 		$fs->mkdir(PATH_CACHE.$tmp_dir, FALSE);
 
