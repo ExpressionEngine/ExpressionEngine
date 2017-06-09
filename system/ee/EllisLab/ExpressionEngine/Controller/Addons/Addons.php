@@ -1004,8 +1004,10 @@ class Addons extends CP_Controller {
 	 * @param	str	$addon	The name of plugin whose manual to display
 	 * @return	void
 	 */
-	public function manual($addon)
+	public function manual($addon = NULL)
 	{
+		if ( ! $addon) show_404();
+
 		$this->assertUserHasAccess($addon);
 
 		try
