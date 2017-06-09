@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
 class Set {
 
 	/**
@@ -101,6 +103,7 @@ class Set {
 
 		if ( ! $this->result->isValid())
 		{
+			$this->deleteFiles();
 			return $this->result;
 		}
 
@@ -113,6 +116,15 @@ class Set {
 		}
 
 		return $this->result;
+	}
+
+	/**
+	 * Deletes the source files used in the import
+	 */
+	protected function deleteFiles()
+	{
+		$filesystem = new Filesystem();
+		$filesystem->delete($this->getPath());
 	}
 
 	/**
@@ -179,7 +191,7 @@ class Set {
 			}
 		}
 
-		@unlink($this->path);
+		$this->deleteFiles();
 	}
 
 	/**
