@@ -583,7 +583,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$template->save();
 	}
 
-	protected function remove($template_ids)
+	protected function removeTemplates($template_ids)
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_templates'))
 		{

@@ -520,7 +520,7 @@ class Template extends AbstractDesignController {
 		{
 			if (ee()->cp->allowed_group('can_delete_templates'))
 			{
-				$this->remove(ee()->input->post('selection'));
+				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/template/search', ee()->cp->get_url_state()));
 			}
 			else

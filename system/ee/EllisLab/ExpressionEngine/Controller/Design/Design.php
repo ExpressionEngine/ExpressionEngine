@@ -118,7 +118,7 @@ class Design extends AbstractDesignController {
 		{
 			if ($this->hasEditTemplatePrivileges($group->group_id))
 			{
-				$this->remove(ee()->input->post('selection'));
+				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name, ee()->cp->get_url_state()));
 			}
 			else
