@@ -307,6 +307,16 @@ class EE_Upload {
 			}
 		}
 
+		// If this is an image make sure it doesn't have PHP embedded in it
+		if ($this->is_image)
+		{
+			if ($this->do_embedded_php_check() === FALSE)
+			{
+				$this->set_error('upload_unable_to_write_file');
+				return FALSE;
+			}
+		}
+
 		/*
 		 * Move the file to the final destination
 		 * To deal with different server configurations
@@ -742,7 +752,7 @@ class EE_Upload {
 
 		if (function_exists('memory_get_usage') && memory_get_usage() && ini_get('memory_limit') != '')
 		{
-			$current = ini_get('memory_limit') * 1024 * 1024;
+			$current = (int) ini_get('memory_limit') * 1024 * 1024;
 
 			// There was a bug/behavioural change in PHP 5.2, where numbers over
 			// one million get output into scientific notation.  number_format()
@@ -801,6 +811,40 @@ class EE_Upload {
 		}
 
 		return ee('Security/XSS')->clean($data, TRUE);
+	}
+
+	public function do_embedded_php_check()
+	{
+		$file = $this->file_temp;
+
+		if (filesize($file) == 0)
+		{
+			return FALSE;
+		}
+
+		if (function_exists('memory_get_usage') && memory_get_usage() && ini_get('memory_limit') != '')
+		{
+			$current = (int) ini_get('memory_limit') * 1024 * 1024;
+
+			// There was a bug/behavioural change in PHP 5.2, where numbers over
+			// one million get output into scientific notation.  number_format()
+			// ensures this number is an integer
+			// http://bugs.php.net/bug.php?id=43053
+
+			$new_memory = number_format(ceil(filesize($file) + $current), 0, '.', '');
+
+			// When an integer is used, the value is measured in bytes.
+			ini_set('memory_limit', $new_memory);
+		}
+
+		if (($data = @file_get_contents($file)) === FALSE)
+		{
+			return FALSE;
+		}
+
+		// We can't simply check for `<?` because that's valid XML and is
+		// allowed in files.
+		return (strpos($data, '<?php') === FALSE);
 	}
 
 	// --------------------------------------------------------------------
