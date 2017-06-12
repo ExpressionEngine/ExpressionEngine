@@ -372,6 +372,8 @@ class Fields extends Members\Members {
 
 		if ( ! empty($_POST))
 		{
+			$field->set($_POST);
+
 			// m_ prefix dance
 			foreach ($_POST as $key => $value)
 			{
