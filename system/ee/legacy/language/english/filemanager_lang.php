@@ -256,7 +256,7 @@ $lang = array(
 
 'upload_file_size' => 'File size',
 
-'upload_file_size_desc' => 'Maximum file size in megabytes.',
+'upload_file_size_desc' => 'Maximum file size in kilobytes.',
 
 'upload_image_width' => 'Image width',
 

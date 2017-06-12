@@ -117,7 +117,7 @@ $lang = array(
 'all_files' => 'All file types',
 
 'file_size' => 'File size',
-'file_size_desc' => 'Maximum file size in megabytes.',
+'file_size_desc' => 'Maximum file size in kilobytes.',
 
 'image_width' => 'Image width',
 'image_width_desc' => 'Maximum image width in pixels.',
