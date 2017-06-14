@@ -554,7 +554,7 @@ $lang = array(
 
 'can_email_from_profile' => 'Can email other members via the profile email console',
 
-'can_email_member_groups' => 'Can send email to Member Groups',
+'can_email_member_groups' => 'Send email to Member Groups',
 
 'can_post_comments' => 'Submit comments',
 
@@ -566,7 +566,7 @@ $lang = array(
 
 'can_search_desc' => 'When set to <b>yes</b>, users assigned to this group may use the search functionality of the website.',
 
-'can_send_cached_email' => 'Can view/send cached email',
+'can_send_cached_email' => 'View/Send cached email',
 
 'can_view_offline_system' => 'Offline - <i>Not recommended</i>',
 

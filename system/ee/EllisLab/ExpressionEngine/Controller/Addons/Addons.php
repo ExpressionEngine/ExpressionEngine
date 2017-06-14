@@ -1004,8 +1004,10 @@ class Addons extends CP_Controller {
 	 * @param	str	$addon	The name of plugin whose manual to display
 	 * @return	void
 	 */
-	public function manual($addon)
+	public function manual($addon = NULL)
 	{
+		if ( ! $addon) show_404();
+
 		$this->assertUserHasAccess($addon);
 
 		try
@@ -1685,7 +1687,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$current = strip_slashes($extension_model->settings);
+		$current = $extension_model->settings;
 
 		$class_name = $extension['class'];
 		$OBJ = new $class_name($current);

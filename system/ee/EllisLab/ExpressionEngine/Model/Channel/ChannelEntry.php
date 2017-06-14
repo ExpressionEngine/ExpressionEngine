@@ -145,16 +145,29 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public function set__entry_date($entry_date)
-	{
-		$this->setRawProperty('entry_date', $entry_date);
+    public function set__entry_date($entry_date)
+    {
+        if ( ! is_numeric($entry_date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php
+            // First we try with the configured date format
+            $entry_date = ee()->localize->string_to_timestamp($entry_date, TRUE, ee()->localize->get_date_format());
 
-		// Day, Month, and Year Fields
-		// @TODO un-break these windows: inject this dependency
-		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
-		$this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
-		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
-	}
+            // If the date format didn't work, try something more fuzzy
+            if ($entry_date === FALSE)
+            {
+                $entry_date = ee()->localize->string_to_timestamp($entry_date);
+            }
+        }
+
+        $this->setRawProperty('entry_date', $entry_date);
+
+        // Day, Month, and Year Fields
+        // @TODO un-break these windows: inject this dependency
+        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
+        $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
+        $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
+    }
 
 	public function validate()
 	{
@@ -645,6 +658,11 @@ class ChannelEntry extends ContentModel {
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
+		if ($this->isNew() OR empty($categories))
+		{
+			$this->Categories = NULL;
+		}
+
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
@@ -652,8 +670,6 @@ class ChannelEntry extends ContentModel {
 				$this->setRawProperty('cat_group_id_'.$cat_group, '');
 				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
-
-			$this->Categories = NULL;
 
 			return;
 		}
@@ -681,6 +697,22 @@ class ChannelEntry extends ContentModel {
 				foreach ($group_cat_objects as $cat)
 				{
 					$set_cats[] = $cat;
+				}
+
+				$cat_ids = $group_cat_objects->pluck('cat_id');
+				if (ee()->config->item('auto_assign_cat_parents') == 'y')
+				{
+					foreach ($set_cats as $cat)
+					{
+						while ($cat->Parent !== NULL)
+						{
+							$cat = $cat->Parent;
+							if ( ! in_array($cat->getId(), $cat_ids))
+							{
+								$set_cats[] = $cat;
+							}
+						}
+					}
 				}
 			}
 		}

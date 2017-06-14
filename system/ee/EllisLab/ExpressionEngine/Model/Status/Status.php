@@ -57,7 +57,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'highlight'			=> 'required',
+		'highlight' => 'required|hexColor'
 	);
 
 	protected static $_events = array(
@@ -79,7 +79,10 @@ class Status extends Model {
 	 */
 	protected function get__highlight()
 	{
-		return $this->highlight ?: '000000';
+		// Old data from before validation may be invalid
+		$valid = (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $this->highlight);
+
+		return $valid ? $this->highlight : '000000';
 	}
 
 	/**

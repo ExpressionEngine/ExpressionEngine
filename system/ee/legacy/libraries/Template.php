@@ -351,29 +351,32 @@ class EE_Template {
 		$this->template = $this->markContext().$this->template;
 
 		// Parse assign_to_config variables and Snippets
-
 		if (count(ee()->config->_global_vars) > 0)
 		{
 			$this->log_item("Config Assignments & Template Partials");
 
 			// Only iterate over the partials present in the template
-			$regex = $this->getGlobalsRegex();
-			while (preg_match_all($regex, $this->template, $result))
+			$regexes = $this->getGlobalsRegex();
+
+			foreach ($regexes as $regex)
 			{
-				foreach ($result[1] as $variable)
+				while (preg_match_all($regex, $this->template, $result))
 				{
-					// In case any of these variables have EE comments of their own,
-					// removing from the value makes snippets more usable in conditionals
-					$value = $this->remove_ee_comments(
-						ee()->config->_global_vars[$variable]
-					);
+					foreach ($result[1] as $variable)
+					{
+						// In case any of these variables have EE comments of their own,
+						// removing from the value makes snippets more usable in conditionals
+						$value = $this->remove_ee_comments(
+							ee()->config->_global_vars[$variable]
+						);
 
-					$replace = $this->wrapInContextAnnotations(
-						$value,
-						'Snippet "'.$variable.'"'
-					);
+						$replace = $this->wrapInContextAnnotations(
+							$value,
+							'Snippet "'.$variable.'"'
+						);
 
-					$this->template = str_replace(LD.$variable.RD, $replace, $this->template);
+						$this->template = str_replace(LD.$variable.RD, $replace, $this->template);
+					}
 				}
 			}
 		}
@@ -612,9 +615,11 @@ class EE_Template {
 	 */
 	private function getGlobalsRegex()
 	{
-		if ( ! isset($this->globals_regex))
+		$global_names = array_keys(ee()->config->_global_vars);
+		$cache_key = md5(serialize($global_names));
+
+		if ( ! isset($this->globals_regex[$cache_key]))
 		{
-			$global_names = array_keys(ee()->config->_global_vars);
 			$global_names = array_map(
 				function($str)
 				{
@@ -623,10 +628,48 @@ class EE_Template {
 				$global_names
 			);
 
-			$this->globals_regex = '/'.LD.'('.implode('|', $global_names).')'.RD.'/';
+			$global_names = $this->chunkGlobalsArray($global_names);
+
+			$this->globals_regex[$cache_key] = array_map(
+				function($array)
+				{
+					return '/'.LD.'('.implode('|', $array).')'.RD.'/';
+				},
+				$global_names
+			);
 		}
 
-		return $this->globals_regex;
+		return $this->globals_regex[$cache_key];
+	}
+
+	/**
+	 * Chunks the globals array by groups to make sure their combined String
+	 * lengths doesn't exceed a certain number to prevent a "Regular Expression
+	 * too large" error in getGlobalsRegex() above
+	 *
+	 * @param	array	$globals	Array of preg_quoted variable names
+	 * @return	array	Chunked array of global variable names
+	 */
+	private function chunkGlobalsArray($globals)
+	{
+		$max_length = 30000;
+
+		$chunks = array(array());
+		$regex_length = 0;
+		$index = 0;
+		foreach ($globals as $variable)
+		{
+			$regex_length += strlen($variable) + 1; // + 1 for pipe
+			$chunks[$index][] = $variable;
+
+			if ($regex_length > $max_length)
+			{
+				$regex_length = 0;
+				$index++;
+			}
+		}
+
+		return $chunks;
 	}
 
 	// --------------------------------------------------------------------
@@ -1963,12 +2006,14 @@ class EE_Template {
 	 */
 	protected function _get_cache_prefix()
 	{
+		$language = ee()->session->get_language();
+
 		if (ee()->uri->uri_string != '')
 		{
-			return md5(ee()->functions->fetch_site_index().ee()->uri->uri_string);
+			return md5(ee()->functions->fetch_site_index().$language.ee()->uri->uri_string);
 		}
 
-		return md5(ee()->config->item('site_url').'index'.ee()->uri->query_string);
+		return md5(ee()->config->item('site_url').'index'.$language.ee()->uri->query_string);
 	}
 
 	// --------------------------------------------------------------------

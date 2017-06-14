@@ -507,8 +507,25 @@ class Groups extends Members\Members {
 						if ((bool)count(array_filter(array_keys($field['choices']), 'is_string')))
 						{
 							$result[$name] = array();
+
+							// RecursiveArrayIterator below will skip keys with
+							// arrays as values
 							foreach ($field['choices'] as $choice => $lang)
 							{
+								if (is_array($lang) && $result[$choice] === TRUE)
+								{
+									$result[$name][] = $choice;
+								}
+							}
+
+							// Dig into nested checkbox items
+							$iterator = new \RecursiveIteratorIterator(
+								new \RecursiveArrayIterator($field['choices'])
+							);
+							foreach ($iterator as $choice => $lang)
+							{
+								if ($choice == 'name' OR $choice == 'children') continue;
+
 								if ($result[$choice] === TRUE)
 								{
 									$result[$name][] = $choice;
@@ -584,6 +601,19 @@ class Groups extends Members\Members {
 						if (is_array($submitted))
 						{
 							$choices = array_keys($options['choices']);
+
+							// Dig into nested checkboxes to get input names
+							$iterator = new \RecursiveIteratorIterator(
+								new \RecursiveArrayIterator($options['choices'])
+							);
+							foreach ($iterator as $key => $value)
+							{
+								if ($key == 'name' OR $key == 'children') continue;
+
+								$choices[] = $key;
+							}
+
+							$choices = array_unique($choices);
 							$deselected = array_diff($choices, $submitted);
 
 							// Validate submitted against choices to prevent
@@ -1420,8 +1450,15 @@ class Groups extends Members\Members {
 							'fields' => array(
 								'access_tools' => array(
 									'type' => 'checkbox',
+									'nested' => TRUE,
 									'choices' => array(
-										'can_access_comm' => lang('can_access_communicate'),
+										'can_access_comm' => array(
+											'name' => lang('can_access_communicate'),
+											'children' => array(
+												'can_email_member_groups' => lang('can_email_member_groups'),
+												'can_send_cached_email' => lang('can_send_cached_email'),
+											)
+										),
 										'can_access_translate' => lang('can_access_translate'),
 										'can_access_import' => lang('can_access_import'),
 										'can_access_sql_manager' => lang('can_access_sql'),

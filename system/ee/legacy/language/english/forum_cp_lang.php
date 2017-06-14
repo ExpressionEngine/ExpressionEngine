@@ -161,7 +161,7 @@ $lang = array(
 
 'file_size' => 'File size',
 
-'file_size_desc' => 'Maximum file size in megabytes.',
+'file_size_desc' => 'Maximum file size in kilobytes.',
 
 'forum_directory' => 'Forum directory',
 

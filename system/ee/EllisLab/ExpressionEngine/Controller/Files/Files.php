@@ -392,7 +392,7 @@ class Files extends AbstractFilesController {
 				continue;
 			}
 
-			$res = $zip->addFile($file->getAbsolutePath());
+			$res = $zip->addFile($file->getAbsolutePath(), $file->file_name);
 
 			if ($res === FALSE)
 			{

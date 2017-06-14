@@ -871,7 +871,7 @@ class Members extends CP_Controller {
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
 			->all();
 
-		if (ee()->config->item('approved_member_notification'))
+		if (ee()->config->item('approved_member_notification') == 'y')
 		{
 			$template = ee('Model')->get('SpecialtyTemplate')
 				->filter('template_name', 'validated_member_notify')
@@ -937,7 +937,7 @@ class Members extends CP_Controller {
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
 			->all();
 
-		if (ee()->config->item('declined_member_notification'))
+		if (ee()->config->item('declined_member_notification') == 'y')
 		{
 			$template = ee('Model')->get('SpecialtyTemplate')
 				->filter('template_name', 'decline_member_validation')

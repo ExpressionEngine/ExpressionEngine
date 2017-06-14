@@ -351,6 +351,7 @@ class Member extends ContentModel {
 	public function getCPHomepageURL($site_id = NULL)
 	{
 		$cp_homepage = NULL;
+		$cp_homepage_custom = 'homepage';
 
 		if ( ! $site_id)
 		{

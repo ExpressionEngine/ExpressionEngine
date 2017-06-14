@@ -41,6 +41,7 @@
 class Member {
 
 	var $trigger			= 'member';
+	var $member_template	= TRUE;	
 	var $theme_class		= 'profile_theme';
 	var $request			= 'public_profile';
 	var $no_menu 			= array(
@@ -161,6 +162,7 @@ class Member {
 		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
 		{
 			$this->trigger = ee()->TMPL->fetch_param('profile_trigger', ee()->config->item('profile_trigger'));
+			$this->member_template = FALSE;
 		}
 		else
 		{
@@ -199,7 +201,10 @@ class Member {
 			$this->show_headings = FALSE;
 		}
 
-		$this->request = str_replace($this->trigger.'/', '', $this->request);
+		if ( ! $this->member_template)
+		{
+			$this->request = str_replace($this->trigger.'/', '', $this->request);
+		}
 
 		if ($this->request == $this->trigger)
 		{
