@@ -122,15 +122,18 @@ class SteppableTest extends \PHPUnit_Framework_TestCase {
 class Stepper {
 	use Steppable;
 
-	public $steps = [
-		'step1',
-		'step2',
-		'step3'
-	];
-
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;
 	public $step3_called = FALSE;
+
+	public function __construct()
+	{
+		$this->setSteps([
+			'step1',
+			'step2',
+			'step3'
+		]);
+	}
 
 	public function step1()
 	{
@@ -151,20 +154,23 @@ class Stepper {
 class StepperSkipSteps {
 	use Steppable;
 
-	public $steps = [
-		'step1',
-		'step2',
-		'step3'
-	];
-
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;
 	public $step3_called = FALSE;
 
+	public function __construct()
+	{
+		$this->setSteps([
+			'step1',
+			'step2',
+			'step3'
+		]);
+	}
+
 	public function step1()
 	{
 		$this->step1_called = TRUE;
-		return 'step3';
+		$this->setNextStep('step3');
 	}
 
 	public function step2()
@@ -181,13 +187,6 @@ class StepperSkipSteps {
 class StepperWithInjection {
 	use Steppable;
 
-	public $steps = [
-		'step1',
-		'step2',
-		'step3',
-		'step4'
-	];
-
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;
 	public $step3_called = FALSE;
@@ -197,6 +196,16 @@ class StepperWithInjection {
 	public $injectedWithMultipleParamsCalled = FALSE;
 	public $injectedWithMultipleParamsResult = [];
 
+	public function __construct()
+	{
+		$this->setSteps([
+			'step1',
+			'step2',
+			'step3',
+			'step4'
+		]);
+	}
+
 	public function step1()
 	{
 		$this->step1_called = TRUE;
@@ -205,30 +214,30 @@ class StepperWithInjection {
 	public function step2()
 	{
 		$this->step2_called = TRUE;
-		return 'injectedStep';
+		$this->setNextStep('injectedStep');
 	}
 
 	public function step3()
 	{
 		$this->step3_called = TRUE;
-		return 'step4';
+		$this->setNextStep('step4');
 	}
 
 	public function injectedStep()
 	{
 		$this->injectedStepCalled = TRUE;
-		return 'injectedWithParam[hello]';
+		$this->setNextStep('injectedWithParam[hello]');
 	}
 
 	public function injectedWithParam($hello)
 	{
 		$this->injectedWithParamCalled = TRUE;
-		return 'injectedWithMultipleParams['.$hello.',1234]';
+		$this->setNextStep('injectedWithMultipleParams['.$hello.',1234]');
 	}
 
 	public function injectedFreshRequest()
 	{
-		return 'step3';
+		$this->setNextStep('step3');
 	}
 
 	public function step4()
@@ -244,6 +253,11 @@ class StepperWithInjection {
 
 	public function injectNested($step)
 	{
-		return $step;
+		$this->setNextStep($step);
+	}
+
+	public function nestedStep($argument)
+	{
+		// Here just to pass the method_exists check from `testNestedInjectedStep`
 	}
 }

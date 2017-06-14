@@ -20,8 +20,6 @@ use EllisLab\ExpressionEngine\Updater\Service\Updater\Steppable;
 class DatabaseUpdater {
 	use Steppable;
 
-	protected $steps = [];
-
 	protected $from_version;
 	protected $filesystem;
 	protected $update_files_path;
@@ -39,7 +37,7 @@ class DatabaseUpdater {
 		$this->filesystem = $filesystem;
 		$this->update_files_path = SYSPATH . 'ee/installer/updates/';
 
-		$this->steps = $this->getSteps();
+		$this->setSteps($this->getSteps());
 	}
 
 	/**

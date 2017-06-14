@@ -21,19 +21,19 @@ class Runner {
 		runStep as runStepParent;
 	}
 
-	// The idea here is to separate the download and unpacking
-	// process into quick, hopefully low-memory tasks when accessed
-	// through the browser
-	protected $steps = [
-		'preflight',
-		'download',
-		'unpack'
-	];
-
 	protected $logger;
 
 	public function __construct()
 	{
+		// The idea here is to separate the download and unpacking
+		// process into quick, hopefully low-memory tasks when accessed
+		// through the browser
+		$this->setSteps([
+			'preflight',
+			'download',
+			'unpack'
+		]);
+
 		$this->logger = ee('Updater/Logger');
 
 		// Attempt to set time and memory limits

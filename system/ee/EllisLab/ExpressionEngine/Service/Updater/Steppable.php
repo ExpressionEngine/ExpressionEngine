@@ -17,14 +17,60 @@ namespace EllisLab\ExpressionEngine\Service\Updater;
 trait Steppable {
 
 	/**
+	 * Stores list of methods to call on the implementing class
+	 */
+	private $steps;
+
+	/**
 	 * Stores the current step being run
 	 */
-	protected $currentStep;
+	private $currentStep;
 
 	/**
 	 * Stores the next step if one is returned by the current step
 	 */
-	protected $nextStep;
+	private $nextStep;
+
+	/**
+	 * Set the steps (method names) to run through
+	 *
+	 * @param	array	$steps	Method names
+	 */
+	public function setSteps(Array $steps)
+	{
+		$this->steps = $steps;
+	}
+
+	/**
+	 * Sets the next step to be called. After that step is called, the queue
+	 * will pick up where it left off.
+	 *
+	 * @param	string	$steps	Method name, with optional parameters, e.g.:
+	 *   'methodName[1,2]'
+	 */
+	public function setNextStep($step)
+	{
+		list($method, $parameters) = $this->parseStepString($step);
+
+		if ( ! method_exists($this, $method))
+		{
+			throw new UpdaterException('Method does not exist on this Steppable class: '.$method, 20);
+		}
+
+		$index = array_search($this->currentStep, $this->steps);
+
+		if ($index === FALSE OR in_array($step, $this->steps))
+		{
+			$this->nextStep = $step;
+			return;
+		}
+
+		// Inject this step into our steps array
+		if ( ! in_array($step, $this->steps))
+		{
+			array_splice($this->steps, $index + 1, 0, $step);
+		}
+	}
 
 	/**
 	 * Runs all steps in sequence
@@ -47,25 +93,7 @@ trait Steppable {
 
 		list($step, $parameters) = $this->parseStepString($step);
 
-		$return = call_user_func_array([$this, $step], $parameters);
-
-		// If we got a string back, we assume it's a method name with optional
-		// parameters, insert it into the steps array to be called next
-		if (is_string($return))
-		{
-			$index = array_search($this->currentStep, $this->steps);
-
-			if ($index === FALSE OR in_array($return, $this->steps))
-			{
-				$this->nextStep = $return;
-				return;
-			}
-
-			if ( ! in_array($return, $this->steps))
-			{
-				array_splice($this->steps, $index + 1, 0, $return);
-			}
-		}
+		call_user_func_array([$this, $step], $parameters);
 	}
 
 	/**
@@ -97,7 +125,7 @@ trait Steppable {
 	 */
 	public function getFirstStep()
 	{
-		return $this->steps[0];
+		return isset($this->steps[0]) ? $this->steps[0] : FALSE;
 	}
 
 	/**

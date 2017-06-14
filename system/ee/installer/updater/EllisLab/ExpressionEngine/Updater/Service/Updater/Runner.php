@@ -22,21 +22,18 @@ class Runner {
 		runStep as runStepParent;
 	}
 
-	// The idea here is to separate the download and unpacking
-	// process into quick, hopefully low-memory tasks when accessed
-	// through the browser
-	protected $steps = [
-		'updateFiles',
-		'checkForDbUpdates',
-		'backupDatabase',
-		'updateDatabase',
-		'selfDestruct'
-	];
-
 	protected $logger;
 
 	public function __construct()
 	{
+		$this->setSteps([
+			'updateFiles',
+			'checkForDbUpdates',
+			'backupDatabase',
+			'updateDatabase',
+			'selfDestruct'
+		]);
+
 		$this->logger = $this->makeLoggerService();
 	}
 
@@ -59,7 +56,7 @@ class Runner {
 
 		if (empty($affected_tables))
 		{
-			return 'updateDatabase';
+			return $this->setNextStep('updateDatabase');
 		}
 
 		$this->makeLoggerService()
@@ -97,7 +94,13 @@ class Runner {
 		{
 			$logger->log('Continuing backup at table '.$table_name.', offset '.$offset);
 
-			return sprintf('backupDatabase[%s,%s]', $returned['table_name'], $returned['offset']);
+			return $this->setNextStep(
+				sprintf(
+					'backupDatabase[%s,%s]',
+					$returned['table_name'],
+					$returned['offset']
+				)
+			);
 		}
 
 		// Rename this file so that we know it's a complete backup
@@ -111,7 +114,7 @@ class Runner {
 
 		$logger->log('Database backup complete: ' . $destination);
 
-		return 'updateDatabase';
+		$this->setNextStep('updateDatabase');
 	}
 
 	/**
@@ -137,13 +140,15 @@ class Runner {
 
 			if ($db_updater->getNextStep())
 			{
-				return sprintf('updateDatabase[%s]', $db_updater->getNextStep());
+				return $this->setNextStep(
+					sprintf('updateDatabase[%s]', $db_updater->getNextStep())
+				);
 			}
 		}
 
 		ee('Filesystem')->deleteDir(SYSPATH.'ee/installer');
 
-		return 'selfDestruct';
+		$this->setNextStep('rollback');
 	}
 
 	/**
@@ -167,10 +172,10 @@ class Runner {
 
 		if (file_exists(PATH_CACHE.'ee_update/database.sql'))
 		{
-			return 'restoreDatabase';
+			return $this->setNextStep('restoreDatabase');
 		}
 
-		return 'selfDestruct';
+		$this->setNextStep('selfDestruct');
 	}
 
 	/**
@@ -183,7 +188,7 @@ class Runner {
 
 		ee('Database/Restore')->restoreLineByLine($db_path);
 
-		return 'selfDestruct';
+		$this->setNextStep('selfDestruct');
 	}
 
 	/**
