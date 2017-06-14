@@ -120,7 +120,7 @@ class Pages_mcp {
 				if ( ! isset($titles[$entry_id]))
 				{
 					ee()->load->library('logger');
-					ee()->logger->developer('Pages entry does not exist: '.(int) $entry_id, TRUE, 1209600);
+					ee()->logger->developer('Pages entry does not exist: '.(int) $entry_id.'. Contact support@expressionengine.com for assistance.', TRUE, 1209600);
 					continue;
 				}
 
