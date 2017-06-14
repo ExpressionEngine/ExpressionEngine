@@ -116,6 +116,14 @@ class Pages_mcp {
 
 			foreach($pages[$site_id]['uris'] as $entry_id => $url)
 			{
+				// shouldn't happen, but in case Pages array is out of sync
+				if ( ! isset($titles[$entry_id]))
+				{
+					ee()->load->library('logger');
+					ee()->logger->developer('Pages entry does not exist: '.(int) $entry_id, TRUE, 1209600);
+					continue;
+				}
+
 				$checkbox = array(
 					'name' => 'selection[]',
 					'value' => $entry_id,
