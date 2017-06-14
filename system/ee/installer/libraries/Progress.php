@@ -32,7 +32,7 @@ class Progress {
 	 */
 	public function update_state($new_state)
 	{
-		session_start();
+		if (session_status() == PHP_SESSION_NONE) session_start();
 		$_SESSION['_progress_state'] = $new_state;
 		session_write_close();
 	}
