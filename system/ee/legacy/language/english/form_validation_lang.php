@@ -68,9 +68,9 @@ $lang = array(
 
 
 /* Legacy form validation lib */
-'file_exists' => 'invalid_path',
+'file_exists' => 'This path is either invalid or not writable.',
 
-'writable' => 'invalid_path',
+'writable' => 'This path is either invalid or not writable.',
 
 
 /* special and legacy things */
