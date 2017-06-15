@@ -33,11 +33,15 @@
 								ExpressionEngine <?=$new_version['version']?><br>
 								<em><?=lang('build') . ' ' . $new_version['build']?></em>
 							</p>
-								<a href="" class="close">&#10006;</a>
-								<div class="status out"><?=lang('out_of_date')?></div>
+								<div class="status out">
+									<a href="" class="close"></a>
+									<?=lang('out_of_date')?>
+								</div>
 							<?php else: ?>
-								<a href="" class="close">&#10006;</a>
-								<div class="status"><?=lang('current')?></div>
+								<div class="status">
+									<a href="" class="close"></a>
+									<?=lang('current')?>
+								</div>
 							<?php endif ?>
 						</div>
 					</div>
