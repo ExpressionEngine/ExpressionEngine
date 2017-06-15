@@ -83,6 +83,14 @@ class EE_Exceptions {
 
 		list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
+		if (REQ == 'CLI')
+		{
+			stdout('PHP '.$error_category.':', CLI_STDOUT_FAILURE);
+			echo $message . "\n";
+			echo $filepath . ": $line\n\n";
+			return;
+		}
+
 		$filepath = str_replace("\\", "/", $filepath);
 		$filepath = str_replace(SYSPATH, '', $filepath);
 
