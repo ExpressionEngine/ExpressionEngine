@@ -516,7 +516,19 @@ class Template extends AbstractDesignController {
 
 	public function search()
 	{
-		if (ee()->input->post('bulk_action') == 'export')
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			if (ee()->cp->allowed_group('can_delete_templates'))
+			{
+				$this->removeTemplates(ee()->input->post('selection'));
+				ee()->functions->redirect(ee('CP/URL')->make('design/template/search', ee()->cp->get_url_state()));
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'), 403);
+			}
+		}
+		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->exportTemplates(ee()->input->post('selection'));
 		}
@@ -558,6 +570,7 @@ class Template extends AbstractDesignController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['show_new_template_button'] = FALSE;
+		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 
 		if ( ! empty($vars['table']['data']))
 		{

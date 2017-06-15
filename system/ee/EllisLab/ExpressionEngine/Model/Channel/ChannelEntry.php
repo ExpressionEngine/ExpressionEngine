@@ -658,6 +658,11 @@ class ChannelEntry extends ContentModel {
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
+		if ($this->isNew() OR empty($categories))
+		{
+			$this->Categories = NULL;
+		}
+
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
@@ -665,8 +670,6 @@ class ChannelEntry extends ContentModel {
 				$this->setRawProperty('cat_group_id_'.$cat_group, '');
 				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
-
-			$this->Categories = NULL;
 
 			return;
 		}
@@ -694,6 +697,22 @@ class ChannelEntry extends ContentModel {
 				foreach ($group_cat_objects as $cat)
 				{
 					$set_cats[] = $cat;
+				}
+
+				$cat_ids = $group_cat_objects->pluck('cat_id');
+				if (ee()->config->item('auto_assign_cat_parents') == 'y')
+				{
+					foreach ($set_cats as $cat)
+					{
+						while ($cat->Parent !== NULL)
+						{
+							$cat = $cat->Parent;
+							if ( ! in_array($cat->getId(), $cat_ids))
+							{
+								$set_cats[] = $cat;
+							}
+						}
+					}
 				}
 			}
 		}

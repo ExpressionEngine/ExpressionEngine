@@ -191,7 +191,15 @@ class MimeType {
 	 */
 	public function fileIsImage($path)
 	{
-		return $this->isImage($this->ofFile($path));
+		if ( ! $this->isImage($this->ofFile($path)))
+		{
+			return FALSE;
+		}
+
+		// If the reported mime-type is an image we'll do an extra validation
+		// step and try to create an image from the data.
+		$im = @imagecreatefromstring(file_get_contents($path));
+		return $im !== FALSE;
 	}
 
 	/**

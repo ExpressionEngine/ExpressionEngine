@@ -79,6 +79,11 @@ class Pages_mcp {
 			$this->delete();
 		}
 
+		if ($this->homepage_display == 'nested')
+		{
+			return $this->nested();
+		}
+
 		$base_url = ee('CP/URL')->make('addons/settings/pages');
 		$site_id = ee()->config->item('site_id');
 
@@ -111,6 +116,14 @@ class Pages_mcp {
 
 			foreach($pages[$site_id]['uris'] as $entry_id => $url)
 			{
+				// shouldn't happen, but in case Pages array is out of sync
+				if ( ! isset($titles[$entry_id]))
+				{
+					ee()->load->library('logger');
+					ee()->logger->developer('Pages entry does not exist: '.(int) $entry_id.'. Contact support@expressionengine.com for assistance.', TRUE, 1209600);
+					continue;
+				}
+
 				$checkbox = array(
 					'name' => 'selection[]',
 					'value' => $entry_id,
@@ -158,8 +171,78 @@ class Pages_mcp {
 			'heading' => lang('pages_manager'),
 			'body' => ee('View')->make('pages:index')->render($vars)
 		);
+	}
 
-		return ee('View')->make('pages:index')->render($vars);
+	/**
+	 *  Provides nested pages view
+	 */
+	private function nested()
+	{
+		$vars = array(
+			'pages' => $this->getPagesTree(),
+			'base_url' => ee('CP/URL')->make('addons/settings/pages')
+		);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('page') . ': <b>### ' . lang('pages') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove'),
+		));
+
+		return array(
+			'heading' => lang('pages_manager'),
+			'body' => ee('View')->make('pages:nested')->render($vars)
+		);
+	}
+
+	/**
+	 *  Constructs a tree data structure from Page URIs
+	 */
+	private function getPagesTree()
+	{
+		$pages = ee()->config->item('site_pages');
+		$site_id = ee()->config->item('site_id');
+
+		$tree_list = array();
+		$lookup = array();
+
+		foreach($pages[$site_id]['uris'] as $entry_id => $uri)
+		{
+			$lookup[trim($uri, '/')] = $entry_id;
+		}
+
+		$entries = ee('Model')->get('ChannelEntry', array_values($lookup))
+			->fields('entry_id', 'title', 'channel_id')
+			->all();
+
+		$titles = $entries->getDictionary('entry_id', 'title');
+
+		ksort($lookup);
+
+		foreach($lookup as $uri => $entry_id)
+		{
+			if (empty($uri)) continue;
+
+			$segments = explode('/', $uri);
+			array_pop($segments);
+			$parent_uri = implode('/', $segments);
+
+			$page = array(
+				'id' => $entry_id,
+				'parent_id' => NULL,
+				'title' => htmlentities($titles[$entry_id], ENT_QUOTES, 'UTF-8'),
+				'uri' => $uri
+			);
+
+			if (isset($lookup[$parent_uri]))
+			{
+				$page['parent_id'] = $lookup[$parent_uri];
+			}
+
+			$tree_list[] = $page;
+		}
+
+		ee()->load->library('datastructures/tree');
+		return ee()->tree->from_list($tree_list);
 	}
 
 	/**
@@ -189,7 +272,11 @@ class Pages_mcp {
 				->withTitle(lang('success'))
 				->addToBody(lang('pages_deleted_desc'))
 				->addToBody($urls)
-				->now();
+				->defer();
+
+			ee()->functions->redirect(
+				ee('CP/URL')->make('addons/settings/pages')
+			);
 		}
 	}
 

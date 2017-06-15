@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 use StdClass;
 use ZipArchive;
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Export {
 
@@ -37,7 +38,8 @@ class Export {
 
 		if ( ! is_dir(PATH_CACHE.'cset/'))
 		{
-			mkdir(PATH_CACHE.'cset/', DIR_WRITE_MODE);
+			$filesystem = new Filesystem();
+			$filesystem->mkdir(PATH_CACHE.'cset/');
 		}
 
 		$this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);

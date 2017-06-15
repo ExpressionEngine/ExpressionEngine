@@ -64,7 +64,12 @@ if ( ! filter_var($url, FILTER_VALIDATE_URL) OR $link !== ee('Security/XSS')->cl
 // Make sure all requests to iframe this page are denied
 header('X-Frame-Options: SAMEORIGIN');
 
-if ($force_redirect == TRUE OR ( ! isset($_SERVER['HTTP_REFERER']) OR ! stristr($_SERVER['HTTP_REFERER'], $host)))
+$referrer_parts = isset($_SERVER['HTTP_REFERER'])
+	? parse_url($_SERVER['HTTP_REFERER'])
+	: FALSE;
+
+if ($force_redirect == TRUE
+	OR ( ! $referrer_parts OR $referrer_parts['host'] !== $host))
 {
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not

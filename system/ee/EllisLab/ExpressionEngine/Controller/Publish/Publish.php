@@ -68,6 +68,16 @@ class Publish extends AbstractPublishController {
 	}
 
 	/**
+	 * AJAX end-point for relationship field filtering
+	 */
+	public function relationshipFilter()
+	{
+		ee()->load->add_package_path(PATH_ADDONS.'relationship');
+		ee()->load->library('EntryList');
+		ee()->output->send_ajax_response(ee()->entrylist->ajaxFilter());
+	}
+
+	/**
 	 * Autosaves a channel entry
 	 *
 	 * @param int $channel_id The Channel ID

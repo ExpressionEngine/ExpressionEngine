@@ -171,6 +171,10 @@ class Table {
 			$defaults['page'] = $_GET['page'];
 		}
 
+		$defaults = array_map(function($value) {
+			return htmlentities($value, ENT_QUOTES, 'UTF-8');
+		}, $defaults);
+
 		return new static(array_merge($config, $defaults));
 	}
 

@@ -615,9 +615,11 @@ class EE_Template {
 	 */
 	private function getGlobalsRegex()
 	{
-		if ( ! isset($this->globals_regex))
+		$global_names = array_keys(ee()->config->_global_vars);
+		$cache_key = md5(serialize($global_names));
+
+		if ( ! isset($this->globals_regex[$cache_key]))
 		{
-			$global_names = array_keys(ee()->config->_global_vars);
 			$global_names = array_map(
 				function($str)
 				{
@@ -628,7 +630,7 @@ class EE_Template {
 
 			$global_names = $this->chunkGlobalsArray($global_names);
 
-			$this->globals_regex = array_map(
+			$this->globals_regex[$cache_key] = array_map(
 				function($array)
 				{
 					return '/'.LD.'('.implode('|', $array).')'.RD.'/';
@@ -637,7 +639,7 @@ class EE_Template {
 			);
 		}
 
-		return $this->globals_regex;
+		return $this->globals_regex[$cache_key];
 	}
 
 	/**

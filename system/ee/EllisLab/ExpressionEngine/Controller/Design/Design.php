@@ -118,7 +118,7 @@ class Design extends AbstractDesignController {
 		{
 			if ($this->hasEditTemplatePrivileges($group->group_id))
 			{
-				$this->remove(ee()->input->post('selection'));
+				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name, ee()->cp->get_url_state()));
 			}
 			else
@@ -170,38 +170,6 @@ class Design extends AbstractDesignController {
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);
 
 		ee()->cp->render('design/index', $vars);
-	}
-
-	private function remove($template_ids)
-	{
-		if ( ! ee()->cp->allowed_group('can_delete_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! is_array($template_ids))
-		{
-			$template_ids = array($template_ids);
-		}
-
-		$template_names = array();
-		$templates = ee('Model')->get('Template', $template_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		foreach ($templates as $template)
-		{
-			$template_names[] = $template->getTemplateGroup()->group_name . '/' . $template->template_name;
-		}
-
-		$templates->delete();
-
-		ee('CP/Alert')->makeInline('shared-form')
-			->asSuccess()
-			->withTitle(lang('success'))
-			->addToBody(lang('templates_removed_desc'))
-			->addToBody($template_names)
-			->defer();
 	}
 
 	/**

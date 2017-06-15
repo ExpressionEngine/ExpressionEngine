@@ -582,6 +582,38 @@ abstract class AbstractDesign extends CP_Controller {
 		$template->Versions = $versions;
 		$template->save();
 	}
+
+	protected function removeTemplates($template_ids)
+	{
+		if ( ! ee()->cp->allowed_group('can_delete_templates'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! is_array($template_ids))
+		{
+			$template_ids = array($template_ids);
+		}
+
+		$template_names = array();
+		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		foreach ($templates as $template)
+		{
+			$template_names[] = $template->getTemplateGroup()->group_name . '/' . $template->template_name;
+		}
+
+		$templates->delete();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('templates_removed_desc'))
+			->addToBody($template_names)
+			->defer();
+	}
 }
 
 // EOF

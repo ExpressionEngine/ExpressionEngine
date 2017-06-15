@@ -396,14 +396,14 @@ class Updater {
 
 		foreach ($layouts as $layout)
 		{
-			// Account for any new fields that have been added to the channel
-			// since the last edit
-			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
-
 			if ( ! isset($layout->Channel))
 			{
 				continue;
 			}
+
+			// Account for any new fields that have been added to the channel
+			// since the last edit
+			$custom_fields = $layout->Channel->CustomFields->getDictionary('field_id', 'field_id');
 
 			foreach ($layout->field_layout as $section)
 			{

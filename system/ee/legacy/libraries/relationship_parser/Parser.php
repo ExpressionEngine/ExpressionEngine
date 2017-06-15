@@ -409,7 +409,7 @@ class EE_Relationship_data_parser {
 		$entry_ids = $entry_ids[$parent_id];
 
 		// reorder the ids
-		if ($node->param('orderby'))
+		if ($node->param('orderby') OR $node->param('sticky', 'yes') == 'yes')
 		{
 			$entry_ids = $this->_apply_sort($node, $entry_ids);
 		}
@@ -656,14 +656,20 @@ class EE_Relationship_data_parser {
 	 */
 	public function _apply_sort($node, $entry_ids)
 	{
-		$order_by = explode('|', $node->param('orderby'));
+		$order_by = array_filter(explode('|', $node->param('orderby')));
 		$sort = explode('|', $node->param('sort', 'desc'));
 
 		// random
-		if ($order_by[0] == 'random')
+		if ( ! empty($order_by) && $order_by[0] == 'random')
 		{
 			shuffle($entry_ids);
 			return $entry_ids;
+		}
+
+		if ($node->param('sticky', 'yes') == 'yes')
+		{
+			$order_by = array_merge(array('sticky'), $order_by);
+			$sort = array_merge(array('desc'), $sort);
 		}
 
 		// custom field
@@ -691,21 +697,19 @@ class EE_Relationship_data_parser {
 			{
 				$k = ($k == 'date') ? 'entry_date' : $k;
 
-				$columns[$k][] = $data[$k];
+				$columns[$k][] = strtolower($data[$k]);
 			}
 		}
-
-		// default everyting to desc
-		$sort = $sort + array_fill_keys(array_keys($order_by), 'desc');
 
 		// fill array_multisort parameters
 		$sort_parameters = array();
 
 		foreach ($order_by as $i => $v)
 		{
-			$sort_parameters[] =& $columns[$v];
-			$sort_flag = constant('SORT_'.strtoupper($sort[$i]));
-			$sort_parameters[] =& $sort_flag;
+			$sort_parameters[] = $columns[$v];
+			$sort_flag = isset($sort[$i]) ? $sort[$i] : 'desc';
+			$sort_flag = constant('SORT_'.strtoupper($sort_flag));
+			$sort_parameters[] = $sort_flag;
 		}
 
 		$sort_parameters[] = &$entry_ids;
