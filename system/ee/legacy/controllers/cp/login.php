@@ -474,7 +474,7 @@ class Login extends CP_Controller {
 		}
 
 		$this->view->email = ( ! $this->input->post('email')) ? '' : $this->input->get_post('email');
-		$this->view->cp_page_title = lang('forgotten_password');
+		$this->view->cp_page_title = lang('new_password');
 		$this->view->focus_field = 'email';
 
 		if ( ! isset($this->view->message))

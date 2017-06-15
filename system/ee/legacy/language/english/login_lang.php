@@ -34,9 +34,11 @@ $lang = array(
 // Reset Password
 //-----------------------------------
 
-'email_address' => 'Email address',
+'email_address' => 'e-mail address',
 
 'forgotten_password' => 'I forgot my password',
+
+'remind_me' => 'Remind me',
 
 'no_reset_id' => 'The password reset token does not appear to be valid.  Please check the link you followed.',
 
