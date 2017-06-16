@@ -689,7 +689,7 @@ class EE_Relationship_data_parser {
 		// split into columns
 		$columns = array_fill_keys($order_by, array());
 
-		foreach ($entry_ids as $entry_id)
+		foreach ($entry_ids as $rel_order => $entry_id)
 		{
 			$data = $this->entry($entry_id);
 
@@ -699,15 +699,21 @@ class EE_Relationship_data_parser {
 
 				$columns[$k][] = strtolower($data[$k]);
 			}
+
+			$columns['rel_order'][] = $rel_order;
 		}
 
 		// fill array_multisort parameters
 		$sort_parameters = array();
 
+		// Fall back to sorting by relationship order after all else
+		$order_by[] = 'rel_order';
+
 		foreach ($order_by as $i => $v)
 		{
 			$sort_parameters[] = $columns[$v];
-			$sort_flag = isset($sort[$i]) ? $sort[$i] : 'desc';
+			$sort_flag = ((isset($sort[$i]) && $sort[$i] == 'asc') OR $v == 'rel_order')
+				? 'asc' : 'desc';
 			$sort_flag = constant('SORT_'.strtoupper($sort_flag));
 			$sort_parameters[] = $sort_flag;
 		}
