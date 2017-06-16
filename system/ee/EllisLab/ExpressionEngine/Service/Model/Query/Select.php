@@ -311,6 +311,7 @@ class Select extends Query {
 		if (strpos($property, '.') !== FALSE)
 		{
 			list($alias, $property) = explode('.', $property);
+			list($from, $alias) = $this->splitAlias($alias);
 			$from = $this->expandAlias($alias);
 		}
 		else
