@@ -514,6 +514,8 @@ $lang = array(
 
 'return_to_login' => 'Return to login page',
 
+'screen_name_taken' => 'The screen name you chose is not available',
+
 'search_field' => 'Search Field',
 
 'search_glass' => 'Search Glass',

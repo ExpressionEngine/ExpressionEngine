@@ -112,6 +112,7 @@ class Member extends ContentModel {
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|validateUsername',
+		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
@@ -480,6 +481,32 @@ class Member extends ContentModel {
 			if (ee()->session->ban_check('username', $username))
 			{
 				return 'username_taken';
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Validation callback for screen name
+	 */
+	public function validateScreenName($key, $screen_name)
+	{
+		if (preg_match('/[\{\}<>]/', $screen_name))
+		{
+			return 'disallowed_screen_chars';
+		}
+
+		if (strlen($screen_name) > USERNAME_MAX_LENGTH)
+		{
+			return 'screenname_too_long';
+		}
+
+		if ($this->isNew())
+		{
+			if (ee()->session->ban_check('screen_name', $screen_name))
+			{
+				return 'screen_name_taken';
 			}
 		}
 
