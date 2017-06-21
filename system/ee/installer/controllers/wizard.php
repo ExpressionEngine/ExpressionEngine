@@ -763,6 +763,7 @@ class Wizard extends CI_Controller {
 		// Load the DB schema
 		require APPPATH.'schema/mysqli_schema.php';
 		$this->schema = new EE_Schema();
+		$this->schema->version = $this->version;
 
 		// Assign the userdata array to the schema class
 		$this->schema->userdata   =& $this->userdata;

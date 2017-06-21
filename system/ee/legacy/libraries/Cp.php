@@ -212,6 +212,7 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 		ee()->view->version_identifier = APP_VER_ID;
+		ee()->view->show_news_button = $this->shouldShowNewsButton();
 
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
@@ -223,6 +224,21 @@ class Cp {
 		}
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	/**
+	 * Determines whether or not the news button beside the version number
+	 * should be shown
+	 *
+	 * @return boolean
+	 */
+	protected function shouldShowNewsButton()
+	{
+		$news_view = ee('Model')->get('MemberNewsView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		return ( ! $news_view OR version_compare(APP_VER, $news_view->version, '>'));
 	}
 
 	protected function validateLicense()

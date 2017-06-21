@@ -192,6 +192,34 @@ class Homepage extends CP_Controller {
 		ee()->functions->redirect($return);
 	}
 
+	/**
+	 * Records that the changelog for this version of EE has been viewed by
+	 * this member, and then redirects to the changelog.
+	 */
+	public function showChangelog()
+	{
+		$news_view = ee('Model')->get('MemberNewsView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		if ( ! $news_view)
+		{
+			$news_view = ee('Model')->make(
+				'MemberNewsView',
+				['member_id' => ee()->session->userdata('member_id')]
+			);
+		}
+
+		$news_view->version = APP_VER;
+		$news_view->save();
+
+		// Version in anchor is separated by dashes instead of dots
+		$dashed_version = implode('-', explode('.', APP_VER));
+		$changelog_url = 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
+
+		ee()->functions->redirect($changelog_url);
+	}
+
 }
 
 // EOF

@@ -45,6 +45,7 @@ DROP TABLE IF EXISTS `exp_member_groups`;
 DROP TABLE IF EXISTS `exp_member_fields`;
 DROP TABLE IF EXISTS `exp_member_data`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
+DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_layout_publish`;
 DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
 DROP TABLE IF EXISTS `exp_html_buttons`;
@@ -881,6 +882,13 @@ CREATE TABLE `exp_member_homepage` (
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE exp_member_news_views (
+    news_id int(10) unsigned NOT NULL auto_increment,
+    version varchar(10) NULL,
+    member_id int(10) unsigned NOT NULL DEFAULT '0',
+    PRIMARY KEY `news_id` (`news_id`),
+    KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_search` (
   `search_id` varchar(32) NOT NULL,
@@ -1839,6 +1847,9 @@ INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `
 
 UNLOCK TABLES;
 
+LOCK TABLES `exp_member_news_views` WRITE;
+INSERT INTO `exp_member_news_views` (`member_id`, `version`) VALUES (1, '4.0.0');
+UNLOCK TABLES;
 
 LOCK TABLES `exp_message_attachments` WRITE;
 UNLOCK TABLES;

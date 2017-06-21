@@ -420,6 +420,7 @@ return array(
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
+			'MemberNewsView' => 'Model\Member\NewsView',
 
 			// ..\Menu
 			'MenuSet' => 'Model\Menu\MenuSet',
