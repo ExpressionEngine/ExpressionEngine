@@ -235,7 +235,9 @@ class EE_Functions {
 	 */
 	public function fetch_current_uri()
 	{
-		return rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
+		$url = rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
+		$url = str_replace(array('"', "'"), array('%22', '%27'), $url);
+		return $url;
 	}
 
 	// --------------------------------------------------------------------
