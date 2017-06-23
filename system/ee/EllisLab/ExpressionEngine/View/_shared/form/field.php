@@ -90,9 +90,13 @@ case 'inline_radio': ?>
 	<?php endforeach ?>
 <?php break;
 
-case 'yes_no': ?>
-	<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang('yes')?></label>
-	<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang('no')?></label>
+case 'yes_no':
+case 'toggle': ?>
+	<?php $this->embed('ee:_shared/form/fields/toggle', [
+		'yes_no' => ($field['type'] == 'yes_no'),
+		'value' => $value,
+		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE)
+	]); ?>
 <?php break;
 
 case 'select': ?>
