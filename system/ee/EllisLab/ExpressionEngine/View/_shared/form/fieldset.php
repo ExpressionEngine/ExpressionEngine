@@ -24,7 +24,7 @@ foreach ($setting['fields'] as $field_name => $field)
 {
 	if (isset($field['required']) && $field['required'] == TRUE)
 	{
-		$fieldset_classes .= ' required';
+		$fieldset_classes .= 'fieldset-required';
 		break;
 	}
 }
@@ -55,7 +55,7 @@ if (isset($errors))
 	{
 		if ($errors->hasErrors($field))
 		{
-			$fieldset_classes .= ' invalid';
+			$fieldset_classes .= ' fieldset-invalid';
 			break;
 		}
 	}
@@ -74,10 +74,10 @@ if (isset($setting['group']))
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
-<<?=$element?> class="col-group<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
-	<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
+<<?=$element?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
-		<h3><?=lang($setting['title'])?></h3>
+		<label><?=lang($setting['title'])?></label>
 		<?php endif; ?>
 		<?php if (isset($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
@@ -96,7 +96,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<p><button class="btn action submit mf-link" type="button" rel="<?=$rel?>"><?=lang($button['text'])?></button></p>
 		<?php endif; ?>
 	</div>
-	<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
+	<div class="field-control">
 		<?php
 			foreach ($setting['fields'] as $field_name => $field)
 			{
