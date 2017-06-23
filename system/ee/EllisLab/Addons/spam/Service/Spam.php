@@ -85,7 +85,7 @@ class Spam implements SpamProtocol {
 	 * @param string $doc      The document that was classified as spam
 	 * @return void
 	 */
-	public function moderate($file, $class, $approve_method, $remove_method, $content, $doc)
+	public function moderate_old($file, $class, $approve_method, $remove_method, $content, $doc)
 	{
 		$data = array(
 			'file' => $file,
@@ -98,6 +98,22 @@ class Spam implements SpamProtocol {
 			'data' => serialize($content),
 			'document' => $doc
 		);
+		$trap = ee('Model')->make('spam:SpamTrap', $data);
+		$trap->save();
+	}
+
+	public function moderate($content_type, $namespace, $entity, $document)
+	{
+		$data = [
+			'content_type' => $content_type,
+			'namespace'    => $namespace,
+			'author_id'    => ee()->session->userdata('member_id'),
+			'trap_date'    => ee()->localize->now,
+			'ip_address'   => $_SERVER['REMOTE_ADDR'],
+			'entity'       => serialize($entity),
+			'document'     => $document
+		];
+
 		$trap = ee('Model')->make('spam:SpamTrap', $data);
 		$trap->save();
 	}

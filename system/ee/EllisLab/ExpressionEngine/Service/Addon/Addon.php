@@ -559,6 +559,21 @@ class Addon {
 	{
 		require_once $this->getPath()."/{$prefix}.".$this->getPrefix().'.php';
 	}
+
+	public function hasSpam()
+	{
+		return $this->provider->getSpamEnabled();
+	}
+
+	public function getSpamApproveClass()
+	{
+		return $this->getFullyQualified($this->provider->get('spam.approve'));
+	}
+
+	public function getSpamRejectClass()
+	{
+		return $this->getFullyQualified($this->provider->get('spam.reject'));
+	}
 }
 
 // EOF

@@ -163,6 +163,13 @@ class Provider extends InjectionBindingDecorator {
 		return $this->get('namespace');
 	}
 
+	public function getSpamEnabled()
+	{
+		return $this->get('spam.enabled', FALSE);
+	}
+
+
+
 	/**
 	 * Get the 'services' key
 	 *

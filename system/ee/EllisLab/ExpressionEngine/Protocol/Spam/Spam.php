@@ -48,5 +48,7 @@ interface Spam {
 	 * @param string $doc      The document that was classified as spam
 	 * @return void
 	 */
-	public function moderate($file, $class, $approve_method, $remove_method, $content, $doc);
+	public function moderate_old($file, $class, $approve_method, $remove_method, $content, $doc);
+
+	public function moderate($content_type, $namespace, $entity, $document);
 }

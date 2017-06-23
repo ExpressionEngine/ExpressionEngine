@@ -10,14 +10,14 @@ class SpamTrap extends Model {
 	protected static $_primary_key = 'trap_id';
 
 	protected static $_typed_columns = array(
-		'date' => 'timestamp'
+		'trap_date' => 'timestamp'
 	);
 
 	protected static $_relationships = array(
 		'Author' => array(
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
-			'from_key' => 'author',
+			'from_key' => 'author_id',
 			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'trap_id',
@@ -26,16 +26,14 @@ class SpamTrap extends Model {
 		)
 	);
 
-	protected $trap_id;
-	protected $author;
-	protected $ip_address;
-	protected $date;
-	protected $file;
-	protected $class;
-	protected $approve;
-	protected $remove;
-	protected $data;
+	protected $author_id;
+	protected $content_type;
 	protected $document;
+	protected $entity;
+	protected $ip_address;
+	protected $namespace;
+	protected $trap_date;
+	protected $trap_id;
 
 }
 
