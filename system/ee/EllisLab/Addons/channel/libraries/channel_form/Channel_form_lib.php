@@ -1762,6 +1762,13 @@ GRID_FALLBACK;
 
 		ee()->config->set_item('site_id', $this->site_id);
 
+		// Structure category data the way the ChannelEntry model expects it
+		$cat_groups = explode('|', $this->entry->Channel->cat_group);
+		if ( ! empty($cat_groups) && isset($_POST['category']))
+		{
+			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => $_POST['category']);
+		}
+
 		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
 			// Lastly we check for spam before inserting the data
@@ -1777,11 +1784,7 @@ GRID_FALLBACK;
 				$this->entry->set($entry_data);
 				$this->entry->edit_date = ee()->localize->now;
 
-				if (isset($_POST['category']) && is_array($_POST['category']))
-				{
-					$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
-				}
-				else
+				if ( ! isset($_POST['category']) OR empty($_POST['category']))
 				{
 					$this->entry->Categories = NULL;
 				}
