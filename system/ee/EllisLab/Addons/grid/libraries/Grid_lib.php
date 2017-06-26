@@ -176,6 +176,9 @@ class Grid_lib {
 			case 'toggle':
 				$class = 'grid-toggle';
 				break;
+			case 'file':
+				$class = 'grid-file-upload';
+				break;
 			default:
 				$class = '';
 				break;
