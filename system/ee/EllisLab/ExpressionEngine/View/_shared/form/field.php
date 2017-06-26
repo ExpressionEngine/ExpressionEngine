@@ -67,27 +67,14 @@ case 'hidden': ?>
 	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 <?php break;
 
-case 'radio_block': ?>
-	<?php foreach ($field['choices'] as $key => $choice):
-		$label = $choice['label'];
-		$checked = ($key == $value); ?>
-		<label class="choice <?=$mr_class?> block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
-		<?php if ( ! empty($choice['html'])): ?><?=$choice['html']?><?php endif ?>
-	<?php endforeach ?>
-<?php break;
-
-case 'radio': ?>
-	<?php foreach ($field['choices'] as $key => $label):
-		$checked = ($key == $value); ?>
-		<label class="choice <?=$mr_class?> block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
-	<?php endforeach ?>
-<?php break;
-
-case 'inline_radio': ?>
-	<?php foreach ($field['choices'] as $key => $label):
-		$checked = ((is_bool($value) && get_bool_from_string($key) === $value) OR ( ! is_bool($value) && $key == $value)); ?>
-		<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
-	<?php endforeach ?>
+case 'radio_block':
+case 'radio':
+case 'inline_radio':
+case 'select': ?>
+	<?php $this->embed('ee:_shared/form/fields/select', [
+		'choices' => $field['choices'],
+		'value' => $value
+	]); ?>
 <?php break;
 
 case 'yes_no':
@@ -97,10 +84,6 @@ case 'toggle': ?>
 		'value' => $value,
 		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE)
 	]); ?>
-<?php break;
-
-case 'select': ?>
-<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs, isset($field['encode']) ? $field['encode'] : TRUE); ?>
 <?php break;
 
 case 'checkbox': ?>
