@@ -28,7 +28,16 @@ class Notifications {
 		$subscriptions = ee()->subscription->get_subscriptions($ignore);
 		ee()->load->model('comment_model');
 		ee()->comment_model->recount_entry_comments(array($comment->entry_id));
-		$this->recipients = ee()->comment_model->fetch_email_recipients($comment->entry_id, $subscriptions);
+		$recipients = ee()->comment_model->fetch_email_recipients($comment->entry_id, $subscriptions);
+
+		foreach ($recipients as $recipient)
+		{
+			$this->recipients[$recipient[0]] = array(
+				'email' => $recipient[0],
+				'name_of_recipient' => $recipient[2],
+				'subscription' => $subscriptions[$recipient[1]],
+			);
+		}
 	}
 
 	private function setupVariables($comment, $url)
@@ -55,46 +64,49 @@ class Notifications {
 		$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
 		$this->variables = array(
-			'name'				=> $comment->name,
-			'name_of_commenter'	=> $comment->name,
-			'email'				=> $comment->email,
-			'url'				=> $comment->url,
-			'location'			=> $comment->location,
-			'channel_name'		=> $comment->Channel->channel_title,
-			'entry_title'		=> $comment->Entry->title,
-			'comment_id'		=> $comment->comment_id,
-			'comment'			=> $parsed_comment,
-			'comment_url'		=> $url,
-			'delete_link'		=> ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id)),
-			'approve_link'		=> ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'o')),
-			'close_link'		=> ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'c')),
-			'channel_id'		=> $comment->channel_id,
-			'entry_id'			=> $comment->entry_id,
-			'url_title'			=> $comment->Entry->url_title,
-			'comment_url_title_auto_path' => reduce_double_slashes($path.'/'.$comment->Entry->url_title)
+			'approve_link'      => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'o')),
+			'channel_id'        => $comment->channel_id,
+			'channel_name'      => $comment->Channel->channel_title,
+			'close_link'        => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'c')),
+			'comment'           => $parsed_comment,
+			'comment_id'        => $comment->comment_id,
+			'comment_url'       => $url,
+			'comment_url_title_auto_path' => reduce_double_slashes($path.'/'.$comment->Entry->url_title),
+			'delete_link'       => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id)),
+			'email'             => $comment->email,
+			'entry_id'          => $comment->entry_id,
+			'entry_title'       => $comment->Entry->title,
+			'location'          => $comment->location,
+			'name'              => $comment->name,
+			'name_of_commenter' => $comment->name,
+			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id={subscription_id}&hash={hash}',
+			'site_name'         => stripslashes(ee()->config->item('site_name')),
+			'site_url'          => ee()->config->item('site_url'),
+			'url'               => $comment->url,
+			'url_title'         => $comment->Entry->url_title,
 		);
 	}
 
 	public function send_admin_notifications()
 	{
-		$addresses = array();
+		$emails = array();
 
 		if ($this->comment->Channel->comment_notify == 'y')
 		{
-			$addresses = $this->commaDelimToArray($this->comment->Channel->comment_notify_emails);
+			$emails = $this->commaDelimToArray($this->comment->Channel->comment_notify_emails);
 		}
 
 		if ($this->comment->Channel->comment_notify_authors == 'y')
 		{
-			$addresses[] = $this->comment->Entry->Author->email;
+			$emails[] = $this->comment->Entry->Author->email;
 		}
 
-		$addresses = array_unique($addresses);
+		$emails = array_unique($emails);
 
 		// don't send admin notifications to the comment author if they are an admin, seems silly
 		// @todo remove ridiculous that/this dance when PHP 5.3 is no longer supported
 		$that = $this;
-		$addresses = array_filter($addresses,
+		$emails = array_filter($emails,
 			function($value) use ($that)
 			{
 				if (ee()->session->userdata('member_id') == 0)
@@ -106,10 +118,12 @@ class Notifications {
 			}
 		);
 
-		if (empty($addresses))
+		if (empty($emails))
 		{
 			return;
 		}
+
+		$addresses = $this->structureAddresses($emails);
 
 		$template = ee()->functions->fetch_email_template('admin_notify_comment');
 		$replyto = ($this->comment->email) ?: ee()->config->item('webmaster_email');
@@ -118,9 +132,31 @@ class Notifications {
 
 	public function send_user_notifications()
 	{
+		if (empty($this->recipients))
+		{
+			return;
+		}
 
+		$template = ee()->functions->fetch_email_template('comment_notification');
+		$replyto = ($this->comment->email) ?: ee()->config->item('webmaster_email');
+		$this->send($template, $this->recipients, ee()->config->item('webmaster_email'));
 	}
 
+	private function structureAddresses($emails)
+	{
+		$addresses = array();
+
+		foreach ($emails as $email)
+		{
+			$addresses[$email] = array(
+				'email' => $email,
+				'name_of_recipient' => $email,
+				'subscription' => null,
+			);
+		}
+
+		return $addresses;
+	}
 	/**
 	 * Comma-delimited Emails to Array
 	 *
@@ -161,21 +197,29 @@ class Notifications {
 
 		foreach ($to as $address)
 		{
-			if (in_array($address, $sent))
+			if (in_array($address['email'], $sent))
 			{
 				continue;
+			}
+
+			$body = $message;
+			$body = str_replace('{name_of_recipient}', $address['name_of_recipient'], $body);
+
+			if ( ! empty($address['subscription']))
+			{
+				$body = ee()->functions->var_swap($body, $address['subscription']);
 			}
 
 			ee()->email->EE_initialize();
 			ee()->email->wordwrap = FALSE;
 			ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-			ee()->email->to($address);
+			ee()->email->to($address['email']);
 			ee()->email->reply_to($replyto);
 			ee()->email->subject($subject);
-			ee()->email->message(entities_to_ascii($message));
+			ee()->email->message(entities_to_ascii($body));
 			ee()->email->send();
 
-			$sent[] = $address;
+			$sent[] = $address['email'];
 		}
 	}
 }

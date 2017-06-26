@@ -12,7 +12,7 @@ class Moderate {
 	public function approve($comment)
 	{
 		$comment->status = 'o';
-		//$comment->save();
+		$comment->save();
 
 		// send notifications
 		$notify = new Notifications($comment, '/foo/bar/url-title');
