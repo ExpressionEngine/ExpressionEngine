@@ -2533,7 +2533,7 @@ class Comment {
 		if ($is_spam == TRUE)
 		{
 			$spam_data = array($comment_id, 'o');
-			ee('Spam')->moderate('comment', $comment, $comment->comment);
+			ee('Spam')->moderate('comment', $comment, $comment->comment, $_POST['URI']);
 		}
 
 		if ($notify == 'y')
@@ -2648,7 +2648,7 @@ class Comment {
 		/**  Send admin notification
 		/** ----------------------------*/
 
-		if ($notify_address != '')
+		if ($notify_address != '' && ! $is_spam)
 		{
 			$cp_url = ee()->config->item('cp_url').'?S=0&D=cp&C=addons_modules&M=show_module_cp&module=comment';
 
@@ -2734,7 +2734,7 @@ class Comment {
 		/**  Send user notifications
 		/** ----------------------------------------*/
 
-		if ($comment_moderate == 'n')
+		if ($comment_moderate == 'n' && ! $is_spam)
 		{
 			$email_msg = '';
 

@@ -44,7 +44,8 @@ interface Spam {
 	 * @param string $content_type the content type (addon short name, e.g. comment, discuss, etc.)
 	 * @param object $entity A valid model entity
 	 * @param string $document The text that was classified as spam
+	 * @param object $optional_data Any optional data the addon would like to store in the trap for later use
 	 * @return void
 	 */
-	public function moderate($content_type, $entity, $document);
+	public function moderate($content_type, $entity, $document, $optional_data);
 }
