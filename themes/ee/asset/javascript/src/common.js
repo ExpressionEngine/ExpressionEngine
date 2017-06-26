@@ -357,12 +357,11 @@ $(document).ready(function(){
 	// highlight checks and radios -> WIP
 	// ==================================
 
-		// listen for clicks on inputs within a choice classed label
-		$('body').on('click change', '.choice input', function() {
-			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
-				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
-			});
-		});
+		$('.field-inputs label input').on('click',function(){
+			$('input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
+				$(this).parents('label').toggleClass('act', $(this).is(':checked'))
+			})
+		})
 
 		$('body').on('click', '.multi-select .ctrl-all input', function(){
 			$(this).closest('.multi-select')
