@@ -23,6 +23,11 @@ class CI_DB_mysqli_connection {
 	protected $connection;
 
 	/**
+	 * @var Do we have MySQLnd?
+	 */
+	protected $mysqlnd;
+
+	/**
 	 * Create a conneciton
 	 *
 	 * @param Array $config Config values
@@ -30,6 +35,7 @@ class CI_DB_mysqli_connection {
 	public function __construct($config)
 	{
 		$this->config = $config;
+		$this->mysqlnd = extension_loaded('pdo_mysql');
 	}
 
 	/**
@@ -58,11 +64,13 @@ class CI_DB_mysqli_connection {
 
 		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
+		// If we have MySQLnd then we can set ATTR_STRINGIFY_FETCHES to FALSE
+		// otherwise we should set it to TRUE to improve memory performance.
 		$options = array(
 			PDO::ATTR_PERSISTENT => $pconnect,
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_CASE => PDO::CASE_NATURAL,
-			PDO::ATTR_STRINGIFY_FETCHES => FALSE
+			PDO::ATTR_STRINGIFY_FETCHES => ! $this->mysqlnd
 		);
 
 		$this->connection = @new PDO(
@@ -198,7 +206,10 @@ class CI_DB_mysqli_connection {
 	private function setEmulatePrepares($query)
 	{
 		$on = strncasecmp($query, 'SELECT', 6) != 0;
-		$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
+		if ($this->mysqlnd)
+		{
+			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
+		}
 	}
 
 	/**
