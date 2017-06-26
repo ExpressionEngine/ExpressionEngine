@@ -76,13 +76,7 @@ class Spam_mcp {
 		$table = ee('CP/Table');
 		$data = array();
 		$trapped = array();
-
-		$content_type = array(
-			'Comment' => 'comment',
-			'Email' => 'email',
-			'Forum_core' => 'forum_post',
-			'Wiki' => 'wiki_post',
-		);
+		$content_type = array();
 
 		$options = array(
 			'all' => lang('all'),
@@ -92,6 +86,7 @@ class Spam_mcp {
 			'Wiki' => lang('wiki_post')
 		);
 
+		// @todo fix the filter options, key off of loaded content types
 		$total = ee('Model')->get('spam:SpamTrap')->count();
 		$types = ee('CP/Filter')->make('content_type', 'content_type', $options);
 		$types->setPlaceholder(lang('all'));
@@ -140,6 +135,12 @@ class Spam_mcp {
 
 		foreach ($trap as $spam)
 		{
+			if ( ! isset($content_type[$spam->content_type]))
+			{
+				ee()->lang->load($spam->content_type);
+				$content_type[$spam->content_type] = lang($spam->content_type);
+			}
+
 			$toolbar = array('toolbar_items' => array(
 				'view' => array(
 					'href' => '#',
@@ -147,8 +148,8 @@ class Spam_mcp {
 					'rel' => 'spam-modal',
 					'title' => strtolower(lang('edit')),
 					'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES, 'UTF-8'),
-					'data-type' => htmlentities($spam->class, ENT_QUOTES, 'UTF-8'),
-					'data-date' => ee()->localize->human_time($spam->date->getTimestamp()),
+					'data-type' => htmlentities($spam->content_type, ENT_QUOTES, 'UTF-8'),
+					'data-date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
 					'data-ip' => htmlentities($spam->ip_address, ENT_QUOTES, 'UTF-8'),
 				)
 			));
@@ -168,9 +169,9 @@ class Spam_mcp {
 
 			$trapped[] = array(
 				'content' => $title,
-				'date' => ee()->localize->human_time($spam->date->getTimestamp()),
+				'date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
 				'ip' => $spam->ip_address,
-				'type' => lang($content_type[$spam->class]),
+				'type' => lang($content_type[$spam->content_type]),
 				$toolbar,
 				array(
 					'name' => 'selection[]',
@@ -394,16 +395,23 @@ class Spam_mcp {
 	{
 		foreach ($trapped as $spam)
 		{
-			if ( ! class_exists($spam->class))
+			$addon = ee('Addon')->get($spam->content_type);
+
+			if ( ! $addon OR ! $addon->hasSpam())
 			{
-				ee()->load->file($spam->file);
+				continue;
 			}
 
-			$class = $spam->class;
-			$class = new $class();
+			$fqcn = $addon->getSpamRejectClass();
 
-			$data = unserialize($spam->data);
-			call_user_func_array(array($class, $spam->approve), $data);
+			try {
+				$approver = new $fqcn;
+				$approver->approve($spam->entity);
+			}
+			catch (\Exception $e)
+			{
+				// @todo behavior here?
+			}
 		}
 
 		ee('CP/Alert')->makeInline('spam')
@@ -428,16 +436,23 @@ class Spam_mcp {
 	{
 		foreach ($trapped as $spam)
 		{
-			if ( ! class_exists($spam->class))
+			$addon = ee('Addon')->get($spam->content_type);
+
+			if ( ! $addon OR ! $addon->hasSpam())
 			{
-				ee()->load->file($spam->file);
+				continue;
 			}
 
-			$class = $spam->class;
-			$class = new $class();
+			$fqcn = $addon->getSpamRejectClass();
 
-			$data = unserialize($spam->data);
-			call_user_func_array(array($class, $spam->remove), $data);
+			try {
+				$rejecter = new $fqcn;
+				$rejecter->reject($spam->entity);
+			}
+			catch (\Exception $e)
+			{
+				// @todo behavior here?
+			}
 		}
 
 		ee('CP/Alert')->makeInline('spam')

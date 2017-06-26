@@ -1,4 +1,7 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\Addons\Comment;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -2497,7 +2500,7 @@ class Comment {
 			'email'			=> $cmtr_email,
 			'url'			=> $cmtr_url,
 			'location'		=> $cmtr_loc,
-			'comment'		=> ee('Security/XSS')->clean($_POST['comment']),
+			'comment'		=> $comment_string,
 			'comment_date'	=> ee()->localize->now,
 			'ip_address'	=> ee()->input->ip_address(),
 			'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
@@ -2524,12 +2527,13 @@ class Comment {
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		//  Insert data
-		$comment_id = ee('Model')->make('Comment', $data)->save()->getId();
+		$comment = ee('Model')->make('Comment', $data)->save();
+		$comment_id = $comment->getId();
 
 		if ($is_spam == TRUE)
 		{
 			$spam_data = array($comment_id, 'o');
-			ee('Spam')->moderate(__FILE__, 'Comment', 'moderate_comment', 'remove_comment', $spam_data, $comment_string);
+			ee('Spam')->moderate('comment', $comment, $comment->comment);
 		}
 
 		if ($notify == 'y')
@@ -2626,9 +2630,8 @@ class Comment {
 			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
 		);
 
-		$comment = ee('Security/XSS')->clean($_POST['comment']);
-		$comment = ee()->typography->parse_type(
-			$comment,
+		$parsed_comment = ee()->typography->parse_type(
+			$comment->comment,
 			array(
 				'text_format'	=> 'none',
 				'html_format'	=> 'none',
@@ -2658,7 +2661,7 @@ class Comment {
 				'channel_name'		=> $channel_title,
 				'entry_title'		=> $entry_title,
 				'comment_id'		=> $comment_id,
-				'comment'			=> $comment,
+				'comment'			=> $parsed_comment,
 				'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
 				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id,
 				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o',
@@ -2747,7 +2750,7 @@ class Comment {
 					'site_url'			=> ee()->config->item('site_url'),
 					'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
 					'comment_id'		=> $comment_id,
-					'comment'			=> $comment,
+					'comment'			=> $parsed_comment,
 					'channel_id'		=> $channel_id,
 					'entry_id'			=> $entry_id,
 					'url_title'			=> $url_title,

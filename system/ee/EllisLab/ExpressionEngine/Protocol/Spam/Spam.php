@@ -36,19 +36,15 @@ interface Spam {
 	public function isSpam($source);
 
 	/**
-	 * Store flagged spam to await moderation. We store a serialized array of any
-	 * data we might need as well as a class and method name. If an entry that was
-	 * caught by the spam filter is manually flagged as ham, the spam module will
-	 * call the stored method with the unserialzed data as the argument. You must
-	 * provide a method to handle re-inserting this data.
+	 * Store flagged spam to await moderation. We store a serialized copy of a model entity
+	 * as well as the content type (addon name) and namespace of the handler. When spam is
+	 * moderated, that entity will be passed to the addon's approve()/reject() methods to
+	 * take whatever action is necessary.
 	 *
-	 * @param string $class    The class to call when re-inserting a false positive
-	 * @param string $method   The method to call when re-inserting a false positive
-	 * @param string $content  Array of content data
-	 * @param string $doc      The document that was classified as spam
+	 * @param string $content_type the content type (addon short name, e.g. comment, discuss, etc.)
+	 * @param object $entity A valid model entity
+	 * @param string $document The text that was classified as spam
 	 * @return void
 	 */
-	public function moderate_old($file, $class, $approve_method, $remove_method, $content, $doc);
-
-	public function moderate($content_type, $namespace, $entity, $document);
+	public function moderate($content_type, $entity, $document);
 }

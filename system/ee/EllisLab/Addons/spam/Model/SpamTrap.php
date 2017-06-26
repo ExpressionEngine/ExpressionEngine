@@ -10,7 +10,8 @@ class SpamTrap extends Model {
 	protected static $_primary_key = 'trap_id';
 
 	protected static $_typed_columns = array(
-		'trap_date' => 'timestamp'
+		'entity'    => 'serialized',
+		'trap_date' => 'timestamp',
 	);
 
 	protected static $_relationships = array(
@@ -31,7 +32,6 @@ class SpamTrap extends Model {
 	protected $document;
 	protected $entity;
 	protected $ip_address;
-	protected $namespace;
 	protected $trap_date;
 	protected $trap_id;
 

@@ -8,5 +8,9 @@ return array(
 	'version'        => '2.3.2',
 	'namespace'      => 'EllisLab\Addons\Comment',
 	'settings_exist' => TRUE,
-	'built_in'       => TRUE
+	'built_in'       => TRUE,
+
+	'spam.enabled' => TRUE,
+	'spam.approve' => 'Service\Spam\Moderate',
+	'spam.reject' => 'Service\Spam\Moderate',
 );

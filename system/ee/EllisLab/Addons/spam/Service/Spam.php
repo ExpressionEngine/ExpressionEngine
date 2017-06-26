@@ -57,8 +57,7 @@ class Spam implements SpamProtocol {
 	/**
 	 * Returns true if the string is classified as spam
 	 *
-	 * @param string $source Text to classify
-	 * @return bool Is Spam?
+	 * @see EllisLab\ExpressionEngine\Protocol\Spam\Spam
 	 */
 	public function isSpam($source)
 	{
@@ -73,44 +72,18 @@ class Spam implements SpamProtocol {
 	}
 
 	/**
-	 * Store flagged spam to await moderation. We store a serialized array of any
-	 * data we might need as well as a class and method name. If an entry that was
-	 * caught by the spam filter is manually flagged as ham, the spam module will
-	 * call the stored method with the unserialzed data as the argument. You must
-	 * provide a method to handle re-inserting this data.
+	 * Moderate Spam
 	 *
-	 * @param string $class    The class to call when re-inserting a false positive
-	 * @param string $method   The method to call when re-inserting a false positive
-	 * @param string $content  Array of content data
-	 * @param string $doc      The document that was classified as spam
-	 * @return void
+	 * @see EllisLab\ExpressionEngine\Protocol\Spam\Spam
 	 */
-	public function moderate_old($file, $class, $approve_method, $remove_method, $content, $doc)
-	{
-		$data = array(
-			'file' => $file,
-			'author' => ee()->session->userdata('member_id'),
-			'date' => time(),
-			'ip_address' => $_SERVER['REMOTE_ADDR'],
-			'class' => $class,
-			'approve' => $approve_method,
-			'remove' => $remove_method,
-			'data' => serialize($content),
-			'document' => $doc
-		);
-		$trap = ee('Model')->make('spam:SpamTrap', $data);
-		$trap->save();
-	}
-
-	public function moderate($content_type, $namespace, $entity, $document)
+	public function moderate($content_type, $entity, $document)
 	{
 		$data = [
 			'content_type' => $content_type,
-			'namespace'    => $namespace,
 			'author_id'    => ee()->session->userdata('member_id'),
 			'trap_date'    => ee()->localize->now,
 			'ip_address'   => $_SERVER['REMOTE_ADDR'],
-			'entity'       => serialize($entity),
+			'entity'       => $entity,
 			'document'     => $document
 		];
 
