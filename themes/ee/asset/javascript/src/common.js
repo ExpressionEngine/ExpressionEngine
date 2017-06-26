@@ -508,4 +508,34 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		// Quick, DOM-based filtering for select boxes
+		$('.filter-item__search input').on('interact', function (e) {
+			var select = $(this).closest('.fields-select'),
+				inputs = select.find('.field-inputs:not(.js-no-results)'),
+				labels = inputs.find('label'),
+				no_results = select.find('.field-inputs.js-no-results')
+
+			// No search terms, reset
+			if ( ! this.value)
+			{
+				labels.show()
+				return toggleNoResults(true)
+			}
+
+			// Do the filtering
+			labels.show()
+				.not('label[data-search*="' + this.value.toLowerCase() + '"]')
+				.hide()
+
+			if (select.find('label:visible').size() == 0)
+				toggleNoResults(false)
+
+			function toggleNoResults(toggle)
+			{
+				inputs.toggleClass('hidden', ! toggle)
+				no_results.toggleClass('hidden', toggle)
+				select.toggleClass('field-resizable', toggle)
+			}
+		});
+
 }); // close (document).ready
