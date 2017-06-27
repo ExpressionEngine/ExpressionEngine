@@ -406,7 +406,7 @@ class Spam_mcp {
 
 			try {
 				$approver = new $fqcn;
-				$approver->approve($spam->entity);
+				$approver->approve($spam->entity, $spam->optional_data);
 			}
 			catch (\Exception $e)
 			{
@@ -447,7 +447,7 @@ class Spam_mcp {
 
 			try {
 				$rejecter = new $fqcn;
-				$rejecter->reject($spam->entity);
+				$rejecter->reject($spam->entity, $spam->optional_data);
 			}
 			catch (\Exception $e)
 			{

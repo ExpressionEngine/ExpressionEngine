@@ -2,6 +2,8 @@
 
 namespace EllisLab\Addons\Comment;
 
+use EllisLab\Addons\Comment\Service\Notifications;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -2305,34 +2307,21 @@ class Comment {
 		/** ----------------------------------------
 		/**  Assign data
 		/** ----------------------------------------*/
-		$author_id				= $query->row('author_id') ;
-		$entry_title			= $query->row('title') ;
-		$url_title				= $query->row('url_title') ;
-		$channel_title		 	= $query->row('channel_title') ;
-		$channel_id			  	= $query->row('channel_id') ;
-		$require_membership 	= $query->row('comment_require_membership') ;
-		$comment_moderate		= (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
-		$author_notify			= $query->row('comment_notify_authors') ;
 
-		$overrides = ee()->config->get_cached_site_prefs($query->row('site_id'));
-		$comment_url			= parse_config_variables($query->row('comment_url'), $overrides);
-		$channel_url			= parse_config_variables($query->row('channel_url'), $overrides);
-		$entry_id				= $query->row('entry_id');
-		$comment_site_id		= $query->row('site_id');
+		$channel_id         = $query->row('channel_id') ;
+		$require_membership = $query->row('comment_require_membership') ;
+		$comment_moderate   = (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
+		$entry_id           = $query->row('entry_id');
+		$comment_site_id    = $query->row('site_id');
 
-
-		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
-
-
-		// Force comment moderation if spam
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
+
 		$is_spam = ee('Spam')->isSpam($comment_string);
 
 		if ($is_spam === TRUE)
 		{
 			$comment_moderate = 'y';
 		}
-
 
 		/** ----------------------------------------
 		/**  Start error trapping
@@ -2494,7 +2483,7 @@ class Comment {
 
 		$data = array(
 			'channel_id'	=> $channel_id,
-			'entry_id'		=> $_POST['entry_id'],
+			'entry_id'		=> $entry_id,
 			'author_id'		=> ee()->session->userdata('member_id'),
 			'name'			=> $cmtr_name,
 			'email'			=> $cmtr_email,
@@ -2507,7 +2496,7 @@ class Comment {
 			'site_id'		=> $comment_site_id
 		);
 
-		if ($is_spam == TRUE)
+		if ($is_spam === TRUE)
 		{
 			$data['status'] = 's';
 		}
@@ -2536,6 +2525,7 @@ class Comment {
 			ee('Spam')->moderate('comment', $comment, $comment->comment, $_POST['URI']);
 		}
 
+		// update their subscription
 		if ($notify == 'y')
 		{
 			ee()->load->library('subscription');
@@ -2551,22 +2541,16 @@ class Comment {
 			}
 		}
 
-
+		// update stats immediately if we're posting now
 		if ($comment_moderate == 'n')
 		{
-			/** ------------------------------------------------
-			/**  Update comment total and "recent comment" date
-			/** ------------------------------------------------*/
-
+			// comment total and recent comment date
 			ee()->db->set('recent_comment_date', ee()->localize->now);
 			ee()->db->where('entry_id', $_POST['entry_id']);
 
 			ee()->db->update('channel_titles');
 
-			/** ----------------------------------------
-			/**  Update member comment total and date
-			/** ----------------------------------------*/
-
+			// member's comment stats
 			if (ee()->session->userdata('member_id') != 0)
 			{
 				ee()->db->select('total_comments');
@@ -2581,249 +2565,19 @@ class Comment {
 				ee()->db->update('members');
 			}
 
-			/** ----------------------------------------
-			/**  Update comment stats
-			/** ----------------------------------------*/
-
+			// site comment stats
 			ee()->stats->update_comment_stats($channel_id, ee()->localize->now);
-
-			/** ----------------------------------------
-			/**  Fetch email notification addresses
-			/** ----------------------------------------*/
-
-			ee()->load->library('subscription');
-			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
-
-			// Remove the current user
-			$ignore = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('member_id') : ee()->input->post('email');
-
-			// Grab them all
-			$subscriptions = ee()->subscription->get_subscriptions($ignore);
-			ee()->load->model('comment_model');
-			ee()->comment_model->recount_entry_comments(array($entry_id));
-			$recipients = ee()->comment_model->fetch_email_recipients($_POST['entry_id'], $subscriptions);
 		}
 
-		/** ----------------------------------------
-		/**  Fetch Author Notification
-		/** ----------------------------------------*/
-
-		if ($author_notify == 'y')
+		// send notifications
+		if ( ! $is_spam)
 		{
-			ee()->db->select('email');
-			ee()->db->where('member_id', $author_id);
+			$notify = new Notifications($comment, $_POST['URI']);
+			$notify->send_admin_notifications();
 
-			$result = ee()->db->get('members');
-
-			$notify_address	.= ','.$result->row('email');
-		}
-
-		/** ----------------------------------------
-		/**  Instantiate Typography class
-		/** ----------------------------------------*/
-
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'parse_images'		=> FALSE,
-			'allow_headings'	=> FALSE,
-			'smileys'			=> FALSE,
-			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-		);
-
-		$parsed_comment = ee()->typography->parse_type(
-			$comment->comment,
-			array(
-				'text_format'	=> 'none',
-				'html_format'	=> 'none',
-				'auto_links'	=> 'n',
-				'allow_img_url' => 'n'
-			)
-		);
-
-		$path = ($comment_url == '') ? $channel_url : $comment_url;
-
-		$comment_url_title_auto_path = reduce_double_slashes($path.'/'.$url_title);
-
-		/** ----------------------------
-		/**  Send admin notification
-		/** ----------------------------*/
-
-		if ($notify_address != '' && ! $is_spam)
-		{
-			$cp_url = ee()->config->item('cp_url').'?S=0&D=cp&C=addons_modules&M=show_module_cp&module=comment';
-
-			$swap = array(
-				'name'				=> $cmtr_name,
-				'name_of_commenter'	=> $cmtr_name,
-				'email'				=> $cmtr_email,
-				'url'				=> $cmtr_url,
-				'location'			=> $cmtr_loc,
-				'channel_name'		=> $channel_title,
-				'entry_title'		=> $entry_title,
-				'comment_id'		=> $comment_id,
-				'comment'			=> $parsed_comment,
-				'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
-				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id,
-				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o',
-				'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c',
-				'channel_id'		=> $channel_id,
-				'entry_id'			=> $entry_id,
-				'url_title'			=> $url_title,
-				'comment_url_title_auto_path' => $comment_url_title_auto_path
-			);
-
-			$template = ee()->functions->fetch_email_template('admin_notify_comment');
-
-			$email_tit = ee()->functions->var_swap($template['title'], $swap);
-			$email_msg = ee()->functions->var_swap($template['data'], $swap);
-
-			// We don't want to send an admin notification if the person
-			// leaving the comment is an admin in the notification list
-			// For added security, we only trust the post email if the
-			// commenter is logged in.
-
-			if (ee()->session->userdata('member_id') != 0 && $_POST['email'] != '')
+			if ($comment_moderate == 'n')
 			{
-				if (strpos($notify_address, $_POST['email']) !== FALSE)
-				{
-					$notify_address = str_replace($_POST['email'], '', $notify_address);
-				}
-			}
-
-			// Remove multiple commas
-			$notify_address = reduce_multiples($notify_address, ',', TRUE);
-
-			if ($notify_address != '')
-			{
-				/** ----------------------------
-				/**  Send email
-				/** ----------------------------*/
-
-				ee()->load->library('email');
-
-				$replyto = ($data['email'] == '') ? ee()->config->item('webmaster_email') : $data['email'];
-
-				$sent = array();
-
-				// Load the text helper
-				ee()->load->helper('text');
-
-				foreach (explode(',', $notify_address) as $addy)
-				{
-					if (in_array($addy, $sent))
-					{
-						continue;
-					}
-
-					ee()->email->EE_initialize();
-					ee()->email->wordwrap = false;
-					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-					ee()->email->to($addy);
-					ee()->email->reply_to($replyto);
-					ee()->email->subject($email_tit);
-					ee()->email->message(entities_to_ascii($email_msg));
-					ee()->email->send();
-
-					$sent[] = $addy;
-				}
-			}
-		}
-
-
-		/** ----------------------------------------
-		/**  Send user notifications
-		/** ----------------------------------------*/
-
-		if ($comment_moderate == 'n' && ! $is_spam)
-		{
-			$email_msg = '';
-
-			if (count($recipients) > 0)
-			{
-				$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
-
-				$swap = array(
-					'name_of_commenter'	=> $cmtr_name,
-					'channel_name'		=> $channel_title,
-					'entry_title'		=> $entry_title,
-					'site_name'			=> stripslashes(ee()->config->item('site_name')),
-					'site_url'			=> ee()->config->item('site_url'),
-					'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
-					'comment_id'		=> $comment_id,
-					'comment'			=> $parsed_comment,
-					'channel_id'		=> $channel_id,
-					'entry_id'			=> $entry_id,
-					'url_title'			=> $url_title,
-					'comment_url_title_auto_path' => $comment_url_title_auto_path
-				);
-
-
-				$template = ee()->functions->fetch_email_template('comment_notification');
-				$email_tit = ee()->functions->var_swap($template['title'], $swap);
-				$email_msg = ee()->functions->var_swap($template['data'], $swap);
-
-				/** ----------------------------
-				/**  Send email
-				/** ----------------------------*/
-
-				ee()->load->library('email');
-				ee()->email->wordwrap = true;
-
-				$cur_email = ($_POST['email'] == '') ? FALSE : $_POST['email'];
-
-				if ( ! isset($sent)) $sent = array();
-
-				// Load the text helper
-				ee()->load->helper('text');
-
-				foreach ($recipients as $val)
-				{
-					// We don't notify the person currently commenting.  That would be silly.
-
-					if ( ! in_array($val['0'], $sent))
-					{
-						$title	 = $email_tit;
-						$message = $email_msg;
-
-						$sub	= $subscriptions[$val['1']];
-						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
-
-						// Deprecate the {name} variable at some point
-						$title	 = str_replace('{name}', $val['2'], $title);
-						$message = str_replace('{name}', $val['2'], $message);
-
-						$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
-						$message = str_replace('{name_of_recipient}', $val['2'], $message);
-
-						$title	 = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
-						$message = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
-
-						ee()->email->EE_initialize();
-						ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-						ee()->email->to($val['0']);
-						ee()->email->subject($title);
-						ee()->email->message(entities_to_ascii($message));
-						ee()->email->send();
-
-						$sent[] = $val['0'];
-					}
-				}
-			}
-
-			/** ----------------------------------------
-			/**  Clear cache files
-			/** ----------------------------------------*/
-
-			ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().$_POST['URI']);
-
-			// clear out the entry_id version if the url_title is in the URI, and vice versa
-			if (preg_match("#\/".preg_quote($url_title)."\/#", $_POST['URI'], $matches))
-			{
-				ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().preg_replace("#".preg_quote($matches['0'])."#", "/{$data['entry_id']}/", $_POST['URI']));
-			}
-			else
-			{
-				ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().preg_replace("#{$data['entry_id']}#", $url_title, $_POST['URI']));
+				$notify->send_user_notifications();
 			}
 		}
 

@@ -61,6 +61,11 @@ class Notifications {
 		);
 
 		$path = ($comment->Channel->comment_url) ?: $comment->Channel->channel_url;
+
+		// parse {base_url}, etc.
+		$overrides = ee()->config->get_cached_site_prefs($comment->site_id);
+		$path = parse_config_variables($path, $overrides);
+
 		$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
 		$this->variables = array(
@@ -70,7 +75,7 @@ class Notifications {
 			'close_link'        => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'c')),
 			'comment'           => $parsed_comment,
 			'comment_id'        => $comment->comment_id,
-			'comment_url'       => $url,
+			'comment_url'       => reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$url)),
 			'comment_url_title_auto_path' => reduce_double_slashes($path.'/'.$comment->Entry->url_title),
 			'delete_link'       => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id)),
 			'email'             => $comment->email,
