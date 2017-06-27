@@ -416,6 +416,7 @@ class Relationship_ft extends EE_Fieldtype {
 				// Cache children for this entry
 				$this->children[$entry_id] = $children = ee('Model')->get('ChannelEntry', $entry_id)
 					->with('Children')
+					->fields('Children.entry_id', 'Children.title', 'Children.channel_id')
 					->first()
 					->Children;
 			}
@@ -455,6 +456,7 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
 				->with('Channel')
+				->fields('Channel.*', 'entry_id', 'title', 'channel_id')
 				->all()
 				->indexBy('entry_id');
 		}

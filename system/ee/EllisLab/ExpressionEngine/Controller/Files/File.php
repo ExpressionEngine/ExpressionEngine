@@ -212,8 +212,9 @@ class File extends AbstractFilesController {
 		}
 		else if (isset($_POST['save_resize']))
 		{
-			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural_no_zero|required');
-			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural');
+
 			$action = "resize";
 			$action_desc = "resized";
 			$vars['active_tab'] = 2;
@@ -230,8 +231,8 @@ class File extends AbstractFilesController {
 			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
-			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural_no_zero|required');
-			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural');
 
 			ee()->form_validation->run_ajax();
 			exit;
@@ -253,6 +254,22 @@ class File extends AbstractFilesController {
 					break;
 
 				case 'resize':
+
+					// Preserve proportions if either dimention was omitted
+					if (empty($_POST['resize_width']) OR empty($_POST['resize_height']))
+					{
+						$size = explode(" ", $file->file_hw_original);
+						// If either h/w unspecified, calculate the other here
+						if (empty($_POST['resize_width']))
+						{
+							$_POST['resize_width'] = ($size[1] / $size[0]) * $_POST['resize_height'];
+						}
+						elseif (empty($_POST['resize_height']))
+						{
+							$_POST['resize_height'] = ($size[0] / $size[1]) * $_POST['resize_width'];
+						}
+					}
+
 					$response = ee()->filemanager->_do_resize($file->getAbsolutePath());
 					break;
 			}

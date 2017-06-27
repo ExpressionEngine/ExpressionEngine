@@ -328,7 +328,7 @@ class EE_Template {
 		$added_globals = array(
 			'last_segment'         => end($seg_array),
 			'current_url'          => ee()->functions->fetch_current_uri(),
-			'current_path'         => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
+			'current_path'         => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
 			'current_query_string' => http_build_query($_GET), // GET has been sanitized!
 			'template_name'        => $this->template_name,
 			'template_group'       => $this->group_name,

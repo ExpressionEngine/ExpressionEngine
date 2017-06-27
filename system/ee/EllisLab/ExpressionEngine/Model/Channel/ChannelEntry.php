@@ -674,44 +674,43 @@ class ChannelEntry extends ContentModel {
 			return;
 		}
 
-		$set_cats = array();
+		$cat_groups = array_filter($cat_groups, function($cat_group_id) use ($categories) {
+			return array_key_exists('cat_group_id_'.$cat_group_id, $categories);
+		});
+
+		$category_ids = array();
 
 		// Set the data on the fields in case we come back from a validation error
 		foreach ($cat_groups as $cat_group)
 		{
-			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
+			$group_cats = $categories['cat_group_id_'.$cat_group];
+
+			$category_ids = array_merge($category_ids, $group_cats);
+
+			$this->setRawProperty('cat_group_id_'.$cat_group, implode('|', $group_cats));
+			$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData(implode('|', $group_cats));
+		}
+
+		$cat_objects = $this->getModelFacade()
+			->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('cat_id', 'IN', $category_ids)
+			->all();
+
+		$set_cats = $cat_objects->asArray();
+
+		if (ee()->config->item('auto_assign_cat_parents') == 'y')
+		{
+			$category_ids = $cat_objects->pluck('cat_id');
+			foreach ($set_cats as $cat)
 			{
-				$group_cats = $categories['cat_group_id_'.$cat_group];
-
-				$cats = implode('|', $group_cats);
-
-				$this->setRawProperty('cat_group_id_'.$cat_group, $cats);
-				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData($cats);
-
-				$group_cat_objects = $this->getModelFacade()
-					->get('Category')
-					->filter('site_id', ee()->config->item('site_id'))
-					->filter('cat_id', 'IN', $group_cats)
-					->all();
-
-				foreach ($group_cat_objects as $cat)
+				while ($cat->Parent !== NULL)
 				{
-					$set_cats[] = $cat;
-				}
-
-				$cat_ids = $group_cat_objects->pluck('cat_id');
-				if (ee()->config->item('auto_assign_cat_parents') == 'y')
-				{
-					foreach ($set_cats as $cat)
+					$cat = $cat->Parent;
+					if ( ! in_array($cat->getId(), $category_ids))
 					{
-						while ($cat->Parent !== NULL)
-						{
-							$cat = $cat->Parent;
-							if ( ! in_array($cat->getId(), $cat_ids))
-							{
-								$set_cats[] = $cat;
-							}
-						}
+						$category_ids[] = $cat->getId();
+						$set_cats[] = $cat;
 					}
 				}
 			}
