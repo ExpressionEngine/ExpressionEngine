@@ -20,9 +20,7 @@ $too_many = (count($choices) > $max_visible_items);
 		<div class="field-tools">
 			<div class="filter-bar">
 				<div class="filter-item filter-item__search">
-					<form>
-						<input type="text" placeholder="Keyword Search">
-					</form>
+					<input type="text" placeholder="Keyword Search">
 				</div>
 			</div>
 		</div>
