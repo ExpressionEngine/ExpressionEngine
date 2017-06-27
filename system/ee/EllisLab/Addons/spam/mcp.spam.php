@@ -73,11 +73,13 @@ class Spam_mcp {
 			}
 		}
 
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array('sort_col' => 'date', 'sort_dir' => 'desc'));
+
 		$data = array();
 		$trapped = array();
 		$content_type = array();
 
+		// @todo fix the filter options, key off of loaded content types
 		$options = array(
 			'all' => lang('all'),
 			'Comment' => lang('comment'),
@@ -86,7 +88,6 @@ class Spam_mcp {
 			'Wiki' => lang('wiki_post')
 		);
 
-		// @todo fix the filter options, key off of loaded content types
 		$total = ee('Model')->get('spam:SpamTrap')->count();
 		$types = ee('CP/Filter')->make('content_type', 'content_type', $options);
 		$types->setPlaceholder(lang('all'));
@@ -94,7 +95,7 @@ class Spam_mcp {
 
 		$filters = ee('CP/Filter')
 			->add($types)
-			->add('Date', 'date')
+			->add('Date', 'trap_date')
 			->add('Perpage', $total, 'show_all_spam');
 
 		$data['filters'] = $filters->render($this->base_url);
@@ -106,12 +107,12 @@ class Spam_mcp {
 
 		if ( ! empty($filter_values['content_type']))
 		{
-			$filter_fields['class'] = $filter_values['content_type'];
+			$filter_fields['content_type'] = $filter_values['content_type'];
 		}
 
 		if ( ! empty($filter_values['filter_by_date']))
 		{
-			$filter_fields['date'] = $filter_values['filter_by_date'];
+			$filter_fields['trap_date'] = $filter_values['filter_by_date'];
 		}
 
 		$table->setColumns(
@@ -119,7 +120,7 @@ class Spam_mcp {
 				'spam_content' => array(
 					'encode' => FALSE
 				),
-				'date',
+				'trap_date',
 				'ip',
 				'spam_type',
 				'manage' => array(
@@ -641,7 +642,22 @@ class Spam_mcp {
 			{
 				if ( ! empty($filter))
 				{
-					$result->filter($key, $filter);
+					if ($key == 'trap_date')
+					{
+						if (is_array($filter))
+						{
+							$result->filter('trap_date', '>=', $filter[0]);
+							$result->filter('trap_date', '<', $filter[1]);
+						}
+						else
+						{
+							$result->filter('trap_date', '>=', ee()->localize->now - $filter);
+						}
+					}
+					else
+					{
+						$result->filter($key, $filter);
+					}
 				}
 			}
 		}
@@ -656,7 +672,7 @@ class Spam_mcp {
 			$options = array(
 				'content_type' => 'class',
 				'spam_content' => 'document',
-				'date' => 'date',
+				'trap_date' => 'trap_date',
 			);
 			$result->order($options[$sort], $direction);
 		}

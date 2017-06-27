@@ -86,6 +86,8 @@ $lang = array(
 
 'training_update_failed' => 'Could not update training data',
 
+'trap_date' => 'Date',
+
 'update_training' => 'Update Training',
 
 'update_training_desc' => 'This will download up-to-date training data from EllisLab and update your database.',
