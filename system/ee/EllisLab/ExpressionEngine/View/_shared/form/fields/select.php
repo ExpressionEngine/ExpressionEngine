@@ -15,7 +15,7 @@ $multi - Boolean, true for multi-select, false for single-select
 $max_visible_items = 8;
 $too_many = (count($choices) > $max_visible_items);
 ?>
-<div class="fields-select<?php if ($too_many): ?> field-resizable<?php endif ?>">
+<div class="fields-select<?php if ($too_many): ?> field-resizable<?php endif ?><?php if ($multi): ?> js-multi-select<?php endif ?>">
 	<?php if ($too_many): ?>
 		<div class="field-tools">
 			<div class="filter-bar">
@@ -47,6 +47,14 @@ $too_many = (count($choices) > $max_visible_items);
 		<?php endif ?>
 	</div>
 	<?php if ($too_many): ?>
+		<div class="field-input-selected <?= ($multi OR ! isset($value_label)) ? 'hidden' : ''?>">
+			<label>
+				<span class="icon--success"></span> <span class="js-select-label"><?=$value_label?></span>
+				<ul class="toolbar">
+					<li class="remove"><a href=""></a></li>
+				</ul>
+			</label>
+		</div>
 		<div class="field-inputs js-no-results hidden">
 			<label class="field-empty">
 				No <b>[choices]</b> found.

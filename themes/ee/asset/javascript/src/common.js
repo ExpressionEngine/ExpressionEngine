@@ -508,6 +508,10 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+	// ============================
+	// Single/multi-select handlers
+	// ============================
+
 		// Quick, DOM-based filtering for select boxes
 		$('.filter-item__search input').on('interact', function (e) {
 			var select = $(this).closest('.fields-select'),
@@ -536,6 +540,28 @@ $(document).ready(function(){
 				no_results.toggleClass('hidden', toggle)
 				select.toggleClass('field-resizable', toggle)
 			}
-		});
+		})
+
+		// Uncheck selected item from select lists
+		$('.field-input-selected .remove a').on('click', function(e) {
+			var select = $(this).closest('.fields-select'),
+				inputs = select.find('input')
+
+			inputs.prop('checked', false).parents('label').removeClass('act');
+			$(this).closest('.field-input-selected').addClass('hidden')
+
+			e.preventDefault()
+		})
+
+		// Show selected item at the bottom
+		$('.field-inputs label').on('click',function(){
+			var select = $(this).closest('.fields-select'),
+				selected = select.find('.field-input-selected')
+
+			if ( ! selected || select.hasClass('js-multi-select')) return
+
+			$('.js-select-label', selected).text($(this).text());
+			selected.removeClass('hidden');
+		})
 
 }); // close (document).ready
