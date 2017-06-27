@@ -73,7 +73,8 @@ case 'inline_radio':
 case 'select': ?>
 	<?php $this->embed('ee:_shared/form/fields/select', [
 		'choices' => $field['choices'],
-		'value' => $value
+		'value' => $value,
+		'multi' => FALSE
 	]); ?>
 <?php break;
 

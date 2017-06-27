@@ -7,6 +7,7 @@ $choices (required) - Associative value => label array for options
    'html' key for custom HTML to appear after the option
 $value (required) - Selected value
 $field_name - Input name
+$multi - Boolean, true for multi-select, false for single-select
 
 */
 
@@ -28,10 +29,14 @@ $too_many = (count($choices) > $max_visible_items);
 	<?php endif ?>
 	<div class="field-inputs">
 		<?php foreach ($choices as $key => $choice):
+
 			$label = isset($choice['label']) ? $choice['label'] : $choice;
-			$checked = ((is_bool($value) && get_bool_from_string($key) === $value) OR ( ! is_bool($value) && $key == $value)); ?>
+			$checked = ((is_bool($value) && get_bool_from_string($key) === $value)
+				OR ( ! is_bool($value) && $key == $value));
+			if ($checked) $value_label = lang($label); ?>
+
 			<label<?php if ($checked): ?> class="act"<?php endif ?> data-search="<?=strtolower($label)?>">
-				<input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $atts : '' ?>><?=lang($label)?>
+				<input type="<?=$multi ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $atts : '' ?>><?=lang($label)?>
 				<?php if ( ! empty($choice['html'])): ?><?=$choice['html']?><?php endif ?>
 			</label>
 		<?php endforeach ?>
