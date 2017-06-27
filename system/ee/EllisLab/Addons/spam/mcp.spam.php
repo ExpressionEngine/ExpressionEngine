@@ -76,20 +76,11 @@ class Spam_mcp {
 		$table = ee('CP/Table', array('sort_col' => 'date', 'sort_dir' => 'desc'));
 
 		$data = array();
-		$trapped = array();
-		$content_type = array();
-
-		// @todo fix the filter options, key off of loaded content types
-		$options = array(
-			'all' => lang('all'),
-			'Comment' => lang('comment'),
-			'Email' => lang('email'),
-			'Forum_core' => lang('forum_post'),
-			'Wiki' => lang('wiki_post')
-		);
 
 		$total = ee('Model')->get('spam:SpamTrap')->count();
-		$types = ee('CP/Filter')->make('content_type', 'content_type', $options);
+
+		$content_types = $this->getContentTypes();
+		$types = ee('CP/Filter')->make('content_type', 'content_type', $content_types);
 		$types->setPlaceholder(lang('all'));
 		$types->disableCustomValue();
 
@@ -134,14 +125,11 @@ class Spam_mcp {
 
 		$trap = $this->getSpamTrap($filter_fields, $table->sort_col, $table->sort_dir, $search, $filter_values['perpage'], ($table->config['page'] - 1) * $filter_values['perpage']);
 
+		$trapped = array();
+		$content_type = array();
+
 		foreach ($trap as $spam)
 		{
-			if ( ! isset($content_type[$spam->content_type]))
-			{
-				ee()->lang->load($spam->content_type);
-				$content_type[$spam->content_type] = lang($spam->content_type);
-			}
-
 			$toolbar = array('toolbar_items' => array(
 				'view' => array(
 					'href' => '#',
@@ -155,7 +143,7 @@ class Spam_mcp {
 				)
 			));
 
-			if ( ! empty($spam->Author))
+			if ($spam->author_id != 0)
 			{
 				$author = $spam->Author->getMemberName();
 			}
@@ -172,7 +160,7 @@ class Spam_mcp {
 				'content' => $title,
 				'date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
 				'ip' => $spam->ip_address,
-				'type' => lang($content_type[$spam->content_type]),
+				'type' => $content_types[$spam->content_type],
 				$toolbar,
 				array(
 					'name' => 'selection[]',
@@ -623,6 +611,22 @@ class Spam_mcp {
 	private function getKernel($name = 'default')
 	{
 		return ee('Model')->get('spam:SpamKernel')->filter('name', $name)->first();
+	}
+
+	private function getContentTypes()
+	{
+		$content_types = array();
+
+		// Query Builder instead of model here as we need aggregation for simplicity and performance
+		$query = ee()->db->select('DISTINCT(content_type)')->get('spam_trap');
+
+		foreach ($query->result() as $row)
+		{
+			ee()->lang->load($row->content_type);
+			$content_types[$row->content_type] = lang($row->content_type);
+		}
+
+		return $content_types;
 	}
 
 	/**
