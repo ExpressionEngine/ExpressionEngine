@@ -73,7 +73,7 @@ class Spam_mcp {
 			}
 		}
 
-		$table = ee('CP/Table', array('sort_col' => 'date', 'sort_dir' => 'desc'));
+		$table = ee('CP/Table', array('sort_col' => 'trap_date', 'sort_dir' => 'desc'));
 
 		$data = array();
 
