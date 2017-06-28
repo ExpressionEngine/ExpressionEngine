@@ -85,6 +85,9 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
+		// never show Spam here, that needs to be dealt with in the Spam module
+		$comments->filter('status', '!=', 's');
+
 		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
@@ -156,6 +159,23 @@ class Comments extends AbstractPublishController {
 			ee()->view->cp_breadcrumbs = array(
 				ee('CP/URL')->make('publish/edit')->compile() => sprintf(lang('all_channel_entries'), $channel),
 			);
+		}
+
+		// if there are Spam comments, and the user can access them, give them a link
+		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam')->isInstalled())
+		{
+			$spam_total = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 's')
+				->count();
+
+			$spam_link = ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'));
+
+			ee('CP/Alert')->makeInline('comments-form')
+				->asWarning()
+				->withTitle(lang('spam_comments_header'))
+				->addToBody(sprintf(lang('spam_comments'), $spam_total, $spam_link))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('all_comments');
@@ -567,8 +587,7 @@ class Comments extends AbstractPublishController {
 		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', array(
 			'o' => lang('open'),
 			'c' => lang('closed'),
-			'p' => lang('pending'),
-			's' => lang('spam')
+			'p' => lang('pending')
 		));
 		$status->disableCustomValue();
 		return $status;
