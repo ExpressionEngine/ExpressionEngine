@@ -709,6 +709,7 @@ class ChannelEntry extends ContentModel {
 					$cat = $cat->Parent;
 					if ( ! in_array($cat->getId(), $category_ids))
 					{
+						$category_ids[] = $cat->getId();
 						$set_cats[] = $cat;
 					}
 				}
