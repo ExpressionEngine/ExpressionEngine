@@ -1023,7 +1023,6 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
-	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()
