@@ -2316,7 +2316,7 @@ class Comment {
 
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
-		$is_spam = ee('Spam')->isSpam($comment_string);
+		$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($comment_string);
 
 		if ($is_spam === TRUE)
 		{
