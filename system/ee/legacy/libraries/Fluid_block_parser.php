@@ -145,8 +145,6 @@ class Fluid_block_parser {
 		$tags = array();
 		$fields_found = array();
 
-		$tag_pairs = array_keys(ee()->TMPL->var_pair);
-
 		$block_name = $block_field->field_name;
 
 		foreach($possible_fields as $field_id => $field_name)
@@ -155,15 +153,18 @@ class Fluid_block_parser {
 
 			$tag_variable = $block_name . ':' . $field_name;
 
-			if (in_array($tag_variable, $tag_pairs))
-			{
-				$pattern = '/'.LD.$tag_variable.RD.'(.*)'.LD.'\/'.$tag_variable.RD.'/is';
+			$pchunks = ee()->api_channel_fields->get_pair_field(
+				$tagdata,
+				$field_name,
+				$block_name . ':'
+			);
 
-				if (preg_match($pattern, $tagdata, $matches))
-				{
-					$tags[$field_name][] = ee('fluid_block:Tag', $matches[1]);
-					$fields_found[] = $field_id;
-				}
+			foreach ($pchunks as $chk_data)
+			{
+				list($modifier, $content, $params, $chunk) = $chk_data;
+
+				$tags[$field_name][] = ee('fluid_block:Tag', $content);
+				$fields_found[] = $field_id;
 			}
 		}
 
