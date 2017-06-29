@@ -304,31 +304,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Gets the field name for a block given an ID
-	 *
-	 * @param int $id The id for the block
-	 * @return string The field name for the block
-	 */
-	private function getBlockName($id = '')
-	{
-		$id = ($id) ?: $this->id;
-
-		$cache_key = "ChannelField/{$id}/field_name";
-
-		if (($name = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
-		{
-			$block = ee('Model')->get('ChannelField', $this->id)
-				->fields('field_name')
-				->first();
-
-			$name = ($block) ? $block->field_name : '';
-			ee()->session->set_cache(__CLASS__, $cache_key, $name);
-		}
-
-		return $name;
-	}
-
-	/**
 	 * Gets the fluid block's data for a given block and entry
 	 *
 	 * @param int $block_id The id for the block
@@ -358,88 +333,23 @@ class Fluid_block_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Gets a list of possible field names for this block
-	 *
-	 * @return array A list of field_names assigned to this block
+	 * Replace Fluid Block template tags
 	 */
-	private function getPossibleFields()
-	{
-		$cache_key = 'ChannelFields/' . implode($this->settings['field_channel_fields'], ',') . '/field_name';
-
-		if (($possible_fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
-		{
-			$possible_fields = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
-				->fields('field_name')
-				->all()
-				->pluck('field_name');
-
-			ee()->session->set_cache(__CLASS__, $cache_key, $possible_fields);
-		}
-
-		return $possible_fields;
-	}
-
-	private function lexTagdata($tagdata)
-	{
-
-		$possible_fields = $this->getPossibleFields();
-
-		$tags = array();
-
-		$tag_pairs = array_keys(ee()->TMPL->var_pair);
-
-		$block_name = $this->getBlockName($this->id);
-
-		foreach($possible_fields as $field)
-		{
-			$tags[$field] = array();
-
-			$tag_variable = $block_name . ':' . $field;
-
-			if (in_array($tag_variable, $tag_pairs))
-			{
-				$pattern = '/'.LD.$tag_variable.RD.'(.*)'.LD.'\/'.$tag_variable.RD.'/is';
-
-				if (preg_match($pattern, $tagdata, $matches))
-				{
-					$tags[$field][] = ee('fluid_block:Tag', $matches[1]);
-				}
-			}
-		}
-
-		return $tags;
-	}
-
 	public function replace_tag($data, $params = '', $tagdata = '')
 	{
-		$output = '';
+		ee()->load->library('fluid_block_parser');
 
-		$tags = $this->lexTagdata($tagdata);
-
-		$blockData = $this->getBlockData();
-
-		foreach ($blockData as $block)
+		// not in a channel scope? pre-process may not have been run.
+		if ($this->content_type() != 'channel')
 		{
-			$field_name = $block->ChannelField->field_name;
-
-			// Have no tags for this field?
-			if ( ! array_key_exists($field_name, $tags))
-			{
-				continue;
-			}
-
-			foreach ($tags[$field_name] as $tag)
-			{
-				$field = $block->getField();
-
-				$field->setItem('row', array_merge($this->row, $block->getFieldData()->getValues()));
-
-				$output .=  $tag->parse($field);
-			}
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('channel_fields');
+			ee()->grid_parser->fluid_block_field_names[$this->id()] = $this->name();
 		}
 
-		return $output;
+		return ee()->fluid_block_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
+
 }
 
 // EOF

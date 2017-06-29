@@ -62,8 +62,8 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$fields = ee('Model')->get('ChannelField')
-			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0))
-			->filter('field_id', 'IN', $group->ChannelFields->pluck('field_id'));
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0));
+			// ->filter('field_id', 'IN', $group->ChannelFields->pluck('field_id'));
 
 		$table = $this->buildTableFromChannelFieldsQuery($fields, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
@@ -111,7 +111,7 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$errors = NULL;
-		$field = ee('Model')->make('ChannelField', compact($group_id));
+		$field = ee('Model')->make('ChannelField');
 
 		if ( ! empty($_POST))
 		{
@@ -263,7 +263,7 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = (int) ee()->config->item('site_id');
-		$field->group_id = ($field->group_id) ?: 0;
+		// $field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 

@@ -75,7 +75,7 @@ class FluidBlock extends Model {
 	protected $field_data_id;
 	protected $order;
 
-	public function getFieldData()
+	public function getFieldData(array $data = NULL)
 	{
 		$cache_key = "ChannelField/{$this->field_id}/Data/{$this->field_data_id}";
 
@@ -83,12 +83,19 @@ class FluidBlock extends Model {
 		{
 			$field_data = ee('Model')->make('FieldData')->forField($this->ChannelField);
 
-			ee()->db->where('id', $this->field_data_id);
-			$rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
-
-			if ( ! empty($rows))
+			if ($data)
 			{
-				$field_data->set($rows[0]);
+				$field_data->set($data);
+			}
+			else
+			{
+				ee()->db->where('id', $this->field_data_id);
+				$rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+
+				if ( ! empty($rows))
+				{
+					$field_data->set($rows[0]);
+				}
 			}
 
 			ee()->session->set_cache(__CLASS__, $cache_key, $field_data);
