@@ -28,7 +28,6 @@ class Fluid_block_parser {
 
 	public $modifiers = array();
 	public $reserved_names = array();
-	public $fluid_block_field_names = array();
 	protected $data = array();
 	protected $tags = array();
 
@@ -55,8 +54,6 @@ class Fluid_block_parser {
 	 */
 	public function pre_process($tagdata, $pre_parser, $fluid_block_fields, $content_type = 'channel')
 	{
-		$this->fluid_block_fields = $fluid_block_fields;
-
 		// Bail out if there are no fluid block fields present to parse
 		if ( ! preg_match_all(
 				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($fluid_block_fields)).'):?))\b([^}{]*)?'.RD."/",
