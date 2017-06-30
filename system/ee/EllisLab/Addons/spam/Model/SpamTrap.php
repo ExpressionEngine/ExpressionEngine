@@ -33,6 +33,7 @@ class SpamTrap extends Model {
 	protected $entity;
 	protected $ip_address;
 	protected $optional_data;
+	protected $site_id;
 	protected $trap_date;
 	protected $trap_id;
 

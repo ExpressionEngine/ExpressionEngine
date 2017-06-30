@@ -25,12 +25,16 @@
 
 class Spam_upd {
 
-	public $version = '1.0.0';
+	public $version;
 	private $name = 'Spam';
 
 	function __construct()
 	{
+		$addon = ee('Addon')->get('spam');
+		$this->version = $addon->getVersion();
+
 		ee()->load->dbforge();
+		ee()->load->library('smartforge');
 	}
 
 	// --------------------------------------------------------------------
@@ -100,16 +104,15 @@ class Spam_upd {
 		ee()->dbforge->create_table('spam_training');
 
 		$fields = array(
-			'trap_id'	 => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-			'author'	 => array('type' => 'int', 'constraint' => '10'),
-			'ip_address' => array('type' => 'varchar', 'constraint' => '45'),
-			'date'	     => array('type' => 'int', 'constraint' => '10'),
-			'file'		 => array('type' => 'varchar', 'constraint' => '129'),
-			'class'		 => array('type' => 'varchar', 'constraint' => '64'),
-			'approve'	 => array('type' => 'varchar', 'constraint' => '64'),
-			'remove'	 => array('type' => 'varchar', 'constraint' => '64'),
-			'data'		 => array('type' => 'text'),
-			'document'	 => array('type' => 'text')
+			'trap_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'site_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
+			'trap_date'     => array('type' => 'int', 'constraint' => '10'),
+			'author_id'     => array('type' => 'int', 'constraint' => '10'),
+			'ip_address'    => array('type' => 'varchar', 'constraint' => '45'),
+			'content_type'  => array('type' => 'varchar', 'constraint' => '45'),
+			'document'      => array('type' => 'text'),
+			'entity'        => array('type' => 'mediumtext'),
+			'optional_data' => array('type' => 'mediumtext'),
 		);
 
 		ee()->dbforge->add_field($fields);
@@ -158,9 +161,40 @@ class Spam_upd {
 
 	function update($current='')
 	{
+		if (version_compare($current, '2.0.0', '<'))
+		{
+			$this->do_2_00_00_update();
+		}
+
 		return TRUE;
 	}
 
+	private function do_2_00_00_update()
+	{
+		ee()->smartforge->add_column(
+			'spam_trap',
+			array(
+				'site_id' => array(
+					'type' => 'int',
+					'constraint' => 10,
+					'unsigned' => TRUE,
+					'null' => FALSE,
+					'default' => 1,
+				)
+			),
+			'trap_id'
+		);
+
+		ee()->smartforge->add_column(
+			'spam_trap',
+			array(
+				'optional_data' => array(
+					'type' => 'mediumtext',
+					'null' => TRUE,
+				)
+			)
+		);
+	}
 }
 
 // EOF
