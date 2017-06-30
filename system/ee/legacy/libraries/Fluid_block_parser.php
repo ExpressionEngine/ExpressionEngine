@@ -213,20 +213,6 @@ class Fluid_block_parser {
 		}
 
 		return $blockData;
-
-		foreach ($entry_ids as $entry_id)
-		{
-			$block_data = $blockData->filter(function($block) use($entry_id)
-			{
-				return $block->entry_id == $entry_id;
-			});
-
-			var_dump($block_data->getValues());
-
-			// $data[$entry_id]['field_id_' . $block_data->block_id] = $block_data;
-		}
-
-		return $data;
 	}
 
 	/**
