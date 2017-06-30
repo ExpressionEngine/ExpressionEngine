@@ -75,30 +75,37 @@ class FluidBlock extends Model {
 	protected $field_data_id;
 	protected $order;
 
-	public function getFieldData(array $data = NULL)
+	protected function getSessionCacheKey()
 	{
-		$cache_key = "ChannelField/{$this->field_id}/Data/{$this->field_data_id}";
+		return "ChannelField/{$this->field_id}/Data/{$this->field_data_id}";
+	}
 
-		if (($field_data = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+	public function setFieldData(array $data)
+	{
+		$field_data = ee('Model')->make('FieldData')->forField($this->ChannelField);
+		$field_data->set($data);
+		ee()->session->set_cache(__CLASS__, $this->getSessionCacheKey(), $field_data);
+
+		return $field_data;
+	}
+
+	public function fetchFieldData()
+	{
+		ee()->db->where('id', $this->field_data_id);
+		$rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+
+		if ( ! empty($rows))
 		{
-			$field_data = ee('Model')->make('FieldData')->forField($this->ChannelField);
+			return $rows[0];
+		}
 
-			if ($data)
-			{
-				$field_data->set($data);
-			}
-			else
-			{
-				ee()->db->where('id', $this->field_data_id);
-				$rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+	}
 
-				if ( ! empty($rows))
-				{
-					$field_data->set($rows[0]);
-				}
-			}
-
-			ee()->session->set_cache(__CLASS__, $cache_key, $field_data);
+	public function getFieldData()
+	{
+		if (($field_data = ee()->session->cache(__CLASS__, $this->getSessionCacheKey(), FALSE)) === FALSE)
+		{
+			$field_data = $this->setFieldData($this->fetchFieldData());
 		}
 
 		return $field_data;

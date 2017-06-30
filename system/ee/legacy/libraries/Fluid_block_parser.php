@@ -235,7 +235,7 @@ class Fluid_block_parser {
 
 			foreach($rows as $row)
 			{
-				$blocks[$row['id']]->getFieldData($row);
+				$blocks[$row['id']]->setFieldData($row);
 			}
 		}
 
