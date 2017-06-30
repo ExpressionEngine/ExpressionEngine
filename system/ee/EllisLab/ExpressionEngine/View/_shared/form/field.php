@@ -74,7 +74,8 @@ case 'select': ?>
 	<?php $this->embed('ee:_shared/form/fields/select', [
 		'choices' => $field['choices'],
 		'value' => $value,
-		'multi' => FALSE
+		'multi' => FALSE,
+		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL
 	]); ?>
 <?php break;
 

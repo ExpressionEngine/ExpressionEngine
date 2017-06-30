@@ -56,7 +56,11 @@ class Template extends Settings {
 					'fields' => array(
 						'site_404' => array(
 							'type' => 'select',
-							'choices' => (ee()->admin_model->get_template_list()) ?: array(),
+							'choices' => $this->templateListSearch(),
+							'filter_url' => ee('CP/URL', 'settings/template/search-templates'),
+							'value' => [
+								ee()->config->item('site_404') => ee()->config->item('site_404')
+							],
 							'no_results' => array(
 								'text' => 'no_templates_found',
 								'link_text' => 'create_new_template',
@@ -122,6 +126,42 @@ class Template extends Settings {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('design'), lang('template_manager'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function templateListSearch()
+	{
+		// TODO: what happens if page loads and selected item is not in the initial list?
+		// maybe specify key => value as value and render a hidden input?
+		$search_query = ee('Request')->post('search');
+
+		$templates = ee('Model')->get('Template')
+			->with('TemplateGroup')
+			->order('TemplateGroup.group_name')
+			->order('Template.template_name');
+
+		if ($search_query)
+		{
+			$templates = $templates = $templates->all()->filter(function($template) use ($search_query) {
+				return strpos($template->getPath(), $search_query) !== FALSE;
+			});
+		}
+		else
+		{
+			$templates = $templates->limit(100)->all();
+		}
+
+		$results = [];
+		foreach ($templates as $template)
+		{
+			$results[$template->getPath()] = $template->getPath();
+		}
+
+		return $results;
+	}
+
+	public function searchTemplates()
+	{
+		return json_encode($this->templateListSearch());
 	}
 }
 // END CLASS
