@@ -523,6 +523,12 @@ class Member extends ContentModel {
 			return 'email_too_long';
 		}
 
+		// Is email address banned?
+		if (ee()->session->ban_check('email', $email))
+		{
+			return 'email_taken';
+		}
+
 		return TRUE;
 	}
 
