@@ -48,9 +48,11 @@ class Fluid_block_parser {
 	 * Called before each channel entries loop to gather the information
 	 * needed to efficiently query the Fluid Block data we need
 	 *
-	 * @param	string	Tag data for entire channel entries loop
-	 * @param	object	Channel preparser object
-	 * @param	array	Array of known Fluid Block fields in this channel
+	 * @param string $tagdata Tag data for entire channel entries loop
+	 * @param object $pre_parser Channel preparser object
+	 * @param array $fluid_block_fields An array of fluid block fields
+	 * @param string $content_type The type of content being processed
+	 * @param array	Array of known Fluid Block fields in this channel
 	 */
 	public function pre_process($tagdata, $pre_parser, $fluid_block_fields, $content_type = 'channel')
 	{
@@ -117,9 +119,9 @@ class Fluid_block_parser {
 	}
 
 	/**
-	 * Gets a list of possible field names for this block
+	 * Gets a list of field names for a given set of field ids
 	 *
-	 * @return array A list of field_names assigned to this block
+	 * @return array A list of field_names
 	 */
 	private function getPossibleFields($field_channel_fields)
 	{
@@ -138,6 +140,13 @@ class Fluid_block_parser {
 		return $possible_fields;
 	}
 
+	/**
+	 * Goes through the tag data finding the field tags used in this block.
+	 *
+	 * @param string $tagdata Tag data for entire channel entries loop
+	 * @param obj $block_field A ChannelField instance for a field block
+	 * @return array An associateive array of tag objects and a list of found fields
+	 */
 	private function lexTagdata($tagdata, $block_field)
 	{
 		$possible_fields = $this->getPossibleFields($block_field->field_settings['field_channel_fields']);
@@ -174,6 +183,20 @@ class Fluid_block_parser {
 		);
 	}
 
+	/**
+	 * Given a list of entry ids, fluid block ids, and field ids used in the
+	 * blocks, this bulk-fetches all the needed data for the field blocks.
+	 *
+	 * A fluid block is a collection of individual fieldtypes. We store the
+	 * data for the blocks in the fields's tables. Because of this, since we know
+	 * which fields have tags (see lexTagdata()) we will only fetch data for
+	 * those fields. Thus, we pass in an array of field ids.
+	 *
+	 * @param array $entry_id A list of entry ids
+	 * @param array $block_ids A list of block ids
+	 * @param array $field_ids A list of field ids
+	 * @return obj A Colletion of FluidBlock model entities
+	 */
 	private function fetchFieldBlocks(array $entry_ids, array $block_ids, array $field_ids)
 	{
 		$data = array();
@@ -186,8 +209,10 @@ class Fluid_block_parser {
 			->order('block_id', 'entry_id', 'order')
 			->all();
 
-		// For each `field_id` we'll run one query
-		// That query will have a WHERE IN accross all the `field_data_id`s
+		// Since we store the data in the field's table, and each field has its
+		// own table, we'll group our block data by the field_id. This will
+		// allow us to run one query per field, fetching all the data across
+		// all the blocks & entries for each field.
 		$fields = array();
 
 		foreach ($blockData as $block)
@@ -203,6 +228,8 @@ class Fluid_block_parser {
 		foreach ($fields as $field_id => $blocks)
 		{
 			$field_data_ids = array_keys($blocks);
+
+			// Captain Obvious says: here we be gettin' the data, Arrrr!
 			ee()->db->where_in('id', $field_data_ids);
 			$rows = ee()->db->get('channel_data_field_' . $field_id)->result_array();
 
