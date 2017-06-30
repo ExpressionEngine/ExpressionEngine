@@ -45,17 +45,17 @@ $too_many = (count($choices) > $max_visible_items);
 		<?php endif ?>
 	</div>
 	<?php if ($too_many): ?>
-		<div class="field-input-selected <?= ($multi OR ! isset($value_label)) ? 'hidden' : ''?>">
+		<div class="field-inputs js-no-results hidden">
+			<label class="field-empty">
+				No <b>[choices]</b> found.
+			</label>
+		</div>
+		<div class="field-input-selected <?= ($multi OR ! $value) ? 'hidden' : ''?>">
 			<label>
 				<span class="icon--success"></span> <span class="js-select-label"><?=$value_label?></span>
 				<ul class="toolbar">
 					<li class="remove"><a href=""></a></li>
 				</ul>
-			</label>
-		</div>
-		<div class="field-inputs js-no-results hidden">
-			<label class="field-empty">
-				No <b>[choices]</b> found.
 			</label>
 		</div>
 	<?php endif ?>
