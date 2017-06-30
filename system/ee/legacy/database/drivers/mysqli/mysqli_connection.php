@@ -35,7 +35,7 @@ class CI_DB_mysqli_connection {
 	public function __construct($config)
 	{
 		$this->config = $config;
-		$this->mysqlnd = extension_loaded('pdo_mysql');
+		$this->mysqlnd = extension_loaded('pdo_mysql') && extension_loaded('mysqlnd');
 	}
 
 	/**
