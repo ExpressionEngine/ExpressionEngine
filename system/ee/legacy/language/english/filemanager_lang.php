@@ -292,6 +292,10 @@ $lang = array(
 
 'image_manip_height_desc' => 'Final height of image',
 
+'image_namip_quality' => 'Quality',
+
+'image_manip_quality_desc' => 'Final quality of image',
+
 'image_manip_watermark' => 'Watermark',
 
 'image_manip_watermark_desc' => 'Add a watermark',
