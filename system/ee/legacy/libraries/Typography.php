@@ -1010,6 +1010,8 @@ class EE_Typography {
 		/**  Permit only safe HTML
 		/** -------------------------------------*/
 
+		$str = $this->markCodeTags($str);
+
 		$str = ee('Security/XSS')->clean($str);
 
 		// We strip any JavaScript event handlers from image links or anchors
@@ -1056,6 +1058,8 @@ class EE_Typography {
 			$str = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", $str);
 			$str = preg_replace("#<p>|<p(?!re)[^>]*?".">|</p>#i", "",  preg_replace("#<\/p><p(?!re)[^>]*?".">#i", "\n", $str));
 		}
+
+		$str = $this->_convert_code_markers($str);
 
 		// Convert allowed HTML to BBCode
 		foreach($this->safe_encode as $key => $val)
@@ -2225,17 +2229,7 @@ class EE_Typography {
 		$counter = 0;
 
 		// Find any code and pre tags to exclude
-		if (strpos($str, '<pre>') !== FALSE OR strpos($str, '<code>') !== FALSE)
-		{
-			if (preg_match_all("/(<pre>(.+?)<\/pre>)|(<code>(.+?)<\/code>)/si", $str, $matches))
-			{
-				for ($counter = 0, $total = count($matches[0]); $counter < $total; $counter++)
-				{
-					$code_chunk[$counter] = $matches[0][$counter];
-					$str = str_replace($matches[0][$counter], '{'.$counter.'xyH45k02wsSdrp}', $str);
-				}
-			}
-		}
+		$str = $this->markCodeTags($str);
 
 		$str = ' '.$str;
 
@@ -2253,13 +2247,7 @@ class EE_Typography {
 		}
 
 		// Flip code chunks back in
-		if ($counter > 0)
-		{
-			foreach ($code_chunk as $key => $val)
-			{
-				$str = str_replace('{'.$key.'xyH45k02wsSdrp}', $val, $str);
-			}
-		}
+		$str = $this->_convert_code_markers($str);
 
 		return ltrim($str);
 	}
@@ -2626,6 +2614,23 @@ while (--j >= 0)
 			},
 			$str
 		);
+	}
+
+	private function markCodeTags($str)
+	{
+		// Find any code and pre tags to exclude
+		if (strpos($str, '<pre>') !== FALSE OR strpos($str, '<code>') !== FALSE)
+		{
+			if (preg_match_all("/(<pre>(.+?)<\/pre>)|(<code>(.+?)<\/code>)/si", $str, $matches))
+			{
+				for ($counter = 0, $total = count($matches[0]); $counter < $total; $counter++)
+				{
+					$this->code_chunks[$counter] = $matches[0][$counter];
+					$str = str_replace($matches[0][$counter], '{'.$counter.'yH45k02wsSdrp}', $str);
+				}
+			}
+		}
+		return $str;
 	}
 
 	// --------------------------------------------------------------------
