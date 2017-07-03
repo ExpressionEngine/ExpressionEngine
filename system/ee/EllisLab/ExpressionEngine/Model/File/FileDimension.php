@@ -25,6 +25,7 @@ class FileDimension extends Model {
 	protected static $_typed_columns = array(
 		//'width'  => 'int',
 		//'height' => 'int'
+		'quality' => 'int',
 	);
 
 	protected static $_relationships = array(
@@ -43,7 +44,8 @@ class FileDimension extends Model {
 		'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
 		'width'       => 'isNatural|validateDimension',
-		'height'      => 'isNatural|validateDimension'
+		'height'      => 'isNatural|validateDimension',
+		'quality'     => 'isNatural|lessThan[101]'
 	);
 
 	protected $id;
@@ -55,6 +57,7 @@ class FileDimension extends Model {
 	protected $width;
 	protected $height;
 	protected $watermark_id;
+	protected $quality;
 
 	/**
 	 * At least a height OR a width must be specified if there is no watermark selected
