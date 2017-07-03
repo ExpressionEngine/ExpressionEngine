@@ -356,8 +356,8 @@ class Uploads extends AbstractFilesController {
 				'image_manip_height' => array(
 					'desc'  => 'image_manip_height_desc'
 				),
-				'image_quality' => array(
-					'desc'  => 'image_quality_desc'
+				'image_namip_quality' => array(
+					'desc'  => 'image_manip_quality_desc'
 				),
 				'image_manip_watermark' => array(
 					'desc'  => 'image_manip_watermark_desc'
