@@ -754,6 +754,12 @@ class EE_Upload {
 		{
 			$current = (int) ini_get('memory_limit') * 1024 * 1024;
 
+			// Because 1G is a thing
+			if (strtolower(substr(ini_get('memory_limit'), -1)) == 'g')
+			{
+				$current = $current * 1024;
+			}
+
 			// There was a bug/behavioural change in PHP 5.2, where numbers over
 			// one million get output into scientific notation.  number_format()
 			// ensures this number is an integer
@@ -826,6 +832,12 @@ class EE_Upload {
 		{
 			$current = (int) ini_get('memory_limit') * 1024 * 1024;
 
+			// Because 1G is a thing
+			if (strtolower(substr(ini_get('memory_limit'), -1)) == 'g')
+			{
+				$current =* 1024;
+			}
+
 			// There was a bug/behavioural change in PHP 5.2, where numbers over
 			// one million get output into scientific notation.  number_format()
 			// ensures this number is an integer
@@ -834,7 +846,7 @@ class EE_Upload {
 			$new_memory = number_format(ceil(filesize($file) + $current), 0, '.', '');
 
 			// When an integer is used, the value is measured in bytes.
-			ini_set('memory_limit', $new_memory);
+			//ini_set('memory_limit', $new_memory);
 		}
 
 		if (($data = @file_get_contents($file)) === FALSE)
