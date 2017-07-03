@@ -146,17 +146,28 @@ class Snippets extends AbstractDesignController {
 			);
 		}
 
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $snippets->count(), 'show_all');
+
+		$filter_values = $filters->values();
+		$base_url->addQueryStringVariables($filter_values);
+
 		$table->setNoResultsText('no_snippets');
 		$table->setData($data);
 
+
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
+
+
+
 
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
 			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
+				->perPage($filter_values['perpage'])
 				->currentPage($vars['table']['page'])
 				->render($base_url);
 		}
@@ -167,6 +178,8 @@ class Snippets extends AbstractDesignController {
 		));
 
 		$this->stdHeader();
+
+		ee()->view->filters = $filters->render($base_url);
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_partials_header');
 		ee()->cp->render('design/snippets/index', $vars);
