@@ -846,7 +846,7 @@ class EE_Upload {
 			$new_memory = number_format(ceil(filesize($file) + $current), 0, '.', '');
 
 			// When an integer is used, the value is measured in bytes.
-			//ini_set('memory_limit', $new_memory);
+			ini_set('memory_limit', $new_memory);
 		}
 
 		if (($data = @file_get_contents($file)) === FALSE)
