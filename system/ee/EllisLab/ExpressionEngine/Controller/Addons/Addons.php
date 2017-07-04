@@ -1798,7 +1798,8 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'checkbox',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'wrap' => TRUE,
 					);
 					break;
 
