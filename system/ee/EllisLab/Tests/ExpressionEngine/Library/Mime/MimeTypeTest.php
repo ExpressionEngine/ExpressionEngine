@@ -162,18 +162,18 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Bad Path',      'foo.bar', '', TRUE),
-			array('CSS File',      realpath(__DIR__.'/../../../support/test.css'),  'text/css', FALSE),
-			array('GIF File',      realpath(__DIR__.'/../../../support/test.gif'),  'image/gif', FALSE),
-			array('HTML File',     realpath(__DIR__.'/../../../support/test.html'), 'text/html', FALSE),
-			array('JPG File',      realpath(__DIR__.'/../../../support/test.jpg'),  'image/jpeg', FALSE),
-			array('JS File',       realpath(__DIR__.'/../../../support/test.js'),   'application/javascript', FALSE),
-			array('JSON File',     realpath(__DIR__.'/../../../support/test.json'), 'application/json', FALSE),
-			array('Markdown File', realpath(__DIR__.'/../../../support/test.md'),   'text/plain', FALSE),
-			array('PDF File',      realpath(__DIR__.'/../../../support/test.pdf'),  'application/pdf', FALSE),
-			array('PHP File',      realpath(__DIR__.'/../../../support/test.php'),  'text/x-php', FALSE),
-			array('PNG File',      realpath(__DIR__.'/../../../support/test.png'),  'image/png', FALSE),
-			array('Text File',     realpath(__DIR__.'/../../../support/test.txt'),  'text/plain', FALSE),
-			array('XML File',      realpath(__DIR__.'/../../../support/test.xml'),  'application/xml', FALSE),
+			array('CSS File',      realpath(__DIR__.'/../../../mime-types/support/test.css'),  'text/css', FALSE),
+			array('GIF File',      realpath(__DIR__.'/../../../mime-types/support/test.gif'),  'image/gif', FALSE),
+			array('HTML File',     realpath(__DIR__.'/../../../mime-types/support/test.html'), 'text/html', FALSE),
+			array('JPG File',      realpath(__DIR__.'/../../../mime-types/support/test.jpg'),  'image/jpeg', FALSE),
+			array('JS File',       realpath(__DIR__.'/../../../mime-types/support/test.js'),   'application/javascript', FALSE),
+			array('JSON File',     realpath(__DIR__.'/../../../mime-types/support/test.json'), 'application/json', FALSE),
+			array('Markdown File', realpath(__DIR__.'/../../../mime-types/support/test.md'),   'text/plain', FALSE),
+			array('PDF File',      realpath(__DIR__.'/../../../mime-types/support/test.pdf'),  'application/pdf', FALSE),
+			array('PHP File',      realpath(__DIR__.'/../../../mime-types/support/test.php'),  'text/x-php', FALSE),
+			array('PNG File',      realpath(__DIR__.'/../../../mime-types/support/test.png'),  'image/png', FALSE),
+			array('Text File',     realpath(__DIR__.'/../../../mime-types/support/test.txt'),  'text/plain', FALSE),
+			array('XML File',      realpath(__DIR__.'/../../../mime-types/support/test.xml'),  'application/xml', FALSE),
 		);
 	}
 
