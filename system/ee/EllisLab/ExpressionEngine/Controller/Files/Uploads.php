@@ -663,6 +663,11 @@ class Uploads extends AbstractFilesController {
 				$model->width = 0;
 			}
 
+			if ($model->quality === '')
+			{
+				$model->quality = 90;
+			}
+
 			$result = $model->validate();
 
 			if ( ! $result->isValid())
