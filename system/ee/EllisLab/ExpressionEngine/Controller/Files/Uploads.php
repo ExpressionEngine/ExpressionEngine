@@ -752,6 +752,7 @@ class Uploads extends AbstractFilesController {
 				'resize_type'  => $size->resize_type,
 				'width'        => $size->width,
 				'height'       => $size->height,
+				'quality'      => $size->quality,
 				'watermark_id' => $size->watermark_id
 			);
 		}
