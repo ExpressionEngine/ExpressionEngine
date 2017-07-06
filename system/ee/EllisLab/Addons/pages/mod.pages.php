@@ -50,7 +50,7 @@ class Pages {
 		// Fetch all pages
 		$sites = ee('Model')->get('Site')
 			->fields('site_id', 'site_name', 'site_pages')
-			->filter('siten_name', $site_names)
+			->filter('site_name', $site_names)
 			->all();
 
 		$new_pages = array();
