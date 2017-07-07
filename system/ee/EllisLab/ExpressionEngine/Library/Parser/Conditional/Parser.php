@@ -75,7 +75,7 @@ class Parser extends AbstractParser {
 		// If the output starts with \n and ends with \n remove just the first
 		// and last (not trim() which will remove ALL); this is to remove any
 		// whitespace we added with annotations
-		if ($out[0] == "\n" && substr($out, -1) == "\n")
+		if ($out && $out[0] == "\n" && substr($out, -1) == "\n")
 		{
 			$out = substr($out, 1);
 			$out = substr($out, 0, strlen($out) - 1);
