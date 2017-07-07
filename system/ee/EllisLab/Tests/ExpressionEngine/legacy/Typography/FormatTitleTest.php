@@ -17,6 +17,12 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 		$this->typography = new TypographyStub();
 	}
 
+	private function getContentForMarkup($name)
+	{
+		$path = realpath(__DIR__.'/../../../support/typography/' . $name);
+		return file_get_contents($path);
+	}
+
 	/**
 	 * @dataProvider titlesDataProvider
 	 */
@@ -88,7 +94,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('Asterisk', '*', '*'),
 			array('Parentheses', '()', '()'),
 			array('Underscore', '_', '_'),
-			array('Dash', '-', '-'),
+			array('Hyphen', '-', '-'),
 			array('Equals sign', '=', '='),
 			array('Plus sign', '+', '+'),
 			array('Brackets', '[]', '[]'),
@@ -802,6 +808,122 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<var> with attributes', '<var ' . $all_attributes . '></var>', '&lt;var ' . $allowed_attributes . '&gt;&lt;/var&gt;'),
 			array('<video> with attributes', '<video ' . $all_attributes . '></video>', '&lt;video ' . $allowed_attributes . '&gt;&lt;/video&gt;'),
 			array('<wbr> with attributes', '<wbr ' . $all_attributes . '></wbr>', '&lt;wbr ' . $allowed_attributes . '&gt;&lt;/wbr&gt;'),
+		);
+	}
+
+	protected function markdownData()
+	{
+		return array(
+			// Automatic Escaping
+			array('Ampersands', 'AT&T', 'AT&amp;T'),
+			array('HTML Entity', '&copy;', '&copy;'),
+			array('Angle brackets', '4 < 5 and 3 > 4', '4 &lt; 5 and 3 &gt; 4'),
+
+			// Links
+			array('Link with title attribute', 'This is [an example](http://example.com/ "Title") inline link.', ''),
+			array('Link without title attribute', '[This link](http://example.net/) has no title attribute.', ''),
+			array('Relative URLs', 'See my [About](/about/) page for details.', ''),
+			array('Refernce style link', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"", ''),
+			array('Refernce style link (with space)', "This is [an example] [id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"", ''),
+			array('Refernce style link (with single quote)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  'Optional Title Here'", ''),
+			array('Refernce style link (with parenthesis)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  (Optional Title Here)", ''),
+			array('Refernce style link (with angle brackets)', "This is [an example][id] reference-style link.\n\n[id]: <http://example.com/>  \"Optional Title Here\"", ''),
+			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"", ''),
+			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", ''),
+			array('Automatic link', '<http://example.com>', '<a href="http://example.com/">http://example.com/</a>'),
+			array('Automatic email ink', '<address@example.com>', '<a href="&#x6D;&#x61;i&#x6C;&#x74;&#x6F;:&#x61;&#x64;&#x64;&#x72;&#x65;&#115;&#115;&#64;&#101;&#120;&#x61;&#109;&#x70;&#x6C;e&#x2E;&#99;&#111;&#109;">&#x61;&#x64;&#x64;&#x72;&#x65;&#115;&#115;&#64;&#101;&#120;&#x61;&#109;&#x70;&#x6C;e&#x2E;&#99;&#111;&#109;</a>'),
+
+			// Emphasis
+			array('Single asterisks', '*single asterisks*', '<em>single asterisks</em>'),
+			array('Single underscores', '_single underscores_', '<em>single underscores</em>'),
+			array('Double asterisks', '**double asterisks**', '<strong>single asterisks</strong>'),
+			array('Double underscores', '__double underscores__', '<strong>single underscores</strong>'),
+			array('Single asterisks in the middle of a word', 'un*frigging*believable', 'un<em>frigging</em>believable'),
+			array('Single underscores in the middle of a word', 'un_frigging_believable', 'un<em>frigging</em>believable'),
+			array('Double asterisks in the middle of a word', 'un**frigging**believable', 'un<strong>frigging</strong>believable'),
+			array('Double underscores in the middle of a word', 'un__frigging__believable', 'un<strong>frigging</strong>believable'),
+			array('Literal asterisk', '8 * 7 = 56', '8 * 7 = 56'),
+			array('Literal underscore', 'Literal _ underscore', 'Literal _ underscore'),
+			array('Escaped asterisk', '\*this text is surrounded by literal asterisks\*', '\*this text is surrounded by literal asterisks\*'),
+			array('Escaped underscore', '\_this text is surrounded by literal asterisks\_', '\_this text is surrounded by literal asterisks\_'),
+
+			// Code
+			array('Span of code', 'Use the `printf()` function.', '<p>Use the <code>printf()</code> function.</p>'),
+			array('Literal backtick', '``There is a literal backtick (`) here.``', '<p><code>There is a literal backtick (`) here.</code></p>'),
+			array('Encoded angle brackets inside code span', "Please don't use any `<blink>` tags.", "<p>Please don't use any <code>&lt;blink&gt;</code> tags.</p>"),
+			array('Encoded ampersands inside code span', '`&#8212;` is the decimal-encoded equivalent of `&mdash;`.', '<p><code>&amp;#8212;</code> is the decimal-encoded equivalent of <code>&amp;mdash;</code>.</p>'),
+
+			// Images
+			array('Image tag', '![Alt text](/path/to/img.jpg)', ''),
+			array('Image tag with title', '![Alt text](/path/to/img.jpg "Optional title")', ''),
+			array('Reference style image tag', "![Alt text][id]\n\n[id]: url/to/image  \"Optional title attribute\"", ''),
+
+			// Escapes
+			array('Escaped backslash', '\\\\', '\\'),
+			array('Escaped backtick', '\`', '`'),
+			array('Escaped asterisk', '\*', '*'),
+			array('Escaped underscore', '\_', '_'),
+			array('Escaped curly braces', '\{\}', '{}'),
+			array('Escaped square brackets', '\[\]', '[]'),
+			array('Escaped parentheses', '\(\)', '()'),
+			array('Escaped hash mark', '\#', '#'),
+			array('Escaped plus sign', '\+', '+'),
+			array('Escaped hyphen', '\-', '-'),
+			array('Escaped dot', '\.', '.'),
+			array('Escaped exclamation mark', '\!', '!'),
+
+			// Horizontal rules
+			array('HR by "* * *"', '* * *', '<hr />'),
+			array('HR by "***"', '***', '<hr />'),
+			array('HR by "*****"', '*****', '<hr />'),
+			array('HR by "---"', '---', '<hr />'),
+			array('HR by "- - -"', '- - -', '<hr />'),
+			array('HR by "-----"', '-----', '<hr />'),
+			array('HR by "___"', '___', '<hr />'),
+			array('HR by "_ _ _"', '_ _ _', '<hr />'),
+			array('HR by "_____"', '_____', '<hr />'),
+
+			// Headers
+			array('# H1', '# This is an H1', ''),
+			array('## H2', '## This is an H2', ''),
+			array('### H3', '### This is an H3', ''),
+			array('#### H4', '#### This is an H4', ''),
+			array('##### H5', '##### This is an H5', ''),
+			array('###### H6', '###### This is an H6', ''),
+			array('# H1 #', '# This is an H1 #', ''),
+			array('## H2 ##', '## This is an H2 ##', ''),
+			array('### H3 ###', '### This is an H3 ###', ''),
+			array('#### H4 ####', '#### This is an H4 ####', ''),
+			array('##### H5 #####', '##### This is an H5 #####', ''),
+			array('###### H6 ######', '###### This is an H6 ######', ''),
+			array('H1 by underscore', "This is an H1\n=============", '<h1>This is an H1</h1>'),
+			array('H2 by underscore', "This is an H2\n_____________", '<h2>This is an H2</h2>'),
+
+			// Blockquotes
+			array('Email style blockquote', $this->getContentForMarkup('email-style-blockquote.in.md'), $this->getContentForMarkup('email-style-blockquote.out.md')),
+			array('Lazy style blockquote', $this->getContentForMarkup('lazy-style-blockquote.in.md'), $this->getContentForMarkup('lazy-style-blockquote.out.md')),
+			array('Nested blockquotes', $this->getContentForMarkup('nested-blockquotes.in.md'), $this->getContentForMarkup('nested-blockquotes.out.md')),
+			array('Markdown inside blockquote', $this->getContentForMarkup('markdown-in-blockquote.in.md'), $this->getContentForMarkup('markdown-in-blockquote.out.md')),
+
+			// Lists
+			array('List by asterisk', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('List by plus', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('List by hyphen', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Ordered list', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Wrapped lists', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Lists with paragraph tags', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Lists with paragraphs', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Lists with blockquotes', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Lists with code blocks', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Not a list', '1986\. What a great season.', '1986. What a great season.'),
+
+			// Code blocks
+			array('Codeblock by 4 spaces', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Codeblock by 5 spaces', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Codeblock by 1 tab', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Codeblock by 2 tabs', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Codeblock with encoded ampersands', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
+			array('Codeblock with encoded angle brackets', $this->getContentForMarkup('xx.in.md'), $this->getContentForMarkup('xx.out.md')),
 		);
 	}
 
