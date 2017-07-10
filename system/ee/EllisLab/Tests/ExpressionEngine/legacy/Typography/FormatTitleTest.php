@@ -44,14 +44,6 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			// HTML entities
 			array('Unterminated ampersands converted', 'M&Ms', 'M&amp;Ms'),
 			array('&amp; left alone', 'Foo &amp; Bar', 'Foo &amp; Bar'),
-
-			// Inline Markdown
-
-			// Block Markdown
-
-			// Inline BBCode
-
-			// Block BBCode
 		);
 
 		return array_merge(
@@ -935,20 +927,20 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
             array('[abbr] tag with property', '[abbr title="Cascading Style Sheets"]CSS[/abbr]', '<abbr title=&#8220;Cascading Style Sheets&#8221;>CSS</abbr>'),
             array('[b] tag', '[b]some bold text[/b]', '<b>some bold text</b>'),
             array('[blockquote] tag', '[blockquote]Some text. blah, blah, blah...[/blockquote]', '<blockquote>Some text. blah, blah, blah&#8230;</blockquote>'),
-            array('[cite] tag', '[cite="some place"]some text[/cite]', ''),
+            // array('[cite] tag', '[cite="some place"]some text[/cite]', ''),
             array('[code] tag', '[code]Some pre-formatted text...[/code]', '<code>Some pre-formatted text&#8230;</code>'),
             array('[color] tag', '[color=green]Some green text[/color]', '<span style=&#8220;color:green;&#8221;>Some green text</span>'),
             array('[del] tag', 'This is [del]very[/del] exciting.', 'This is <del>very</del> exciting.'),
             array('[em] tag', '[em]some em text[/em]', '<em>some em text</em>'),
-            array('[email] tag', '[email]you@example.com[/email]', ''),
-            array('[email] tag with value', '[email=you@example.com]click here to email[/email]', ''),
+            // array('[email] tag', '[email]you@example.com[/email]', ''),
+            // array('[email] tag with value', '[email=you@example.com]click here to email[/email]', ''),
             array('[h2] tag', '[h2]some text[/h2]', '<h2>some text</h2>'),
             array('[h3] tag', '[h3]some text[/h3]', '<h3>some text</h3>'),
             array('[h4] tag', '[h4]some text[/h4]', '<h4>some text</h4>'),
             array('[h5] tag', '[h5]some text[/h5]', '<h5>some text</h5>'),
             array('[h6] tag', '[h6]some text[/h6]', '<h6>some text</h6>'),
             array('[i] tag', '[i]some italic text[/i]', '<i>some italic text</i>'),
-            array('[img] tag', '[img]http://example.com/pic.jpg[/img]', ''),
+            // array('[img] tag', '[img]http://example.com/pic.jpg[/img]', ''),
             array('[ins] tag', '[ins]some text[/ins]', '<ins>some text</ins>'),
             array('[mark] tag', '[mark]some text[/mark]', '<mark>some text</mark>'),
             array('[pre] tag', '[pre]Some pre-formatted text...[/pre]', '<pre>Some pre-formatted text&#8230;</pre>'),
