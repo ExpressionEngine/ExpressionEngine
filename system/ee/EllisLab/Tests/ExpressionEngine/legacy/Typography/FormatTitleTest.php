@@ -14,7 +14,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->typography = new TypographyStub();
+		$this->typography = new EE_Typography();
 	}
 
 	private function getContentForMarkup($name)
@@ -62,7 +62,8 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			$this->HTMLWithoutClosingTagsData(),
 			$this->HTMLWithContentData(),
 			$this->HTMLAttributesData(),
-			$this->HTMLWithAttributesData()
+			$this->HTMLWithAttributesData(),
+			$this->BBCodeData()
 		);
 	}
 
@@ -148,7 +149,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<caption></caption>', '<caption></caption>', '&lt;caption&gt;&lt;/caption&gt;'),
 			array('<center></center>', '<center></center>', '&lt;center&gt;&lt;/center&gt;'),
 			array('<cite></cite>', '<cite></cite>', '&lt;cite&gt;&lt;/cite&gt;'),
-			array('<code></code>', '<code></code>', '&lt;code&gt;&lt;/code&gt;'),
+			array('<code></code>', '<code></code>', '<code></code>'),
 			array('<col></col>', '<col></col>', '&lt;col&gt;&lt;/col&gt;'),
 			array('<colgroup></colgroup>', '<colgroup></colgroup>', '&lt;colgroup&gt;&lt;/colgroup&gt;'),
 			array('<datalist></datalist>', '<datalist></datalist>', '&lt;datalist&gt;&lt;/datalist&gt;'),
@@ -191,7 +192,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<link></link>', '<link></link>', '&lt;link&gt;&lt;/link&gt;'),
 			array('<main></main>', '<main></main>', '&lt;main&gt;&lt;/main&gt;'),
 			array('<map></map>', '<map></map>', '&lt;map&gt;&lt;/map&gt;'),
-			array('<mark></mark>', '<mark></mark>', '&lt;mark&gt;&lt;/mark&gt;'),
+			array('<mark></mark>', '<mark></mark>', '<mark></mark>'),
 			array('<menu></menu>', '<menu></menu>', '&lt;menu&gt;&lt;/menu&gt;'),
 			array('<menuitem></menuitem>', '<menuitem></menuitem>', '&lt;menuitem&gt;&lt;/menuitem&gt;'),
 			array('<meta></meta>', '<meta></meta>', '&lt;meta&gt;&lt;/meta&gt;'),
@@ -220,7 +221,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<select></select>', '<select></select>', '&lt;select&gt;&lt;/select&gt;'),
 			array('<small></small>', '<small></small>', '&lt;small&gt;&lt;/small&gt;'),
 			array('<source></source>', '<source></source>', '&lt;source&gt;&lt;/source&gt;'),
-			array('<span></span>', '<span></span>', '&lt;span&gt;&lt;/span&gt;'),
+			array('<span></span>', '<span></span>', '<span></span>'),
 			array('<strike></strike>', '<strike></strike>', '&lt;strike&gt;&lt;/strike&gt;'),
 			array('<strong></strong>', '<strong></strong>', '&lt;strong&gt;&lt;/strong&gt;'),
 			array('<style></style>', '<style></style>', '&lt;style&gt;&lt;/style&gt;'),
@@ -389,25 +390,25 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			// array('<article>foobar</article>', '<article>foobar</article>', '&lt;article&gt;foobar&lt;/article&gt;'),
 			// array('<aside>foobar</aside>', '<aside>foobar</aside>', '&lt;aside&gt;foobar&lt;/aside&gt;'),
 			// array('<audio>foobar</audio>', '<audio>foobar</audio>', '&lt;audio&gt;foobar&lt;/audio&gt;'),
-			array('<b>foobar</b>', '<b>foobar</b>', '&lt;b&gt;foobar&lt;/b&gt;'),
+			array('<b>foobar</b>', '<b>foobar</b>', '<b>foobar</b>'),
 			array('<base>foobar</base>', '<base>foobar</base>', '&lt;base&gt;foobar&lt;/base&gt;'),
 			array('<basefont>foobar</basefont>', '<basefont>foobar</basefont>', '&lt;basefont&gt;foobar&lt;/basefont&gt;'),
 			array('<bdi>foobar</bdi>', '<bdi>foobar</bdi>', '&lt;bdi&gt;foobar&lt;/bdi&gt;'),
 			array('<bdo>foobar</bdo>', '<bdo>foobar</bdo>', '&lt;bdo&gt;foobar&lt;/bdo&gt;'),
 			array('<big>foobar</big>', '<big>foobar</big>', '&lt;big&gt;foobar&lt;/big&gt;'),
-			array('<blockquote>foobar</blockquote>', '<blockquote>foobar</blockquote>', '&lt;blockquote&gt;foobar&lt;/blockquote&gt;'),
+			array('<blockquote>foobar</blockquote>', '<blockquote>foobar</blockquote>', '<blockquote>foobar</blockquote>'),
 			array('<body>foobar</body>', '<body>foobar</body>', '&lt;body&gt;foobar&lt;/body&gt;'),
 			array('<button>foobar</button>', '<button>foobar</button>', '&lt;button&gt;foobar&lt;/button&gt;'),
 			array('<canvas>foobar</canvas>', '<canvas>foobar</canvas>', '&lt;canvas&gt;foobar&lt;/canvas&gt;'),
 			array('<caption>foobar</caption>', '<caption>foobar</caption>', '&lt;caption&gt;foobar&lt;/caption&gt;'),
 			array('<center>foobar</center>', '<center>foobar</center>', '&lt;center&gt;foobar&lt;/center&gt;'),
-			array('<cite>foobar</cite>', '<cite>foobar</cite>', '&lt;cite&gt;foobar&lt;/cite&gt;'),
-			array('<code>foobar</code>', '<code>foobar</code>', '&lt;code&gt;foobar&lt;/code&gt;'),
+			array('<cite>foobar</cite>', '<cite>foobar</cite>', '<cite>foobar</cite>'),
+			array('<code>foobar</code>', '<code>foobar</code>', '<code>foobar</code>'),
 			array('<col>foobar</col>', '<col>foobar</col>', '&lt;col&gt;foobar&lt;/col&gt;'),
 			array('<colgroup>foobar</colgroup>', '<colgroup>foobar</colgroup>', '&lt;colgroup&gt;foobar&lt;/colgroup&gt;'),
 			array('<datalist>foobar</datalist>', '<datalist>foobar</datalist>', '&lt;datalist&gt;foobar&lt;/datalist&gt;'),
 			array('<dd>foobar</dd>', '<dd>foobar</dd>', '&lt;dd&gt;foobar&lt;/dd&gt;'),
-			array('<del>foobar</del>', '<del>foobar</del>', '&lt;del&gt;foobar&lt;/del&gt;'),
+			array('<del>foobar</del>', '<del>foobar</del>', '<del>foobar</del>'),
 			array('<details>foobar</details>', '<details>foobar</details>', '&lt;details&gt;foobar&lt;/details&gt;'),
 			array('<dfn>foobar</dfn>', '<dfn>foobar</dfn>', '&lt;dfn&gt;foobar&lt;/dfn&gt;'),
 			array('<dialog>foobar</dialog>', '<dialog>foobar</dialog>', '&lt;dialog&gt;foobar&lt;/dialog&gt;'),
@@ -415,7 +416,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<div>foobar</div>', '<div>foobar</div>', '&lt;div&gt;foobar&lt;/div&gt;'),
 			array('<dl>foobar</dl>', '<dl>foobar</dl>', '&lt;dl&gt;foobar&lt;/dl&gt;'),
 			array('<dt>foobar</dt>', '<dt>foobar</dt>', '&lt;dt&gt;foobar&lt;/dt&gt;'),
-			array('<em>foobar</em>', '<em>foobar</em>', '&lt;em&gt;foobar&lt;/em&gt;'),
+			array('<em>foobar</em>', '<em>foobar</em>', '<em>foobar</em>'),
 			array('<embed>foobar</embed>', '<embed>foobar</embed>', '&lt;embed&gt;foobar&lt;/embed&gt;'),
 			array('<fieldset>foobar</fieldset>', '<fieldset>foobar</fieldset>', '&lt;fieldset&gt;foobar&lt;/fieldset&gt;'),
 			array('<figcaption>foobar</figcaption>', '<figcaption>foobar</figcaption>', '&lt;figcaption&gt;foobar&lt;/figcaption&gt;'),
@@ -426,17 +427,17 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<frame>foobar</frame>', '<frame>foobar</frame>', '&lt;frame&gt;foobar&lt;/frame&gt;'),
 			array('<frameset>foobar</frameset>', '<frameset>foobar</frameset>', '&lt;frameset&gt;foobar&lt;/frameset&gt;'),
 			array('<h1>foobar</h1>', '<h1>foobar</h1>', '&lt;h1&gt;foobar&lt;/h1&gt;'),
-			array('<h2>foobar</h2>', '<h2>foobar</h2>', '&lt;h2&gt;foobar&lt;/h2&gt;'),
-			array('<h3>foobar</h3>', '<h3>foobar</h3>', '&lt;h3&gt;foobar&lt;/h3&gt;'),
-			array('<h4>foobar</h4>', '<h4>foobar</h4>', '&lt;h4&gt;foobar&lt;/h4&gt;'),
-			array('<h5>foobar</h5>', '<h5>foobar</h5>', '&lt;h5&gt;foobar&lt;/h5&gt;'),
-			array('<h6>foobar</h6>', '<h6>foobar</h6>', '&lt;h6&gt;foobar&lt;/h6&gt;'),
+			array('<h2>foobar</h2>', '<h2>foobar</h2>', '<h2>foobar</h2>'),
+			array('<h3>foobar</h3>', '<h3>foobar</h3>', '<h3>foobar</h3>'),
+			array('<h4>foobar</h4>', '<h4>foobar</h4>', '<h4>foobar</h4>'),
+			array('<h5>foobar</h5>', '<h5>foobar</h5>', '<h5>foobar</h5>'),
+			array('<h6>foobar</h6>', '<h6>foobar</h6>', '<h6>foobar</h6>'),
 			array('<head>foobar</head>', '<head>foobar</head>', '&lt;head&gt;foobar&lt;/head&gt;'),
 			array('<header>foobar</header>', '<header>foobar</header>', '&lt;header&gt;foobar&lt;/header&gt;'),
 			array('<html>foobar</html>', '<html>foobar</html>', '&lt;html&gt;foobar&lt;/html&gt;'),
-			array('<i>foobar</i>', '<i>foobar</i>', '&lt;i&gt;foobar&lt;/i&gt;'),
+			array('<i>foobar</i>', '<i>foobar</i>', '<i>foobar</i>'),
 			array('<iframe>foobar</iframe>', '<iframe>foobar</iframe>', '&lt;iframe&gt;foobar&lt;/iframe&gt;'),
-			array('<ins>foobar</ins>', '<ins>foobar</ins>', '&lt;ins&gt;foobar&lt;/ins&gt;'),
+			array('<ins>foobar</ins>', '<ins>foobar</ins>', '<ins>foobar</ins>'),
 			array('<kbd>foobar</kbd>', '<kbd>foobar</kbd>', '&lt;kbd&gt;foobar&lt;/kbd&gt;'),
 			array('<keygen>foobar</keygen>', '<keygen>foobar</keygen>', '&lt;keygen&gt;foobar&lt;/keygen&gt;'),
 			array('<label>foobar</label>', '<label>foobar</label>', '&lt;label&gt;foobar&lt;/label&gt;'),
@@ -445,7 +446,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<link>foobar</link>', '<link>foobar</link>', '&lt;link&gt;foobar&lt;/link&gt;'),
 			array('<main>foobar</main>', '<main>foobar</main>', '&lt;main&gt;foobar&lt;/main&gt;'),
 			array('<map>foobar</map>', '<map>foobar</map>', '&lt;map&gt;foobar&lt;/map&gt;'),
-			array('<mark>foobar</mark>', '<mark>foobar</mark>', '&lt;mark&gt;foobar&lt;/mark&gt;'),
+			array('<mark>foobar</mark>', '<mark>foobar</mark>', '<mark>foobar</mark>'),
 			array('<menu>foobar</menu>', '<menu>foobar</menu>', '&lt;menu&gt;foobar&lt;/menu&gt;'),
 			array('<menuitem>foobar</menuitem>', '<menuitem>foobar</menuitem>', '&lt;menuitem&gt;foobar&lt;/menuitem&gt;'),
 			array('<meta>foobar</meta>', '<meta>foobar</meta>', '&lt;meta&gt;foobar&lt;/meta&gt;'),
@@ -461,7 +462,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<p>foobar</p>', '<p>foobar</p>', 'foobar'),
 			// array('<param>foobar</param>', '<param>foobar</param>', '&lt;param&gt;foobar&lt;/param&gt;'),
 			// array('<picture>foobar</picture>', '<picture>foobar</picture>', '&lt;picture&gt;foobar&lt;/picture&gt;'),
-			array('<pre>foobar</pre>', '<pre>foobar</pre>', '&lt;pre&gt;foobar&lt;/pre&gt;'),
+			array('<pre>foobar</pre>', '<pre>foobar</pre>', '<pre>foobar</pre>'),
 			// array('<progress>foobar</progress>', '<progress>foobar</progress>', '&lt;progress&gt;foobar&lt;/progress&gt;'),
 			array('<q>foobar</q>', '<q>foobar</q>', '&lt;q&gt;foobar&lt;/q&gt;'),
 			array('<rp>foobar</rp>', '<rp>foobar</rp>', '&lt;rp&gt;foobar&lt;/rp&gt;'),
@@ -474,13 +475,13 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<select>foobar</select>', '<select>foobar</select>', '&lt;select&gt;foobar&lt;/select&gt;'),
 			array('<small>foobar</small>', '<small>foobar</small>', '&lt;small&gt;foobar&lt;/small&gt;'),
 			array('<source>foobar</source>', '<source>foobar</source>', '&lt;source&gt;foobar&lt;/source&gt;'),
-			array('<span>foobar</span>', '<span>foobar</span>', '&lt;span&gt;foobar&lt;/span&gt;'),
+			array('<span>foobar</span>', '<span>foobar</span>', '<span>foobar</span>'),
 			array('<strike>foobar</strike>', '<strike>foobar</strike>', '&lt;strike&gt;foobar&lt;/strike&gt;'),
-			array('<strong>foobar</strong>', '<strong>foobar</strong>', '&lt;strong&gt;foobar&lt;/strong&gt;'),
+			array('<strong>foobar</strong>', '<strong>foobar</strong>', '<strong>foobar</strong>'),
 			array('<style>foobar</style>', '<style>foobar</style>', '&lt;style&gt;foobar&lt;/style&gt;'),
-			array('<sub>foobar</sub>', '<sub>foobar</sub>', '&lt;sub&gt;foobar&lt;/sub&gt;'),
+			array('<sub>foobar</sub>', '<sub>foobar</sub>', '<sub>foobar</sub>'),
 			array('<summary>foobar</summary>', '<summary>foobar</summary>', '&lt;summary&gt;foobar&lt;/summary&gt;'),
-			array('<sup>foobar</sup>', '<sup>foobar</sup>', '&lt;sup&gt;foobar&lt;/sup&gt;'),
+			array('<sup>foobar</sup>', '<sup>foobar</sup>', '<sup>foobar</sup>'),
 			array('<table>foobar</table>', '<table>foobar</table>', '&lt;table&gt;foobar&lt;/table&gt;'),
 			array('<tbody>foobar</tbody>', '<tbody>foobar</tbody>', '&lt;tbody&gt;foobar&lt;/tbody&gt;'),
 			array('<td>foobar</td>', '<td>foobar</td>', '&lt;td&gt;foobar&lt;/td&gt;'),
@@ -710,7 +711,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<caption> with attributes', '<caption ' . $all_attributes . '></caption>', '&lt;caption ' . $allowed_attributes . '&gt;&lt;/caption&gt;'),
 			array('<center> with attributes', '<center ' . $all_attributes . '></center>', '&lt;center ' . $allowed_attributes . '&gt;&lt;/center&gt;'),
 			array('<cite> with attributes', '<cite ' . $all_attributes . '></cite>', '&lt;cite ' . $allowed_attributes . '&gt;&lt;/cite&gt;'),
-			array('<code> with attributes', '<code ' . $all_attributes . '></code>', '&lt;code ' . $allowed_attributes . '&gt;&lt;/code&gt;'),
+			array('<code> with attributes', '<code ' . $all_attributes . '></code>', '<code class=&#8220;foo&#8221;></code>'),
 			array('<col> with attributes', '<col ' . $all_attributes . '></col>', '&lt;col ' . $allowed_attributes . '&gt;&lt;/col&gt;'),
 			array('<colgroup> with attributes', '<colgroup ' . $all_attributes . '></colgroup>', '&lt;colgroup ' . $allowed_attributes . '&gt;&lt;/colgroup&gt;'),
 			array('<datalist> with attributes', '<datalist ' . $all_attributes . '></datalist>', '&lt;datalist ' . $allowed_attributes . '&gt;&lt;/datalist&gt;'),
@@ -755,7 +756,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<link> with attributes', '<link ' . $all_attributes . '></link>', '&lt;link ' . $allowed_attributes . '&gt;&lt;/link&gt;'),
 			array('<main> with attributes', '<main ' . $all_attributes . '></main>', '&lt;main ' . $allowed_attributes . '&gt;&lt;/main&gt;'),
 			array('<map> with attributes', '<map ' . $all_attributes . '></map>', '&lt;map ' . $allowed_attributes . '&gt;&lt;/map&gt;'),
-			array('<mark> with attributes', '<mark ' . $all_attributes . '></mark>', '&lt;mark ' . $allowed_attributes . '&gt;&lt;/mark&gt;'),
+			array('<mark> with attributes', '<mark ' . $all_attributes . '></mark>', '<mark class=&#8220;foo&#8221;></mark>'),
 			array('<menu> with attributes', '<menu ' . $all_attributes . '></menu>', '&lt;menu ' . $allowed_attributes . '&gt;&lt;/menu&gt;'),
 			array('<menuitem> with attributes', '<menuitem ' . $all_attributes . '></menuitem>', '&lt;menuitem ' . $allowed_attributes . '&gt;&lt;/menuitem&gt;'),
 			array('<meta> with attributes', '<meta ' . $all_attributes . '></meta>', '&lt;meta ' . $allowed_attributes . '&gt;&lt;/meta&gt;'),
@@ -784,7 +785,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 			array('<select> with attributes', '<select ' . $all_attributes . '></select>', '&lt;select ' . $allowed_attributes . '&gt;&lt;/select&gt;'),
 			array('<small> with attributes', '<small ' . $all_attributes . '></small>', '&lt;small ' . $allowed_attributes . '&gt;&lt;/small&gt;'),
 			array('<source> with attributes', '<source ' . $all_attributes . '></source>', '&lt;source ' . $allowed_attributes . '&gt;&lt;/source&gt;'),
-			array('<span> with attributes', '<span ' . $all_attributes . '></span>', '&lt;span ' . $allowed_attributes . '&gt;&lt;/span&gt;'),
+			array('<span> with attributes', '<span ' . $all_attributes . '></span>', '<span class=&#8220;foo&#8221;></span>'),
 			array('<strike> with attributes', '<strike ' . $all_attributes . '></strike>', '&lt;strike ' . $allowed_attributes . '&gt;&lt;/strike&gt;'),
 			array('<strong> with attributes', '<strong ' . $all_attributes . '></strong>', '&lt;strong ' . $allowed_attributes . '&gt;&lt;/strong&gt;'),
 			array('<style> with attributes', '<style ' . $all_attributes . '></style>', '&lt;style ' . $allowed_attributes . '&gt;&lt;/style&gt;'),
@@ -927,21 +928,70 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-}
-
-class TypographyStub extends EE_Typography
-{
-	public function __construct()
+	protected function BBCodeData()
 	{
-		// Skipping initialize and autoloader
+		return array(
+            array('[abbr] tag', '[abbr="Cascading Style Sheets"]CSS[/abbr]', '<abbr title=&#8220;Cascading Style Sheets&#8221;>CSS</abbr>'),
+            array('[abbr] tag with property', '[abbr title="Cascading Style Sheets"]CSS[/abbr]', '<abbr title=&#8220;Cascading Style Sheets&#8221;>CSS</abbr>'),
+            array('[b] tag', '[b]some bold text[/b]', '<b>some bold text</b>'),
+            array('[blockquote] tag', '[blockquote]Some text. blah, blah, blah...[/blockquote]', '<blockquote>Some text. blah, blah, blah&#8230;</blockquote>'),
+            array('[cite] tag', '[cite="some place"]some text[/cite]', ''),
+            array('[code] tag', '[code]Some pre-formatted text...[/code]', '<code>Some pre-formatted text&#8230;</code>'),
+            array('[color] tag', '[color=green]Some green text[/color]', '<span style=&#8220;color:green;&#8221;>Some green text</span>'),
+            array('[del] tag', 'This is [del]very[/del] exciting.', 'This is <del>very</del> exciting.'),
+            array('[em] tag', '[em]some em text[/em]', '<em>some em text</em>'),
+            array('[email] tag', '[email]you@example.com[/email]', ''),
+            array('[email] tag with value', '[email=you@example.com]click here to email[/email]', ''),
+            array('[h2] tag', '[h2]some text[/h2]', '<h2>some text</h2>'),
+            array('[h3] tag', '[h3]some text[/h3]', '<h3>some text</h3>'),
+            array('[h4] tag', '[h4]some text[/h4]', '<h4>some text</h4>'),
+            array('[h5] tag', '[h5]some text[/h5]', '<h5>some text</h5>'),
+            array('[h6] tag', '[h6]some text[/h6]', '<h6>some text</h6>'),
+            array('[i] tag', '[i]some italic text[/i]', '<i>some italic text</i>'),
+            array('[img] tag', '[img]http://example.com/pic.jpg[/img]', ''),
+            array('[ins] tag', '[ins]some text[/ins]', '<ins>some text</ins>'),
+            array('[mark] tag', '[mark]some text[/mark]', '<mark>some text</mark>'),
+            array('[pre] tag', '[pre]Some pre-formatted text...[/pre]', '<pre>Some pre-formatted text&#8230;</pre>'),
+            array('[quote] tag', '[quote]Some text. blah, blah, blah...[/quote]', '<blockquote>Some text. blah, blah, blah&#8230;</blockquote>'),
+            array('[size=1] tag', '[size=1]some text[/size]', '<span style=&#8220;font-size:9px;&#8221;>some text</span>'),
+            array('[size=2] tag', '[size=2]some text[/size]', '<span style=&#8220;font-size:11px;&#8221;>some text</span>'),
+            array('[size=3] tag', '[size=3]some text[/size]', '<span style=&#8220;font-size:14px;&#8221;>some text</span>'),
+            array('[size=4] tag', '[size=4]some text[/size]', '<span style=&#8220;font-size:16px;&#8221;>some text</span>'),
+            array('[size=5] tag', '[size=5]some text[/size]', '<span style=&#8220;font-size:18px;&#8221;>some text</span>'),
+            array('[size=6] tag', '[size=6]some text[/size]', '<span style=&#8220;font-size:20px;&#8221;>some text</span>'),
+            array('[span] tag', '[span]some text[/span]', '<span>some text</span>'),
+            array('[strike] tag', '[strike]some text[/strike]', '<del>some text</del>'),
+            array('[strong] tag', '[strong]some strong text[/strong]', '<strong>some strong text</strong>'),
+            array('[style] tag', '[style=class_name]your content[/style]', '<span class=&#8220;class_name&#8221;>your content</span>'),
+            array('[sub] tag', '[sub]some text[/sub]', '<sub>some text</sub>'),
+            array('[sup] tag', '[sup]some text[/sup]', '<sup>some text</sup>'),
+            array('[u] tag', '[u]some underlined text[/u]', '<em>some underlined text</em>'),
+            array('[url] tag', '[url]http://example.com/[/url]', '<a href=&#8220;http://example.com/&#8221;>http://example.com/</a>'),
+            array('[url] tag with value', '[url=http://example.com/]my site[/url]', '<a href=&#8220;http://example.com/&#8221;>my site</a>'),
+            array('[url] tag with value and property', '[url=http://example.com/ class="link"]my site[/url]', '<a href=&#8220;http://example.com/&#8221; class=&#8220;link&#8221;>my site</a>'),
+		);
 	}
+
 }
 
-class ConfigStub
-{
+class ConfigStub {
 	public function item($str = '')
 	{
 		return 'n';
+	}
+}
+
+class LoadStub {
+	public function model($str = '')
+	{
+		return;
+	}
+}
+
+class AddonsModelStub {
+	public function get_plugin_formatting()
+	{
+		return array();
 	}
 }
 
@@ -955,6 +1005,8 @@ function ee($str = '')
 
 	$obj = new StdClass();
 	$obj->config = new ConfigStub();
+	$obj->load = new LoadStub();
+	$obj->addons_model = new AddonsModelStub();
 
 	return $obj;
 }
