@@ -364,6 +364,12 @@ $(document).ready(function(){
 				.trigger('change');
 		});
 
+		$('.field-inputs label input').on('click',function(){
+			$('input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
+				$(this).parents('label').toggleClass('act', $(this).is(':checked'))
+			})
+		})
+
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
 			if (event.target.nodeName != 'A') {
