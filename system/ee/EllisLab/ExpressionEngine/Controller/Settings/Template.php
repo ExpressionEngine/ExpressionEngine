@@ -57,7 +57,7 @@ class Template extends Settings {
 						'site_404' => array(
 							'type' => 'select',
 							'choices' => $this->templateListSearch(),
-							'filter_url' => ee('CP/URL', 'settings/template/search-templates'),
+							'filter_url' => ee('CP/URL', 'settings/template/search-templates')->compile(),
 							'value' => [
 								ee()->config->item('site_404') => ee()->config->item('site_404')
 							],
@@ -130,9 +130,7 @@ class Template extends Settings {
 
 	private function templateListSearch()
 	{
-		// TODO: what happens if page loads and selected item is not in the initial list?
-		// maybe specify key => value as value and render a hidden input?
-		$search_query = ee('Request')->post('search');
+		$search_query = ee('Request')->get('search');
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
@@ -142,7 +140,7 @@ class Template extends Settings {
 		if ($search_query)
 		{
 			$templates = $templates = $templates->all()->filter(function($template) use ($search_query) {
-				return strpos($template->getPath(), $search_query) !== FALSE;
+				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
 			});
 		}
 		else
