@@ -294,7 +294,7 @@ class Pages_mcp {
 			'breadcrumb' => array(
 				ee('CP/URL')->make('addons/settings/pages')->compile() => lang('pages_manager')
 			),
-			'body' => ee('View')->make('pages:form')->render($vars)
+			'body' => ee('View')->make('ee:_shared/form')->render($vars)
 		);
 	}
 
