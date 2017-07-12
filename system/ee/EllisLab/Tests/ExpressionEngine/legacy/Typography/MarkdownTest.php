@@ -125,7 +125,7 @@ class MarkdownTest extends \PHPUnit_Framework_TestCase {
 
 	public function markdownData()
 	{
-		return array(
+		$data = array(
 			// Automatic Escaping
 			array('Ampersands', 'AT&T', "<p>AT&amp;T</p>\n"),
 			array('HTML Entity', '&copy;', "<p>&copy;</p>\n"),
@@ -151,9 +151,7 @@ class MarkdownTest extends \PHPUnit_Framework_TestCase {
 			array('Double asterisks', '**double asterisks**', "<p><strong>double asterisks</strong></p>\n"),
 			array('Double underscores', '__double underscores__', "<p><strong>double underscores</strong></p>\n"),
 			array('Single asterisks in the middle of a word', 'un*frigging*believable', "<p>un<em>frigging</em>believable</p>\n"),
-			// array('Single underscores in the middle of a word', 'un_frigging_believable', "<p>un<em>frigging</em>believable</p>\n"),
 			array('Double asterisks in the middle of a word', 'un**frigging**believable', "<p>un<strong>frigging</strong>believable</p>\n"),
-			// array('Double underscores in the middle of a word', 'un__frigging__believable', "<p>un<strong>frigging</strong>believable</p>\n"),
 			array('Literal asterisk', '8 * 7 = 56', "<p>8 * 7 = 56</p>\n"),
 			array('Literal underscore', 'Literal _ underscore', "<p>Literal _ underscore</p>\n"),
 			array('Escaped asterisk', '\*this text is surrounded by literal asterisks\*', "<p>&#42;this text is surrounded by literal asterisks&#42;</p>\n"),
@@ -230,14 +228,83 @@ class MarkdownTest extends \PHPUnit_Framework_TestCase {
 			array('Not a list', '1986\. What a great season.', "<p>1986&#46; What a great season.</p>\n"),
 
 			// Code blocks
-			array('Codeblock by 4 spaces', $this->getContentForMarkup('codeblock-by-4-spaces.in.md'), $this->getContentForMarkup('codeblock-by-4-spaces.out.md')),
-			array('Codeblock by 5 spaces', $this->getContentForMarkup('codeblock-by-5-spaces.in.md'), $this->getContentForMarkup('codeblock-by-5-spaces.out.md')),
-			array('Codeblock by 1 tab', $this->getContentForMarkup('codeblock-by-1-tab.in.md'), $this->getContentForMarkup('codeblock-by-1-tab.out.md')),
-			array('Codeblock by 2 tabs', $this->getContentForMarkup('codeblock-by-2-tabs.in.md'), $this->getContentForMarkup('codeblock-by-2-tabs.out.md')),
-			array('Codeblock with encoded ampersands', $this->getContentForMarkup('codeblock-with-encoded-ampersands.in.md'), $this->getContentForMarkup('codeblock-with-encoded-ampersands.out.md')),
-			array('Codeblock with encoded angle brackets', $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.in.md'), $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.out.md')),
+			array('Code block by 4 spaces', $this->getContentForMarkup('codeblock-by-4-spaces.in.md'), $this->getContentForMarkup('codeblock-by-4-spaces.out.md')),
+			array('Code block by 5 spaces', $this->getContentForMarkup('codeblock-by-5-spaces.in.md'), $this->getContentForMarkup('codeblock-by-5-spaces.out.md')),
+			array('Code block by 1 tab', $this->getContentForMarkup('codeblock-by-1-tab.in.md'), $this->getContentForMarkup('codeblock-by-1-tab.out.md')),
+			array('Code block by 2 tabs', $this->getContentForMarkup('codeblock-by-2-tabs.in.md'), $this->getContentForMarkup('codeblock-by-2-tabs.out.md')),
+			array('Code block with encoded ampersands', $this->getContentForMarkup('codeblock-with-encoded-ampersands.in.md'), $this->getContentForMarkup('codeblock-with-encoded-ampersands.out.md')),
+			array('Code block with encoded angle brackets', $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.in.md'), $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.out.md')),
 		);
+
+    return array_merge($data, $this->markdownExtraData());
 	}
+
+  public function markdownExtraData()
+  {
+    return array(
+      array('Markdown inside HTML blocks', $this->getContentForMarkup('markdown-inside-html-blocks.in.md'), $this->getContentForMarkup('markdown-inside-html-blocks.out.md')),
+
+      // Special Attributes
+      array('Header: ID', '## Header 2 {#header2}', "<h2 id=\"header2\">Header 2</h2>\n"),
+      array('Header: Class names', '## Header 2 {.main}', "<h2 class=\"main\">Header 2</h2>\n"),
+      array('Header: Custom attributes', '## Le Header 2 {lang=fr}', "<h2 lang=\"fr\">Le Header 2</h2>\n"),
+      array('Header: Multiple attributes', '## Le Header 2 {.main .shine lang=fr #header2}', "<h2 id=\"header2\" class=\"main shine\" lang=\"fr\">Le Header 2</h2>\n"),
+      array('Link: ID', '[link](/url){#header2}', "<p><a href=\"/url\" title=\"\" id=\"header2\">link</a></p>\n"),
+      array('Link: Class names', '[link](/url){.main}', "<p><a href=\"/url\" title=\"\" class=\"main\">link</a></p>\n"),
+      array('Link: Custom attributes', '[link](/url){lang=fr}', "<p><a href=\"/url\" title=\"\" lang=\"fr\">link</a></p>\n"),
+      array('Link: Multiple attributes', '[link](/url){.main .shine lang=fr #header2}', "<p><a href=\"/url\" title=\"\" id=\"header2\" class=\"main shine\" lang=\"fr\">link</a></p>\n"),
+      array('Reference Link: ID', "[link][linkref]\n\n[linkref]: /url {#header2}", "<p><a href=\"/url\" title=\"\" id=\"header2\">link</a></p>\n"),
+      array('Reference Link: Class names', "[link][linkref]\n\n[linkref]: /url {.main}", "<p><a href=\"/url\" title=\"\" class=\"main\">link</a></p>\n"),
+      array('Reference Link: Custom attributes', "[link][linkref]\n\n[linkref]: /url {lang=fr}", "<p><a href=\"/url\" title=\"\" lang=\"fr\">link</a></p>\n"),
+      array('Reference Link: Multiple attributes', "[link][linkref]\n\n[linkref]: /url {.main .shine lang=fr #header2}", "<p><a href=\"/url\" title=\"\" id=\"header2\" class=\"main shine\" lang=\"fr\">link</a></p>\n"),
+      array('Image: ID', '![link](/url){#header2}', "<p><img src=\"/url\" alt=\"link\" title=\"\" id=\"header2\" /></p>\n"),
+      array('Image: Class names', '![link](/url){.main}', "<p><img src=\"/url\" alt=\"link\" title=\"\" class=\"main\" /></p>\n"),
+      array('Image: Custom attributes', '![link](/url){lang=fr}', "<p><img src=\"/url\" alt=\"link\" title=\"\" lang=\"fr\" /></p>\n"),
+      array('Image: Multiple attributes', '![link](/url){.main .shine lang=fr #header2}', "<p><img src=\"/url\" alt=\"link\" title=\"\" id=\"header2\" class=\"main shine\" lang=\"fr\" /></p>\n"),
+      array('Fenced code block: ID', "~~~ {#header2}\ncode block\n~~~\n", "<pre><code id=\"header2\">code block\n</code></pre>\n"),
+      array('Fenced code block: Class names', "~~~ {.main}\ncode block\n~~~\n", "<pre><code class=\"main\">code block\n</code></pre>\n"),
+      array('Fenced code block: Custom attributes', "~~~ {lang=fr}\ncode block\n~~~\n", "<pre><code lang=\"fr\">code block\n</code></pre>\n"),
+      array('Fenced code block: Multiple attributes', "~~~ {.main .shine lang=fr #header2}\ncode block\n~~~\n", "<pre><code id=\"header2\" class=\"main shine\" lang=\"fr\">code block\n</code></pre>\n"),
+
+      // Fenced Code Blocks
+			array('Fenced code block by 3 tildes', $this->getContentForMarkup('codeblock-by-3-tildes.in.md'), $this->getContentForMarkup('codeblock-by-3-tildes.out.md')),
+			array('Fenced code block by 4 tildes', $this->getContentForMarkup('codeblock-by-4-tildes.in.md'), $this->getContentForMarkup('codeblock-by-4-tildes.out.md')),
+			array('Fenced code block by 3 backticks', $this->getContentForMarkup('codeblock-by-3-backticks.in.md'), $this->getContentForMarkup('codeblock-by-3-backticks.out.md')),
+			array('Fenced code block by 4 backticks', $this->getContentForMarkup('codeblock-by-4-backticks.in.md'), $this->getContentForMarkup('codeblock-by-4-backticks.out.md')),
+			array('Fenced code block beginning and ending with blank lines', $this->getContentForMarkup('codeblock-begin-end-blank-lines.in.md'), $this->getContentForMarkup('codeblock-begin-end-blank-lines.out.md')),
+			array('Fenced code block after a list', $this->getContentForMarkup('codeblock-after-list.in.md'), $this->getContentForMarkup('codeblock-after-list.out.md')),
+
+      // Tables
+      array('Table', $this->getContentForMarkup('table.in.md'), $this->getContentForMarkup('table.out.md')),
+      array('Table with leading and tailing pipes', $this->getContentForMarkup('table-with-pipes.in.md'), $this->getContentForMarkup('table-with-pipes.out.md')),
+      array('Table with alignment', $this->getContentForMarkup('table-with-alignment.in.md'), $this->getContentForMarkup('table-with-alignment.out.md')),
+      array('Table with span-level formatting', $this->getContentForMarkup('table-with-formatting.in.md'), $this->getContentForMarkup('table-with-formatting.out.md')),
+
+      // Definition Lists
+      array('Definition list', $this->getContentForMarkup('definition-list.in.md'), $this->getContentForMarkup('definition-list.out.md')),
+      array('Definition list wrapped', $this->getContentForMarkup('definition-list-wrapped.in.md'), $this->getContentForMarkup('definition-list-wrapped.out.md')),
+      array('Definition list indented', $this->getContentForMarkup('definition-list-indented.in.md'), $this->getContentForMarkup('definition-list-indented.out.md')),
+      array('Definition list multiple definitions', $this->getContentForMarkup('definition-list-multiple.in.md'), $this->getContentForMarkup('definition-list-multiple.out.md')),
+      array('Definition list with paragraph tags', $this->getContentForMarkup('definition-list-with-paragraph-tags.in.md'), $this->getContentForMarkup('definition-list-with-paragraph-tags.out.md')),
+      array('Definition list with multiple paragraphs', $this->getContentForMarkup('definition-list-with-multiple-paragraphs.in.md'), $this->getContentForMarkup('definition-list-with-multiple-paragraphs.out.md')),
+
+      // Footnotes
+      array('Footnote first', $this->getContentForMarkup('footnote-first.in.md'), $this->getContentForMarkup('footnote-first.out.md')),
+      array('Footnote intermingled', $this->getContentForMarkup('footnote-intermingled.in.md'), $this->getContentForMarkup('footnote-intermingled.out.md')),
+      array('Footnote last', $this->getContentForMarkup('footnote-last.in.md'), $this->getContentForMarkup('footnote-last.out.md')),
+      array('Footnote with multiple paragraphs', $this->getContentForMarkup('footnote-with-multiple-paragraphs.in.md'), $this->getContentForMarkup('footnote-with-multiple-paragraphs.out.md')),
+
+      // Abbreviations
+      array('Abbreviation definition first', "*[HTML]: Hyper Text Markup Language\n\nThe HTML specification", "<p>The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification</p>\n"),
+      array('Abbreviation definition middle', "The HTML specification\n\n*[HTML]: Hyper Text Markup Language\n\nis dry", "<p>The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification</p>\n\n<p>is dry</p>\n"),
+      array('Abbreviation definition last', "The HTML specification\n\n*[HTML]: Hyper Text Markup Language", "<p>The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification</p>\n"),
+      array('Multiword abbreviation', "*[Foo Bar]: Fubar\n\nI saw a Foo Bar once", "<p>I saw a <abbr title=\"Fubar\">Foo Bar</abbr> once</p>\n"),
+      array('Empty abbreviateion', "Operation Tigra Genesis is going well.\n\n*[Tigra Genesis]:", "<p>Operation <abbr>Tigra Genesis</abbr> is going well.</p>\n"),
+
+      array('Single underscores in the middle of a word', 'un_frigging_believable', "<p>un_frigging_believable</p>\n"),
+      array('Double underscores in the middle of a word', 'un__frigging__believable', "<p>un__frigging__believable</p>\n"),
+    );
+  }
 
 }
 
