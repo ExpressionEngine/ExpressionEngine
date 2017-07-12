@@ -71,6 +71,25 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider encodeEmailData
+	 */
+	public function testEncodeEmail($description, $in, $out)
+	{
+		$str = $this->typography->encode_email($in[0], $in[1], $in[2]);
+		$this->assertEquals($str, $out, $description);
+	}
+
+	public function encodeEmailData()
+	{
+		return array(
+			array('Encode email with defaults', array('example@example.com', '', TRUE), "<span data-eeEncEmail_test='1'>.encoded_email</span><script type=\"text/javascript\">/*<![CDATA[*/var out = '',el = document.getElementsByTagName('span'),l = ['>','a','/','<',' 109',' 111',' 99',' 46',' 101',' 108',' 112',' 109',' 97',' 120',' 101',' 64',' 101',' 108',' 112',' 109',' 97',' 120',' 101','>','\\\"',' 109',' 111',' 99',' 46',' 101',' 108',' 112',' 109',' 97',' 120',' 101',' 64',' 101',' 108',' 112',' 109',' 97',' 120',' 101',':','o','t','l','i','a','m','\\\"','=','f','e','r','h','a ','<'],i = l.length,j = el.length;while (--i >= 0)out += unescape(l[i].replace(/^\s\s*/, '&#'));while (--j >= 0)if (el[j].getAttribute('data-eeEncEmail_test'))el[j].innerHTML = out;/*]]>*/</script>"),
+			array('Encode email with title', array('example@example.com', 'my email', TRUE), "<span data-eeEncEmail_test='1'>.encoded_email</span><script type=\"text/javascript\">/*<![CDATA[*/var out = '',el = document.getElementsByTagName('span'),l = ['>','a','/','<',' 108',' 105',' 97',' 109',' 101',' 32',' 121',' 109','>','\\\"',' 109',' 111',' 99',' 46',' 101',' 108',' 112',' 109',' 97',' 120',' 101',' 64',' 101',' 108',' 112',' 109',' 97',' 120',' 101',':','o','t','l','i','a','m','\\\"','=','f','e','r','h','a ','<'],i = l.length,j = el.length;while (--i >= 0)out += unescape(l[i].replace(/^\s\s*/, '&#'));while (--j >= 0)if (el[j].getAttribute('data-eeEncEmail_test'))el[j].innerHTML = out;/*]]>*/</script>"),
+			array('Encode email without anchor', array('example@example.com', '', FALSE), "<span data-eeEncEmail_test='1'>.encoded_email</span><script type=\"text/javascript\">/*<![CDATA[*/var out = '',el = document.getElementsByTagName('span'),l = [' 109',' 111',' 99',' 46',' 101',' 108',' 112',' 109',' 97',' 120',' 101',' 64',' 101',' 108',' 112',' 109',' 97',' 120',' 101'],i = l.length,j = el.length;while (--i >= 0)out += unescape(l[i].replace(/^\s\s*/, '&#'));while (--j >= 0)if (el[j].getAttribute('data-eeEncEmail_test'))el[j].innerHTML = out;/*]]>*/</script>"),
+			array('Encode email with title and without anchor', array('example@example.com', 'my email', FALSE), "<span data-eeEncEmail_test='1'>.encoded_email</span><script type=\"text/javascript\">/*<![CDATA[*/var out = '',el = document.getElementsByTagName('span'),l = [' 109',' 111',' 99',' 46',' 101',' 108',' 112',' 109',' 97',' 120',' 101',' 64',' 101',' 108',' 112',' 109',' 97',' 120',' 101'],i = l.length,j = el.length;while (--i >= 0)out += unescape(l[i].replace(/^\s\s*/, '&#'));while (--j >= 0)if (el[j].getAttribute('data-eeEncEmail_test'))el[j].innerHTML = out;/*]]>*/</script>"),
+		);
+	}
+
 }
 
 class TypographyStub extends EE_Typography
@@ -79,5 +98,20 @@ class TypographyStub extends EE_Typography
 	{
 		// Skipping initialize and autoloader
 	}
+}
+
+class FunctionsStub {
+	public function random($str, $int)
+	{
+		return 'test';
+	}
+}
+
+function ee()
+{
+	$obj = new StdClass();
+	$obj->encode_email = TRUE;
+	$obj->functions = new FunctionsStub();
+	return $obj;
 }
 // EOF
