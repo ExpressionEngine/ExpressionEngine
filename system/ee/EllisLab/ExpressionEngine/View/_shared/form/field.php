@@ -75,7 +75,9 @@ case 'select': ?>
 		'choices' => $field['choices'],
 		'value' => $value,
 		'multi' => FALSE,
-		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL
+		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
+		'limit' => isset($field['limit']) ? $field['limit'] : 100,
+		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
 	]); ?>
 <?php break;
 
@@ -89,47 +91,17 @@ case 'toggle': ?>
 <?php break;
 
 case 'checkbox': ?>
-	<?php if ( ! isset($field['scalar'])) $field_name .= '[]'; ?>
-	<?php if (isset($field['nested']) && $field['nested']): ?>
-		<div class="scroll-wrap pr">
-			<ul class="nested-list">
-				<?php $this->embed('ee:_shared/form/nested_checkbox', array(
-					'field_name' => $field_name,
-					'attrs' => $attrs,
-					'choices' => $field['choices'],
-					'disabled_choices' => (isset($field['disabled_choices'])) ? $field['disabled_choices'] : array(),
-					'value' => $value,
-				)); ?>
-			</ul>
-		</div>
-	<?php else: ?>
-	<?php if (isset($field['wrap']) && $field['wrap']): ?>
-		<div class="scroll-wrap">
-	<?php endif ?>
-		<?php foreach ($field['choices'] as $key => $label):
-			if (is_array($value))
-			{
-				$selected = in_array($key, $value);
-			}
-			else
-			{
-				$selected = ((string) $value == (string) $key);
-			}
-
-			$disabled = FALSE;
-			if (isset($field['disabled_choices']))
-			{
-				$disabled = in_array($key, $field['disabled_choices']);
-			}
-		?>
-			<label class="choice block<?php if ($selected):?> chosen<?php endif ?><?php if ($disabled):?> disable<?php endif ?>">
-				<input type="checkbox" name="<?=$field_name?>" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
-			</label>
-		<?php endforeach ?>
-	<?php if (isset($field['wrap']) && $field['wrap']): ?>
-		</div>
-	<?php endif ?>
-	<?php endif ?>
+	<?php if ( ! isset($field['scalar'])) $field_name .= '[]';
+	// TODO: disabled_choices, nested, input attrs
+	$this->embed('ee:_shared/form/fields/select', [
+		'field_name' => $field_name,
+		'choices' => $field['choices'],
+		'value' => $value,
+		'multi' => TRUE,
+		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
+		'limit' => isset($field['limit']) ? $field['limit'] : 100,
+		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
+	]); ?>
 <?php break;
 
 case 'textarea': ?>
