@@ -46,7 +46,7 @@ if ($grid)
 }
 else
 {
-	$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']));
+	$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']), 'fieldset-invalid');
 }
 // If a validation result object is set, see if any of our fields have errors
 if (isset($errors))
