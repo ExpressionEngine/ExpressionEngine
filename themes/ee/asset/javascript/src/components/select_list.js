@@ -21,9 +21,9 @@ var SelectList = function (_React$Component) {
 
       // DOM filter
       if (!_this.ajaxFilter) {
-        _this.setState({ items: _this.intialItems.filter(function (item) {
-            return item.label.toLowerCase().includes(search_term.toLowerCase());
-          }) });
+        _this.props.itemsChanged(_this.props.initialItems.filter(function (item) {
+          return item.label.toLowerCase().includes(search_term.toLowerCase());
+        }));
         return;
       }
 
@@ -39,53 +39,85 @@ var SelectList = function (_React$Component) {
           data: $.param(params),
           dataType: 'json',
           success: function success(data) {
-            _this.setState({
-              items: _this._formatItems(data)
-            });
+            _this.props.itemsChanged(formatItems(data));
           },
           error: function error() {} // Defined to prevent error on .abort above
         });
       }, 300);
     };
 
-    _this.handleSelect = function (event, label, value) {
+    _this.handleChange = function (event, label, value) {
+      var selected = {};
       if (_this.props.multi) {
-        // handle multi-select
+        if (event.target.checked) {
+          selected = _this.props.selected.concat([{ value: value, label: label }]);
+        } else {
+          selected = _this.props.selected.filter(function (item) {
+            return item.value != value;
+          });
+        }
       } else {
-        _this.setState({
-          selected: [{ value: value, label: label }],
-          values: [value]
-        });
+        selected = [{ value: value, label: label }];
       }
+      _this.props.selectionChanged(selected);
     };
 
     _this.clearSelection = function (event) {
-      _this.setState({
-        selected: [],
-        values: []
-      });
+      _this.props.selectionChanged([]);
       event.preventDefault();
     };
 
-    _this.intialItems = _this._formatItems(props.items);
-    _this.state = {
-      items: _this.intialItems,
-      selected: _this._formatItems(props.selected)
-    };
-    _this.state.values = _this.state.selected.map(function (item) {
-      return item.value;
-    });
+    _this.selectable = props.selectable !== undefined ? props.selectable : true;
+    _this.reorderable = props.reorderable !== undefined ? props.reorderable : false;
+    _this.removable = props.removable !== undefined ? props.removable : false;
+    _this.tooMany = props.tooMany ? props.tooMany : 8;
 
     // If the intial state is less than the limit, use DOM filtering
-    _this.ajaxFilter = _this.intialItems.length >= _this.props.limit && _this.props.filter_url;
+    _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filter_url;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
     return _this;
   }
 
   _createClass(SelectList, [{
-    key: '_formatItems',
-    value: function _formatItems(items) {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var props = this.props;
+
+      return React.createElement(
+        'div',
+        { className: "fields-select" + (props.items.length > this.tooMany ? ' field-resizable' : '') },
+        React.createElement(SelectFilter, { handleSearch: this.handleSearch }),
+        React.createElement(
+          SelectInputs,
+          null,
+          props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
+          props.items.map(function (item) {
+            return React.createElement(SelectItem, { key: item.value,
+              item: item,
+              name: props.name,
+              selected: props.selected,
+              multi: props.multi,
+              selectable: _this2.selectable,
+              reorderable: _this2.reorderable,
+              removable: _this2.removable,
+              handleSelect: function handleSelect(e) {
+                return _this2.handleChange(e, item.label, item.value);
+              } });
+          })
+        ),
+        !props.multi && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
+          item: props.selected[0],
+          clearSelection: this.clearSelection })
+      );
+    }
+  }], [{
+    key: 'formatItems',
+    value: function formatItems(items) {
+      if (!items) return [];
+
       var items_array = [];
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -95,7 +127,11 @@ var SelectList = function (_React$Component) {
         for (var _iterator = Object.keys(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           key = _step.value;
 
-          items_array.push({ value: key, label: items[key] });
+          items_array.push({
+            value: key,
+            label: items[key].label ? items[key].label : items[key],
+            instructions: items[key].instructions ? items[key].instructions : ''
+          });
         }
       } catch (err) {
         _didIteratorError = true;
@@ -113,34 +149,6 @@ var SelectList = function (_React$Component) {
       }
 
       return items_array;
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      return React.createElement(
-        'div',
-        { className: "fields-select" + (this.state.items.length > this.props.too_many ? ' field-resizable' : '') },
-        React.createElement(SelectFilter, { handleSearch: this.handleSearch }),
-        React.createElement(
-          SelectInputs,
-          null,
-          this.state.items.length == 0 && React.createElement(NoResults, { text: this.props.no_results }),
-          this.state.items.map(function (item) {
-            return React.createElement(SelectItem, { key: item.value,
-              item: item,
-              name: _this2.props.name,
-              values: _this2.state.values,
-              handleSelect: function handleSelect(e) {
-                return _this2.handleSelect(e, item.label, item.value);
-              } });
-          })
-        ),
-        !this.props.multi && this.state.selected[0] && React.createElement(SelectedItem, { name: this.props.name,
-          item: this.state.selected[0],
-          clearSelection: this.clearSelection })
-      );
     }
   }]);
 
@@ -173,19 +181,39 @@ function SelectFilter(props) {
 
 function SelectItem(props) {
   function checked(value) {
-    return props.values.includes(value);
+    return props.selected.find(function (item) {
+      return item.value == value;
+    });
   }
 
   return React.createElement(
     'label',
     { className: checked(props.item.value) ? 'act' : '' },
-    React.createElement('input', { type: 'radio',
+    props.reorderable && React.createElement(
+      'span',
+      { className: 'icon-reorder' },
+      ' '
+    ),
+    props.selectable && React.createElement('input', { type: props.multi ? "checkbox" : "radio",
       name: props.name,
       value: props.item.value,
       onChange: props.handleSelect,
       checked: checked(props.item.value) ? 'checked' : '' }),
-    ' ',
-    props.item.label
+    props.item.label + " ",
+    props.item.instructions && React.createElement(
+      'i',
+      null,
+      props.item.instructions
+    ),
+    props.removable && React.createElement(
+      'ul',
+      { className: 'toolbar' },
+      React.createElement(
+        'li',
+        { className: 'remove' },
+        React.createElement('a', { href: '' })
+      )
+    )
   );
 }
 
@@ -212,14 +240,3 @@ function SelectedItem(props) {
     )
   );
 }
-
-function NoResults(props) {
-  return React.createElement('label', { className: 'field-empty', dangerouslySetInnerHTML: { __html: props.text } });
-}
-
-$(document).ready(function () {
-  $('div[data-select-react]').each(function () {
-    var props = JSON.parse(window.atob($(this).data('selectReact')));
-    ReactDOM.render(React.createElement(SelectList, props, null), this);
-  });
-});
