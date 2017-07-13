@@ -379,7 +379,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script(array(
 			'plugin' => array('ui.touch.punch', 'ee_interact.event'),
-			'file' => 'fields/relationship/cp',
+			'file' => 'fields/relationship/relationship',
 			'ui' => 'sortable'
 		));
 
@@ -450,6 +450,34 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		$multiple = (bool) $this->settings['allow_multiple'];
+
+		$choices = [];
+		foreach ($entries as $entry)
+		{
+			$choices[$entry->getId()] = [
+				'label' => $entry->title,
+				'instructions' => $entry->Channel->channel_title
+			];
+		}
+
+		$selected = [];
+		foreach ($related as $child)
+		{
+			$selected[$child->getId()] = [
+				'label' => $child->title,
+				'instructions' => $child->Channel->channel_title
+			];
+		}
+
+		return ee('View')->make('relationship:publish')->render([
+			'field_name' => $field_name,
+			'choices' => $choices,
+			'selected' => $selected,
+			'multi' => $multiple,
+			'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
+			'limit' => isset($field['limit']) ? $field['limit'] : 100,
+			'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
+		]);
 
 		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels', 'settings'));
 	}
