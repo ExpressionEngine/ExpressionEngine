@@ -9,11 +9,11 @@ $component = [
 	'selected' => $selected,
 	'multi' => $multi,
 	'filter_url' => $filter_url,
-	'limit' => $limit
+	'limit' => $limit,
+	'no_results' => lang($no_results['text']),
+	'no_related' => lang($no_related['text']),
+	'select_filters' => $select_filters
 ];
-if (isset($no_results['text'])) {
-	$component['no_results'] = lang($no_results['text']);
-}
 ?>
 <div data-relationship-react="<?=base64_encode(json_encode($component))?>">
 	<div class="fields-select">

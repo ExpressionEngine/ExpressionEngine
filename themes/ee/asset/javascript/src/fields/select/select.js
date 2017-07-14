@@ -47,7 +47,8 @@ var SelectField = function (_React$Component) {
         selected: this.state.selected,
         itemsChanged: this.itemsChanged,
         selectionChanged: this.selectionChanged,
-        noResults: this.props.no_results
+        noResults: this.props.no_results,
+        filters: this.props.filters
       });
     }
   }]);

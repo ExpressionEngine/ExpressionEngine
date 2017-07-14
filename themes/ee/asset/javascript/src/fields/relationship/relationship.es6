@@ -40,6 +40,8 @@ class Relationship extends React.Component {
           selected={this.state.selected}
           itemsChanged={this.itemsChanged}
           selectionChanged={this.selectionChanged}
+          noResults={this.props.no_results}
+          filters={this.props.select_filters}
         />
 
         {this.props.multi &&
@@ -51,6 +53,7 @@ class Relationship extends React.Component {
             removable={true}
             itemsChanged={this.selectedItemsChanged}
             selectionChanged={this.selectionChanged}
+            noResults={this.props.no_related}
           />
         }
       </div>

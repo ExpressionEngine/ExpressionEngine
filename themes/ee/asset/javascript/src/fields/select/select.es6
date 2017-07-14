@@ -32,6 +32,7 @@ class SelectField extends React.Component {
         itemsChanged={this.itemsChanged}
         selectionChanged={this.selectionChanged}
         noResults={this.props.no_results}
+        filters={this.props.filters}
       />
     )
   }

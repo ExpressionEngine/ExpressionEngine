@@ -469,17 +469,33 @@ class Relationship_ft extends EE_Fieldtype {
 			];
 		}
 
+		$field_name = $field_name.'[data]';
+
+		// Single relationships also expects an array
+		if ( ! $multiple) {
+			$field_name .= '[]';
+		}
+
+		$select_filters = [];
+		if ($channels->count() > 1) {
+			$select_filters[] = [
+				'name' => lang('channel'),
+				'placeholder' => lang('filter_channels'),
+				'items' => $channels->getDictionary('channel_id', 'channel_title')
+			];
+		}
+
 		return ee('View')->make('relationship:publish')->render([
 			'field_name' => $field_name,
 			'choices' => $choices,
 			'selected' => $selected,
 			'multi' => $multiple,
-			'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
-			'limit' => isset($field['limit']) ? $field['limit'] : 100,
-			'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
+			'filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile(),
+			'limit' => $this->settings['limit'] ?: 100,
+			'no_results' => ['text' => lang('no_entries_found')],
+			'no_related' => ['text' => lang('no_entries_related')],
+			'select_filters' => $select_filters
 		]);
-
-		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels', 'settings'));
 	}
 
 	/**

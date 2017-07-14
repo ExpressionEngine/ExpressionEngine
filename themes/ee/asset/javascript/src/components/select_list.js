@@ -17,12 +17,12 @@ var SelectList = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (SelectList.__proto__ || Object.getPrototypeOf(SelectList)).call(this, props));
 
     _this.handleSearch = function (event) {
-      var search_term = event.target.value;
+      _this.search_term = event.target.value;
 
       // DOM filter
       if (!_this.ajaxFilter) {
         _this.props.itemsChanged(_this.props.initialItems.filter(function (item) {
-          return item.label.toLowerCase().includes(search_term.toLowerCase());
+          return item.label.toLowerCase().includes(_this.search_term.toLowerCase());
         }));
         return;
       }
@@ -31,7 +31,7 @@ var SelectList = function (_React$Component) {
       clearTimeout(_this.ajaxTimer);
       if (_this.ajaxRequest) _this.ajaxRequest.abort();
 
-      var params = { search: search_term };
+      var params = { search: _this.search_term };
 
       _this.ajaxTimer = setTimeout(function () {
         _this.ajaxRequest = $.ajax({
@@ -83,6 +83,7 @@ var SelectList = function (_React$Component) {
     _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filter_url;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
+    _this.search_term = null;
 
     _this.bindSortable();
     return _this;
@@ -111,10 +112,17 @@ var SelectList = function (_React$Component) {
       return React.createElement(
         'div',
         { className: "fields-select" + (props.items.length > this.tooMany ? ' field-resizable' : '') },
-        React.createElement(SelectFilter, { handleSearch: this.handleSearch }),
         React.createElement(
-          SelectInputs,
+          FilterBar,
           null,
+          props.filters && props.filters.map(function (filter) {
+            return React.createElement(FilterSelect, { key: filter.name, name: filter.name, placeholder: filter.placeholder, items: filter.items });
+          }),
+          React.createElement(FilterSearch, { handleSearch: this.handleSearch })
+        ),
+        React.createElement(
+          'div',
+          { className: 'field-inputs' },
           props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
           props.items.map(function (item) {
             return React.createElement(SelectItem, { key: item.value,
@@ -189,30 +197,6 @@ var SelectList = function (_React$Component) {
 
   return SelectList;
 }(React.Component);
-
-function SelectInputs(props) {
-  return React.createElement(
-    'div',
-    { className: 'field-inputs' },
-    props.children
-  );
-}
-
-function SelectFilter(props) {
-  return React.createElement(
-    'div',
-    { className: 'field-tools' },
-    React.createElement(
-      'div',
-      { className: 'filter-bar' },
-      React.createElement(
-        'div',
-        { className: 'filter-item filter-item__search' },
-        React.createElement('input', { type: 'text', placeholder: 'Keyword Search', onChange: props.handleSearch })
-      )
-    )
-  );
-}
 
 function SelectItem(props) {
   function checked(value) {

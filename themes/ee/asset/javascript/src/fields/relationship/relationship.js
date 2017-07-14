@@ -59,7 +59,9 @@ var Relationship = function (_React$Component) {
           multi: this.props.multi,
           selected: this.state.selected,
           itemsChanged: this.itemsChanged,
-          selectionChanged: this.selectionChanged
+          selectionChanged: this.selectionChanged,
+          noResults: this.props.no_results,
+          filters: this.props.select_filters
         }),
         this.props.multi && React.createElement(SelectList, { items: this.state.selectedVisible,
           selected: [],
@@ -68,7 +70,8 @@ var Relationship = function (_React$Component) {
           reorderable: true,
           removable: true,
           itemsChanged: this.selectedItemsChanged,
-          selectionChanged: this.selectionChanged
+          selectionChanged: this.selectionChanged,
+          noResults: this.props.no_related
         })
       );
     }

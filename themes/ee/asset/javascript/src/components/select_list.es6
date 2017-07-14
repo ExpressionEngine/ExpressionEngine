@@ -11,6 +11,7 @@ class SelectList extends React.Component {
     this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filter_url)
     this.ajaxTimer = null
     this.ajaxRequest = null
+    this.search_term = null
 
     this.bindSortable()
   }
@@ -42,12 +43,12 @@ class SelectList extends React.Component {
   }
 
   handleSearch = (event) => {
-    let search_term = event.target.value
+    this.search_term = event.target.value
 
     // DOM filter
     if ( ! this.ajaxFilter) {
       this.props.itemsChanged(this.props.initialItems.filter(item =>
-        item.label.toLowerCase().includes(search_term.toLowerCase())
+        item.label.toLowerCase().includes(this.search_term.toLowerCase())
       ))
       return
     }
@@ -56,7 +57,7 @@ class SelectList extends React.Component {
     clearTimeout(this.ajaxTimer)
     if (this.ajaxRequest) this.ajaxRequest.abort()
 
-    let params = { search: search_term }
+    let params = { search: this.search_term }
 
     this.ajaxTimer = setTimeout(() => {
       this.ajaxRequest = $.ajax({
@@ -106,8 +107,13 @@ class SelectList extends React.Component {
 
     return (
       <div className={"fields-select" + (props.items.length > this.tooMany ? ' field-resizable' : '')}>
-        <SelectFilter handleSearch={this.handleSearch} />
-        <SelectInputs>
+        <FilterBar>
+          {props.filters && props.filters.map(filter =>
+            <FilterSelect key={filter.name} name={filter.name} placeholder={filter.placeholder} items={filter.items} />
+          )}
+          <FilterSearch handleSearch={this.handleSearch} />
+        </FilterBar>
+        <div className="field-inputs">
           {props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
@@ -124,7 +130,7 @@ class SelectList extends React.Component {
               handleRemove={(e) => this.handleRemove(e, item)}
             />
           )}
-        </SelectInputs>
+        </div>
         { ! props.multi && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
@@ -143,26 +149,6 @@ class SelectList extends React.Component {
   componentDidUpdate () {
     if (this.reorderable) this.bindSortable()
   }
-}
-
-function SelectInputs (props) {
-  return (
-    <div className="field-inputs">
-      {props.children}
-    </div>
-  )
-}
-
-function SelectFilter (props) {
-  return (
-    <div className="field-tools">
-      <div className="filter-bar">
-        <div className="filter-item filter-item__search">
-          <input type="text" placeholder="Keyword Search" onChange={props.handleSearch} />
-        </div>
-      </div>
-    </div>
-  )
 }
 
 function SelectItem (props) {
