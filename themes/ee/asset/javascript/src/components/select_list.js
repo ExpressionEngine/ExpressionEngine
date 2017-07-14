@@ -137,6 +137,9 @@ var SelectList = function (_React$Component) {
         !props.multi && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
           item: props.selected[0],
           clearSelection: this.clearSelection
+        }),
+        props.multi && this.selectable && props.selected.map(function (item) {
+          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value });
         })
       );
     }
@@ -227,7 +230,6 @@ function SelectItem(props) {
       ' '
     ),
     props.selectable && React.createElement('input', { type: props.multi ? "checkbox" : "radio",
-      name: props.name,
       value: props.item.value,
       onChange: props.handleSelect,
       checked: checked(props.item.value) ? 'checked' : '' }),

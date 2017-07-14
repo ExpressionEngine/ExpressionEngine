@@ -131,6 +131,11 @@ class SelectList extends React.Component {
             clearSelection={this.clearSelection}
           />
         }
+        {props.multi && this.selectable &&
+          props.selected.map(item =>
+            <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value} />
+          )
+        }
       </div>
     )
   }
@@ -174,7 +179,6 @@ function SelectItem (props) {
       )}
       {props.selectable && (
         <input type={props.multi ? "checkbox" : "radio"}
-          name={props.name}
           value={props.item.value}
           onChange={props.handleSelect}
           checked={(checked(props.item.value) ? 'checked' : '')} />
