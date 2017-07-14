@@ -5,6 +5,8 @@ namespace EllisLab\ExpressionEngine\Controller\Channels;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,6 +32,10 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  * @link		https://ellislab.com
  */
 abstract class AbstractChannels extends CP_Controller {
+
+	protected $base_url;
+	protected $params;
+	protected $perpage = 25;
 
 	/**
 	 * Constructor
@@ -174,6 +180,22 @@ abstract class AbstractChannels extends CP_Controller {
 			}
 		}
 	}
+
+	/**
+	 * Display filters
+	 *
+	 * @param filter object
+	 * @return void
+	 */
+	protected function renderFilters(FilterFactory $filters)
+	{
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->perpage = $this->params['perpage'];
+
+		$this->base_url->addQueryStringVariables($this->params);
+	}
+
 
 	/**
 	 * Builds and returns a Table object for use of displaying a list of channels

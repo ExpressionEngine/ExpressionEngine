@@ -52,6 +52,8 @@ class Fields extends AbstractChannelsController {
 
 	public function fields($group_id)
 	{
+		$this->base_url = ee('CP/URL')->make('channels/fields/' . $group_id);
+
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
@@ -67,8 +69,6 @@ class Fields extends AbstractChannelsController {
 			show_404();
 		}
 
-		$base_url = ee('CP/URL', 'channels/fields/'.$group_id);
-
 		$vars = array(
 			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id),
 			'group_id'   => $group->group_id
@@ -81,13 +81,20 @@ class Fields extends AbstractChannelsController {
 		$table = $this->buildTableFromChannelFieldsQuery($fields, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
 
+		$filters = ee('CP/Filter')
+					->add('Perpage', $vars['table']['total_rows'], 'show_all_templates');
+
+				// Before pagination so perpage is set correctly
+				$this->renderFilters($filters);
+
+
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
+			->perPage($this->perpage)
 			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
+			->render($this->base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
 		ee()->cp->add_js_script(array(

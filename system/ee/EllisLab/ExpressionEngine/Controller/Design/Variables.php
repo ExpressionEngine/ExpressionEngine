@@ -91,7 +91,7 @@ class Variables extends AbstractDesignController {
 		$data = array();
 		$variables = ee('Model')->make('GlobalVariable')->loadAll();
 
-		$base_url = ee('CP/URL')->make('design/variables');
+		$this->base_url = ee('CP/URL')->make('design/variables');
 
 		foreach($variables as $variable)
 		{
@@ -150,22 +150,31 @@ class Variables extends AbstractDesignController {
 		$table->setNoResultsText('no_template_variables');
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $variables->count(), 'show_all_variables');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
 
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
 			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
+				->perPage($this->perpage)
 				->currentPage($vars['table']['page'])
-				->render($base_url);
+				->render($this->base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_variable') . ': <b>### ' . lang('template_variables') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
 		));
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $variables->count(), 'show_all_variables');
 
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');

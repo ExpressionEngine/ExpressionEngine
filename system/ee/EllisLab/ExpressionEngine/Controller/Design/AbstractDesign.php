@@ -7,6 +7,9 @@ use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,6 +36,10 @@ use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
  */
 abstract class AbstractDesign extends CP_Controller {
 
+	protected $base_url;
+	protected $params;
+	protected $perpage = 25;
+
 	/**
 	 * Constructor
 	 */
@@ -50,6 +57,22 @@ abstract class AbstractDesign extends CP_Controller {
 
 		ee()->lang->loadfile('design');
 	}
+
+	/**
+	 * Display filters
+	 *
+	 * @param int
+	 * @return void
+	 */
+	protected function renderFilters(FilterFactory $filters)
+	{
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->perpage = $this->params['perpage'];
+
+		$this->base_url->addQueryStringVariables($this->params);
+	}
+
 
 	protected function generateSidebar($active = NULL)
 	{

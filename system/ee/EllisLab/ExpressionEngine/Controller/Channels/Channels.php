@@ -44,6 +44,8 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function index()
 	{
+		$this->base_url = $this->base_url = ee('CP/URL')->make('channels');
+
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $channels->count();
@@ -53,10 +55,16 @@ class Channels extends AbstractChannelsController {
 		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
 		$vars['show_new_channel_button'] = ee()->cp->allowed_group('can_create_channels');
 
+		$filters = ee('CP/Filter')
+					->add('Perpage', $vars['table']['total_rows'], 'show_all_channels');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
-			->perPage($vars['table']['limit'])
+			->perPage($this->perpage)
 			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
+			->render($this->base_url);
 
 		$vars['disable'] = $this->hasMaximumChannels() ? 'disable' : '';
 

@@ -91,7 +91,7 @@ class Snippets extends AbstractDesignController {
 		$data = array();
 		$snippets = ee('Model')->make('Snippet')->loadAll();
 
-		$base_url = ee('CP/URL')->make('design/snippets');
+		$this->base_url = ee('CP/URL')->make('design/snippets');
 
 		foreach ($snippets as $snippet)
 		{
@@ -146,30 +146,26 @@ class Snippets extends AbstractDesignController {
 			);
 		}
 
-
-		$filters = ee('CP/Filter')
-			->add('Perpage', $snippets->count(), 'show_all');
-
-		$filter_values = $filters->values();
-		$base_url->addQueryStringVariables($filter_values);
-
 		$table->setNoResultsText('no_snippets');
 		$table->setData($data);
 
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
+		$filters = ee('CP/Filter')
+			->add('Perpage', $snippets->count(), 'show_all_partials');
 
-
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
 
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
 			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($filter_values['perpage'])
+				->perPage($this->perpage)
 				->currentPage($vars['table']['page'])
-				->render($base_url);
+				->render($this->base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_partial') . ': <b>### ' . lang('template_partials') . '</b>');
@@ -178,8 +174,6 @@ class Snippets extends AbstractDesignController {
 		));
 
 		$this->stdHeader();
-
-		ee()->view->filters = $filters->render($base_url);
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_partials_header');
 		ee()->cp->render('design/snippets/index', $vars);

@@ -34,12 +34,12 @@ use EllisLab\ExpressionEngine\Controller\Members;
  */
 class Groups extends Members\Members {
 
-	private $base_url;
+	protected $base_url;
 	private $index_url;
 	private $site_id;
 	private $super_admin;
-	private $group;
-	private $group_id;
+	protected $group;
+	protected $group_id;
 	private $query_string = array();
 	private $no_delete		= array('1', '2', '3', '4'); // Member groups that can not be deleted
 
@@ -67,17 +67,17 @@ class Groups extends Members\Members {
 	 */
 	public function index()
 	{
-		$perpage = $this->config->item('memberlist_row_limit');
 		$sort_col = ee()->input->get('sort_col') ?: 'group_id';
 		$sort_col = ($sort_col == 'id') ? 'group_id' : $sort_col;
+		$sort_col = ($sort_col == 'status') ? 'is_locked' : $sort_col;
 		$sort_dir = ee()->input->get('sort_dir') ?: 'asc';
 		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
-		$offset = ! empty($page) ? ($page - 1) * $perpage : 0;
+		$offset = ! empty($page) ? ($page - 1) * $this->perpage : 0;
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
-			'limit' => $perpage
+			'limit' => $this->perpage
 		));
 
 		$columns = array(
@@ -115,10 +115,15 @@ class Groups extends Members\Members {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
+		$filter = ee('CP/Filter')
+						->add('Perpage', $total, 'show_all_member_groups');
+
+		$this->renderFilters($filter);
+
 		$groups = ee()->api->get('MemberGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($sort_col, $sort_dir)
-			->limit($perpage)
+			->limit($this->perpage)
 			->offset($offset);
 
 		$search = ee()->input->post('search');
@@ -201,7 +206,7 @@ class Groups extends Members\Members {
 		if ( ! empty($data['table']['data']))
 		{
 			$data['pagination'] = ee('CP/Pagination', $total)
-				->perPage($perpage)
+				->perPage($this->perpage)
 				->currentPage($page)
 				->render($base_url);
 		}

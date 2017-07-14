@@ -138,20 +138,27 @@ class Design extends AbstractDesignController {
 		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 		$vars['group_id'] = $group->group_name;
 
-		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
+		$this->base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
 
 		$table = $this->buildTableFromTemplateCollection($group->Templates);
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
+
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $vars['table']['total_rows'], 'show_all_templates');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
 
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
 			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
+				->perPage($this->perpage)
 				->currentPage($vars['table']['page'])
-				->render($base_url);
+				->render($this->base_url);
 		}
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
