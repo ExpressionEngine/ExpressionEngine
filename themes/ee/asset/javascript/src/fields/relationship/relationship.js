@@ -22,9 +22,16 @@ var Relationship = function (_React$Component) {
       });
     };
 
+    _this.selectedItemsChanged = function (selectedItems) {
+      _this.setState({
+        selectedVisible: selectedItems
+      });
+    };
+
     _this.selectionChanged = function (selected) {
       _this.setState({
-        selected: selected
+        selected: selected,
+        selectedVisible: selected
       });
     };
 
@@ -33,8 +40,12 @@ var Relationship = function (_React$Component) {
       items: _this.initialItems,
       selected: SelectList.formatItems(props.selected)
     };
+    _this.state.selectedVisible = _this.state.selected;
     return _this;
   }
+
+  // Items visible in the selection container changed via filtering
+
 
   _createClass(Relationship, [{
     key: 'render',
@@ -50,13 +61,13 @@ var Relationship = function (_React$Component) {
           itemsChanged: this.itemsChanged,
           selectionChanged: this.selectionChanged
         }),
-        this.props.multi && React.createElement(SelectList, { items: this.state.selected,
+        this.props.multi && React.createElement(SelectList, { items: this.state.selectedVisible,
           selected: [],
-          initialItems: this.props.selected,
+          initialItems: this.state.selected,
           selectable: false,
           reorderable: true,
           removable: true,
-          itemsChanged: this.itemsChanged,
+          itemsChanged: this.selectedItemsChanged,
           selectionChanged: this.selectionChanged
         })
       );

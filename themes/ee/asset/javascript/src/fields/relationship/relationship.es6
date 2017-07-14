@@ -7,6 +7,7 @@ class Relationship extends React.Component {
       items: this.initialItems,
       selected: SelectList.formatItems(props.selected)
     }
+    this.state.selectedVisible = this.state.selected
   }
 
   itemsChanged = (items) => {
@@ -15,9 +16,17 @@ class Relationship extends React.Component {
     })
   }
 
+  // Items visible in the selection container changed via filtering
+  selectedItemsChanged = (selectedItems) => {
+    this.setState({
+      selectedVisible: selectedItems
+    })
+  }
+
   selectionChanged = (selected) => {
     this.setState({
-      selected: selected
+      selected: selected,
+      selectedVisible: selected,
     })
   }
 
@@ -34,13 +43,13 @@ class Relationship extends React.Component {
         />
 
         {this.props.multi &&
-          <SelectList items={this.state.selected}
+          <SelectList items={this.state.selectedVisible}
             selected={[]}
-            initialItems={this.props.selected}
+            initialItems={this.state.selected}
             selectable={false}
             reorderable={true}
             removable={true}
-            itemsChanged={this.itemsChanged}
+            itemsChanged={this.selectedItemsChanged}
             selectionChanged={this.selectionChanged}
           />
         }

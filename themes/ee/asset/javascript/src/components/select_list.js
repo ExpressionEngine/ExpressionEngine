@@ -46,20 +46,27 @@ var SelectList = function (_React$Component) {
       }, 300);
     };
 
-    _this.handleChange = function (event, label, value) {
-      var selected = {};
+    _this.handleChange = function (event, item) {
+      var selected = [];
       if (_this.props.multi) {
         if (event.target.checked) {
-          selected = _this.props.selected.concat([{ value: value, label: label }]);
+          selected = _this.props.selected.concat([item]);
         } else {
-          selected = _this.props.selected.filter(function (item) {
-            return item.value != value;
+          selected = _this.props.selected.filter(function (thisItem) {
+            return thisItem.value != item.value;
           });
         }
       } else {
-        selected = [{ value: value, label: label }];
+        selected = [item];
       }
       _this.props.selectionChanged(selected);
+    };
+
+    _this.handleRemove = function (event, item) {
+      _this.props.selectionChanged(_this.props.items.filter(function (thisItem) {
+        return thisItem.value != item.value;
+      }));
+      event.preventDefault();
     };
 
     _this.clearSelection = function (event) {
@@ -76,10 +83,25 @@ var SelectList = function (_React$Component) {
     _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filter_url;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
+
+    _this.bindSortable();
     return _this;
   }
 
   _createClass(SelectList, [{
+    key: 'bindSortable',
+    value: function bindSortable() {
+      $('.field-inputs').sortable({
+        axis: 'y',
+        containment: 'parent',
+        handle: '.icon-reorder',
+        items: 'label',
+        stop: function stop(event, ui) {
+          // TODO
+        }
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -104,14 +126,24 @@ var SelectList = function (_React$Component) {
               reorderable: _this2.reorderable,
               removable: _this2.removable,
               handleSelect: function handleSelect(e) {
-                return _this2.handleChange(e, item.label, item.value);
-              } });
+                return _this2.handleChange(e, item);
+              },
+              handleRemove: function handleRemove(e) {
+                return _this2.handleRemove(e, item);
+              }
+            });
           })
         ),
         !props.multi && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
           item: props.selected[0],
-          clearSelection: this.clearSelection })
+          clearSelection: this.clearSelection
+        })
       );
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      if (this.reorderable) this.bindSortable();
     }
   }], [{
     key: 'formatItems',
@@ -211,7 +243,7 @@ function SelectItem(props) {
       React.createElement(
         'li',
         { className: 'remove' },
-        React.createElement('a', { href: '' })
+        React.createElement('a', { href: '', onClick: props.handleRemove })
       )
     )
   );

@@ -11,6 +11,8 @@ class SelectList extends React.Component {
     this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filter_url)
     this.ajaxTimer = null
     this.ajaxRequest = null
+
+    this.bindSortable()
   }
 
   static formatItems (items) {
@@ -25,6 +27,18 @@ class SelectList extends React.Component {
       })
     }
     return items_array
+  }
+
+  bindSortable () {
+    $('.field-inputs').sortable({
+      axis: 'y',
+      containment: 'parent',
+      handle: '.icon-reorder',
+      items: 'label',
+      stop: (event, ui) => {
+        // TODO
+      }
+    })
   }
 
   handleSearch = (event) => {
@@ -57,20 +71,29 @@ class SelectList extends React.Component {
     }, 300)
   }
 
-  handleChange = (event, label, value) => {
-    var selected = {}
+  handleChange = (event, item) => {
+    var selected = []
     if (this.props.multi) {
       if (event.target.checked) {
-        selected = this.props.selected.concat([{value: value, label: label}])
+        selected = this.props.selected.concat([item])
       } else {
-        selected = this.props.selected.filter((item) => {
-          return item.value != value
+        selected = this.props.selected.filter((thisItem) => {
+          return thisItem.value != item.value
         })
       }
     } else {
-      selected = [{value: value, label: label}]
+      selected = [item]
     }
     this.props.selectionChanged(selected)
+  }
+
+  handleRemove = (event, item) => {
+    this.props.selectionChanged(
+      this.props.items.filter((thisItem) => {
+        return thisItem.value != item.value
+      })
+    )
+    event.preventDefault()
   }
 
   clearSelection = (event) => {
@@ -97,16 +120,23 @@ class SelectList extends React.Component {
               selectable={this.selectable}
               reorderable={this.reorderable}
               removable={this.removable}
-              handleSelect={(e) => this.handleChange(e, item.label, item.value)} />
+              handleSelect={(e) => this.handleChange(e, item)}
+              handleRemove={(e) => this.handleRemove(e, item)}
+            />
           )}
         </SelectInputs>
         { ! props.multi && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
-            clearSelection={this.clearSelection} />
+            clearSelection={this.clearSelection}
+          />
         }
       </div>
     )
+  }
+
+  componentDidUpdate () {
+    if (this.reorderable) this.bindSortable()
   }
 }
 
@@ -155,7 +185,7 @@ function SelectItem (props) {
       )}
       {props.removable && (
         <ul className="toolbar">
-          <li className="remove"><a href=""></a></li>
+          <li className="remove"><a href="" onClick={props.handleRemove}></a></li>
         </ul>
       )}
     </label>
