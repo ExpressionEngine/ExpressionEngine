@@ -2647,39 +2647,6 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
-     * remove_comment is used by the spam module to delete comments that are
-	 * flagged as spam from the spam trap
-	 *
-	 * @param integer $comment_id  The ID of the comment
-	 * @access public
-	 * @return void
-	 */
-	function remove_comment($id)
-	{
-		ee()->db->delete('comments', array('comment_id' => $id));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-     * moderate_comment simply sets a particular status given a comment id.
-     * This is used by the Spam Module for showing comments after they are
-     * flagged as a false positive in the spam trap.
-	 *
-	 * @param integer $comment_id  The ID of the comment
-	 * @param string  $status  The status to set
-	 * @access public
-	 * @return void
-	 */
-	function moderate_comment($comment_id, $status)
-	{
-		ee()->db->where('comment_id', $comment_id);
-		ee()->db->update('comments', array('status' => $status));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Comment subscription tag
 	 *
 	 *
