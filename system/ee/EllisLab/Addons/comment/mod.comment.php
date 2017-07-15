@@ -2521,7 +2521,6 @@ class Comment {
 
 		if ($is_spam == TRUE)
 		{
-			$spam_data = array($comment_id, 'o');
 			ee('Spam')->moderate('comment', $comment, $comment->comment, $_POST['URI']);
 		}
 

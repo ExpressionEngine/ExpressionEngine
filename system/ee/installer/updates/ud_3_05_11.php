@@ -24,6 +24,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			array(
 				'addSpamModerationPermissions',
+				'runSpamModuleUpdate'
 			)
 		);
 
@@ -51,7 +52,10 @@ class Updater {
 
 		// Only assume super admins can moderate spam
 		ee()->db->update('member_groups', array('can_moderate_spam' => 'y'), array('group_id' => 1));
+	}
 
+	private function runSpamModuleUpdate()
+	{
 		// run the Spam module update
 		$spam = ee('Addon')->get('spam');
 		if ($spam->hasUpdate())

@@ -36,7 +36,6 @@ class SpamTrap extends Model {
 	protected $site_id;
 	protected $trap_date;
 	protected $trap_id;
-
 }
 
 // EOF
