@@ -366,6 +366,7 @@ class Simple_commerce {
 			ee()->email->to($debug_to);
 			ee()->email->subject('EE Debug: Incoming IPN Response');
 			ee()->email->message($msg);
+			ee()->email->mailtype = ee()->config->item('mail_format');
 			ee()->email->send();
 			ee()->email->EE_initialize();
 
@@ -828,6 +829,7 @@ class Simple_commerce {
 				ee()->email->to($to);
 				ee()->email->subject($subject);
 				ee()->email->message(entities_to_ascii($message));
+				ee()->email->mailtype = ee()->config->item('mail_format');
 				ee()->email->send();
 				ee()->email->EE_initialize();
 			}
@@ -859,6 +861,7 @@ class Simple_commerce {
 				ee()->email->to($row->admin_email_address);
 				ee()->email->subject($subject);
 				ee()->email->message(entities_to_ascii($message));
+				ee()->email->mailtype = ee()->config->item('mail_format');
 				ee()->email->send();
 				ee()->email->EE_initialize();
 			}

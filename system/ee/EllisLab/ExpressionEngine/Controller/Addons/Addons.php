@@ -1732,19 +1732,11 @@ class Addons extends CP_Controller {
 				$value = '';
 			}
 
-			$sub = '';
 			$choices = array();
 			$selected = '';
 
-			if (isset($subtext[$key]))
-			{
-				foreach ($subtext[$key] as $txt)
-				{
-					$sub .= lang($txt);
-				}
-			}
-
-			$element['desc'] = $sub;
+			// add field instructions, if they exist
+			$element['desc'] = (lang($key.'_desc') != $key.'_desc') ? lang($key.'_desc') : '';
 
 			if ( ! is_array($options))
 			{
@@ -1798,7 +1790,8 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'checkbox',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'wrap' => TRUE,
 					);
 					break;
 
