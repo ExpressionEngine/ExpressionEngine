@@ -32,7 +32,7 @@
 						<?=lang('since_last_login')?> (<?=$last_visit?>)
 					</p>
 					<?php if ($can_moderate_comments): ?>
-					<p class="last"><b><?=$number_of_pending_comments?></b> <?=lang('are')?> <a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>"><?=lang('awaiting_moderation')?></a><?php if ($spam_module_installed): ?>, <?=lang('and')?> <b><?=$number_of_spam_comments?></b> <?=lang('have_been')?> <a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 's'))?>"><?=lang('flagged_as_spam')?></a><?php endif ?>.</p>
+					<p class="last"><b><?=$number_of_pending_comments?></b> <?=lang('are')?> <a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>"><?=lang('awaiting_moderation')?></a><?php if ($spam_module_installed): ?>, <?=lang('and')?> <b><?=$number_of_spam_comments?></b> <?=lang('have_been')?> <a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))?>"><?=lang('flagged_as_spam')?></a><?php endif ?>.</p>
 					<?php endif; ?>
 				</div>
 			</div>
