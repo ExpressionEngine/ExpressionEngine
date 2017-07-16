@@ -409,8 +409,8 @@ class Spam_mcp {
 			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)))
 			->defer();
 
-	//	$this->moderate($trapped, 'ham');
-	//	ee()->functions->redirect($this->base_url);
+		$this->moderate($trapped, 'ham');
+		ee()->functions->redirect($this->base_url);
 	}
 
 	/**
