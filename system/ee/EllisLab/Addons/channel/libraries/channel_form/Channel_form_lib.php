@@ -1793,7 +1793,7 @@ GRID_FALLBACK;
 				{
 					$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($spam_content);
 
-					if ($is_spam OR TRUE)
+					if ($is_spam)
 					{
 						ee('Spam')->moderate('channel', $this->entry, $spam_content, serialize($entry_data));
 					}
