@@ -1771,51 +1771,49 @@ GRID_FALLBACK;
 
 		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
-			// Lastly we check for spam before inserting the data
-			$is_spam = ee('Spam')->isSpam($spam_content);
+			$entry_data = array_filter(
+				$_POST,
+				function($v) { return ! is_null($v); }
+			);
 
-			if ($is_spam === FALSE)
+			$this->entry->set($entry_data);
+			$this->entry->edit_date = ee()->localize->now;
+
+			if ( ! isset($_POST['category']) OR empty($_POST['category']))
 			{
-				$entry_data = array_filter(
-					$_POST,
-					function($v) { return ! is_null($v); }
-				);
+				$this->entry->Categories = NULL;
+			}
 
-				$this->entry->set($entry_data);
-				$this->entry->edit_date = ee()->localize->now;
+			$result = $this->entry->validate();
 
-				if ( ! isset($_POST['category']) OR empty($_POST['category']))
+			if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
+			{
+				// Lastly we check for spam before saving a new entry
+				if ( ! $this->entry('entry_id'))
 				{
-					$this->entry->Categories = NULL;
-				}
+					$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($spam_content);
 
-				$result = $this->entry->validate();
-
-				if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
-				{
-					$this->entry->save();
+					if ($is_spam OR TRUE)
+					{
+						ee('Spam')->moderate('channel_entry', $this->entry, $spam_content, serialize($_POST));
+					}
+					else
+					{
+						$this->entry->save();
+					}
 				}
 				else
 				{
-					$errors = $result->getAllErrors();
-
-					// only show the first error for each field to match CI's old behavior
-					$current_errors = array_map('current', $errors);
-					$this->field_errors = array_merge($this->field_errors, $current_errors);
+					$this->entry->save();
 				}
 			}
 			else
 			{
-				if ($this->entry('entry_id'))
-				{
-					$spam_data = array($_POST, NULL, $this->entry('entry_id'));
-				}
-				else
-				{
-					$spam_data = array($_POST, $this->channel('channel_id'));
-				}
+				$errors = $result->getAllErrors();
 
-				ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
+				// only show the first error for each field to match CI's old behavior
+				$current_errors = array_map('current', $errors);
+				$this->field_errors = array_merge($this->field_errors, $current_errors);
 			}
 		}
 		else
