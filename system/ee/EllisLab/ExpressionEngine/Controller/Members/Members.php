@@ -572,7 +572,6 @@ class Members extends CP_Controller {
 			)
 		);
 
-		// add the toolbar if they can edit members
 		if (ee()->cp->allowed_group('can_edit_members'))
 		{
 			$columns['manage'] = array(
@@ -580,7 +579,6 @@ class Members extends CP_Controller {
 			);
 		}
 
-		// add the checkbox if they can delete members
 		if ($checkboxes)
 		{
 			$columns[] = array(
@@ -667,16 +665,28 @@ class Members extends CP_Controller {
 					<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member->join_date).'<br>
 					<b>'.lang('last_visit').'</b>: '.$last_visit.'
 				</span>',
-				$group,
-				array('toolbar_items' => $toolbar),
-				array(
+				$group
+			);
+
+			$toolbar = array('toolbar_items' => $toolbar);
+
+			// add the toolbar if they can edit members
+			if (ee()->cp->allowed_group('can_edit_members'))
+			{
+				$column[] = $toolbar;
+			}
+
+			// add the checkbox if they can delete members
+			if (ee()->cp->allowed_group('can_delete_members'))
+			{
+				$column[] = array(
 					'name' => 'selection[]',
 					'value' => $member->member_id,
 					'data' => array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
 					)
-				)
-			);
+				);
+			}
 
 			if ($member_id && $member->member_id == $member_id)
 			{
@@ -856,7 +866,7 @@ class Members extends CP_Controller {
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
 			->all();
 
-		if (ee()->config->item('approved_member_notification'))
+		if (ee()->config->item('approved_member_notification') == 'y')
 		{
 			$template = ee('Model')->get('SpecialtyTemplate')
 				->filter('template_name', 'validated_member_notify')
@@ -922,7 +932,7 @@ class Members extends CP_Controller {
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
 			->all();
 
-		if (ee()->config->item('declined_member_notification'))
+		if (ee()->config->item('declined_member_notification') == 'y')
 		{
 			$template = ee('Model')->get('SpecialtyTemplate')
 				->filter('template_name', 'decline_member_validation')

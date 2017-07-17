@@ -91,7 +91,7 @@ class Relationship_ft extends EE_Fieldtype {
 			'data' => $data
 		));
 
-		return '';
+		return NULL;
 	}
 
 	/**
@@ -384,7 +384,7 @@ class Relationship_ft extends EE_Fieldtype {
 		));
 
 		ee()->javascript->set_global(array(
-			'relationship.filter_url' => ee('CP/URL', 'addons/settings/relationship/ajax-filter')->compile()
+			'relationship.filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile()
 		));
 
 		if ($entry_id)
@@ -394,6 +394,7 @@ class Relationship_ft extends EE_Fieldtype {
 				// Cache children for this entry
 				$this->children[$entry_id] = $children = ee('Model')->get('ChannelEntry', $entry_id)
 					->with('Children')
+					->fields('Children.entry_id', 'Children.title', 'Children.channel_id')
 					->first()
 					->Children;
 			}
@@ -433,6 +434,7 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
 				->with('Channel')
+				->fields('Channel.*', 'entry_id', 'title', 'channel_id')
 				->all()
 				->indexBy('entry_id');
 		}
@@ -582,6 +584,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_categories' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
+						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_categories(),
 						'value' => ($values['categories']) ?: '--'
@@ -595,6 +598,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_authors' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
+						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_authors(),
 						'value' => ($values['authors']) ?: '--'
@@ -608,8 +612,8 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_statuses' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'attrs' => 'data-any="y"',
 						'wrap' => TRUE,
+						'attrs' => 'data-any="y"',
 						'choices' => $util->all_statuses(),
 						'value' => ($values['statuses']) ?: '--'
 					)

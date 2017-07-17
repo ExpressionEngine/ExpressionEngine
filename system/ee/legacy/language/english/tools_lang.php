@@ -2,72 +2,102 @@
 
 $lang = array(
 
-'tools'					=> 'Tools',
-'tools_data' 			=> 'Data',
-'tools_logs'			=> 'Logs',
-'tools_utilities'		=> 'Utilities',
+'advanced_users_only' => 'Advanced Users Only',
 
-'communicate'			=> 'Communicate',
+'all_caching' => 'All caches',
 
-'config_editor'			=> 'Config File Manager',
-'php_info' 				=> 'PHP Info',
-'recount_stats' 		=> 'Recount Statistics',
-'search_and_replace' 	=> 'Search and Replace',
-'sql_manager' 			=> 'SQL Manager',
-'clear_caching'	 		=> 'Clear Cached Data',
+'choose_translation_file' => 'Choose a file to translate',
 
-'import_utilities' 		=> 'Import Utilities',
-'translation_tool' 		=> 'Translation Utility',
-'english'				=> 'English',
-'translation'			=> 'Translation',
+'clear_caching' => 'Clear Cached Data',
 
-'no_search_results'	 	=> 'No Results Found',
+'communicate' => 'Communicate',
 
-'search_results' 		=> 'Search Results',
-'site_search' 			=> 'Site',
-'searched_in' 			=> 'Searched In',
-'search_terms' 			=> 'Search Terms',
+'config_editor' => 'Config File Manager',
 
-'page_caching' 			=> 'Page (template) cache files',
-'tag_caching' 			=> 'Tag cache files',
-'db_caching' 			=> 'Database cache files',
-'all_caching' 			=> 'All caches',
+'db_caching' => 'Database cache files',
 
-'sandr_instructions' 	=> 'These forms enable you to search for specific text and replace it with different text',
-'search_term' 			=> 'Search for this text',
-'replace_term' 			=> 'And replace it with this text',
-'replace_where' 		=> 'In what database field do you want the replacement to occur?',
-'search_replace_disclaimer'	=> 'Depending on the syntax used, this function can produce undesired results.  Consult the manual and backup your database.',
-'advanced_users_only' 	=> 'Advanced Users Only',
+'english' => 'English',
 
-'choose_translation_file' 	=> 'Choose a file to translate',
-'no_lang_file' 			=> 'No Language File Provided',
-'no_lang_keys'			=> 'No Language Keys Exist to Translate',
-'invalid_path' 			=> 'The path you submitted is not valid:',
+'european' => 'European',
+
+'import_utilities' => 'Import Utilities',
+
+'invalid_path' => 'The path you submitted is not valid:',
+
+'member_import' => 'Member Import Utility',
+
+'missing_password_type' => 'The required type attribute is missing in the password element for user: %x. Please consult the documentation for the correct import format.',
+
+'no_lang_file' => 'No Language File Provided',
+
+'no_lang_keys' => 'No Language Keys Exist to Translate',
+
+'no_search_results' => 'No Results Found',
+
+'page_caching' => 'Page (template) cache files',
+
+'php_info' => 'PHP Info',
+
+'recount_stats' => 'Recount Statistics',
+
+'replace_term' => 'And replace it with this text',
+
+'replace_where' => 'In what database field do you want the replacement to occur?',
+
+'sandr_instructions' => 'These forms enable you to search for specific text and replace it with different text',
+
+'search_and_replace' => 'Search and Replace',
+
+'search_replace_disclaimer' => 'Depending on the syntax used, this function can produce undesired results. Consult the manual and backup your database.',
+
+'search_results' => 'Search Results',
+
+'search_term' => 'Search for this text',
+
+'search_terms' => 'Search Terms',
+
+'searched_in' => 'Searched In',
+
+'site_search' => 'Site',
+
+'sql_manager' => 'SQL Manager',
+
+'tag_caching' => 'Tag cache files',
+
+'tools' => 'Tools',
+
+'tools_data' => 'Data',
+
+'tools_logs' => 'Logs',
+
+'tools_utilities' => 'Utilities',
+
 'trans_file_not_writable'=> 'Translation file is not writeable.',
 
-'member_import' 		=> 'Member Import Utility',
-'missing_password_type'	=> 'The required type attribute is missing in the password element for user: %x. Please consult the documentation for the correct import format.',
+'translation' => 'Translation',
 
-'united_states' 		=> 'United States',
-'european' 				=> 'European',
+'translation_tool' => 'Translation Utility',
+
+'united_states' => 'United States',
 
 
 /* Config Editor */
-'preference'			=> 'Preference',
-'setting'				=> 'Setting',
-'preferences_updated'	=> 'Preferences Updated',
-'true'					=> 'True',
-'false'					=> 'False',
+'false' => 'False',
+
+'preference' => 'Preference',
+
+'preferences_updated' => 'Preferences Updated',
+
+'setting' => 'Setting',
+
+'true' => 'True',
 
 
 /* Translation */
-'translation_dir_unwritable' => 'Warning: Your translation directory is not writable.',
-
 'screen_name' => 'Screen Name',
 
+'translation_dir_unwritable' => 'Warning: Your translation directory is not writable.',
 
-''=>''
 );
 
 // EOF

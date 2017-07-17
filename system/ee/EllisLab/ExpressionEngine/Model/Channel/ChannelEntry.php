@@ -152,16 +152,29 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public function set__entry_date($entry_date)
-	{
-		$this->setRawProperty('entry_date', $entry_date);
+    public function set__entry_date($entry_date)
+    {
+        if ( ! is_numeric($entry_date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php
+            // First we try with the configured date format
+            $entry_date = ee()->localize->string_to_timestamp($entry_date, TRUE, ee()->localize->get_date_format());
 
-		// Day, Month, and Year Fields
-		// @TODO un-break these windows: inject this dependency
-		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
-		$this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
-		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
-	}
+            // If the date format didn't work, try something more fuzzy
+            if ($entry_date === FALSE)
+            {
+                $entry_date = ee()->localize->string_to_timestamp($entry_date);
+            }
+        }
+
+        $this->setRawProperty('entry_date', $entry_date);
+
+        // Day, Month, and Year Fields
+        // @TODO un-break these windows: inject this dependency
+        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
+        $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
+        $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
+    }
 
 	public function validate()
 	{
@@ -652,6 +665,11 @@ class ChannelEntry extends ContentModel {
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
+		if ($this->isNew() OR empty($categories))
+		{
+			$this->Categories = NULL;
+		}
+
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
@@ -660,34 +678,47 @@ class ChannelEntry extends ContentModel {
 				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
 
-			$this->Categories = NULL;
-
 			return;
 		}
 
-		$set_cats = array();
+		$cat_groups = array_filter($cat_groups, function($cat_group_id) use ($categories) {
+			return array_key_exists('cat_group_id_'.$cat_group_id, $categories);
+		});
+
+		$category_ids = array();
 
 		// Set the data on the fields in case we come back from a validation error
 		foreach ($cat_groups as $cat_group)
 		{
-			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
+			$group_cats = $categories['cat_group_id_'.$cat_group];
+
+			$category_ids = array_merge($category_ids, $group_cats);
+
+			$this->setRawProperty('cat_group_id_'.$cat_group, implode('|', $group_cats));
+			$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData(implode('|', $group_cats));
+		}
+
+		$cat_objects = $this->getModelFacade()
+			->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('cat_id', 'IN', $category_ids)
+			->all();
+
+		$set_cats = $cat_objects->asArray();
+
+		if (ee()->config->item('auto_assign_cat_parents') == 'y')
+		{
+			$category_ids = $cat_objects->pluck('cat_id');
+			foreach ($set_cats as $cat)
 			{
-				$group_cats = $categories['cat_group_id_'.$cat_group];
-
-				$cats = implode('|', $group_cats);
-
-				$this->setRawProperty('cat_group_id_'.$cat_group, $cats);
-				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData($cats);
-
-				$group_cat_objects = $this->getModelFacade()
-					->get('Category')
-					->filter('site_id', ee()->config->item('site_id'))
-					->filter('cat_id', 'IN', $group_cats)
-					->all();
-
-				foreach ($group_cat_objects as $cat)
+				while ($cat->Parent !== NULL)
 				{
-					$set_cats[] = $cat;
+					$cat = $cat->Parent;
+					if ( ! in_array($cat->getId(), $category_ids))
+					{
+						$category_ids[] = $cat->getId();
+						$set_cats[] = $cat;
+					}
 				}
 			}
 		}

@@ -975,8 +975,10 @@ class Addons extends CP_Controller {
 	 * @param	str	$addon	The name of plugin whose manual to display
 	 * @return	void
 	 */
-	public function manual($addon)
+	public function manual($addon = NULL)
 	{
+		if ( ! $addon) show_404();
+
 		$this->assertUserHasAccess($addon);
 
 		try
@@ -1634,7 +1636,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$current = strip_slashes($extension_model->settings);
+		$current = $extension_model->settings;
 
 		$class_name = $extension['class'];
 		$OBJ = new $class_name($current);
@@ -1679,19 +1681,11 @@ class Addons extends CP_Controller {
 				$value = '';
 			}
 
-			$sub = '';
 			$choices = array();
 			$selected = '';
 
-			if (isset($subtext[$key]))
-			{
-				foreach ($subtext[$key] as $txt)
-				{
-					$sub .= lang($txt);
-				}
-			}
-
-			$element['desc'] = $sub;
+			// add field instructions, if they exist
+			$element['desc'] = (lang($key.'_desc') != $key.'_desc') ? lang($key.'_desc') : '';
 
 			if ( ! is_array($options))
 			{
@@ -1745,7 +1739,8 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'checkbox',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'wrap' => TRUE,
 					);
 					break;
 
