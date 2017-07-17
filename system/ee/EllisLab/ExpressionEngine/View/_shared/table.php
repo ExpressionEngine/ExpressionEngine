@@ -166,10 +166,16 @@ if ($wrap): ?>
 									>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-								<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
 								<?php
+									$class = isset($column['class']) ? $column['class'] : $column['content'];
 									$style = 'style="';
-									if ($class != 'open' && $class != 'closed')
+
+									// override for open/closed
+									if (isset($column['status']) && in_array($column['status'], array('open', 'closed')))
+									{
+										$class = $column['status'];
+									}
+									else
 									{
 										if (isset($column['background-color']) && $column['background-color'])
 										{

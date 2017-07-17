@@ -84,9 +84,11 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
-			$item = $list->addItem($destination->name, ee('CP/URL')->make('files/directory/' . $destination->id))
+			$display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
+
+			$item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
 				->withEditUrl(ee('CP/URL')->make('files/uploads/edit/' . $destination->id))
-				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $destination->name . '</b>')
+				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $display_name . '</b>')
 				->identifiedBy($destination->id);
 
 			if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
