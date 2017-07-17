@@ -119,6 +119,7 @@ class Member extends ContentModel {
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|validateUsername',
+		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
@@ -358,6 +359,7 @@ class Member extends ContentModel {
 	public function getCPHomepageURL($site_id = NULL)
 	{
 		$cp_homepage = NULL;
+		$cp_homepage_custom = 'homepage';
 
 		if ( ! $site_id)
 		{
@@ -493,6 +495,32 @@ class Member extends ContentModel {
 	}
 
 	/**
+	 * Validation callback for screen name
+	 */
+	public function validateScreenName($key, $screen_name)
+	{
+		if (preg_match('/[\{\}<>]/', $screen_name))
+		{
+			return 'disallowed_screen_chars';
+		}
+
+		if (strlen($screen_name) > USERNAME_MAX_LENGTH)
+		{
+			return 'screenname_too_long';
+		}
+
+		if ($this->isNew())
+		{
+			if (ee()->session->ban_check('screen_name', $screen_name))
+			{
+				return 'screen_name_taken';
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Validation callback for email field
 	 */
 	public function validateEmail($key, $email)
@@ -500,6 +528,12 @@ class Member extends ContentModel {
 		if (strlen($email) > USERNAME_MAX_LENGTH)
 		{
 			return 'email_too_long';
+		}
+
+		// Is email address banned?
+		if (ee()->session->ban_check('email', $email))
+		{
+			return 'email_taken';
 		}
 
 		return TRUE;
