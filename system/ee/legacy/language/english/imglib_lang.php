@@ -22,6 +22,8 @@ $lang = array(
 
 'imglib_libpath_invalid' => 'The path to your image library is not correct. Please set the correct path in your image preferences.',
 
+'imglib_unsafe_config' => 'A configuration item contains characters that are unsafe to run in a shell environment.',
+
 'imglib_missing_font' => 'Unable to find a font to use.',
 
 'imglib_png_not_supported' => 'PNG images are not supported.',

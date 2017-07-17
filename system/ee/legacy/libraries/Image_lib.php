@@ -575,6 +575,11 @@ class EE_Image_lib {
 			return FALSE;
 		}
 
+		if ( ! $this->arePathsSafe())
+		{
+			return FALSE;
+		}
+
 		if ( ! preg_match("/convert$/i", $this->library_path))
 		{
 			$this->library_path = rtrim($this->library_path, '/').'/';
@@ -587,7 +592,7 @@ class EE_Image_lib {
 
 		if ($action == 'crop')
 		{
-			$cmd .= " -crop ".$this->width."x".$this->height."+".$this->x_axis."+".$this->y_axis." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " -crop ".$this->width."x".$this->height."+".$this->x_axis."+".$this->y_axis." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 		elseif ($action == 'rotate')
 		{
@@ -601,11 +606,11 @@ class EE_Image_lib {
 					break;
 			}
 
-			$cmd .= " ".$angle." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " ".$angle." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 		else  // Resize
 		{
-			$cmd .= " -resize ".$this->width."x".$this->height." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " -resize ".$this->width."x".$this->height." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 
 		$retval = 1;
@@ -641,6 +646,11 @@ class EE_Image_lib {
 		if ($this->library_path == '')
 		{
 			$this->set_error('imglib_libpath_invalid');
+			return FALSE;
+		}
+
+		if ( ! $this->arePathsSafe())
+		{
 			return FALSE;
 		}
 
@@ -688,7 +698,7 @@ class EE_Image_lib {
 			$cmd_inner = 'pnmscale -xysize '.$this->width.' '.$this->height;
 		}
 
-		$cmd = $this->library_path.$cmd_in.' '.$this->full_src_path.' | '.$cmd_inner.' | '.$cmd_out.' > '.$this->dest_folder.'netpbm.tmp';
+		$cmd = $this->library_path.$cmd_in.' '.escapeshellarg($this->full_src_path).' | '.$cmd_inner.' | '.$cmd_out.' > '.escapeshellarg($this->dest_folder.'netpbm.tmp');
 
 		$retval = 1;
 
@@ -707,6 +717,27 @@ class EE_Image_lib {
 		copy ($this->dest_folder.'netpbm.tmp', $this->full_dst_path);
 		unlink ($this->dest_folder.'netpbm.tmp');
 		@chmod($this->full_dst_path, FILE_WRITE_MODE);
+
+		return TRUE;
+	}
+
+	/**
+	 * Checks path instance variables to make sure they have been properly
+	 * sanitized before passing to shell functions
+	 *
+	 * @return	bool
+	 */
+	private function arePathsSafe()
+	{
+		foreach (array('library_path', 'full_src_path',
+			'full_dst_path', 'dest_folder') as $path)
+		{
+			if (ee()->security->sanitize_filename($this->$path, TRUE) !== $this->$path)
+			{
+				$this->set_error(sprintf(lang('imglib_unsafe_config'), $path));
+				return FALSE;
+			}
+		}
 
 		return TRUE;
 	}
