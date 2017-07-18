@@ -146,6 +146,9 @@ class Cp {
 			'search'				=> lang('search'),
 			'session_idle'			=> lang('session_idle'),
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'check_all'				=> lang('check_all'),
+			'clear_all'				=> lang('clear_all'),
 		);
 
 		ee()->javascript->set_global(array(

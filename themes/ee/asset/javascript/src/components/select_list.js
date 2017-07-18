@@ -16,36 +16,6 @@ var SelectList = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SelectList.__proto__ || Object.getPrototypeOf(SelectList)).call(this, props));
 
-    _this.handleSearch = function (event) {
-      _this.search_term = event.target.value;
-
-      // DOM filter
-      if (!_this.ajaxFilter) {
-        _this.props.itemsChanged(_this.props.initialItems.filter(function (item) {
-          return item.label.toLowerCase().includes(_this.search_term.toLowerCase());
-        }));
-        return;
-      }
-
-      // Debounce AJAX filter
-      clearTimeout(_this.ajaxTimer);
-      if (_this.ajaxRequest) _this.ajaxRequest.abort();
-
-      var params = { search: _this.search_term };
-
-      _this.ajaxTimer = setTimeout(function () {
-        _this.ajaxRequest = $.ajax({
-          url: _this.props.filter_url,
-          data: $.param(params),
-          dataType: 'json',
-          success: function success(data) {
-            _this.props.itemsChanged(formatItems(data));
-          },
-          error: function error() {} // Defined to prevent error on .abort above
-        });
-      }, 300);
-    };
-
     _this.handleChange = function (event, item) {
       var selected = [];
       if (_this.props.multi) {
@@ -74,16 +44,67 @@ var SelectList = function (_React$Component) {
       event.preventDefault();
     };
 
+    _this.filterChange = function (name, value) {
+      _this.state.filterState[name] = value;
+
+      // DOM filter
+      if (!_this.ajaxFilter && name == 'search') {
+        _this.props.itemsChanged(_this.props.initialItems.filter(function (item) {
+          return item.label.toLowerCase().includes(value.toLowerCase());
+        }));
+        return;
+      }
+
+      // Debounce AJAX filter
+      clearTimeout(_this.ajaxTimer);
+      if (_this.ajaxRequest) _this.ajaxRequest.abort();
+
+      var params = _this.state.filterState;
+      params.selected = _this.props.selected.map(function (item) {
+        return item.value;
+      });
+
+      _this.ajaxTimer = setTimeout(function () {
+        _this.ajaxRequest = $.ajax({
+          url: _this.props.filterUrl,
+          data: $.param(params),
+          dataType: 'json',
+          success: function success(data) {
+            _this.props.initialItemsChanged(SelectList.formatItems(data));
+          },
+          error: function error() {} // Defined to prevent error on .abort above
+        });
+      }, 300);
+    };
+
+    _this.handleToggleAll = function (check) {
+      // If checking, merge the newly-selected items on to the existing stack
+      // in case the current view is limited by a filter
+      if (check) {
+        newly_selected = _this.props.items.filter(function (thisItem) {
+          found = _this.props.selected.find(function (item) {
+            return item.value == thisItem.value;
+          });
+          return !found;
+        });
+        _this.props.selectionChanged(_this.props.selected.concat(newly_selected));
+      } else {
+        _this.props.selectionChanged([]);
+      }
+    };
+
     _this.selectable = props.selectable !== undefined ? props.selectable : true;
     _this.reorderable = props.reorderable !== undefined ? props.reorderable : false;
     _this.removable = props.removable !== undefined ? props.removable : false;
-    _this.tooMany = props.tooMany ? props.tooMany : 8;
+    _this.tooMany = props.tooMany ? props.tooMany : SelectList.limit;
 
-    // If the intial state is less than the limit, use DOM filtering
-    _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filter_url;
+    _this.state = {
+      filterState: {}
+
+      // If the intial state is less than the limit, use DOM filtering
+    };_this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filterUrl;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
-    _this.search_term = null;
 
     _this.bindSortable();
     return _this;
@@ -108,17 +129,36 @@ var SelectList = function (_React$Component) {
       var _this2 = this;
 
       var props = this.props;
+      var tooMany = props.items.length > this.tooMany;
 
       return React.createElement(
         'div',
-        { className: "fields-select" + (props.items.length > this.tooMany ? ' field-resizable' : '') },
+        { className: "fields-select" + (tooMany ? ' field-resizable' : '') },
         React.createElement(
-          FilterBar,
+          FieldTools,
           null,
-          props.filters && props.filters.map(function (filter) {
-            return React.createElement(FilterSelect, { key: filter.name, name: filter.name, placeholder: filter.placeholder, items: filter.items });
-          }),
-          React.createElement(FilterSearch, { handleSearch: this.handleSearch })
+          React.createElement(
+            FilterBar,
+            null,
+            props.filters && props.filters.map(function (filter) {
+              return React.createElement(FilterSelect, { key: filter.name,
+                name: filter.name,
+                title: filter.title,
+                placeholder: filter.placeholder,
+                items: filter.items,
+                onSelect: function onSelect(value) {
+                  return _this2.filterChange(filter.name, value);
+                }
+              });
+            }),
+            React.createElement(FilterSearch, { onSearch: function onSearch(e) {
+                return _this2.filterChange('search', e.target.value);
+              } })
+          ),
+          props.toggleAll !== null && React.createElement('hr', null),
+          props.toggleAll !== null && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
+              return _this2.handleToggleAll(check);
+            } })
         ),
         React.createElement(
           'div',
@@ -146,6 +186,7 @@ var SelectList = function (_React$Component) {
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
+        props.multi && this.selectable && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '' }),
         props.multi && this.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value });
         })
@@ -197,6 +238,9 @@ var SelectList = function (_React$Component) {
 
   return SelectList;
 }(React.Component);
+
+SelectList.limit = 8;
+
 
 function SelectItem(props) {
   function checked(value) {

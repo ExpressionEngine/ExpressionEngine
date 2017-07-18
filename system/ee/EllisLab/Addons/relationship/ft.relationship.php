@@ -481,9 +481,22 @@ class Relationship_ft extends EE_Fieldtype {
 		$select_filters = [];
 		if ($channels->count() > 1) {
 			$select_filters[] = [
-				'name' => lang('channel'),
+				'name' => 'channel_id',
+				'title' => lang('channel'),
 				'placeholder' => lang('filter_channels'),
 				'items' => $channels->getDictionary('channel_id', 'channel_title')
+			];
+		}
+
+		if ($multiple)
+		{
+			$select_filters[] = [
+				'name' => 'related',
+				'title' => lang('show'),
+				'items' => [
+					'related' => 'Related only',
+					'unrelated' => 'Unrelated only'
+				]
 			];
 		}
 
@@ -492,7 +505,9 @@ class Relationship_ft extends EE_Fieldtype {
 			'choices' => $choices,
 			'selected' => $selected,
 			'multi' => $multiple,
-			'filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile(),
+			'filter_url' => ee('CP/URL')->make('publish/relationship-filter', [
+				'settings' => $settings
+			])->compile(),
 			'limit' => $this->settings['limit'] ?: 100,
 			'no_results' => ['text' => lang('no_entries_found')],
 			'no_related' => ['text' => lang('no_entries_related')],

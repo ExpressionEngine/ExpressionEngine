@@ -16,6 +16,13 @@ var Relationship = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Relationship.__proto__ || Object.getPrototypeOf(Relationship)).call(this, props));
 
+    _this.initialItemsChanged = function (items) {
+      _this.initialItems = items;
+      _this.setState({
+        items: items
+      });
+    };
+
     _this.itemsChanged = function (items) {
       _this.setState({
         items: items
@@ -50,18 +57,26 @@ var Relationship = function (_React$Component) {
   _createClass(Relationship, [{
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       return React.createElement(
         'div',
         { className: "fields-relate" + (this.props.multi ? ' fields-relate-multi' : '') },
         React.createElement(SelectList, { items: this.state.items,
           initialItems: this.initialItems,
+          initialItemsChanged: this.initialItemsChanged,
           name: this.props.name,
           multi: this.props.multi,
           selected: this.state.selected,
           itemsChanged: this.itemsChanged,
           selectionChanged: this.selectionChanged,
           noResults: this.props.no_results,
-          filters: this.props.select_filters
+          filters: this.props.select_filters,
+          filterUrl: this.props.filter_url,
+          toggleAll: this.props.multi && this.state.items.length > SelectList.limit ? true : null,
+          onToggleAll: function onToggleAll(e) {
+            return _this2.handleToggleAll(true);
+          }
         }),
         this.props.multi && React.createElement(SelectList, { items: this.state.selectedVisible,
           selected: [],
@@ -71,7 +86,11 @@ var Relationship = function (_React$Component) {
           removable: true,
           itemsChanged: this.selectedItemsChanged,
           selectionChanged: this.selectionChanged,
-          noResults: this.props.no_related
+          noResults: this.props.no_related,
+          toggleAll: this.state.items.length > SelectList.limit ? false : null,
+          onToggleAll: function onToggleAll(e) {
+            return _this2.handleToggleAll(false);
+          }
         })
       );
     }

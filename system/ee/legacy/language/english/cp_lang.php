@@ -197,6 +197,10 @@ $lang = array(
 
 'channel' => 'Channel',
 
+'check_all' => 'Check All',
+
+'clear_all' => 'Clear All',
+
 'create' => 'Create',
 
 'create_and_edit' => 'Create and Edit',

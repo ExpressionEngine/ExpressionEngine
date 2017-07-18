@@ -1,17 +1,61 @@
-function FilterBar (props) {
+function FieldTools (props) {
   return (
     <div className="field-tools">
-      <div className="filter-bar">
-        {props.children}
-      </div>
+      {props.children}
     </div>
   )
+}
+
+function FilterBar (props) {
+  return (
+    <div className="filter-bar">
+      {props.children}
+    </div>
+  )
+}
+
+class FilterToggleAll extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      checked: false
+    }
+  }
+
+  handleClick = () => {
+    // Clear all will always be "unchecked" to the parent
+    if ( ! this.props.checkAll) {
+      this.props.onToggleAll(false)
+      return
+    }
+
+    let checked = ! this.state.checked
+    this.setState({
+      checked: checked
+    })
+    this.props.onToggleAll(checked)
+  }
+
+  render () {
+    return (
+      <div className="field-ctrl">
+        <label className={
+            (this.props.checkAll ? "field-toggle-all" : "field-clear-all")
+            + (this.state.checked ? " act" : "")
+          }
+          onClick={this.handleClick}>
+          {this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all}
+        </label>
+      </div>
+    )
+  }
 }
 
 function FilterSearch (props) {
   return (
     <div className="filter-item filter-item__search">
-      <input type="text" placeholder="Keyword Search" onChange={props.handleSearch} />
+      <input type="text" placeholder="Keyword Search" onChange={props.onSearch} />
     </div>
   )
 }
@@ -28,30 +72,34 @@ class FilterSelect extends React.Component {
     }
   }
 
-  selectItem = (event, item) => {
-    this.setState({ selected: item })
-    $(event.target).closest('.js-filter-link').trigger('click') // Not working
-    event.preventDefault()
+  handleSearch = (event) => {
+    this.setState({ items: this.initialItems.filter(item =>
+      item.label.toLowerCase().includes(event.target.value.toLowerCase())
+    )})
   }
 
-  clearSelection = (event) => {
-    this.setState({ selected: null })
+  selectItem = (event, item) => {
+    this.setState({ selected: item })
+    this.props.onSelect(item ? item.value : null)
+    $(event.target).closest('.filter-item').find('.js-filter-link').click() // Not working
     event.preventDefault()
   }
 
   render () {
     return (
       <div className="filter-item">
-        <a href="#" className="js-filter-link filter-item__link filter-item__link--has-submenu" onClick={this.toggle}>{this.props.name}</a>
+        <a href="#" className="js-filter-link filter-item__link filter-item__link--has-submenu" onClick={this.toggle}>{this.props.title}</a>
         <div className="filter-submenu">
-          <div className="filter-submenu__search">
-            <form>
-              <input type="text" placeholder={this.props.placeholder} />
-            </form>
-          </div>
+          {this.state.items.length > 7 &&
+            <div className="filter-submenu__search">
+              <form>
+                <input type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
+              </form>
+            </div>
+          }
           {this.state.selected &&
             <div className="filter-submenu__selected">
-              <a href="#" onClick={this.clearSelection}>{this.state.selected.label}</a>
+              <a href="#" onClick={(e) => this.selectItem(e, null)}>{this.state.selected.label}</a>
             </div>
           }
           <div className="filter-submenu__scroll">

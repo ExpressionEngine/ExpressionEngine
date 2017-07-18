@@ -5,16 +5,21 @@ class SelectList extends React.Component {
     this.selectable = props.selectable !== undefined ? props.selectable : true
     this.reorderable = props.reorderable !== undefined ? props.reorderable : false
     this.removable = props.removable !== undefined ? props.removable : false
-    this.tooMany = props.tooMany ? props.tooMany : 8
+    this.tooMany = props.tooMany ? props.tooMany : SelectList.limit
+
+    this.state = {
+      filterState: {}
+    }
 
     // If the intial state is less than the limit, use DOM filtering
-    this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filter_url)
+    this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filterUrl)
     this.ajaxTimer = null
     this.ajaxRequest = null
-    this.search_term = null
 
     this.bindSortable()
   }
+
+  static limit = 8
 
   static formatItems (items) {
     if ( ! items) return []
@@ -40,36 +45,6 @@ class SelectList extends React.Component {
         // TODO
       }
     })
-  }
-
-  handleSearch = (event) => {
-    this.search_term = event.target.value
-
-    // DOM filter
-    if ( ! this.ajaxFilter) {
-      this.props.itemsChanged(this.props.initialItems.filter(item =>
-        item.label.toLowerCase().includes(this.search_term.toLowerCase())
-      ))
-      return
-    }
-
-    // Debounce AJAX filter
-    clearTimeout(this.ajaxTimer)
-    if (this.ajaxRequest) this.ajaxRequest.abort()
-
-    let params = { search: this.search_term }
-
-    this.ajaxTimer = setTimeout(() => {
-      this.ajaxRequest = $.ajax({
-        url: this.props.filter_url,
-        data: $.param(params),
-        dataType: 'json',
-        success: (data) => {
-          this.props.itemsChanged(formatItems(data))
-        },
-        error: () => {} // Defined to prevent error on .abort above
-      })
-    }, 300)
   }
 
   handleChange = (event, item) => {
@@ -102,17 +77,79 @@ class SelectList extends React.Component {
     event.preventDefault()
   }
 
+  filterChange = (name, value) => {
+    this.state.filterState[name] = value
+
+    // DOM filter
+    if ( ! this.ajaxFilter && name == 'search') {
+      this.props.itemsChanged(this.props.initialItems.filter(item =>
+        item.label.toLowerCase().includes(value.toLowerCase())
+      ))
+      return
+    }
+
+    // Debounce AJAX filter
+    clearTimeout(this.ajaxTimer)
+    if (this.ajaxRequest) this.ajaxRequest.abort()
+
+    let params = this.state.filterState
+    params.selected = this.props.selected.map(item => {
+      return item.value
+    })
+
+    this.ajaxTimer = setTimeout(() => {
+      this.ajaxRequest = $.ajax({
+        url: this.props.filterUrl,
+        data: $.param(params),
+        dataType: 'json',
+        success: (data) => {
+          this.props.initialItemsChanged(SelectList.formatItems(data))
+        },
+        error: () => {} // Defined to prevent error on .abort above
+      })
+    }, 300)
+  }
+
+  handleToggleAll = (check) => {
+    // If checking, merge the newly-selected items on to the existing stack
+    // in case the current view is limited by a filter
+    if (check) {
+      newly_selected = this.props.items.filter((thisItem) => {
+        found = this.props.selected.find((item) => {
+          return item.value == thisItem.value
+        })
+        return ! found
+      })
+      this.props.selectionChanged(this.props.selected.concat(newly_selected))
+    } else {
+      this.props.selectionChanged([])
+    }
+  }
+
   render () {
     let props = this.props
+    let tooMany = props.items.length > this.tooMany
 
     return (
-      <div className={"fields-select" + (props.items.length > this.tooMany ? ' field-resizable' : '')}>
-        <FilterBar>
-          {props.filters && props.filters.map(filter =>
-            <FilterSelect key={filter.name} name={filter.name} placeholder={filter.placeholder} items={filter.items} />
-          )}
-          <FilterSearch handleSearch={this.handleSearch} />
-        </FilterBar>
+      <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}>
+        <FieldTools>
+          <FilterBar>
+            {props.filters && props.filters.map(filter =>
+              <FilterSelect key={filter.name}
+                name={filter.name}
+                title={filter.title}
+                placeholder={filter.placeholder}
+                items={filter.items}
+                onSelect={(value) => this.filterChange(filter.name, value)}
+              />
+            )}
+            <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
+          </FilterBar>
+          {props.toggleAll !== null && <hr />}
+          {props.toggleAll !== null &&
+            <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
+          }
+        </FieldTools>
         <div className="field-inputs">
           {props.items.length == 0 &&
             <NoResults text={props.noResults} />
@@ -136,6 +173,10 @@ class SelectList extends React.Component {
             item={props.selected[0]}
             clearSelection={this.clearSelection}
           />
+        }
+        {/* Maintain a blank input to easily know when field is empty */}
+        {props.multi && this.selectable &&
+          <input type="hidden" name={props.name + '[]'} value='' />
         }
         {props.multi && this.selectable &&
           props.selected.map(item =>

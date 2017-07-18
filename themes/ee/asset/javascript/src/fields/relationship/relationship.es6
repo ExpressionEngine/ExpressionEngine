@@ -10,6 +10,13 @@ class Relationship extends React.Component {
     this.state.selectedVisible = this.state.selected
   }
 
+  initialItemsChanged = (items) => {
+    this.initialItems = items
+    this.setState({
+      items: items
+    })
+  }
+
   itemsChanged = (items) => {
     this.setState({
       items: items
@@ -35,6 +42,7 @@ class Relationship extends React.Component {
       <div className={"fields-relate" + (this.props.multi ? ' fields-relate-multi' : '')}>
         <SelectList items={this.state.items}
           initialItems={this.initialItems}
+          initialItemsChanged={this.initialItemsChanged}
           name={this.props.name}
           multi={this.props.multi}
           selected={this.state.selected}
@@ -42,6 +50,9 @@ class Relationship extends React.Component {
           selectionChanged={this.selectionChanged}
           noResults={this.props.no_results}
           filters={this.props.select_filters}
+          filterUrl={this.props.filter_url}
+          toggleAll={this.props.multi && this.state.items.length > SelectList.limit ? true : null}
+          onToggleAll={(e) => this.handleToggleAll(true)}
         />
 
         {this.props.multi &&
@@ -54,6 +65,8 @@ class Relationship extends React.Component {
             itemsChanged={this.selectedItemsChanged}
             selectionChanged={this.selectionChanged}
             noResults={this.props.no_related}
+            toggleAll={this.state.items.length > SelectList.limit ? false : null}
+            onToggleAll={(e) => this.handleToggleAll(false)}
           />
         }
       </div>
