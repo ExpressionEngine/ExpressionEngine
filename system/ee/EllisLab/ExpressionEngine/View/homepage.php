@@ -12,9 +12,10 @@
 			</div>
 		</div>
 	</div>
+	<?php $spam_comment_width = ($spam_module_installed) ? '8' : '16';?>
 	<?php if (ee()->config->item('enable_comments') == 'y'): ?>
 	<div class="col-group snap mb">
-		<div class="col w-16 last">
+		<div class="col w-<?=$spam_comment_width?> <?=($spam_module_installed)? '' :'last'?>">
 			<div class="box">
 				<h1><?=lang('comments')?>
 					<?php if ($can_moderate_comments && $can_edit_comments): ?>
@@ -37,6 +38,37 @@
 				</div>
 			</div>
 		</div>
+		<?php if ($spam_module_installed): ?>
+			<div class="col w-8 last">
+				<div class="box">
+					<h1><?=lang('spam')?>
+						<?php if ($can_moderate_spam): ?>
+							<a class="btn action" href="<?=ee('CP/URL', 'addons/settings/spam')?>"><?=lang('review_all')?></a>
+						<?php endif; ?>
+					</h1>
+					<div class="info">
+						<p>
+							<?=lang('there_are')?> <b><?=$number_of_new_spam?></b>
+							<?php if ($can_moderate_spam): ?>
+								<a href="<?=ee('CP/URL')->make('addons/settings/spam')?>"><?=lang('new_spam')?></a>
+							<?php else: ?>
+								<?=lang('new_spam') ?>
+							<?php endif; ?>
+							<?=lang('since_last_login')?> (<?=$last_visit?>)
+						</p>
+
+						<ul class="arrow-list">
+						<?php foreach ($trapped_spam as $trapped): ?>
+							<li><a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => $trapped->content_type))?>">
+								<b><?=$trapped->total_trapped?></b> <?=lang($trapped->content_type)?> <?=lang('spam')?>
+								</a>
+							</li>
+						<?php endforeach;?>
+						</ul>
+					</div>
+				</div>
+			</div>
+		<?php endif; ?>
 	</div>
 	<?php endif; ?>
 
