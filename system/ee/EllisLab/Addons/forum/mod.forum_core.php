@@ -5994,12 +5994,7 @@ class Forum_Core extends Forum {
 						$data['topic_edit_date']	= ee()->localize->now;
 
 						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->post('topic_id')));
-
-						if ( ! $spam)
-						{
-							ee()->db->query($sql);
-						}
-
+						ee()->db->query($sql);
 
 						$data['topic_id'] = $this->current_id;
 
@@ -6085,11 +6080,7 @@ class Forum_Core extends Forum {
 						$data['post_edit_date']		= ee()->localize->now;
 
 						$sql = ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'");
-
-						if ( ! $spam)
-						{
-							ee()->db->query($sql);
-						}
+						ee()->db->query($sql);
 
 						// Determine the redirect location
 						ee()->db->select('COUNT(*) as count');
@@ -6107,8 +6098,7 @@ class Forum_Core extends Forum {
 		if ($spam)
 		{
 			$args = array($sql);
-			ee('Spam')->moderate(__FILE__, 'Forum Post', 'moderate_post', NULL, $args, $text);
-
+			ee('Spam')->moderate('forum', $sql, $text, serialize(array('postdata' => $_POST, 'redirect' => $redirect)));
 			$this->submission_error = lang('spam');
 			return $this->display_errors();
 		}
