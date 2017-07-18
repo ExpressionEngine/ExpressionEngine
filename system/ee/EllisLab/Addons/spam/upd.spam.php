@@ -219,6 +219,13 @@ class Spam_upd {
 		// migrate any comments trapped to the new schema
 		$this->updateCommentSpam_2_00_00();
 
+		// migrate any Channel Entries trapped to the new schema
+		$this->updateChannelSpam_2_00_00();
+
+		// kill the rest, orphaned unusable data. `content_type` won't have values for old items that aren't converted
+		ee()->db->where('content_type', '');
+		ee()->db->delete('spam_trap');
+
 		// drop old columns not used anymore
 		ee()->smartforge->drop_column('spam_trap', 'file');
 		ee()->smartforge->drop_column('spam_trap', 'class');
@@ -288,6 +295,165 @@ class Spam_upd {
 		}
 
 		ee()->db->update_batch('spam_trap', $update, 'trap_id');
+
+		// cleanup
+		if ( ! empty($delete_ids))
+		{
+			ee()->db->where_in('trap_id', $delete_ids)->delete('spam_trap');
+		}
+	}
+
+	/**
+	 * Update Channel entries in the spam trap
+	 * Part of this module's 2.0.0 update
+	 * @return void
+	 */
+	private function updateChannelSpam_2_00_00()
+	{
+		// the model's file is already on the latest version so we need to use the DB directly
+		// to access old properties like 'class'
+		$trapped_entries = ee()->db->select('trap_id, trap_date, author_id, ip_address, entity, document')
+			->where('class', 'api_channel_form_channel_entries')
+			->get('spam_trap');
+
+		if ($trapped_entries->num_rows() == 0)
+		{
+			return;
+		}
+
+		$delete_ids = array();
+
+		// just in case this update is ran in the context of the control panel
+		// ChannelEntry model looks at the session for validating channel ID assignment
+		$orig_group_id = ee()->session->userdata('group_id');
+		$orig_site_id = ee()->config->item('site_id');
+
+		// set super admins to all channels
+		$assigned_channels[1] = ee('Model')->get('Channel')->fields('channel_id')->all()->pluck('channel_id');
+
+		// fetch all the others
+		$query = ee()->db->get('channel_member_groups');
+		foreach($query->result() as $row)
+		{
+			$assigned_channels[$row->group_id][] = $row->channel_id;
+		}
+
+		foreach ($trapped_entries->result() as $trapped)
+		{
+			// we're going to delete all of these old traps, regardless of what we do with them
+			$delete_ids[] = $trapped->trap_id;
+
+			$entry_data = unserialize($trapped->entity);
+
+			// array(
+			// 		postdata,
+			// 		channel_id or NULL,
+			// 		entry_id, or not set for new entries
+			// )
+			// If it's an existing entry, we don't have a way to deal with it,
+			// HAMing an edit could revert changes made by previous non-spam edits.
+			if (isset($entry_data[2]))
+			{
+				continue;
+			}
+
+			$postdata = $entry_data[0];
+			$channel_id = $entry_data[1];
+
+			$channel = ee('Model')->get('Channel')
+				->with('ChannelFormSettings')
+				->filter('channel_id', $channel_id)
+				->first();
+
+			if ( ! $channel)
+			{
+				continue;
+			}
+
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Channel = $channel;
+			$entry->ip_address = $trapped->ip_address;
+
+			// Assign defaults based on the channel
+			$entry->title = $channel->default_entry_title;
+			$entry->versioning_enabled = $channel->enable_versioning;
+			$entry->status = $channel->deft_status;
+			$entry->author_id = $trapped->author_id;
+			$entry->edit_date = ee()->localize->now;
+
+			// guest entries may have been allowed at the time, but not any longer
+			if ($entry->author_id == 0 && $channel->ChannelFormSettings->allow_guest_posts != 'y')
+			{
+				$delete_ids[] = $trapped->trap_id;
+				continue;
+			}
+
+			if ( ! empty($channel->deft_category))
+			{
+				$cat = ee('Model')->get('Category', $channel->deft_category)->first();
+
+				if ($cat)
+				{
+					// set directly so other categories don't get lazy loaded
+					// along with our default
+					$entry->Categories = $cat;
+				}
+			}
+
+			// Assign defaults based on the ChannelFormSettings
+			if ($channel->ChannelFormSettings)
+			{
+				$entry->status = ($channel->ChannelFormSettings->default_status) ?: $channel->deft_status;
+
+				// only override if user was not logged in, and guest entries are allowed
+				if ($entry->author_id == 0 && $channel->ChannelFormSettings->allow_guest_posts == 'y')
+				{
+					$entry->author_id = $channel->ChannelFormSettings->default_author;
+				}
+			}
+
+			// fake out the group ID so the entry will validate properly
+			ee()->session->userdata['group_id'] = $entry->Author->group_id;
+
+			// just in case this member group doesn't exist or have channel assignments anymore
+			if ( ! isset($assigned_channels[$entry->Author->group_id]))
+			{
+				continue;
+			}
+			ee()->session->userdata['assigned_channels'] = $assigned_channels[$entry->Author->group_id];
+			ee()->config->set_item('site_id', $entry->Channel->site_id);
+
+			$entry->set($postdata);
+			if ( ! isset($postdata['category']) OR empty($postdata['category']))
+			{
+				$entry->Categories = NULL;
+			}
+
+			$result = $entry->validate();
+
+			if ( ! $result->isValid())
+			{
+				continue;
+			}
+
+			// now that that's all out of the way, save it to the trap
+			$data = array(
+				'content_type'  => 'channel',
+				'author_id'     => $entry->author_id,
+				'trap_date'     => $trapped->trap_date,
+				'ip_address'    => $trapped->ip_address,
+				'entity'        => $entry,
+				'document'      => $trapped->document,
+				'optional_data' => serialize($postdata),
+			);
+
+			$trap = ee('Model')->make('spam:SpamTrap', $data);
+			$trap->save();
+		}
+
+		// set the member group and site back
+		ee()->session->userdata['group_id'] = $orig_group_id;
+		ee()->config->set_item('site_id', $orig_site_id);
 
 		// cleanup
 		if ( ! empty($delete_ids))

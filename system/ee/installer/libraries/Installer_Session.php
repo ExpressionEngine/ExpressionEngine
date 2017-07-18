@@ -25,6 +25,8 @@
 
 class Installer_Session {
 
+	public $userdata = array();
+
 	public function cache($class, $key, $default = FALSE)
 	{
 		return FALSE;
@@ -37,7 +39,12 @@ class Installer_Session {
 
 	public function userdata($which, $default = FALSE)
 	{
-		return FALSE;
+		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+	}
+
+	public function session_id($which = '')
+	{
+		return 0;
 	}
 }
 // END CLASS
