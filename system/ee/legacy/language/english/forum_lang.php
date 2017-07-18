@@ -184,7 +184,7 @@ $lang = array(
 
 'formatting' => 'Formatting',
 
-'forum' => 'Forum:',
+'forum' => 'Forum',
 
 'forum_boards' => 'Forum Boards',
 
