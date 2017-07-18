@@ -30,6 +30,7 @@ class Submenu extends Menu {
 	public $title;
 	public $addlink;
 	public $placeholder;
+	public $view_all_link;
 
 	private $has_add = FALSE;
 	private $has_filter = FALSE;
@@ -70,10 +71,11 @@ class Submenu extends Menu {
 	 * @param String $placholder Search box placeholder text
 	 * @return $this
 	 */
-	public function withFilter($placeholder)
+	public function withFilter($placeholder, $view_all_link = FALSE)
 	{
 		$this->has_filter = TRUE;
 		$this->placeholder = $placeholder;
+		$this->view_all_link = $view_all_link;
 		return $this;
 	}
 
