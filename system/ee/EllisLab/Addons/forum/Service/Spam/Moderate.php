@@ -91,23 +91,20 @@ class Moderate {
 		// Manage subscriptions
 		if (isset($postdata['notify']) && $postdata['notify'] == 'y')
 		{
-			$query = ee()->db->select('COUNT(*) as count')
-				->where('topic_id', $topic->topic_id)
+			$subs_count = ee()->db->where('topic_id', $topic->topic_id)
 				->where('member_id', $member->member_id)
-			 	->get('forum_subscriptions');
+			 	->count_all_results('forum_subscriptions');
 
-			$row = $query->row_array();
-
-			if ($row['count'] > 1)
+			// if for some reason there are more than 1 sub for the user, let's get rid of all the old ones
+			if ($subs_count > 1)
 			{
 				ee()->db->where('topic_id', $topic->topic_id);
 				ee()->db->where('member_id', $member->member_id);
 				ee()->db->delete('forum_subscriptions');
-
-				$row['count'] = 0;
 			}
 
-			if ($row['count'] == 0)
+			// if they don't have exactly 1 sub, add it!
+			if ($subs_count != 1)
 			{
 				$rand = $member->member_id.ee()->functions->random('alnum', 8);
 
