@@ -460,6 +460,8 @@ $lang = array(
 
 'post_info_heading' => 'Latest Post Info',
 
+'post_is_moderated' => 'Your post is in a moderation queue and will be displayed after moderator approval.',
+
 'post_marked_read' => 'All Posts Marked Read',
 
 'post_new_topic' => 'New Topic',
