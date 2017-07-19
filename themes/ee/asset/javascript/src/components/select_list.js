@@ -105,28 +105,37 @@ var SelectList = function (_React$Component) {
     };_this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filterUrl;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
-
-    _this.bindSortable();
     return _this;
   }
 
   _createClass(SelectList, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.reorderable) this.bindSortable();
+    }
+  }, {
     key: 'bindSortable',
     value: function bindSortable() {
-      $('.field-inputs').sortable({
+      var _this2 = this;
+
+      $(this.inputs).sortable({
         axis: 'y',
         containment: 'parent',
         handle: '.icon-reorder',
         items: 'label',
         stop: function stop(event, ui) {
-          // TODO
+          var items = ui.item.closest('.field-inputs').find('label').toArray();
+
+          _this2.props.selectionChanged(items.map(function (element) {
+            return _this2.props.items[element.dataset.sortableIndex];
+          }));
         }
       });
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       var props = this.props;
       var tooMany = props.items.length > this.tooMany;
@@ -147,37 +156,40 @@ var SelectList = function (_React$Component) {
                 placeholder: filter.placeholder,
                 items: filter.items,
                 onSelect: function onSelect(value) {
-                  return _this2.filterChange(filter.name, value);
+                  return _this3.filterChange(filter.name, value);
                 }
               });
             }),
             React.createElement(FilterSearch, { onSearch: function onSearch(e) {
-                return _this2.filterChange('search', e.target.value);
+                return _this3.filterChange('search', e.target.value);
               } })
           ),
           props.toggleAll !== null && React.createElement('hr', null),
           props.toggleAll !== null && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
-              return _this2.handleToggleAll(check);
+              return _this3.handleToggleAll(check);
             } })
         ),
         React.createElement(
           'div',
-          { className: 'field-inputs' },
+          { className: 'field-inputs', ref: function ref(container) {
+              _this3.inputs = container;
+            } },
           props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
-          props.items.map(function (item) {
+          props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value,
+              sortableIndex: index,
               item: item,
               name: props.name,
               selected: props.selected,
               multi: props.multi,
-              selectable: _this2.selectable,
-              reorderable: _this2.reorderable,
-              removable: _this2.removable,
+              selectable: _this3.selectable,
+              reorderable: _this3.reorderable,
+              removable: _this3.removable,
               handleSelect: function handleSelect(e) {
-                return _this2.handleChange(e, item);
+                return _this3.handleChange(e, item);
               },
               handleRemove: function handleRemove(e) {
-                return _this2.handleRemove(e, item);
+                return _this3.handleRemove(e, item);
               }
             });
           })
@@ -191,11 +203,6 @@ var SelectList = function (_React$Component) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value });
         })
       );
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      if (this.reorderable) this.bindSortable();
     }
   }], [{
     key: 'formatItems',
@@ -212,7 +219,7 @@ var SelectList = function (_React$Component) {
           key = _step.value;
 
           items_array.push({
-            value: key,
+            value: items[key].id ? items[key].id : key,
             label: items[key].label ? items[key].label : items[key],
             instructions: items[key].instructions ? items[key].instructions : ''
           });
@@ -241,43 +248,75 @@ var SelectList = function (_React$Component) {
 
 SelectList.limit = 8;
 
+var SelectItem = function (_React$Component2) {
+  _inherits(SelectItem, _React$Component2);
 
-function SelectItem(props) {
-  function checked(value) {
-    return props.selected.find(function (item) {
-      return item.value == value;
-    });
+  function SelectItem() {
+    _classCallCheck(this, SelectItem);
+
+    return _possibleConstructorReturn(this, (SelectItem.__proto__ || Object.getPrototypeOf(SelectItem)).apply(this, arguments));
   }
 
-  return React.createElement(
-    'label',
-    { className: checked(props.item.value) ? 'act' : '' },
-    props.reorderable && React.createElement(
-      'span',
-      { className: 'icon-reorder' },
-      ' '
-    ),
-    props.selectable && React.createElement('input', { type: props.multi ? "checkbox" : "radio",
-      value: props.item.value,
-      onChange: props.handleSelect,
-      checked: checked(props.item.value) ? 'checked' : '' }),
-    props.item.label + " ",
-    props.item.instructions && React.createElement(
-      'i',
-      null,
-      props.item.instructions
-    ),
-    props.removable && React.createElement(
-      'ul',
-      { className: 'toolbar' },
-      React.createElement(
-        'li',
-        { className: 'remove' },
-        React.createElement('a', { href: '', onClick: props.handleRemove })
-      )
-    )
-  );
-}
+  _createClass(SelectItem, [{
+    key: 'checked',
+    value: function checked(value) {
+      return this.props.selected.find(function (item) {
+        return item.value == value;
+      });
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.props.reorderable) this.node.dataset.sortableIndex = this.props.sortableIndex;
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      this.componentDidMount();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this5 = this;
+
+      var props = this.props;
+      var checked = this.checked(props.item.value);
+
+      return React.createElement(
+        'label',
+        { className: checked ? 'act' : '', ref: function ref(label) {
+            _this5.node = label;
+          } },
+        props.reorderable && React.createElement(
+          'span',
+          { className: 'icon-reorder' },
+          ' '
+        ),
+        props.selectable && React.createElement('input', { type: props.multi ? "checkbox" : "radio",
+          value: props.item.value,
+          onChange: props.handleSelect,
+          checked: checked ? 'checked' : '' }),
+        props.item.label + " ",
+        props.item.instructions && React.createElement(
+          'i',
+          null,
+          props.item.instructions
+        ),
+        props.removable && React.createElement(
+          'ul',
+          { className: 'toolbar' },
+          React.createElement(
+            'li',
+            { className: 'remove' },
+            React.createElement('a', { href: '', onClick: props.handleRemove })
+          )
+        )
+      );
+    }
+  }]);
+
+  return SelectItem;
+}(React.Component);
 
 function SelectedItem(props) {
   return React.createElement(

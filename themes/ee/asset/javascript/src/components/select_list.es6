@@ -15,8 +15,6 @@ class SelectList extends React.Component {
     this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filterUrl)
     this.ajaxTimer = null
     this.ajaxRequest = null
-
-    this.bindSortable()
   }
 
   static limit = 8
@@ -27,7 +25,7 @@ class SelectList extends React.Component {
     let items_array = []
     for (key of Object.keys(items)) {
       items_array.push({
-        value: key,
+        value: items[key].id ? items[key].id : key,
         label: items[key].label ? items[key].label : items[key],
         instructions: items[key].instructions ? items[key].instructions : ''
       })
@@ -35,14 +33,22 @@ class SelectList extends React.Component {
     return items_array
   }
 
+  componentDidMount () {
+    if (this.reorderable) this.bindSortable()
+  }
+
   bindSortable () {
-    $('.field-inputs').sortable({
+    $(this.inputs).sortable({
       axis: 'y',
       containment: 'parent',
       handle: '.icon-reorder',
       items: 'label',
       stop: (event, ui) => {
-        // TODO
+        let items = ui.item.closest('.field-inputs').find('label').toArray()
+
+        this.props.selectionChanged(items.map((element) => {
+          return this.props.items[element.dataset.sortableIndex]
+        }))
       }
     })
   }
@@ -150,12 +156,13 @@ class SelectList extends React.Component {
             <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
           }
         </FieldTools>
-        <div className="field-inputs">
+        <div className="field-inputs" ref={(container) => { this.inputs = container }}>
           {props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
-          {props.items.map(item =>
+          {props.items.map((item, index) =>
             <SelectItem key={item.value}
+              sortableIndex={index}
               item={item}
               name={props.name}
               selected={props.selected}
@@ -186,41 +193,50 @@ class SelectList extends React.Component {
       </div>
     )
   }
-
-  componentDidUpdate () {
-    if (this.reorderable) this.bindSortable()
-  }
 }
 
-function SelectItem (props) {
-  function checked(value) {
-    return props.selected.find((item) => {
+class SelectItem extends React.Component {
+  checked (value) {
+    return this.props.selected.find((item) => {
       return item.value == value
     })
   }
 
-  return (
-    <label className={(checked(props.item.value) ? 'act' : '')}>
-      {props.reorderable && (
-        <span className="icon-reorder"> </span>
-      )}
-      {props.selectable && (
-        <input type={props.multi ? "checkbox" : "radio"}
-          value={props.item.value}
-          onChange={props.handleSelect}
-          checked={(checked(props.item.value) ? 'checked' : '')} />
-      )}
-      {props.item.label+" "}
-      {props.item.instructions && (
-        <i>{props.item.instructions}</i>
-      )}
-      {props.removable && (
-        <ul className="toolbar">
-          <li className="remove"><a href="" onClick={props.handleRemove}></a></li>
-        </ul>
-      )}
-    </label>
-  )
+  componentDidMount () {
+    if (this.props.reorderable) this.node.dataset.sortableIndex = this.props.sortableIndex
+  }
+
+  componentDidUpdate () {
+    this.componentDidMount()
+  }
+
+  render() {
+    let props = this.props
+    let checked = this.checked(props.item.value)
+
+    return (
+      <label className={(checked ? 'act' : '')} ref={(label) => { this.node = label }}>
+        {props.reorderable && (
+          <span className="icon-reorder"> </span>
+        )}
+        {props.selectable && (
+          <input type={props.multi ? "checkbox" : "radio"}
+            value={props.item.value}
+            onChange={props.handleSelect}
+            checked={(checked ? 'checked' : '')} />
+        )}
+        {props.item.label+" "}
+        {props.item.instructions && (
+          <i>{props.item.instructions}</i>
+        )}
+        {props.removable && (
+          <ul className="toolbar">
+            <li className="remove"><a href="" onClick={props.handleRemove}></a></li>
+          </ul>
+        )}
+      </label>
+    )
+  }
 }
 
 function SelectedItem (props) {
