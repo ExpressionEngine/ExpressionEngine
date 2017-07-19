@@ -9,6 +9,14 @@ use EllisLab\Addons\Comment\Service\Notifications;
  */
 class Moderate {
 
+	/**
+	 * Approve Trapped Spam
+	 * Posts the content to the forums and sends relevant notifications
+	 *
+	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  string $comment_path URL to the comment
+	 * @return void
+	 */
 	public function approve($comment, $comment_path)
 	{
 		// open it
@@ -57,6 +65,12 @@ class Moderate {
 		}
 	}
 
+	/**
+	 * Reject Trapped Spam
+	 *
+	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @return void
+	 */
 	public function reject($comment)
 	{
 		$comment->delete();

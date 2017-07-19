@@ -2,10 +2,22 @@
 
 namespace EllisLab\Addons\Comment\Service;
 
+/**
+ * Notifications class for Comment Module
+ * Abstracted from mod files, only used for notifications after Spam queue moderation
+ */
 class Notifications {
 
 	protected $comment;
+
+	/**
+	 * @var array
+	 */
 	protected $recipients = array();
+
+	/**
+	 * @var array
+	 */
 	protected $variables = array();
 
 	public function __construct($comment, $url)
@@ -16,6 +28,12 @@ class Notifications {
 		$this->comment = $comment;
 	}
 
+	/**
+	 * Setup Recipients
+	 *
+	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @return void
+	 */
 	private function setupRecipients($comment)
 	{
 		ee()->load->library('subscription');
@@ -40,6 +58,13 @@ class Notifications {
 		}
 	}
 
+	/**
+	 * Setup Variables
+	 *
+	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  string $url URL to the comment
+	 * @return void
+	 */
 	private function setupVariables($comment, $url)
 	{
 		ee()->load->library('typography');
@@ -92,6 +117,11 @@ class Notifications {
 		);
 	}
 
+	/**
+	 * Send Admin Notification Emails
+	 *
+	 * @return void
+	 */
 	public function send_admin_notifications()
 	{
 		$emails = array();
@@ -135,6 +165,11 @@ class Notifications {
 		$this->send($template, $addresses, $replyto);
 	}
 
+	/**
+	 * Send User Notification Emails
+	 *
+	 * @return void
+	 */
 	public function send_user_notifications()
 	{
 		if (empty($this->recipients))
@@ -147,6 +182,11 @@ class Notifications {
 		$this->send($template, $this->recipients, ee()->config->item('webmaster_email'));
 	}
 
+	/**
+	 * Structure the email addresses
+	 * @param  array $emails Array of email addresses
+	 * @return array Structured array that will be used by send()
+	 */
 	private function structureAddresses($emails)
 	{
 		$addresses = array();
@@ -187,6 +227,14 @@ class Notifications {
 		return $emails;
 	}
 
+	/**
+	 * Send the Emails
+	 *
+	 * @param  string $template The template to use
+	 * @param  array $to The email addresses to send to, formatted by structureAddresses()
+	 * @param  string $replyto The email to use for the replyto header
+	 * @return void
+	 */
 	private function send($template, $to, $replyto)
 	{
 		// keep track of all notifications sent, prevent both admin and user notifications
@@ -212,7 +260,13 @@ class Notifications {
 
 			if ( ! empty($address['subscription']))
 			{
-				$body = ee()->functions->var_swap($body, $address['subscription']);
+				$body = ee()->functions->var_swap(
+					$body,
+					array(
+						'subscription_id' => $address['subscription']['subscription_id'],
+						'hash' => $address['subscription']['hash'],
+					)
+				);
 			}
 
 			ee()->email->EE_initialize();
