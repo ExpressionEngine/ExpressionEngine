@@ -121,6 +121,9 @@ class Moderate {
 		}
 		else
 		{
+			// Unsubscribe on Reply? Also cleans up potential orphans
+			// Relevant if this was HAMmed and they unchecked the notify box on this
+			// reply, indicating that they want to stop getting notifications
 			ee()->db->where('topic_id', $topic->topic_id);
 			ee()->db->where('member_id', $member->member_id);
 			ee()->db->delete('forum_subscriptions');
