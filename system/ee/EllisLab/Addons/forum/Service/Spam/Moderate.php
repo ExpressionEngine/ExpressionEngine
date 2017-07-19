@@ -5,12 +5,18 @@ namespace EllisLab\Addons\Forum\Service\Spam;
 use EllisLab\Addons\Forum\Service\Notifications;
 
 /**
- * Moderate Spam for the Comment module
+ * Moderate Spam for the Forum module
  */
 class Moderate {
 
+	/**
+	 * @var object Forum_core class
+	 */
 	protected $fc;
 
+	/**
+	 * Constructor
+	 */
 	public function __construct()
 	{
 		require_once PATH_ADDONS.'forum/mod.forum.php';
@@ -19,6 +25,14 @@ class Moderate {
 		$this->fc = new \Forum_core;
 	}
 
+	/**
+	 * Approve Trapped Spam
+	 * Posts the content to the forums and sends relevant notifications
+	 *
+	 * @param  string $sql SQL query to run to activate the post
+	 * @param  string $extra serialized array('postdata' => $_POST, 'redirect' => <url>)
+	 * @return void
+	 */
 	public function approve($sql, $extra)
 	{
 		// take ze action
@@ -27,6 +41,8 @@ class Moderate {
 		$extra = unserialize($extra);
 		$postdata = $extra['postdata'];
 		$redirect = $extra['redirect'];
+
+		$post = NULL;
 
 		// was this a new topic or a reply?
 		if (preg_match('/^INSERT INTO `?[a-z0-9_]+forum_topics/', $sql))
@@ -59,7 +75,7 @@ class Moderate {
 		$topic->save();
 
 		// Update the topic stats (count, last post info)
-		if (isset($post))
+		if ($post)
 		{
 			$this->fc->_update_topic_stats($topic->topic_id);
 		}
@@ -114,12 +130,17 @@ class Moderate {
 		}
 
 		// send notifications
-		$notify = new Notifications($topic, $redirect);
+		$notify = new Notifications($topic, $redirect, $post);
 		$notify->send_admin_notifications();
 		$notify->send_user_notifications();
-
 	}
 
+	/**
+	 * Reject Trapped Spam
+	 *
+	 * @param  string $sql SQL query that holds the submitted content
+	 * @return void
+	 */
 	public function reject($sql)
 	{
 		// nothing to do, we've not saved anything outside of the spam trap

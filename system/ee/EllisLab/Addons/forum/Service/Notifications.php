@@ -1,34 +1,141 @@
 <?php
 
-namespace EllisLab\Addons\Comment\Service;
+namespace EllisLab\Addons\Forum\Service;
 
+/**
+ * Notifications class for Forum Module
+ * Abstracted from mod files, only used for notifications after Spam queue moderation
+ */
 class Notifications {
 
-	protected $topic;
-	protected $reply;
+	/**
+	 * @var object EllisLab\ExpressionEngine\Model\Member
+	 */
 	protected $member;
+
+	/**
+	 * @var array
+	 */
 	protected $recipients = array();
+
+	/**
+	 * @var array
+	 */
+	protected $admin_recipients = array();
+
+	/**
+	 * @var array
+	 */
 	protected $variables = array();
 
+	/**
+	 * Constructor
+	 *
+	 * @param object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param string $url URL to the forum post
+	 * @param object $reply EllisLab\Addons\Forum\Model\Post
+	 */
 	public function __construct($topic, $url, $reply = NULL)
 	{
-		$this->setupRecipients($topic);
-		$this->setupVariables($topic, $url, $reply);
-
-		$this->topic = $topic;
-		$this->reply = $reply;
-
-		if ($this->reply)
+		if ($reply)
 		{
-			$this->member = $this->reply->Author;
+			$member = $reply->Author;
 		}
 		else
 		{
-			$this->member = $this->topic->Author;
+			$member = $topic->Author;
 		}
+
+		$this->setupAdminRecipients($topic, $reply);
+		$this->setupRecipients($topic, $member);
+		$this->setupVariables($topic, $url, $reply);
 	}
 
-	private function setupRecipients($topic)
+	/**
+	 * Setup Administrator Recipients
+	 *
+	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param  object $reply EllisLab\Addons\Forum\Model\Post
+	 * @return void
+	 */
+	private function setupAdminRecipients($topic, $reply = NULL)
+	{
+		// from notification preferences: Board, Forum, and Forum parent ("category" Forum)
+		$notify_email_str = '';
+
+		if ($reply)
+		{
+			$notify_email_str .= $topic->Board->board_notify_emails;
+			$notify_email_str .= ','.$topic->Forum->forum_notify_emails;
+		}
+		else
+		{
+			$notify_email_str .= $topic->Board->board_notify_emails_topics;
+			$notify_email_str .= ','.$topic->Forum->forum_notify_emails_topics;
+		}
+
+		$notify_moderators_topics = get_bool_from_string($topic->Forum->forum_notify_moderators_topics);
+		$notify_moderators_replies = get_bool_from_string($topic->Forum->forum_notify_moderators_replies);
+
+		$forum_category = ee('Model')->get('forum:Forum', $topic->Forum->forum_parent)->first();
+
+		if ($forum_category)
+		{
+			$notify_moderators_topics = get_bool_from_string($forum_category->forum_notify_moderators_topics) OR $notify_moderators_topics;
+			$notify_moderators_replies = get_bool_from_string($forum_category->forum_notify_moderators_replies) OR $notify_moderators_replies;
+
+			if ($reply)
+			{
+				$notify_email_str .= ','.$forum_category->forum_notify_emails;
+			}
+			else
+			{
+				$notify_email_str .= ','.$forum_category->forum_notify_emails_topics;
+			}
+		}
+
+		// moderators
+		if (
+				($reply && $notify_moderators_replies) OR
+				( ! $reply && $notify_moderators_topics)
+			)
+		{
+			// can be member ID or group ID based
+			ee()->db->select('email');
+			ee()->db->from('members, forum_moderators');
+			ee()->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id = exp_forum_moderators.mod_group_id)', NULL, FALSE);
+			ee()->db->where('exp_forum_moderators.mod_forum_id', $topic->forum_id);
+
+			$query = ee()->db->get();
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result() as $row)
+				{
+					$notify_email_str .= ','.$row->email;
+				}
+			}
+		}
+
+		$addresses = array_unique($this->commaDelimToArray($notify_email_str));
+		$addresses = $this->structureAddresses($addresses);
+
+		// Remove Current User Email
+		// We don't want to send an admin notification if the person
+		// leaving the comment is an admin in the notification list
+		unset($addresses[ee()->session->userdata('email')]);
+
+		$this->admin_recipients = $addresses;
+	}
+
+	/**
+	 * Setup Recipients
+	 *
+	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param  object $member EllisLab\ExpressionEngine\Model\Member
+	 * @return void
+	 */
+	private function setupRecipients($topic, $member)
 	{
 		$query = ee()->db->select('s.hash, s.notification_sent, m.member_id, m.email, m.screen_name, m.smart_notifications, m.ignore_list')
 			->from('forum_subscriptions AS s')
@@ -52,7 +159,7 @@ class Notifications {
 
 			// Don't send notifications if the recipient is ignoring the author
 			if ($row->ignore_list != '' &&
-				in_array($this->member->member_id, explode('|', $row->ignore_list)))
+				in_array($member->member_id, explode('|', $row->ignore_list)))
 			{
 				continue;
 			}
@@ -66,6 +173,14 @@ class Notifications {
 		}
 	}
 
+	/**
+	 * Setup Variables
+	 *
+	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param  string $url URL of the post
+	 * @param  object $reply EllisLab\Addons\Forum\Model\Post
+	 * @return void
+	 */
 	private function setupVariables($topic, $url, $reply = NULL)
 	{
 		ee()->load->library('typography');
@@ -87,227 +202,69 @@ class Notifications {
 			)
 		);
 
+		$action_id  = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
+
 		$this->variables = array(
-			'name_of_poster'	=> ee()->session->userdata('screen_name'),
+			'name_of_poster'	=> ($reply) ? $reply->Author->screen_name : $topic->Author->screen_name,
 			'forum_name'		=> $topic->Board->board_label,
 			'title'				=> $topic->title,
 			'body'				=> $body,
 			'topic_id'			=> $topic->topic_id,
 			'thread_url'		=> ee()->input->remove_session_id($url),
-			'post_url'			=> ($reply) ? $this->getForumUrl()."viewreply/{$reply->post_id}/" : ee()->input->remove_session_id($url)
+			'post_url'			=> ($reply) ? $this->getForumUrl($topic)."/viewreply/{$reply->post_id}/" : ee()->input->remove_session_id($url),
+			'notification_removal_url'	=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id={subscription}&board_id='.$topic->board_id,
 		 );
 	}
 
-	function orig()
-	{
-		// Email Notifications
-		$notify_addresses = '';
-
-		if ($this->current_request == 'newtopic')
-		{
-			$notify_addresses .= ($this->fetch_pref('board_notify_emails_topics') != '') ? ','.$this->fetch_pref('board_notify_emails_topics') : '';
-		}
-		else
-		{
-			$notify_addresses .= ($this->fetch_pref('board_notify_emails') != '') ? ','.$this->fetch_pref('board_notify_emails') : '';
-		}
-
-		// Fetch forum notification addresses
-		if ($this->current_request == 'newtopic')
-		{
-			$notify_addresses .= ($fdata['forum_notify_emails'] != '') ? ','.$fdata['forum_notify_emails'] : '';
-		}
-		else
-		{
-			$notify_addresses .= ($fdata['forum_notify_emails_topics'] != '') ? ','.$fdata['forum_notify_emails_topics'] : '';
-		}
-
-		// Category Notification Prefs
-		$cmeta = $this->_fetch_forum_metadata($fdata['forum_parent']);
-
-		if (FALSE !== $cmeta)
-		{
-			if ($this->current_request == 'newtopic')
-			{
-				if ($cmeta[$fdata['forum_parent']]['forum_notify_emails'] != '')
-				{
-					$notify_addresses .= ','.$cmeta[$fdata['forum_parent']]['forum_notify_emails'];
-				}
-			}
-			else
-			{
-				if ($cmeta[$fdata['forum_parent']]['forum_notify_emails_topics'] != '')
-				{
-					$notify_addresses .= ','.$cmeta[$fdata['forum_parent']]['forum_notify_emails_topics'];
-				}
-			}
-		}
-
-		// Fetch moderator addresses
-		if ((isset($fdata['forum_notify_moderators']) && $fdata['forum_notify_moderators'] == 'y') OR
-			($this->current_request == 'newtopic' && $cmeta[$fdata['forum_parent']]['forum_notify_moderators_topics'] == 'y') OR
-			($this->current_request != 'newtopic' && $cmeta[$fdata['forum_parent']]['forum_notify_moderators_replies'] == 'y')
-			)
-		{
-			ee()->db->select('email');
-			ee()->db->from('members, forum_moderators');
-			ee()->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id =  exp_forum_moderators.mod_group_id)', NULL, FALSE);
-			ee()->db->where('exp_forum_moderators.mod_forum_id', $fdata['forum_id']);
-
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$notify_addresses .= ','.$row['email'];
-				}
-			}
-		}
-
-		$notify_addresses = str_replace(' ', '', $notify_addresses);
-
-		// Remove Current User Email
-		// We don't want to send an admin notification if the person
-		// leaving the comment is an admin in the notification list
-
-		if ($notify_addresses != '')
-		{
-			if (strpos($notify_addresses, ee()->session->userdata('email')) !== FALSE)
-			{
-				$notify_addresses = str_replace(ee()->session->userdata('email'), "", $notify_addresses);
-			}
-
-			// Remove multiple commas
-			$notify_addresses = reduce_multiples($notify_addresses, ',', TRUE);
-		}
-
-		// Strip duplicate emails
-		// And while we're at it, create an array
-		if ($notify_addresses != '')
-		{
-			$notify_addresses = array_unique(explode(",", $notify_addresses));
-		}
-
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'parse_images' => FALSE
-		));
-
-		$query = ee()->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '".$data['topic_id']."'");
-
-		$title = $query->row('title') ;
-		$body = ee()->typography->parse_type($data['body'],
-										array(
-												'text_format'	=> 'none',
-												'html_format'	=> 'none',
-												'auto_links'	=> 'n',
-												'allow_img_url' => 'n'
-											)
-									);
-
-		// Send admin notification
-		if (is_array($notify_addresses) AND count($notify_addresses) > 0)
-		{
-			$swap = array(
-							'name_of_poster'	=> ee()->session->userdata('screen_name'),
-							'forum_name'		=> $this->fetch_pref('board_label'),
-							'title'				=> $title,
-							'body'				=> $body,
-							'topic_id'			=> $data['topic_id'],
-							'thread_url'		=> ee()->input->remove_session_id($redirect),
-							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : ee()->input->remove_session_id($redirect)
-						 );
-
-			$template = ee()->functions->fetch_email_template('admin_notify_forum_post');
-			$email_tit = ee()->functions->var_swap($template['title'], $swap);
-			$email_msg = ee()->functions->var_swap($template['data'], $swap);
-
-			// Send email
-			ee()->load->library('email');
-			ee()->email->wordwrap = TRUE;
-
-			// Load the text helper
-			ee()->load->helper('text');
-
-			foreach ($notify_addresses as $val)
-			{
-				ee()->email->EE_initialize();
-				ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-				ee()->email->to($val);
-				ee()->email->reply_to($val);
-				ee()->email->subject($email_tit);
-				ee()->email->message(entities_to_ascii($email_msg));
-				ee()->email->send();
-			}
-		}
-	}
-
+	/**
+	 * Get Forum URL
+	 *
+	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @return string the forum's base URL
+	 */
 	private function getForumUrl($topic)
 	{
-		static $basepath;
+		static $url;
 
-		if ($basepath)
+		if ($url)
 		{
-			return $basepath;
+			return $url;
 		}
 
 		if (ee()->config->item('use_forum_url') == 'y')
 		{
-			$basepath = $topic->Board->board_forum_url;
+			$url = $topic->Board->board_forum_url;
 		}
 		else
 		{
-			$basepath = ee()->functions->create_url($topic->Board->board_forum_trigger);
+			$url = ee()->functions->create_url($topic->Board->board_forum_trigger);
 		}
 
-		$overrides = ee()->config->get_cached_site_prefs($topic->site_id);
-		return $basepath = parse_config_variables($basepath, $overrides);
+		$overrides = ee()->config->get_cached_site_prefs($topic->Board->board_site_id);
+		return $url = parse_config_variables($url, $overrides);
 	}
 
+	/**
+	 * Send User Notification Emails
+	 *
+	 * @return void
+	 */
 	public function send_admin_notifications()
 	{
-		$emails = array();
-
-		if ($this->comment->Channel->comment_notify == 'y')
-		{
-			$emails = $this->commaDelimToArray($this->comment->Channel->comment_notify_emails);
-		}
-
-		if ($this->comment->Channel->comment_notify_authors == 'y')
-		{
-			$emails[] = $this->comment->Entry->Author->email;
-		}
-
-		$emails = array_unique($emails);
-
-		// don't send admin notifications to the comment author if they are an admin, seems silly
-		// @todo remove ridiculous that/this dance when PHP 5.3 is no longer supported
-		$that = $this;
-		$emails = array_filter($emails,
-			function($value) use ($that)
-			{
-				if (ee()->session->userdata('member_id') == 0)
-				{
-					return TRUE;
-				}
-
-				return ee()->session->userdata('member_id') != $this->comment->author_id;
-			}
-		);
-
-		if (empty($emails))
+		if (empty($this->admin_recipients))
 		{
 			return;
 		}
 
-		$addresses = $this->structureAddresses($emails);
-
-		$template = ee()->functions->fetch_email_template('admin_notify_comment');
-		$replyto = ($this->comment->email) ?: ee()->config->item('webmaster_email');
-		$this->send($template, $addresses, $replyto);
+		$template = ee()->functions->fetch_email_template('admin_notify_forum_post');
+		$this->send($template, $this->admin_recipients, ee()->config->item('webmaster_email'));
 	}
 
+	/**
+	 * Send User Notification Emails
+	 *
+	 * @return void
+	 */
 	public function send_user_notifications()
 	{
 		if (empty($this->recipients))
@@ -315,11 +272,15 @@ class Notifications {
 			return;
 		}
 
-		$template = ee()->functions->fetch_email_template('comment_notification');
-		$replyto = ($this->comment->email) ?: ee()->config->item('webmaster_email');
+		$template = ee()->functions->fetch_email_template('forum_post_notification');
 		$this->send($template, $this->recipients, ee()->config->item('webmaster_email'));
 	}
 
+	/**
+	 * Structure the email addresses
+	 * @param  array $emails Array of email addresses
+	 * @return array Structured array that will be used by send()
+	 */
 	private function structureAddresses($emails)
 	{
 		$addresses = array();
@@ -360,6 +321,14 @@ class Notifications {
 		return $emails;
 	}
 
+	/**
+	 * Send the Emails
+	 *
+	 * @param  string $template The template to use
+	 * @param  array $to The email addresses to send to, formatted by structureAddresses()
+	 * @param  string $replyto The email to use for the replyto header
+	 * @return void
+	 */
 	private function send($template, $to, $replyto)
 	{
 		// keep track of all notifications sent, prevent both admin and user notifications
@@ -385,7 +354,7 @@ class Notifications {
 
 			if ( ! empty($address['subscription']))
 			{
-				$body = ee()->functions->var_swap($body, $address['subscription']);
+				$body = ee()->functions->var_swap($body, array('subscription' => $address['subscription']));
 			}
 
 			ee()->email->EE_initialize();
