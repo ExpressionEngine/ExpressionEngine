@@ -222,6 +222,9 @@ class Spam_upd {
 		// migrate any Channel Entries trapped to the new schema
 		$this->updateChannelSpam_2_00_00();
 
+		// migrate any legacy Forum
+		$this->updateForumSpam_2_00_00();
+
 		// kill the rest, orphaned unusable data. `content_type` won't have values for old items that aren't converted
 		ee()->db->where('content_type', '');
 		ee()->db->delete('spam_trap');
@@ -459,6 +462,49 @@ class Spam_upd {
 		if ( ! empty($delete_ids))
 		{
 			ee()->db->where_in('trap_id', $delete_ids)->delete('spam_trap');
+		}
+	}
+
+	/**
+	 * Update Forum posts in the spam trap
+	 * Part of this module's 2.0.0 update
+	 * @return void
+	 */
+	private function updateForumSpam_2_00_00()
+	{
+		// Legacy forum stores raw SQL. Get rid of all UPDATE queries, since we have no
+		// way to determine what order they should run in, and UPDATEs (edits) to topics or posts
+		// would be destructive and random
+		ee()->db->where('class', 'Forum Post');
+		ee()->db->like('entity', 'UPDATE `exp_forum_posts`');
+		ee()->db->or_like('entity', 'UPDATE `exp_forum_topics`');
+		ee()->db->delete('spam_trap');
+
+		$delete_ids = array();
+		$trapped_posts = ee()->db->where('class', 'Forum Post')
+			->get('spam_trap');
+
+		foreach ($trapped_posts->result() as $trapped)
+		{
+			$delete_ids[] = $trapped->trap_id;
+
+			$data = unserialize($trapped->entity);
+			$sql = $data[0];
+
+			// now that that's all out of the way, save it to the trap
+			// optional data will be empty, we didn't collect it before
+			$data = array(
+				'content_type'  => 'forum',
+				'author_id'     => $trapped->author_id,
+				'trap_date'     => $trapped->trap_date,
+				'ip_address'    => $trapped->ip_address,
+				'entity'        => $sql,
+				'document'      => $trapped->document,
+				'optional_data' => serialize(array('postdata' => array(), 'redirect' => '')),
+			);
+
+			$trap = ee('Model')->make('spam:SpamTrap', $data);
+			$trap->save();
 		}
 	}
 }
