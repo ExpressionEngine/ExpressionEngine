@@ -75,7 +75,7 @@ function FilterSearch(props) {
   return React.createElement(
     "div",
     { className: "filter-item filter-item__search" },
-    React.createElement("input", { type: "text", placeholder: "Keyword Search", onChange: props.onSearch })
+    React.createElement("input", { type: "text", placeholder: EE.lang.keyword_search, onChange: props.onSearch })
   );
 }
 

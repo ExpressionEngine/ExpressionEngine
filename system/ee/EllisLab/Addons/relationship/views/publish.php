@@ -4,7 +4,6 @@ if (empty($choices)) {
 	return $this->embed('ee:_shared/form/no_results', $no_results);
 }
 $component = [
-	'name' => $field_name,
 	'items' => $choices,
 	'selected' => $selected,
 	'multi' => $multi,

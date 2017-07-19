@@ -55,7 +55,7 @@ class FilterToggleAll extends React.Component {
 function FilterSearch (props) {
   return (
     <div className="filter-item filter-item__search">
-      <input type="text" placeholder="Keyword Search" onChange={props.onSearch} />
+      <input type="text" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
     </div>
   )
 }

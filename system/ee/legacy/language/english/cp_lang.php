@@ -215,6 +215,9 @@ $lang = array(
 
 'limit_by' => 'limit by',
 
+'keyword_search' =>
+'Keyword Search',
+
 'manage' => 'Manage',
 
 'modify' => 'Modify',

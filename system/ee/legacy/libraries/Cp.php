@@ -149,6 +149,7 @@ class Cp {
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
 			'check_all'				=> lang('check_all'),
 			'clear_all'				=> lang('clear_all'),
+			'keyword_search'		=> lang('keyword_search'),
 		);
 
 		ee()->javascript->set_global(array(
