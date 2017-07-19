@@ -21,6 +21,7 @@ class Moderate {
 	{
 		// open it
 		$comment->status = 'o';
+		$comment->edit_date = ee()->localize->now;
 		$comment->save();
 
 		// update stats
