@@ -10,6 +10,13 @@ class Relationship extends React.Component {
     this.state.selectedVisible = this.state.selected
   }
 
+  static renderVisibleFields(context) {
+    $('div[data-relationship-react]:visible', context).each(function () {
+      let props = JSON.parse(window.atob($(this).data('relationshipReact')))
+      ReactDOM.render(React.createElement(Relationship, props, null), this)
+    })
+  }
+
   initialItemsChanged = (items) => {
     this.initialItems = items
     this.setState({
@@ -75,8 +82,9 @@ class Relationship extends React.Component {
 }
 
 $(document).ready(function () {
-  $('div[data-relationship-react]').each(function () {
-    let props = JSON.parse(window.atob($(this).data('relationshipReact')))
-    ReactDOM.render(React.createElement(Relationship, props, null), this)
-  })
+  Relationship.renderVisibleFields()
 })
+
+Grid.bind('relationship', 'display', function(cell) {
+  Relationship.renderVisibleFields(cell)
+});

@@ -51,9 +51,6 @@ var Relationship = function (_React$Component) {
     return _this;
   }
 
-  // Items visible in the selection container changed via filtering
-
-
   _createClass(Relationship, [{
     key: 'render',
     value: function render() {
@@ -94,14 +91,26 @@ var Relationship = function (_React$Component) {
         })
       );
     }
+  }], [{
+    key: 'renderVisibleFields',
+    value: function renderVisibleFields(context) {
+      $('div[data-relationship-react]:visible', context).each(function () {
+        var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+        ReactDOM.render(React.createElement(Relationship, props, null), this);
+      });
+    }
+
+    // Items visible in the selection container changed via filtering
+
   }]);
 
   return Relationship;
 }(React.Component);
 
 $(document).ready(function () {
-  $('div[data-relationship-react]').each(function () {
-    var props = JSON.parse(window.atob($(this).data('relationshipReact')));
-    ReactDOM.render(React.createElement(Relationship, props, null), this);
-  });
+  Relationship.renderVisibleFields();
+});
+
+Grid.bind('relationship', 'display', function (cell) {
+  Relationship.renderVisibleFields(cell);
 });
