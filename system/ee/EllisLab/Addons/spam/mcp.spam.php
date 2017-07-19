@@ -391,7 +391,7 @@ class Spam_mcp {
 				continue;
 			}
 
-			$fqcn = $addon->getSpamRejectClass();
+			$fqcn = $addon->getSpamApproveClass();
 
 			try {
 				$approver = new $fqcn;
