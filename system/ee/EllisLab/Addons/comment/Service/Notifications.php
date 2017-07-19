@@ -137,28 +137,15 @@ class Notifications {
 		}
 
 		$emails = array_unique($emails);
+		$addresses = $this->structureAddresses($emails);
 
 		// don't send admin notifications to the comment author if they are an admin, seems silly
-		// @todo remove ridiculous that/this dance when PHP 5.3 is no longer supported
-		$that = $this;
-		$emails = array_filter($emails,
-			function($value) use ($that)
-			{
-				if (ee()->session->userdata('member_id') == 0)
-				{
-					return TRUE;
-				}
+		unset($addresses[ee()->session->userdata('email')]);
 
-				return ee()->session->userdata('member_id') != $this->comment->author_id;
-			}
-		);
-
-		if (empty($emails))
+		if (empty($addresses))
 		{
 			return;
 		}
-
-		$addresses = $this->structureAddresses($emails);
 
 		$template = ee()->functions->fetch_email_template('admin_notify_comment');
 		$replyto = ($this->comment->email) ?: ee()->config->item('webmaster_email');
