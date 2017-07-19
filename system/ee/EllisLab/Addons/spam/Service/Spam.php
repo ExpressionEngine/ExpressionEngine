@@ -78,7 +78,7 @@ class Spam implements SpamProtocol {
 	 */
 	public function moderate($content_type, $entity, $document, $optional_data)
 	{
-		$data = [
+		$data = array(
 			'content_type'  => $content_type,
 			'author_id'     => ee()->session->userdata('member_id'),
 			'trap_date'     => ee()->localize->now,
@@ -86,7 +86,7 @@ class Spam implements SpamProtocol {
 			'entity'        => $entity,
 			'document'      => $document,
 			'optional_data' => $optional_data,
-		];
+		);
 
 		$trap = ee('Model')->make('spam:SpamTrap', $data);
 		$trap->save();
