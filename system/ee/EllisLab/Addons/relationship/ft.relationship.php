@@ -476,9 +476,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$field_name = $field_name.'[data]';
 
 		// Single relationships also expects an array
-		if ( ! $multiple) {
-			$field_name .= '[]';
-		}
+		if ( ! $multiple) $field_name .= '[]';
 
 		$select_filters = [];
 		if ($channels->count() > 1) {
@@ -496,8 +494,8 @@ class Relationship_ft extends EE_Fieldtype {
 				'name' => 'related',
 				'title' => lang('show'),
 				'items' => [
-					'related' => 'Related only',
-					'unrelated' => 'Unrelated only'
+					'related' => lang('rel_ft_related_only'),
+					'unrelated' => lang('rel_ft_unrelated_only')
 				]
 			];
 		}

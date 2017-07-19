@@ -62,9 +62,13 @@ $lang = array(
 
 'rel_ft_order_title' => 'Title',
 
+'rel_ft_related_only' => 'Related only',
+
 'rel_ft_statuses' => 'Limit by status',
 
 'rel_ft_statuses_desc' => 'Choose statuses to limit the entries in this relationships field.',
+
+'rel_ft_unrelated_only' => 'Unrelated only',
 
 
 /* File */
