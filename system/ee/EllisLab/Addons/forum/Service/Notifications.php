@@ -74,15 +74,15 @@ class Notifications {
 			$notify_email_str .= ','.$topic->Forum->forum_notify_emails_topics;
 		}
 
-		$notify_moderators_topics = get_bool_from_string($topic->Forum->forum_notify_moderators_topics);
-		$notify_moderators_replies = get_bool_from_string($topic->Forum->forum_notify_moderators_replies);
+		$notify_moderators_topics = $topic->Forum->forum_notify_moderators_topics;
+		$notify_moderators_replies = $topic->Forum->forum_notify_moderators_replies;
 
 		$category = $topic->Forum->Category;
 
 		if ($category)
 		{
-			$notify_moderators_topics = get_bool_from_string($category->forum_notify_moderators_topics) OR $notify_moderators_topics;
-			$notify_moderators_replies = get_bool_from_string($category->forum_notify_moderators_replies) OR $notify_moderators_replies;
+			$notify_moderators_topics = $category->forum_notify_moderators_topics OR $notify_moderators_topics;
+			$notify_moderators_replies = $category->forum_notify_moderators_replies OR $notify_moderators_replies;
 
 			if ($reply)
 			{
