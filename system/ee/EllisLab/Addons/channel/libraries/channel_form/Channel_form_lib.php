@@ -1791,7 +1791,10 @@ GRID_FALLBACK;
 				// Lastly we check for spam before saving a new entry
 				if ( ! $this->entry('entry_id'))
 				{
-					$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($spam_content);
+					// set the real group ID or 3 for guests for spam exemption check
+					// can't trust group_id on the session object due to _member_group_override()
+					$real_group_id = (ee()->session->userdata('member_id')) ? ee()->session->userdata('group_id') : 3;
+					$is_spam = $real_group_id != 1 && ee('Spam')->isSpam($spam_content);
 
 					if ($is_spam)
 					{
