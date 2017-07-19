@@ -13,6 +13,7 @@ class Relationship extends React.Component {
   static renderVisibleFields(context) {
     $('div[data-relationship-react]:visible', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('relationshipReact')))
+      props.name = $(this).data('inputValue')
       ReactDOM.render(React.createElement(Relationship, props, null), this)
     })
   }

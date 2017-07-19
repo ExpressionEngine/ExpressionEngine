@@ -96,6 +96,7 @@ var Relationship = function (_React$Component) {
     value: function renderVisibleFields(context) {
       $('div[data-relationship-react]:visible', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+        props.name = $(this).data('inputValue');
         ReactDOM.render(React.createElement(Relationship, props, null), this);
       });
     }

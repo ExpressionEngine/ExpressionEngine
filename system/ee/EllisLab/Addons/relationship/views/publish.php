@@ -15,7 +15,7 @@ $component = [
 	'select_filters' => $select_filters
 ];
 ?>
-<div data-relationship-react="<?=base64_encode(json_encode($component))?>">
+<div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>">
 	<div class="fields-select">
 		<div class="field-inputs">
 			<label class="field-loading">
