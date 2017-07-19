@@ -52,6 +52,7 @@ class Relationship extends React.Component {
           initialItems={this.initialItems}
           initialItemsChanged={this.initialItemsChanged}
           name={this.props.name}
+          limit={this.props.limit}
           multi={this.props.multi}
           selected={this.state.selected}
           itemsChanged={this.itemsChanged}
